@@ -1,5 +1,4 @@
-# onsas
-An Open Nonlinear Structural Analysis System.
+# ONSAS: An Open Nonlinear Structural Analysis System
 
 The source files and the user's guide will be uploaded soon.
 
