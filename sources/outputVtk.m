@@ -69,7 +69,7 @@ function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( 
       if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
       
         [xdef, ydef, zdef, conecElem] = outputFrameElementPlot( coordsElem(i,:)', dispsElemsMat(i,:)', elemType ) ;
-        
+        titax = [] ; titay = [] ; titaz = [] ;
       elseif nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
     
         [~, locglos] = beamParameters( Nodes(nodeselem,:) ) ;
@@ -115,10 +115,12 @@ function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( 
     dispMat = NodesDefAux - NodesAux ;
     % Replaces nodes x, y, z disps 
     UG(1:2:end) = reshape( dispMat', size(NodesAux,1)*3, 1) ;
-    % FALTAN LOS GIROS PARA ROTAR LA SECCION
-    UG(2:6:end) = RotsAux(:,1) ;
-    UG(4:6:end) = RotsAux(:,2) ;
-    UG(6:6:end) = RotsAux(:,3) ;
+    % Replaces nodes x, y, z rots
+    if size(RotsAux) > 0
+      UG(2:6:end) = RotsAux(:,1) ;
+      UG(4:6:end) = RotsAux(:,2) ;
+      UG(6:6:end) = RotsAux(:,3) ;
+    end
   end
  
 

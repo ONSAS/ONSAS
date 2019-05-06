@@ -47,6 +47,8 @@ if elemType == 1
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
   titax = [] ;
+  titay = [] ;
+  titaz = [] ;
   conecElem = [1 2] ;
 
 elseif elemType == 2

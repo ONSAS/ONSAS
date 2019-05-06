@@ -50,6 +50,9 @@ if elemType == 1
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
+  titax = [] ;
+  titay = [] ;
+  titaz = [] ;
 	conecElem = [1 2] ;
 
 elseif elemType == 2
@@ -73,6 +76,9 @@ elseif elemType == 2
   ux     = zeros( size(xsloc) ) ; 
   uy     = zeros( size(xsloc) ) ; 
   uz     = zeros( size(xsloc) ) ;
+  titax	 = zeros( size(xsloc) ) ;
+  titay	 = zeros( size(xsloc) ) ;
+  titaz	 = zeros( size(xsloc) ) ;
   
   LocAxialdofs  = [ 1  1+ndofpnode                        ] ;
   LocTorsidofs  = [ 2  2+ndofpnode                        ] ;
@@ -102,6 +108,14 @@ localUelem = zeros(2,1);
     Nlin2 = xsloc(i)/l       ;
     ux(i) = Nlin1 * localUelem(LocAxialdofs(1)) + Nlin2 * localUelem(LocAxialdofs(2)) ;
 		
+    % torsion
+		titax(i) = Nlin1 * localUelem(LocTorsidofs(1)) + Nlin2 * localUelem(LocTorsidofs(2)) ;
+		
+    % rots
+    %~ Nrots = bendingInterFuns( xsloc(i), l, 1 ) ;
+    %~ titaz(i) = Nrots * localUelem( LocBendXYdofs ) ; 
+    %~ titay(i) = Nrots * Rb' * localUelem( LocBendXZdofs ) ;
+    
 		if i<nPlotPoints
 			conecElem = [conecElem ; (i-1)+1 (i-1)+2] ;
 		end
@@ -114,4 +128,5 @@ localUelem = zeros(2,1);
   xsdef = ( xsdefA(1) + XsGlo(1,:) )' ;
   ysdef = ( ysdefA(1) + XsGlo(2,:) )' ;
   zsdef = ( zsdefA(1) + XsGlo(3,:) )' ;
+  
 end
