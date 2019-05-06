@@ -17,12 +17,12 @@
 %~ You should have received a copy of the GNU General Public License
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-  fprintf('==============================================\n');
-  fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
-  fprintf('==============================================\n');
-  fprintf( [ 'Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli \n' ] ) ;
-  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. \n' ] ) ;
-  fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYNG file for more details. \n' ] ) ;
+fprintf('==============================================\n');
+fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
+fprintf('==============================================\n');
+fprintf( [ 'Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli \n' ] ) ;
+fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. \n' ] ) ;
+fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYNG file for more details. \n' ] ) ;
 
 close all, clear -x previouslyDefinedSelectedFileVar ONSASversion
 fileslist = readdir('./input');
@@ -46,7 +46,6 @@ else
   selectedfile = previouslyDefinedSelectedFileVar ;
 
 end
-
 
 run( fileslist{ selectedfile }(1:end-2) ) ;
 

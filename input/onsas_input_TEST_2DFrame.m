@@ -74,6 +74,8 @@ controlDofInfo = [ 1 1 1 ] ;
 printflag = 2 ;
 tablesBoolean = 1;
 
+plotParamsVector = [2];
+
 plotsViewAxis = [ 0 -1 0] ;
 
 linearDeformedScaleFactor = 1;
