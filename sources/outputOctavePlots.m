@@ -51,10 +51,11 @@ for indplot = 1 : length( timesPlotsVec ) ;
   end
   
   hold on, grid on
-  
+
   for i=1:nelems
     plot3( coordsElemsMat(i,[1 7]), coordsElemsMat(i,[3 9]), coordsElemsMat(i,[5 11]),'b--o','linewidth',lw*0.8,'markersize',ms*0.8);
   end
+
 
   Utplot = matUts ( :, timesPlotsVec( indplot) ) *linearDeformedScaleFactor ;
 
@@ -133,6 +134,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
   else
     view(plotsViewAxis);
   end
+
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
 			subplot(3,2,5)
@@ -169,8 +171,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
   end
   % ---------------------------------------------------------------------
 
+
   % Axial force 
-  
   if length(plotParamsVector) > 1 
     
     figAxial = figure ;
@@ -187,7 +189,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
     
     for i = 1:nelems
 			normalForce = matNts(:,timesPlotsVec( indplot)) ;
-      if Conec(i,end) == 1 
+      if Conec(i,end) == 1 || Conec(i,end) == 2
         nodeselem = Conec(i,1:2) ;
         [lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
         offsetText = min(lengths) / 15 ;
@@ -203,11 +205,15 @@ for indplot = 1 : length( timesPlotsVec ) ;
           text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%3.2e', normalForce(i)), 'color', 'g', 'fontsize', 9 )
         end
         
+      else
+        fprintf('Missing: normal forces plot in octave for beam elements.\n')
+      
       end
     end
     
     
   end 
 
+%~ stop
 end %endfor indplot
 

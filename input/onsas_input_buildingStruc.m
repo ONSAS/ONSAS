@@ -79,8 +79,8 @@ linearDeformedScaleFactor = 1.0 ;
 controlDofInfo = [ nlevs*4 3 1 ] ;
 
 % Plot options
-%~ plotParamsVector = [ 2 4] ;
-plotParamsVector = [ 3] ;
+plotParamsVector = [ 2 4] ;
+%~ plotParamsVector = [ 3] ;
 printflag = 0 ;
 
 % Analytic solution 
@@ -90,5 +90,5 @@ stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-5 ;  stopTolForces  = 1.0e-8 ;
 %~ targetLoadFactr = 1.0e3 ;  nLoadSteps     = 2    ;
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
-targetLoadFactr = 1.0e5 ;  nLoadSteps     = 150    ;
+targetLoadFactr = 1.0e5 ;  nLoadSteps     = 100    ;
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps .05 ] ; 
