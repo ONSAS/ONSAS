@@ -62,6 +62,7 @@ nodalConstantLoads = [ 3 0 0 Fy 0 Fz 0 ] ;
 
 % Analysis parameters
 nonLinearAnalysisBoolean = 0 ; printflag = 2 ; tablesBoolean = 1 ;
+plotParamsVector = [2] ;
 linearDeformedScaleFactor = 1;
 
 % Analytical solution 

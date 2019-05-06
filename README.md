@@ -53,14 +53,14 @@ We strongly encourage the user to read the user's guide available at [https://ww
 ## Contributions <a name="contributions"></a>
 ------
 
-### Contributions
+### Authors
 All the authors collaborated in various tasks regarding the design, development, testing and documentation of the code. However, the contribution of each author to the development of the current version was focused in the following tasks:
 
 * [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, leaded and managed the design and development of the code, developed the assembly functions, nonlinear truss element formulation, nonlinear static analysis function, designed and co-authored Newmark's method function, input and output functions, leaded the generation of the documentation.
 
 * **J. Bruno Bazzano**<sup>1,2</sup>, leaded the development of the nonlinear/linear buckling analysis modules, co-designed the code, developed and implemented validation examples.
 
-* **Jean-Marc Battini**<sup>3</sup>, developed the functions associated with the nonlinear frame element (included in the file elementBeam3DInternLoads.m).
+* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en)<sup>3</sup>, developed the functions associated with the nonlinear frame element (included in the file elementBeam3DInternLoads.m).
 
 * **Joaquín Viera** <sup>1</sup>, leaded the development of the Linear Analysis module and input files, collaborated in the design and development of the input reading and output generation modules, leaded the development of GUI.
 
@@ -72,6 +72,10 @@ Affiliations:
 1. Bazzano & Scelza Ingenieros, Montevideo, Uruguay
 1. Department of Civil and Architectural Engineering, KTH Royal Institute of Technology, Stockholm, Sweden
 1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
+
+### Contributors
+Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function.
+
 
 ### Acknowledgments
 The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. Usera).
