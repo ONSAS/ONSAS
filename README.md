@@ -74,11 +74,11 @@ Affiliations:
 1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
 
 ### Contributors
-Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function. The functions linearStiffMatPlate3D.m and assemblyUniform.m use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) example developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
+Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function. The functions linearStiffMatPlate3D.m and assemblyUniform.m use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
 
 
 ### Acknowledgments
-The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. Usera).
+The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
 
 J. M. Pérez Zerpa would like to thank Professors Pablo Blanco and Gonzalo Ares from the HeMoLab group at LNCC Brazil, [hemolab.lncc.br](http://hemolab.lncc.br/), for their comments and suggestions regarding the structure of the code and the model information management.
 
