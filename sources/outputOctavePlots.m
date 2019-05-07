@@ -172,11 +172,16 @@ for indplot = 1 : length( timesPlotsVec ) ;
   % ---------------------------------------------------------------------
 
 
-  % Axial force 
-  if length(plotParamsVector) > 1 
+  % ----------------------------------------
+  % ---------- Axial force plots  ----------
+  if length(plotParamsVector) > 0 && plotParamsVector(1)>0
     
     figAxial = figure ;
     hold on, grid on
+
+    cmap = flipud( colormap('jet') ) ; % other good options: hot
+    colormap(cmap);
+
 
     axis equal
     axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
@@ -186,9 +191,13 @@ for indplot = 1 : length( timesPlotsVec ) ;
     else
       view(plotsViewAxis);
     end
+
+    normalForce    = matNts(:,timesPlotsVec( indplot)) ;
+    minNormalForce = min( normalForce);
+    maxNormalForce = max( normalForce);
     
     for i = 1:nelems
-			normalForce = matNts(:,timesPlotsVec( indplot)) ;
+ 
       if Conec(i,end) == 1 || Conec(i,end) == 2
         nodeselem = Conec(i,1:2) ;
         [lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
@@ -196,24 +205,26 @@ for indplot = 1 : length( timesPlotsVec ) ;
         
         posText = ( Nodes(nodeselem(2),:)+Nodes(nodeselem(1),:) ) / 2 ;
         
-        if normalForce(i) < -1e-6
-          plot3( Nodes(nodeselem,1) , Nodes(nodeselem,2) , Nodes(nodeselem,3) ,'r','linewidth', lw*0.4 ) ;
-          text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%3.2e', normalForce(i)), 'color', 'r', 'fontsize', 9 )
-          
-        elseif normalForce(i) > 1e-6
-          plot3( Nodes(nodeselem,1) , Nodes(nodeselem,2) , Nodes(nodeselem,3) ,'g','linewidth', lw*0.4 ) ;
-          text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%3.2e', normalForce(i)), 'color', 'g', 'fontsize', 9 )
+        if abs(maxNormalForce - minNormalForce) < 1e-10
+          cmapi = cmap( 1 ,: );
+        else
+          cmapi = cmap( max( [ 1 ceil( (normalForce(i)-minNormalForce) / abs( maxNormalForce-minNormalForce) * length(cmap) ) ] ) ,: );
         end
+        
+        plot3( Nodes(nodeselem,1), Nodes(nodeselem,2), Nodes(nodeselem,3), 'color',cmapi,'linewidth',lw*0.7 )
+        text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%5.1e', normalForce(i)), 'color', cmapi, 'fontsize', 9 )
         
       else
         fprintf('Missing: normal forces plot in octave for beam elements.\n')
       
       end
+    
+    end
+
+    colorbar('title','Normal Force')
+    if minNormalForce ~= maxNormalForce
+      caxis([minNormalForce maxNormalForce])
     end
     
-    
   end 
-
-%~ stop
 end %endfor indplot
-
