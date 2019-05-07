@@ -70,7 +70,7 @@ nodalVariableLoads   = [ (nlevs-1)*4+1  0 0 1e-3 0 -1 0 ; ...
                          (nlevs-1)*4+4  0 0 0 0 -1 0 ] ;
 
 
-sectPar = [ 12 .5 .5 ];
+sectPar = [ 12 .2 .2 ];
 
 % Analysis parameters
 nonLinearAnalysisBoolean = 1 ; 
@@ -79,8 +79,8 @@ linearDeformedScaleFactor = 1.0 ;
 controlDofInfo = [ nlevs*4 3 1 ] ;
 
 % Plot options
-plotParamsVector = [ 2 4] ;
-%~ plotParamsVector = [ 3] ;
+%~ plotParamsVector = [ 2 4] ;
+plotParamsVector = [ 3] ;
 printflag = 0 ;
 
 % Analytic solution 

@@ -235,7 +235,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
   cellPointData{1,1} = 'VECTORS' ; cellPointData{1,2} = 'Displacements' ; cellPointData{1,3} = vtkDispMat ;
 
   
-  vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData, stressMat ) ;
+  vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData ) ;
   
 end
 
