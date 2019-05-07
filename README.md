@@ -74,7 +74,7 @@ Affiliations:
 1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
 
 ### Contributors
-Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function.
+Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function. The functions linearStiffMatPlate3D.m and assemblyUniform.m use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) example developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
 
 
 ### Acknowledgments
