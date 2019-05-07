@@ -43,7 +43,7 @@ The code is available at is distributed under a GNU-GPL license.
 The user should follow these steps to install and run onsas:
 
 1. Download and install [GNU-Octave](https://www.gnu.org/software/octave/)
-1. Download the ONSAS source files **AGREGAR LINK**
+1. Download the ONSAS source files https://github.com/onsas/onsas/archive/v0.1.8.zip
 1. Open GNU-Octave and run the _ONSAS.m_ script
 1. Select one of the available input files (or create one).
 
@@ -78,7 +78,7 @@ Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPA
 
 
 ### Acknowledgments
-The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
+The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera**](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
 
 J. M. Pérez Zerpa would like to thank Professors Pablo Blanco and Gonzalo Ares from the HeMoLab group at LNCC Brazil, [hemolab.lncc.br](http://hemolab.lncc.br/), for their comments and suggestions regarding the structure of the code and the model information management.
 
