@@ -95,6 +95,7 @@ LBAAnalyFlag             = 0 ;
 
 
 printflag = 2 ;
+plotParamsVector = [2 ];
 tablesBoolean = 1 ;
 
 linearDeformedScaleFactor = 1;

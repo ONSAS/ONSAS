@@ -238,8 +238,6 @@ elemSelfWLoc = zeros(nelems, ndofpnode*2) ;
                                                                           Local2GlobalMats, elemReleases, secGeomProps, Lx, Ly)  ;
 
 
-
-
 % Assembly
 constantFext = constantFext + nodalConstUnif + nodalPlate ; % Computes constant fext as the sum of the constant fext plus distributed loads
 
@@ -563,8 +561,8 @@ for currTime = 1:nTimeSteps
 			platedofs1 = [] ; % displacements dofs
       for j = 1:4
         if ismember(nodeselem(j), beamNodes)
-          %~ nodedofs = nodes2dofs(nodeselem(j), ndofpnode) ;
-          %~ platedofs1 = [ platedofs1 ; nodedofs ] ;
+          nodedofs = nodes2dofs(nodeselem(j), ndofpnode) ;
+          platedofs1 = [ platedofs1 ; nodedofs([2 4 5]) ] ; % to fix
         else
           nodedofs = nodes2dofs(nodeselem(j), ndofpnode) ;
           platedofs1 = [ platedofs1 ; nodedofs([2 4 5]) ] ;
