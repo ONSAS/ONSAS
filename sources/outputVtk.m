@@ -40,7 +40,7 @@ function R = expon(t);
 end
 
 % ------------------------------------------------------------------------------
-function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, secc, UG, nonLinearAnalysisBoolean, dynamicAnalysisBoolean, coordsElem, normalForce )
+function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, indexesElems, secc, UG, nonLinearAnalysisBoolean, dynamicAnalysisBoolean, coordsElem, normalForce )
 % ------------------------------------------------------------------------------
 
   nelems = size(Conec,1) ; nnodes = size(Nodes,1) ;
@@ -139,9 +139,15 @@ function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( 
     Nodesvtk = NodesDef ;
     Conecvtk = [ Conec(:,7) Conec(:,1:4) ] ;
     vtkDispMat = dispMat ;
-    vtkNormalForceMat = [ vtkNormalForceMat ; normalForce ] ;
+    for i = 1:nelems
+      m = indexesElems(i) ;
+      if Conec(i,7) == 1 || Conec(i,7) == 2
+        vtkNormalForceMat = [ vtkNormalForceMat ; normalForce(m) ] ;
+      elseif Conec(i,7) == 3 || Conec(i,7) == 4
+        vtkNormalForceMat = [ vtkNormalForceMat ; 0 ] ;
+      end  
+    end    
   end
-
 end
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
@@ -164,11 +170,11 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
   Utplot = matUts ( :, timesPlotsVec( indplot) ) ;
 
-  [vtkConec, vtkNodesDef, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, sectPar , Utplot, nonLinearAnalysisBoolean, ...
+  [vtkConec, vtkNodesDef, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, indexesElems, sectPar , Utplot, nonLinearAnalysisBoolean, ...
                                                                             dynamicAnalysisBoolean, coordsElemsMat, matNts(:, timesPlotsVec(indplot)) ) ;
 
   filename = [ outputdir problemName '_' sprintf('%04i',indplot) '.vtk'] ;
-	
+
   % Scalars vals
   svm             = [] ;
   vecSigI         = [] ;
@@ -184,7 +190,6 @@ for indplot = 1 : length( timesPlotsVec ) ;
   cellPointData   = cell ;
 	cellCellData    = cell ;
   cellTensorData  = cell ;	
-  
   
 	if size(matNts,1) > 0
     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForceMat ;
