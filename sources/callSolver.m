@@ -33,6 +33,7 @@ if dynamicAnalysisBoolean == 0
     Ut, Stresst, Strainst, dsigdepst, FintGt, currLoadFactor, nextLoadFactor, ...
     convDeltau ) ;
 
+Stresst
   modelCompress
 
 else
