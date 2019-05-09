@@ -20,6 +20,8 @@
 
 lw = 1.5; ms = 3;
 
+flagMarkersLoadDisp = 1;
+
 figure , hold on, grid on
 plot( timeVals, loadFactors        , 'b-x', 'linewidth', lw,'markersize',ms)
 labx = xlabel('step/time'); laby = ylabel('Load factors');
@@ -55,9 +57,11 @@ cd(currdir)
 figure, hold on, grid on
 plot( controlDisps, loadFactors , 'b-x', 'linewidth', lw,'markersize',ms)
 
-for indplot = 1 : length( timesPlotsVec ) ;
-  text( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), sprintf('%6.2f', timesPlotsVec(indplot)/nTimesTotal) ) 
-  plot( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), 'ro','markersize',ms*3 ) 
+if flagMarkersLoadDisp == 1
+  for indplot = 1 : length( timesPlotsVec ) ;
+    text( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), sprintf('%6.2f', timesPlotsVec(indplot)/nTimesTotal) ) 
+    plot( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), 'ro','markersize',ms*3 ) 
+  end
 end
 
 labx=xlabel('Displacements'); laby=ylabel('Load factors');
