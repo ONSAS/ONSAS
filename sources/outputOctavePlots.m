@@ -90,6 +90,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
 			end
 			plot3( xselemdef, yselemdef, zselemdef, 'b-', 'linewidth', lw, 'markersize', ms );
+
 		else
 			% Deformed shape of plate
     end
@@ -210,8 +211,26 @@ for indplot = 1 : length( timesPlotsVec ) ;
         else
           cmapi = cmap( max( [ 1 ceil( (normalForce(i)-minNormalForce) / abs( maxNormalForce-minNormalForce) * length(cmap) ) ] ) ,: );
         end
-        
-        plot3( Nodes(nodeselem,1), Nodes(nodeselem,2), Nodes(nodeselem,3), 'color',cmapi,'linewidth',lw*0.7 )
+
+        % --- plot of each element
+        if Conec(i,end) == 1 || Conec(i,end) == 2 
+    
+          [~, locglomat] = beamParameters(Nodes(Conec(i,1:2),:)) ;
+      
+          if (nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0)
+            [ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
+    
+          else
+            [ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,:)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
+    
+          end
+          plot3( xselemdef, yselemdef, zselemdef, 'color',cmapi,'linewidth',lw*0.7 );
+    
+        else
+          % Deformed shape of plate
+        end
+        % ----------
+
         text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%5.1e', normalForce(i)), 'color', cmapi, 'fontsize', 9 )
         
       else
@@ -225,6 +244,18 @@ for indplot = 1 : length( timesPlotsVec ) ;
     if minNormalForce ~= maxNormalForce
       caxis([minNormalForce maxNormalForce])
     end
+    
+    if size(matUts,2) == 1
+      tit = title(['Deformed shape' ] );
+    else
+      tit = title(['Step/increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
+    end
+    labx=xlabel('x'); laby=ylabel('y'); labz=zlabel('z') ;
+    set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize*0.5 ) ;
+    set(tit, "FontSize", plotfontsize) ;
+    set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
+    
+  
     
   end 
 end %endfor indplot

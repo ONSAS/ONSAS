@@ -76,17 +76,11 @@ currTime       = currTime + deltaT ;
 % stores displacements
 matUts = [ matUts modelNextState.Ut ] ;
 
-%~ % normal forces calculation
-currentNormalForces = zeros(nelems,1) ;
-%~ auxMat = coordsElemsMat+dispsElemsMat ;
-for i=1:nelems
-  
-  if Conec(i,7) == 1 || 2
-		A  = secGeomProps(Conec(i,6),1) ;
-		currentNormalForces(i) = modelCurrState.Stresst(i) * A ;
-	end
-	
-end
+% normal forces calculation
+
+indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
+Areas = secGeomProps(Conec(:,6),1) ;
+currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
 
 matNts = [ matNts currentNormalForces ] ;
 
