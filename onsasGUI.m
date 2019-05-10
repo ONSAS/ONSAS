@@ -378,6 +378,8 @@ function editBoxes(src, eventdata, fig)
 		handles.controldofVec 				= num2str(inp) ;
 	elseif strcmp(a, 'plotView')
 		handles.plotViewVec 					= num2str(inp) ;
+	elseif strcmp(a, 'scale')
+		handles.scaleNum							= num2str(inp) ;
   end  
 
   set(src,'string', inp) ;  
@@ -860,11 +862,11 @@ function saveFile(src, eventdata, fig, version)
   fprintf(fileM, ['reportBoolean = %i ;\n'], str2num(handles.reportBoolean) );
   fprintf(fileM, ['printflag = %i ;\n'], str2num(handles.printflagNum)) ;
   if handles.anaVec == 1
-		fprintf(fileM, ['linearDeformedScaleFactor = %12.3e ;\n'], handles.scaleNum ); 
+		fprintf(fileM, ['linearDeformedScaleFactor = %12.3e ;\n'], str2num(handles.scaleNum) ); 
   elseif handles.anaVec == 2 || handles.anaVec == 3
 		fprintf(fileM, ['controlDofInfo = [ %s ] ;\n'], handles.controldofVec ); 
   end
-  fprintf(fileM, ['plotViewAxis = [ %s ] ;\n'], handles.plotViewVec ); 
+  fprintf(fileM, ['plotsViewAxis = [ %s ] ;\n'], handles.plotViewVec ); 
   fclose(fileM) ;
   
   cd ..
