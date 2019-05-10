@@ -24,6 +24,7 @@ function onsasGUI
   close all, clc
   
   addpath([pwd '/sources/'])
+  addpath([pwd '/sourcesGUI/'])
   % Geometrical properties
   GUIgeometry
   
@@ -35,48 +36,48 @@ function onsasGUI
   % ------------------------------------------------------------------------------------------------------------------------
   
   % General handles
-  handlesFig.nodes = [] ;
-  handlesFig.conec = [] ;
+  handlesFig.nodes 	= [] 	;
+  handlesFig.conec 	= [] 	;
   handlesFig.anaVec = [1] ;
-  handlesFig.numVec = 0 ;
+  handlesFig.numVec = 0 	;
   % Structural properties handles
   handlesFig.matNumbers = '1' ;
   handlesFig.secNumbers = '1' ;
-  handlesFig.matMatrix = zeros(str2double(handlesFig.matNumbers),5) ;
-  handlesFig.secMatrix = zeros(str2double(handlesFig.secNumbers),4) ;
+  handlesFig.matMatrix 	= zeros(str2double(handlesFig.matNumbers),5) ;
+  handlesFig.secMatrix 	= zeros(str2double(handlesFig.secNumbers),4) ;
   % Boundary conditions handles
-  handlesFig.loadRows = '1' ;
-  handlesFig.suppsRows = '1' ;
-  handlesFig.loadsMatrix = zeros(str2double(handlesFig.loadRows),7) ;
-  handlesFig.suppsMatrix = zeros(str2double(handlesFig.suppsRows),6) ;
+  handlesFig.loadRows 		= '1' ;
+  handlesFig.suppsRows 		= '1' ;
+  handlesFig.loadsMatrix 	= zeros(str2double(handlesFig.loadRows),7) 	;
+  handlesFig.suppsMatrix 	= zeros(str2double(handlesFig.suppsRows),6) ;
   % Numerical method parameters handles
-  handlesFig.prevValdeltaTLin = '0' ; 
-  handlesFig.prevValfinalTimeLin = '0' ;
-  handlesFig.prevValIndexTimeSol = '0' ;
+  handlesFig.prevValdeltaTLin 		= '0' ; 
+  handlesFig.prevValfinalTimeLin 	= '0' ;
+  handlesFig.prevValIndexTimeSol 	= '0' ;
   
-  handlesFig.prevValTimeIncr = '0' ;
-  handlesFig.prevValFinalTimeDyn = '0' ;
-  handlesFig.prevValTolDeltaUDyn = '0' ;
-  handlesFig.prevValTolForcesDyn = '0' ;
-  handlesFig.prevValTolIterDyn = '0' ;
-  handlesFig.prevValDeltaNW = '0' ;
-  handlesFig.prevValAlphaNW = '0' ;
+  handlesFig.prevValTimeIncr 			= '0' ;
+  handlesFig.prevValFinalTimeDyn 	= '0' ;
+  handlesFig.prevValTolDeltaUDyn 	= '0' ;
+  handlesFig.prevValTolForcesDyn 	= '0' ;
+  handlesFig.prevValTolIterDyn 		= '0' ;
+  handlesFig.prevValDeltaNW 			= '0' ;
+  handlesFig.prevValAlphaNW 			= '0' ;
   
   handlesFig.prevValTolDeltaU = '0' ;
   handlesFig.prevValTolForces = '0' ;
-  handlesFig.prevValTolIter = '0' ;
-  handlesFig.prevValLoadFac = '0' ;
+  handlesFig.prevValTolIter 	= '0' ;
+  handlesFig.prevValLoadFac 	= '0' ;
   handlesFig.prevValLoadSteps = '0' ;
-  handlesFig.prevValIncremAL = '0' ;
+  handlesFig.prevValIncremAL 	= '0' ;
   
   % Output handles
-  handlesFig.reportBoolean = '0' ;
-  handlesFig.plotOpt = '1' ;
-  handlesFig.plotTimesNum = '1' ;
-  handlesFig.printflagNum = '1' ;
-  handlesFig.controldofVec = '1 1 -1' ;
-  handlesFig.scaleNum = '1' ;
-  handlesFig.plotViewVec = '1 1 1' ;
+  handlesFig.reportBoolean 	= '0' ;
+  handlesFig.plotOpt 				= '1' ;
+  handlesFig.plotTimesNum 	= '1' ;
+  handlesFig.printflagNum 	= '1' ;
+  handlesFig.controldofVec 	= '1 1 -1' ;
+  handlesFig.scaleNum 			= '1' ;
+  handlesFig.plotViewVec 		= '1 1 1' ;
 
   % ------------------------------------------------------------------------------------------------------------------------ 
   
@@ -87,66 +88,100 @@ function onsasGUI
   analysisPanel
   
 % => Action buttons Panel
-  handlesFig.sysActions = uipanel ('parent', fig, "position", vecSysActions) ;
-  handlesFig.loadM = uicontrol ("parent", handlesFig.sysActions, "string", "Load .m", "position",[PPFromLeft PPFromBottomSys buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
-  handlesFig.saveM = uicontrol ("parent", handlesFig.sysActions, "string", "Save .m", "position",[PPFromLeft+incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight ], 'callback', {@saveFile, fig, ONSASversion} ) ;
-  handlesFig.runONSAS = uicontrol ("parent", handlesFig.sysActions, "string", "Run", "position",[PPFromLeft+2*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], 'callback', {@runONSAS, fig} ) ; 
-  handlesFig.GPLLicense = uicontrol ("parent", handlesFig.sysActions, "string", "GPL License", "position",[PPFromLeft+3*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], 'callback', {@license, fig} ) ; 
-  handlesFig.quit = uicontrol ("parent", handlesFig.sysActions, "string", "Quit", "position",[PPFromLeft+4*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], 'callback', 'close (gcf)' ) ; 
+  handlesFig.sysActions = uipanel 	(	'parent', fig, "position", vecSysActions) ;
+  handlesFig.loadM 			= uicontrol (	"parent", handlesFig.sysActions, "string", "Load .m", ...
+																			"position",[PPFromLeft PPFromBottomSys buttonSysWidth buttonSysHeight ], ...
+																			'callback', {@loadFile, fig} ) ;
+  handlesFig.saveM 			= uicontrol (	"parent", handlesFig.sysActions, "string", "Save .m", ...
+																			"position",[PPFromLeft+incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight ], ...
+																			'callback', {@saveFile, fig, ONSASversion} ) ;
+  handlesFig.runONSAS 	= uicontrol (	"parent", handlesFig.sysActions, "string", "Run", ...
+																			"position",[PPFromLeft+2*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], ...
+																			'callback', {@runONSAS, fig} ) ; 
+  handlesFig.GPLLicense = uicontrol (	"parent", handlesFig.sysActions, "string", "GPL License", ...
+																			"position",[PPFromLeft+3*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], ...
+																			'callback', {@license, fig} ) ; 
+  handlesFig.quit 			= uicontrol (	"parent", handlesFig.sysActions, "string", "Quit", ...
+																			"position",[PPFromLeft+4*incremSysHor PPFromBottomSys buttonSysWidth buttonSysHeight], ...
+																			'callback', 'close (gcf)' ) ; 
   % ------------------------------------------------------------------------------------------------------------------------
 
 % => Sub panel Geommetry
-  handlesFig.geomPanel = uipanel ('parent', handlesFig.inputPanel, "position", vecGeomPanel) ;
+  handlesFig.geomPanel = uipanel 	('parent', handlesFig.inputPanel, "position", vecGeomPanel) ;
   handlesFig.geomTitle = uicontrol('parent', handlesFig.geomPanel, 'style', 'text', 'string', 'Geommetry options', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft ref buttonWidth buttonHeight]) ; 
   % Geommetry buttons
   handlesFig.geomOpt = '' ;
   handlesFig.loadDxf = uicontrol('parent', handlesFig.geomPanel, 'string', 'Load .dxf', 'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
   
-  handlesFig.loadMsh = uicontrol('parent', handlesFig.geomPanel, 'string', 'Load .msh', 'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
-  handlesFig.loadTxt = uicontrol('parent', handlesFig.geomPanel, 'string', 'Load .txt', 'position', [PPFromLeft+2*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
-  handlesFig.view = uicontrol('parent', handlesFig.geomPanel, 'string', 'View', 'position', [PPFromLeft+3*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@plot, fig} ) ;
+  handlesFig.loadMsh = uicontrol(	'parent', handlesFig.geomPanel, 'string', 'Load .msh', ...
+																	'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ]	, 'callback', {@loadFile, fig} ) ;
+  handlesFig.loadTxt = uicontrol(	'parent', handlesFig.geomPanel, 'string', 'Load .txt', ...
+																	'position', [PPFromLeft+2*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
+  handlesFig.view		 = uicontrol(	'parent', handlesFig.geomPanel, 'string', 'View', ...
+																	'position', [PPFromLeft+3*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@plot, fig} ) ;
   % ------------------------------------------------------------------------------------------------------------------------
   
 % => Sub panel Structural Properties
   handlesFig.strucPanel = uipanel ('parent', handlesFig.inputPanel, "position", vecStrucPanel) ;
   handlesFig.strucTitle = uicontrol('parent', handlesFig.strucPanel, 'style', 'text', 'string', 'Structural Properties', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft ref buttonWidth buttonHeight]) ; 
   % Structural buttons
-  handlesFig.matsNumber = uicontrol('parent', handlesFig.strucPanel, 'style', 'edit', 'string',  '# materials', 'tag', 'matNumbers', 'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@editBoxes, fig} ) ;
-  handlesFig.materialMat = uicontrol('parent', handlesFig.strucPanel, 'string', 'Material matrix', 'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
-  handlesFig.secsNumber = uicontrol('parent', handlesFig.strucPanel, 'style', 'edit', 'string',  '# sections', 'tag', 'secNumbers', 'position', [PPFromLeft+2*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@editBoxes, fig} ) ;
-  handlesFig.sectionMat = uicontrol('parent', handlesFig.strucPanel, 'string', 'Section matrix', 'position', [PPFromLeft+3*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;  
+  handlesFig.matsNumber 	= uicontrol('parent', handlesFig.strucPanel, 'style'	, 'edit', 'string'	, '# materials', 'tag', 'matNumbers', ...
+																			'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@editBoxes, fig} ) ;
+  handlesFig.materialMat 	= uicontrol('parent', handlesFig.strucPanel, 'string'	, 'Material matrix'	, ...
+																			'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
+  handlesFig.secsNumber 	= uicontrol('parent', handlesFig.strucPanel, 'style'	, 'edit', 'string'	, '# sections', 'tag', 'secNumbers', ...
+																			'position', [PPFromLeft+2*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@editBoxes, fig} ) ;
+  handlesFig.sectionMat 	= uicontrol('parent', handlesFig.strucPanel, 'string'	, 'Section matrix'	, ...
+																			'position', [PPFromLeft+3*incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;  
   % ------------------------------------------------------------------------------------------------------------------------
 
 % => Sub panel Boundary conditions
-  handlesFig.BCPanel = uipanel ('parent', handlesFig.inputPanel, "position", vecBCPanel) ;
+  handlesFig.BCPanel = uipanel 	('parent', handlesFig.inputPanel, "position", vecBCPanel) ;
   handlesFig.BCTitle = uicontrol('parent', handlesFig.BCPanel, 'style', 'text', 'string', 'Boundary Conditions', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft ref buttonWidth buttonHeight]) ; 
   % Geommetry buttons
-  handlesFig.loadsMat = uicontrol('parent', handlesFig.BCPanel, 'string', 'Loads matrix', 'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
-  handlesFig.springsMat = uicontrol('parent', handlesFig.BCPanel, 'string', 'Springs matrix', 'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
+  handlesFig.loadsMat 	= uicontrol('parent', handlesFig.BCPanel, 'string', 'Loads matrix', ...
+																		'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
+  handlesFig.springsMat = uicontrol('parent', handlesFig.BCPanel, 'string', 'Springs matrix', ...
+																		'position', [PPFromLeft+incremSysHor PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@uitables, fig} ) ;
   % ------------------------------------------------------------------------------------------------------------------------
   
 % => Sub panel output options
-  handlesFig.outputPanel = uipanel ('parent', handlesFig.inputPanel, "position", vecOutputPanel) ;
+  handlesFig.outputPanel = uipanel 	('parent', handlesFig.inputPanel, "position", vecOutputPanel) ;
   handlesFig.outputTitle = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Output Options', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft 1.8*ref buttonWidth buttonHeight]) ; 
   % Outputbuttons
   % 1 row
-  handlesFig.VTK = uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'VTK', 'position', [PPFromLeft PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], 'callback', {@outputOpt, fig} ) ;
-  handlesFig.Octave = uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'Octave', 'position', [PPFromLeft+editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], 'callback', {@outputOpt, fig} ) ;
-  handlesFig.plotTimesText = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Plot times:', 'position', [PPFromLeft+2*editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ]) ;
-  handlesFig.plotTimes = uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'plotTimes' ,'position', [PPFromLeft+3*editSep PPFromBottom+2+buttonSysHeight editW editH ], 'callback', {@editBoxes, fig}) ;
-  handlesFig.report = uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'Report', 'tag', 'reportOpt', 'position', [PPFromLeft+4*editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], 'callback', {@outputOpt, fig} ) ;
+  handlesFig.VTK 						= uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'VTK', ...
+																				'position', [PPFromLeft PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], ...
+																				'callback', {@outputOpt, fig} ) ;
+  handlesFig.Octave 				= uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'Octave', ...
+																				'position', [PPFromLeft+editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], ...
+																				'callback', {@outputOpt, fig} ) ;
+  handlesFig.plotTimesText 	= uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Plot times:', ...
+																				'position', [PPFromLeft+2*editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ]) ;
+  handlesFig.plotTimes 			= uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'plotTimes', ...
+																				'position', [PPFromLeft+3*editSep PPFromBottom+2+buttonSysHeight editW editH ], ...
+																				'callback', {@editBoxes, fig}) ;
+  handlesFig.report 				= uicontrol('parent', handlesFig.outputPanel, 'style', 'radiobutton', 'string', 'Report', 'tag', 'reportOpt', ...
+																				'position', [PPFromLeft+4*editSep PPFromBottom+buttonSysHeight buttonSysWidth buttonSysHeight ], ...
+																				'callback', {@outputOpt, fig} ) ;
   % 2 row
-  handlesFig.printflagText = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Print flag:', 'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ]) ;
-  handlesFig.printflag = uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'printflag' ,'position', [PPFromLeft+editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}) ;
+  handlesFig.printflagText 	= uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Print flag:', ...
+																				'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ]) ;
+  handlesFig.printflag 			= uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'printflag', ...
+																				'position', [PPFromLeft+editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}) ;
 	% if nonLin
 	handlesFig.controlDofText = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Control dof:', 'position', [PPFromLeft+4*editSep PPFromBottom buttonSysWidth buttonSysHeight ], 'visible', 'off') ;
-  handlesFig.controlDof = uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1 1 -1', 'tag', 'controldof' ,'position', [PPFromLeft+5*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}, 'visible', 'off') ;
+  handlesFig.controlDof 		= uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1 1 -1', 'tag', 'controldof' ,'position', [PPFromLeft+5*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}, 'visible', 'off') ;
 	% if Lin
-	handlesFig.scaleText = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Scale:', 'position', [PPFromLeft+4*editSep PPFromBottom buttonSysWidth buttonSysHeight ], 'visible', 'off') ;
-  handlesFig.scale = uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'scale' ,'position', [PPFromLeft+5*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}, 'visible', 'off') ;
+	handlesFig.scaleText 			= uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Scale:', ...
+																				'position', [PPFromLeft+4*editSep PPFromBottom buttonSysWidth buttonSysHeight ], 'visible', 'off') ;
+  handlesFig.scale 					= uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1', 'tag', 'scale', ...
+																				'position', [PPFromLeft+5*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}, 'visible', 'off') ;
   
-	handlesFig.plotViewText = uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Plot view:', 'position', [PPFromLeft+2*editSep PPFromBottom buttonSysWidth buttonSysHeight ]) ;
-  handlesFig.plotView = uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1 1 1', 'tag', 'plotView' ,'position', [PPFromLeft+3*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}) ;
+	handlesFig.plotViewText 	= uicontrol('parent', handlesFig.outputPanel, 'style', 'text', 'string', 'Plot view:', ...
+																				'position', [PPFromLeft+2*editSep PPFromBottom buttonSysWidth buttonSysHeight ]) ;
+  handlesFig.plotView 			= uicontrol('parent', handlesFig.outputPanel, 'style', 'edit', 'string', '1 1 1', 'tag', 'plotView', ...
+																				'position', [PPFromLeft+3*editSep PPFromBottom+2 editW editH ], 'callback', {@editBoxes, fig}) ;
   % ------------------------------------------------------------------------------------------------------------------------
 	
 	% Close table button
@@ -158,22 +193,26 @@ function onsasGUI
 	% Tables handles
 	
 	% Column names
-  colNamesMat = { 'Model', 'Es', 'Ec', 'nu', 'Prestrain' } ;
-  colNamesSec = { 'A', 'Iy', 'Iz', 'It' } ;
-  colNamesLoads = { 'Global flag', 'Fx', 'Mx', 'Fy', 'My', 'Fz', 'Mz' } ;
-  colNamesSprings = { 'ux', 'thetax', 'uy', 'thetay', 'uz', 'thetaz' } ;
+  colNamesMat 		= { 'Model', 'Es', 'Ec', 'nu', 'Prestrain' 						} ;
+  colNamesSec 		= { 'A', 'Iy', 'Iz', 'It' 														} ;
+  colNamesLoads 	= { 'Global flag', 'Fx', 'Mx', 'Fy', 'My', 'Fz', 'Mz' } ;
+  colNamesSprings = { 'ux', 'thetax', 'uy', 'thetay', 'uz', 'thetaz' 		} ;
 	
-  handlesFig.matTable = uitable ('parent', handlesFig.inputPanel, 'ColumnName', colNamesMat, 'visible', 'off', 'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1.], 'ColumnEditable', [true false false false false]) ;
-	handlesFig.secTable = uitable ('parent', handlesFig.inputPanel, 'ColumnName', colNamesSec, 'visible', 'off', 'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
-	handlesFig.loadsTable = uitable ('parent', handlesFig.inputPanel, 'ColumnName', colNamesLoads, 'visible', 'off', 'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
-	handlesFig.suppsTable = uitable ('parent', handlesFig.inputPanel, 'ColumnName', colNamesSprings, 'visible', 'off', 'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
+  handlesFig.matTable 	= uitable (	'parent', handlesFig.inputPanel, 'ColumnName', colNamesMat, 			'visible', 'off', ...
+																		'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1.], 'ColumnEditable', [true false false false false]) ;
+	handlesFig.secTable 	= uitable (	'parent', handlesFig.inputPanel, 'ColumnName', colNamesSec, 			'visible', 'off', ...
+																		'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
+	handlesFig.loadsTable = uitable (	'parent', handlesFig.inputPanel, 'ColumnName', colNamesLoads, 		'visible', 'off', ...
+																		'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
+	handlesFig.suppsTable = uitable (	'parent', handlesFig.inputPanel, 'ColumnName', colNamesSprings, 	'visible', 'off', ...
+																		'position', [vecPos(3)+1.5 2 350 vecPos(4)-4.5*vecGeomPos(4)-1], 'ColumnEditable', true ) ;
   
   
   % sets initial values
-  set(handlesFig.matTable, 'data', handlesFig.matMatrix) ;
-  set(handlesFig.secTable, 'data', handlesFig.secMatrix) ;
-  set(handlesFig.loadsTable, 'data', handlesFig.loadsMatrix) ;
-  set(handlesFig.suppsTable, 'data', handlesFig.suppsMatrix) ;
+  set(handlesFig.matTable, 		'data', handlesFig.matMatrix) 	;
+  set(handlesFig.secTable, 		'data', handlesFig.secMatrix) 	;
+  set(handlesFig.loadsTable, 	'data', handlesFig.loadsMatrix) ;
+  set(handlesFig.suppsTable, 	'data', handlesFig.suppsMatrix) ;
   
 
   fontsizeSet
@@ -197,18 +236,18 @@ function anaChoice(src, eventdata, fig, buttonHeight, buttonWidth)
   if strcmp(buttonString, 'Linear Analysis')
     set(handles.nonLinAna, 'value', 0), set(handles.dynNonLinAna, 'value', 0)
     handles.anaVec = [ 1 ] ;
-    set(handles.scaleText, 'visible', 'on'), set(handles.scale, 'visible', 'on')
-    set(handles.controlDofText, 'visible', 'off'), set(handles.controlDof, 'visible', 'off')
+    set(handles.scaleText			, 'visible', 'on')	, set(handles.scale			, 'visible', 'on'	)
+    set(handles.controlDofText, 'visible', 'off')	, set(handles.controlDof, 'visible', 'off')
   elseif strcmp(buttonString, 'Dynamic NonLinear Analysis')
     set(handles.linAna, 'value', 0), set(handles.nonLinAna, 'value', 0)
     handles.anaVec = [ 2 ] ;
-    set(handles.scaleText, 'visible', 'off'), set(handles.scale, 'visible', 'off')
-    set(handles.controlDofText, 'visible', 'on'), set(handles.controlDof, 'visible', 'on')
+    set(handles.scaleText			, 'visible', 'off')	, set(handles.scale		 , 	'visible', 'off')
+    set(handles.controlDofText, 'visible', 'on'	)	, set(handles.controlDof, 'visible', 'on'	)
   elseif strcmp(buttonString, 'NonLinear Analysis')  
     set(handles.linAna, 'value', 0) , set(handles.dynNonLinAna, 'value', 0) 
     handles.anaVec = [ 3 ] ;
-    set(handles.scaleText, 'visible', 'off'), set(handles.scale, 'visible', 'off')
-    set(handles.controlDofText, 'visible', 'on'), set(handles.controlDof, 'visible', 'on')
+    set(handles.scaleText			, 'visible', 'off')	, set(handles.scale			, 'visible', 'off')
+    set(handles.controlDofText, 'visible', 'on')	, set(handles.controlDof, 'visible', 'on'	)
   end
 
   % Analysis numerical method choice
@@ -217,75 +256,75 @@ function anaChoice(src, eventdata, fig, buttonHeight, buttonWidth)
     if strcmp(buttonString, 'Linear Analysis')
       set(handles.numMethod, 'value', 1)
       set(handles.numMethod, 'string', {'Choose method', 'User Function'} )
-      set(handles.tolDeltaUText, 'visible', 'off'), set(handles.tolDeltaU, 'visible', 'off') 
-      set(handles.tolForcesText, 'visible', 'off'), set(handles.tolForces, 'visible', 'off') 
-      set(handles.tolIterText, 'visible', 'off'), set(handles.tolIter, 'visible', 'off')
-      set(handles.targetLoadFacText, 'visible', 'off'), set(handles.targetLoadFac, 'visible', 'off') 
-      set(handles.loadStepsText, 'visible', 'off'), set(handles.loadSteps, 'visible', 'off')
-      set(handles.incremALText, 'visible', 'off'), set(handles.incremAL, 'visible', 'off')
+      set(handles.tolDeltaUText			, 'visible', 'off'), set(handles.tolDeltaU			, 'visible', 'off') 
+      set(handles.tolForcesText			, 'visible', 'off'), set(handles.tolForces			, 'visible', 'off') 
+      set(handles.tolIterText				, 'visible', 'off'), set(handles.tolIter				, 'visible', 'off')
+      set(handles.targetLoadFacText	, 'visible', 'off'), set(handles.targetLoadFac	, 'visible', 'off') 
+      set(handles.loadStepsText			, 'visible', 'off'), set(handles.loadSteps			, 'visible', 'off')
+      set(handles.incremALText			, 'visible', 'off'), set(handles.incremAL				, 'visible', 'off')
       
-      set(handles.timeIncrText, 'visible', 'off'), set(handles.timeIncr, 'visible', 'off')
-      set(handles.finalTimeText, 'visible', 'off'), set(handles.finalTime, 'visible', 'off')
-      set(handles.tolDeltaUDynText, 'visible', 'off'), set(handles.tolDeltaUDyn, 'visible', 'off')
-      set(handles.tolForcesDynText, 'visible', 'off'), set(handles.tolForcesDyn, 'visible', 'off')
-      set(handles.tolIterDynText, 'visible', 'off'), set(handles.tolIterDyn, 'visible', 'off')
-      set(handles.deltaNWText, 'visible', 'off'), set(handles.deltaNW, 'visible', 'off')
-      set(handles.alphaNWText, 'visible', 'off'), set(handles.alphaNW, 'visible', 'off')
+      set(handles.timeIncrText			, 'visible', 'off'), set(handles.timeIncr				, 'visible', 'off')
+      set(handles.finalTimeText			, 'visible', 'off'), set(handles.finalTime			, 'visible', 'off')
+      set(handles.tolDeltaUDynText	, 'visible', 'off'), set(handles.tolDeltaUDyn		, 'visible', 'off')
+      set(handles.tolForcesDynText	, 'visible', 'off'), set(handles.tolForcesDyn		, 'visible', 'off')
+      set(handles.tolIterDynText		, 'visible', 'off'), set(handles.tolIterDyn			, 'visible', 'off')
+      set(handles.deltaNWText				, 'visible', 'off'), set(handles.deltaNW				, 'visible', 'off')
+      set(handles.alphaNWText				, 'visible', 'off'), set(handles.alphaNW				, 'visible', 'off')
     elseif strcmp(buttonString, 'Dynamic NonLinear Analysis')
       set(handles.numMethod, 'value', 1)
       set(handles.numMethod, 'string', {'Choose method', 'Newmark'} )
       
-      set(handles.deltaTText, 'visible', 'off'), set(handles.deltaT, 'visible', 'off')
-      set(handles.finalTimeLinText, 'visible', 'off'), set(handles.finalTimeLin, 'visible', 'off')
-      set(handles.indexTimeSolText, 'visible', 'off'), set(handles.indexTimeSol, 'visible', 'off')
+      set(handles.deltaTText				, 'visible', 'off'), set(handles.deltaT					, 'visible', 'off')
+      set(handles.finalTimeLinText	, 'visible', 'off'), set(handles.finalTimeLin		, 'visible', 'off')
+      set(handles.indexTimeSolText	, 'visible', 'off'), set(handles.indexTimeSol		, 'visible', 'off')
       
-      set(handles.tolDeltaUText, 'visible', 'off'), set(handles.tolDeltaU, 'visible', 'off') 
-      set(handles.tolForcesText, 'visible', 'off'), set(handles.tolForces, 'visible', 'off') 
-      set(handles.tolIterText, 'visible', 'off'), set(handles.tolIter, 'visible', 'off')
-      set(handles.targetLoadFacText, 'visible', 'off'), set(handles.targetLoadFac, 'visible', 'off') 
-      set(handles.loadStepsText, 'visible', 'off'), set(handles.loadSteps, 'visible', 'off')
-      set(handles.incremALText, 'visible', 'off'), set(handles.incremAL, 'visible', 'off')
+      set(handles.tolDeltaUText			, 'visible', 'off'), set(handles.tolDeltaU			, 'visible', 'off') 
+      set(handles.tolForcesText			, 'visible', 'off'), set(handles.tolForces			, 'visible', 'off') 
+      set(handles.tolIterText				, 'visible', 'off'), set(handles.tolIter				, 'visible', 'off')
+      set(handles.targetLoadFacText	, 'visible', 'off'), set(handles.targetLoadFac	, 'visible', 'off') 
+      set(handles.loadStepsText			, 'visible', 'off'), set(handles.loadSteps			, 'visible', 'off')
+      set(handles.incremALText			, 'visible', 'off'), set(handles.incremAL				, 'visible', 'off')
       
     elseif strcmp(buttonString, 'NonLinear Analysis')
       set(handles.numMethod, 'value', 1)
       set(handles.numMethod, 'string', {'Choose method', 'Newton Raphson', 'Newton Raphson-Arc Length'} )
     
-      set(handles.deltaTText, 'visible', 'off'), set(handles.deltaT, 'visible', 'off')
-      set(handles.finalTimeLinText, 'visible', 'off'), set(handles.finalTimeLin, 'visible', 'off')
-      set(handles.indexTimeSolText, 'visible', 'off'), set(handles.indexTimeSol, 'visible', 'off')
-      set(handles.timeIncrText, 'visible', 'off'), set(handles.timeIncr, 'visible', 'off')
-      set(handles.finalTimeText, 'visible', 'off'), set(handles.finalTime, 'visible', 'off')
-      set(handles.tolDeltaUDynText, 'visible', 'off'), set(handles.tolDeltaUDyn, 'visible', 'off')
-      set(handles.tolForcesDynText, 'visible', 'off'), set(handles.tolForcesDyn, 'visible', 'off')
-      set(handles.tolIterDynText, 'visible', 'off'), set(handles.tolIterDyn, 'visible', 'off')
-      set(handles.deltaNWText, 'visible', 'off'), set(handles.deltaNW, 'visible', 'off')
-      set(handles.alphaNWText, 'visible', 'off'), set(handles.alphaNW, 'visible', 'off')  
+      set(handles.deltaTText				, 'visible', 'off'), set(handles.deltaT					, 'visible', 'off')
+      set(handles.finalTimeLinText	, 'visible', 'off'), set(handles.finalTimeLin		, 'visible', 'off')
+      set(handles.indexTimeSolText	, 'visible', 'off'), set(handles.indexTimeSol		, 'visible', 'off')
+      set(handles.timeIncrText			, 'visible', 'off'), set(handles.timeIncr				, 'visible', 'off')
+      set(handles.finalTimeText			, 'visible', 'off'), set(handles.finalTime			, 'visible', 'off')
+      set(handles.tolDeltaUDynText	, 'visible', 'off'), set(handles.tolDeltaUDyn		, 'visible', 'off')
+      set(handles.tolForcesDynText	, 'visible', 'off'), set(handles.tolForcesDyn		, 'visible', 'off')
+      set(handles.tolIterDynText		, 'visible', 'off'), set(handles.tolIterDyn			, 'visible', 'off')
+      set(handles.deltaNWText				, 'visible', 'off'), set(handles.deltaNW				, 'visible', 'off')
+      set(handles.alphaNWText				, 'visible', 'off'), set(handles.alphaNW				, 'visible', 'off')  
     end
   else
     set(handles.numMethod, 'value', 1)
-    set(handles.numericalTitle, 'visible', 'off'), set(handles.numMethod, 'visible', 'off')
+    set(handles.numericalTitle		, 'visible', 'off'), set(handles.numMethod		, 'visible', 'off')
     
-    set(handles.deltaTText, 'visible', 'off'), set(handles.deltaT, 'visible', 'off')
-    set(handles.finalTimeLinText, 'visible', 'off'), set(handles.finalTimeLin, 'visible', 'off')
-    set(handles.indexTimeSolText, 'visible', 'off'), set(handles.indexTimeSol, 'visible', 'off')
+    set(handles.deltaTText				, 'visible', 'off'), set(handles.deltaT				, 'visible', 'off')
+    set(handles.finalTimeLinText	, 'visible', 'off'), set(handles.finalTimeLin	, 'visible', 'off')
+    set(handles.indexTimeSolText	, 'visible', 'off'), set(handles.indexTimeSol	, 'visible', 'off')
   
-    set(handles.timeIncrText, 'visible', 'off'), set(handles.timeIncr, 'visible', 'off')
-    set(handles.finalTimeText, 'visible', 'off'), set(handles.finalTime, 'visible', 'off')
-    set(handles.tolDeltaUDynText, 'visible', 'off'), set(handles.tolDeltaUDyn, 'visible', 'off')
-    set(handles.tolForcesDynText, 'visible', 'off'), set(handles.tolForcesDyn, 'visible', 'off')
-    set(handles.tolIterDynText, 'visible', 'off'), set(handles.tolIterDyn, 'visible', 'off')
-    set(handles.deltaNWText, 'visible', 'off'), set(handles.deltaNW, 'visible', 'off')
-    set(handles.alphaNWText, 'visible', 'off'), set(handles.alphaNW, 'visible', 'off')
+    set(handles.timeIncrText			, 'visible', 'off'), set(handles.timeIncr			, 'visible', 'off')
+    set(handles.finalTimeText			, 'visible', 'off'), set(handles.finalTime		, 'visible', 'off')
+    set(handles.tolDeltaUDynText	, 'visible', 'off'), set(handles.tolDeltaUDyn	, 'visible', 'off')
+    set(handles.tolForcesDynText	, 'visible', 'off'), set(handles.tolForcesDyn	, 'visible', 'off')
+    set(handles.tolIterDynText		, 'visible', 'off'), set(handles.tolIterDyn		, 'visible', 'off')
+    set(handles.deltaNWText				, 'visible', 'off'), set(handles.deltaNW			, 'visible', 'off')
+    set(handles.alphaNWText				, 'visible', 'off'), set(handles.alphaNW			, 'visible', 'off')
   
-    set(handles.tolDeltaUText, 'visible', 'off'), set(handles.tolDeltaU, 'visible', 'off') 
-    set(handles.tolForcesText, 'visible', 'off'), set(handles.tolForces, 'visible', 'off') 
-    set(handles.tolIterText, 'visible', 'off'), set(handles.tolIter, 'visible', 'off')
-    set(handles.targetLoadFacText, 'visible', 'off'), set(handles.targetLoadFac, 'visible', 'off') 
-    set(handles.loadStepsText, 'visible', 'off'), set(handles.loadSteps, 'visible', 'off')
-    set(handles.incremALText, 'visible', 'off'), set(handles.incremAL, 'visible', 'off')
+    set(handles.tolDeltaUText			, 'visible', 'off'), set(handles.tolDeltaU		, 'visible', 'off') 
+    set(handles.tolForcesText			, 'visible', 'off'), set(handles.tolForces		, 'visible', 'off') 
+    set(handles.tolIterText				, 'visible', 'off'), set(handles.tolIter			, 'visible', 'off')
+    set(handles.targetLoadFacText	, 'visible', 'off'), set(handles.targetLoadFac, 'visible', 'off') 
+    set(handles.loadStepsText			, 'visible', 'off'), set(handles.loadSteps		, 'visible', 'off')
+    set(handles.incremALText			, 'visible', 'off'), set(handles.incremAL			, 'visible', 'off')
     
-    set(handles.scaleText, 'visible', 'off'), set(handles.scale, 'visible', 'off')
-    set(handles.controlDofText, 'visible', 'off'), set(handles.controlDof, 'visible', 'off')
+    set(handles.scaleText					, 'visible', 'off'), set(handles.scale				, 'visible', 'off')
+    set(handles.controlDofText		, 'visible', 'off'), set(handles.controlDof		, 'visible', 'off')
   end
   guidata(fig, handles) ;
 end  
@@ -296,49 +335,49 @@ function editBoxes(src, eventdata, fig)
   a = get(src, 'tag') ;
   inp = get(src, 'string') ;
   if strcmp(a, 'delta T')
-    handles.prevValdeltaTLin = num2str(inp) ;
+    handles.prevValdeltaTLin 			= num2str(inp) ;
   elseif strcmp(a, 'finalTime')  
-    handles.preValfinalTimeLin = num2str(inp) ;
+    handles.preValfinalTimeLin 		= num2str(inp) ;
   elseif strcmp(a, 'indexTimeSol')
-    handles.prevValIndexTimeSol = num2str(inp) ;
+    handles.prevValIndexTimeSol 	= num2str(inp) ;
   elseif strcmp(a, 'timeIncr')
-    handles.prevValTimeIncr = num2str(inp) ;
+    handles.prevValTimeIncr 			= num2str(inp) ;
   elseif strcmp(a, 'finalTimeDyn')
-    handles.prevValFinalTimeDyn = num2str(inp) ;
+    handles.prevValFinalTimeDyn 	= num2str(inp) ;
   elseif strcmp(a, 'tolDeltaUDyn')
-    handles.prevValTolDeltaUDyn = num2str(inp) ;
+    handles.prevValTolDeltaUDyn 	= num2str(inp) ;
   elseif strcmp(a, 'tolForcesDyn')
-    handles.prevValTolForcesDyn = num2str(inp) ;
+    handles.prevValTolForcesDyn 	= num2str(inp) ;
   elseif strcmp(a, 'tolIterDyn')
-    handles.prevValTolIterDyn = num2str(inp) ;
+    handles.prevValTolIterDyn 		= num2str(inp) ;
   elseif strcmp(a, 'deltaNW')
-    handles.prevValDeltaNW = num2str(inp) ;
+    handles.prevValDeltaNW 				= num2str(inp) ;
   elseif strcmp(a, 'alphaNW')
-    handles.prevValAlphaNW = num2str(inp) ;
+    handles.prevValAlphaNW 				= num2str(inp) ;
   elseif strcmp(a,'tolDeltaU')
-    handles.prevValTolDeltaU = num2str(inp) ;
+    handles.prevValTolDeltaU 			= num2str(inp) ;
   elseif strcmp(a,'tolForces')
-    handles.prevValTolForces = num2str(inp) ;
+    handles.prevValTolForces 			= num2str(inp) ;
   elseif strcmp(a,'tolIter')
-    handles.prevValTolIter = num2str(inp) ;
+    handles.prevValTolIter 				= num2str(inp) ;
   elseif strcmp(a,'loadFac')
-    handles.prevValLoadFac = num2str(inp) ;  
+    handles.prevValLoadFac 				= num2str(inp) ;  
   elseif strcmp(a,'loadSteps')
-    handles.prevValLoadSteps = num2str(inp) ;
+    handles.prevValLoadSteps 			= num2str(inp) ;
   elseif strcmp(a, 'incremAL')  
-    handles.prevValIncremAL = num2str(inp) ;
+    handles.prevValIncremAL 			= num2str(inp) ;
   elseif strcmp(a, 'matNumbers')
-    handles.matNumbers = num2str(inp) ;
+    handles.matNumbers 						= num2str(inp) ;
   elseif strcmp(a, 'secNumbers')
-		handles.secNumbers = num2str(inp) ;
+		handles.secNumbers 						= num2str(inp) ;
   elseif strcmp(a, 'plotTimes')
-    handles.plotTimesNum = num2str(inp) ;
+    handles.plotTimesNum 					= num2str(inp) ;
   elseif strcmp(a, 'printflag')
-		handles.printflagNum = num2str(inp) ;
+		handles.printflagNum 					= num2str(inp) ;
 	elseif strcmp(a, 'controldof')
-		handles.controldofVec = num2str(inp) ;
+		handles.controldofVec 				= num2str(inp) ;
 	elseif strcmp(a, 'plotView')
-		handles.plotViewVec = num2str(inp) ;
+		handles.plotViewVec 					= num2str(inp) ;
   end  
 
   set(src,'string', inp) ;  
@@ -353,55 +392,55 @@ function numMethodChoice(src, eventdata, fig)
 
   if strcmp(handles.buttonString, 'Linear Analysis')
     if val == 2
-      set(handles.deltaTText, 'visible', 'on'), set(handles.deltaT, 'visible', 'on')
-      set(handles.finalTimeLinText, 'visible', 'on'), set(handles.finalTimeLin, 'visible', 'on')
-      set(handles.indexTimeSolText, 'visible', 'on'), set(handles.indexTimeSol, 'visible', 'on')
+      set(handles.deltaTText			, 'visible', 'on'), set(handles.deltaT				, 'visible', 'on')
+      set(handles.finalTimeLinText, 'visible', 'on'), set(handles.finalTimeLin	, 'visible', 'on')
+      set(handles.indexTimeSolText, 'visible', 'on'), set(handles.indexTimeSol	, 'visible', 'on')
       handles.numVec = 1 ;
     else
-      set(handles.deltaTText, 'visible', 'off'), set(handles.deltaT, 'visible', 'off')
-      set(handles.finalTimeLinText, 'visible', 'off'), set(handles.finalTimeLin, 'visible', 'off')
-      set(handles.indexTimeSolText, 'visible', 'off'), set(handles.indexTimeSol, 'visible', 'off')
+      set(handles.deltaTText			, 'visible', 'off'), set(handles.deltaT				, 'visible', 'off')
+      set(handles.finalTimeLinText, 'visible', 'off'), set(handles.finalTimeLin	, 'visible', 'off')
+      set(handles.indexTimeSolText, 'visible', 'off'), set(handles.indexTimeSol	, 'visible', 'off')
       handles.numVec = 0 ;
     end
   elseif strcmp(handles.buttonString, 'Dynamic NonLinear Analysis')
     if val == 2
-      set(handles.timeIncrText, 'visible', 'on'), set(handles.timeIncr, 'visible', 'on')
-      set(handles.finalTimeText, 'visible', 'on'), set(handles.finalTime, 'visible', 'on')
-      set(handles.tolDeltaUDynText, 'visible', 'on'), set(handles.tolDeltaUDyn, 'visible', 'on')
-      set(handles.tolForcesDynText, 'visible', 'on'), set(handles.tolForcesDyn, 'visible', 'on')
-      set(handles.tolIterDynText, 'visible', 'on'), set(handles.tolIterDyn, 'visible', 'on')
-      set(handles.deltaNWText, 'visible', 'on'), set(handles.deltaNW, 'visible', 'on')
-      set(handles.alphaNWText, 'visible', 'on'), set(handles.alphaNW, 'visible', 'on')
+      set(handles.timeIncrText			, 'visible', 'on'), set(handles.timeIncr		, 'visible', 'on')
+      set(handles.finalTimeText			, 'visible', 'on'), set(handles.finalTime		, 'visible', 'on')
+      set(handles.tolDeltaUDynText	, 'visible', 'on'), set(handles.tolDeltaUDyn, 'visible', 'on')
+      set(handles.tolForcesDynText	, 'visible', 'on'), set(handles.tolForcesDyn, 'visible', 'on')
+      set(handles.tolIterDynText		, 'visible', 'on'), set(handles.tolIterDyn	, 'visible', 'on')
+      set(handles.deltaNWText				, 'visible', 'on'), set(handles.deltaNW			, 'visible', 'on')
+      set(handles.alphaNWText				, 'visible', 'on'), set(handles.alphaNW			, 'visible', 'on')
       handles.numVec = 1 ;
     else
-      set(handles.timeIncrText, 'visible', 'off'), set(handles.timeIncr, 'visible', 'off')
-      set(handles.finalTimeText, 'visible', 'off'), set(handles.finalTime, 'visible', 'off')
-      set(handles.tolDeltaUDynText, 'visible', 'off'), set(handles.tolDeltaUDyn, 'visible', 'off')
-      set(handles.tolForcesDynText, 'visible', 'off'), set(handles.tolForcesDyn, 'visible', 'off')
-      set(handles.tolIterDynText, 'visible', 'off'), set(handles.tolIterDyn, 'visible', 'off')
-      set(handles.deltaNWText, 'visible', 'off'), set(handles.deltaNW, 'visible', 'off')
-      set(handles.alphaNWText, 'visible', 'off'), set(handles.alphaNW, 'visible', 'off')
+      set(handles.timeIncrText			, 'visible', 'off'), set(handles.timeIncr			, 'visible', 'off')
+      set(handles.finalTimeText			, 'visible', 'off'), set(handles.finalTime		, 'visible', 'off')
+      set(handles.tolDeltaUDynText	, 'visible', 'off'), set(handles.tolDeltaUDyn	, 'visible', 'off')
+      set(handles.tolForcesDynText	, 'visible', 'off'), set(handles.tolForcesDyn	, 'visible', 'off')
+      set(handles.tolIterDynText		, 'visible', 'off'), set(handles.tolIterDyn		, 'visible', 'off')
+      set(handles.deltaNWText				, 'visible', 'off'), set(handles.deltaNW			, 'visible', 'off')
+      set(handles.alphaNWText				, 'visible', 'off'), set(handles.alphaNW			, 'visible', 'off')
       handles.numVec = 0 ;
     end
   elseif strcmp(handles.buttonString, 'NonLinear Analysis')
     if val == 2
-      set(handles.tolDeltaUText, 'visible', 'on'), set(handles.tolDeltaU, 'visible', 'on') 
-      set(handles.tolForcesText, 'visible', 'on'), set(handles.tolForces, 'visible', 'on') 
-      set(handles.tolIterText, 'visible', 'on'), set(handles.tolIter, 'visible', 'on')
-      set(handles.targetLoadFacText, 'visible', 'on'), set(handles.targetLoadFac, 'visible', 'on') 
-      set(handles.loadStepsText, 'visible', 'on'), set(handles.loadSteps, 'visible', 'on')
-      set(handles.incremALText, 'visible', 'off'), set(handles.incremAL, 'visible', 'off') 
+      set(handles.tolDeltaUText			, 'visible', 'on')	, set(handles.tolDeltaU			, 'visible', 'on') 
+      set(handles.tolForcesText			, 'visible', 'on')	, set(handles.tolForces			, 'visible', 'on') 
+      set(handles.tolIterText				, 'visible', 'on')	, set(handles.tolIter				, 'visible', 'on')
+      set(handles.targetLoadFacText	, 'visible', 'on')	, set(handles.targetLoadFac	, 'visible', 'on') 
+      set(handles.loadStepsText			, 'visible', 'on')	, set(handles.loadSteps			, 'visible', 'on')
+      set(handles.incremALText			, 'visible', 'off')	, set(handles.incremAL			, 'visible', 'off') 
       handles.numVec = 1 ;
     elseif val == 3
-      set(handles.incremALText, 'visible', 'on'), set(handles.incremAL, 'visible', 'on')
+      set(handles.incremALText			, 'visible', 'on'), set(handles.incremAL				, 'visible', 'on')
       handles.numVec = 2 ;
     else
-      set(handles.tolDeltaUText, 'visible', 'off'), set(handles.tolDeltaU, 'visible', 'off') 
-      set(handles.tolForcesText, 'visible', 'off'), set(handles.tolForces, 'visible', 'off') 
-      set(handles.tolIterText, 'visible', 'off'), set(handles.tolIter, 'visible', 'off')
-      set(handles.targetLoadFacText, 'visible', 'off'), set(handles.targetLoadFac, 'visible', 'off') 
-      set(handles.loadStepsText, 'visible', 'off'), set(handles.loadSteps, 'visible', 'off')
-      set(handles.incremALText, 'visible', 'off'), set(handles.incremAL, 'visible', 'off')
+      set(handles.tolDeltaUText			, 'visible', 'off'), set(handles.tolDeltaU			, 'visible', 'off') 
+      set(handles.tolForcesText			, 'visible', 'off'), set(handles.tolForces			, 'visible', 'off') 
+      set(handles.tolIterText				, 'visible', 'off'), set(handles.tolIter				, 'visible', 'off')
+      set(handles.targetLoadFacText	, 'visible', 'off'), set(handles.targetLoadFac	, 'visible', 'off') 
+      set(handles.loadStepsText			, 'visible', 'off'), set(handles.loadSteps			, 'visible', 'off')
+      set(handles.incremALText			, 'visible', 'off'), set(handles.incremAL				, 'visible', 'off')
       handles.numVec = 0 ;
     end
   end  
@@ -431,7 +470,7 @@ function uitables(src, eventdata, fig)
 		set(handles.matTable, 'visible', 'on')
 		guidata(fig, handles);
 		set(handles.matTable, 'celleditcallback', {@uiTableEdit, fig, a})
-		set(handles.secTable, 'visible', 'off') 
+		set(handles.secTable	, 'visible', 'off') 
 		set(handles.loadsTable, 'visible', 'off')
 		set(handles.suppsTable, 'visible', 'off')  
   elseif strcmp(a, 'Section matrix')
@@ -441,8 +480,8 @@ function uitables(src, eventdata, fig)
 		handles.secMatrixAux(1:m,:) = handles.secMatrix ;
 		set(handles.secTable, 'data', handles.secMatrixAux)
 		set(handles.secTable, 'visible', 'on') 
-		set(handles.secTable,  'celleditcallback', {@uiTableEdit, fig, a})
-		set(handles.matTable, 'visible', 'off') 
+		set(handles.secTable, 'celleditcallback', {@uiTableEdit, fig, a})
+		set(handles.matTable	, 'visible', 'off') 
 		set(handles.loadsTable, 'visible', 'off')
 		set(handles.suppsTable, 'visible', 'off')
   elseif strcmp(a, 'Loads matrix')
@@ -452,9 +491,9 @@ function uitables(src, eventdata, fig)
 		handles.loadsMatrixAux(1:m,:) = handles.loadsMatrix ;
 		set(handles.loadsTable, 'data', handles.loadsMatrixAux)
 		set(handles.loadsTable, 'visible', 'on')
-		set(handles.loadsTable,  'celleditcallback', {@uiTableEdit, fig, a})
-		set(handles.matTable, 'visible', 'off') 
-		set(handles.secTable, 'visible', 'off')
+		set(handles.loadsTable, 'celleditcallback', {@uiTableEdit, fig, a})
+		set(handles.matTable	, 'visible', 'off') 
+		set(handles.secTable	, 'visible', 'off')
 		set(handles.suppsTable, 'visible', 'off')
   elseif strcmp(a, 'Springs matrix')
 		% Springs mat
@@ -463,9 +502,9 @@ function uitables(src, eventdata, fig)
 		handles.suppsMatrixAux(1:m,:) = handles.suppsMatrix ;
 		set(handles.suppsTable, 'data', handles.suppsMatrixAux)
 		set(handles.suppsTable, 'visible', 'on')
-		set(handles.suppsTable,  'celleditcallback', {@uiTableEdit, fig, a})
-		set(handles.matTable, 'visible', 'off') 
-		set(handles.secTable, 'visible', 'off')
+		set(handles.suppsTable, 'celleditcallback', {@uiTableEdit, fig, a})
+		set(handles.matTable	, 'visible', 'off') 
+		set(handles.secTable	, 'visible', 'off')
 		set(handles.loadsTable, 'visible', 'off')
   end
   % ----------
@@ -489,7 +528,7 @@ function uiTableEdit(src, eventdata, fig, a)
 				set(handles.matTable, 'ColumnEditable', [true true true false false])
 			elseif
 				handles.matMatrix(i,1) == 3
-				set(handles.matTable, 'ColumnEditable', [true true true false true])
+				set(handles.matTable, 'ColumnEditable', [true true true false true ])
 			end 
 		end 
   elseif strcmp(a, 'Section matrix')
@@ -511,9 +550,9 @@ function closeTable(src, eventdata, fig, a)
 
 	handles = guidata(fig) ; 
 	
-	set(handles.hideTable, 'visible', 'off')
-	set(handles.matTable, 'visible', 'off')
-	set(handles.secTable, 'visible', 'off') 
+	set(handles.hideTable	, 'visible', 'off')
+	set(handles.matTable	, 'visible', 'off')
+	set(handles.secTable	, 'visible', 'off') 
 	set(handles.loadsTable, 'visible', 'off')
 	set(handles.suppsTable, 'visible', 'off')  
 	
@@ -810,9 +849,9 @@ function saveFile(src, eventdata, fig, version)
 			fprintf(fileM, [ 'stopTolIts = %12.3e ;\n' ], str2num(handles.prevValTolIter)) ;
 			fprintf(fileM, [ 'targetLoadFactr = %12.3e ;\n' ], str2num(handles.prevValLoadFac)) ;
 			fprintf(fileM, [ 'nLoadSteps = %12.3e ;\n' ], str2num(handles.prevValLoadSteps)) ;
-      fprintf(fileM, ['numericalMethodParams = [ %i %12.3e %12.3e %12.3e %12.3e %12.3e ] ;\n'], [1 str2num(handles.prevValTolDeltaU) str2num(handles.prevValTolForces) str2num(handles.prevValTolIter) str2num(handles.prevValLoadFac) str2num(handles.prevValLoadSteps)] ); 
+      fprintf(fileM, [ 'numericalMethodParams = [ %i %12.3e %12.3e %12.3e %12.3e %12.3e ] ;\n'], [1 str2num(handles.prevValTolDeltaU) str2num(handles.prevValTolForces) str2num(handles.prevValTolIter) str2num(handles.prevValLoadFac) str2num(handles.prevValLoadSteps)] ); 
     elseif handles.numVec == 2
-      fprintf(fileM, ['numericalMethodParams = [ %i %12.3e %12.3e %12.3e %12.3e %12.3e %12.3e ] ;\n'], [2 str2num(handles.prevValTolDeltaU) str2num(handles.prevValTolForces) str2num(handles.prevValTolIter) str2num(handles.prevValLoadFac) str2num(handles.prevValLoadSteps) str2num(handles.prevValIncremAL)] );
+      fprintf(fileM, [ 'numericalMethodParams = [ %i %12.3e %12.3e %12.3e %12.3e %12.3e %12.3e ] ;\n'], [2 str2num(handles.prevValTolDeltaU) str2num(handles.prevValTolForces) str2num(handles.prevValTolIter) str2num(handles.prevValLoadFac) str2num(handles.prevValLoadSteps) str2num(handles.prevValIncremAL)] );
     end
   end
   % Output options

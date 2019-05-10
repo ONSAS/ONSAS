@@ -169,7 +169,7 @@ for i=1:nelem
 			for j = 1:length(auxnodes)
 				if ~ismember(auxnodes(j), auxPhysNodes)
 					nodesMat(auxnodes(j),4:5) = ones(length(auxnodes(j)),2) * diag( [str2num(auxstr(11:12)) str2num(auxstr(14:15)) ] ) ;
-         end
+        end
       end
                             
     end
