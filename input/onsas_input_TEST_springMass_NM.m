@@ -43,9 +43,9 @@ cres   = 2*ceda*omegaN*mres   ;
 
 nodalDamping = cres;
 
-freq   = omegaN / (2*pi) 
-TN     = 2*pi / omegaN 
-dtCrit = TN / pi
+freq   = omegaN / (2*pi)      ;
+TN     = 2*pi / omegaN        ;
+dtCrit = TN / pi              ;
 
 % method
 timeIncr   =  0.001 * dtCrit    ;
