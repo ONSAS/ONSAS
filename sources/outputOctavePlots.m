@@ -130,7 +130,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
   axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
 
-  if exist( 'plotsViewAxis' ) == 0
+  if length( plotsViewAxis ) == 0
     view(3);
   elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
     view(2);
@@ -189,7 +189,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
     axis equal
     axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
 
-    if exist( 'plotsViewAxis' ) == 0
+    if length( plotsViewAxis ) == 0
       view(3);
     elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
       view(2);
