@@ -132,6 +132,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
   if exist( 'plotsViewAxis' ) == 0
     view(3);
+  elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
+    view(2);
   else
     view(plotsViewAxis);
   end
@@ -189,6 +191,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
     if exist( 'plotsViewAxis' ) == 0
       view(3);
+    elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
+      view(2);
     else
       view(plotsViewAxis);
     end
@@ -255,7 +259,6 @@ for indplot = 1 : length( timesPlotsVec ) ;
     set(tit, "FontSize", plotfontsize) ;
     set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
     
-  
     
   end 
 end %endfor indplot
