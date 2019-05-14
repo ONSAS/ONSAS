@@ -82,7 +82,7 @@ Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPA
 ### Acknowledgments
 The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera**](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
 
-J. M. Pérez Zerpa would like to thank Professors [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es) and [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) from the HeMoLab group at LNCC Brazil, [hemolab.lncc.br](http://hemolab.lncc.br/), for their comments and suggestions regarding the structure of the code and the model information management.
+J. M. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es) from the [hemolab.lncc.br](http://hemolab.lncc.br/) group at LNCC Brazil, [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) from Univ. Nacional de Mar del Plata, [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) from the Auckland Bioengineering Institute and [**Diego Figueredo**](https://www.researchgate.net/profile/Diego_Figueredo4) for their numerous comments and suggestions. 
 
 ## Contact <a name="contact"></a>
 ------
