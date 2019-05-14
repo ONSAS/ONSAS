@@ -59,12 +59,11 @@ currTime       = currTime + deltaT ;
 
 % ------------------------------------------------------------------------------
 
-% ESTO VA PARA CALL DYNAMIC SOLVER CUANDO MAURICIO TERMINE
   %~ targetLoadFactr = loadFactorsFunc( finalTime ) ;
   %~ nLoadSteps      = round( finalTime / deltaT ) ;
-  factor_crit     = 0;
-  nKeigpos        = 0;
-  nKeigneg        = 0 ;
+  %~ factor_crit     = 0;
+  %~ nKeigpos        = 0;
+  %~ nKeigneg        = 0 ;
 
 
 
@@ -89,7 +88,13 @@ matNts = [ matNts currentNormalForces ] ;
 
 itersPerTimeVec( timeIndex )    = auxIO.itersPerTime ;
 
+factor_crit = modelCurrState.factorCrit ;
+nKeigneg = modelCurrState.nKeigneg ;
+nKeigpos= modelCurrState.nKeigpos;
+
+
 printsOutputScreen
+
 
 % ---------------       evals stop time incr crit          ---------------------
 if dynamicAnalysisBoolean == 1
