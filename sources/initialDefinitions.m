@@ -86,7 +86,6 @@ FintGt  = zeros( ndofpnode*nnodes,   1 ) ;
 
 matUts = Ut ;
 
-matNts = zeros(nelems,1) ;
 
 dispsElemsMat = zeros(nelems,2*ndofpnode) ;
 for i=1:nelems
@@ -112,7 +111,7 @@ stopCritPar = 0;
 loadFactors( timeIndex,1) = currLoadFactor ;
 controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
-FintGt = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut ,1 ) ;
+[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut ,1 ) ;
 
 factor_crit = 0;
 nKeigpos=0;
@@ -129,5 +128,11 @@ end
 
 % stores model data structures
 modelCompress
+
+indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
+Areas = secGeomProps(Conec(:,6),1) ;
+currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
+
+matNts = currentNormalForces ;
 
 printsOutputScreen

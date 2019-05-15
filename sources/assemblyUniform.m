@@ -137,6 +137,7 @@ function [nodalConstUnif, nodalSelfW, nodalPlate, elemUnifLoc, elemSelfWLoc, ele
 			q = unifLoad(i,5) ;
 
 			qelem = 4*q*a*b* [ 0 a/12 0 b/12 1/4 0 0 -a/12 0 b/12 1/4 0 0 -a/12 0 -b/12 1/4 0 0 a/12 0 -b/12 1/4 0 ]' ;
+      
 			nodalPlate(elemdofs) = nodalPlate(elemdofs) + qelem ;
       
       if selfWeightBoolean

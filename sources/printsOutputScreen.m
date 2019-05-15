@@ -44,7 +44,7 @@ fprintf(fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i
 % -----------------------------------
 
 if max( abs( Strainst) ) > 0.05,
-  fprintf('WARNING: at timeStep %5i, elements with strain level %4.1f%%!\n', timeStep, max( abs( Strainst) )*100 ),
+  fprintf('WARNING: at timeStep %5i, elements with strain level %4.1f%%!\n', timeIndex, max( abs( Strainst) )*100 ),
 end
 
 fclose(fileIncrements);

@@ -1,3 +1,5 @@
+![afiche](https://www.fing.edu.uy/~jorgepz/files/aficheONSAS.png "Afiche evento presentación.")
+
 # ONSAS: an Open Nonlinear Structural Analysis System (v. 0.1.8)
 
 ## Table of Contents
@@ -33,7 +35,7 @@ The linear analysis module includes the following features:
 
 ### License
 
-The code is available at is distributed under a GNU-GPL license.
+The code is distributed under a GNU-GPL 3.0 license.
 
 
 
@@ -43,7 +45,7 @@ The code is available at is distributed under a GNU-GPL license.
 The user should follow these steps to install and run onsas:
 
 1. Download and install [GNU-Octave](https://www.gnu.org/software/octave/)
-1. Download the ONSAS source files **AGREGAR LINK**
+1. Download the ONSAS source files https://github.com/onsas/onsas/archive/v0.1.8.zip
 1. Open GNU-Octave and run the _ONSAS.m_ script
 1. Select one of the available input files (or create one).
 
@@ -74,13 +76,13 @@ Affiliations:
 1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
 
 ### Contributors
-Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function.
+Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) from CIMEC Santa Fe, Argentina, kindly provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf2ONSAS.m function. The functions linearStiffMatPlate3D.m and assemblyUniform.m use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
 
 
 ### Acknowledgments
-The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. Usera).
+The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera**](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
 
-J. M. Pérez Zerpa would like to thank Professors Pablo Blanco and Gonzalo Ares from the HeMoLab group at LNCC Brazil, [hemolab.lncc.br](http://hemolab.lncc.br/), for their comments and suggestions regarding the structure of the code and the model information management.
+J. M. Pérez Zerpa would like to thank Professors [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es) and [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) from the HeMoLab group at LNCC Brazil, [hemolab.lncc.br](http://hemolab.lncc.br/), for their comments and suggestions regarding the structure of the code and the model information management.
 
 ## Contact <a name="contact"></a>
 ------
