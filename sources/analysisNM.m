@@ -1,4 +1,5 @@
 %This function implements the Newmark's method for the analysis of one time step. The input includes the structural properties, the displacements at the time t and the loads for the next time tp1. The output includes the displacements, velocities, accelerations and internal forces.
+%This function implements the Newmark's method for the analysis of one time step. The input includes the structural properties, the displacements at the time t and the loads for the next time tp1. The output includes the displacements, velocities, accelerations and internal forces.
 
 %~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
 
@@ -67,7 +68,7 @@ while ( iterDispConverged == 0 )
   dispIter += 1;
   
   % computes tangent matrix
-[~, KT, KL0 ]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,2  ) ;                                                          
+[~, KT]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,2  ) ;                                                          
   %VALSKT= mean (abs(diag (eig(KT)))
 
   %computes deltau and rfresh Ut
