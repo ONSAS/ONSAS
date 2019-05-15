@@ -88,10 +88,15 @@ matNts = [ matNts currentNormalForces ] ;
 
 itersPerTimeVec( timeIndex )    = auxIO.itersPerTime ;
 
-factor_crit = modelCurrState.factorCrit ;
-nKeigneg = modelCurrState.nKeigneg ;
-nKeigpos= modelCurrState.nKeigpos;
-
+if dynamicAnalysisBoolean == 0
+  factor_crit = modelCurrState.factorCrit ;
+  nKeigneg = modelCurrState.nKeigneg ;
+  nKeigpos= modelCurrState.nKeigpos;
+else
+  factor_crit = 0 ;
+  nKeigneg = 0 ;
+  nKeigpos = 0 ;
+end
 
 printsOutputScreen
 

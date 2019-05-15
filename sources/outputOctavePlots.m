@@ -208,7 +208,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
         [lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
         offsetText = min(lengths) / 15 ;
         
-        posText = ( Nodes(nodeselem(2),:)+Nodes(nodeselem(1),:) ) / 2 ;
+        %~ posText = ( Nodes(nodeselem(2),:) + Nodes(nodeselem(1),:) ) / 2 ;
+        posText = ( Nodes(nodeselem(2),:) + dispsElemsMat(i,1:2:5) + Nodes(nodeselem(1),:) + dispsElemsMat(i,7:2:11) ) / 2 ;
         
         if abs(maxNormalForce - minNormalForce) < 1e-10
           cmapi = cmap( 1 ,: );
