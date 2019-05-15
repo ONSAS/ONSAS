@@ -106,9 +106,9 @@ function onsasGUI
 																			'callback', 'close (gcf)' ) ; 
   % ------------------------------------------------------------------------------------------------------------------------
 
-% => Sub panel Geommetry
+% => Sub panel Geometry
   handlesFig.geomPanel = uipanel 	('parent', handlesFig.inputPanel, "position", vecGeomPanel) ;
-  handlesFig.geomTitle = uicontrol('parent', handlesFig.geomPanel, 'style', 'text', 'string', 'Geommetry options', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft ref buttonWidth buttonHeight]) ; 
+  handlesFig.geomTitle = uicontrol('parent', handlesFig.geomPanel, 'style', 'text', 'string', 'Geometry options', 'HorizontalAlignment', 'left', 'fontsize', 11, 'position', [PPFromLeft ref buttonWidth buttonHeight]) ; 
   % Geommetry buttons
   handlesFig.geomOpt = '' ;
   handlesFig.loadDxf = uicontrol('parent', handlesFig.geomPanel, 'string', 'Load .dxf', 'position', [PPFromLeft PPFromBottom buttonSysWidth buttonSysHeight ], 'callback', {@loadFile, fig} ) ;
