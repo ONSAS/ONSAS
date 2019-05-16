@@ -21,8 +21,9 @@ function [ nodesMat, conecMat ] = dxf2ONSAS(nomArch)
     elemEntity = str2num(c_Line{i,2}(1:2)) ;
     secEntity = str2num(c_Line{i,2}(4:5)) ;
     matEntity = str2num(c_Line{i,2}(7:8)) ;
-    loadEntity = str2num(c_Line{i,2}(10:11)) ;
-    suppEntity = str2num(c_Line{i,2}(13:14)) ;
+    suppEntity = str2num(c_Line{i,2}(10:11)) ;
+    loadEntity = str2num(c_Line{i,2}(13:14)) ;
+    
     entityVec = [ secEntity matEntity loadEntity suppEntity ] ;
     
     if i == 1
@@ -68,8 +69,8 @@ function [ nodesMat, conecMat ] = dxf2ONSAS(nomArch)
     for i = 1:nnodesEntity
       nod = c_Poi{i}(1:3) ;
       aux = [] ;
-      loadEntity = str2num(c_Poi{i,2}(10:11)) ;
-      suppEntity = str2num(c_Poi{i,2}(13:14)) ;
+      suppEntity = str2num(c_Poi{i,2}(10:11)) ;
+      loadEntity = str2num(c_Poi{i,2}(13:14)) ;
       for j = 1:nnodes
         if norm(Nodes(j,:)-nod) < 1e-10 
           nodesMat(j,4) = loadEntity ;
