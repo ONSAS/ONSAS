@@ -113,9 +113,10 @@ controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
 [ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut ,1 ) ;
 
-factor_crit = 0;
-nKeigpos=0;
-nKeigneg=0;
+factorCrit = 0 ;
+factor_crit = 0 ;
+nKeigpos   = 0 ;
+nKeigneg   = 0 ;
 
 if dynamicAnalysisBoolean == 0
   nextLoadFactor  = currLoadFactor + targetLoadFactr / nLoadSteps ;
