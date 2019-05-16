@@ -434,7 +434,12 @@ function numMethodChoice(src, eventdata, fig)
       set(handles.incremALText			, 'visible', 'off')	, set(handles.incremAL			, 'visible', 'off') 
       handles.numVec = 1 ;
     elseif val == 3
-      set(handles.incremALText			, 'visible', 'on'), set(handles.incremAL				, 'visible', 'on')
+			set(handles.tolDeltaUText			, 'visible', 'on')	, set(handles.tolDeltaU			, 'visible', 'on') 
+      set(handles.tolForcesText			, 'visible', 'on')	, set(handles.tolForces			, 'visible', 'on') 
+      set(handles.tolIterText				, 'visible', 'on')	, set(handles.tolIter				, 'visible', 'on')
+      set(handles.targetLoadFacText	, 'visible', 'on')	, set(handles.targetLoadFac	, 'visible', 'on') 
+      set(handles.loadStepsText			, 'visible', 'on')	, set(handles.loadSteps			, 'visible', 'on')
+      set(handles.incremALText			, 'visible', 'on')	, set(handles.incremAL			, 'visible', 'on')
       handles.numVec = 2 ;
     else
       set(handles.tolDeltaUText			, 'visible', 'off'), set(handles.tolDeltaU			, 'visible', 'off') 
