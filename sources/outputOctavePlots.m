@@ -18,6 +18,7 @@
 
 %script for generation of plots of deformed structure.
 
+tic ;
 currdir = pwd ;
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
@@ -41,8 +42,14 @@ nelems = size(Conec,1) ;
 nnodes = size(Nodes,1) ;
 ndofpnode = 6 ;
 
-for indplot = 1 : length( timesPlotsVec ) ;
+tMarginDef = toc ;
 
+tNormalForce 	= 0 ;
+tDefShape 		= 0 ;
+tLoadFac 			= 0 ;
+
+for indplot = 1 : length( timesPlotsVec ) ;
+	tic ;
   figdef = figure ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
@@ -137,7 +144,11 @@ for indplot = 1 : length( timesPlotsVec ) ;
   else
     view(plotsViewAxis);
   end
-
+  % time
+	auxtDefShape = toc ;
+	tDefShape = tDefShape + auxtDefShape ;
+	
+	tic ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
 			subplot(3,2,5)
@@ -151,14 +162,16 @@ for indplot = 1 : length( timesPlotsVec ) ;
 			labx=xlabel('step'); laby=ylabel('load factor');
 		end
   end
-
+  % time
+	auxtLoadFac = toc ;
+	tLoadFac = tLoadFac + auxtLoadFac ;
   % ---------------------------------------------------------------------
 
 
   % ----------------------------------------
   % ---------- Axial force plots  ----------
 
-    
+  tic
 	figAxial = figure ;
 	hold on, grid on
 
@@ -246,7 +259,10 @@ for indplot = 1 : length( timesPlotsVec ) ;
 		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot) ] ,'-dpng') ;
 	end
 	cd(currdir)
-
+	% time
+	auxtNormalForce = toc ;
+	tNormalForce = tNormalForce + auxtNormalForce ;
+	
 	if printflag > 0  
 		close(figdef)		;
 		close(figAxial)	;

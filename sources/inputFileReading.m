@@ -25,8 +25,10 @@ fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. \n' ] ) ;
 fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYNG file for more details. \n' ] ) ;
 
 close all, clear -x previouslyDefinedSelectedFileVar ONSASversion
-fileslist = readdir('./input');
 
+tic
+
+fileslist = readdir('./input');
 
 if exist( 'previouslyDefinedSelectedFileVar' ) == 0
   
@@ -57,3 +59,6 @@ end
 if plotParamsVector(1)>0
   fprintf([' done.\n'] );
 end
+
+tReadingInput = toc ;
+

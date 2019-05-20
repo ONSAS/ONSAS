@@ -18,6 +18,8 @@
 
 %Script for verification of the input variables definition.
 
+tic
+
 if plotParamsVector(1)>0
   fprintf('  - input variables verification ... ');
 end
@@ -266,3 +268,5 @@ end
 if plotParamsVector(1)>0
   fprintf(' done.\n');
 end
+
+tVarVer = toc ;

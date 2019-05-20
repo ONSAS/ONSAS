@@ -55,7 +55,7 @@ nodalSprings = [ 1         inf  inf  inf  inf  inf  0 ;
 Conec = [ (1:(Np-1))' (2:(Np))' zeros(Nelem,2)  (ones(Nelem,1)*[ 1 1 2]) ] ;
 
                       %nod    fx  mx  fy  my  fz  mz
-nodalVariableLoads   = [ m+1    0   0   -1   0   0   .2 ] ; %mz>0 gira antih, imperf. sensitive
+nodalVariableLoads   = [ m+1    0   0   -1   0   0   -1 ] ; %mz>0 gira antih, imperf. sensitive
 
 controlDofInfo = [ m+1 3 -1 ] ;
 
@@ -63,10 +63,10 @@ stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-8 ;
 stopTolForces  = 1.0e-8 ;
 targetLoadFactr = 12.8e3 ;
-nLoadSteps      = 100 ; incremArcLen     = 1    ;
+nLoadSteps      = 50 ; incremArcLen     = 2    ;
 
 plotParamsVector = [ 2 4 ];  plotsViewAxis = [ 0 0 1];  
 
-printflag = 1;   reportBoolean = 1 ;
+printflag = 0;   reportBoolean = 1 ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps  incremArcLen ] ;  % ArcLength
