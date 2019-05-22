@@ -53,6 +53,8 @@ function ...
   currDeltau      = zeros( length(neumdofs), 1 ) ;
   convDeltau      = convDeltau(neumdofs);
 
+  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2 ) ;
+
   % ----------------------------------
   % iteration in displacements (NR) or load-displacements (NR-AL)
   while ( iterDispConverged == 0 )
@@ -87,8 +89,8 @@ function ...
     % --- stopping criteria verification ---
     deltaErrLoad  = norm(FintGk(neumdofs) - FextG(neumdofs) )        ;
     normFext      = norm(FextG(neumdofs) )                           ;
-    logicDispStop = ( normadeltau < ( normaUk * stopTolDeltau ) )    ;
-    logicForcStop = (  deltaErrLoad < ( normFext * stopTolForces ) ) ;
+    logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
+    logicForcStop = ( deltaErrLoad < ( normFext * stopTolForces ) )  ;
                   
     if logicForcStop
       stopCritPar = 1 ;      iterDispConverged = 1 ;
@@ -101,51 +103,45 @@ function ...
       stopCritPar = 3 ;      iterDispConverged = 1 ;
     end
     % -------------------------
-
     
   end
+
+  % computes KTred at converged Uk
+  [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2 ) ;
+
 
   if solutionMethod == 2;    
     nextLoadFactor = currLoadFactor ;
   end
 
 
-  nKeigpos =  0 ;
-  nKeigneg =  0 ;
-    factor_crit = 0;
+  factor_crit = 0;
 
   % -----------------------------------
   % buckling analysis
-  
-  % computes KTred at converged Uk
-  %~ [~, KT, KL0 ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,2 ) ;
 
   [FintGk, ~, Strainsk, Stressk, Dsigdeps ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,1 ) ;
 
-  %~ KTred  = KT  ( neumdofs, neumdofs );
 
-  %~ [a,b] = eig( KTred ) ;
-  %~ Keigvals = diag(b) ; 
-  %~ nKeigpos = length( find(Keigvals >  0 ) );
-  %~ nKeigneg = length( find(Keigvals <= 0 ) );
+  KTtred   = KTt  ( neumdofs, neumdofs );
+  KTtm1red = KTtm1( neumdofs, neumdofs );
 
-  %~ KL0red = KL0 ( neumdofs, neumdofs );
-  %~ [a, lambtech ] = eig( KTred ,  KL0red ) ;    
-  %~ lambtech = diag(lambtech) ;
-  %~ %
-  %~ if length( find( lambtech >  0 ) ) > 0
-    %~ lambdatech_crit = min ( lambtech ( find( lambtech >  0 ) ) ) ;
-    %~ lambda_crit  = 1 / ( 1 - lambdatech_crit ) ;
-    %~ factor_crit = lambda_crit * currLoadFactor ;
-  %~ else
-    %~ factor_crit = 0;
-  %~ end
+  [a,b] = eig( KTtred ) ;
+  Keigvals = diag(b) ; 
+  nKeigpos = length( find(Keigvals >  0 ) ) ;
+  nKeigneg = length( find(Keigvals <= 0 ) ) ;
 
-  % linearized according to Bathe
-  %~ if (loadIter == 1)
-    %~ KG0redBathe = KGred / currLoadFactor ;
-    %~ [a,b] = eig( KL0red , - KG0redBathe ) ;
-    %~ factor_crit_lin_Bathe = min( diag(b) );
-  %~ end
+  [vecgamma, gammas ] = eig( KTtm1red, KTtred ) ;
+  
+  gammas = diag( gammas);
+  
+  if length( find( gammas >  0 ) ) > 0
+    gamma_crit = min ( gammas ( find( gammas >  0 ) ) ) ;
+    lambda_crit  = 1 / ( 1 - gamma_crit ) ;
+    factor_crit = lambda_crit * currLoadFactor ;
+
+  else
+    factor_crit = 0;
+  end
   % -----------------------------------
 

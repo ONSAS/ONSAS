@@ -130,7 +130,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
   axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
 
-  if exist( 'plotsViewAxis' ) == 0
+  if length( plotsViewAxis ) == 0
     view(3);
   elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
     view(2);
@@ -189,7 +189,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
     axis equal
     axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
 
-    if exist( 'plotsViewAxis' ) == 0
+    if length( plotsViewAxis ) == 0
       view(3);
     elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
       view(2);
@@ -208,7 +208,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
         [lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
         offsetText = min(lengths) / 15 ;
         
-        posText = ( Nodes(nodeselem(2),:)+Nodes(nodeselem(1),:) ) / 2 ;
+        %~ posText = ( Nodes(nodeselem(2),:) + Nodes(nodeselem(1),:) ) / 2 ;
+        posText = ( Nodes(nodeselem(2),:) + dispsElemsMat(i,1:2:5) + Nodes(nodeselem(1),:) + dispsElemsMat(i,7:2:11) ) / 2 ;
         
         if abs(maxNormalForce - minNormalForce) < 1e-10
           cmapi = cmap( 1 ,: );
