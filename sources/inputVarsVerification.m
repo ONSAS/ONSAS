@@ -92,6 +92,10 @@ if exist( 'Releases' ) == 0
   Releases = [] ;
 end
 
+if exist( 'plotsViewAxis' ) == 0
+  plotsViewAxis = [] ;
+end
+
 if exist( 'Nodes' ) == 0
   error('The Nodes matrix was not defined.') ;
 end
