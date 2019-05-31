@@ -37,7 +37,6 @@ end
 % verifies the definition of input variables and sets default values
 inputVarsVerification
 
-
 inputAuxDefinitions
 
 % ==============================================================================
@@ -47,7 +46,7 @@ inputAuxDefinitions
 % ----------------------------    Analysis     ---------------------------------
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-
+	
   % Linear Analysis
   linearAnalysis
   
@@ -93,13 +92,15 @@ end
 
 % plots and/or visualization files are generated
 if plotParamsVector(1) > 0
-  outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
+  [tPrevDefs, tMarginDef, tDefShape, tLoadFac, tNormalForce, tLoadDisps] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
     Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
-    outputdir, problemName, loadFactors, sectPar, plotsViewAxis, ...
-    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, timeIncr, cellStress, matNts, indexesElems ) ;
+    outputdir, problemName, loadFactors, sectPar, ...
+    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
+    timeIncr, cellStress, matNts, indexesElems, plotsViewAxis ) ;
 end
 
+tic
 % report with results is generated
 if reportBoolean == 1
   if nelems < 500
@@ -108,7 +109,9 @@ if reportBoolean == 1
     end  
   end  
 end
+tReport = toc ;
 
 noErrorsOccurred = 1 ;
+timeReport
 
 % ==============================================================================
