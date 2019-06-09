@@ -97,7 +97,7 @@ else
   nKeigneg = 0 ;
   nKeigpos = 0 ;
 end
-
+tStores = toc ;
 printsOutputScreen
 
 

@@ -20,6 +20,9 @@
 % TEST
 
 % ----------- fixeddofs and spring matrix computation ---------
+
+tic ;
+
 fixeddofs = [] ;
 KS      = sparse(ndofpnode*nnodes,ndofpnode*nnodes);  
 
@@ -136,4 +139,8 @@ currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
 
 matNts = currentNormalForces ;
 
+tCallSolver = 0 ;
+tStores = 0 ;
 printsOutputScreen
+
+tInitialDefs = toc ;

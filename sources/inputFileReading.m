@@ -26,8 +26,6 @@ fprintf( [ 'This is free software, and you are welcome to redistribute it under 
 
 close all, clear -x previouslyDefinedSelectedFileVar ONSASversion
 
-tic
-
 fileslist = readdir('./input');
 
 if exist( 'previouslyDefinedSelectedFileVar' ) == 0
@@ -48,6 +46,8 @@ else
   selectedfile = previouslyDefinedSelectedFileVar ;
 
 end
+
+tic
 
 run( fileslist{ selectedfile }(1:end-2) ) ;
 
