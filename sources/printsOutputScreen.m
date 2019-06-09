@@ -19,7 +19,7 @@
 % Prints analysis output 
 
 incrementsResultsFilename = [ outputdir  problemName '_incrementsOutput.tex' ] ;
-%~ axialTruss = [ outputdir  problemName '_axialTrussOutput.tex' ] ;
+incrementsNormalForce 		= [ outputdir  problemName '_incrementsNormalForceOutput.tex' ] ;
 
 
 if currTime == 0
@@ -28,19 +28,19 @@ if currTime == 0
   fileIncrements = fopen( incrementsResultsFilename ,'w') ; 
   fprintf(fileIncrements, [ 'timeInd & t & $ \\lambda(t)$ & dispits & maxStrain (\\%%) & BucklingFac ' ...
   ' & npos & nneg  \\\\ \\toprule \n'] );
-  %~ fileAxialTruss = fopen( axialTruss, 'w' ) ;
-  %~ fprintf(fileAxialTruss, [ 'timeInd & t & $ \\lambda(t)$ & $N_{max}$ & $N_{min}$ \\\\ \\toprule \n'] );
+  fileNormalForce = fopen( incrementsNormalForce, 'w' ) ;
+  fprintf(fileNormalForce, [ 'timeInd & t & $ \\lambda(t)$ & $N_{max}$ & $N_{min}$ \\\\ \\toprule \n'] );
 else
-  fileIncrements = fopen( incrementsResultsFilename ,'a') ;
-  %~ fileAxialTruss = fopen( axialTruss, 'a' ) ;
+  fileIncrements 	= fopen( incrementsResultsFilename ,'a') ;
+  fileNormalForce = fopen( incrementsNormalForce, 'a' ) ;
 end
 
 % latex table output
 fprintf(fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i & %3i \\\\\n' ], ...
   timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( abs( modelCurrState.Strainst) )*100 , ...
   factor_crit , nKeigpos, nKeigneg )
-%~ fprintf(fileAxialTruss, [ ' %4i & %12.3e & %12.3e  & %12.3e & %12.3e \\\\\n' ], ...
-  %~ timeIndex, currTime, currLoadFactor, max(currentNormalForces), min(currentNormalForces)  )  
+fprintf(fileNormalForce, [ ' %4i & %12.3e & %12.3e  & %12.3e & %12.3e \\\\\n' ], ...
+  timeIndex, currTime, currLoadFactor, max(currentNormalForces), min(currentNormalForces)  )  
 % -----------------------------------
 
 if max( abs( Strainst) ) > 0.05,
@@ -48,7 +48,7 @@ if max( abs( Strainst) ) > 0.05,
 end
 
 fclose(fileIncrements);
-%~ fclose(axialTruss);
+fclose(fileNormalForce);
 
 
 
