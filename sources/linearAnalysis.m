@@ -26,7 +26,7 @@ end
 
 % ==============================================================================
 % ---------------------    Geometry reading    ------------------------
-
+tic ;
 ndofpnode = 6 ;
 
 ElemLengths = zeros(nbeam+ntruss,1) ;
@@ -94,6 +94,7 @@ for i = 1:nelems
   
   end  
 end
+tGeomReading = toc ;
 % ==============================================================================
 
 
@@ -103,7 +104,7 @@ end
 if plotParamsVector(1)>0
   fprintf('Assembling stiffness matrix...\n');
 end
-
+tic ;
 KG      = sparse( ndofpnode*nnodes, ndofpnode*nnodes ) ;
 ElemKGs = cell(nbeam+ntruss,1) ;                                        
 
@@ -203,12 +204,13 @@ end
 
 % add springs stiffness matrix
 KG = KG + KS ;
+tStiffMatrix = toc ;
 % ==============================================================================
 
 
 % ==============================================================================
 % ------------------------    Load Vector Assembly    --------------------------
-
+tic ;
 % Parameters 
 if length(userLoadsFilename) > 0 || norm(variableFext) > 0
 	deltaT = numericalMethodParams(2) ;
@@ -293,12 +295,12 @@ else
   end
 
 end %end first if
-
+tLoadsAssembly = toc ;
 % ==============================================================================
 % --------------------------    System Resolution   ----------------------------
 
 % Non-zero prescribed displacements 
-
+tic
 fixeddofsD = [ ] ;
 for i = 1:size(prescribedDisps,1)
   aux = nodes2dofs ( prescribedDisps (i,1), ndofpnode ) ;
@@ -381,11 +383,12 @@ Reactions = ((KG-KS)*matUG - matFs)(gdlfixed,:) ;
 matFs ( fixeddofs, : ) = Fcon ; 
 matFs ( notfixeddofs, : ) = Flib ;
 
+tSystemResolution = toc ;
 % ==============================================================================
 
 % ==============================================================================
 % -----------------------------    Post process   ------------------------------
-
+tic ;
 %~ nTimeSteps = size(matUG,2) ;
 
 % Beams
@@ -574,6 +577,7 @@ for currTime = 1:nTimeSteps
   matNts = [ matNts normalForce(:,currTime) ] ;
 end % endfor time
 
+tSolicDisps = toc ;
 
 % Analytic sol flag check
 
