@@ -91,32 +91,10 @@ function ...
 
   factor_crit = 0;
 
-  % -----------------------------------
-  % buckling analysis
-
   [FintGk, ~, Strainsk, Stressk, Dsigdeps ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,1 ) ;
 
+  [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor ) ;
 
-  KTtred   = KTt  ( neumdofs, neumdofs );
-  KTtm1red = KTtm1( neumdofs, neumdofs );
-
-  [a,b] = eig( KTtred ) ;
-  Keigvals = diag(b) ; 
-  nKeigpos = length( find(Keigvals >  0 ) ) ;
-  nKeigneg = length( find(Keigvals <= 0 ) ) ;
-
-  [vecgamma, gammas ] = eig( KTtm1red, KTtred ) ;
-  
-  gammas = diag( gammas);
-  
-  if length( find( gammas >  0 ) ) > 0
-    gamma_crit = min ( gammas ( find( gammas >  0 ) ) ) ;
-    lambda_crit  = 1 / ( 1 - gamma_crit ) ;
-    factor_crit = lambda_crit * currLoadFactor ;
-
-  else
-    factor_crit = 0;
-  end
   % -----------------------------------
 
 
@@ -218,6 +196,32 @@ function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, syste
     
     deltaured = deltauast + deltalambda(1) * deltaubar ;
   end
+
+
+
+% ======================================================================
+% ======================================================================
+% --- nonlinear buckling analysis as in section 6.8.2 from Bathe, FEM Procedures 2nd edition. ---
+function [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor );  
+
+  [a,b] = eig( KTtred ) ;
+  Keigvals = diag(b) ; 
+  nKeigpos = length( find(Keigvals >  0 ) ) ;
+  nKeigneg = length( find(Keigvals <= 0 ) ) ;
+
+  [vecgamma, gammas ] = eig( KTtred, KTtm1red ) ;
+  
+  gammas = diag( gammas);
+ 
+  if length( find( gammas >  0 ) ) > 0
+    gamma_crit = min ( gammas ( find( gammas >  0 ) ) ) ;
+    lambda_crit  = 1 / ( 1 - gamma_crit ) ;
+    factor_crit = lambda_crit * currLoadFactor ;
+
+  else
+    factor_crit = 0;
+  end
+
 
 
 

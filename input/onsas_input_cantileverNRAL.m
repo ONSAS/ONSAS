@@ -58,11 +58,14 @@ Pcr = E * pi^2 * Iyy / ( 2*l)^2 ;
 stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-8 ;
 stopTolForces    = 1.0e-8 ;
-targetLoadFactr  = Pcr*2    ;
-nLoadSteps       = 400    ;
+targetLoadFactr  = Pcr*1.5    ;
+nLoadSteps       = 500    ;
 incremArcLen     = 0.2e-3    ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps incremArcLen ] ; 
+
+global taf;
+taf = 1;
 
 % --------------------------------------------------------------------------------------------------

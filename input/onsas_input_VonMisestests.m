@@ -47,8 +47,6 @@ printflag = 1 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
 
-
-
 %~ stopTolIts       = 30     ;
 %~ stopTolDeltau    = 1.0e-10 ;
 %~ stopTolForces    = 1.0e-6 ;
