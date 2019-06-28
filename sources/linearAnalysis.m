@@ -208,8 +208,6 @@ tStiffMatrix = toc ;
 % ==============================================================================
 
 
-
-
 % ==============================================================================
 % ------------------------    Load Vector Assembly    --------------------------
 tic ;
@@ -311,9 +309,9 @@ for i = 1:size(prescribedDisps,1)
 end
 
 
-% Dofs array
+% --- Dofs array ---
 trussdofs = [];
-tetdofs = [] ;
+tetdofs   = [] ;
 platedofs = [] ;
 
 for i = 1:nelems
@@ -332,17 +330,17 @@ for i = 1:nelems
     nodeselem = Conec(i,1:4) ;
     elemdofs = nodes2dofs(nodeselem,ndofpnode) ;
     tetdofs = [ tetdofs ; elemdofs(2:2:end) ] ;
+
   elseif Conec(i,7) == 4
     nodeselem = Conec(i,1:4) ;
+
     for j = 1:4
-      if ismember(nodeselem(j), beamNodes)
-        platedofs = platedofs ;
-      else
+      if ~(ismember(nodeselem(j), beamNodes))
         platedofs = [ platedofs ; nodeselem(j)*ndofpnode-5 ; nodeselem(j)*ndofpnode-3 ; nodeselem(j)*ndofpnode ] ;
       end
     end
+
   end
-  
 end
 
 
