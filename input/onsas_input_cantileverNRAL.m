@@ -64,8 +64,4 @@ incremArcLen     = 0.2e-3    ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps incremArcLen ] ; 
-
-global taf;
-taf = 1;
-
 % --------------------------------------------------------------------------------------------------

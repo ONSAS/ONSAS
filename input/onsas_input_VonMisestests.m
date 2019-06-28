@@ -63,6 +63,3 @@ l0 = sqrt(auxx^2 + auxy^2) ;
 analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ...
   ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
   .* ( auxy + (-w) ) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) ) ; 
-
-global taf;
-taf = 1;
