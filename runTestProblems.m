@@ -17,3 +17,5 @@ for previouslyDefinedSelectedFileVar = 1:length(readdir('./input'))
     end
   end
 end
+
+clear all
