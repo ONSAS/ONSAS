@@ -347,24 +347,24 @@ fprintf(fileReport, [ '\\subsection{Time performance}\n\n'] ) ;
 fprintf(fileReport, [ '\\textbf{Reading and variables definition/verification}\n'] ) ;
 [enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Reading and variables definition/verification time performance.') ;
 fprintf(fileReport, '%s', enc )
-fprintf(fileReport, [ 'Reading input file: & %5.3f \\\\ \n'], tReadingInput) ;
-fprintf(fileReport, [ 'Variables verification: & %5.3f \\\\ \n'], tVarVer) ;
-fprintf(fileReport, [ 'Input auxiliar definitions: & %5.3f \\\\ \n'], tInputAuxDefs) ;
+fprintf(fileReport, [ 'Reading input file: & %5.3e \\\\ \n'], tReadingInput) ;
+fprintf(fileReport, [ 'Variables verification: & %5.3e \\\\ \n'], tVarVer) ;
+fprintf(fileReport, [ 'Input auxiliar definitions: & %5.3e \\\\ \n'], tInputAuxDefs) ;
 fprintf(fileReport, [ '\\midrule\n'])
-fprintf(fileReport, [ 'Total elapsed time in reading and verification: & %5.3f \\\\ \n'], tReadingInput+tVarVer+tInputAuxDefs) ;
+fprintf(fileReport, [ 'Total elapsed time in reading and verification: & %5.3e \\\\ \n'], tReadingInput+tVarVer+tInputAuxDefs) ;
 fprintf(fileReport, '%s', fin )
 %
 fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Analysis time spent.') ;
 	fprintf(fileReport, '%s', enc )
-	fprintf(fileReport, [ 'Geometry computation: & %5.3f \\\\ \n'], tGeomReading) ;
-	fprintf(fileReport, [ 'Stiffness matrix assembly: & %5.3f \\\\ \n'], tStiffMatrix) ;
-	fprintf(fileReport, [ 'Loads assembly: & %5.3f \\\\ \n'], tLoadsAssembly) ;
-	fprintf(fileReport, [ 'System resolution: & %5.3f \\\\ \n'], tSystemResolution) ;
-	fprintf(fileReport, [ 'Elems. disps and solic.: & %5.3f \\\\ \n'], tSolicDisps) ;
+	fprintf(fileReport, [ 'Geometry computation: & %5.3e \\\\ \n'], tGeomReading) ;
+	fprintf(fileReport, [ 'Stiffness matrix assembly: & %5.3e \\\\ \n'], tStiffMatrix) ;
+	fprintf(fileReport, [ 'Loads assembly: & %5.3e \\\\ \n'], tLoadsAssembly) ;
+	fprintf(fileReport, [ 'System resolution: & %5.3e \\\\ \n'], tSystemResolution) ;
+	fprintf(fileReport, [ 'Elems. disps and solic.: & %5.3e \\\\ \n'], tSolicDisps) ;
 	fprintf(fileReport, [ '\\midrule\n'])
-	fprintf(fileReport, [ 'Total elapsed time in analysis: & %5.3f \\\\ \n'], tGeomReading+tStiffMatrix+tLoadsAssembly+tSystemResolution+tSolicDisps) ;
+	fprintf(fileReport, [ 'Total elapsed time in analysis: & %5.3e \\\\ \n'], tGeomReading+tStiffMatrix+tLoadsAssembly+tSystemResolution+tSolicDisps) ;
 	fprintf(fileReport, '%s', fin )
 else
 	fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
