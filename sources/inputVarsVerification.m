@@ -236,7 +236,7 @@ if exist( 'printflag' ) == 0
 end
 
 if exist( 'reportBoolean' ) == 0
-  reportBoolean = 0 ;
+  reportBoolean = 1 ;
 end
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0

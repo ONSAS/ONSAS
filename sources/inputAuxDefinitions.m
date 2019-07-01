@@ -1,12 +1,7 @@
 tic
 % ---------------------------------------------------
 
-ndofpnode = 6;
-
-
-%~ strucsize = max( [ max(Nodes(:,1))-min(Nodes(:,1)) , ...
-                   %~ max(Nodes(:,2))-min(Nodes(:,2)) , ...
-                   %~ max(Nodes(:,3))-min(Nodes(:,3)) ] ) ; 
+ndofpnode = 6; 
 
 strucsize = strucSize(Nodes) ;
 
