@@ -1,3 +1,5 @@
+% ==============================================================================
+% --------     ONSAS: an Open Non-linear Structural Analysis System     --------
 %~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
 
 %~ This file is part of ONSAS.
@@ -15,6 +17,7 @@
 %~ You should have received a copy of the GNU General Public License
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+% ==============================================================================
 
 % ==============================================================================
 % -------------------------------    Main GUI    -------------------------------
@@ -25,6 +28,7 @@ function onsasGUI
   
   addpath([pwd '/sources/'])
   addpath([pwd '/sourcesGUI/'])
+  
   % Geometrical properties
   GUIgeometry
   
@@ -475,7 +479,7 @@ function uitables(src, eventdata, fig)
 		handles.matMatrixAux(1:m,:) = handles.matMatrix ;
 		set(handles.matTable, 'data', handles.matMatrixAux)
 		set(handles.matTable, 'visible', 'on')
-		guidata(fig, handles);
+		
 		set(handles.matTable, 'celleditcallback', {@uiTableEdit, fig, a})
 		set(handles.secTable	, 'visible', 'off') 
 		set(handles.loadsTable, 'visible', 'off')
