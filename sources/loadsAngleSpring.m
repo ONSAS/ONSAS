@@ -6,15 +6,16 @@ n=40;
 ts = linspace(0,pi,n)' ;
 
 indselim = unique( round( rand(round(0.5*n),1)*(n*.95) + 1 ) )
-ts (indselim) = [];
+%~ ts (indselim) = [];
 
 
-Rx = 2;
+Rx = 4;
 Ry = 2;
 %~ xs = linspace(0,1,n)';
 %~ ys = xs.^2 ;
 xs = Rx*cos(ts);
 ys = Ry*sin(ts);
+zs = ts*0;
 
 
 EI  =1 ;
@@ -70,9 +71,11 @@ end
 
 
 figure
-plot(xs,ys,'o-g')
+%~ plot(xs,ys,'o-g')
+plot3(xs,ys,zs,'o-g')
 hold on
-quiver(xs,ys,fextAngSpr(1:6:end),fextAngSpr(3:6:end),'o-r')
+%~ quiver(xs,ys,zs,fextAngSpr(1:6:end),fextAngSpr(3:6:end),fextAngSpr(3:6:end),'o-r')
+quiver3(xs,ys,zs,fextAngSpr(1:6:end),fextAngSpr(3:6:end),fextAngSpr(3:6:end),'o-r')
 axis equal
 
 figure
