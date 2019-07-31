@@ -25,7 +25,7 @@ function ...
 % inputs ---
   % constant data
   Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat, ...
-  numericalMethodParams, constantFext, variableFext, KS, userLoadsFilename , ...
+  numericalMethodParams, constantFext, variableFext, KS, userLoadsFilename , bendStiff, ...
   % model variable data
   Uk, Stressk, Strainsk, dsigdepsk, FintGk, currLoadFactor, nextLoadFactor, ...
   % specific iterative methods variables 
@@ -48,8 +48,9 @@ function ...
     incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
         = extractMethodParams( numericalMethodParams ) ;
 
+
   % current stiffness matrix for buckling analysis
-  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2 ) ;
+  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
   % --------------------------------------------------------------------
   % --------------------------------------------------------------------
   
@@ -60,7 +61,7 @@ function ...
     dispIter += 1 ;
 
     % system matrix
-    systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod);
+    systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
     
     % system rhs
     [systemDeltauRHS, FextG]    = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
@@ -73,7 +74,7 @@ function ...
     if solutionMethod == 2
       currDeltau      = currDeltau    + deltaured ;
     end
-    [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,1 ) ;
+    [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
     % check convergence
     [booleanConverged,stopCritPar] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
@@ -81,7 +82,7 @@ function ...
   end
 
   % computes KTred at converged Uk
-  [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2 ) ;
+  [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
 
   if solutionMethod == 2;    
@@ -91,7 +92,7 @@ function ...
 
   factor_crit = 0;
 
-  [FintGk, ~, Strainsk, Stressk, Dsigdeps ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,1 ) ;
+  [FintGk, ~, Strainsk, Stressk, Dsigdeps ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
   [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor ) ;
 
@@ -101,10 +102,10 @@ function ...
 
 % ======================================================================
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod)
+function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod , bendStiff)
 
   % computes static tangent matrix
-  [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2 ) ;
+  [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
   % performs one iteration
   if solutionMethod == 1 || solutionMethod == 2

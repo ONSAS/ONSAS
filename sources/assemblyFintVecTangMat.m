@@ -18,7 +18,7 @@
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [FintGt, KT, StrainVec, StressVec, DsigdepsVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut,paramOut )
+function [FintGt, KT, StrainVec, StressVec, DsigdepsVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
 
 ndofpnode = 6;
 nelems = size(Conec,1);
@@ -102,4 +102,14 @@ end
 
 KT  = KT  + KS ;
 FintGt = FintGt + KS*Ut ;
+
+if length(bendStiff) >0
+
+  %~ fextAngSpr = loadsAngleSpring( Nodes, Conec, bendStiff )
+
+  %~ KT     += ;
+  FintGt += fextAngSpr ;
+
+end
+
 % ------------------------------------
