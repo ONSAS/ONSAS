@@ -60,10 +60,3 @@ linearDeformedScaleFactor = 1e5;
 
 % analytical solution 
 analyticSolFlag = 0 ;
-G  = E / ( 2*(1+nu) )               ;
-analytSol = [ -3.43990/(E*Iy)*Fz ]' ;
-analyticSolDofs = [ 7 ]' ;
-  %~ -1.90385
-   %~ 0.93930
-analyticCheckTolerance = 1e-4 ;  
-% --------------------------------------------------------------------------------------------------
