@@ -114,7 +114,7 @@ stopCritPar = 0;
 loadFactors( timeIndex,1) = currLoadFactor ;
 controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
-[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut ,1 ) ;
+[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
 
 factorCrit = 0 ;
 factor_crit = 0 ;

@@ -98,6 +98,10 @@ if exist( 'plotsViewAxis' ) == 0
   plotsViewAxis = [] ;
 end
 
+if exist( 'bendStiff' ) == 0
+  bendStiff = [] ;
+end
+
 if exist( 'Nodes' ) == 0
   error('The Nodes matrix was not defined.') ;
 end
