@@ -89,9 +89,9 @@ matNts = [ matNts currentNormalForces ] ;
 itersPerTimeVec( timeIndex )    = auxIO.itersPerTime ;
 
 if dynamicAnalysisBoolean == 0
-  factor_crit = modelCurrState.factorCrit ;
-  nKeigneg = modelCurrState.nKeigneg ;
-  nKeigpos= modelCurrState.nKeigpos;
+  factor_crit = modelNextState.factorCrit ;
+  nKeigneg = modelNextState.nKeigneg ;
+  nKeigpos= modelNextState.nKeigpos;
 else
   factor_crit = 0 ;
   nKeigneg = 0 ;
@@ -100,6 +100,7 @@ end
 tStores = toc ;
 printsOutputScreen
 
+factor_crit
 
 % ---------------       evals stop time incr crit          ---------------------
 if dynamicAnalysisBoolean == 1
@@ -107,7 +108,7 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if (nextLoadFactor > targetLoadFactr) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  if ( nextLoadFactor > targetLoadFactr ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end
