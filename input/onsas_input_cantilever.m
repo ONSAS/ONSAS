@@ -25,7 +25,6 @@ secGeomProps = [ byL*bzL   Iyy   Izz   1 ] ;
 
 nelems = 5 ;
 
-%~ Nodes = [  zeros(nelems+1,2) linspace(0,l,nelems+1)' ] ;
 Nodes = [  linspace(0,l,nelems+1)' zeros(nelems+1,2) ] ;
 
 % in global system of coordinates
@@ -33,20 +32,18 @@ nodalSprings = [ 1  inf  inf  inf  inf  inf  inf ] ;
 
 Conec = [ (1:(nelems))' (2:(nelems+1))' zeros(nelems,2) ones(nelems,2) 2*ones(nelems,1) ] ;
 
-%~ nodalVariableLoads   = [ nelems+1  0 0 0 1e-5 -1 0 ] ;
-nodalVariableLoads   = [ nelems+1  -1 0   0 0   0 1e-5 ] ;
+nodalVariableLoads   = [ nelems+1  -1 0   0 0   0 1e-2 ] ;
 
 % analysis parameters
 nonLinearAnalysisBoolean = 1 ; 
 dynamicAnalysisBoolean   = 0 ; 
 
 % [ node nodaldof scalefactor(positive or negative) ]
-%~ controlDofInfo = [ 2 1 1 ] ;
 controlDofInfo = [ nelems+1 3 1 ] ;
 
 printflag = 2 ;
 
-plotParamsVector = [2 10 ];
+plotParamsVector = [2 4  ];
 %~ plotParamsVector = [2 50];
 
 sectPar = [ 12 byL bzL ];
@@ -61,10 +58,10 @@ Pcr = min( [ E * pi^2 * Iyy / ( 2*l)^2, E * pi^2 * Izz / ( 2*l)^2 ] ) ;
 stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-8 ;
 stopTolForces    = 1.0e-8 ;
-%~ targetLoadFactr  = Pcr*1.5    ;
-%~ nLoadSteps       = 150    ;
-targetLoadFactr  = Pcr*0.5    ;
-nLoadSteps       = 2    ;
+targetLoadFactr  = Pcr*1.2    ;
+nLoadSteps       = 360    ;
+%~ targetLoadFactr  = Pcr*0.5    ;
+%~ nLoadSteps       = 20    ;
 incremArcLen     = 0.2e-3    ;
 
 %~ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...

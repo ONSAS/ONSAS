@@ -100,8 +100,6 @@ end
 tStores = toc ;
 printsOutputScreen
 
-factor_crit
-
 % ---------------       evals stop time incr crit          ---------------------
 if dynamicAnalysisBoolean == 1
   if ( timeIndex > nLoadSteps ) || ( abs( currTime - finalTime) < (deltaT*1e-10))
