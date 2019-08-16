@@ -20,17 +20,17 @@
 
 
 % auxiliar numerical data
-Es = 100 ;
-A  = 1 ;
+Es = 200e9 ;
+b = .1 ;
+A  = b*b ;
 l0 = 2 ;
 
-rhoprob =  1    ;
-ceda    =  0.02 ;
+rhoprob =  8    ; % kg/m3
 nu      =  0    ;
 
 % method
 timeIncr   =  0.01    ;
-finalTime  =  2       ;
+finalTime  =  5       ;
 nLoadSteps = finalTime/timeIncr ;
 
 DeltaNW    =  0.5               ;
@@ -92,8 +92,10 @@ udot0= 0;
 
 numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
-plotParamsVector = [2 5 ];
+plotParamsVector = [3 101];
 printflag = 2 ;
+
+sectPar = [ 12 b b ] ;
 
 analyticSolFlag = 0 ;
 % ------------------------------------------------
