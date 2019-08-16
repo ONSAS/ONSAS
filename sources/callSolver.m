@@ -79,7 +79,7 @@ else
     FextGtred         = FextGt(neumdofs)                              ;
   
     FintGt            = assemblyFintVecTangMat( Conec, secGeomProps, ...
-                                      coordsElemsMat, hyperElasParamsMat, KS, Ut,1 ); %el ultimo 1 saca la fuerza
+                                      coordsElemsMat, hyperElasParamsMat, KS, Ut,[], 1 ); %el ultimo 1 saca la fuerza
                                              
     FintGtred         = FintGt(neumdofs)                              ;
   

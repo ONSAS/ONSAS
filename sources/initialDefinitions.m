@@ -57,6 +57,7 @@ factorescriticos = [] ;
 
 % create velocity and displacements vectors
 Ut      = zeros( ndofpnode*nnodes,   1 ) ;  
+Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
 if exist( 'nonHomogeneousInitialCondU0') ~=0
@@ -70,7 +71,6 @@ end
 
 if exist( 'nonHomogeneousInitialCondUdot0') ~=0 
   if dynamicAnalysisBoolean == 1
-    Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
     for i=1:size(nonHomogeneousInitialCondUdot0,1)
        dofsdot= nodes2dofs(nonHomogeneousInitialCondUdot0(i,1),ndofpnode);
        Udott( dofsdot (nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
