@@ -51,7 +51,7 @@ else
 end
 
 Uk          = Ut ;
-[FintGt]    = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut,1  ) ;%  el 1 es por la fuerza
+[FintGt]    = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut,[], 1  ) ;%  el 1 es por la fuerza
 FextGtp1    = variableFext * nextLoadFactor + constantFext  + FextUser                                     ;
 FextGtp1red = FextGtp1(neumdofs)                                                                           ;                                                          
 
@@ -68,7 +68,7 @@ while ( iterDispConverged == 0 )
   dispIter += 1;
   
   % computes tangent matrix
-[~, KT]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,2  ) ;                                                          
+[~, KT]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,[], 2  ) ;                                                          
   %VALSKT= mean (abs(diag (eig(KT)))
 
   %computes deltau and rfresh Ut
@@ -84,7 +84,7 @@ while ( iterDispConverged == 0 )
   normaUk     = norm( Uk(neumdofs ) ) ;                                                                             
 
   % updates model variables and computes internal, hat and inertial forces
-  [FintGk, ~, Strainsk, Stressk ]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,1  ); %1 para sacar la fuerza
+  [FintGk, ~, Strainsk, Stressk ]  = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk,[], 1  ); %1 para sacar la fuerza
   
   Fine      =  full( massMat(neumdofs,neumdofs) * ...
               ( a0NW * ( Uk(neumdofs) - Ut(neumdofs) )  - a2NW * Udott(neumdofs) - a3NW * Udotdott(neumdofs)  ) ) ;
