@@ -1,4 +1,4 @@
-%function for iteration of Newton-Raphson or Newton-Raphson-Arc-Length.
+% function for iteration of Newton-Raphson or Newton-Raphson-Arc-Length.
 
 %~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
 
@@ -94,14 +94,23 @@ function ...
 
   [FintGk, ~, Strainsk, Stressk, Dsigdeps ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
-  [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor ) ;
+  [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;
 
   % -----------------------------------
 
 
 
+
+
 % ======================================================================
 % ======================================================================
+
+
+
+
+
+% ======================================================================
+
 function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod , bendStiff)
 
   % computes static tangent matrix
@@ -115,7 +124,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
     
 
 % ======================================================================
-% ======================================================================
+
 function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk) 
 
   if strcmp( userLoadsFilename , '')
@@ -150,7 +159,7 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
 
 
 % ======================================================================
-% ======================================================================
+
 function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, numericalMethodParams, currLoadFactor, currDeltau  )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
@@ -201,9 +210,10 @@ function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, syste
 
 
 % ======================================================================
-% ======================================================================
+
 % --- nonlinear buckling analysis as in section 6.8.2 from Bathe, FEM Procedures 2nd edition. ---
-function [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor );  
+
+function [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor, nextLoadFactor );  
 
   [a,b] = eig( KTtred ) ;
   Keigvals = diag(b) ; 
@@ -214,15 +224,16 @@ function [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1red, KTtr
   
   gammas = diag( gammas);
  
-  if length( find( gammas >  0 ) ) > 0
-    gamma_crit = min ( gammas ( find( gammas >  0 ) ) ) ;
-    lambda_crit  = 1 / ( 1 - gamma_crit ) ;
-    factor_crit = lambda_crit * currLoadFactor ;
+  if length( find( gammas >  0 ) ) > 0,
+  
+    gamma_crit  = min ( gammas ( find( gammas >  0 ) ) ) 
+    lambda_crit = 1 / ( 1 - gamma_crit )                 
+    
+    factor_crit = currLoadFactor + lambda_crit * (nextLoadFactor - currLoadFactor) ;
 
   else
     factor_crit = 0;
   end
-
 
 
 
