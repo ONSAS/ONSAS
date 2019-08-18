@@ -19,19 +19,25 @@ l1 = 1 ;
 
 Nodes = [   0  0   0 ; ...
            l1  0   0 ; ... 
-         2*l1  0   0 ] ;
+         2*l1  0   0 ; ... 
+         3*l1  0   0 ] ;
 
-kz2 = .1;
+kz2 = 0;
 
 nodalSprings = [ 1  inf  inf  inf  inf  inf  inf ; ...
                  2    0  inf  inf  inf  kz2  inf ; ...
-                 3    0  inf  inf  inf  inf  inf ] ;
+                 3    0  inf  inf  inf  kz2  inf ; ...
+                 4    0  inf  inf  inf  inf  inf ] ;
 
 Conec = [ 1 2 0 0 1 1 1 ; ...
-          2 3 0 0 1 1 1 ] ;
+          2 3 0 0 1 1 1 ; ...
+          3 4 0 0 1 1 1 ] ;
 
 nodalVariableLoads   = [ 2  0 0 0 0 -P 0 ] ;
+nodalConstantLoads   = [ 4  .1 0 0 0 0 0 ] ;
 
+
+bendStiff = [ 0 1 1 0 ] ;
 
 % analysis parameters
 nonLinearAnalysisBoolean = 1 ; 

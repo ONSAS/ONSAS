@@ -100,16 +100,45 @@ for elem = 1:nelems
   end
 end
 
-KT  = KT  + KS ;
+KT     = KT  + KS ;
 FintGt = FintGt + KS*Ut ;
 
 if length(bendStiff) >0
 
-  %~ fextAngSpr = loadsAngleSpring( Nodes, Conec, bendStiff )
+%~ coordsElemsMat
+%~ dispsElemsMat
 
-  %~ KT     += ;
-  FintGt += fextAngSpr ;
+%~ pause
+Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) 
+
+[ fextAngSpr, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
+
+%~ fextAngSpr
+%~ full(KTAngSpr)
+%~ pause(3)
+
+%~ fextAngSpr = KTAngSpr*Ut ;
+norm(fextAngSpr)
+pause(1)
+  KT     += KTAngSpr   ;
+  FintGt += -fextAngSpr ;
 
 end
 
 % ------------------------------------
+
+
+
+function nodesmat = conv ( conec, coordsElemsMat ) 
+
+
+nodesmat = [] ;
+nodesread = [] ;
+
+for i=1:size(conec,1)
+  for j=1:2
+    if length( find( nodesread == conec(i,j) ) ) == 0
+      nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
+    end
+  end
+end

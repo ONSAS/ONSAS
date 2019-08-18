@@ -226,11 +226,13 @@ function [ factor_crit, nKeigpos, nKeigneg] = stabilityAnalysis ( KTtm1red, KTtr
  
   if length( find( gammas >  0 ) ) > 0,
   
-    gamma_crit  = min ( gammas ( find( gammas >  0 ) ) ) 
-    lambda_crit = 1 / ( 1 - gamma_crit )                 
-    
-    factor_crit = currLoadFactor + lambda_crit * (nextLoadFactor - currLoadFactor) ;
-
+    gamma_crit  = min ( gammas ( find( gammas >  0 ) ) ) ;
+    if gamma_crit ~= 1 
+      lambda_crit = 1 / ( 1 - gamma_crit )  ;               
+      factor_crit = currLoadFactor + lambda_crit * (nextLoadFactor - currLoadFactor) ;
+    else
+      factor_crit = 0 ;
+    end
   else
     factor_crit = 0;
   end
