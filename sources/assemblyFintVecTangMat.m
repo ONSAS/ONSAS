@@ -117,11 +117,11 @@ Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat )
 %~ full(KTAngSpr)
 %~ pause(3)
 
-%~ fextAngSpr = KTAngSpr*Ut ;
-norm(fextAngSpr)
-pause(1)
+fextAngSpr = KTAngSpr*Ut ;
+%~ norm(fextAngSpr)
+%~ pause(.2)
   KT     += KTAngSpr   ;
-  FintGt += -fextAngSpr ;
+  FintGt += fextAngSpr ;
 
 end
 
