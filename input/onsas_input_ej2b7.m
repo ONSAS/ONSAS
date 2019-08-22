@@ -45,14 +45,20 @@ LBAAnalyFlag             = 0 ;
 stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-5 ;  stopTolForces  = 1.0e-8 ;
 %~ targetLoadFactr = 8e4 ;  nLoadSteps     = 200    ;
-targetLoadFactr = kres*auxx/3*1.1 ;  nLoadSteps     = 200    ;
-incremArcLen     = .01    ;
+
+%~ targetLoadFactr = kres*auxx/3*1.1 ;  nLoadSteps     = 200    ;
+%~ incremArcLen     = .01    ;
+
+targetLoadFactr = kres*auxx/3*1.1*15 ;  nLoadSteps     = 5000    ;
+incremArcLen     = .05    ;
 
 
 %~ plotParamsVector = [ 2  4 ];
-plotParamsVector = [ 3 ];
+plotParamsVector = [ 3 100 ];
 plotsViewAxis = [ 0 -1 0] ;
 printflag = 0 ;
+
+sectPar = [ 12 10 10] ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps  incremArcLen] ; 
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps  ] ; 
