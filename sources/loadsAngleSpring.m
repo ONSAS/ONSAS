@@ -4,8 +4,8 @@ function [ fextAngSpr, KTAngSprAppr] = loadsAngleSpring( Nodes, Conec, bendStiff
 
 n = size(Nodes,1);
 
-fextAngSpr   = zeros( 6*n,1);
-KTAngSprAppr = sparse( 6*n,6*n);
+fextAngSpr   = zeros ( 6*n,   1);
+KTAngSprAppr = sparse( 6*n, 6*n);
 
 for i = 1:n
   %
@@ -38,11 +38,8 @@ for i = 1:n
       Fip1i = -dtds *  EI  / norm( cross( tip1, dtds) )  ;
 
 
-
       aux3 = nodes2dofs( [indxim1 indxi indxip1] ,6) ;
       Avec = -EI /  ( lip1/2 + li/2 )^3 * [ 1 -2 1 ];
-
-
 
       % node im1      
       aux = nodes2dofs( indxim1,6) ;

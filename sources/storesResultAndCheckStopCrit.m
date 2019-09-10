@@ -18,6 +18,8 @@
 
 %script for updating and storing variables at each time increment. In this script the dispsElemesMat is also created, with the displacements of all nodes, including rotation of releases. In this script the analysis stopping criteria is checked.
 
+tic ;
+
 if dynamicAnalysisBoolean == 0
   deltaT    = targetLoadFactr/nLoadSteps ;
   finalTime = targetLoadFactr ;
