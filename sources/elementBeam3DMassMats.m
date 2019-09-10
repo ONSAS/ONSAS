@@ -22,9 +22,10 @@ function [ Me ] = elementBeam3DMassMats( Xe, rho, A,deltamassMat )
   localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
 
-  %~ Me = sparse( 12, 12 ) ;
-  %~ Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
-  %~ Me (2:2:end, 2:2:end) = rho * A * lini * 0.5 * eye(6)*deltamassMat ;
+
+  Me = sparse( 12, 12 ) ;
+  Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * speye(6) ;
+  Me (2:2:end, 2:2:end) = rho * A * lini * 0.5 * speye(6)*deltamassMat ;
 
 
   Me = sparse( 12, 12 ) ;
