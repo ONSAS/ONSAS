@@ -20,34 +20,63 @@
 function [ KTe, KL0e ] = elementTruss3DTangentMats( ...
   Xe, Ue, hyperelasparams, A )
 
-  Xe ;
-  localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
-  lini = sqrt( sum( localAxisRef.^2 ) ) ;
-
-  e1ref = localAxisRef / lini ;
+  booleanAnalytical = 1 ;
   
-  Xedef = Xe + Ue ;
-  localAxisDef = ( Xedef( [(1:2:5)+6] ) - Xedef( [(1:2:5)]) )' ;
-  ldef = sqrt( sum( localAxisDef.^2 ) ) ;
+  if booleanAnalytical
+    Xe ;
+    localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
+    lini = sqrt( sum( localAxisRef.^2 ) ) ;
   
-  e1def = localAxisDef / ldef ;
-
-  strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
-
-  [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
-
-  B = zeros( 12,3) ;
-  B(1:2:5     , :) = -eye(3);
-  B([1:2:5]+6 , :) = +eye(3);
-
-  TTcl = B * e1def;
-
-  KMe = dstressdeps * A / lini * ( TTcl * TTcl' ) ;
+    e1ref = localAxisRef / lini ;
+    
+    Xedef = Xe + Ue ;
+    localAxisDef = ( Xedef( [(1:2:5)+6] ) - Xedef( [(1:2:5)]) )' ;
+    ldef = sqrt( sum( localAxisDef.^2 ) ) ;
+    
+    e1def = localAxisDef / ldef ;
   
-  Ksige = A * stress / (ldef) * ( B * B' - TTcl * (TTcl')  ) ;
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
+  
+    [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
+  
+    B = zeros( 12,3) ;
+    B(1:2:5     , :) = -eye(3);
+    B([1:2:5]+6 , :) = +eye(3);
+  
+    TTcl = B * e1def;
+  
+    KMe = dstressdeps * A / lini * ( TTcl * TTcl' ) ;
+    
+    Ksige = A * stress / (ldef) * ( B * B' - TTcl * (TTcl')  ) ;
+  
+    KTe = KMe + Ksige ;
+  
+    TrefTcl = B * e1ref;
+    [ ~, dstressdeps0  ] = hyperElasModels ( +eps, hyperelasparams ) ;
+    KL0e = dstressdeps0 * A / lini * ( TrefTcl * TrefTcl' ) ;
 
-  KTe = KMe + Ksige ;
 
-  TrefTcl = B * e1ref;
-  [ ~, dstressdeps0  ] = hyperElasModels ( +eps, hyperelasparams ) ;
-  KL0e = dstressdeps0 * A / lini * ( TrefTcl * TrefTcl' ) ;
+
+
+
+  else
+    %
+    KTe = zeros(12,12) ;
+
+    %~ FinteU = elementTruss3DInternLoads( Xe, Ue, hyperelasparams, A );
+    step = 1e-10;
+    
+    for i=1:2:12
+      ei = zeros(12,1);
+      ei(i) = j ;
+      
+      FinteComp = elementTruss3DInternLoads( Xe, Ue + ei*step , hyperelasparams, A );
+      
+      KTe(i,:) = imag( FinteComp ) / step;
+      %~ pause
+    end
+    
+    KL0e = [];
+    %~ KTe
+    %~ stop
+  end

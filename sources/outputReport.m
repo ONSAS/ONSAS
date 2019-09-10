@@ -26,6 +26,7 @@ fileReport = fopen( [ outputdir  problemName '_Report.tex' ] ,'w') ;
 fprintf(fileReport, [ '\\documentclass[a4paper,10pt]{article} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage[a4paper,margin=20mm]{geometry} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{longtable} \n'] ) ;
+fprintf(fileReport, [ '\\usepackage{float} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{adjustbox} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{graphicx} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{color} \n'] ) ;
@@ -92,6 +93,7 @@ for i = 1:size(nodalSprings,1)
 end
 fprintf(fileReport, '%s', fin ) ;
 
+fprintf(fileReport, [ '\\subsubsection{Elements data} \n\n'] ) ;
 % Elements
 fprintf(fileReport, [ 'The number and type of elements are listed below. \n\n'] ) ;
 
@@ -104,6 +106,8 @@ fprintf(fileReport, [ 'Number of plate elements & %i \\\\ \n' ], nplate ) ;
 fprintf(fileReport, [ 'Number of tetrahedron elements & %i \n' ], ntet ) ;
 fprintf(fileReport, '%s', fin ) ;
 
+fprintf(fileReport, [ '\\clearpage\n\n']) ;
+
 % Materials
 numberMaterials = size( hyperElasParams, 1 ) ;
 formatMaterial = '%12.3e' ;
@@ -111,23 +115,22 @@ formatMaterial = '%12.3e' ;
 fprintf(fileReport, [ '\\subsection{Material properties} \n\n'] ) ;
 fprintf(fileReport, [ 'The mechanical properties and the constitutive model of the defined materials are listed in the corresponding tables below. The number of defined materials is: %i. \\\\ \n\n'], numberMaterials ) ;
 
-
-
 [enc, fin] = tablesFunc( 'Parameter & Value', 2, 'c|c', 'Constitutive parameters of the material.') ;
-
 vecMat = [ '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' ] ; 
 vecVal = [] ;
-
 for i = 1:numberMaterials
+	Et 	= hyperElasParams{i}(2) ;
+  rho = hyperElasParams{i}(end) ;
   if hyperElasParams{i}(1) == 1
-    Et = hyperElasParams{i}(2) ; nu = hyperElasParams{i}(3) ; Ec = Et ; G = Et/(2*(1+nu)) ; Prestrain = 0 ;
+    nu = hyperElasParams{i}(3) ; Ec = Et ; G = Et/(2*(1+nu)) ; Prestrain = 0 ;
   elseif hyperElasParams{i}(1) == 2
-    Et = hyperElasParams{i}(2) ; Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = 0 ;
+    Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = 0 ;
   else
-    Et = hyperElasParams{i}(2) ; Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = hyperElasParams{i}(4) ;
+    Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = hyperElasParams{i}(4) ;
   end
+  
   vecVal = [ Et, Ec, nu, G, rho, Prestrain ] ;
-  fprintf(fileReport, [ '\\textbf{Material %i}: material parameters presented in table.'], i ) ;
+  fprintf(fileReport, [ '\\textbf{Material %i}: material parameters are presented in the table.\n'], i ) ;
   fprintf(fileReport, '%s', enc ) ;
   for j = 1:size(vecMat,1)
     fprintf(fileReport, ['%s & ' formatMaterial ], vecMat(j,:), vecVal(j) );
@@ -136,24 +139,17 @@ for i = 1:numberMaterials
   fprintf(fileReport, '%s', fin ) ;
 end
 
-
-
 % Sections
-
 numberSections  = size( secGeomProps, 1 ) ;
 formatSections = '%12.3e' ;
 
-fprintf(fileReport, [ '\\subsection{Sections}\n\n'] ) ;
+fprintf(fileReport, [ '\\subsection{Sections properties}\n\n'] ) ;
 fprintf(fileReport, [ 'The geometrical properties of the defined sections are listed below. The number of defined sections is: %i. \\\\ \n\n'], numberSections ) ;
 
-
 [enc, fin] = tablesFunc( 'Geometrical property & Value ', 3, 'c|c', 'Geometrical properties of the section.') ;
-
 vecSec = [ '$A$' ; '$I_y$' ; '$I_z$' ; '$J$' ] ;
-
-
 for i = 1:numberSections
-  fprintf(fileReport, [ '\\textbf{Section %i}: geometry parameters presented in table.'], i ) ;
+  fprintf(fileReport, [ '\\textbf{Section %i}: geometry parameters are presented in the table.\n'], i ) ;
   fprintf(fileReport, '%s', enc ) ;
   for j = 1:size(vecSec,1)
     fprintf(fileReport, ['%s & ' formatSections ], vecSec(j,:), secGeomProps(i,j) );
@@ -163,7 +159,6 @@ for i = 1:numberSections
 end
 
 % Load Cases
-
 fprintf(fileReport, [ '\\subsection{Load Cases}\n\n'] ) ;
 fprintf(fileReport, [ 'The load cases considered in the problem are listed in the table below. \n\n'] ) ;
 
@@ -178,7 +173,7 @@ if selfWeightBoolean
 else
   selfWeightText = 'no' ;  
 end
-	 
+
 if norm(variableFext) > 0
 	variable = 'yes' ;
 	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
@@ -217,17 +212,16 @@ fprintf(fileReport, [ '$\\lambda_{max}$ & %12.3e \\\\ \n' ], lambdamax ) ;
 if dynamicAnalysisBoolean == 1
 	fprintf(fileReport, [ 'Dynamic Func & %s \\\\ \n' ], dynamicFunc ) ;
 end
-%~ if length(userLoadsFilename) > 0
-	fprintf(fileReport, [ 'User Loads Func & %s\\\\ \n' ], userLoads ) ;
-%~ end	
-fprintf(fileReport, [ '\\end{tabular}\n\\caption{Load cases definition.}\n\\end{table}' ] ) ;
+fprintf(fileReport, [ 'User Loads Func & %s\\\\ \n' ], userLoads ) ;
+fprintf(fileReport, [ '\\end{tabular}\n\\caption{Load cases definition.}\n\\end{table}\n' ] ) ;
 
-
-fprintf(fileReport, [ '\\newpage' ] ) ;
+fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
 % ==============================================================================
 % --------------------------    Analysis Output    -----------------------------
 
 fprintf(fileReport, [ '\\section{Analysis Output}\n\n'] ) ;
+
+fprintf(fileReport, [ '\\subsection{General parameters}\n\n'] ) ;
 
 % Prints numerical methods and analysis parameters
 
@@ -294,13 +288,11 @@ else
   fprintf(fileReport, [ 'Number of negative eigenvalues: %3i'], valProp ) ;
 end 
 
-
 [enc1,fin1] = tablesFunc( 'Optional parameters & Status', 2, 'c|c', 'Analysis optional parameters status.' ) ;
 [enc2,~] = tablesFunc( 'Node & Dof & Value', 3, 'c|c|c', 'Optional parameters values.' ) ;
 if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
   fprintf(fileReport, '%s', enc1 ) ;
   fprintf(fileReport, [ 'Non homogeneous initial cond. $u_0$ & %s  \\\\ \n' ], initialCondU0 ) ;
-  
   if dynamicAnalysisBoolean == 1
     fprintf(fileReport, [ 'Non homogeneous initial cond. $\\dot{u_0}$ & %s \\\\ \n' ], initialCondUdot0 ) ;
 		fprintf(fileReport, [ 'Nodal damping $C$ & %8.2e' ], nodalDamping ) ;
@@ -349,21 +341,82 @@ if length(numericalMethodParams) > 0
   fprintf(fileReport, '%s', fin ) ;
 end
 
+% Time report
+fprintf(fileReport, [ '\\subsection{Time performance}\n\n'] ) ;
+%
+fprintf(fileReport, [ '\\textbf{Reading and variables definition/verification}\n'] ) ;
+[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Reading and variables definition/verification time performance.') ;
+fprintf(fileReport, '%s', enc )
+fprintf(fileReport, [ 'Reading input file: & %5.3e \\\\ \n'], tReadingInput) ;
+fprintf(fileReport, [ 'Variables verification: & %5.3e \\\\ \n'], tVarVer) ;
+fprintf(fileReport, [ 'Input auxiliar definitions: & %5.3e \\\\ \n'], tInputAuxDefs) ;
+fprintf(fileReport, [ '\\midrule\n'])
+fprintf(fileReport, [ 'Total elapsed time in reading and verification: & %5.3e \\\\ \n'], tReadingInput+tVarVer+tInputAuxDefs) ;
+fprintf(fileReport, '%s', fin )
+%
+fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
+if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Analysis time spent.') ;
+	fprintf(fileReport, '%s', enc )
+	fprintf(fileReport, [ 'Geometry computation: & %5.3e \\\\ \n'], tGeomReading) ;
+	fprintf(fileReport, [ 'Stiffness matrix assembly: & %5.3e \\\\ \n'], tStiffMatrix) ;
+	fprintf(fileReport, [ 'Loads assembly: & %5.3e \\\\ \n'], tLoadsAssembly) ;
+	fprintf(fileReport, [ 'System resolution: & %5.3e \\\\ \n'], tSystemResolution) ;
+	fprintf(fileReport, [ 'Elems. disps and solic.: & %5.3e \\\\ \n'], tSolicDisps) ;
+	fprintf(fileReport, [ '\\midrule\n'])
+	fprintf(fileReport, [ 'Total elapsed time in analysis: & %5.3e \\\\ \n'], tGeomReading+tStiffMatrix+tLoadsAssembly+tSystemResolution+tSolicDisps) ;
+	fprintf(fileReport, '%s', fin )
+else
+	fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+  fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] )
+  fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;  
+  fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
+end	
+
+%
+if plotParamsVector(1)>0
+	fprintf(fileReport, [ '\\textbf{Plots}\n'] ) ;
+	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Plots time spent.') ;
+	fprintf(fileReport, '%s', enc )
+	if plotParamsVector(1) < 3
+		fprintf(fileReport, [ 'Deformed shape: & %5.3f \\\\ \n'], tDefShape) ;
+		fprintf(fileReport, [ 'Normal force: & %5.3f \\\\ \n'], tNormalForce) ;
+		if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
+			fprintf(fileReport, [ 'Load factor vs control disp:: & %5.3f \\\\ \n'], tLoadFac) ;
+		end
+	else
+		fprintf(fileReport, [ 'VTK ConecNodes function: & %5.3f \\\\ \n'], tVtkConecNodes) ;
+		fprintf(fileReport, [ 'VTK writer: & %5.3f \\\\ \n'], tVtkWriter) ;
+	end
+	if length(loadFactors)>1	
+		fprintf(fileReport, [ 'Load vs Disps.: & %5.3f \\\\ \n'], tLoadDisps) ;
+	end
+	fprintf(fileReport, [ '\\midrule\n'])
+	if plotParamsVector(1) < 3
+		fprintf(fileReport, [ 'Total elapsed time in octave plots: & %5.3f \\\\ \n'], tDefShape+tLoadFac+tNormalForce+tLoadDisps) ;
+	else
+		fprintf(fileReport, [ 'Total elapsed time in vtk plots: & %5.3f \\\\ \n'], tVtkConecNodes+tVtkWriter) ;
+	end
+end
+fprintf(fileReport, '%s', fin )
+%
 
 
-
-
+% Incremental analysis output
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
   if norm(variableFext) > 0
     % Salida de datos para caso con load cases en linear analysis
   end
 else
   fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+  
   fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] )
   fprintf(fileReport, [ '\\input{' problemName '_incrementsOutput.tex' '} \n'] ) ;  
-  fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n'] ) ;
-  fprintf(fileReport, [ '\\newpage' ] ) ;
+  fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n\n'] ) ;
+  fprintf(fileReport, [ '\\newpage \n\n' ] ) ;
 end
+
+
 
 % ==============================================================================
 % --------------------------    Plots and Tables    ----------------------------
@@ -377,64 +430,66 @@ end
 
 %-------------------------------- Deformed Shape -------------------------------
 
-%~ nTimesTotal = size( matUts, 2 ) ;
+if size(matUts,2) == 1 && size(matNts,2) == 1 
+	matUts = [zeros(size(matUts,1),1) matUts] ;
+	matNts = [zeros(size(matNts,1),1) matNts] ;
+end
 
-%~ if (length(plotParamsVector)>1)
-  %~ timesPlotsVec = round( linspace(1, nTimesTotal, plotParamsVector(2) ) ) ;
-%~ else
-  %~ timesPlotsVec = 1: size(matUts,2) ;
-%~ end
+nTimesTotal = size( matUts, 2 ) ;
 
-%~ if plotParamsVector(1) < 3 && ( printflag == 1 || printflag == 2 )
+if (length(plotParamsVector)>1)
+  timesPlotsVec = round( linspace(1, nTimesTotal, plotParamsVector(2) ) ) ;
+else
+  timesPlotsVec = 1: size(matUts,2) ;
+end
 
-  %~ fprintf(fileReport, [ '\\subsection{Plots}\n\n'] ) ;
+if plotParamsVector(1) < 3 && ( printflag == 1 || printflag == 2 )
+  fprintf(fileReport, [ '\\subsection{Plots}\n\n'] ) ;
   %~ fprintf(fileReport, [ 'The deformed shape of the structure is plotted in Octave as shown below. \n'] ) ;
+  fprintf(fileReport, [ '\\subsubsection{Deformed Shape}\n\n'] ) ;
+
+	if printflag > 0
+		fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
+		if printflag == 1  
+			fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
+		elseif printflag == 2  
+			fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
+		end
+		if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+			if norm(variableFext) == 0
+				fprintf(fileReport, [ '\\caption{Deformed structure. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'] )
+			else
+				fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+			end
+		else	
+			fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+		end
+		fprintf(fileReport,  '\\end{figure} \n\n' )
+	end
+	
+  fprintf(fileReport, [ '\\subsubsection{Normal Force}\n\n'] ) ;
   
-  %~ fprintf(fileReport, [ '\\subsubsection{Deformed Shape}\n\n'] ) ;
-
-  %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-    %~ if norm(variableFext) == 0
-      %~ if printflag > 0
-        %~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-        %~ if printflag == 1  
-          %~ fprintf(fileReport, [ '\\resizebox{.95\\linewidth}{!}{\\input{' problemName '_deform.tex}} \n ' ] ) ;
-        %~ elseif printflag == 2  
-          %~ fprintf(fileReport, [ '\\includegraphics[width =0.7\\textwidth]{' problemName '_deform}\n']) ;
-        %~ end
-        %~ fprintf(fileReport, [ '\\caption{Deformed structure. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'] )
-        %~ fprintf(fileReport,  '\\end{figure} \n\n' )
-      %~ end
-    %~ else
-      %~ if printflag > 0
-        %~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-        %~ if printflag == 1  
-          %~ fprintf(fileReport, [ '\\resizebox{.95\\linewidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-        %~ elseif printflag == 2  
-          %~ fprintf(fileReport, [ '\\includegraphics[width =0.7\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
-        %~ end
-        %~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'], timeIndex, currTime, currLoadFactor )
-        %~ fprintf(fileReport,  '\\end{figure} \n\n' )
-      %~ end    
-    %~ end
-  %~ else
-    
-    %~ if printflag > 0
-      %~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-      %~ if printflag == 1  
-        %~ fprintf(fileReport, [ '\\resizebox{.95\\linewidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-      %~ elseif printflag == 2  
-        %~ fprintf(fileReport, [ '\\includegraphics[width =0.7\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
-      %~ end
-      %~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e.}\n'], timeIndex, currTime, currLoadFactor )
-      %~ fprintf(fileReport,  '\\end{figure} \n\n' )
-    %~ end
-
-  %~ end
-
-%~ end
+  if printflag > 0
+		fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
+		if printflag == 1  
+			fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
+		elseif printflag == 2  
+			fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
+		end
+		if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+			if norm(variableFext) == 0
+				fprintf(fileReport, [ '\\caption{Normal Force.}\n'] )
+			else
+				fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+			end
+		else	
+			fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+		end
+		fprintf(fileReport,  '\\end{figure} \n\n' )
+	end
+end
+fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
 %--------------------------------- Control node --------------------------------
-
-
 
 if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
   if length(loadFactors) > 1
@@ -446,9 +501,9 @@ if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
     fprintf(fileReport, '%s', fin) ;
     fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;
     if printflag == 1
-      fprintf(fileReport, [ '\\resizebox{.95\\linewidth}{!}{\\input{' problemName '_loadDisp.tex}} \n ' ] ) ;
+      fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_loadDisp.tex}} \n ' ] ) ;
     elseif printflag == 2
-      fprintf(fileReport, [ '\\includegraphics[width =0.7\\textwidth]{' problemName '_loadDisp}\n']) ;
+      fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_loadDisp}\n']) ;
     end  
     fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] )
     fprintf(fileReport,  '\\end{figure} \n\n' )
@@ -459,7 +514,6 @@ end
 
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 % PARA QUE NO ENTRE EL NONLINEAR ------------> VER COMO SACAR DATOS DE AHI
-
 
   if nplate == 0 && ntet == 0
     fprintf(fileReport, [ '\\subsection{Solicitations}\n\n'] ) ;
@@ -519,7 +573,6 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 % PARA QUE NO EN
       fprintf(fileReport, '%s', fin) ;
   end
 
-
 %---------------------------------- Reactions ----------------------------------
 
   fprintf(fileReport, [ '\\subsection{Reactions}\n\n'] ) ;																										
@@ -537,7 +590,7 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 % PARA QUE NO EN
         aux = 0 ;
         formatReaction = '%2i' ;
       else 
-        formatReaction = '%10.3e' ;																																																	
+        formatReaction = '%10.2e' ;																																																	
       end
       fprintf( fileReport, [ ' & ' formatReaction ] , aux ) ;
     end
@@ -554,8 +607,8 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 % PARA QUE NO EN
   if nbeam > 0 
     fprintf(fileReport, [ '\\subsubsection{Beam elements} \n' ] ) ;																				
 
-    fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c?cccccc?cccccc} \n'] ) 
-    fprintf(fileReport, [ ' & \\multicolumn{6}{c?}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] ) 
+    fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c|cccccc|cccccc} \n'] ) 
+    fprintf(fileReport, [ ' & \\multicolumn{6}{c|}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] ) 
     fprintf(fileReport, [ 'Elem. & ' ...
         ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ & ' ... 
         ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ \\\\ \\toprule \n'] )														
@@ -608,19 +661,28 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 % PARA QUE NO EN
     fprintf(fileReport, [ '\\input{' problemName '_tables.tex' '} \n'] ) ; 
   end	
 
-end % end if que empieza en solicitations
+else
+	if nplate == 0 && ntet == 0
+    fprintf(fileReport, [ '\\subsection{Solicitations}\n\n'] ) ;
+    fprintf(fileReport, [ 'The solicitations of the elements are presented below. \n'] ) ; 
+  end
 
-fprintf(fileReport, [ '\\newpage' ] ) ;
+	fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+  fprintf(fileReport, [ '\\begin{longtable}{ccccc} \n'] )
+  fprintf(fileReport, [ '\\input{' problemName '_incrementsNormalForceOutput.tex' '} \n'] ) ;  
+  fprintf(fileReport, [ '\\caption{Output of incremental Normal Forces analysis.}\n\\end{longtable}\n'] ) ;
+end % endif 
+
+fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
 % ==============================================================================
 % -------------------------------    Appendix    -------------------------------
 
-fprintf(fileReport, [ '\\newpage\n\n'] ) ;
 fprintf(fileReport, [ '\\section{Appendix}\n\n'] ) ;
 
 % Nodes matrix
 fprintf(fileReport, [ '\\subsection{Nodes matrix}\n\n'] ) ;
 fprintf(fileReport, [ 'The nodes matrix is presented in the table below.\n'] ) ;
-fprintf(fileReport, [ '\\begin{longtable}{c?c|c|c|c|c|c}\n\\centering\n' ] ) ;
+fprintf(fileReport, [ '\\begin{longtable}{c|c|c|c|c|c|c}\n\\centering\n' ] ) ;
 fprintf(fileReport, [ 'Node & X & Y & Z \\\\ \\toprule \n' ] ) ;
 for i=1:nnodes
   fprintf(fileReport, ['%2i & %4i & %4i & %4i'], [i Nodes(i,1) Nodes(i,2) Nodes(i,3)] ) ;
@@ -715,7 +777,7 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 			fprintf(fileTables, ' \\\\ \n' );
     end
   end  
-  fprintf(fileTables,  '\\end{tabular} \\end{adjustbox} \\caption{Coordinates of data points.} \\end{table} \n\n' )
+  fprintf(fileTables,  '\\end{tabular} \\end{adjustbox} \\caption{Local coordinates of data points.} \\end{table} \n\n' )
   
   % -----------------------------------
   

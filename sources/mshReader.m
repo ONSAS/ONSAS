@@ -71,8 +71,6 @@
 
 function [ nodesMat, conecMat ] = mshReader( mshfile )
 
-cd input
-
 fid = fopen( mshfile ,'r') ;
 
 % ---- header reading --------------------------
@@ -174,7 +172,7 @@ for i=1:nelem
   end
 
 end
-cd ..
+
 fclose(fid);
 
 

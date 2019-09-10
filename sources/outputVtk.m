@@ -164,15 +164,19 @@ nelems = size(Conec) ;
 nnodes = size(Nodes) ;
 ndofpnode = 6 ;
 
+tVtkWriter = 0 ;
+tVtkConecNodes = 0 ;
 % -----------------------------------------
 
 for indplot = 1 : length( timesPlotsVec ) ;
 
   Utplot = matUts ( :, timesPlotsVec( indplot) ) ;
-
+	tic
   [vtkConec, vtkNodesDef, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, indexesElems, sectPar , Utplot, nonLinearAnalysisBoolean, ...
                                                                             dynamicAnalysisBoolean, coordsElemsMat, matNts(:, timesPlotsVec(indplot)) ) ;
-
+	auxVtkConecNodes = toc ;
+	tVtkConecNodes = auxVtkConecNodes + tVtkConecNodes ;
+	
   filename = [ outputdir problemName '_' sprintf('%04i',indplot) '.vtk'] ;
 
   % Scalars vals
@@ -234,9 +238,10 @@ for indplot = 1 : length( timesPlotsVec ) ;
   cellPointData = cell(1,3) ;
   cellPointData{1,1} = 'VECTORS' ; cellPointData{1,2} = 'Displacements' ; cellPointData{1,3} = vtkDispMat ;
 
-  
+  tic 
   vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData ) ;
-  
+  auxtVtkWriter = toc ;
+  tVtkWriter = auxtVtkWriter + tVtkWriter	;
 end
 
 

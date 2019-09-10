@@ -20,3 +20,4 @@ octave-workspace
 /documentation/*.blg
 /input/*.bak
 /sources/*.txt
+/sources/*.oct

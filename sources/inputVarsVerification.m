@@ -98,6 +98,10 @@ if exist( 'plotsViewAxis' ) == 0
   plotsViewAxis = [] ;
 end
 
+if exist( 'bendStiff' ) == 0
+  bendStiff = [] ;
+end
+
 if exist( 'Nodes' ) == 0
   error('The Nodes matrix was not defined.') ;
 end
@@ -236,7 +240,7 @@ if exist( 'printflag' ) == 0
 end
 
 if exist( 'reportBoolean' ) == 0
-  reportBoolean = 0 ;
+  reportBoolean = 1 ;
 end
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0

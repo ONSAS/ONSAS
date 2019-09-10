@@ -18,6 +18,8 @@
 
 %script for updating and storing variables at each time increment. In this script the dispsElemesMat is also created, with the displacements of all nodes, including rotation of releases. In this script the analysis stopping criteria is checked.
 
+tic ;
+
 if dynamicAnalysisBoolean == 0
   deltaT    = targetLoadFactr/nLoadSteps ;
   finalTime = targetLoadFactr ;
@@ -89,17 +91,16 @@ matNts = [ matNts currentNormalForces ] ;
 itersPerTimeVec( timeIndex )    = auxIO.itersPerTime ;
 
 if dynamicAnalysisBoolean == 0
-  factor_crit = modelCurrState.factorCrit ;
-  nKeigneg = modelCurrState.nKeigneg ;
-  nKeigpos= modelCurrState.nKeigpos;
+  factor_crit = modelNextState.factorCrit ;
+  nKeigneg = modelNextState.nKeigneg ;
+  nKeigpos= modelNextState.nKeigpos;
 else
   factor_crit = 0 ;
   nKeigneg = 0 ;
   nKeigpos = 0 ;
 end
-
+tStores = toc ;
 printsOutputScreen
-
 
 % ---------------       evals stop time incr crit          ---------------------
 if dynamicAnalysisBoolean == 1
@@ -107,7 +108,7 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if (nextLoadFactor > targetLoadFactr) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  if ( nextLoadFactor > targetLoadFactr ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end

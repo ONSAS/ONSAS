@@ -32,6 +32,8 @@ addpath( [ pwd '/user'    ] ) ;
 if ~(exist('environInputVars') == 1) || (environInputVars == 0)
   % reads/loads the input data from input file
   inputFileReading
+else
+	tReadingInput = 0 ;
 end
 
 % verifies the definition of input variables and sets default values
@@ -61,13 +63,13 @@ else
   initialDefinitions
 
   % increment step analysis
-  tic;
+  %~ tic;
   while ( stopTimeIncrBoolean == 0 )
-
+		tic ;
     % --------   computes the model state at the next load/time step   --------
     [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
     % -------------------------------------------------------------------------
-
+		tCallSolver = toc ;
     % checks stopping criteria and stores model state
     storesResultAndCheckStopCrit
   end
@@ -92,7 +94,8 @@ end
 
 % plots and/or visualization files are generated
 if plotParamsVector(1) > 0
-  [tPrevDefs, tMarginDef, tDefShape, tLoadFac, tNormalForce, tLoadDisps] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
+  [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
+		tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
     Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
     outputdir, problemName, loadFactors, sectPar, ...
@@ -102,7 +105,7 @@ end
 
 tic
 % report with results is generated
-if reportBoolean == 1
+if reportBoolean
   if nelems < 500
     if nnodes < 53
       outputReport
@@ -112,6 +115,4 @@ end
 tReport = toc ;
 
 noErrorsOccurred = 1 ;
-timeReport
-
 % ==============================================================================

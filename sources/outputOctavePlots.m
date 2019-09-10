@@ -18,7 +18,7 @@
 
 %script for generation of plots of deformed structure.
 
-tic ;
+
 currdir = pwd ;
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
@@ -41,8 +41,6 @@ maxzdef = max( zs + max( linearDeformedScaleFactor*matUts(5:6:end,:)' )' ) + mar
 nelems = size(Conec,1) ;
 nnodes = size(Nodes,1) ;
 ndofpnode = 6 ;
-
-tMarginDef = toc ;
 
 tNormalForce 	= 0 ;
 tDefShape 		= 0 ;
@@ -121,7 +119,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
       FG(5:6:end)*visualloadfactor , ...
       0,'m',"filled",'linewidth',lw2)
 	
-	if size(matUts,2) == 1
+	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 		tit = title(['Deformed shape' ] );
 	else
 		tit = title(['Deformed increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
@@ -131,12 +129,18 @@ for indplot = 1 : length( timesPlotsVec ) ;
   set(tit, "FontSize", plotfontsize) ;
   set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
 
-  axis equal
-
   % sets global or coordinate-wise axis limits
 
-  axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
+%~ minxdef
+%~ marginAxis
+%~ maxxdef
 
+  %~ [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ]
+  axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ],'equal' );
+  %~ axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ]  );
+  %~ axis equal
+
+ 
   if length( plotsViewAxis ) == 0
     view(3);
   elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
@@ -177,7 +181,6 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
 	cmap = flipud( colormap('jet') ) ; % other good options: hot
 	colormap(cmap);
-
 
 	axis equal
 	axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
@@ -242,9 +245,12 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	if minNormalForce ~= maxNormalForce
 		caxis([minNormalForce maxNormalForce])
 	end
+	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+		tit = title(['Normal Force:']) ;
+	else
+		tit = title(['Step/increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
+	end
 	
-	tit = title(['Step/increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
-
 	labx=xlabel('x'); laby=ylabel('y'); labz=zlabel('z') ;
 	set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize*0.5 ) ;
 	set(tit, "FontSize", plotfontsize) ;
@@ -252,11 +258,11 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	
 	cd(outputdir )
 	if printflag == 1
-		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot)  ] ,'-depslatex') ;
-		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot)  ] ,'-depslatex') ;
+		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot)  ] ,'-dpdflatex','-tight') ;
+		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot)  ] ,'-dpdflatex','-tight') ;
 	elseif printflag == 2
-		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot) ] ,'-dpng') ;
-		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot) ] ,'-dpng') ;
+		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot) ] ,'-dpng','-tight') ;
+		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot) ] ,'-dpng','-tight') ;
 	end
 	cd(currdir)
 	% time

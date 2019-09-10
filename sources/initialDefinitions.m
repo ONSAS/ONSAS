@@ -20,6 +20,9 @@
 % TEST
 
 % ----------- fixeddofs and spring matrix computation ---------
+
+tic ;
+
 fixeddofs = [] ;
 KS      = sparse(ndofpnode*nnodes,ndofpnode*nnodes);  
 
@@ -54,6 +57,7 @@ factorescriticos = [] ;
 
 % create velocity and displacements vectors
 Ut      = zeros( ndofpnode*nnodes,   1 ) ;  
+Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
 if exist( 'nonHomogeneousInitialCondU0') ~=0
@@ -67,7 +71,6 @@ end
 
 if exist( 'nonHomogeneousInitialCondUdot0') ~=0 
   if dynamicAnalysisBoolean == 1
-    Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
     for i=1:size(nonHomogeneousInitialCondUdot0,1)
        dofsdot= nodes2dofs(nonHomogeneousInitialCondUdot0(i,1),ndofpnode);
        Udott( dofsdot (nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
@@ -111,7 +114,7 @@ stopCritPar = 0;
 loadFactors( timeIndex,1) = currLoadFactor ;
 controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
-[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut ,1 ) ;
+[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
 
 factorCrit = 0 ;
 factor_crit = 0 ;
@@ -136,4 +139,8 @@ currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
 
 matNts = currentNormalForces ;
 
+tCallSolver = 0 ;
+tStores = 0 ;
 printsOutputScreen
+
+tInitialDefs = toc ;
