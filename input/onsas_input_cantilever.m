@@ -32,7 +32,7 @@ nodalSprings = [ 1  inf  inf  inf  inf  inf  inf ] ;
 
 Conec = [ (1:(nelems))' (2:(nelems+1))' zeros(nelems,2) ones(nelems,2) 2*ones(nelems,1) ] ;
 
-nodalVariableLoads   = [ nelems+1  -1 0   0 0   0 1e-2 ] ;
+nodalVariableLoads   = [ nelems+1  -1 0   0 0   0 1e-3 ] ;
 
 % analysis parameters
 nonLinearAnalysisBoolean = 1 ; 

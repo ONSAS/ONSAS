@@ -71,7 +71,6 @@ else
     % -------------------------------------------------------------------------
 		tCallSolver = toc ;
     % checks stopping criteria and stores model state
-    tic ;
     storesResultAndCheckStopCrit
   end
 end
@@ -116,5 +115,4 @@ end
 tReport = toc ;
 
 noErrorsOccurred = 1 ;
-
 % ==============================================================================
