@@ -32,7 +32,7 @@ ndofpnode = 6 ;
 ElemLengths = zeros(nbeam+ntruss,1) ;
 tetVol      = zeros(ntet,1) ;
 
-Local2GlobalMats = cell(nbeam,1) ;
+Local2GlobalMats = cell(nbeam+ntruss,1) ;
 
 eyetres      = eye(3)     ;
 eyevoig      = zeros(6,1) ;
@@ -48,7 +48,7 @@ for i = 1:nelems
   m =  indexesElems(i) ;    
   
   if Conec(i,7) == 1 || Conec(i,7) == 2                                              
-  
+		
     [ ElemLengths(m) Local2GlobalMats{m} ] = beamParameters(Nodes(Conec(i,1:2),:)) ; 
   
   elseif Conec(i,7) == 3
@@ -139,17 +139,18 @@ for i = 1:nelems
     Iz = secGeomProps ( Conec(i,6), 3 ) ;  
     J  = secGeomProps ( Conec(i,6), 4 ) ;  
     l  = ElemLengths(m) ;
+    
     % -------------------------
     % sets the nodes of the element and the corresponding dofs
     nodi = Conec(i,1) ;    nodj = Conec(i,2) ;  
     elemdofs = nodes2dofs ( [ nodi nodj ]' , ndofpnode ) ;
     % --------------------------------
-
+		
     R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
-
+		
     KGelem = linearStiffMatBeam3D(E, nu, A, Iy, Iz, J, l, elemReleases(m,:), R) ;
-    ElemKGs{m} = KGelem;
-    
+    ElemKGs{i} = KGelem;
+
   elseif Conec(i,7) == 3
      
     nodeselem = Conec(i,1:4) ;
@@ -325,7 +326,13 @@ for i = 1:nelems
 		elseif dim == 2
 			trussdofs = unique([ trussdofs ; elemdofs([2 3 4 6]) ; elemdofs([ 8 9 10 12]) ]) ;
 		elseif dim == 3
-			trussdofs = unique([ trussdofs ; elemdofs([2 4 6]) ; elemdofs([ 8 10 12]) ]) ;
+			if ~ismember(nodeselem(1), beamNodes) && ~ismember(nodeselem(2), beamNodes)				
+				trussdofs = unique([ trussdofs ; elemdofs([2 4 6]) ; elemdofs([ 8 10 12]) ]) ;
+			elseif ~ismember(nodeselem(1), beamNodes) 
+				trussdofs = unique([ trussdofs ; elemdofs([2 4 6]) ]) ;
+			elseif ~ismember(nodeselem(2), beamNodes)
+				trussdofs = unique([ trussdofs ; elemdofs([8 10 12]) ]) ;
+			end
 		end
 		
   elseif Conec(i,7) == 3
@@ -349,7 +356,6 @@ end
 fixeddofs = unique([fixeddofsR ; fixeddofsD ; trussdofs ; tetdofs ; platedofs ]) ;
 notfixeddofs             = 1:( ndofpnode*nnodes ) ;
 notfixeddofs ( fixeddofs ) = [ ] ;
-
 % Stiffness dofs
 
 Kliblib = KG ( notfixeddofs , notfixeddofs ) ;
@@ -473,7 +479,7 @@ for currTime = 1:nTimeSteps
       trussDisps(m,:,currTime) = [localUelem(1) localUelem(1+6)] ; 
       trussStrain(m,currTime) = [ (trussDisps(m,2,currTime)-trussDisps(m,1,currTime))/l ] ;
       normalForce(m,currTime) = trussStrain(m,currTime) * E * A ;
-    
+      
     elseif Conec(i,7) == 2
     % obtains nodes and dofs of element
       nodeselem  = Conec(i,1:2)' ;
