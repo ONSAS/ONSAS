@@ -84,7 +84,7 @@ for i = 1:nelems
   if Conec(i,7) == 1
     nodeselem = Conec(i,1:2) ;
     ntruss = ntruss + 1 ;
-    indexesElems(i) = ntruss ;
+    indexesElems(i) = nbeam+1 ;
     trussElem = [ trussElem ; i ] ;
   elseif Conec(i,7) == 2
     nodeselem = Conec(i,1:2) ;
