@@ -62,8 +62,7 @@ else
   % Initial computations: sets initial matrices and vectors.
   initialDefinitions
 
-  % increment step analysis
-  %~ tic;
+  % --- increment step analysis ---
   while ( stopTimeIncrBoolean == 0 )
 		tic ;
     % --------   computes the model state at the next load/time step   --------
@@ -73,6 +72,7 @@ else
     % checks stopping criteria and stores model state
     storesResultAndCheckStopCrit
   end
+  % -------------------------------
 end
 
 % if analytical solution is provided, numerical results are validated. 

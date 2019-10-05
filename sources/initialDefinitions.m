@@ -114,7 +114,7 @@ stopCritPar = 0;
 loadFactors( timeIndex,1) = currLoadFactor ;
 controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
-[ FintGt, ~, Strainst, Stresst, dsigdepst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
+[ FintGt, ~, Strainst, Stresst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
 
 factorCrit = 0 ;
 factor_crit = 0 ;
@@ -135,7 +135,7 @@ modelCompress
 
 indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
-currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
+currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 
 matNts = currentNormalForces ;
 

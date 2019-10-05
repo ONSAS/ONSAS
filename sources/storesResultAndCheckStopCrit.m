@@ -16,7 +16,10 @@
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-%script for updating and storing variables at each time increment. In this script the dispsElemesMat is also created, with the displacements of all nodes, including rotation of releases. In this script the analysis stopping criteria is checked.
+% script for updating and storing variables at each time increment.
+% In this script the dispsElemesMat is also created, with the displacements 
+% of all nodes, including rotation of releases. 
+% In this script the analysis stopping criteria is checked.
 
 tic ;
 
@@ -81,7 +84,7 @@ matUts = [ matUts modelNextState.Ut ] ;
 
 indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
-currentNormalForces = modelCurrState.Stresst(:) .* Areas ;
+currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 
 matNts = [ matNts currentNormalForces ] ;
 
