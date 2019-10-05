@@ -40,32 +40,6 @@ if exist( 'problemName' ) == 0
   error('problemName variable was not defined.');
 end
 
-% creates outputdir
-outputdir = [ './output/' problemName '/' ] ;
-
-if exist( './output/' ) ~= 7
-  fprintf( '  - Creating directory ./output/ ...' );
-  mkdir('./', './output/' );
-  fprintf( ' done. \n' );
-end
-
-cd output
-if exist( ['./' problemName '/' ] ) ~= 7
-  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
-elseif exist( ['./' problemName '/' ] ) == 7
-  if plotParamsVector(1)>0
-    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
-  end
-  confirm_recursive_rmdir (0)
-  [aux,msg] = rmdir( problemName ,'s'); 
-end
-mkdir('./', ['./' problemName '/' ] );
-if plotParamsVector(1)>0
-  fprintf( ' done. \n' );
-end
-cd ..
-% -----------------------
-
 
 % -----------------------
 % structural properties
@@ -274,3 +248,32 @@ if plotParamsVector(1)>0
 end
 
 tVarVer = toc ;
+
+
+
+% creates outputdir
+outputdir = [ './output/' problemName '/' ] ;
+
+if exist( './output/' ) ~= 7
+  fprintf( '  - Creating directory ./output/ ...' );
+  mkdir('./', './output/' );
+  fprintf( ' done. \n' );
+end
+
+cd output
+if exist( ['./' problemName '/' ] ) ~= 7
+  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
+elseif exist( ['./' problemName '/' ] ) == 7
+  if plotParamsVector(1)>0
+    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
+  end
+  confirm_recursive_rmdir (0)
+  [aux,msg] = rmdir( problemName ,'s'); 
+end
+mkdir('./', ['./' problemName '/' ] );
+if plotParamsVector(1)>0
+  fprintf( ' done. \n' );
+end
+cd ..
+% -----------------------
+
