@@ -8,7 +8,7 @@ l   = 2       ; % reference length
 byL = 0.05    ;
 bzL = 0.05    ;
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 
 problemName = 'cantilever' ;
 

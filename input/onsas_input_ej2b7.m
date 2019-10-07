@@ -1,10 +1,6 @@
-% -------------------
-% Example 3.1 from journal article: Li and Khandelwal, 'Topology
-%  optimization of geometrically nonlinear trusses with spurious eigenmodes
-%  control', Engineering Structures, 131 (2017) 324-344, 2017.
-% -------------------
 
-inputONSASversion = '0.1.8';  problemName = 'ej2b7' ;
+inputONSASversion = '0.1.9';
+problemName = 'ej2b7' ;
 
 Es = 2.1e5 ;
 nu = 0 ;

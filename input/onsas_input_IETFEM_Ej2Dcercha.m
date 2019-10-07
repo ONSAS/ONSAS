@@ -2,7 +2,7 @@
 % IETFEM problem 2D cercha
 % --------------------------------------------------------------------------------------------------
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'IETFEM_2D_cercha' ;
 
 % Propiedades mecanicas

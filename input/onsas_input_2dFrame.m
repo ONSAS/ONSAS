@@ -5,7 +5,7 @@ Iy = 1943e-8 ;
 Fz = -1350e3 ;
 A  = 28.5e-4 ; 
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 
 problemName = '2dFrame' ;
 

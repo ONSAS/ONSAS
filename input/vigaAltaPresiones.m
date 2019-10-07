@@ -1,4 +1,4 @@
-inputONSASversion = '0.1.8' ; 
+inputONSASversion = '0.1.9';
 problemName = 'vigaAltaPresiones' ; 
 
 % Constitutive properties

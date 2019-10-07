@@ -2,7 +2,7 @@
 % IETFEM problem 3D torre
 % --------------------------------------------------------------------------------------------------
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'IETFEM_3D_torre' ;
 
 % Propiedades mecanicas

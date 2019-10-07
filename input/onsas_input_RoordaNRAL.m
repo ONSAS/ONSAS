@@ -16,7 +16,7 @@ a = 10    ;
 b = 50    ;
 m = 4     ;
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'RoordaNRAL' ;
 
 hyperElasParams = cell(1,1) ;

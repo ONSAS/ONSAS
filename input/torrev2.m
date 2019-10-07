@@ -1,5 +1,5 @@
 % ONSAS version
-inputONSASversion = '0.1.8' ; 
+inputONSASversion = '0.1.9';
 
 % Problem name in order to write LaTex report 
 problemName = 'torre' ; 

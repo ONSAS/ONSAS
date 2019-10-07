@@ -5,7 +5,7 @@
 E = 200e9 ;  nu = 0.3 ;  l = 10   ; 
 
 problemName = 'cantileverNodalMoment' ;
-inputONSASversion = '0.1.8';  
+inputONSASversion = '0.1.9';
 
 hyperElasParams = cell(1,1) ; hyperElasParams{1} = [1 E nu] ;
 

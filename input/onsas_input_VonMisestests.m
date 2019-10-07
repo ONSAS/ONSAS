@@ -4,7 +4,8 @@
 %  control', Engineering Structures, 131 (2017) 324-344, 2017.
 % -------------------
 
-inputONSASversion = '0.1.8';  problemName = 'VonMisesTrussNR' ;
+inputONSASversion = '0.1.9';
+problemName = 'VonMisesTrussNR' ;
 
 Es = 210e9 ;
 nu = 0 ;

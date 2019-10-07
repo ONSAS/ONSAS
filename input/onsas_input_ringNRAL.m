@@ -6,7 +6,7 @@ E  = 200e3 ;   nu = 0.3   ;
 
 R = 120   ;
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'ring' ;
 
 hyperElasParams = cell(1,1) ;
