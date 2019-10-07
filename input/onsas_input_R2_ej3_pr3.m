@@ -11,7 +11,7 @@ A  = sqrt( Iy )*1e9 ;
 qz = -15 ;
 H = 15 ;
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 
 problemName = 'R2_pr3_ej3' ;
 

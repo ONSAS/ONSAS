@@ -1,5 +1,5 @@
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'buildingStruc' ;
 
 ndofpnode = 6 ;
