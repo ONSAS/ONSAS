@@ -16,7 +16,12 @@
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-%script for updating and storing variables at each time increment. In this script the dispsElemesMat is also created, with the displacements of all nodes, including rotation of releases. In this script the analysis stopping criteria is checked.
+% script for updating and storing variables at each time increment.
+% In this script the dispsElemesMat is also created, with the displacements 
+% of all nodes, including rotation of releases. 
+% In this script the analysis stopping criteria is checked.
+
+tic ;
 
 if dynamicAnalysisBoolean == 0
   deltaT    = targetLoadFactr/nLoadSteps ;
@@ -59,12 +64,11 @@ currTime       = currTime + deltaT ;
 
 % ------------------------------------------------------------------------------
 
-% ESTO VA PARA CALL DYNAMIC SOLVER CUANDO MAURICIO TERMINE
   %~ targetLoadFactr = loadFactorsFunc( finalTime ) ;
   %~ nLoadSteps      = round( finalTime / deltaT ) ;
-  factor_crit     = 0;
-  nKeigpos        = 0;
-  nKeigneg        = 0 ;
+  %~ factor_crit     = 0;
+  %~ nKeigpos        = 0;
+  %~ nKeigneg        = 0 ;
 
 
 
@@ -76,17 +80,11 @@ currTime       = currTime + deltaT ;
 % stores displacements
 matUts = [ matUts modelNextState.Ut ] ;
 
-%~ % normal forces calculation
-currentNormalForces = zeros(nelems,1) ;
-%~ auxMat = coordsElemsMat+dispsElemsMat ;
-for i=1:nelems
-  
-  if Conec(i,7) == 1 || 2
-		A  = secGeomProps(Conec(i,6),1) ;
-		currentNormalForces(i) = modelCurrState.Stresst(i) * A ;
-	end
-	
-end
+% normal forces calculation
+
+indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
+Areas = secGeomProps(Conec(:,6),1) ;
+currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 
 matNts = [ matNts currentNormalForces ] ;
 
@@ -95,6 +93,16 @@ matNts = [ matNts currentNormalForces ] ;
 
 itersPerTimeVec( timeIndex )    = auxIO.itersPerTime ;
 
+if dynamicAnalysisBoolean == 0
+  factor_crit = modelNextState.factorCrit ;
+  nKeigneg = modelNextState.nKeigneg ;
+  nKeigpos= modelNextState.nKeigpos;
+else
+  factor_crit = 0 ;
+  nKeigneg = 0 ;
+  nKeigpos = 0 ;
+end
+tStores = toc ;
 printsOutputScreen
 
 % ---------------       evals stop time incr crit          ---------------------
@@ -103,7 +111,7 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if (nextLoadFactor > targetLoadFactr) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  if ( nextLoadFactor > targetLoadFactr ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end

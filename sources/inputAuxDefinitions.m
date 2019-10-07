@@ -1,12 +1,7 @@
-
+tic
 % ---------------------------------------------------
 
-ndofpnode = 6;
-
-
-%~ strucsize = max( [ max(Nodes(:,1))-min(Nodes(:,1)) , ...
-                   %~ max(Nodes(:,2))-min(Nodes(:,2)) , ...
-                   %~ max(Nodes(:,3))-min(Nodes(:,3)) ] ) ; 
+ndofpnode = 6; 
 
 strucsize = strucSize(Nodes) ;
 
@@ -89,7 +84,7 @@ for i = 1:nelems
   if Conec(i,7) == 1
     nodeselem = Conec(i,1:2) ;
     ntruss = ntruss + 1 ;
-    indexesElems(i) = ntruss ;
+    indexesElems(i) = nbeam+1 ;
     trussElem = [ trussElem ; i ] ;
   elseif Conec(i,7) == 2
     nodeselem = Conec(i,1:2) ;
@@ -114,4 +109,4 @@ cellStress = [] ;
 matNts = [] ;
 matUts = [] ;
 % ------------------------------------------------------------
-
+tInputAuxDefs = toc;

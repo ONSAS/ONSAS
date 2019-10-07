@@ -21,7 +21,7 @@ function [enc, fin] = tablesFunc(encabezado, numeroColumnas, alineacionValores, 
 
 enc = [ 
 
-sprintf( ['\\begin{table}[!htb]\n\\centering\n\\begin{adjustbox}{max width=\\textwidth}\\begin{tabular}{%s} \n' ...
+sprintf( ['\\begin{table}[h!tb]\n\\centering\n\\begin{adjustbox}{max width=\\textwidth}\\begin{tabular}{%s} \n' ...
           '%s \\\\ \\toprule \n'], alineacionValores, encabezado ) 
 
 ] ;

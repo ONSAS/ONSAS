@@ -23,7 +23,7 @@
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
 
-ONSASversion = '0.1.8'; 
+ONSASversion = '0.1.9'; 
 
 addpath( [ pwd '/sources' ] ) ;
 addpath( [ pwd '/input'   ] ) ;
@@ -32,11 +32,12 @@ addpath( [ pwd '/user'    ] ) ;
 if ~(exist('environInputVars') == 1) || (environInputVars == 0)
   % reads/loads the input data from input file
   inputFileReading
+else
+	tReadingInput = 0 ;
 end
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
-
 
 inputAuxDefinitions
 
@@ -47,7 +48,7 @@ inputAuxDefinitions
 % ----------------------------    Analysis     ---------------------------------
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-
+	
   % Linear Analysis
   linearAnalysis
   
@@ -61,17 +62,17 @@ else
   % Initial computations: sets initial matrices and vectors.
   initialDefinitions
 
-  % increment step analysis
-  tic;
+  % --- increment step analysis ---
   while ( stopTimeIncrBoolean == 0 )
-
+		tic ;
     % --------   computes the model state at the next load/time step   --------
     [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
     % -------------------------------------------------------------------------
-
+		tCallSolver = toc ;
     % checks stopping criteria and stores model state
     storesResultAndCheckStopCrit
   end
+  % -------------------------------
 end
 
 % if analytical solution is provided, numerical results are validated. 
@@ -93,22 +94,25 @@ end
 
 % plots and/or visualization files are generated
 if plotParamsVector(1) > 0
-  outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
+  [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
+		tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
     Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
     outputdir, problemName, loadFactors, sectPar, ...
-    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, timeIncr, cellStress, matNts, indexesElems ) ;
+    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
+    timeIncr, cellStress, matNts, indexesElems, plotsViewAxis ) ;
 end
 
+tic
 % report with results is generated
-if reportBoolean == 1
+if reportBoolean
   if nelems < 500
     if nnodes < 53
       outputReport
     end  
   end  
 end
+tReport = toc ;
 
 noErrorsOccurred = 1 ;
-
 % ==============================================================================

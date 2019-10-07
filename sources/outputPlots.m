@@ -18,12 +18,14 @@
 
 %Script for generation of the plots of the deformed structure.
 
-function outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
+function [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
+					 tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
   Conec, Nodes, constantFext, variableFext, strucsize, ...
   controlDisps, visualloadfactor, linearDeformedScaleFactor, ...
   printflag, outputdir, problemName, loadFactors, sectPar, ...
-  nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, timeIncr, cellStress, matNts, indexesElems )
-	
+  nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
+  timeIncr, cellStress, matNts, indexesElems, plotsViewAxis )
+
 	if size(matUts,2) == 1 && size(matNts,2) == 1 
 		matUts = [zeros(size(matUts,1),1) matUts] ;
 		matNts = [zeros(size(matNts,1),1) matNts] ;
@@ -38,19 +40,20 @@ function outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
   else
     timesPlotsVec = 1: size(matUts,2) ;
   end
-
+	
   if plotParamsVector(1) < 3
     outputOctavePlots
-
+		tVtkWriter = 0 ; tVtkConecNodes = 0 ;
   else
     outputVtk
-
+		tDefShape = 0 ; tLoadFac = 0 ; tNormalForce = 0 ; tLoadDisps = 0 ;
   end  
-  
+  tic
   if length(loadFactors)>1
 		if nonLinearAnalysisBoolean || dynamicAnalysisBoolean ~= 0
 			outputLoadVSDisplacementsPlot
-		end	
+		end
   end
+	tLoadDisps = toc ;
 
 end

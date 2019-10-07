@@ -18,6 +18,7 @@
 
 %script for generation of plots of deformed structure.
 
+
 currdir = pwd ;
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
@@ -41,8 +42,12 @@ nelems = size(Conec,1) ;
 nnodes = size(Nodes,1) ;
 ndofpnode = 6 ;
 
-for indplot = 1 : length( timesPlotsVec ) ;
+tNormalForce 	= 0 ;
+tDefShape 		= 0 ;
+tLoadFac 			= 0 ;
 
+for indplot = 1 : length( timesPlotsVec ) ;
+	tic ;
   figdef = figure ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
@@ -90,6 +95,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
 			end
 			plot3( xselemdef, yselemdef, zselemdef, 'b-', 'linewidth', lw, 'markersize', ms );
+
 		else
 			% Deformed shape of plate
     end
@@ -113,7 +119,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
       FG(5:6:end)*visualloadfactor , ...
       0,'m',"filled",'linewidth',lw2)
 	
-	if size(matUts,2) == 1
+	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 		tit = title(['Deformed shape' ] );
 	else
 		tit = title(['Deformed increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
@@ -123,18 +129,30 @@ for indplot = 1 : length( timesPlotsVec ) ;
   set(tit, "FontSize", plotfontsize) ;
   set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
 
-  axis equal
-
   % sets global or coordinate-wise axis limits
 
-  axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
+%~ minxdef
+%~ marginAxis
+%~ maxxdef
 
-  if exist( 'plotsViewAxis' ) == 0
+  %~ [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ]
+  axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ],'equal' );
+  %~ axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ]  );
+  %~ axis equal
+
+ 
+  if length( plotsViewAxis ) == 0
     view(3);
+  elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
+    view(2);
   else
     view(plotsViewAxis);
   end
-
+  % time
+	auxtDefShape = toc ;
+	tDefShape = tDefShape + auxtDefShape ;
+	
+	tic ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
 			subplot(3,2,5)
@@ -148,83 +166,113 @@ for indplot = 1 : length( timesPlotsVec ) ;
 			labx=xlabel('step'); laby=ylabel('load factor');
 		end
   end
-  % ---------------------------------------------------------------------
-
-  cd(outputdir )
-  if printflag == 1
-		if size(matUts,2) == 1
-			print( [ problemName '_deform' ] ,'-depslatex') ;
-		else
-			print( [ problemName '_deform_' sprintf('%04i', indplot)  ] ,'-depslatex') ;
-		end	
-  elseif printflag == 2
-		if size(matUts,2) == 1
-			print( [ problemName '_deform' ] ,'-dpng') ;
-		else
-			print( [ problemName '_deform_' sprintf('%04i', indplot) ] ,'-dpng') ;
-		end
-  end
-  cd(currdir)
-
-  if printflag > 0  
-    close(figdef);
-  end
+  % time
+	auxtLoadFac = toc ;
+	tLoadFac = tLoadFac + auxtLoadFac ;
   % ---------------------------------------------------------------------
 
 
   % ----------------------------------------
   % ---------- Axial force plots  ----------
-  if length(plotParamsVector) > 0 && plotParamsVector(1)>0
+
+  tic
+	figAxial = figure ;
+	hold on, grid on
+
+	cmap = flipud( colormap('jet') ) ; % other good options: hot
+	colormap(cmap);
+
+	axis equal
+	axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
+
+	if length( plotsViewAxis ) == 0
+		view(3);
+	elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
+		view(2);
+	else
+		view(plotsViewAxis);
+	end
+
+	normalForce    = matNts(:,timesPlotsVec( indplot)) ;
+	minNormalForce = min( normalForce);
+	maxNormalForce = max( normalForce);
+	
+	for i = 1:nelems
+
+		if Conec(i,end) == 1 || Conec(i,end) == 2
+			nodeselem = Conec(i,1:2) ;
+			[lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
+			offsetText = min(lengths) / 15 ;
+			
+			%~ posText = ( Nodes(nodeselem(2),:) + Nodes(nodeselem(1),:) ) / 2 ;
+			posText = ( Nodes(nodeselem(2),:) + dispsElemsMat(i,1:2:5) + Nodes(nodeselem(1),:) + dispsElemsMat(i,7:2:11) ) / 2 ;
+			
+			if abs(maxNormalForce - minNormalForce) < 1e-10
+				cmapi = cmap( 1 ,: );
+			else
+				cmapi = cmap( max( [ 1 ceil( (normalForce(i)-minNormalForce) / abs( maxNormalForce-minNormalForce) * length(cmap) ) ] ) ,: );
+			end
+
+			% --- plot of each element
+			if Conec(i,end) == 1 || Conec(i,end) == 2 
+	
+				[~, locglomat] = beamParameters(Nodes(Conec(i,1:2),:)) ;
+		
+				if (nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0)
+					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
+	
+				else
+					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,:)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
+	
+				end
+				plot3( xselemdef, yselemdef, zselemdef, 'color',cmapi,'linewidth',lw*0.7 );
+	
+			else
+				% Deformed shape of plate
+			end
+			% ----------
+
+			text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%5.1e', normalForce(i)), 'color', cmapi, 'fontsize', 9 )
+			
+		else
+			fprintf('Missing: normal forces plot in octave for beam elements.\n')
+		
+		end
+	
+	end
+
+	colorbar('title','Normal Force')
+	if minNormalForce ~= maxNormalForce
+		caxis([minNormalForce maxNormalForce])
+	end
+	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+		tit = title(['Normal Force:']) ;
+	else
+		tit = title(['Step/increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
+	end
+	
+	labx=xlabel('x'); laby=ylabel('y'); labz=zlabel('z') ;
+	set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize*0.5 ) ;
+	set(tit, "FontSize", plotfontsize) ;
+	set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
+	
+	cd(outputdir )
+	if printflag == 1
+		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot)  ] ,'-dpdflatex','-tight') ;
+		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot)  ] ,'-dpdflatex','-tight') ;
+	elseif printflag == 2
+		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot) ] ,'-dpng','-tight') ;
+		print( figdef		, [ problemName '_deform_' sprintf('%04i', indplot) ] ,'-dpng','-tight') ;
+	end
+	cd(currdir)
+	% time
+	auxtNormalForce = toc ;
+	tNormalForce = tNormalForce + auxtNormalForce ;
+	
+	if printflag > 0  
+		close(figdef)		;
+		close(figAxial)	;
+	end
     
-    figAxial = figure ;
-    hold on, grid on
 
-    cmap = flipud( colormap('jet') ) ; % other good options: hot
-    colormap(cmap);
-
-
-    axis equal
-    axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ] );
-
-    if exist( 'plotsViewAxis' ) == 0
-      view(3);
-    else
-      view(plotsViewAxis);
-    end
-
-    normalForce    = matNts(:,timesPlotsVec( indplot)) ;
-    minNormalForce = min( normalForce);
-    maxNormalForce = max( normalForce);
-    
-    for i = 1:nelems
- 
-      if Conec(i,end) == 1 || Conec(i,end) == 2
-        nodeselem = Conec(i,1:2) ;
-        [lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
-        offsetText = min(lengths) / 15 ;
-        
-        posText = ( Nodes(nodeselem(2),:)+Nodes(nodeselem(1),:) ) / 2 ;
-        
-        if abs(maxNormalForce - minNormalForce) < 1e-10
-          cmapi = cmap( 1 ,: );
-        else
-          cmapi = cmap( max( [ 1 ceil( (normalForce(i)-minNormalForce) / abs( maxNormalForce-minNormalForce) * length(cmap) ) ] ) ,: );
-        end
-        
-        plot3( Nodes(nodeselem,1), Nodes(nodeselem,2), Nodes(nodeselem,3), 'color',cmapi,'linewidth',lw*0.7 )
-        text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%5.1e', normalForce(i)), 'color', cmapi, 'fontsize', 9 )
-        
-      else
-        fprintf('Missing: normal forces plot in octave for beam elements.\n')
-      
-      end
-    
-    end
-
-    colorbar('title','Normal Force')
-    if minNormalForce ~= maxNormalForce
-      caxis([minNormalForce maxNormalForce])
-    end
-    
-  end 
 end %endfor indplot

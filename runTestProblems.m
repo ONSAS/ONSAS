@@ -9,11 +9,13 @@ for previouslyDefinedSelectedFileVar = 1:length(readdir('./input'))
     ONSAS
   
     if noErrorsOccurred == 1
-      fprintf('No errors occurred. Press any key to continue...');
-      pause,
+      fprintf('No errors occurred. Waiting 2 seconds...');
+      pause(2),
       fprintf('\n\n'); clear all, close all
     else
       error('Errors occurred');
     end
   end
 end
+
+clear all

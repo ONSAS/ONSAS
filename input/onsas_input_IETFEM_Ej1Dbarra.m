@@ -2,7 +2,7 @@
 % IETFEM problem 1D barra
 % --------------------------------------------------------------------------------------------------
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'IETFEM_1D_barra' ;
 
 % Propiedades mecanicas

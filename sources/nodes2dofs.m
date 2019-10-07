@@ -21,7 +21,5 @@ function [dofs] = nodes2dofs( nodes , degreespernode )
 n    = length(nodes);
 dofs = zeros( n*degreespernode , 1 ) ;
 for i=1:n
-  for j=1:degreespernode
-    dofs( (i-1)*degreespernode + j ) = degreespernode * (nodes(i)-1) + j  ;
-  end
+  dofs( (i-1)*degreespernode + (1:degreespernode) ) = [ (degreespernode*(nodes(i)-1))+(1:degreespernode) ]' ;
 end

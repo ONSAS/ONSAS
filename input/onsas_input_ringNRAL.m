@@ -6,7 +6,7 @@ E  = 200e3 ;   nu = 0.3   ;
 
 R = 120   ;
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'ring' ;
 
 hyperElasParams = cell(1,1) ;
@@ -14,7 +14,7 @@ hyperElasParams{1} = [1 E nu] ;
 
 b = .6;   h = 6 ;
 
-sectPar = [ b h ]; 
+sectPar = [12 b h ]; 
 
 A  = b*h      ; It = h*b^3/3 ;
 Iy = b*h^3/12 ; Iz = h*b^3/12 ;

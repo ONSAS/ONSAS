@@ -18,6 +18,8 @@
 
 %Script for verification of the input variables definition.
 
+tic
+
 if plotParamsVector(1)>0
   fprintf('  - input variables verification ... ');
 end
@@ -37,32 +39,6 @@ end
 if exist( 'problemName' ) == 0
   error('problemName variable was not defined.');
 end
-
-% creates outputdir
-outputdir = [ './output/' problemName '/' ] ;
-
-if exist( './output/' ) ~= 7
-  fprintf( '  - Creating directory ./output/ ...' );
-  mkdir('./', './output/' );
-  fprintf( ' done. \n' );
-end
-
-cd output
-if exist( ['./' problemName '/' ] ) ~= 7
-  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
-elseif exist( ['./' problemName '/' ] ) == 7
-  if plotParamsVector(1)>0
-    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
-  end
-  confirm_recursive_rmdir (0)
-  [aux,msg] = rmdir( problemName ,'s'); 
-end
-mkdir('./', ['./' problemName '/' ] );
-if plotParamsVector(1)>0
-  fprintf( ' done. \n' );
-end
-cd ..
-% -----------------------
 
 
 % -----------------------
@@ -90,6 +66,14 @@ end
 
 if exist( 'Releases' ) == 0
   Releases = [] ;
+end
+
+if exist( 'plotsViewAxis' ) == 0
+  plotsViewAxis = [] ;
+end
+
+if exist( 'bendStiff' ) == 0
+  bendStiff = [] ;
 end
 
 if exist( 'Nodes' ) == 0
@@ -230,7 +214,7 @@ if exist( 'printflag' ) == 0
 end
 
 if exist( 'reportBoolean' ) == 0
-  reportBoolean = 0 ;
+  reportBoolean = 1 ;
 end
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
@@ -262,3 +246,34 @@ end
 if plotParamsVector(1)>0
   fprintf(' done.\n');
 end
+
+tVarVer = toc ;
+
+
+
+% creates outputdir
+outputdir = [ './output/' problemName '/' ] ;
+
+if exist( './output/' ) ~= 7
+  fprintf( '  - Creating directory ./output/ ...' );
+  mkdir('./', './output/' );
+  fprintf( ' done. \n' );
+end
+
+cd output
+if exist( ['./' problemName '/' ] ) ~= 7
+  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
+elseif exist( ['./' problemName '/' ] ) == 7
+  if plotParamsVector(1)>0
+    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
+  end
+  confirm_recursive_rmdir (0)
+  [aux,msg] = rmdir( problemName ,'s'); 
+end
+mkdir('./', ['./' problemName '/' ] );
+if plotParamsVector(1)>0
+  fprintf( ' done. \n' );
+end
+cd ..
+% -----------------------
+

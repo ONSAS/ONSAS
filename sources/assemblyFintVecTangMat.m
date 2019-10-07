@@ -18,7 +18,7 @@
 %~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [FintGt, KT, StrainVec, StressVec, DsigdepsVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut,paramOut )
+function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
 
 ndofpnode = 6;
 nelems = size(Conec,1);
@@ -35,9 +35,8 @@ for i=1:nelems
 end
 
 
-StrainVec   = zeros(nelems,1);
-StressVec   = zeros(nelems,1);
-DsigdepsVec = zeros(nelems,1);
+StrainVec   = zeros( nelems, 6 ) ;
+StressVec   = zeros( nelems, 6 ) ;
 
 for elem = 1:nelems
   % obtains nodes and dofs of element
@@ -48,6 +47,8 @@ for elem = 1:nelems
 
   % -------------------------------------------
   case 1 % Co-rotational Truss
+
+    sizeTensor = 1 ;
 
     A  = secGeomProps(Conec(elem,6),1) ;
 
@@ -61,7 +62,7 @@ for elem = 1:nelems
 
   % -------------------------------------------
   case 2 % Co-rotational Frame element (bernoulli beam)
-
+    sizeTensor = 1 ;
 
     A   = secGeomProps(Conec(elem,6),1) ;
     Iyy = secGeomProps(Conec(elem,6),2) ;
@@ -77,6 +78,13 @@ for elem = 1:nelems
 
     KL0e = KTe;
 
+  % -------------------------------------------
+  case 3 % linear solid element
+    
+    sizeTensor = 6 ;
+
+    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElemsMat(elem,:)' , [E G A Iyy Izz J] ) ;
+
   end
 
 
@@ -84,22 +92,46 @@ for elem = 1:nelems
   if paramOut == 1
     % internal loads vector assembly
     FintGt ( dofselem ) = FintGt( dofselem ) + Finte ;
-
-    if  Conec(elem,7) == 1
-        StrainVec(elem) = strain ;
-        StressVec(elem) = stress ;
-        DsigdepsVec(elem) = dstressdeps ;
-    elseif Conec(elem,7) == 2
-				StrainVec(elem) == strain ;
-				StressVec(elem) = stress ;
-    end
+  
+  	StrainVec(elem,(1:sizeTensor) ) = strain ;
+		StressVec(elem,(1:sizeTensor) ) = stress ;
   
   elseif paramOut == 2
     % matrices assembly
     KT  (dofselem,dofselem) = KT  (dofselem,dofselem) + KTe     ;
   end
+
 end
 
-KT  = KT  + KS ;
+KT     = KT  + KS ;
 FintGt = FintGt + KS*Ut ;
+
+if length(bendStiff) >0
+
+  Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
+
+  [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
+
+  fextAngSpr = KTAngSpr*Ut ;
+
+  KT     += KTAngSpr   ;
+  FintGt += fextAngSpr ;
+
+end
+
 % ------------------------------------
+
+
+
+function nodesmat = conv ( conec, coordsElemsMat ) 
+
+nodesmat  = [] ;
+nodesread = [] ;
+
+for i=1:size(conec,1)
+  for j=1:2
+    if length( find( nodesread == conec(i,j) ) ) == 0
+      nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
+    end
+  end
+end

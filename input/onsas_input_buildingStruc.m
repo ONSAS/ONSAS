@@ -1,5 +1,5 @@
 
-inputONSASversion = '0.1.8';
+inputONSASversion = '0.1.9';
 problemName = 'buildingStruc' ;
 
 ndofpnode = 6 ;
@@ -26,7 +26,7 @@ Itb = beta * b1 * a1^3 ;
 
 secGeomProps = [ Ab   Iyb   Izb   Itb   ] ;
 
-h = 3; nlevs = 6 ;
+h = 3; nlevs = 7 ;
 
 Nodes = [] ;
 
@@ -70,7 +70,7 @@ nodalVariableLoads   = [ (nlevs-1)*4+1  0 0 1e-3 0 -1 0 ; ...
                          (nlevs-1)*4+4  0 0 0 0 -1 0 ] ;
 
 
-sectPar = [ 12 .5 .5 ];
+sectPar = [ 12 .2 .2 ];
 
 % Analysis parameters
 nonLinearAnalysisBoolean = 1 ; 
@@ -79,8 +79,8 @@ linearDeformedScaleFactor = 1.0 ;
 controlDofInfo = [ nlevs*4 3 1 ] ;
 
 % Plot options
-plotParamsVector = [ 2 4] ;
-%~ plotParamsVector = [ 3] ;
+%~ plotParamsVector = [ 2 4] ;
+plotParamsVector = [ 3 3] ;
 printflag = 0 ;
 
 % Analytic solution 
@@ -90,5 +90,5 @@ stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-5 ;  stopTolForces  = 1.0e-8 ;
 %~ targetLoadFactr = 1.0e3 ;  nLoadSteps     = 2    ;
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
-targetLoadFactr = 1.0e5 ;  nLoadSteps     = 100    ;
-numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps .05 ] ; 
+targetLoadFactr = 1.0e5 ;  nLoadSteps     = 150    ;
+numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps .04 ] ; 

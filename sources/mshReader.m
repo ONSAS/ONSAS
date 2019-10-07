@@ -71,11 +71,6 @@
 
 function [ nodesMat, conecMat ] = mshReader( mshfile )
 
-%~ addpath('../input')
-
-%~ cd ..
-cd input
-
 fid = fopen( mshfile ,'r') ;
 
 % ---- header reading --------------------------
@@ -137,8 +132,8 @@ for i=1:nelem
       auxstr = strsPhysProp{ind} ;
       auxnodes = a(3+ntags+1) ;
       
-      nodesMat(auxnodes,4) = str2num(auxstr(11:12)) ;
-      nodesMat(auxnodes,5) = str2num(auxstr(14:15)) ;
+      nodesMat(auxnodes,4) = str2num(auxstr(14:15)) ;
+      nodesMat(auxnodes,5) = str2num(auxstr(11:12)) ;
       
       auxPhysNodes = [ auxPhysNodes	; auxnodes] ;
     end
@@ -165,11 +160,11 @@ for i=1:nelem
             
       conecMat( i, 1:5) = [ str2num(auxstr(2:3)) auxnodes2 ] ;
       conecMat( i, 6:9) = [ str2num(auxstr( 5: 6)) str2num(auxstr( 8: 9)) ...
-                            str2num(auxstr(11:12)) str2num(auxstr(14:15)) ] ;
+                            str2num(auxstr(14:15)) str2num(auxstr(11:12)) ] ;
 			for j = 1:length(auxnodes)
 				if ~ismember(auxnodes(j), auxPhysNodes)
-					nodesMat(auxnodes(j),4:5) = ones(length(auxnodes(j)),2) * diag( [str2num(auxstr(11:12)) str2num(auxstr(14:15)) ] ) ;
-         end
+					nodesMat(auxnodes(j),4:5) = ones(length(auxnodes(j)),2) * diag( [str2num(auxstr(14:15)) str2num(auxstr(11:12)) ] ) ;
+        end
       end
                             
     end
@@ -177,7 +172,7 @@ for i=1:nelem
   end
 
 end
-cd ..
+
 fclose(fid);
 
 

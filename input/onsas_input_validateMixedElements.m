@@ -6,12 +6,12 @@ E  = 210e9   ;
 nu = 0.3     ;
 l  = 3       ; % reference length
 Iy = 1943e-8 ;
-Fz = -1350e3 ;
+Fz = -1e6 ;
 A  = 28.5e-4 ; 
 
 inputONSASversion = '0.1.9';
 
-problemName = '2DFrame' ;
+problemName = 'validateMixedElements' ;
 
 % constitutive properties
 
@@ -20,28 +20,29 @@ hyperElasParams{1} = [1 E nu] ;
 
 % geometrical properties
 
-secGeomProps = [ A Iy 1 1 ] ;
+secGeomProps = [ A*1e4 Iy 1 1 ; ...
+                 A*1e4 Iy*1e3 1 1 ] ;
 
-Nodes = [   0  0   0 ; ...
-            0  0 2*l ; ... 
-            l  0 2*l ; ...
-          3*l  0 2*l ; ...
-          3*l  0  -l ] ;
+Nodes = [   0  0  0 ; ...
+            l  0  0 ; ... 
+          2*l  0  0 ; ...
+            l  0  l ] ;
 
 % in global system of coordinates
-nodalSprings = [ 1  inf  inf  inf  inf  inf  inf ; ...
-                 5  inf  inf  inf  inf  inf  inf ; ...
+nodalSprings = [ 1  inf  inf  inf    0  inf  inf ; ...
                  2    0  inf  inf    0    0  inf ; ...
                  3    0  inf  inf    0    0  inf ; ...
-                 4    0  inf  inf    0    0  inf ] ;
+                 4  inf  inf  inf    0  inf  inf ] ;
 
 Conec = [ 1 2 0 0 1 1 2 ; ...
           2 3 0 0 1 1 2 ; ...
-          3 4 0 0 1 1 2 ; ...
-          4 5 0 0 1 1 2 ] ;
+          2 4 0 0 1 2 2 ] ;
 
-nodalConstantLoads   = [ 3  0 0 0 0 Fz 0 ] ;
+nodalConstantLoads   = [ 3  0 0 0 0  Fz 0 ] ;
 
+Releases = [3 1 0 1 0];
+%~ Releases = [3 0 1 0 1];
+%~ Releases = [3 1 1 1 1];
 
 % analysis parameters
 nonLinearAnalysisBoolean = 0 ; 
@@ -49,20 +50,19 @@ dynamicAnalysisBoolean   = 0 ;
 LBAAnalyFlag             = 0 ;
 
 % [ node nodaldof scalefactor(positive or negative) ]
-controlDofInfo = [ 1 1 1 ] ;
+controlDofInfo = [ 3 5 -1 ] ;
 
-
-printflag = 2 ;
+printflag = 0 ;
 tablesBoolean = 1;
 
-plotParamsVector = [2];
+plotParamsVector = [2 2];
 
 plotsViewAxis = [ 0 -1 0] ;
 
 linearDeformedScaleFactor = 1;
 
 % analytical solution 
-analyticSolFlag = 3 ;
+analyticSolFlag = 0 ;
 G  = E / ( 2*(1+nu) )               ;
 analytSol = [ -3.43990/(E*Iy)*Fz ]' ;
 analyticSolDofs = [ 7 ]' ;

@@ -48,6 +48,16 @@ printflag = 1 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
 
+%~ stopTolIts       = 30     ;
+%~ stopTolDeltau    = 1.0e-10 ;
+%~ stopTolForces    = 1.0e-6 ;
+%~ targetLoadFactr  = 5e7    ;
+%~ nLoadSteps       = 50    ;
+%~ incremArcLen     = .1    ;
+
+%~ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactr nLoadSteps incremArcLen ] ; 
+
 % analytical solution using engineering strain
 analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
