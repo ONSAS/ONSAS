@@ -29,13 +29,6 @@ nsecs  = length( secGeomProps    ) ;
 nnodes = size(Nodes,1) ;
 nelems = size(Conec,1) ;
 
-
-if exist( 'inputONSASversion' ) == 0
-  error('The inputONSASversion string variable was not defined.') ;
-elseif (~isequal( inputONSASversion, ONSASversion)),
-  error('input for different ONSAS version.');
-end
-
 if exist( 'problemName' ) == 0
   error('problemName variable was not defined.');
 end
