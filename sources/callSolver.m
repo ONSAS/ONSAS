@@ -17,7 +17,6 @@
 
 %% This functions calls the corresponding solver according to the anlysis settings and the numerical method provided by the user.
 
-% fdsafdsa
 
 function  [ modelCurrState, BCsNextState, auxIO ]  = callSolver( modelCurrState, BCsNextState, auxIO ) ;
 
@@ -27,6 +26,8 @@ if dynamicAnalysisBoolean == 0
 
   currDeltau = zeros(length(neumdofs),1) ;
 
+  % output variables correspond to the next time step, however they are stored as t since the model compress script
+  % will store them in the modelCurrState struct.
   [ nextLoadFactor, itersPerTime, stopCritPar, factorCrit, nKeigpos, nKeigneg, Ut, FintGt, Stresst, Strainst ] ...
   = analysisNRAndNRAL ( ...
     Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat,  ...
