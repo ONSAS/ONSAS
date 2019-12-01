@@ -67,7 +67,7 @@ analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( 
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
-printflag = 2 ; plotParamsVector = [2 5 ];
+printflag = 0 ; plotParamsVector = [ 2 5 ];
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
