@@ -12,7 +12,7 @@ clear all, close all
 
 %% General data
 dirOnsas = '..' ;
-problemName = 'uniaxialSolid' ;
+problemName = 'uniaxialSolidGMSH' ;
 
 
 %% Structural properties
