@@ -39,7 +39,7 @@ loadsMat = [0   0 0 0 0 p 0 ] ;
 % Constitutive properties: Structure: [ 1 E nu ]
 E = 210e9 ; nu = 0.3 ;
 hyperElasParams = cell(1,1) ;
-hyperElasParams{1} = [ 1    210e9    0.3 ] ;
+hyperElasParams{1} = [ 1  E  nu ] ;
 
 % Sections
 secGeomProps = [ 0 0 0 0 ] ;

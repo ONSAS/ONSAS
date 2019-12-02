@@ -10,27 +10,35 @@ addpath('../sources/');
 
 %% General data
 dirOnsas = '..' ;
-problemName = 'Cylinder' ;
-
+problemName = 'cylinder' ;
 
 % Pressure
-p = -0.1 ;
+p = 1e3 ;
 
 % Mesh data
-[ Nodes, Conec, nodalConstantLoads, nodalSprings] = msh2input( '../input/canio.msh', p ) ;
+[ nodesMat, conecMat ] = mshReader('cylinder.msh') ;
 
 % Material properties
 E = 210e9 ; nu = 0.3 ;
-  
 hyperElasParams = cell(1,1) ;  
 hyperElasParams{1} = [ 1 E nu ] ;
 
 % Sections
-secGeomProps = [ 0 0 0 0 ] ; Rint = 0.2 ; Rext = 0.24 ;
+secGeomProps = [ 0 0 0 0 ] ;
+
+Rint = 0.2 ; Rext = 0.24 ;
+
+suppsMat = [ inf 0  0 	0   0 	0 ; ...
+             0 	 0  inf 0   0   0 ; ...
+             0 	 0  0   0   inf 0 ] ;
+
+loadsMat = [0   0 0 0 0 -p 0 ] ;
+
+
+[Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat ) ;
 
 % Analysis parameters
 nonLinearAnalysisBoolean = 0 ; linearDeformedScaleFactor = 10.0 ;
-
 
 % Analytic solution
 analyticSolFlag = 3 ; p = abs(p) ; r = Rext ;
