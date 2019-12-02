@@ -1,22 +1,22 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+%% Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+%%
+%% This file is part of ONSAS.
+%%
+%% ONSAS is free software: you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation, either version 3 of the License, or
+%% (at your option) any later version.
+%%
+%% ONSAS is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You should have received a copy of the GNU General Public License
+%% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%~ This file is part of ONSAS.
+%% This functions calls the corresponding solver according to the anlysis settings and the numerical method provided by the user.
 
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-
-%This functions calls the corresponding solver according to the anlysis settings and the numerical method provided by the user.
 
 function  [ modelCurrState, BCsNextState, auxIO ]  = callSolver( modelCurrState, BCsNextState, auxIO ) ;
 
@@ -26,6 +26,8 @@ if dynamicAnalysisBoolean == 0
 
   currDeltau = zeros(length(neumdofs),1) ;
 
+  % output variables correspond to the next time step, however they are stored as t since the model compress script
+  % will store them in the modelCurrState struct.
   [ nextLoadFactor, itersPerTime, stopCritPar, factorCrit, nKeigpos, nKeigneg, Ut, FintGt, Stresst, Strainst ] ...
   = analysisNRAndNRAL ( ...
     Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat,  ...

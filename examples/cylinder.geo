@@ -1,6 +1,6 @@
-ms = 0.02 ;
+ms = 0.01 ;
 //ms = 0.009 ;
-msi = 0.6*ms ;
+msi = 0.5*ms ;
 
 largo_canio = 0.01 ;
 radio_int   = 0.20 ;
@@ -52,14 +52,12 @@ Ruled Surface(6) = {6};
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
 
-Physical Surface(102) = {3} ;
-Physical Surface(103) = {4} ;
-Physical Surface(104) = {1,2} ;
+Physical Surface("05x00x00x01x00") = {3} ;
+Physical Surface("05x00x00x02x00") = {4} ;
+Physical Surface("05x00x00x03x00") = {1,2} ;
 
-Physical Surface(200) = {5} ;
-Physical Surface(201) = {6} ;
+Physical Surface("05x00x00x00x00") = {5} ;
+Physical Surface("05x00x00x00x01") = {6} ;
 
-Physical Volume(301) = {1} ;
-
-
+Physical Volume("03x01x01x00x00") = {1} ;
 
