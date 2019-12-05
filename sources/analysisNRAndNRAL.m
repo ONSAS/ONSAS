@@ -112,7 +112,6 @@ function ...
 
 
 % ======================================================================
-
 function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod , bendStiff)
 
   % computes static tangent matrix

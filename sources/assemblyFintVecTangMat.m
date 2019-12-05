@@ -20,48 +20,55 @@
 
 function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
 
+% -----------------------------------------------
 ndofpnode = 6;
-nelems = size(Conec,1);
+nelems    = size(Conec,1);
 
-KT  = sparse( length(Ut) , length(Ut)  ) ;
-FintGt = zeros( length(Ut) ,1 ) ;
-
-dispsElemsMat = zeros(nelems,2*ndofpnode) ;
-for i=1:nelems
-  % obtains nodes and dofs of element
-  nodeselem = Conec(i,1:2)' ;
-  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
-  dispsElemsMat( i, : ) = Ut(dofselem)' ;
-end
-
+KT     = sparse( length(Ut) , length(Ut)  ) ;
+FintGt = zeros(  length(Ut) , 1           ) ;
 
 StrainVec   = zeros( nelems, 6 ) ;
 StressVec   = zeros( nelems, 6 ) ;
 
+%~ tetVol      = zeros(nelems,1) ;
+%~ BMat        = cell(ntet,1) ;
+% ----------------------------------------------
+
+
+% ----------------------------------------------
 for elem = 1:nelems
-  % obtains nodes and dofs of element
-  nodeselem = Conec(elem,1:2)' ;
-  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
 
   switch Conec(elem,7)
 
   % -------------------------------------------
   case 1 % Co-rotational Truss
 
+    % obtains nodes and dofs of element
+    nodeselem = Conec(elem,1:2)' ;
+    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dispsElem = u2ElemDisps( Ut , dofselem ) ;
+
     sizeTensor = 1 ;
 
     A  = secGeomProps(Conec(elem,6),1) ;
-
+    E  = hyperElasParamsMat( Conec(elem,5),:) ;
+    
     if paramOut == 2
       [ KTe, KL0e ] = elementTruss3DTangentMats( ...
-        coordsElemsMat(elem,:), dispsElemsMat(elem,:), hyperElasParamsMat( Conec(elem,5),:) , A );
+        coordsElemsMat(elem,:), dispsElem, E , A );
     else
       [ Finte, stress, dstressdeps, strain ] = elementTruss3DInternLoads( ...
-        coordsElemsMat(elem,:), dispsElemsMat(elem,:), hyperElasParamsMat( Conec(elem,5),:) , A );
+        coordsElemsMat(elem,:), dispsElem, E , A );
     end
 
   % -------------------------------------------
   case 2 % Co-rotational Frame element (bernoulli beam)
+
+    % obtains nodes and dofs of element
+    nodeselem = Conec(elem,1:2)' ;
+    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dispsElem = u2ElemDisps( Ut , dofselem ) ;
+
     sizeTensor = 1 ;
 
     A   = secGeomProps(Conec(elem,6),1) ;
@@ -74,19 +81,36 @@ for elem = 1:nelems
     nu = hyperElasParamsMat( Conec(elem,5),3) ;
     G  = E/(2*(1+nu)) ;
 
-    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElemsMat(elem,:)' , [E G A Iyy Izz J] ) ;
+    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
 
     KL0e = KTe;
+
 
   % -------------------------------------------
   case 3 % linear solid element
     
+    % obtains nodes and dofs of element
+    nodeselem = Conec(elem,1:4)' ;
+    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dofstet = dofselem(1:2:length(dofselem)) ;
+    dispsElem = u2ElemDisps( Ut , dofstet ) ;
+    
+    tetcoordmat        = zeros(3,4) ;
+    tetcoordmat(1,1:4) = Nodes( nodeselem , 1 ) ;
+    tetcoordmat(2,1:4) = Nodes( nodeselem , 2 ) ;
+    tetcoordmat(3,1:4) = Nodes( nodeselem , 3 ) ;
+    
+
+    E  = hyperElasParams{ Conec(i,5)}(1+1) ;  
+    nu = hyperElasParams{ Conec(i,5)}(1+2) ; 
+    
     sizeTensor = 6 ;
 
-    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElemsMat(elem,:)' , [E G A Iyy Izz J] ) ;
+    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( tetcoordmat, dispsElem , [E nu] ) ;
 
   end
-
+  % -------------------------------------------
+  
 
   % -------------------------------------------
   if paramOut == 1
@@ -134,4 +158,13 @@ for i=1:size(conec,1)
       nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
     end
   end
+end
+
+
+
+% ---------------------
+% function to convert vector of displacements into displacements of element.
+% ---------------------
+function elemDisps = u2ElemDisps( U, dofselem)
+  elemDisps = U(dofselem);
 end
