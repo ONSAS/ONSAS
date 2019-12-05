@@ -11,8 +11,8 @@
 clear all, close all
 
 %% General data
-dirOnsas = '..' ;
-problemName = 'uniaxialSolidManual' ;
+dirOnsas = [ pwd '/..' ] ;
+problemName = 'uniaxialSolidGMSH' ;
 
 %% Structural properties
 

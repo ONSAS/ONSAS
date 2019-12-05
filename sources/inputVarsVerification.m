@@ -20,9 +20,7 @@
 
 tic
 
-if plotParamsVector(1)>0
-  fprintf('  - input variables verification ... ');
-end
+fprintf('  - input variables verification ... ');
 
 nmats  = length( hyperElasParams ) ;
 nsecs  = length( secGeomProps    ) ;
@@ -253,20 +251,18 @@ if exist( './output/' ) ~= 7
   fprintf( ' done. \n' );
 end
 
-cd output
-if exist( ['./' problemName '/' ] ) ~= 7
-  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
-elseif exist( ['./' problemName '/' ] ) == 7
-  if plotParamsVector(1)>0
-    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
-  end
+if exist( outputdir ) == 7 % problemName is a directory
+  % the content is erased
+  fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
   confirm_recursive_rmdir (0)
   [aux,msg] = rmdir( problemName ,'s'); 
+
+elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
+  % it is created
+  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] ) ;
+  mkdir( outputdir );
 end
-mkdir('./', ['./' problemName '/' ] );
-if plotParamsVector(1)>0
-  fprintf( ' done. \n' );
-end
-cd ..
+
+fprintf( ' done. \n' );
 % -----------------------
 

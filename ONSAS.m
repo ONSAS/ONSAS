@@ -34,8 +34,8 @@ if plotParamsVector(1)>0
   fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
   fprintf('==============================================\n');
   fprintf( [ 'Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli \n' ] ) ;
-  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. \n' ] ) ;
-  fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYNG file for more details. \n' ] ) ;
+  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. ' ] ) ;
+  fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYING.txt file for more details. \n' ] ) ;
 end
 
 tReadingInput = 0;

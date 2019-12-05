@@ -2,8 +2,10 @@
 %
 %%
 
+clear all, close all
+
 %% General data
-dirOnsas = '..' ;
+dirOnsas = [ pwd '/..' ] ;
 problemName = 'VonMisesTrussNRAL' ;
 
 % uncomment to delete variables and close windows

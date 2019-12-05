@@ -6,16 +6,15 @@
 % uncomment to delete variables and close windows
 clear all, close all
 
-addpath('../sources/');
-
 %% General data
-dirOnsas = '..' ;
+dirOnsas = [ pwd '/..' ] ;
 problemName = 'cylinder' ;
 
 % Pressure
 p = 1e3 ;
 
 % Mesh data
+addpath( [ dirOnsas '/sources/' ] );
 [ nodesMat, conecMat ] = mshReader('cylinder.msh') ;
 
 % Material properties
