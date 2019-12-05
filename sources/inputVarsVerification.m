@@ -200,6 +200,12 @@ else
 	end
 end
 
+
+if exist( 'stabilityAnalysisBoolean' ) == 0
+  stabilityAnalysisBoolean = 0 ;
+end
+
+
 if exist( 'printflag' ) == 0
   printflag = 0 ;
 end

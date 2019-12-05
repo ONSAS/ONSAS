@@ -62,6 +62,8 @@ incremArcLen     = .1    ;
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps incremArcLen ] ; 
 
+stabilityAnalysisBoolean = 1 ;
+
 % analytical solution using engineering strain
 analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
