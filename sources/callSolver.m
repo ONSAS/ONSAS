@@ -38,7 +38,7 @@ if dynamicAnalysisBoolean == 0
   modelCompress
 
 else
-  
+
   deltaT         = numericalMethodParams(2)        ;
   finalTime      = numericalMethodParams(3)        ;
   stopTolDeltau  = numericalMethodParams(4)        ;
@@ -90,6 +90,7 @@ else
 
   end
 
+
   % assemble M and C
   massMatAssembly                                ;
   dampingMat = eye(size(massMat))* nodalDamping   ;
@@ -104,6 +105,7 @@ else
   a5NW = (deltaT/2)*(deltaNW/AlphaNW-2);
   a6NW = deltaT*(1-deltaNW)            ;
   a7NW = deltaNW*deltaT                ;
+
   
   % la matriz y lo ai de newmark podrian ir en initial y definirse en model compress
   [ Utp1, Udottp1, Udotdottp1, FintGtp1, dispIter, Strainst, Stresst ] ...
@@ -117,7 +119,7 @@ else
     a1NW, a2NW, a3NW, a4NW,...
     a5NW, a6NW,   a7NW, ...
     % model variable data
-    dispsElemsMat, Ut, Udott, Udotdott, nextLoadFactor, stopTolDeltau, stopTolForces, stopTolIts, userLoadsFilename, currTime + deltaT ) ;
+    Ut, Udott, Udotdott, nextLoadFactor, stopTolDeltau, stopTolForces, stopTolIts, userLoadsFilename, currTime + deltaT ) ;
 
   % Releases displacements velocity and aceleration
   Ut       = Utp1              ;
@@ -127,5 +129,4 @@ else
   
   modelCompress
   
-
 end

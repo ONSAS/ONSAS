@@ -148,7 +148,6 @@ end
 
 
 function nodesmat = conv ( conec, coordsElemsMat ) 
-
 nodesmat  = [] ;
 nodesread = [] ;
 
@@ -160,11 +159,9 @@ for i=1:size(conec,1)
   end
 end
 
-
-
 % ---------------------
 % function to convert vector of displacements into displacements of element.
 % ---------------------
 function elemDisps = u2ElemDisps( U, dofselem)
-  elemDisps = U(dofselem);
-end
+
+elemDisps = U(dofselem);

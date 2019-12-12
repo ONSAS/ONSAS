@@ -23,7 +23,7 @@ function [Finte, stress, dstressdeps, strain] = elementTruss3DInternLoads( ...
   localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]);
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
   
-  Xedef = Xe + Ue ;
+  Xedef = Xe(:) + Ue(:) ;
   localAxisDef = Xedef( [(1:2:5)+6]) - Xedef( [(1:2:5)]);
   ldef = sqrt( sum( localAxisDef.^2 ) ) ;
 

@@ -20,6 +20,9 @@
 function [ KTe, KL0e ] = elementTruss3DTangentMats( ...
   Xe, Ue, hyperelasparams, A )
 
+  Xe = (Xe(:))';
+  Ue = (Ue(:))';
+  
   booleanAnalytical = 1 ;
   
   if booleanAnalytical
