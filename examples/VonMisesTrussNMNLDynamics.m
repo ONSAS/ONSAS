@@ -52,8 +52,8 @@ nodalSprings = [ 1  kc   0  inf  0  inf 0 ; ...
 %~ nodalDamping = 0 ;
 
 % method
-timeIncr   =  0.00001    ;
-finalTime  =  0.5             ;
+timeIncr   =  0.000001    ;
+finalTime  =  0.1             ;
 nLoadSteps = finalTime/timeIncr ;
 DeltaNW    =  0.5               ;
 AlphaNW    =  0.25              ;
@@ -86,7 +86,7 @@ dynamicAnalysisBoolean   = 1 ;
 numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
 %~ plotParamsVector = [2 5 ];
-plotParamsVector = [3 ]; sectPar = [ 12 a b ];
+plotParamsVector = [3 30 ]; sectPar = [ 12 b a ];
 printflag = 0 ;
 % ------------------------------------------------
 
