@@ -1,5 +1,4 @@
-
-%% Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% ------------------------------------------------------------------------------
+
 
 % function for iteration of Newton-Raphson or Newton-Raphson-Arc-Length.
 

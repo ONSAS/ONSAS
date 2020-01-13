@@ -1,19 +1,19 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
 
@@ -279,9 +279,6 @@ elseif nonLinearAnalysisBoolean == 1 && dynamicAnalysisBoolean == 1
   fprintf(fileReport, [ 'Non Linear and Dynamic Analysis is performed.\n' ] ) ;
 else
   fprintf(fileReport, [ 'Linear Analysis is performed.\\\\\n' ] ) ;
-  if LinBuckModeImperf == 1
-    fprintf(fileReport, [ 'Linear buckling analysis is performed with geometry imperfection. Imperfection factor: %8.2e \n' ], imperfactor ) ;
-  end
   if LBAAnalyFlag == 1
     fprintf(fileReport, [ 'Linear buckling analysis is performed.\n' ]) ;
   end
