@@ -113,8 +113,8 @@ while ( iterDispConverged == 0 )
     warning('displacements iteration stopped by max iterations.');
     stopCritPar = 3 ;      iterDispConverged = 1 ;
   end
-  norm(Fhat)
-  dispIter  
+  
+  fprintf(' %12.3e   %03i  %12g\n', norm(Fhat), dispIter, nextTime )
   % -------------------------
 
 end

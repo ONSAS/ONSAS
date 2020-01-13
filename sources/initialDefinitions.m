@@ -39,9 +39,40 @@ for i=1:size(nodalSprings,1)
 end
 
 diridofs = fixeddofs ;
-diridofs = [ diridofs ; releasesDofs] ;
-neumdofs = (1:(ndofpnode*nnodes))';
-neumdofs(diridofs) = [];
+%~ diridofs = [ diridofs ; releasesDofs] ;
+
+
+neumdofs = zeros( ndofpnode*nnodes, 1 ) ;
+
+for elem = 1:nelems
+  
+  aux = nodes2dofs( Conec( elem, 1:4), 6)' ;
+  
+  switch Conec( elem, 7)
+  case 1
+    neumdofs ( aux(1:2:11) ) = aux(1:2:11) ;
+  case 2
+    neumdofs ( aux(1:11) ) = aux(1:11) ;
+  case 3
+    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:(6*4-1)) ;
+  end  
+end
+
+neumdofs( diridofs ) = 0 ;
+
+neumdofs = unique( neumdofs )(2:end)
+
+
+%~ neumdofs = (1:(ndofpnode*nnodes))';
+%~ neumdofs(diridofs) = [];
+
+
+stop
+
+
+
+
+
 % -------------------------------------------------------------
 
 

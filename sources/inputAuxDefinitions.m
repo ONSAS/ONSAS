@@ -16,15 +16,15 @@ else
 end
 
 
-releasesDofs = [];
-for i=1:nelems
-  if Conec(i,7)==1
-    releasesDofs = [ releasesDofs; nodes2dofs( Conec(i,1:2),ndofpnode)(2:2:end) ];
-    Releases = [ Releases; i ones(1,4) ] ;
-  end
-end
+%~ releasesDofs = [];
+%~ for i=1:nelems
+  %~ if Conec(i,7)==1
+    %~ releasesDofs = [ releasesDofs; nodes2dofs( Conec(i,1:2),ndofpnode)(2:2:end) ];
+    %~ Releases = [ Releases; i ones(1,4) ] ;
+  %~ end
+%~ end
 
-releasesDofs = unique( releasesDofs);
+%~ releasesDofs = unique( releasesDofs);
 
 coordsElemsMat = zeros(nelems,2*ndofpnode) ;
 for i=1:nelems

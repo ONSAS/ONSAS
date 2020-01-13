@@ -106,6 +106,22 @@ else
   a6NW = deltaT*(1-deltaNW)            ;
   a7NW = deltaNW*deltaT                ;
 
+
+Lx = .374/2;
+Lz = sqrt(.205^2 - Lx^2); %m
+l0 = sqrt(Lx^2+Lz^2); %m
+Ac = .0254*.0032; %m2
+rho = 7850; % kg/m3 (acero)
+mb = Ac*l0*rho ;
+
+m=3;
+dampingMat(neumdofs,neumdofs) = [ 10/2 0 ; 0 10 ] ;
+massMat (neumdofs,neumdofs) = [ mb 0 ; 0 (mb+m)/2 ] ;
+variableFext(neumdofs) = [ 0 ; -(m+mb)/2*9.81 ] ;
+
+%~ neumdofs
+%~ stop
+
   
   % la matriz y lo ai de newmark podrian ir en initial y definirse en model compress
   [ Utp1, Udottp1, Udotdottp1, FintGtp1, dispIter, Strainst, Stresst ] ...
