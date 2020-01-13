@@ -22,28 +22,23 @@ tic
 
 fprintf('  - input variables verification ... ');
 
+% --- verification of relevant variables ---
+checkVarNamesList = { 'problemName', 'Nodes', 'Conec', ...
+                      'hyperElasParams', 'secGeomProps', 'nodalSprings'} ;
+for j=1:length(checkVarNamesList)
+  varName = checkVarNamesList{j} ;
+  if exist( varName, 'var' )==0,
+    error([ varName ' variable was not defined.'] );
+  end
+end
+% ------------------------------------------
+
+
 nmats  = length( hyperElasParams ) ;
 nsecs  = length( secGeomProps    ) ;
 nnodes = size(Nodes,1) ;
 nelems = size(Conec,1) ;
 
-% --- verification of relevant variables ---
-checkVarNamesList=cell(2,1);
-
-checkVarNamesList{1} = 'problemName' ;
-checkVarNamesList{2} = 'Nodes' ;
-checkVarNamesList{3} = 'Conec' ;
-checkVarNamesList{4} = 'hyperElasParams' ;
-checkVarNamesList{5} = 'secGeomProps' ;
-checkVarNamesList{6} = 'nodalSprings' ;
-
-for j=1:length(checkVarNamesList)
-  varName = checkVarNamesList{j} ;
-  if exist( varName, 'var' )==0,
-    error([ varName ' variable not defined.'] );
-  end
-end
-% ------------------------------------------
 
 
 % -----------------------
