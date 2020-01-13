@@ -1,4 +1,4 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+%~ Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
 
 %~ This file is part of ONSAS.
 
@@ -27,34 +27,37 @@ nsecs  = length( secGeomProps    ) ;
 nnodes = size(Nodes,1) ;
 nelems = size(Conec,1) ;
 
-if exist( 'problemName' ) == 0
-  error('problemName variable was not defined.');
+% --- verification of relevant variables ---
+checkVarNamesList=cell(2,1);
+
+checkVarNamesList{1} = 'problemName' ;
+checkVarNamesList{2} = 'Nodes' ;
+checkVarNamesList{3} = 'Conec' ;
+checkVarNamesList{4} = 'hyperElasParams' ;
+checkVarNamesList{5} = 'secGeomProps' ;
+checkVarNamesList{6} = 'nodalSprings' ;
+
+for j=1:length(checkVarNamesList)
+  varName = checkVarNamesList{j} ;
+  if exist( varName, 'var' )==0,
+    error([ varName ' variable not defined.'] );
+  end
 end
+% ------------------------------------------
 
 
 % -----------------------
 % structural properties
 
-if exist('hyperElasParams') == 0
-  error('hyperElasParams variable was not defined.');
-end
-
-if exist( 'secGeomProps' ) == 0
-  error('secGeomProps variable was not defined.');
-end
-
-if exist( 'nodalSprings' ) == 0
-  error('A nodalSprings matrix must be defined.');
-end
-
 if exist( 'prescribedDisps' ) == 0
   prescribedDisps = [] ; 
 elseif length(prescribedDisps)>0
-    if size( prescribedDisps ) (2) ~= 3
-      error('The prescribedDisps matrix must have 3 columns') ; 
-    end
+  if size( prescribedDisps ) (2) ~= 3
+    error('The prescribedDisps matrix must have 3 columns') ; 
+  end
 end  
 
+%% default variables
 if exist( 'Releases' ) == 0
   Releases = [] ;
 end
@@ -66,15 +69,6 @@ end
 if exist( 'bendStiff' ) == 0
   bendStiff = [] ;
 end
-
-if exist( 'Nodes' ) == 0
-  error('The Nodes matrix was not defined.') ;
-end
-
-if exist( 'Conec' ) == 0
-  error('The Conec matrix was not defined.') ;
-end
-
 
 if exist( 'sectPar' ) == 0
   sectPar = [0 0 ] ;
@@ -104,8 +98,8 @@ end
 if exist( 'selfWeightBoolean') == 0
   selfWeightBoolean = 0 ;
 else
-	if ~selfWeightBoolean == 0
-		if exist( 'rho' ) == 0, error( 'Density was not defined.' ) ; end
+  if ~selfWeightBoolean == 0
+    if exist( 'rho' ) == 0, error( 'Density was not defined.' ) ; end
 	end
 end
 
@@ -116,11 +110,7 @@ end
 if exist( 'unifLoad' ) == 0
   unifLoad = [] ;
 end
-
-
-
 % -----------------------
-
 
 
 
