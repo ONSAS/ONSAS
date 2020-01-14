@@ -15,8 +15,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%
-
 function [ KTe, KL0e ] = elementTruss3DTangentMats( ...
   Xe, Ue, hyperelasparams, A )
 

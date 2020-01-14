@@ -48,7 +48,6 @@ function ...
     incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
         = extractMethodParams( numericalMethodParams ) ;
 
-
   % current stiffness matrix for buckling analysis
   [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
   % --------------------------------------------------------------------
@@ -63,9 +62,15 @@ function ...
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
     
+    %~ dispIter
+    %~ full(systemDeltauMatrix)
+    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
 
+%~ systemDeltauRHS 
+
+%~ pause(1)
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
     
@@ -80,10 +85,13 @@ function ...
     [booleanConverged,stopCritPar] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
  
   end
+  % --------------------------------------------------------------------
+  % --------------------------------------------------------------------
+
+
 
   % computes KTred at converged Uk
   [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
-
 
   if solutionMethod == 2;    
     nextLoadFactor = currLoadFactor ;

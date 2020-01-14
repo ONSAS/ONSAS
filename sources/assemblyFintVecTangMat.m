@@ -22,7 +22,6 @@
 function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
 
 % -----------------------------------------------
-ndofpnode = 6;
 nelems    = size(Conec,1);
 
 KT     = sparse( length(Ut) , length(Ut)  ) ;
@@ -46,7 +45,7 @@ for elem = 1:nelems
 
     % obtains nodes and dofs of element
     nodeselem = Conec(elem,1:2)' ;
-    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dofselem  = nodes2dofs( nodeselem , 6 ) ;
     dispsElem = u2ElemDisps( Ut , dofselem ) ;
 
     sizeTensor = 1 ;
@@ -54,20 +53,22 @@ for elem = 1:nelems
     A  = secGeomProps(Conec(elem,6),1) ;
     E  = hyperElasParamsMat( Conec(elem,5),:) ;
     
-    if paramOut == 2
-      [ KTe, KL0e ] = elementTruss3DTangentMats( ...
-        coordsElemsMat(elem,:), dispsElem, E , A );
-    else
-      [ Finte, stress, dstressdeps, strain ] = elementTruss3DInternLoads( ...
-        coordsElemsMat(elem,:), dispsElem, E , A );
-    end
+    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,:), dispsElem, E , A, paramOut );
+
+    %~ if paramOut == 2
+      %~ [ KTe, KL0e ] = elementTruss3DTangentMats( ...
+        %~ coordsElemsMat(elem,:), dispsElem, E , A );
+    %~ else
+      %~ [ Finte, stress, dstressdeps, strain ] = elementTruss3DInternLoads( ...
+        %~ coordsElemsMat(elem,:), dispsElem, E , A );
+    %~ end
 
   % -------------------------------------------
   case 2 % Co-rotational Frame element (bernoulli beam)
 
     % obtains nodes and dofs of element
     nodeselem = Conec(elem,1:2)' ;
-    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dofselem  = nodes2dofs( nodeselem , 6 ) ;
     dispsElem = u2ElemDisps( Ut , dofselem ) ;
 
     sizeTensor = 1 ;
@@ -92,7 +93,7 @@ for elem = 1:nelems
     
     % obtains nodes and dofs of element
     nodeselem = Conec(elem,1:4)' ;
-    dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+    dofselem  = nodes2dofs( nodeselem , 6 ) ;
     dofstet = dofselem(1:2:length(dofselem)) ;
     dispsElem = u2ElemDisps( Ut , dofstet ) ;
     

@@ -21,7 +21,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
   % computes static tangent matrix
   [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
-  % performs one iteration
+  % extracts matrix entries
   if solutionMethod == 1 || solutionMethod == 2
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
   end

@@ -17,7 +17,7 @@
 
 % function for computation of the normal force of 3D truss elements
 
-function [Finte, stress, dstressdeps, strain] = elementTruss3DInternLoads( ...
+function [Finte, stress, dstressdeps, strain ] = elementTruss3DInternLoads( ...
   Xe, Ue, hyperelasparams, A )
 
   localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]);
@@ -29,8 +29,10 @@ function [Finte, stress, dstressdeps, strain] = elementTruss3DInternLoads( ...
 
   e1def = localAxisDef / ldef ;
 
+  % --- strain ---
   strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
 
+  % --- stress and constitutive tensor ---
   [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
 
   TTcl              = zeros(12,1) ;

@@ -22,7 +22,7 @@ tic
 fprintf('  - input variables verification ... ');
 
 % --- verification of relevant variables ---
-checkVarNamesList = { 'problemName', 'Nodes', 'Conec', ...
+checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
                       'hyperElasParams', 'secGeomProps', 'nodalSprings'} ;
 for j=1:length(checkVarNamesList)
   varName = checkVarNamesList{j} ;
@@ -101,8 +101,6 @@ end
 
 if exist( 'LBAAnalyFlag' ) == 0
   LBAAnalyFlag = 0 ;
-elseif LBAAnalyFlag == 0 && LinBuckModeImperf>0;
-  error('LBAAnalyFlag must be set 1 to add an LBA mode imperfection.') ; 
 end
 
 if ( exist( 'numericalMethodParams' ) == 0 ) && ( nonLinearAnalysisBoolean ~= 0 || dynamicAnalysisBoolean ~= 0 )

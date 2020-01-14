@@ -16,24 +16,25 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-%This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0. TEST
-% TEST
+% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0.
 
-% ----------- fixeddofs and spring matrix computation ---------
 
 tic ;
 
+% ----------- fixeddofs and spring matrix computation ---------
 fixeddofs = [] ;
-KS      = sparse(ndofpnode*nnodes,ndofpnode*nnodes);  
+KS      = sparse( 6*nnodes, 6*nnodes );  
 
 for i=1:size(nodalSprings,1)
-  aux = nodes2dofs ( nodalSprings (i,1) , ndofpnode ) ;
-  for k=1:ndofpnode
+  aux = nodes2dofs ( nodalSprings (i,1) , 6 ) ;
+  for k=1:6
     %
-    if nodalSprings(i,k+1) == inf
+    if nodalSprings(i,k+1) == inf,
       fixeddofs = [ fixeddofs; aux(k) ] ;
-    else
-      KS(aux(k), aux(k) ) = nodalSprings(i,k+1) ;
+
+    elseif nodalSprings(i,k+1) > 0,
+      KS( aux(k), aux(k) ) = KS( aux(k), aux(k) ) + nodalSprings(i,k+1) ;
+
     end
   end
 end
@@ -42,7 +43,7 @@ diridofs = fixeddofs ;
 %~ diridofs = [ diridofs ; releasesDofs] ;
 
 
-neumdofs = zeros( ndofpnode*nnodes, 1 ) ;
+neumdofs = zeros( 6*nnodes, 1 ) ;
 
 for elem = 1:nelems
   
@@ -60,21 +61,11 @@ end
 
 neumdofs( diridofs ) = 0 ;
 
-neumdofs = unique( neumdofs )(2:end)
-
-
-%~ neumdofs = (1:(ndofpnode*nnodes))';
-%~ neumdofs(diridofs) = [];
-
-
-stop
-
-
-
-
-
+neumdofs = unique( neumdofs ) ;
+if neumdofs(1) == 0,
+  neumdofs(1)=[];
+end
 % -------------------------------------------------------------
-
 
 
 loadFactors     = 0 ;
@@ -82,7 +73,7 @@ itersPerTime    = 0 ;
 itersPerTimeVec = 0 ;
 controlDisps    = 0 ;
 
-timesVec = [ 0] ;
+timesVec = [ 0 ] ;
 
 factorescriticos = [] ;
 
@@ -152,7 +143,7 @@ factor_crit = 0 ;
 nKeigpos   = 0 ;
 nKeigneg   = 0 ;
 
-if dynamicAnalysisBoolean == 0
+if dynamicAnalysisBoolean == 0,
   nextLoadFactor  = currLoadFactor + targetLoadFactr / nLoadSteps ;
 
 else 
