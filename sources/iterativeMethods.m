@@ -103,4 +103,6 @@ function ...
 
   if stabilityAnalysisBoolean == 1
     [ factor_crit, nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;
+  else
+    factor_crit = 0; nKeigpos=0; nKeigneg=0;
   end

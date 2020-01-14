@@ -15,59 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
-
-% === function for reading f and x values ===
-% first author: J. Perez Zerpa
-% revision: april 2010
-% lectura de archivos
-% interpretacion de condiciones geometricas y fisicas
-%
-% %$MeshFormat
-% version-number file-type data-size
-% %$EndMeshFormat
-% %$Nodes
-% number-of-nodes
-% node-number x-coord y-coord z-coord
-% ...
-% %$EndNodes
-% %$Elements
-% number-of-elements
-% elm-number elm-type number-of-tags < tag > ... node-number-list 
-%
-% number-of-tags
-% gives the number of integer tags that follow for the n-th element. By default, the
-% first tag is the number of the physical entity to which the element belongs; the
-% second is the number of the elementary geometrical entity to which the element
-% belongs; the third is the number of a mesh partition to which the element
-% belongs. All tags must be postive integers, or zero. A zero tag is equivalent to
-% no tag.
-%
-% ...
-% %$EndElements
-% %$PhysicalNames
-% number-of-names
-% physical-dimension physical-number "physical-name"
-% ...
-% %$EndPhysicalNames
-%
-%
-%
-% geometrical properties
-% point
-% 1  todo libre    no considerado
-% 2  retengo el x   
-% 3 retengo el y
-% 4 retengo x e y
-%
-% line
-% 1   libre
-% 2  retengo x
-% 3 retengo y
-% 4 retengo x e y
-%
-% surface
-% 
+% function for reading gmsh's msh legacy version 2.2 files.
 
 function [ nodesMat, conecMat ] = mshReader( mshfile )
 
@@ -166,13 +114,8 @@ for i=1:nelem
 					nodesMat(auxnodes(j),4:5) = ones(length(auxnodes(j)),2) * diag( [str2num(auxstr(14:15)) str2num(auxstr(11:12)) ] ) ;
         end
       end
-                            
     end
-        
   end
-
 end
 
 fclose(fid);
-
-

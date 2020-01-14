@@ -14,6 +14,8 @@ clear all, close all
 dirOnsas = [ pwd '/..' ] ;
 problemName = 'uniaxialSolidGMSH' ;
 
+addpath( [ dirOnsas '/sources/' ] );
+
 %% Structural properties
 
 % Nodes and Conectivity matrix from .dxf file
