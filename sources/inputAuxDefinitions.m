@@ -44,13 +44,19 @@ end
 
 %~ releasesDofs = unique( releasesDofs);
 
-coordsElemsMat = zeros(nelems,2*ndofpnode) ;
+coordsElemsMat = zeros(nelems,1) ;
+
 for i=1:nelems
   % obtains nodes and dofs of element
-  nodeselem = Conec(i,1:2)' ;
+  nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
   dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
-  coordsElemsMat( i, (1:2:11) ) = [ Nodes( nodeselem(1),:)  Nodes( nodeselem(2),:) ] ;
+  for j=1:length(nodeselem)
+    coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j),:) ;
+  end
 end
+
+%~ coordsElemsMat
+%~ stop
 
 
 hyperElasParamsMat = [] ;

@@ -51,9 +51,9 @@ for elem = 1:nelems
     sizeTensor = 1 ;
 
     A  = secGeomProps(Conec(elem,6),1) ;
-    E  = hyperElasParamsMat( Conec(elem,5),:) ;
+    hyperAux  = hyperElasParamsMat( Conec(elem,5),:) 
     
-    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,:), dispsElem, E , A, paramOut );
+    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,:), dispsElem, hyperAux , A, paramOut );
 
     %~ if paramOut == 2
       %~ [ KTe, KL0e ] = elementTruss3DTangentMats( ...
@@ -94,21 +94,23 @@ for elem = 1:nelems
     % obtains nodes and dofs of element
     nodeselem = Conec(elem,1:4)' ;
     dofselem  = nodes2dofs( nodeselem , 6 ) ;
-    dofstet = dofselem(1:2:length(dofselem)) ;
+    dofstet   = dofselem(1:2:length(dofselem)) ;
     dispsElem = u2ElemDisps( Ut , dofstet ) ;
-    
+   
+    %~ dofselem = dofstet ;
+ 
     tetcoordmat        = zeros(3,4) ;
-    tetcoordmat(1,1:4) = Nodes( nodeselem , 1 ) ;
-    tetcoordmat(2,1:4) = Nodes( nodeselem , 2 ) ;
-    tetcoordmat(3,1:4) = Nodes( nodeselem , 3 ) ;
+    tetcoordmat(1,1:4) = coordsElemsMat(elem,1:6:end) ;
+    tetcoordmat(2,1:4) = coordsElemsMat(elem,3:6:end) ;
+    tetcoordmat(3,1:4) = coordsElemsMat(elem,5:6:end) ;
     
-
-    E  = hyperElasParams{ Conec(i,5)}(1+1) ;  
-    nu = hyperElasParams{ Conec(i,5)}(1+2) ; 
+    E  = hyperElasParamsMat( Conec(elem,5),2) ;
+    nu = hyperElasParamsMat( Conec(elem,5),3) ;
+    
     
     sizeTensor = 6 ;
 
-    [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( tetcoordmat, dispsElem , [E nu] ) ;
+    [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] ) ;
 
   end
   % -------------------------------------------

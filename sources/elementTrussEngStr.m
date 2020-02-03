@@ -30,13 +30,18 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   % normalized reference vector
   e1ref = localAxisRef / lini ;
   
+  Ue = Ue(:);
+  
   % vector deformed element
-  Xedef = Xe(:) + Ue(:) ;
-  localAxisDef = Xedef( [(1:2:5)+6]) - Xedef( [(1:2:5)]);
+  Xedef = Xe + Ue(1:11) 
+  
+  
+  localAxisDef = Xedef( [(1:2:5)+6]) - Xedef( [(1:2:5)])
 
   % deformed length
-  ldef = sqrt( sum( localAxisDef.^2 ) ) ;
+  ldef = sqrt( sum( localAxisDef.^2 ) ) 
 
+stop
   % normalized deformed co-rotational vector
   e1def = localAxisDef / ldef ;
 

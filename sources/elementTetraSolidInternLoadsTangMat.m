@@ -17,16 +17,19 @@
 
 % function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes tetraedron element
 
-function [ Finte, KTe, strain, stress ] = elementBeam3DInternLoads( x, Ue, params )
-
+function [ Finte, KTe, strain, stress ] = elementTetraSolidInternLoadsTangMat( tetcoordmat, Ue, params )
+  
+  Finte = zeros(24,1) ;
+  KTe = sparse(24,24) ;
+  
   [ deriv , vol ] =  DerivFun( tetcoordmat ) ;
   
   if vol<0, elem, error('Element with negative volume, check connectivity.'), end
   tetVol = vol ;
   BMat = BMats ( deriv ) ;
   
-  E  = params[1] ;
-  nu = params[2] ;
+  E  = params(1) ;
+  nu = params(2) ;
 
   mu    = E / (2.0 * ( 1.0 + nu ) ) ;
   Bulk  = E / (3.0 * ( 1.0 - 2.0 * nu ) ) ;
@@ -35,14 +38,19 @@ function [ Finte, KTe, strain, stress ] = elementBeam3DInternLoads( x, Ue, param
   eyevoig      = zeros(6,1) ;
   eyevoig(1:3) = 1.0        ;
 
-  
-  ConsMataux = zeros(6,6) ;
-  ConsMataux (1:3,1:3) = Bulk  + 2* mu * ( eyetres - 1.0/3.0 ) ;
-  ConsMataux (4:6,4:6) =            mu *   eyetres ;
+  ConsMat = zeros(6,6) ;
+  ConsMat (1:3,1:3) = Bulk  + 2* mu * ( eyetres - 1.0/3.0 ) ;
+  ConsMat (4:6,4:6) =            mu *   eyetres ;
     
-  ConsMat{m} = ConsMataux ;
+  Kml    = BMat' * ConsMat * BMat * tetVol ;
+  
+  KTe([1:2:end], [1:2:end])  =  Kml ;
+
+  strain = BMat * Ue ;
+  stress = ConsMat * strain ;
+  Fint   = stress' * BMat * tetVol ;
+  
+  Finte(1:2:end) = Fint ;
+  
 
 
-  Kml    = BMat{m}' * ConsMat{m} * BMat{m} * tetVol(m) ;
-  KGelem = zeros(24,24) ;  
-  KGelem([1:2:end], [1:2:end])  =  Kml ;

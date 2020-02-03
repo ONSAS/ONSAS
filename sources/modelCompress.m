@@ -35,7 +35,8 @@ if dynamicAnalysisBoolean == 0
 % variables to analyze if should be considered in struct
                             %~ 'Utp1'          , Utp1, ...
                              %~ 'dsigdepst'    , dsigdepst, ...
-                             'nnodes'       , nnodes                 );
+                             'nnodes'       , nnodes         , ...
+                             'systemDeltauMatrix', systemDeltauMatrix );
                              
                              
 else

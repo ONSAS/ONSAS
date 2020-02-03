@@ -42,7 +42,6 @@ end
 diridofs = fixeddofs ;
 %~ diridofs = [ diridofs ; releasesDofs] ;
 
-
 neumdofs = zeros( 6*nnodes, 1 ) ;
 
 for elem = 1:nelems
@@ -55,7 +54,7 @@ for elem = 1:nelems
   case 2
     neumdofs ( aux(1:11) ) = aux(1:11) ;
   case 3
-    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:(6*4-1)) ;
+    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:2:(6*4-1)) ;
   end  
 end
 
@@ -151,6 +150,8 @@ else
   nextLoadFactor = loadFactorsFunc(currTime+deltaT);
 
 end
+
+systemDeltauMatrix = [];
 
 % stores model data structures
 modelCompress
