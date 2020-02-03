@@ -20,7 +20,7 @@
 
 incrementsResultsFilename = [ outputdir  problemName '_incrementsOutput.tex' ] ;
 incrementsNormalForce 		= [ outputdir  problemName '_incrementsNormalForceOutput.tex' ] ;
-incrementsTimePerformance 	= [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
+incrementsTimePerformance = [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
 
 
 if currTime == 0
@@ -39,9 +39,13 @@ else
   fileTimePerformance = fopen( incrementsTimePerformance, 'a' ) ;
 end
 
+%~ timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( max( abs( modelCurrState.Strainst) )*100 ) , ...
+  %~ factor_crit , nKeigpos, nKeigneg
+
+%~ stop  
 % latex table output
-fprintf(fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i & %3i \\\\\n' ], ...
-  timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( abs( modelCurrState.Strainst) )*100 , ...
+fprintf( fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i & %3i \\\\\n' ], ...
+  timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( max( abs( modelCurrState.Strainst) )*100 ) , ...
   factor_crit , nKeigpos, nKeigneg )
 fprintf(fileNormalForce, [ ' %4i & %12.3e & %12.3e  & %12.3e & %12.3e \\\\\n' ], ...
   timeIndex, currTime, currLoadFactor, max(currentNormalForces), min(currentNormalForces)  )
