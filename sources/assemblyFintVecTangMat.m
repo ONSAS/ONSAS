@@ -53,15 +53,8 @@ for elem = 1:nelems
     A  = secGeomProps(Conec(elem,6),1) ;
     hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
     
-    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,dofselem)', dispsElem, hyperAux , A, paramOut );
-
-    %~ if paramOut == 2
-      %~ [ KTe, KL0e ] = elementTruss3DTangentMats( ...
-        %~ coordsElemsMat(elem,:), dispsElem, E , A );
-    %~ else
-      %~ [ Finte, stress, dstressdeps, strain ] = elementTruss3DInternLoads( ...
-        %~ coordsElemsMat(elem,:), dispsElem, E , A );
-    %~ end
+    
+    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
 
   % -------------------------------------------
   case 2 % Co-rotational Frame element (bernoulli beam)
@@ -126,13 +119,14 @@ for elem = 1:nelems
   
   elseif paramOut == 2
     % matrices assembly
-    KT  (dofselem,dofselem) = KT  (dofselem,dofselem) + KTe     ;
+    KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
   end
 
 end
 
 KT     = KT  + KS ;
 FintGt = FintGt + KS*Ut ;
+
 
 if length(bendStiff) >0
 

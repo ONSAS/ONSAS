@@ -55,16 +55,11 @@ for i=1:nelems
   end
 end
 
-%~ coordsElemsMat
-%~ stop
-
 
 hyperElasParamsMat = [] ;
 for i=1:size(hyperElasParams,1)
   hyperElasParamsMat (i,1:length(hyperElasParams{i})) = hyperElasParams{i} ;
 end
-
-
 
 % ---------------- load vectors assembly -----------------------
 variableFext = zeros( ndofpnode*nnodes , 1 );

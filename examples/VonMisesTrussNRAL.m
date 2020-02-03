@@ -55,9 +55,18 @@ LBAAnalyFlag             = 0 ;
 stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-10 ;
 stopTolForces    = 1.0e-6 ;
+
+% arc length
 targetLoadFactr  = 5e7    ;
+
+% newton
+%~ targetLoadFactr  = 1e7    ;
+
 nLoadSteps       = 50    ;
 incremArcLen     = .1    ;
+
+%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactr nLoadSteps ] ; 
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps incremArcLen ] ; 
@@ -72,7 +81,7 @@ analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( 
 
 %% Output parameters
 printflag = 0 ;
-plotParamsVector = [ 2 5 ];
+plotParamsVector = [ 0 ];
 reportBoolean = 1 ;
 
 %% ONSAS execution
