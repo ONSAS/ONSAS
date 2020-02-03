@@ -51,9 +51,9 @@ for elem = 1:nelems
     sizeTensor = 1 ;
 
     A  = secGeomProps(Conec(elem,6),1) ;
-    hyperAux  = hyperElasParamsMat( Conec(elem,5),:) 
+    hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
     
-    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,:), dispsElem, hyperAux , A, paramOut );
+    [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,dofselem)', dispsElem, hyperAux , A, paramOut );
 
     %~ if paramOut == 2
       %~ [ KTe, KL0e ] = elementTruss3DTangentMats( ...
