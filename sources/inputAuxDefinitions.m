@@ -34,6 +34,8 @@ else
 end
 
 
+tangentMatricesCell = cell(2,1) ;
+
 %~ releasesDofs = [];
 %~ for i=1:nelems
   %~ if Conec(i,7)==1

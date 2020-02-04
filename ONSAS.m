@@ -71,7 +71,6 @@ else
     % --------   computes the model state at the next load/time step   --------
     [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
     % -------------------------------------------------------------------------
-
 		
     tCallSolver = toc ;
     % checks stopping criteria and stores model state

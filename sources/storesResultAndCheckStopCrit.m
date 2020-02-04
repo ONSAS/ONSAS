@@ -80,6 +80,9 @@ currTime       = currTime + deltaT ;
 % stores displacements
 matUts = [ matUts modelNextState.Ut ] ;
 
+
+tangentMatricesCell{timeIndex} = modelNextState.systemDeltauMatrix ;
+ 
 % normal forces calculation
 
 indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
