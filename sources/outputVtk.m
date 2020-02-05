@@ -177,7 +177,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	auxVtkConecNodes = toc ;
 	tVtkConecNodes = auxVtkConecNodes + tVtkConecNodes ;
 	
-  filename = [ outputdir problemName '_' sprintf('%04i',indplot) '.vtk'] ;
+  filename = [ outputdir problemName '_' sprintf('%04i',indplot-1) '.vtk'] ;
 
   % Scalars vals
   svm             = [] ;

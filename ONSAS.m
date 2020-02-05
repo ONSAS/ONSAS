@@ -28,7 +28,7 @@ addpath( [ pwd '/sources' ] ) ;
 addpath( [ pwd '/input'   ] ) ;
 addpath( [ pwd '/user'    ] ) ;
 
-if plotParamsVector(1)>0
+if ( plotParamsVector(1)>0 && exist('silentRun') == 0 )
   fprintf('==============================================\n');
   fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
   fprintf('==============================================\n');

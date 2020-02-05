@@ -153,6 +153,9 @@ if exist( 'numericalMethodParams' ) == 0 && ( nonLinearAnalysisBoolean == 0 && d
   numericalMethodParams = [] ;
 end
 
+if exist( 'silentRun' ) == 0
+  silentRun = 0;
+end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [1] ;
@@ -209,7 +212,6 @@ end
 tVarVer = toc ;
 
 
-
 % creates outputdir
 outputdir = [ './output/' problemName '/' ] ;
 
@@ -232,5 +234,3 @@ elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
 end
 
 fprintf( ' done. \n' );
-% -----------------------
-
