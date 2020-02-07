@@ -18,10 +18,11 @@ addpath( [ dirOnsas '/sources/' ] );
 
 %% Structural properties
 
+tic
 % Nodes and Conectivity matrix from .dxf file
 [ nodesMat, conecMat, physicalNames ] = msh4Reader('uniaxialSolid.msh') ;
 [ nodesMat, conecMat ] = esmacParser( nodesMat, conecMat, physicalNames ) ;
-
+tiempoLecturaGMSH = toc 
 
 
 % Support matrix	: Is defined by the corresponding support label. I.e., in torre.dxf there is ony one label for supports, then
@@ -33,7 +34,7 @@ suppsMat = [ inf 0  0 	0   0 	0 ; ...
 % Loads matrix: 		Is defined by the corresponding load label. First entry is a boolean to assign load in Global or Local axis. (Recommendation: Global axis). 
 %										Global axis -> 1, local axis -> 0. 
 %										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
-p = -210e8 ; Lx = 0.5 ; Ly = 0.5 ; Lz = 0.5 ;
+p = 210e8 ; Lx = 1 ;
 
 loadsMat = [0   0 0 0 0 p 0 ] ;
 
@@ -81,8 +82,9 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 
 % Analytic sol
-analyticSolFlag = 0 ; analytSol = [ p*Lx/E ] ; analyticSolDofs = [ 6*(7-1)+1 ] ;
-analyticCheckTolerance = 1e-8 ;
+analyticSolFlag        = 1             ;
+analyticCheckTolerance = 1e-8          ;
+analyticFunc           = @(w) w*p*Lx/E ;
 
 %% Output parameters
 plotParamsVector = [ 3 ] ; printflag = 2 ;
