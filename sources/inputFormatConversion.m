@@ -124,7 +124,7 @@ for i = 1:nelems
       
       end
 
-      nodalConstantLoads = [ nodalConstantLoads ; ...
+      nodalVariableLoads = [ nodalVariableLoads ; ...
                            nodestrng' ones(3,1)*[Fx 0 Fy 0 Fz 0] ] ;
 
     end

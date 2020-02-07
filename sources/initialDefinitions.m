@@ -40,6 +40,7 @@ for i=1:size(nodalSprings,1)
 end
 
 diridofs = fixeddofs ;
+diridofs = unique( diridofs) ; % remove repeated dofs
 %~ diridofs = [ diridofs ; releasesDofs] ;
 
 neumdofs = zeros( 6*nnodes, 1 ) ;

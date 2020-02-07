@@ -24,7 +24,8 @@ function [ Finte, KTe, strain, stress ] = elementTetraSolidInternLoadsTangMat( t
   
   [ deriv , vol ] =  DerivFun( tetcoordmat ) ;
   
-  if vol<0, error('Element with negative volume, check connectivity.'), end
+  if vol<0,  vol, error('Element with negative volume, check connectivity.'), end
+
   tetVol = vol ;
   BMat = BMats ( deriv ) ;
   

@@ -1,11 +1,12 @@
 //ms = 0.05 ;
-ms = 3.0 ;
+ms = 0.05;
+//ms = 3.0 ;
 
 //Puntos
 
 Lx = 1.0 ;
-Ly = 1 ;
-Lz = 1 ;
+Ly = .2 ;
+Lz = .2 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {0,0,Lz, ms} ;
@@ -63,7 +64,7 @@ Curve Loop(5) = {5, -10, -1, -9};
 //+
 Plane Surface(5) = {5};
 //+
-Curve Loop(6) = {8, 5, 6, 7};
+Curve Loop(6) = {-8, -7, -6, -5};
 //+
 Plane Surface(6) = {6};
 //+

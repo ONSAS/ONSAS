@@ -22,6 +22,8 @@ addpath( [ dirOnsas '/sources/' ] );
 [ nodesMat, conecMat, physicalNames ] = msh4Reader('uniaxialSolid.msh') ;
 [ nodesMat, conecMat ] = esmacParser( nodesMat, conecMat, physicalNames ) ;
 
+
+
 % Support matrix	: Is defined by the corresponding support label. I.e., in torre.dxf there is ony one label for supports, then
 % 									the matrix will have only one row. The structure of the matrix is: [ ux thetax uy thetay uz thetaz ]
 suppsMat = [ inf 0  0 	0   0 	0 ; ...
@@ -37,6 +39,19 @@ loadsMat = [0   0 0 0 0 p 0 ] ;
 
 % Previously defined matrices to ONSAS format
 [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat ) ;
+
+
+%~ for i=1:size(Conec,1)
+  %~ tetcoordmat = Nodes( Conec(i,1:4) ,:)' ; 
+  %~ [ deriv , vol ] =  DerivFun( tetcoordmat ) ;
+
+  %~ if vol<0
+    %~ Conec(i,1:4) = Conec(i,[1 3 2 4] ) ;
+    %~ tetcoordmat = Nodes( Conec(i,1:4) ,:)' ; 
+    %~ [ deriv , vol ] =  DerivFun( tetcoordmat ) ; 
+  %~ end
+%~ end
+
 
 clear nodesMat conecMat loadsMat suppsMat
 
@@ -66,7 +81,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 
 % Analytic sol
-analyticSolFlag = 3 ; analytSol = [ p*Lx/E ] ; analyticSolDofs = [ 6*(7-1)+1 ] ;
+analyticSolFlag = 0 ; analytSol = [ p*Lx/E ] ; analyticSolDofs = [ 6*(7-1)+1 ] ;
 analyticCheckTolerance = 1e-8 ;
 
 %% Output parameters

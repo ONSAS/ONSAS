@@ -113,7 +113,7 @@ if strncmp( X, '$Nodes',5)
     aux = fscanf(fid,'%g %g %g %g',[4  1]) ; fgetl(fid);
     if aux(4) > 0 % if there are nodes in the block
       nodesTags = fscanf(fid,'%g \n',[aux(4) 1]);
-      matCoords = fscanf(fid,'%g \n',[aux(4) 3]);
+      matCoords = fscanf(fid,'%g \n',[3, aux(4)])';
       % only saves physical tags for nodes defined as nodes (no inheritance)
       auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2)) * ( aux(1) == 0) ;
       nodesMat( nodesTags,:) = [ matCoords ones(aux(4),1)*auxphy ] ;

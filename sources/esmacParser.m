@@ -32,5 +32,7 @@ nodesMat(indsNZ,4:end) = matInds( nodesMatinp(indsNZ,4), :) ;
 
 conecMat = zeros( size(conecMatinp,1), 9 ) ;
 conecMat(:,1:4) = conecMatinp(:, 1:4) ;
+
+
 indsNZ = find( conecMatinp(:,5) ) ;
 conecMat(indsNZ,5:end) = matInds( conecMatinp(indsNZ, 5), :) ;
