@@ -24,7 +24,7 @@ function [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
   controlDisps, visualloadfactor, linearDeformedScaleFactor, ...
   printflag, outputdir, problemName, loadFactors, sectPar, ...
   nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
-  timeIncr, cellStress, matNts, indexesElems, plotsViewAxis )
+  timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, silentRun )
 
 	if size(matUts,2) == 1 && size(matNts,2) == 1 
 		matUts = [zeros(size(matUts,1),1) matUts] ;
@@ -49,10 +49,12 @@ function [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
 		tDefShape = 0 ; tLoadFac = 0 ; tNormalForce = 0 ; tLoadDisps = 0 ;
   end  
   tic
-  if length(loadFactors)>1
-		if nonLinearAnalysisBoolean || dynamicAnalysisBoolean ~= 0
-			outputLoadVSDisplacementsPlot
-		end
+  if silentRun ~= 1 ;
+    if length(loadFactors)>1
+      if nonLinearAnalysisBoolean || dynamicAnalysisBoolean ~= 0
+        outputLoadVSDisplacementsPlot
+      end
+    end
   end
 	tLoadDisps = toc ;
 

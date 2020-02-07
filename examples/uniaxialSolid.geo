@@ -1,11 +1,11 @@
-ms = .2 ;
-msi = 0.6*ms ;
+//ms = 0.05 ;
+ms = 3.0 ;
 
 //Puntos
 
-Lx = 0.5 ;
-Ly = 0.5 ;
-Lz = 0.5 ;
+Lx = 1.0 ;
+Ly = 1 ;
+Lz = 1 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {0,0,Lz, ms} ;

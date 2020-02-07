@@ -19,7 +19,10 @@
 % Function that converts from the gui format to the .m input format
 
 function [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
-  
+
+nodesMat(:,4:6) = [] ;
+conecMat = [ conecMat(:,5) conecMat(:,1:4) conecMat(:,6:9) ] ;
+
 ndofpnode = 6 ;  
 
 nnodes = size(nodesMat,1) ;
@@ -77,8 +80,8 @@ for i = 1:nelems
   type = conecMat(i,1) ;
   sec  = conecMat(i,6) ;
   mat  = conecMat(i,7) ;
-  loa  = conecMat(i,8) ;
-  sup  = conecMat(i,9) ;
+  sup  = conecMat(i,8) ;
+  loa  = conecMat(i,9) ;
   
   switch type
 

@@ -19,7 +19,8 @@ addpath( [ dirOnsas '/sources/' ] );
 %% Structural properties
 
 % Nodes and Conectivity matrix from .dxf file
-[ nodesMat, conecMat ] = mshReader('uniaxialSolid.msh') ;
+[ nodesMat, conecMat, physicalNames ] = msh4Reader('uniaxialSolid.msh') ;
+[ nodesMat, conecMat ] = esmacParser( nodesMat, conecMat, physicalNames ) ;
 
 % Support matrix	: Is defined by the corresponding support label. I.e., in torre.dxf there is ony one label for supports, then
 % 									the matrix will have only one row. The structure of the matrix is: [ ux thetax uy thetay uz thetaz ]
@@ -37,6 +38,7 @@ loadsMat = [0   0 0 0 0 p 0 ] ;
 % Previously defined matrices to ONSAS format
 [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat ) ;
 
+clear nodesMat conecMat loadsMat suppsMat
 
 % Constitutive properties: Structure: [ 1 E nu ]
 E = 210e9 ; nu = 0.3 ;
@@ -47,8 +49,20 @@ hyperElasParams{1} = [ 1  E  nu ] ;
 secGeomProps = [ 0 0 0 0 ] ;
 
 % Analysis parameters
-nonLinearAnalysisBoolean 	= 0 ;
+%~ nonLinearAnalysisBoolean 	= 0 ;
+nonLinearAnalysisBoolean 	= 1 ;
 dynamicAnalysisBoolean 		= 0 ;
+
+stopTolIts       = 30     ;
+stopTolDeltau    = 1.0e-10 ;
+stopTolForces    = 1.0e-6 ;
+targetLoadFactr  = 1    ;
+nLoadSteps       = 2    ;
+
+controlDofInfo = [ 7 1 1 ] ;
+
+numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactr nLoadSteps ] ; 
 
 
 % Analytic sol
