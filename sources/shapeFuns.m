@@ -16,23 +16,22 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ==============================================================================
-function [ fun , vol ] = DerivFun( tetcoordmat , varargin )
+function [ fun ] = shapeFuns( x,y,z , derivOrder )
 
-  if nargin == 1
-    derivOrder = 0 
-  else
-    derivOrder = varargin(1){1}
+  if derivOrder == 0  
+    fun = zeros(4,1) ;
+    fun(1) = x ;
+    fun(2) = 1 - x - y - z ;
+    fun(3) = z ;
+    fun(4) = y ;
+  
+  elseif derivOrder == 1
+    fun = zeros( 3, 4 ) ;
+    fun(1,1) = 1 ;
+    fun(1:3,2) = [ -1, -1, -1 ] ;
+    fun(3,3) = 1.0 ;
+    fun(2,4) = 1.0 ;
   end
-  
-  A        = zeros(4,4)   ;
-  A(:,1)   = 1.0          ;
-  A(:,2:4) = tetcoordmat' ;
-  
-  invA = inv(A) ;
-    
-  vol = det(A) / 6.0 ;
-  
-  fun = invA(2:4,:) ;
-end  
+
 % ==============================================================================
 

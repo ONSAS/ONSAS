@@ -26,7 +26,7 @@ function [ booleanConverged, stopCritPar ] = convergenceTest( ...
 
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
-  deltaErrLoad  = norm( redFint - redFext )   ;
+  deltaErrLoad  = norm( redFint - redFext )   
   normFext      = norm( redFext )             ;
   
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;

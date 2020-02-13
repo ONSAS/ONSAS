@@ -97,13 +97,50 @@ for elem = 1:nelems
     tetcoordmat(2,1:4) = coordsElemsMat(elem,3:6:end) ;
     tetcoordmat(3,1:4) = coordsElemsMat(elem,5:6:end) ;
     
-    E  = hyperElasParamsMat( Conec(elem,5),2) ;
-    nu = hyperElasParamsMat( Conec(elem,5),3) ;
     
     
     sizeTensor = 6 ;
 
-    [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] ) ;
+
+    if hyperElasParamsMat( Conec(elem,5), 1 ) == 6
+      E  = hyperElasParamsMat( Conec(elem,5),2) ;
+      nu = hyperElasParamsMat( Conec(elem,5),3) ;
+      if paramOut==1
+      
+        %~ dl = .0001 ;
+        %~ alpha = 1+dl ;
+        %~ beta = sqrt( 1-(alpha^2-1)*nu ) ;
+        %~ utran = beta -1 
+
+        %~ % segundo nodo (nodo 3)
+        %~ dispsElem( 1*3 + 2) = utran ;
+        %~ dispsElem( 1*3 + 3) = utran ;
+
+        %~ % tercer nodo ( nodo 2)
+        %~ dispsElem( 2*3 + 3) = utran ;
+        
+        %~ % cuarto nodo (6)
+        %~ dispsElem( 3*3 + 1) =  dl    ;
+        %~ dispsElem( 3*3 + 3) = utran ;        
+%~ paramOut = 2 ;
+
+        [ Finte ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, dispsElem , [E nu], paramOut ) ; 
+        
+        strain=zeros(6,1);
+        stress=zeros(6,1);
+      else
+        [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
+        
+        %~ full(KTe)
+        %~ stop
+      end
+      
+    else
+      E  = hyperElasParamsMat( Conec(elem,5),2) ;
+      nu = hyperElasParamsMat( Conec(elem,5),3) ;
+      [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
+    end
+
 
   end
   % -------------------------------------------

@@ -57,7 +57,7 @@ function ...
   % --------------------------------------------------------------------
   % --- iteration in displacements (NR) or load-displacements (NR-AL) --
   while  booleanConverged == 0
-    dispIter += 1 ;
+    dispIter += 1 
 
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);

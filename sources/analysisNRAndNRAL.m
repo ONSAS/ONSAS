@@ -60,16 +60,13 @@ function ...
   while  booleanConverged == 0
     dispIter += 1 ;
 
+    dispIter
+
     % system matrix
     systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-
-%~ dispIter
-%~ full(systemDeltauMatrix)
     
     % system rhs
     [systemDeltauRHS, FextG]    = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
-
-%~ systemDeltauRHS
 
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
