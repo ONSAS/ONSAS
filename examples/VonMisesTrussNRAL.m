@@ -2,8 +2,10 @@
 %
 %%
 
+clear all, close all
+
 %% General data
-dirOnsas = '..' ;
+dirOnsas = [ pwd '/..' ] ;
 problemName = 'VonMisesTrussNRAL' ;
 
 % uncomment to delete variables and close windows
@@ -20,18 +22,18 @@ hyperElasParams{1} = [1 Es nu] ;
 A = 2.5e-4 ; 
 secGeomProps = [ A 2 2 4 ] ;
 
-% in global system of coordinates
-nodalSprings = [ 1  inf  0  inf  0  inf 0 ; ...
-                 2    0  0  inf  0    0 0 ; ...
-                 3  inf  0  inf  0  inf 0   ...
-               ];
-
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
 
 Nodes = [      0  0     0  ; ...
             auxx  0  auxy  ; ...
           2*auxx  0     0  ] ;
+
+% in global system of coordinates
+nodalSprings = [ 1  inf  0  inf  0  inf 0 ; ...
+                 2    0  0  inf  0    0 0 ; ...
+                 3  inf  0  inf  0  inf 0   ...
+               ];
 
 Conec = [ 1 2 0 0 1 1 1 ;
           2 3 0 0 1 1 1 ] ;
@@ -53,12 +55,23 @@ LBAAnalyFlag             = 0 ;
 stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-10 ;
 stopTolForces    = 1.0e-6 ;
+
+% arc length
 targetLoadFactr  = 5e7    ;
+
+% newton
+%~ targetLoadFactr  = 1e7    ;
+
 nLoadSteps       = 50    ;
 incremArcLen     = .1    ;
 
+%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactr nLoadSteps ] ; 
+
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps incremArcLen ] ; 
+
+stabilityAnalysisBoolean = 1 ;
 
 % analytical solution using engineering strain
 analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
@@ -67,7 +80,9 @@ analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( 
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
-printflag = 0 ; plotParamsVector = [ 2 5 ];
+printflag = 0 ;
+plotParamsVector = [ 0 ];
+reportBoolean = 1 ;
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution

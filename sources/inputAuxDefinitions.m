@@ -1,3 +1,21 @@
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
+
 tic
 % ---------------------------------------------------
 
@@ -5,7 +23,7 @@ ndofpnode = 6;
 
 strucsize = strucSize(Nodes) ;
 
-absoluteimperfection = imperfactor * strucsize ;
+%~ absoluteimperfection = imperfactor * strucsize ;
 
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
   controlDofInfo = [ ] ;
@@ -16,22 +34,27 @@ else
 end
 
 
-releasesDofs = [];
-for i=1:nelems
-  if Conec(i,7)==1
-    releasesDofs = [ releasesDofs; nodes2dofs( Conec(i,1:2),ndofpnode)(2:2:end) ];
-    Releases = [ Releases; i ones(1,4) ] ;
-  end
-end
+tangentMatricesCell = cell(2,1) ;
 
-releasesDofs = unique( releasesDofs);
+%~ releasesDofs = [];
+%~ for i=1:nelems
+  %~ if Conec(i,7)==1
+    %~ releasesDofs = [ releasesDofs; nodes2dofs( Conec(i,1:2),ndofpnode)(2:2:end) ];
+    %~ Releases = [ Releases; i ones(1,4) ] ;
+  %~ end
+%~ end
 
-coordsElemsMat = zeros(nelems,2*ndofpnode) ;
+%~ releasesDofs = unique( releasesDofs);
+
+coordsElemsMat = zeros(nelems,24) ;
+
 for i=1:nelems
   % obtains nodes and dofs of element
-  nodeselem = Conec(i,1:2)' ;
+  nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
   dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
-  coordsElemsMat( i, (1:2:11) ) = [ Nodes( nodeselem(1),:)  Nodes( nodeselem(2),:) ] ;
+  for j=1:length(nodeselem)
+    coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j), : ) ;
+  end
 end
 
 
@@ -39,8 +62,6 @@ hyperElasParamsMat = [] ;
 for i=1:size(hyperElasParams,1)
   hyperElasParamsMat (i,1:length(hyperElasParams{i})) = hyperElasParams{i} ;
 end
-
-
 
 % ---------------- load vectors assembly -----------------------
 variableFext = zeros( ndofpnode*nnodes , 1 );

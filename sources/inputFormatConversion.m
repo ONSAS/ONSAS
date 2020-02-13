@@ -1,25 +1,28 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
 % Function that converts from the gui format to the .m input format
 
 function [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
-  
+
+nodesMat(:,4:6) = [] ;
+conecMat = [ conecMat(:,5) conecMat(:,1:4) conecMat(:,6:9) ] ;
+
 ndofpnode = 6 ;  
 
 nnodes = size(nodesMat,1) ;
@@ -77,8 +80,8 @@ for i = 1:nelems
   type = conecMat(i,1) ;
   sec  = conecMat(i,6) ;
   mat  = conecMat(i,7) ;
-  loa  = conecMat(i,8) ;
-  sup  = conecMat(i,9) ;
+  sup  = conecMat(i,8) ;
+  loa  = conecMat(i,9) ;
   
   switch type
 
@@ -121,7 +124,7 @@ for i = 1:nelems
       
       end
 
-      nodalConstantLoads = [ nodalConstantLoads ; ...
+      nodalVariableLoads = [ nodalVariableLoads ; ...
                            nodestrng' ones(3,1)*[Fx 0 Fy 0 Fz 0] ] ;
 
     end

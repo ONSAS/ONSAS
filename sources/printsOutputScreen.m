@@ -1,26 +1,26 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
 % Prints analysis output 
 
 incrementsResultsFilename = [ outputdir  problemName '_incrementsOutput.tex' ] ;
 incrementsNormalForce 		= [ outputdir  problemName '_incrementsNormalForceOutput.tex' ] ;
-incrementsTimePerformance 	= [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
+incrementsTimePerformance = [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
 
 
 if currTime == 0
@@ -39,9 +39,13 @@ else
   fileTimePerformance = fopen( incrementsTimePerformance, 'a' ) ;
 end
 
+%~ timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( max( abs( modelCurrState.Strainst) )*100 ) , ...
+  %~ factor_crit , nKeigpos, nKeigneg
+
+%~ stop  
 % latex table output
-fprintf(fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i & %3i \\\\\n' ], ...
-  timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( abs( modelCurrState.Strainst) )*100 , ...
+fprintf( fileIncrements, [ ' %4i & %12.3e & %12.3e  & %4i  & %5.2f & %12.5e & %5i & %3i \\\\\n' ], ...
+  timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( max( abs( modelCurrState.Strainst) )*100 ) , ...
   factor_crit , nKeigpos, nKeigneg )
 fprintf(fileNormalForce, [ ' %4i & %12.3e & %12.3e  & %12.3e & %12.3e \\\\\n' ], ...
   timeIndex, currTime, currLoadFactor, max(currentNormalForces), min(currentNormalForces)  )

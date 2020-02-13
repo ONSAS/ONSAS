@@ -1,49 +1,71 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%~ This file is part of ONSAS.
 
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
+% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0.
 
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-
-%This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0. TEST
-% TEST
-
-% ----------- fixeddofs and spring matrix computation ---------
 
 tic ;
 
+% ----------- fixeddofs and spring matrix computation ---------
 fixeddofs = [] ;
-KS      = sparse(ndofpnode*nnodes,ndofpnode*nnodes);  
+KS      = sparse( 6*nnodes, 6*nnodes );  
 
 for i=1:size(nodalSprings,1)
-  aux = nodes2dofs ( nodalSprings (i,1) , ndofpnode ) ;
-  for k=1:ndofpnode
+  aux = nodes2dofs ( nodalSprings (i,1) , 6 ) ;
+  for k=1:6
     %
-    if nodalSprings(i,k+1) == inf
+    if nodalSprings(i,k+1) == inf,
       fixeddofs = [ fixeddofs; aux(k) ] ;
-    else
-      KS(aux(k), aux(k) ) = nodalSprings(i,k+1) ;
+
+    elseif nodalSprings(i,k+1) > 0,
+      KS( aux(k), aux(k) ) = KS( aux(k), aux(k) ) + nodalSprings(i,k+1) ;
+
     end
   end
 end
 
 diridofs = fixeddofs ;
-diridofs = [ diridofs ; releasesDofs] ;
-neumdofs = (1:(ndofpnode*nnodes))';
-neumdofs(diridofs) = [];
-% -------------------------------------------------------------
+diridofs = unique( diridofs) ; % remove repeated dofs
+%~ diridofs = [ diridofs ; releasesDofs] ;
 
+neumdofs = zeros( 6*nnodes, 1 ) ;
+
+for elem = 1:nelems
+  
+  aux = nodes2dofs( Conec( elem, 1:4), 6)' ;
+  
+  switch Conec( elem, 7)
+  case 1
+    neumdofs ( aux(1:2:11) ) = aux(1:2:11) ;
+  case 2
+    neumdofs ( aux(1:11) ) = aux(1:11) ;
+  case 3
+    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:2:(6*4-1)) ;
+  end  
+end
+
+neumdofs( diridofs ) = 0 ;
+
+neumdofs = unique( neumdofs ) ;
+if neumdofs(1) == 0,
+  neumdofs(1)=[];
+end
+% -------------------------------------------------------------
 
 
 loadFactors     = 0 ;
@@ -51,7 +73,7 @@ itersPerTime    = 0 ;
 itersPerTimeVec = 0 ;
 controlDisps    = 0 ;
 
-timesVec = [ 0] ;
+timesVec = [ 0 ] ;
 
 factorescriticos = [] ;
 
@@ -121,7 +143,7 @@ factor_crit = 0 ;
 nKeigpos   = 0 ;
 nKeigneg   = 0 ;
 
-if dynamicAnalysisBoolean == 0
+if dynamicAnalysisBoolean == 0,
   nextLoadFactor  = currLoadFactor + targetLoadFactr / nLoadSteps ;
 
 else 
@@ -129,6 +151,8 @@ else
   nextLoadFactor = loadFactorsFunc(currTime+deltaT);
 
 end
+
+systemDeltauMatrix = [];
 
 % stores model data structures
 modelCompress

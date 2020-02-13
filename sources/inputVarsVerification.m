@@ -1,62 +1,54 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %Script for verification of the input variables definition.
 
 tic
 
-if plotParamsVector(1)>0
-  fprintf('  - input variables verification ... ');
+fprintf('  - input variables verification ... ');
+
+% --- verification of relevant variables ---
+checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
+                      'hyperElasParams', 'secGeomProps', 'nodalSprings'} ;
+for j=1:length(checkVarNamesList)
+  varName = checkVarNamesList{j} ;
+  if exist( varName, 'var' )==0,
+    error([ varName ' variable was not defined.'] );
+  end
 end
+% ------------------------------------------
 
 nmats  = length( hyperElasParams ) ;
 nsecs  = length( secGeomProps    ) ;
 nnodes = size(Nodes,1) ;
 nelems = size(Conec,1) ;
 
-if exist( 'problemName' ) == 0
-  error('problemName variable was not defined.');
-end
-
-
 % -----------------------
-% structural properties
-
-if exist('hyperElasParams') == 0
-  error('hyperElasParams variable was not defined.');
-end
-
-if exist( 'secGeomProps' ) == 0
-  error('secGeomProps variable was not defined.');
-end
-
-if exist( 'nodalSprings' ) == 0
-  error('A nodalSprings matrix must be defined.');
-end
+% default values
 
 if exist( 'prescribedDisps' ) == 0
   prescribedDisps = [] ; 
 elseif length(prescribedDisps)>0
-    if size( prescribedDisps ) (2) ~= 3
-      error('The prescribedDisps matrix must have 3 columns') ; 
-    end
+  if size( prescribedDisps ) (2) ~= 3
+    error('The prescribedDisps matrix must have 3 columns') ; 
+  end
 end  
 
+%% default variables
 if exist( 'Releases' ) == 0
   Releases = [] ;
 end
@@ -69,35 +61,9 @@ if exist( 'bendStiff' ) == 0
   bendStiff = [] ;
 end
 
-if exist( 'Nodes' ) == 0
-  error('The Nodes matrix was not defined.') ;
-end
-
-if exist( 'Conec' ) == 0
-  error('The Conec matrix was not defined.') ;
-end
-
-
 if exist( 'sectPar' ) == 0
   sectPar = [0 0 ] ;
 end 
-
-if exist( 'LinBuckModeImperf' ) == 0
-  LinBuckModeImperf = 0 ;
-end 
-
-if exist( 'imperFactor' ) == 0
-  imperfactor = 1e-4 ;
-end
-
-if exist( 'dim' ) == 0
-	dim = 3 ;
-end
-% ---------------------------------
-
-
-% ---------------------------------
-% loading parameters
 
 if exist( 'loadFactorsFunc') == 0
   loadFactorsFunc = @(t) t ;
@@ -106,8 +72,8 @@ end
 if exist( 'selfWeightBoolean') == 0
   selfWeightBoolean = 0 ;
 else
-	if ~selfWeightBoolean == 0
-		if exist( 'rho' ) == 0, error( 'Density was not defined.' ) ; end
+  if ~selfWeightBoolean == 0
+    if exist( 'rho' ) == 0, error( 'Density was not defined.' ) ; end
 	end
 end
 
@@ -118,11 +84,7 @@ end
 if exist( 'unifLoad' ) == 0
   unifLoad = [] ;
 end
-
-
-
 % -----------------------
-
 
 
 
@@ -139,8 +101,6 @@ end
 
 if exist( 'LBAAnalyFlag' ) == 0
   LBAAnalyFlag = 0 ;
-elseif LBAAnalyFlag == 0 && LinBuckModeImperf>0;
-  error('LBAAnalyFlag must be set 1 to add an LBA mode imperfection.') ; 
 end
 
 if ( exist( 'numericalMethodParams' ) == 0 ) && ( nonLinearAnalysisBoolean ~= 0 || dynamicAnalysisBoolean ~= 0 )
@@ -193,6 +153,9 @@ if exist( 'numericalMethodParams' ) == 0 && ( nonLinearAnalysisBoolean == 0 && d
   numericalMethodParams = [] ;
 end
 
+if exist( 'silentRun' ) == 0
+  silentRun = 0;
+end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [1] ;
@@ -201,6 +164,12 @@ else
 		plotParamsVector = [plotParamsVector 0] ;
 	end
 end
+
+
+if exist( 'stabilityAnalysisBoolean' ) == 0
+  stabilityAnalysisBoolean = 0 ;
+end
+
 
 if exist( 'printflag' ) == 0
   printflag = 0 ;
@@ -243,7 +212,6 @@ end
 tVarVer = toc ;
 
 
-
 % creates outputdir
 outputdir = [ './output/' problemName '/' ] ;
 
@@ -253,20 +221,16 @@ if exist( './output/' ) ~= 7
   fprintf( ' done. \n' );
 end
 
-cd output
-if exist( ['./' problemName '/' ] ) ~= 7
-  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] );
-elseif exist( ['./' problemName '/' ] ) == 7
-  if plotParamsVector(1)>0
-    fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] );
-  end
+if exist( outputdir ) == 7 % problemName is a directory
+  % the content is erased
+  fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
   confirm_recursive_rmdir (0)
   [aux,msg] = rmdir( problemName ,'s'); 
-end
-mkdir('./', ['./' problemName '/' ] );
-if plotParamsVector(1)>0
-  fprintf( ' done. \n' );
-end
-cd ..
-% -----------------------
 
+elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
+  % it is created
+  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] ) ;
+  mkdir( outputdir );
+end
+
+fprintf( ' done. \n' );
