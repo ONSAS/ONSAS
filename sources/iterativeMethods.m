@@ -29,7 +29,7 @@ function ...
   % model variable data
   Uk, Stressk, Strainsk, FintGk, currLoadFactor, nextLoadFactor, ...
   % specific iterative methods variables 
-  convDeltau, stabilityAnalysisBoolean ) ;
+  convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
 
@@ -56,8 +56,11 @@ function ...
 
   % --------------------------------------------------------------------
   % --- iteration in displacements (NR) or load-displacements (NR-AL) --
+  if  booleanScreenOutput
+    fprintf(' iter  normResLoad\n----------------------\n' ) ;
+  end
   while  booleanConverged == 0
-    dispIter += 1 
+    dispIter += 1 ;
 
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
@@ -76,9 +79,16 @@ function ...
     [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
     % check convergence
-    [booleanConverged,stopCritPar] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
- 
+    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
+
+    if  booleanScreenOutput
+      fprintf(' %3i %12.3e \n' , dispIter, deltaErrLoad ) ;
+    end
   end
+  if  booleanScreenOutput
+    fprintf('----  iters ended --------\n' ) ;
+  end
+
   % --------------------------------------------------------------------
   % --------------------------------------------------------------------
 

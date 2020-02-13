@@ -15,11 +15,18 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%Script for verification of the input variables definition.
+% Script for verification of the input variables definition. Default
+% values ar assigned.
 
 tic
 
-fprintf('  - input variables verification ... ');
+if exist( 'booleanScreenOutput' ) == 0
+  booleanScreenOutput = 1 ;
+end
+
+if booleanScreenOutput
+  fprintf('  - input variables verification ... ') ;
+end
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
@@ -114,12 +121,10 @@ if ( nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 )
   end
 
 else
-
   if exist( 'linearDeformedScaleFactor' ) ~= 0
-    fprintf(' WARNING: linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
+    warning(' linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
   end
   linearDeformedScaleFactor = 1 ;
-
 end
 
 if exist( 'analyticSolFlag' ) == 0
@@ -153,9 +158,6 @@ if exist( 'numericalMethodParams' ) == 0 && ( nonLinearAnalysisBoolean == 0 && d
   numericalMethodParams = [] ;
 end
 
-if exist( 'silentRun' ) == 0
-  silentRun = 0;
-end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [1] ;

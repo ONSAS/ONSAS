@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [ booleanConverged, stopCritPar ] = convergenceTest( ...
+function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   numericalMethodParams, redFint, redFext, redDeltaU, redUk, dispIter ) 
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
@@ -26,7 +26,7 @@ function [ booleanConverged, stopCritPar ] = convergenceTest( ...
 
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
-  deltaErrLoad  = norm( redFint - redFext )   
+  deltaErrLoad  = norm( redFint - redFext )   ;
   normFext      = norm( redFext )             ;
   
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;

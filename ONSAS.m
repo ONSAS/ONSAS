@@ -28,13 +28,11 @@ addpath( [ pwd '/sources' ] ) ;
 addpath( [ pwd '/input'   ] ) ;
 addpath( [ pwd '/user'    ] ) ;
 
-if ( plotParamsVector(1)>0 && exist('silentRun') == 0 )
+if exist('booleanScreenOutput') == 0 || booleanScreenOutput
   fprintf('==============================================\n');
   fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
+  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. Please read COPYING.txt and README.md files for more information. \n' ] ) ;
   fprintf('==============================================\n');
-  fprintf( [ 'Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli \n' ] ) ;
-  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. ' ] ) ;
-  fprintf( [ 'This is free software, and you are welcome to redistribute it under certain conditions; read COPYING.txt file for more details. \n' ] ) ;
 end
 
 tReadingInput = 0;
@@ -105,7 +103,7 @@ if plotParamsVector(1) > 0
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
     outputdir, problemName, loadFactors, sectPar, ...
     nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
-    timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, silentRun ) ;
+    timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput ) ;
 end
 
 tic
