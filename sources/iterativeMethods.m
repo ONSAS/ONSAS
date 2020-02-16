@@ -49,7 +49,9 @@ function ...
         = extractMethodParams( numericalMethodParams ) ;
 
   % current stiffness matrix for buckling analysis
-  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  if stabilityAnalysisBoolean == 1
+    [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  end
   % --------------------------------------------------------------------
   % --------------------------------------------------------------------
   
@@ -62,14 +64,20 @@ function ...
   while  booleanConverged == 0
     dispIter += 1 ;
 
+auxT = time();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-    
+tiempoComputeMatrix = time() - auxT
+
+auxT = time();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
+tiempoComputeRHS = time() - auxT
 
+opa = time();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
+tiempoSystemSolve = time() - opa
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
