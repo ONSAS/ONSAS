@@ -22,7 +22,7 @@ function  [ modelCurrState, BCsNextState, auxIO ]  = callSolver( modelCurrState,
 
 auxT = time();
 modelExtract
-tiempoModelExtract = time() - auxT
+tiempoModelExtract = time() - auxT ;
 
 if dynamicAnalysisBoolean == 0
 
@@ -46,7 +46,7 @@ if dynamicAnalysisBoolean == 0
 
 auxT = time();
   modelCompress
-tiempoModelCompress = time() - auxT
+tiempoModelCompress = time() - auxT;
 
 else
 

@@ -18,8 +18,12 @@
 % ======================================================================
 function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod , bendStiff)
 
+  tiem=time();
+
   % computes static tangent matrix
   [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+
+  tiempoAssembly = time() - tiem ;
 
   % extracts matrix entries
   if solutionMethod == 1 || solutionMethod == 2

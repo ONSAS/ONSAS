@@ -19,8 +19,8 @@
 %
 
 function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, Ue, params, paramOut )
-  
-  Finte = zeros(24,1) ;
+
+  Finte = zeros(12,1) ;
   
   booleanKTAnalytic = 1 ;
   
@@ -36,7 +36,8 @@ function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat
   % jacobiano que relaciona coordenadas materiales con isoparametricas
   jacobianmat = elecoordmat * deriv'  ;
 
-  vol = det( jacobianmat ) / 6 ;
+  vol = analyDet( jacobianmat ) / 6 ;
+
   if vol<0,  vol, error('Element with negative volume, check connectivity.'), end
 
   funder = inv(jacobianmat)' * deriv ;
@@ -60,17 +61,14 @@ function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat
   
   ConsMat = constTensor ( young, nu, Egreen ) ;
   
-  Scons = ConsMat * tranvoigCon2(Egreen) ;
-
-  %~ Finte(1:2:end)    = matBgrande' * Svoigt * vol ;
-  Finte(1:2:end)    = transpose(matBgrande) * Svoigt * vol ;
+  Finte    = transpose(matBgrande) * Svoigt * vol ;
     
   strain = zeros(6,1);
   stress = zeros(6,1);
 
   if paramOut == 2
 
-    KTe = sparse(24,24) ;
+    KTe = zeros(12,12) ;
 
     if booleanKTAnalytic
       Kml        = matBgrande' * ConsMat * matBgrande * vol ;
@@ -84,7 +82,7 @@ function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat
         end
       end
       
-      KTe(1:2:end,1:2:end) = Kml + Kgl ;
+      KTe = Kml + Kgl ;
 
     else
     
@@ -102,7 +100,6 @@ function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat
 
 
 
-
 % ======================================================================
 % ======================================================================
 function S = cosserat( young, nu, Egreen)
@@ -113,27 +110,38 @@ shear   = young      / ( 2 * (1 + nu) )          ;
 S = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
 
 
+%~ S = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
+
+
 % ======================================================================
 % ======================================================================
 function matBgrande = BgrandeMats ( deriv , F )
 
   matBgrande = zeros(6, 12) ;
+
+  matBgrande(1:3,:) = [ diag( deriv(:,1) )*F' diag( deriv(:,2) )*F' diag( deriv(:,3) )*F' diag( deriv(:,4) )*F' ];
   
   for k=1:4
 
-    for i=1:3 % fila
-      for j=1:3 % columna
-        matBgrande ( i , (k-1)*3 + j  ) = deriv(i,k) * F(j,i) ;
-      end
-    end          
+    %~ for i=1:3 % fila
+      %~ for j=1:3 % columna
+        %~ matBgrande ( i , (k-1)*3 + j  ) = deriv(i,k) * F(j,i) ;
+      %~ end
+    %~ end          
 
-    for j=1:3
-      matBgrande ( 4 , (k-1)*3 + j ) = deriv(2,k) * F(j,3) + deriv(3,k) * F(j,2) ;
-      matBgrande ( 5 , (k-1)*3 + j ) = deriv(1,k) * F(j,3) + deriv(3,k) * F(j,1) ;
-      matBgrande ( 6 , (k-1)*3 + j ) = deriv(1,k) * F(j,2) + deriv(2,k) * F(j,1) ;
-    end
+  
+    %~ for j=1:3
+      %~ matBgrande ( 4:6 , (k-1)*3 + j ) = [ deriv(2,k)*F(j,3)+deriv(3,k)*F(j,2) ; ...
+                                           %~ deriv(1,k)*F(j,3)+deriv(3,k)*F(j,1) ; ...
+                                           %~ deriv(1,k)*F(j,2)+deriv(2,k)*F(j,1) ] ;
+    %~ end
+      matBgrande ( 4:6 , (k-1)*3 + (1:3) ) = [ deriv(2,k)*F(:,3)'+deriv(3,k)*F(:,2)' ; ...
+                                               deriv(1,k)*F(:,3)'+deriv(3,k)*F(:,1)' ; ...
+                                               deriv(1,k)*F(:,2)'+deriv(2,k)*F(:,1)' ] ;
   end
 
+
+  
 
 % ======================================================================
 % ======================================================================
@@ -156,20 +164,13 @@ function v = tranvoigCon2(Tensor)
 
 function v = tranvoigSin2(Tensor)
     
-  if norm( Tensor - Tensor' ) > 1e-5
+  %~ if norm( Tensor - Tensor' ) > 1e-5
     %~ Tensor
-    norm( Tensor - Tensor' )
+    %~ norm( Tensor - Tensor' )
     %~ error('tensor not symmetric')
-  end
+  %~ end
   
-  v = zeros(6,1) ;
-  
-  v(1) = Tensor(1,1) ;
-  v(2) = Tensor(2,2) ;
-  v(3) = Tensor(3,3) ;
-  v(4) = Tensor(2,3) ;
-  v(5) = Tensor(1,3) ;
-  v(6) = Tensor(1,2) ;
+  v = [ Tensor(1,1)  Tensor(2,2)  Tensor(3,3)  Tensor(2,3) Tensor(1,3) Tensor(1,2) ]' ;
 
 
 % ======================================================================
@@ -224,3 +225,15 @@ function ConsMat = constTensor ( young, nu, Egreen )
     end % for compone
   end
 
+
+
+
+function detVal = analyDet(A)
+
+
+detVal =   A(1,1)*A(2,2)*A(3,3)  ...
+          - A(1,1)*A(2,3)*A(3,2)  ...
+          - A(1,2)*A(2,1)*A(3,3)  ...
+          + A(1,2)*A(2,3)*A(3,1)  ...
+          + A(1,3)*A(2,1)*A(3,2)  ...
+          - A(1,3)*A(2,2)*A(3,1) ;

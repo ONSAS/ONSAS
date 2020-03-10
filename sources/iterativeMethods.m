@@ -32,7 +32,6 @@ function ...
   convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
-
   % --------------------------------------------------------------------
   % -----------      pre-iteration definitions     ---------------------
   nelems    = size(Conec,1) ; ndofpnode = 6;
@@ -64,20 +63,20 @@ function ...
   while  booleanConverged == 0
     dispIter += 1 ;
 
-auxT = time();
+  auxT = time();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-tiempoComputeMatrix = time() - auxT
+tiempoComputeMatrix = time() - auxT ;
 
 auxT = time();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
-tiempoComputeRHS = time() - auxT
+tiempoComputeRHS = time() - auxT;
 
 opa = time();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
-tiempoSystemSolve = time() - opa
+tiempoSystemSolve = time() - opa;
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
