@@ -27,6 +27,10 @@ nelems    = size(Conec,1);
 KT     = sparse( length(Ut) , length(Ut)  ) ;
 FintGt = zeros(  length(Ut) , 1           ) ;
 
+indsIKT = zeros( nelems*12*12, 1 ) ;
+indsJKT = zeros( nelems*12*12, 1 ) ;
+valsKT  = zeros( nelems*12*12, 1 ) ;
+
 StrainVec   = zeros( nelems, 6 ) ;
 StressVec   = zeros( nelems, 6 ) ;
 
@@ -157,9 +161,18 @@ for elem = 1:nelems
   elseif paramOut == 2
     % matrices assembly
     KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
+  else
+    for iii=1:12
+      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
+      indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
+      indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
+      valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
+    end
   end
 
 end
+
+%~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;
 
 KT     = KT  + KS ;
 FintGt = FintGt + KS*Ut ;
@@ -173,8 +186,8 @@ if length(bendStiff) >0
 
   fextAngSpr = KTAngSpr*Ut ;
 
-  KT     += KTAngSpr   ;
-  FintGt += fextAngSpr ;
+  KT     = KT     + KTAngSpr   ;
+  FintGt = FintGt + fextAngSpr ;
 
 end
 

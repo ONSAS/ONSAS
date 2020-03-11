@@ -19,17 +19,12 @@
 % function for iterative resolution of nonlinear equations.
 
 function ...
-%  outputs ---
 [ nextLoadFactor, dispIter, stopCritPar, factor_crit, nKeigpos, nKeigneg, Uk, FintGk, Stressk, Strainsk, systemDeltauMatrix ] ...
   = iterativeMethods( ...
-% inputs ---
-  % constant data
   Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat, ...
   numericalMethodParams, constantFext, variableFext, KS, userLoadsFilename , bendStiff, ...
-  % model variable data
   Uk, Stressk, Strainsk, FintGk, currLoadFactor, nextLoadFactor, ...
-  % specific iterative methods variables 
-  convDeltau, stabilityAnalysisBoolean ) ;
+  convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
 
@@ -49,24 +44,35 @@ function ...
         = extractMethodParams( numericalMethodParams ) ;
 
   % current stiffness matrix for buckling analysis
-  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  if stabilityAnalysisBoolean == 1
+    [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  end
   % --------------------------------------------------------------------
   % --------------------------------------------------------------------
   
 
   % --------------------------------------------------------------------
   % --- iteration in displacements (NR) or load-displacements (NR-AL) --
+  if  booleanScreenOutput
+    fprintf(' iter  normResLoad\n----------------------\n' ) ;
+  end
   while  booleanConverged == 0
-    dispIter += 1 
+    dispIter = dispIter + 1 ;
 
+auxT = cputime();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-    
+tiempoComputeMatrix = cputime() - auxT
+
+auxT = cputime();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
+tiempoComputeRHS = cputime() - auxT
 
+opa = cputime();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
+tiempoSystemSolve = cputime() - opa
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
@@ -76,9 +82,16 @@ function ...
     [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
     % check convergence
-    [booleanConverged,stopCritPar] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
- 
+    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
+
+    if  booleanScreenOutput
+      fprintf(' %3i %12.3e \n' , dispIter, deltaErrLoad ) ;
+    end
   end
+  if  booleanScreenOutput
+    fprintf('----  iters ended --------\n' ) ;
+  end
+
   % --------------------------------------------------------------------
   % --------------------------------------------------------------------
 

@@ -15,11 +15,18 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%Script for verification of the input variables definition.
+% Script for verification of the input variables definition. Default
+% values ar assigned.
 
 tic
 
-fprintf('  - input variables verification ... ');
+if exist( 'booleanScreenOutput' ) == 0
+  booleanScreenOutput = 1 ;
+end
+
+if booleanScreenOutput
+  fprintf('  - input variables verification ... ') ;
+end
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
@@ -43,7 +50,7 @@ nelems = size(Conec,1) ;
 if exist( 'prescribedDisps' ) == 0
   prescribedDisps = [] ; 
 elseif length(prescribedDisps)>0
-  if size( prescribedDisps ) (2) ~= 3
+  if size( prescribedDisps, 2) ~= 3
     error('The prescribedDisps matrix must have 3 columns') ; 
   end
 end  
@@ -114,12 +121,10 @@ if ( nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 )
   end
 
 else
-
   if exist( 'linearDeformedScaleFactor' ) ~= 0
-    fprintf(' WARNING: linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
+    warning(' linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
   end
   linearDeformedScaleFactor = 1 ;
-
 end
 
 if exist( 'analyticSolFlag' ) == 0
@@ -153,9 +158,6 @@ if exist( 'numericalMethodParams' ) == 0 && ( nonLinearAnalysisBoolean == 0 && d
   numericalMethodParams = [] ;
 end
 
-if exist( 'silentRun' ) == 0
-  silentRun = 0;
-end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [1] ;
@@ -170,6 +172,9 @@ if exist( 'stabilityAnalysisBoolean' ) == 0
   stabilityAnalysisBoolean = 0 ;
 end
 
+if exist( 'octaveBoolean' ) == 0
+  octaveBoolean = 1 ;
+end
 
 if exist( 'printflag' ) == 0
   printflag = 0 ;
@@ -224,7 +229,9 @@ end
 if exist( outputdir ) == 7 % problemName is a directory
   % the content is erased
   fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
-  confirm_recursive_rmdir (0)
+  if octaveBoolean
+    confirm_recursive_rmdir (0)
+  end
   [aux,msg] = rmdir( problemName ,'s'); 
 
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
