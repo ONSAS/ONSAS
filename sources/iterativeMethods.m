@@ -19,16 +19,11 @@
 % function for iterative resolution of nonlinear equations.
 
 function ...
-%  outputs ---
 [ nextLoadFactor, dispIter, stopCritPar, factor_crit, nKeigpos, nKeigneg, Uk, FintGk, Stressk, Strainsk, systemDeltauMatrix ] ...
   = iterativeMethods( ...
-% inputs ---
-  % constant data
   Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat, ...
   numericalMethodParams, constantFext, variableFext, KS, userLoadsFilename , bendStiff, ...
-  % model variable data
   Uk, Stressk, Strainsk, FintGk, currLoadFactor, nextLoadFactor, ...
-  % specific iterative methods variables 
   convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
@@ -62,22 +57,22 @@ function ...
     fprintf(' iter  normResLoad\n----------------------\n' ) ;
   end
   while  booleanConverged == 0
-    dispIter += 1 ;
+    dispIter = dispIter + 1 ;
 
-auxT = time();
+auxT = cputime();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-tiempoComputeMatrix = time() - auxT
+tiempoComputeMatrix = cputime() - auxT
 
-auxT = time();    
+auxT = cputime();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
-tiempoComputeRHS = time() - auxT
+tiempoComputeRHS = cputime() - auxT
 
-opa = time();
+opa = cputime();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
-tiempoSystemSolve = time() - opa
+tiempoSystemSolve = cputime() - opa
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;

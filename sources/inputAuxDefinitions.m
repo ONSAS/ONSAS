@@ -29,8 +29,9 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
   controlDofInfo = [ ] ;
 else 
   % control dof info
-  controlDof       = nodes2dofs( controlDofInfo(1), 6)(controlDofInfo(2)) ;
-  controlDofFactor = controlDofInfo(3) ; 
+  aux              = nodes2dofs( controlDofInfo(1), 6) ;
+  controlDof       = aux(        controlDofInfo(2)   ) ;
+  controlDofFactor = controlDofInfo(3)                 ; 
 end
 
 

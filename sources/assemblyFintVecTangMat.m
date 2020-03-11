@@ -163,7 +163,8 @@ for elem = 1:nelems
     KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
   else
     for iii=1:12
-      indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
+      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
+      indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
       indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
       valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
     end
@@ -185,8 +186,8 @@ if length(bendStiff) >0
 
   fextAngSpr = KTAngSpr*Ut ;
 
-  KT     += KTAngSpr   ;
-  FintGt += fextAngSpr ;
+  KT     = KT     + KTAngSpr   ;
+  FintGt = FintGt + fextAngSpr ;
 
 end
 
