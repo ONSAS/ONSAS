@@ -157,7 +157,7 @@ systemDeltauMatrix = [];
 % stores model data structures
 modelCompress
 
-indselems12 = find( ( Conec(:,7) == 1) || ( Conec(:,7) == 2) ) ;
+indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 

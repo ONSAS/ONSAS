@@ -20,9 +20,13 @@
 
 function  [ modelCurrState, BCsNextState, auxIO ]  = callSolver( modelCurrState, BCsNextState, auxIO ) ;
 
-auxT = time();
+auxT = cputime();
 modelExtract
+<<<<<<< HEAD
 tiempoModelExtract = time() - auxT ;
+=======
+tiempoModelExtract = cputime() - auxT
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 if dynamicAnalysisBoolean == 0
 
@@ -44,9 +48,13 @@ if dynamicAnalysisBoolean == 0
       Ut, Stresst, Strainst, FintGt, currLoadFactor, nextLoadFactor, ...
       convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 
-auxT = time();
+auxT = cputime();
   modelCompress
+<<<<<<< HEAD
 tiempoModelCompress = time() - auxT;
+=======
+tiempoModelCompress = cputime() - auxT
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 else
 
@@ -137,15 +145,11 @@ variableFext(neumdofs) = [ 0 ; -(m+mb)/2*9.81 ] ;
   % la matriz y lo ai de newmark podrian ir en initial y definirse en model compress
   [ Utp1, Udottp1, Udotdottp1, FintGtp1, dispIter, Strainst, Stresst ] ...
     = analysisNM ( ...
-    % --- inputs ---
-    % constant data
     Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat, ...
     constantFext, variableFext, KS, ...
-    %
     massMat, dampingMat, a0NW, ...
     a1NW, a2NW, a3NW, a4NW,...
     a5NW, a6NW,   a7NW, ...
-    % model variable data
     Ut, Udott, Udotdott, nextLoadFactor, stopTolDeltau, stopTolForces, stopTolIts, userLoadsFilename, currTime + deltaT ) ;
 
   % Releases displacements velocity and aceleration

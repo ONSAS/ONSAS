@@ -26,7 +26,7 @@ figure , hold on, grid on
 plot( timeVals, loadFactors        , 'b-x', 'linewidth', lw,'markersize',ms)
 labx = xlabel('step/time'); laby = ylabel('Load factors');
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize )
-set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize);
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize);
 
 cd( outputdir )
 if printflag == 1
@@ -42,7 +42,7 @@ figure , hold on, grid on
 plot( timeVals , controlDisps      , 'b-x', 'linewidth', lw,'markersize',ms)
 labx = xlabel('step/time'); laby = ylabel('Displacement');
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize )
-set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize);
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize);
 
 cd( outputdir )
 if printflag == 1
@@ -66,7 +66,7 @@ end
 
 labx=xlabel('Displacements'); laby=ylabel('Load factors');
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize )
-set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize);
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize);
 
 cd( outputdir )
 if printflag == 1

@@ -81,7 +81,7 @@ function analyticSolVerif ...
     labx = xlabel('step/time');  laby = ylabel(analitMagnitude) ;
     legend('numeric', 'analytic','location','North')
     set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
-    set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ;
+    set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 
     currdir = pwd;
     cd(outputdir )

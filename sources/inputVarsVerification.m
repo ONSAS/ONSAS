@@ -50,7 +50,7 @@ nelems = size(Conec,1) ;
 if exist( 'prescribedDisps' ) == 0
   prescribedDisps = [] ; 
 elseif length(prescribedDisps)>0
-  if size( prescribedDisps ) (2) ~= 3
+  if size( prescribedDisps, 2) ~= 3
     error('The prescribedDisps matrix must have 3 columns') ; 
   end
 end  
@@ -172,6 +172,9 @@ if exist( 'stabilityAnalysisBoolean' ) == 0
   stabilityAnalysisBoolean = 0 ;
 end
 
+if exist( 'octaveBoolean' ) == 0
+  octaveBoolean = 1 ;
+end
 
 if exist( 'printflag' ) == 0
   printflag = 0 ;
@@ -226,7 +229,9 @@ end
 if exist( outputdir ) == 7 % problemName is a directory
   % the content is erased
   fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
-  confirm_recursive_rmdir (0)
+  if octaveBoolean
+    confirm_recursive_rmdir (0)
+  end
   [aux,msg] = rmdir( problemName ,'s'); 
 
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory

@@ -81,6 +81,7 @@ plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
 
+octaveBoolean = 0 ;
 reportBoolean = 0;
 
 %% ONSAS execution

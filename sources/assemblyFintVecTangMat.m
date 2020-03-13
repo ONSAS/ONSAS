@@ -273,9 +273,22 @@ else
   loopelemtie = time() - chetiem ;
   
   
+<<<<<<< HEAD
   chetiem=time();  
   if paramOut == 2
     KT     = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) )  + KS ;
+=======
+  elseif paramOut == 2
+    % matrices assembly
+    KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
+  else
+    for iii=1:12
+      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
+      indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
+      indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
+      valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
+    end
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
   end
   
   FintGt = FintGt + KS*Ut ;
@@ -296,7 +309,32 @@ else
   fintiem = time() - chetiem;
   % ------------------------------------
 
+<<<<<<< HEAD
 end % if booleanCppAssembler
+=======
+end
+
+%~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;
+
+KT     = KT  + KS ;
+FintGt = FintGt + KS*Ut ;
+
+
+if length(bendStiff) >0
+
+  Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
+
+  [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
+
+  fextAngSpr = KTAngSpr*Ut ;
+
+  KT     = KT     + KTAngSpr   ;
+  FintGt = FintGt + fextAngSpr ;
+
+end
+
+% ------------------------------------
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 
 

@@ -19,16 +19,11 @@
 % function for iterative resolution of nonlinear equations.
 
 function ...
-%  outputs ---
 [ nextLoadFactor, dispIter, stopCritPar, factor_crit, nKeigpos, nKeigneg, Uk, FintGk, Stressk, Strainsk, systemDeltauMatrix ] ...
   = iterativeMethods( ...
-% inputs ---
-  % constant data
   Conec, secGeomProps, coordsElemsMat, neumdofs, nnodes, hyperElasParamsMat, ...
   numericalMethodParams, constantFext, variableFext, KS, userLoadsFilename , bendStiff, ...
-  % model variable data
   Uk, Stressk, Strainsk, FintGk, currLoadFactor, nextLoadFactor, ...
-  % specific iterative methods variables 
   convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
@@ -61,22 +56,37 @@ function ...
     fprintf(' iter  normResLoad\n----------------------\n' ) ;
   end
   while  booleanConverged == 0
-    dispIter += 1 ;
+    dispIter = dispIter + 1 ;
 
+<<<<<<< HEAD
   auxT = time();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
 tiempoComputeMatrix = time() - auxT ;
+=======
+auxT = cputime();
+    % system matrix
+    systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
+tiempoComputeMatrix = cputime() - auxT
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
-auxT = time();    
+auxT = cputime();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
+<<<<<<< HEAD
 tiempoComputeRHS = time() - auxT;
+=======
+tiempoComputeRHS = cputime() - auxT
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
-opa = time();
+opa = cputime();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
+<<<<<<< HEAD
 tiempoSystemSolve = time() - opa;
+=======
+tiempoSystemSolve = cputime() - opa
+>>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;

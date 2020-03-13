@@ -43,7 +43,7 @@ clear nodesMat conecMat loadsMat suppsMat
 % Material and geometry properties
 E = 1 ; nu = 0.3 ;
   
-hyperElasParams = cell(1,1) ;  
+hyperElasParams    = cell(1,1) ;  
 hyperElasParams{1} = [ 6 E nu ] ;
 
 secGeomProps = [ 0 0 0 0 ] ;

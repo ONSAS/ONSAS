@@ -29,6 +29,6 @@ arrfie{6} = 'auxIO'  ;
 for k=1:3
   fieldNames = fieldnames( arrfie{k} ) ;
   for i=1:length(fieldNames)
-    eval( [ fieldNames{i} "= getfield(" arrfie{k+3} ",'" fieldNames{i} "');" ] )
+    eval( [ fieldNames{i} '= getfield(' arrfie{k+3} ',''' fieldNames{i} ''');' ] )
   end
 end
