@@ -91,9 +91,7 @@ if booleanCppAssembler
   StressVec   = sparse( nelems, 6 ) ;
 
 
-
-
-
+% --- octave assembly ---
 else
   
   % -----------------------------------------------
@@ -118,8 +116,6 @@ else
   %~ BMat        = cell(ntet,1) ;
   % ----------------------------------------------
   declartime =time() - chetiem ;
-  
-  
   
   chetiem=time();
   
@@ -266,29 +262,30 @@ else
         valsKT  ( entriesSparseStorVecs ) = KTe( indVec, : )' ;
       end
     
-    end
-  
-  end
+    end % if paramout
+    % ---------------------
+   
+  end % for elements ----
   
   loopelemtie = time() - chetiem ;
   
   
-<<<<<<< HEAD
+%~ <<<<<<< HEAD
   chetiem=time();  
   if paramOut == 2
     KT     = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) )  + KS ;
-=======
-  elseif paramOut == 2
-    % matrices assembly
-    KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
-  else
-    for iii=1:12
-      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
-      indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
-      indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
-      valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
-    end
->>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+%~ =======
+  %~ elseif paramOut == 2
+    %~ % matrices assembly
+    %~ KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
+  %~ else
+    %~ for iii=1:12
+      %%%indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
+      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
+      %~ indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
+      %~ valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
+    %~ end
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
   end
   
   FintGt = FintGt + KS*Ut ;
@@ -304,37 +301,37 @@ else
     KT     += sparse(KTAngSpr)   ;
     FintGt += fextAngSpr ;
   
-  end
+  end % if bend stiff ----
   
   fintiem = time() - chetiem;
   % ------------------------------------
 
-<<<<<<< HEAD
 end % if booleanCppAssembler
-=======
-end
+
+%~ end
+
 
 %~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;
 
-KT     = KT  + KS ;
-FintGt = FintGt + KS*Ut ;
+%~ KT     = KT  + KS ;
+%~ FintGt = FintGt + KS*Ut ;
 
 
-if length(bendStiff) >0
+%~ if length(bendStiff) >0
 
-  Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
+  %~ Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
 
-  [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
+  %~ [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
 
-  fextAngSpr = KTAngSpr*Ut ;
+  %~ fextAngSpr = KTAngSpr*Ut ;
 
-  KT     = KT     + KTAngSpr   ;
-  FintGt = FintGt + fextAngSpr ;
+  %~ KT     = KT     + KTAngSpr   ;
+  %~ FintGt = FintGt + fextAngSpr ;
 
-end
+%~ end
 
-% ------------------------------------
->>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+%~ % ------------------------------------
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 
 

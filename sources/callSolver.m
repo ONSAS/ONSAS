@@ -22,11 +22,11 @@ function  [ modelCurrState, BCsNextState, auxIO ]  = callSolver( modelCurrState,
 
 auxT = cputime();
 modelExtract
-<<<<<<< HEAD
+%~ <<<<<<< HEAD
 tiempoModelExtract = time() - auxT ;
-=======
-tiempoModelExtract = cputime() - auxT
->>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+%~ =======
+%~ tiempoModelExtract = cputime() - auxT
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 if dynamicAnalysisBoolean == 0
 
@@ -50,11 +50,11 @@ if dynamicAnalysisBoolean == 0
 
 auxT = cputime();
   modelCompress
-<<<<<<< HEAD
+%~ <<<<<<< HEAD
 tiempoModelCompress = time() - auxT;
-=======
-tiempoModelCompress = cputime() - auxT
->>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+%~ =======
+%~ tiempoModelCompress = cputime() - auxT
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 else
 
