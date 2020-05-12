@@ -26,6 +26,7 @@ function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, s
 
 booleanCppAssembler = 0 ;
 
+
 if booleanCppAssembler
 
   timer = time();
@@ -105,9 +106,10 @@ else
   %~ KT     = sparse( length(Ut) , length(Ut)  ) ;
   FintGt = zeros(  length(Ut) , 1           ) ;
   
-  indsIKT = zeros( nelems*12*12, 1 ) ;
-  indsJKT = zeros( nelems*12*12, 1 ) ;
-  valsKT  = zeros( nelems*12*12, 1 ) ;
+  indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
+  indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
+  valsKT  =         zeros( nelems*24*24, 1 ) ;
+  counterInds = 0 ;
   
   StrainVec   = zeros( nelems, 6 ) ;
   StressVec   = zeros( nelems, 6 ) ;
@@ -132,15 +134,16 @@ else
     case 1 % Co-rotational Truss
   
       % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)' ;
-      dofselem  = nodes2dofs( nodeselem , 6 ) ;
+      nodeselem = Conec(elem,1:2)' 
+      dofselem  = nodes2dofs( nodeselem , 6 ) 
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
   
+      dofselemRed = dofselem(1:2:end) 
+      
       sizeTensor = 1 ;
   
       A  = secGeomProps(Conec(elem,6),1) ;
       hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
-      
       
       [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
   
@@ -179,9 +182,10 @@ else
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:4)' ;
       dofselem  = nodes2dofs( nodeselem , 6 ) ;
-      dofstet   = dofselem(1:2:length(dofselem)) ;
       dispsElem = u2ElemDisps( Ut , dofstet ) ;
      
+      dofselemRed = dofselem(1:2:length(dofselem)) ;
+      
       %~ dofselem = dofstet ;
    
       tetcoordmat        = zeros(3,4) ;
@@ -237,8 +241,8 @@ else
     % -------------------------------------------
     if paramOut == 1
       % internal loads vector assembly
-      %~ FintGt ( dofselem ) = FintGt( dofselem ) + Finte ;
-      FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
+      FintGt ( dofselemRed ) = FintGt( dofselemRed ) + Finte ;
+      %~ FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
     
       StrainVec(elem,(1:sizeTensor) ) = strain ;
       StressVec(elem,(1:sizeTensor) ) = stress ;
@@ -247,19 +251,19 @@ else
       % matrices assembly
       %~ KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
     %~ else
-      for indRow = 1:2:24
+      for indRow = 1:length( dofselemRed )
   
-        indVec = (indRow+1)/2 ;
+        %~ indVec = (indRow+1)/2 ;
       
         %~ entriesSparseStorVecs = (elem-1)*24*24 + (indRow-1) * 24 + (1:24) ;
-        entriesSparseStorVecs = (elem-1)*12*12 + (indVec-1) * 12 + (1:12) ;
+        entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
         
-        indsIKT ( entriesSparseStorVecs  ) = dofselem( indRow )     ;
+        indsIKT ( entriesSparseStorVecs  ) = dofselemRed( indRow )     ;
         %~ indsJKT ( entriesSparseStorVecs ) = dofselem            ;
         %~ valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : ) ;
   
-        indsJKT ( entriesSparseStorVecs ) = dofselem(1:2:end )       ;
-        valsKT  ( entriesSparseStorVecs ) = KTe( indVec, : )' ;
+        indsJKT ( entriesSparseStorVecs ) = dofselemRed       ;
+        valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
       end
     
     end % if paramout

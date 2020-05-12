@@ -24,14 +24,13 @@
 
 ONSASversion = '0.1.10' ;
 
-addpath( [ pwd '/sources' ] ) ;
-addpath( [ pwd '/input'   ] ) ;
-addpath( [ pwd '/user'    ] ) ;
+addpath( [ pwd '/sources' ':' pwd '/input' ':' pwd '/user'  ] );
 
 if exist('booleanScreenOutput') == 0 || booleanScreenOutput
   fprintf('==============================================\n');
   fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
-  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. Please read COPYING.txt and README.md files for more information. \n' ] ) ;
+  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. Please ' ...
+             'read COPYING.txt and README.md files for more information. \n' ]);
   fprintf('==============================================\n');
 end
 
@@ -41,42 +40,29 @@ tReadingInput = 0;
 inputVarsVerification
 
 inputAuxDefinitions
-
 % ==============================================================================
 
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
-if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-	
-  % Linear Analysis
-  linearAnalysis
+% --- Incremental steps analysis ---
+
+% Initial computations: sets initial matrices and vectors.
+initialDefinitions
+%~ stop
+% --- increment step analysis ---
+while ( stopTimeIncrBoolean == 0 )
+  auxT = cputime() ;
+  % --------   computes the model state at the next load/time step   --------
+  [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
+  % -------------------------------------------------------------------------
   
-  if LBAAnalyFlag == 1
-    linearBucklingAnalysis
-  end
+  tCallSolver = cputime() - auxT
+  
+  % checks stopping criteria and stores model state
+  storesResultAndCheckStopCrit
 
-else
-  % --- Incremental steps analysis ---
-
-  % Initial computations: sets initial matrices and vectors.
-  initialDefinitions
-
-  % --- increment step analysis ---
-  while ( stopTimeIncrBoolean == 0 )
-		auxT = cputime() ;
-    % --------   computes the model state at the next load/time step   --------
-    [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
-    % -------------------------------------------------------------------------
-		
-    tCallSolver = cputime() - auxT
-    
-    % checks stopping criteria and stores model state
-    storesResultAndCheckStopCrit
-
-  end
-  % -------------------------------
 end
 
 % if analytical solution is provided, numerical results are validated. 

@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0.
+% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
 tic ;
@@ -83,19 +83,18 @@ Udott   = zeros( ndofpnode*nnodes,   1 ) ;
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
 if exist( 'nonHomogeneousInitialCondU0') ~=0
-  for i=1:size(nonHomogeneousInitialCondU0,1)
-    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1),ndofpnode);
+  for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
+    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), ndofpnode ) ;
     Ut( dofs (nonHomogeneousInitialCondU0(i,2)))=nonHomogeneousInitialCondU0(i,3);
-    
-  end
-end
+  end 
+end % if nonHomIniCond
 
 
 if exist( 'nonHomogeneousInitialCondUdot0') ~=0 
   if dynamicAnalysisBoolean == 1
     for i=1:size(nonHomogeneousInitialCondUdot0,1)
-       dofsdot= nodes2dofs(nonHomogeneousInitialCondUdot0(i,1),ndofpnode);
-       Udott( dofsdot (nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
+      dofs = nodes2dofs(nonHomogeneousInitialCondUdot0(i,1), ndofpnode ) ;
+      Udott( dofs(nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
     end
   else
     error('Velocity initial conditions set for static analysis.');
