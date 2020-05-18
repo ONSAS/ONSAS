@@ -26,7 +26,9 @@ function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, s
 
 booleanCppAssembler = 0 ;
 
-
+% -----------------------------------------------
+% -----------------------------------------------
+% C++ assembler
 if booleanCppAssembler
 
   timer = time();
@@ -92,53 +94,52 @@ if booleanCppAssembler
   StressVec   = sparse( nelems, 6 ) ;
 
 
-% --- octave assembly ---
+
+
+% -----------------------------------------------
+% -----------------------------------------------
+% --- octave assembler ---
 else
-  
+
   % -----------------------------------------------
-  nelems    = size(Conec,1);
+  nelems    = size(Conec,1)   ;
+  nnodes    = length( Ut) / 6 ;
   
-  chetiem=time();
+  %~ profile clear, profile on
   
-  %~ profile clear
-  %~ profile on
+  % creates Fint vector
+  FintGt = zeros( nnodes*6 , 1 ) ;
   
-  %~ KT     = sparse( length(Ut) , length(Ut)  ) ;
-  FintGt = zeros(  length(Ut) , 1           ) ;
-  
+  % assumes maximum 4 nodes per element
   indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
   indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
   valsKT  =         zeros( nelems*24*24, 1 ) ;
+
   counterInds = 0 ;
   
   StrainVec   = zeros( nelems, 6 ) ;
   StressVec   = zeros( nelems, 6 ) ;
-  
-  %~ tetVol      = zeros(nelems,1) ;
-  %~ BMat        = cell(ntet,1) ;
   % ----------------------------------------------
-  declartime =time() - chetiem ;
-  
-  chetiem=time();
-  
   
   contTiempoLlamadasIndexs = 0;
   contTiempoLlamadasAssembly = 0;
   contTiempoLlamadasAssemblyFint = 0;
+
   % ----------------------------------------------
+  % loop for assembly
   for elem = 1:nelems
   
     switch Conec(elem,7)
   
     % -------------------------------------------
-    case 1 % Co-rotational Truss
+    case 1 % Co-rotational Truss with Engineering strain
   
       % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)' 
-      dofselem  = nodes2dofs( nodeselem , 6 ) 
+      nodeselem = Conec(elem,1:2)' ;
+      dofselem  = nodes2dofs( nodeselem , 6 ) ;
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
   
-      dofselemRed = dofselem(1:2:end) 
+      dofselemRed = dofselem(1:2:end)  ;
       
       sizeTensor = 1 ;
   
@@ -146,7 +147,10 @@ else
       hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
       
       [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
-  
+      
+      %~ size(Finte)
+      %~ size(KTe)
+      %~ stop  
     % -------------------------------------------
     case 2 % Co-rotational Frame element (bernoulli beam)
   
@@ -176,9 +180,6 @@ else
     case 3 % linear solid element
       
       
-      
-      
-      
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:4)' ;
       dofselem  = nodes2dofs( nodeselem , 6 ) ;
@@ -204,18 +205,19 @@ else
           iniAss = time() ;
   
           [ Finte ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, dispsElem , [E nu], paramOut ) ; 
-      contTiempoLlamadasAssemblyFint = contTiempoLlamadasAssemblyFint + ( time() - iniAss) ;
           
-          strain=zeros(6,1);
-          stress=zeros(6,1);
+          contTiempoLlamadasAssemblyFint = contTiempoLlamadasAssemblyFint + ( time() - iniAss) ;
+          
+          strain = zeros(6,1) ;
+          stress = zeros(6,1) ;
   
         elseif paramOut == 2
   
-      iniAss = time() ;
+          iniAss = time() ;
   
           [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
   
-      contTiempoLlamadasAssembly = contTiempoLlamadasAssembly + ( time() - iniAss) ;
+          contTiempoLlamadasAssembly = contTiempoLlamadasAssembly + ( time() - iniAss) ;
   
         end
         
@@ -225,16 +227,8 @@ else
         [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
       end
   
-  
-  
-  
-  
     end   % case tipo elemento
     % -------------------------------------------
-    
-  
-  
-  
   
   
   
@@ -256,7 +250,7 @@ else
         %~ indVec = (indRow+1)/2 ;
       
         %~ entriesSparseStorVecs = (elem-1)*24*24 + (indRow-1) * 24 + (1:24) ;
-        entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
+        entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;        
         
         indsIKT ( entriesSparseStorVecs  ) = dofselemRed( indRow )     ;
         %~ indsJKT ( entriesSparseStorVecs ) = dofselem            ;
@@ -264,6 +258,9 @@ else
   
         indsJKT ( entriesSparseStorVecs ) = dofselemRed       ;
         valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
+        
+        counterInds = counterInds + length( dofselemRed ) ;
+
       end
     
     end % if paramout
@@ -271,28 +268,17 @@ else
    
   end % for elements ----
   
-  loopelemtie = time() - chetiem ;
+  %~ loopelemtie = time() - chetiem ;
   
+  indsIKT = indsIKT(1:counterInds) ;
+  indsJKT = indsJKT(1:counterInds) ;
+  valsKT  = valsKT (1:counterInds) ;
   
-%~ <<<<<<< HEAD
-  chetiem=time();  
   if paramOut == 2
-    KT     = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) )  + KS ;
-%~ =======
-  %~ elseif paramOut == 2
-    %~ % matrices assembly
-    %~ KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
-  %~ else
-    %~ for iii=1:12
-      %%%indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)(iii)     ;
-      %~ indsIKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem( (iii-1)*2 +1 )     ;
-      %~ indsJKT ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = dofselem(1:2:end)          ;
-      %~ valsKT  ( (elem-1)*12*12+(iii-1)*12+(1:12) ) = KTe((iii-1)*2+iii,1:2:end) ;
-    %~ end
-%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+    KT     = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) + KS ;
   end
   
-  FintGt = FintGt + KS*Ut ;
+  FintGt = FintGt + KS * Ut ;
   
   if length(bendStiff) >0
   
@@ -307,12 +293,13 @@ else
   
   end % if bend stiff ----
   
-  fintiem = time() - chetiem;
+  %~ fintiem = time() - chetiem;
   % ------------------------------------
 
 end % if booleanCppAssembler
+% ----------------------------------------
 
-%~ end
+
 
 
 %~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;
@@ -336,6 +323,8 @@ end % if booleanCppAssembler
 
 %~ % ------------------------------------
 %~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
+
+
 
 
 

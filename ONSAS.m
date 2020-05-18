@@ -50,12 +50,13 @@ inputAuxDefinitions
 
 % Initial computations: sets initial matrices and vectors.
 initialDefinitions
-%~ stop
+
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
   auxT = cputime() ;
+  
   % --------   computes the model state at the next load/time step   --------
-  [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
+  [modelNextState, BCsNextState, auxIO] = timeStepIteration ( modelCurrState, BCsNextState, auxIO);
   % -------------------------------------------------------------------------
   
   tCallSolver = cputime() - auxT

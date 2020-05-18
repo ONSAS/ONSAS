@@ -84,4 +84,8 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   else
     KTe = [] ;
   end
+  
+  % reduce to keep only displacements dofs
+  Finte = Finte(1:2:end);
+  KTe   = KTe(1:2:end,1:2:end);
 

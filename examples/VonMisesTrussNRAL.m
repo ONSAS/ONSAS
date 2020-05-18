@@ -1,4 +1,4 @@
-%% Von Mises truss example
+%% Von Mises truss example using Newton-Raphson Arc-Length Method
 %
 %%
 
@@ -56,20 +56,18 @@ stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-10 ;
 stopTolForces    = 1.0e-6 ;
 
-% arc length
-targetLoadFactr  = 5e7    ;
 
-% newton
-%~ targetLoadFactr  = 1e7    ;
+targetLoadFactrNR   = 1e7    ; % newton
+targetLoadFactrNRAL = 5e7    ; % arc length
 
 nLoadSteps       = 50    ;
 incremArcLen     = .1    ;
 
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactr nLoadSteps ] ; 
+                            %~ targetLoadFactrNR nLoadSteps ] ; 
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactr nLoadSteps incremArcLen ] ; 
+                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
 
 stabilityAnalysisBoolean = 1 ;
 
@@ -91,4 +89,3 @@ acdir = pwd ;
 cd(dirOnsas);
 ONSAS
 cd(acdir) ;
-

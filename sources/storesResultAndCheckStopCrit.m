@@ -24,8 +24,8 @@
 tic ;
 
 if dynamicAnalysisBoolean == 0
-  deltaT    = targetLoadFactr/nLoadSteps ;
-  finalTime = targetLoadFactr ;
+  deltaT    = numericalMethodParams(5)/nLoadSteps ;
+  finalTime = numericalMethodParams(5) ;
 end
 
 % --------------   computes magnitudes for next step  -------------------------- 
@@ -44,7 +44,7 @@ timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 % ----------------   updates data structures and time --------------------------
 if dynamicAnalysisBoolean == 0
   currLoadFactor = BCsNextState.nextLoadFactor    ;
-  nextLoadFactor = currLoadFactor + targetLoadFactr / nLoadSteps ;
+  nextLoadFactor = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 end
 
 BCsNextState.currLoadFactor = currLoadFactor ;
@@ -114,7 +114,7 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if ( nextLoadFactor > targetLoadFactr ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  if ( nextLoadFactor > numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end

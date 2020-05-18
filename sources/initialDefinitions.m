@@ -22,8 +22,7 @@
 tic ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-[neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings )
-
+[neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
 
 loadFactors     = 0 ;
 itersPerTime    = 0 ;
@@ -100,7 +99,7 @@ nKeigpos   = 0 ;
 nKeigneg   = 0 ;
 
 if dynamicAnalysisBoolean == 0,
-  nextLoadFactor  = currLoadFactor + targetLoadFactr / nLoadSteps ;
+  nextLoadFactor  = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 
 else 
   deltaT         = numericalMethodParams(2)        ;

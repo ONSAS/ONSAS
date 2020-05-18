@@ -2,7 +2,7 @@
 % functions for computation of Boundary Conditions Degrees of Freedom..
 %
 
-function [neumdofs, diridofs, KS] = computeNeumDiriDofs(nnodes, Conec, nelems, nodalSprings )
+function [neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings )
 
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 
