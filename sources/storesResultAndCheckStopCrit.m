@@ -35,7 +35,7 @@ Ut   = modelCurrState.Ut ;
 % updates displacements
 convDeltau = Utp1 - Ut ;
 
-loadFactors  ( timeIndex +1 )  = BCsNextState.nextLoadFactor  ;
+loadFactors  ( timeIndex +1 )  = BCsData.nextLoadFactor  ;
 controlDisps ( timeIndex +1 )  = Utp1(controlDof)*controlDofFactor ;
 timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 % ------------------------------------------------------------------------------
@@ -43,12 +43,12 @@ timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 
 % ----------------   updates data structures and time --------------------------
 if dynamicAnalysisBoolean == 0
-  currLoadFactor = BCsNextState.nextLoadFactor    ;
+  currLoadFactor = BCsData.nextLoadFactor    ;
   nextLoadFactor = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 end
 
-BCsNextState.currLoadFactor = currLoadFactor ;
-BCsNextState.nextLoadFactor = nextLoadFactor ;
+BCsData.currLoadFactor = currLoadFactor ;
+BCsData.nextLoadFactor = nextLoadFactor ;
 
 modelCurrState            = modelNextState ; 
 modelCurrState.convDeltau = convDeltau     ;

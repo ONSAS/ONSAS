@@ -19,8 +19,7 @@
 % the next time step using the numerical method and parameters provided by the
 % user.
 
-function  [ modelCurrState, BCsNextState, auxIO ]  = timeStepIteration( modelCurrState, BCsNextState, auxIO ) ;
-
+function  [ modelCurrState, BCsData, auxIO ]  = timeStepIteration( modelCurrState, BCsData, auxIO ) ;
 
 % -----------------------------------
 % ------   extracts variables  ------
@@ -60,22 +59,23 @@ if  booleanScreenOutput
 end
 
 
+% --- start iteration with previous displacements ---
 Uk     = Ut ;
 FintGk = FintGt ;
-
-
+% ---------------------------------------------------
 
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
+  %~ stop
   % --- system matrix ---
   auxT = cputime();
   systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
   tiempoComputeMatrix = cputime() - auxT ;
-
+  
   % --- system rhs ---
   auxT = cputime();    
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk)  ;
   tiempoComputeRHS = cputime() - auxT ;
 
   % --- solve system ---
@@ -125,9 +125,10 @@ else
 end
 
 
-
+% --- stores next step as Ut and Ft ---
 Ut     = Uk ;
 FintGt = FintGk ;
+% -------------------------------------
 
 auxT = cputime();
 modelCompress

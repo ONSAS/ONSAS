@@ -11,7 +11,7 @@ rhoprob =  1    ;
 ceda    =  0.02 ;
 nu      =  0    ;
 
-%Force data
+% sForce data
 omegaBar = 2   ;
 p0       = 0.1 ;
 
@@ -85,14 +85,13 @@ controlDofInfo = [ 2 1 +1 ] ;
 dynamicAnalysisBoolean   = 1 ; 
 
 % initial conditions
-u0   = 0.2;
-udot0= 0;
+u0    = 0.2 ;
+udot0 = 0   ;
 
-nonHomogeneousInitialCondU0 = [ 2 1 u0 ] ;
+nonHomogeneousInitialCondU0    = [ 2 1 u0    ] ;
+nonHomogeneousInitialCondUdot0 = [ 2 1 udot0 ] ;
 
-nonHomogeneousInitialCondUdot0 =[ 2 1 udot0 ] ;
-
-numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
+numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
 plotParamsVector = [2 5 ];
 printflag = 2 ;
@@ -103,7 +102,7 @@ omega = sqrt( kres / mres ) ;
 
 if u0 < l0
   omegaReal = omegaN*sqrt(1-ceda^2);
-  beta= omegaBar/omegaN
+  beta= omegaBar/omegaN ;
   G1=(p0/kres) * (-2*ceda*beta/((1-beta^2)^2+(2*ceda*beta)^2));
   G2=(p0/kres) * ((1-beta^2)/((1-beta^2)^2+(2*ceda*beta)^2)) ;
   A=u0 -G1;

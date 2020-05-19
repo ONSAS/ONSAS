@@ -20,10 +20,10 @@
 
 arrfie =cell(6,1);
 arrfie{1} = modelCurrState;
-arrfie{2} = BCsNextState ;
+arrfie{2} = BCsData ;
 arrfie{3} = auxIO  ;
 arrfie{4} = 'modelCurrState';
-arrfie{5} = 'BCsNextState' ;
+arrfie{5} = 'BCsData' ;
 arrfie{6} = 'auxIO'  ;
 
 for k=1:3

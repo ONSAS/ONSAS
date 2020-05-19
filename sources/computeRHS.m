@@ -17,7 +17,13 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk) 
+function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk) 
+
+  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
+  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+      = extractMethodParams( numericalMethodParams ) ;
+
 
   if strcmp( userLoadsFilename , '')
     FextUser = zeros(size(constantFext)) ;
@@ -28,11 +34,10 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
     FextUser = feval( userLoadsFilename, nextLoadFactor)  ;
   end
 
+
   if solutionMethod == 1
 
-    %~ if (dispIter==1),
-      FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
-    %~ end
+    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
 
     Resred          = FintGk(neumdofs) - FextG(neumdofs) ;
     systemDeltauRHS = - ( Resred ) ;
@@ -45,6 +50,21 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
 
     % incremental displacement
     systemDeltauRHS = [ -Resred  variableFext(neumdofs) ] ;
+
+
+  elseif solutionMethod == 3
+
+    [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
+
+    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
+  
+    Fine      =   massMat(neumdofs,neumdofs) * ...
+              ( a0NW * ( Uk(neumdofs) - Ut(neumdofs) )  - a2NW * Udott(neumdofs) - a3NW * Udotdott(neumdofs)  )  ;
+      
+    Fhat      = FextG -Fine ...
+                + dampingMat(neumdofs,neumdofs)*...
+                (a1NW*(Ut(neumdofs)-Uk(neumdofs)) + Udott(neumdofs)*a4NW  + a5NW*Udotdott(neumdofs))    ...
+                - FintGk(neumdofs)                                                                                   ;
 
   end
     
