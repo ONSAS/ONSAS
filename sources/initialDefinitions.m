@@ -58,6 +58,10 @@ if exist( 'nonHomogeneousInitialCondUdot0') ~=0
 end
 
 
+% computation of initial acceleration for some cases
+% --------------------------------------------------- 
+
+
 Utm1    = Ut ;  
 
 Utp1    = zeros( ndofpnode*nnodes,   1 ) ;  
@@ -108,6 +112,13 @@ else
 end
 
 systemDeltauMatrix = [];
+
+
+
+massMat = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
+
+full(massMat)
+stop
 
 % stores model data structures
 modelCompress

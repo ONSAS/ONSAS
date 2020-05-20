@@ -115,3 +115,8 @@ else
   error('this analytical solution is not valid for this u0 and l0');
 end
 % ------------------------------------------------
+
+acdir = pwd ;
+cd(dirOnsas);
+ONSAS
+cd(acdir) ;

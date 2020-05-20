@@ -56,7 +56,7 @@ while ( stopTimeIncrBoolean == 0 )
   auxT = cputime() ;
   
   % --------   computes the model state at the next load/time step   --------
-  [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO);
+  [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
   % -------------------------------------------------------------------------
   
   tCallSolver = cputime() - auxT

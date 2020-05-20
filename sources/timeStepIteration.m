@@ -67,16 +67,17 @@ FintGk = FintGt ;
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
-  %~ stop
   % --- system matrix ---
   auxT = cputime();
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
+  %~ systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
   tiempoComputeMatrix = cputime() - auxT ;
   
   % --- system rhs ---
   auxT = cputime();    
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk)  ;
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk )  ;
   tiempoComputeRHS = cputime() - auxT ;
+
+  stop
 
   % --- solve system ---
   auxT = cputime();
