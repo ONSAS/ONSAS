@@ -78,6 +78,8 @@ loadFactorsFunc = @(t) p0 *sin( omegaBar*t) ;
 % or
 nodalVariableLoads   = [ 2  0  0  0  0  0  0 ];
 userLoadsFilename = 'myLoadSpringMass' ;
+
+nodalDamping = ceda ;
 % -------------------
 
 controlDofInfo = [ 2 1 +1 ] ;

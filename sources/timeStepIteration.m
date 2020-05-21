@@ -69,20 +69,23 @@ while  booleanConverged == 0
 
   % --- system matrix ---
   auxT = cputime();
-  %~ systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat);
   tiempoComputeMatrix = cputime() - auxT ;
   
   % --- system rhs ---
   auxT = cputime();    
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk )  ;
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
   tiempoComputeRHS = cputime() - auxT ;
 
-  stop
 
   % --- solve system ---
   auxT = cputime();
+  
+  %~ size( systemDeltauMatrix)
+  %~ size( systemDeltauRHS)
   [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
   tiempoSystemSolve = cputime() - auxT ;
+
 
   % --- updates: model variables and computes internal forces ---
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
@@ -106,8 +109,6 @@ end
 % --------------------------------------------------------------------
 
 
-
-
 % computes KTred at converged Uk
 [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
@@ -127,10 +128,40 @@ end
 
 
 % --- stores next step as Ut and Ft ---
-Ut     = Uk ;
-FintGt = FintGk ;
+
+
+
+[ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 % -------------------------------------
 
-auxT = cputime();
+currTime = nextTime ;
+Ut       = Utp1 ;
+FintGt   = FintGtp1 ;
+Udott    = Udottp1 ;
+Udotdott = Udotdottp1 ;
 modelCompress
-tiempoModelCompress = cputime() - auxT ;
+
+
+function [ Utp1, Udottp1, Udotdott, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
+
+
+  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
+  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+      = extractMethodParams( numericalMethodParams ) ;
+
+  Utp1       = Uk                                         ;
+  FintGtp1   = FintGk                                     ;
+  nextTime = currTime + deltaT ;
+
+if solutionMethod == 3
+  [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
+  
+  Udotdottp1 = a0NM*(Utp1-Ut) - a2NM*Udott - a3NM*Udotdott;
+  Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
+  
+  
+else
+  Udotdottp1 = [] ;
+  Udottp1    = [] ;
+end  

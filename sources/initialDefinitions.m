@@ -23,6 +23,7 @@ tic ;
 
 % ----------- fixeddofs and spring matrix computation ---------
 [neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
+% -------------------------------------------------------------
 
 loadFactors     = 0 ;
 itersPerTime    = 0 ;
@@ -113,15 +114,19 @@ end
 
 systemDeltauMatrix = [];
 
-
-
 massMat = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
+
+if dynamicAnalysisBoolean == 1,
+  dampingMat = speye( size(massMat) ) * nodalDamping   ;
+else
+  dampingMat = [] ;
+end
 
 % stores model data structures
 modelCompress
 
-stop
-indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
+
+%~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 

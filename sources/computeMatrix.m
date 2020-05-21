@@ -16,7 +16,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod , bendStiff)
+function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams , bendStiff, massMat, dampingMat )
+
+  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
+  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+      = extractMethodParams( numericalMethodParams ) ;
 
   tiem=time();
 
@@ -28,4 +33,13 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
   % extracts matrix entries
   if solutionMethod == 1 || solutionMethod == 2
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
+    
+  elseif solutionMethod == 3
+  
+    systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
+      + deltaNW / ( AlphaNW*deltaT) * dampingMat(neumdofs, neumdofs)  ;
+
+%~ neumdofs
+%~ size(systemDeltauMatrix)
+%~ stop    
   end

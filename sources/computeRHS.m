@@ -17,7 +17,7 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk) 
+function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott ) 
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -58,7 +58,7 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
 
     FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
     
-    Fhat      = FextG ...
+    Fhat      = FextG(neumdofs) ...
                 - massMat( neumdofs, neumdofs ) * ...
                   (   a0NM * ( Uk(neumdofs)  - Ut(neumdofs) ) ...
                     - a2NM * Udott(neumdofs) - a3NM * Udotdott(neumdofs) ) ...
@@ -67,7 +67,7 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
                     + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs))    ...
                 - FintGk(neumdofs)                                             ;
                 
-    systemDeltauRHS = Fhat 
+    systemDeltauRHS = Fhat ;
 
   end
     
