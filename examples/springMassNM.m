@@ -2,6 +2,8 @@
 % TEST example springmass
 % ------------------------------------
 
+clear all, close all
+
 % auxiliar numerical data
 Es = .5 ;
 A  = 1 ;
@@ -47,6 +49,7 @@ stopTolIts    = 1000            ;
 % --- general data ---
 inputONSASversion = '0.1.9';
 
+dirOnsas = [ pwd '/..' ] ;
 problemName = 'springMass_NM' ;
 % ------------------------------------
 

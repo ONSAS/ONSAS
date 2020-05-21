@@ -117,12 +117,10 @@ systemDeltauMatrix = [];
 
 massMat = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
 
-full(massMat)
-stop
-
 % stores model data structures
 modelCompress
 
+stop
 indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
