@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, numericalMethodParams, currLoadFactor, currDeltau  )
+function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, numericalMethodParams, nextLoadFactor, currDeltau  )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -41,6 +41,7 @@ function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, syste
         aux = sign( convDeltau' * deltaubar ) ;
         deltalambda =   incremArcLen * aux / ( sqrt( deltaubar' * deltaubar ) ) ;
       end
+      
     else
       ca =    deltaubar' * deltaubar ;
       cb = 2*(currDeltau + deltauast)' * deltaubar ;
@@ -57,7 +58,7 @@ function [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, syste
       deltalambda = sols( find( vals == max(vals) ) ) ;
     end
     
-    currLoadFactor = currLoadFactor + deltalambda(1) ;
+    nextLoadFactor  = nextLoadFactor  + deltalambda(1) ;
     
     deltaured = deltauast + deltalambda(1) * deltaubar ;
   end

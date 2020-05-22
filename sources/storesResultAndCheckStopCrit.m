@@ -43,8 +43,15 @@ timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 
 % ----------------   updates data structures and time --------------------------
 if dynamicAnalysisBoolean == 0
+%~ BCsData.nextLoadFactor
+%~ stop
   currLoadFactor = BCsData.nextLoadFactor    ;
   nextLoadFactor = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
+else
+
+  currLoadFactor = loadFactorsFunc( currTime + deltaT ) ;
+  nextLoadFactor = loadFactorsFunc( currTime + 2*deltaT ) ;
+  
 end
 
 BCsData.currLoadFactor = currLoadFactor ;

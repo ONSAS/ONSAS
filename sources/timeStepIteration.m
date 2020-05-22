@@ -28,6 +28,9 @@ modelExtract
 tiempoModelExtract = cputime() - auxT ;
 % -------------------------
 
+%~ Ut
+%~ stop
+
 % -----------      pre-iteration definitions     ---------------------
 nelems    = size(Conec,1) ; ndofpnode = 6;
 
@@ -60,8 +63,12 @@ end
 
 
 % --- start iteration with previous displacements ---
-Uk     = Ut ;
+Uk     = Ut     ;   % initial guess
 FintGk = FintGt ;
+
+if solutionMethod == 2
+  nextLoadFactor = currLoadFactor ; % initial guess
+end
 % ---------------------------------------------------
 
 while  booleanConverged == 0
@@ -83,9 +90,8 @@ while  booleanConverged == 0
   
   %~ size( systemDeltauMatrix)
   %~ size( systemDeltauRHS)
-  [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
+  [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau );
   tiempoSystemSolve = cputime() - auxT ;
-
 
   % --- updates: model variables and computes internal forces ---
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
@@ -112,9 +118,9 @@ end
 % computes KTred at converged Uk
 [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
-if solutionMethod == 2;    
-  nextLoadFactor = currLoadFactor ;
-end
+%~ if solutionMethod == 2;    
+  %~ nextLoadFactor = currLoadFactor ;
+%~ end
 
 factor_crit = 0;
 
@@ -129,8 +135,6 @@ end
 
 % --- stores next step as Ut and Ft ---
 
-
-
 [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 % -------------------------------------
 
@@ -139,11 +143,14 @@ Ut       = Utp1 ;
 FintGt   = FintGtp1 ;
 Udott    = Udottp1 ;
 Udotdott = Udotdottp1 ;
+
+
 modelCompress
 
 
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
 function [ Utp1, Udottp1, Udotdott, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
-
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -159,7 +166,6 @@ if solutionMethod == 3
   
   Udotdottp1 = a0NM*(Utp1-Ut) - a2NM*Udott - a3NM*Udotdott;
   Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
-  
   
 else
   Udotdottp1 = [] ;

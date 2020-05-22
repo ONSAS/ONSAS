@@ -56,12 +56,11 @@ stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-10 ;
 stopTolForces    = 1.0e-6 ;
 
-
 targetLoadFactrNR   = 1e7    ; % newton
 targetLoadFactrNRAL = 5e7    ; % arc length
 
 nLoadSteps       = 50    ;
-incremArcLen     = .1    ;
+incremArcLen     = .1     ;
 
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             %~ targetLoadFactrNR nLoadSteps ] ; 

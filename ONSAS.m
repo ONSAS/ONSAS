@@ -64,6 +64,11 @@ while ( stopTimeIncrBoolean == 0 )
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
 
+if timeIndex == 4
+timeIndex
+%~ stop
+end
+
 end
 
 % if analytical solution is provided, numerical results are validated. 

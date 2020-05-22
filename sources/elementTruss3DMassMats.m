@@ -26,15 +26,15 @@ function [ Me ] = elementTruss3DMassMats( Xe, rho, A )
   Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
 
 
-  Me = sparse( 12, 12 ) ;
-  Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
+  %~ Me = sparse( 12, 12 ) ;
+  %~ Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
   
-  Me (      1,       7) = rho * A * lini * 1 / 6            ;
-  Me (      7,       1) = rho * A * lini * 1 / 6            ;
+  %~ Me (      1,       7) = rho * A * lini * 1 / 6            ;
+  %~ Me (      7,       1) = rho * A * lini * 1 / 6            ;
   
-  Me (      3,       9) = rho * A * lini * 1 / 6            ;
-  Me (      9,       3) = rho * A * lini * 1 / 6            ;
+  %~ Me (      3,       9) = rho * A * lini * 1 / 6            ;
+  %~ Me (      9,       3) = rho * A * lini * 1 / 6            ;
   
-  Me (      5,      11) = rho * A * lini * 1 / 6            ;
-  Me (     11,       5) = rho * A * lini * 1 / 6            ;
+  %~ Me (      5,      11) = rho * A * lini * 1 / 6            ;
+  %~ Me (     11,       5) = rho * A * lini * 1 / 6            ;
   

@@ -26,7 +26,8 @@ for elem = 1:nelems
 
   if Conec(elem,7)==1
     massMate = elementTruss3DMassMats(coordsElemsMat(elem,:), rho, A ) ;
-    elseif Conec(elem,7)==2
+
+  elseif Conec(elem,7)==2
     massMate = elementBeam3DMassMats( coordsElemsMat(elem,:), rho, A, deltamassMat );
   end
     % matrices assembly

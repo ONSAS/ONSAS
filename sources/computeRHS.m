@@ -43,20 +43,26 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
     systemDeltauRHS = - ( Resred ) ;
 
   elseif solutionMethod == 2
-
-    FextG  = variableFext * currLoadFactor + constantFext ;
+    
+    if norm(constantFext)>0, error('not implemented yet'); end
+    
+    FextG  = variableFext * nextLoadFactor ;
 
     Resred = FintGk(neumdofs) - FextG(neumdofs)  ;
 
     % incremental displacement
     systemDeltauRHS = [ -Resred  variableFext(neumdofs) ] ;
 
-
   elseif solutionMethod == 3
 
     [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
 
     FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
+
+variableFext
+nextLoadFactor
+FextG(neumdofs)
+
     
     Fhat      = FextG(neumdofs) ...
                 - massMat( neumdofs, neumdofs ) * ...
