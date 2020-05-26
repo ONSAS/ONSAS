@@ -36,6 +36,9 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
     
   elseif solutionMethod == 3
   
+  %~ KT ( neumdofs, neumdofs )
+  %~ massMat(neumdofs, neumdofs ) 
+  %~ stop
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
       + deltaNW / ( AlphaNW*deltaT) * dampingMat(neumdofs, neumdofs)  ;
 

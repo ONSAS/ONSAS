@@ -34,9 +34,11 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
                 
   if logicForcStop
     stopCritPar = 1 ;      booleanConverged = 1 ;
+    warning('stopped by forcesssss')
 
   elseif logicDispStop
     stopCritPar = 2 ;      booleanConverged = 1 ;
+    fprintf('\nstopped by displacements\n\n')
 
   elseif ( dispIter >= stopTolIts )
     warning('displacements iteration stopped by max iterations.');

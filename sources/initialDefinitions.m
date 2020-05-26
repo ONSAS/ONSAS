@@ -63,8 +63,6 @@ end
 % --------------------------------------------------- 
 
 
-Utm1    = Ut ;  
-
 Utp1    = zeros( ndofpnode*nnodes,   1 ) ;  
 
 FintGt  = zeros( ndofpnode*nnodes,   1 ) ;  
@@ -121,6 +119,14 @@ if dynamicAnalysisBoolean == 1,
 else
   dampingMat = [] ;
 end
+
+
+% Udotdott
+a = massMat(neumdofs,neumdofs) \ ( -FintGt(neumdofs) ) ;
+Udotdott (neumdofs) = a 
+%~ stop
+
+%
 
 % stores model data structures
 modelCompress

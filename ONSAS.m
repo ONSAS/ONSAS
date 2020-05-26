@@ -39,7 +39,9 @@ tReadingInput = 0;
 % verifies the definition of input variables and sets default values
 inputVarsVerification
 
+
 inputAuxDefinitions
+
 % ==============================================================================
 
 
@@ -50,6 +52,7 @@ inputAuxDefinitions
 
 % Initial computations: sets initial matrices and vectors.
 initialDefinitions
+
 
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
@@ -64,10 +67,13 @@ while ( stopTimeIncrBoolean == 0 )
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
 
-if timeIndex == 4
+%~ massMat
+%~ currTime
+%~ pause(2)
+%~ if timeIndex == 4
 timeIndex
 %~ stop
-end
+%~ end
 
 end
 

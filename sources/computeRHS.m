@@ -59,10 +59,9 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
 
     FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
 
-variableFext
-nextLoadFactor
-FextG(neumdofs)
-
+%~ variableFext
+%~ nextLoadFactor
+%~ FextG(neumdofs)
     
     Fhat      = FextG(neumdofs) ...
                 - massMat( neumdofs, neumdofs ) * ...

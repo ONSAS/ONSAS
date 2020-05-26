@@ -31,6 +31,9 @@ end
 % --------------   computes magnitudes for next step  -------------------------- 
 Utp1 = modelNextState.Ut ;
 Ut   = modelCurrState.Ut ;
+
+Udott = modelNextState.Udott 
+Udotdott = modelNextState.Udotdott ;
  
 % updates displacements
 convDeltau = Utp1 - Ut ;
@@ -60,6 +63,10 @@ BCsData.nextLoadFactor = nextLoadFactor ;
 modelCurrState            = modelNextState ; 
 modelCurrState.convDeltau = convDeltau     ;
 
+%~ modelCurrState.Udott 
+%~ modelCurrState.Udotdott 
+
+%~ stop
 if timeIndex == 1,
   fprintf('Time/step: %4i, ',timeIndex);
 elseif mod( timeIndex, 20) == 0,

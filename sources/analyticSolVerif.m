@@ -56,6 +56,8 @@ function analyticSolVerif ...
     normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ; 
   end
   
+analyticalVecy
+numericalVecy
 
   % ----------------------------------------
   if analyticSolFlag == 1 || analyticSolFlag == 2 
