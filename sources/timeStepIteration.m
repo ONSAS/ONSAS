@@ -65,6 +65,8 @@ end
 % --- start iteration with previous displacements ---
 Uk     = Ut     ;   % initial guess
 FintGk = FintGt ;
+Finet  = zeros(size(FintGk));
+Udotdottp1 = Udotdott ;
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
@@ -84,7 +86,6 @@ while  booleanConverged == 0
   [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
   tiempoComputeRHS = cputime() - auxT ;
 
-
   % --- solve system ---
   auxT = cputime();
   
@@ -99,13 +100,24 @@ while  booleanConverged == 0
     currDeltau      = currDeltau    + deltaured ;
   end
   [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+  
+  
+  
+  if solutionMethod == 3
+    Fine = massMat * Udotdottp1 ;
+  end
 
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter ) ;
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Fine(neumdofs), systemDeltauRHS ) ;
 
   if  booleanScreenOutput
     fprintf(' %3i %12.3e \n' , dispIter, deltaErrLoad ) ;
   end
+  
+  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
+  %~ currTime
+  %~ nextTime
+
 end % iteration while
 
 if  booleanScreenOutput
@@ -135,7 +147,6 @@ end
 
 % --- stores next step as Ut and Ft ---
 
-[ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 % -------------------------------------
 
 currTime = nextTime ;

@@ -11,7 +11,7 @@ dirOnsas = [ pwd '/..' ] ;
 problemName = 'springMass_NM' ;
 
 %~ caseSolution = 0 ; % 0: no solution, 1: free
-caseSolution = 1 ; % 0: no solution, 1: free
+caseSolution = 2 ; % 0: no solution, 1: free 2: forced
 % ------------------------------------
 
 % auxiliar numerical data
@@ -20,7 +20,7 @@ A  = 1 ;
 l0 = 4 ;
 
 rhoprob =  1    ;
-ceda    =  0.00 ;
+ceda    =  0.02 ;
 %~ ceda    =  0.00 ;
 nu      =  0    ;
 
@@ -46,8 +46,7 @@ dtCrit = TN / pi              ;
 
 % method
 timeIncr   =  0.08 ;
-finalTime  =  2*TN                ;
-%~ finalTime  =  0.01*TN                ;
+finalTime  =  4*TN                ;
 nLoadSteps = finalTime/timeIncr ;
 DeltaNW    =  0.5               ;
 AlphaNW    =  0.25              ;
@@ -76,10 +75,10 @@ Nodes = [    0  0  0 ; ...
 
 Conec = [ 1 2 0 0 1 1 1 ] ; 
 
-%~ loadFactorsFunc = @(t) p0 *sin( omegaBar*t) ; 
+loadFactorsFunc = @(t) p0 *sin( omegaBar*t) ; 
 
 % -------------------
-%~ nodalVariableLoads   = [ 2  1  0  0  0  0  0 ];
+nodalVariableLoads   = [ 2  1  0  0  0  0  0 ];
 % or
 %~ nodalVariableLoads   = [ 2  0  0  0  0  0  0 ];
 %~ userLoadsFilename = 'myLoadSpringMass' ;
