@@ -80,12 +80,9 @@ analyticFunc = @(w) w*p*Lx/E
 plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
-
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
-
 acdir = pwd ;
 cd(dirOnsas);
 ONSAS
 cd(acdir) ;
-  

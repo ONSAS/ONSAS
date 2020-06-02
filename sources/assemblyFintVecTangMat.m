@@ -185,12 +185,10 @@ else
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:4)' ;
       dofselem  = nodes2dofs( nodeselem , 6 ) ;
-      dispsElem = u2ElemDisps( Ut , dofstet ) ;
-     
-      dofselemRed = dofselem(1:2:length(dofselem)) ;
-      
-      %~ dofselem = dofstet ;
-   
+      dofselemRed = dofselem(1:2:end) ;
+
+      dispsElem = u2ElemDisps( Ut , dofselemRed ) ;
+         
       tetcoordmat        = zeros(3,4) ;
       tetcoordmat(1,1:4) = coordsElemsMat(elem,1:6:end) ;
       tetcoordmat(2,1:4) = coordsElemsMat(elem,3:6:end) ;
