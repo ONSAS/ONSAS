@@ -15,6 +15,12 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+function massMat = tangentInertialMassMatrix ( ...
+                     Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
+
+ndofpnode = 6 ;
+nelems = size(Conec,1);
+
 massMat = sparse( ndofpnode*nnodes, ndofpnode*nnodes) ;
 
 for elem = 1:nelems
@@ -26,9 +32,8 @@ for elem = 1:nelems
 
   if Conec(elem,7)==1
     massMate = elementTruss3DMassMats(coordsElemsMat(elem,:), rho, A ) ;
-
-  elseif Conec(elem,7)==2
-    massMate = elementBeam3DMassMats( coordsElemsMat(elem,:), rho, A, deltamassMat );
+    %~ elseif Conec(elem,7)==2
+    %~ massMate = elementBeam3DMassMats( coordsElemsMat(elem,:), rho, A, deltamassMat );
   end
     % matrices assembly
   massMat (dofselem, dofselem ) = massMat (dofselem,dofselem) + massMate     ;

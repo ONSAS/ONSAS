@@ -17,7 +17,13 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk) 
+function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott ) 
+
+  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
+  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+      = extractMethodParams( numericalMethodParams ) ;
+
 
   if strcmp( userLoadsFilename , '')
     FextUser = zeros(size(constantFext)) ;
@@ -28,23 +34,45 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
     FextUser = feval( userLoadsFilename, nextLoadFactor)  ;
   end
 
+
   if solutionMethod == 1
 
-    %~ if (dispIter==1),
-      FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
-    %~ end
+    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
 
     Resred          = FintGk(neumdofs) - FextG(neumdofs) ;
     systemDeltauRHS = - ( Resred ) ;
 
   elseif solutionMethod == 2
-
-    FextG  = variableFext * currLoadFactor + constantFext ;
+    
+    if norm(constantFext)>0, error('not implemented yet'); end
+    
+    FextG  = variableFext * nextLoadFactor ;
 
     Resred = FintGk(neumdofs) - FextG(neumdofs)  ;
 
     % incremental displacement
     systemDeltauRHS = [ -Resred  variableFext(neumdofs) ] ;
+
+  elseif solutionMethod == 3
+
+    [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
+
+    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
+
+%~ variableFext
+%~ nextLoadFactor
+%~ FextG(neumdofs)
+    
+    Fhat      = FextG(neumdofs) ...
+                - massMat( neumdofs, neumdofs ) * ...
+                  (   a0NM * ( Uk(neumdofs)  - Ut(neumdofs) ) ...
+                    - a2NM * Udott(neumdofs) - a3NM * Udotdott(neumdofs) ) ...
+                + dampingMat( neumdofs, neumdofs) * ...
+                  (   a1NM * ( Ut(neumdofs) - Uk(neumdofs) ) ...
+                    + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs))    ...
+                - FintGk(neumdofs)                                             ;
+                
+    systemDeltauRHS = Fhat ;
 
   end
     

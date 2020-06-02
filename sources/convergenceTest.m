@@ -17,7 +17,7 @@
 
 
 function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
-  numericalMethodParams, redFint, redFext, redDeltaU, redUk, dispIter ) 
+  numericalMethodParams, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS ) 
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -26,7 +26,8 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
 
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
-  deltaErrLoad  = norm( redFint - redFext )   ;
+  %~ deltaErrLoad  = norm( redFint - redFext - redFinet )   ;
+  deltaErrLoad  = norm( systemDeltauRHS )     ;
   normFext      = norm( redFext )             ;
   
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
@@ -34,9 +35,11 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
                 
   if logicForcStop
     stopCritPar = 1 ;      booleanConverged = 1 ;
+    fprintf('stopped by forcesssss')
 
   elseif logicDispStop
     stopCritPar = 2 ;      booleanConverged = 1 ;
+    fprintf('\nstopped by displacements\n\n')
 
   elseif ( dispIter >= stopTolIts )
     warning('displacements iteration stopped by max iterations.');

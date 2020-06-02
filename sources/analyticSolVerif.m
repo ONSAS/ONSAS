@@ -18,7 +18,7 @@
 %function for verification of the numerical results provided by ONSAS, using the analytical expression provided by the user.
 
 
-function analyticSolVerif ...
+function [ numericalVecy ] = analyticSolVerif ...
 ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir );
 
   fprintf('----------------------------------------------- \n')
@@ -56,7 +56,6 @@ function analyticSolVerif ...
     normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ; 
   end
   
-
   % ----------------------------------------
   if analyticSolFlag == 1 || analyticSolFlag == 2 
 

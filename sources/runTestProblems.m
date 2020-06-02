@@ -17,13 +17,32 @@
 
 % run all test examples from examples folder.
 
+keyword = 'test' ;
+%~ keyword = 'example' ;
+
 fileslist = readdir('../examples');
+keyfiles  = {} ;
+ 
+totalRuns = 0 ;
 
-for ind = 1:length(fileslist)
-
-  if length( strfind( fileslist{ind},'TEST') ) > 0  
-    run( [ '../examples/' fileslist{ind} ] ) ;
-    pause(1)
+for i=1:length(fileslist)
+  if length( strfind( fileslist{i}, keyword ) ) > 0
+    totalRuns = totalRuns +1 ; 
+    keyfiles{totalRuns} = fileslist{i} ;
   end
+end
+
+current       = 1 ;
+totalRuns
+
+while current <= totalRuns
+
+  save('-mat', 'exData.mat','current','totalRuns', 'keyfiles' );
   
+  run( [ '../examples/' keyfiles{current} ] ) ;
+  pause(0.5)
+  fprintf([' === test ' problemName ' problem executed === \n\n']);
+  
+  load('exData.mat');
+  current = current + 1 ; 
 end

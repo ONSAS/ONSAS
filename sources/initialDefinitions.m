@@ -16,57 +16,14 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal forces, are computed for step/time 0.
+% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
 tic ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-fixeddofs = [] ;
-KS      = sparse( 6*nnodes, 6*nnodes );  
-
-for i=1:size(nodalSprings,1)
-  aux = nodes2dofs ( nodalSprings (i,1) , 6 ) ;
-  for k=1:6
-    %
-    if nodalSprings(i,k+1) == inf,
-      fixeddofs = [ fixeddofs; aux(k) ] ;
-
-    elseif nodalSprings(i,k+1) > 0,
-      KS( aux(k), aux(k) ) = KS( aux(k), aux(k) ) + nodalSprings(i,k+1) ;
-
-    end
-  end
-end
-
-diridofs = fixeddofs ;
-diridofs = unique( diridofs) ; % remove repeated dofs
-%~ diridofs = [ diridofs ; releasesDofs] ;
-
-neumdofs = zeros( 6*nnodes, 1 ) ;
-
-for elem = 1:nelems
-  
-  aux = nodes2dofs( Conec( elem, 1:4), 6)' ;
-  
-  switch Conec( elem, 7)
-  case 1
-    neumdofs ( aux(1:2:11) ) = aux(1:2:11) ;
-  case 2
-    neumdofs ( aux(1:11) ) = aux(1:11) ;
-  case 3
-    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:2:(6*4-1)) ;
-  end  
-end
-
-neumdofs( diridofs ) = 0 ;
-
-neumdofs = unique( neumdofs ) ;
-if neumdofs(1) == 0,
-  neumdofs(1)=[];
-end
+[neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
 % -------------------------------------------------------------
-
 
 loadFactors     = 0 ;
 itersPerTime    = 0 ;
@@ -83,19 +40,18 @@ Udott   = zeros( ndofpnode*nnodes,   1 ) ;
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
 if exist( 'nonHomogeneousInitialCondU0') ~=0
-  for i=1:size(nonHomogeneousInitialCondU0,1)
-    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1),ndofpnode);
+  for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
+    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), ndofpnode ) ;
     Ut( dofs (nonHomogeneousInitialCondU0(i,2)))=nonHomogeneousInitialCondU0(i,3);
-    
-  end
-end
+  end 
+end % if nonHomIniCond
 
 
 if exist( 'nonHomogeneousInitialCondUdot0') ~=0 
   if dynamicAnalysisBoolean == 1
     for i=1:size(nonHomogeneousInitialCondUdot0,1)
-       dofsdot= nodes2dofs(nonHomogeneousInitialCondUdot0(i,1),ndofpnode);
-       Udott( dofsdot (nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
+      dofs = nodes2dofs(nonHomogeneousInitialCondUdot0(i,1), ndofpnode ) ;
+      Udott( dofs(nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
     end
   else
     error('Velocity initial conditions set for static analysis.');
@@ -103,7 +59,9 @@ if exist( 'nonHomogeneousInitialCondUdot0') ~=0
 end
 
 
-Utm1    = Ut ;  
+% computation of initial acceleration for some cases
+% --------------------------------------------------- 
+
 
 Utp1    = zeros( ndofpnode*nnodes,   1 ) ;  
 
@@ -144,7 +102,7 @@ nKeigpos   = 0 ;
 nKeigneg   = 0 ;
 
 if dynamicAnalysisBoolean == 0,
-  nextLoadFactor  = currLoadFactor + targetLoadFactr / nLoadSteps ;
+  nextLoadFactor  = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 
 else 
   deltaT         = numericalMethodParams(2)        ;
@@ -154,10 +112,28 @@ end
 
 systemDeltauMatrix = [];
 
+
+if dynamicAnalysisBoolean == 1,
+  massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
+  dampingMat = speye( size(massMat) ) * nodalDamping   ;
+else
+  dampingMat = [] ;
+  massMat    = [] ;
+end
+
+
+% Udotdott
+
+if dynamicAnalysisBoolean == 1
+  a = massMat( neumdofs, neumdofs ) \ ( -FintGt( neumdofs ) ) ;
+  Udotdott (neumdofs) = a 
+end
+
 % stores model data structures
 modelCompress
 
-indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
+
+%~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 

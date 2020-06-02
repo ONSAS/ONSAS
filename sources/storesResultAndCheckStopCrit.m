@@ -24,18 +24,22 @@
 tic ;
 
 if dynamicAnalysisBoolean == 0
-  deltaT    = targetLoadFactr/nLoadSteps ;
-  finalTime = targetLoadFactr ;
+  deltaT    = numericalMethodParams(5)/nLoadSteps ;
+  finalTime = numericalMethodParams(5) ;
 end
+
 
 % --------------   computes magnitudes for next step  -------------------------- 
 Utp1 = modelNextState.Ut ;
 Ut   = modelCurrState.Ut ;
+
+Udott    = modelNextState.Udott    ;
+Udotdott = modelNextState.Udotdott ;
  
 % updates displacements
 convDeltau = Utp1 - Ut ;
 
-loadFactors  ( timeIndex +1 )  = BCsNextState.nextLoadFactor  ;
+loadFactors  ( timeIndex +1 )  = BCsData.nextLoadFactor  ;
 controlDisps ( timeIndex +1 )  = Utp1(controlDof)*controlDofFactor ;
 timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 % ------------------------------------------------------------------------------
@@ -43,16 +47,27 @@ timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 
 % ----------------   updates data structures and time --------------------------
 if dynamicAnalysisBoolean == 0
-  currLoadFactor = BCsNextState.nextLoadFactor    ;
-  nextLoadFactor = currLoadFactor + targetLoadFactr / nLoadSteps ;
+%~ BCsData.nextLoadFactor
+%~ stop
+  currLoadFactor = BCsData.nextLoadFactor    ;
+  nextLoadFactor = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
+else
+
+  currLoadFactor = loadFactorsFunc( currTime + deltaT ) ;
+  nextLoadFactor = loadFactorsFunc( currTime + 2*deltaT ) ;
+  
 end
 
-BCsNextState.currLoadFactor = currLoadFactor ;
-BCsNextState.nextLoadFactor = nextLoadFactor ;
+BCsData.currLoadFactor = currLoadFactor ;
+BCsData.nextLoadFactor = nextLoadFactor ;
 
 modelCurrState            = modelNextState ; 
 modelCurrState.convDeltau = convDeltau     ;
 
+%~ modelCurrState.Udott 
+%~ modelCurrState.Udotdott 
+
+%~ stop
 if timeIndex == 1,
   fprintf('Time/step: %4i, ',timeIndex);
 elseif mod( timeIndex, 20) == 0,
@@ -114,7 +129,7 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if ( nextLoadFactor > targetLoadFactr ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  if ( (nextLoadFactor - numericalMethodParams(5)) > 1e-6*numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end

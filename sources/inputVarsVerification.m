@@ -68,6 +68,10 @@ if exist( 'bendStiff' ) == 0
   bendStiff = [] ;
 end
 
+if  exist( 'nodalDamping' ) == 0
+  nodalDamping = [] ;
+end
+
 if exist( 'sectPar' ) == 0
   sectPar = [0 0 ] ;
 end 

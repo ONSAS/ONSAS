@@ -19,7 +19,7 @@
 % http://gmsh.info/doc/texinfo/gmsh.html#MSH-file-format
 %
 % Input:
-%   - mshFilename
+%   - mshFilename: the name of the msh file
 %
 % Output:
 %  - nodesMat: matrix with 4 columns: [x y z physicalTag]
@@ -78,9 +78,12 @@ if strncmp( X, '$Entiti',5)
   entNumsPerDim = fscanf(fid,'%g %g %g %g',[4  1]) ; fgetl(fid);
 
   for i=1:4
-    vecsPhysicalPropsPerEntity{i} = zeros( entNumsPerDim(i) , 1 ) ;
+    vecsPhysicalPropsPerEntity{i} = zeros( entNumsPerDim(i) , 2 ) ;
   end      
 
+  %~ vecsPhysicalPropsPerEntity
+%~ entNumsPerDim
+  %~ stop
   for indDim = 1:4
     colNumTags  = 1+3+3*(indDim>1)+1 ;
     colTags     = 1+3+3*(indDim>1)+2 ;
@@ -88,7 +91,9 @@ if strncmp( X, '$Entiti',5)
       for i=1:entNumsPerDim(indDim)
         aux = str2num( fgets(fid, maxLengthLine ) ) ; 
         if aux(colNumTags) > 0
-          vecsPhysicalPropsPerEntity{indDim}(i) = aux( colTags ) ;
+          vecsPhysicalPropsPerEntity{indDim}(i,:) = [ aux(1) aux( colTags ) ] ;
+        else
+          vecsPhysicalPropsPerEntity{indDim}(i,:) = [ aux(1) 0              ] ;
         end
       end
     end
@@ -122,9 +127,15 @@ if strncmp( X, '$Nodes',5)
       %~ nodesMat( nodesTags,:) = [ matCoords ones(aux(4),1)*auxphy ] ;
   % backup
   
+  %~ block
+  %~ aux
+  %~ vecsPhysicalPropsPerEntity
+  %~ stop
       % only saves physical tags for nodes defined as nodes (no inheritance)
       if aux(1) == 0
-        auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2))  ;
+        vecsPhysicalPropsPerEntity{aux(1)+1} ;
+        indEnt = find( vecsPhysicalPropsPerEntity{aux(1)+1}(:,1) == aux(2) ) ;
+        auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}( indEnt ,2 ) ;
       else
         auxphy = 0 ;
       end
@@ -140,7 +151,7 @@ end
 
 
 
-% --- reads entities if they are defined -------
+% --- reads elements if they are defined -------
 if strncmp( X, '$Elements',5)
   aux = fscanf(fid,'%g %g %g %g',[4  1]) ; fgetl(fid);
   
@@ -163,7 +174,9 @@ if strncmp( X, '$Elements',5)
       
       elemInds = auxMatCon(:,1) ;
       nodes    = auxMatCon(:,2:end) ; 
-      auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2)) ;
+      indEnt = find( vecsPhysicalPropsPerEntity{aux(1)+1}(:,1) == aux(2) ) ;
+      auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}( indEnt ,2 ) ;
+      %~ auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2)) ;
 
       conecMat( elemInds,1:(aux(1)+1)) = nodes ;
       conecMat( elemInds,5           ) = auxphy ;

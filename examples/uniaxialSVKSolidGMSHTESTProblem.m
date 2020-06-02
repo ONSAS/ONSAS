@@ -14,48 +14,44 @@ clear all, close all
 dirOnsas = [ pwd '/..' ] ;
 problemName = 'uniaxialSVKSolidManual' ;
 
+addpath( [ dirOnsas '/sources/' ] );
+
 %% Structural properties
 
 % tension applied and x, y, z dimensions
 p = 1 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
-% an 8-node mesh is considered with its connectivity matrix
-Nodes = [ 0    0    0 ; ...
-          0    0   Lz ; ...
-          0   Ly   Lz ; ...
-          0   Ly    0 ; ...
-          Lx   0    0 ; ...
-          Lx   0   Lz ; ...
-          Lx  Ly   Lz ; ...
-          Lx  Ly    0 ] ;
 
-Conec = [ 1 4 2 6 1 1 3 ; ...
-          6 2 3 4 1 1 3 ; ...
-          4 3 6 7 1 1 3 ; ...
-          4 1 5 6 1 1 3 ; ...
-          4 6 5 8 1 1 3 ; ...
-          4 7 6 8 1 1 3 ] ;
+[ nodesMat, conecMat, physicalNames ] = msh4Reader('uniaxialSolid.msh') ;
+[ nodesMat, conecMat ] = esmacParser( nodesMat, conecMat, physicalNames ) ;
 
+suppsMat = [ inf 0  0 	0   0 	0 ; ...
+             0 	 0  inf 0   0   0 ; ...
+             0 	 0  0   0   inf 0 ] ;
+
+% Loads matrix: 		Is defined by the corresponding load label. First entry is a boolean to assign load in Global or Local axis. (Recommendation: Global axis). 
+%										Global axis -> 1, local axis -> 0. 
+%										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
+
+%~ loadsMat = [0   0 0 0 0 p 0 ] ;  % --- local loading ---
+loadsMat = [1   p 0 0 0 0 0 ] ; % --- global loading ---
+
+[Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat ) ;
+
+clear nodesMat conecMat loadsMat suppsMat
+          
 % Material and geometry properties
 E = 1 ; nu = 0.3 ;
   
-hyperElasParams = cell(1,1) ;  
+hyperElasParams    = cell(1,1) ;  
 hyperElasParams{1} = [ 6 E nu ] ;
 
 secGeomProps = [ 0 0 0 0 ] ;
 
-% Displacement boundary conditions and springs
-nodalSprings = [ 1 inf 0  inf 0   inf 0 ; ...
-                 2 inf 0  inf 0   0   0 ; ...
-                 3 inf 0  0   0   0   0 ; ...
-                 4 inf 0  0   0   inf 0 ; ...
-                 5 0   0  inf 0   inf 0 ; ...
-                 6 0   0  inf 0   0   0 ; ...
-                 8 0   0  0   0   inf 0 ] ;
 
 %% Loading parameters
-nodalForce = p * Ly * Lz / 6 ;
-nodalVariableLoads = [ (5:8)' nodalForce*[1 2 1 2]' zeros(4,5) ] ;
+%~ nodalForce = p * Ly * Lz / 6 ;
+%~ nodalVariableLoads = [ (5:8)' nodalForce*[1 2 1 2]' zeros(4,5) ] ;
 
 %% Analysis parameters
 nonLinearAnalysisBoolean = 1 ; linearDeformedScaleFactor = 1.0 ;
@@ -64,7 +60,7 @@ stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
 targetLoadFactr  = 2    ;
-nLoadSteps       = 10    ;
+nLoadSteps       = 3    ;
 
 controlDofInfo = [ 7 1 1 ] ;
 
@@ -81,7 +77,6 @@ plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
 
-octaveBoolean = 0 ;
 reportBoolean = 0;
 
 %% ONSAS execution

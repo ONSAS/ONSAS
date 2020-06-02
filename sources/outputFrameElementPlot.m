@@ -37,10 +37,6 @@ xsref = coordsElem( [ 1   7  ] ) ;
 ysref = coordsElem( [ 1+2 7+2] ) ;
 zsref = coordsElem( [ 1+4 7+4] ) ;
 
-xsdefA = (coordsElem + dispsElem)( [ 1   7  ] ) ;
-ysdefA = (coordsElem + dispsElem)( [ 1+2 7+2] ) ;
-zsdefA = (coordsElem + dispsElem)( [ 1+4 7+4] ) ;
-
 ndofpnode =  6 ;
 conecElem = [] ;
 
@@ -55,7 +51,18 @@ if elemType == 1
   titaz = [] ;
 	conecElem = [1 2] ;
 
+
+
+
+
+
 elseif elemType == 2
+
+%~ coordsElem
+%~ dispsElem
+  xsdefA = (coordsElem + dispsElem )( [ 1   7  ] ) ;
+  ysdefA = (coordsElem + dispsElem )( [ 1+2 7+2] ) ;
+  zsdefA = (coordsElem + dispsElem )( [ 1+4 7+4] ) ;
 
   nPlotPoints    = 20 ; 
 

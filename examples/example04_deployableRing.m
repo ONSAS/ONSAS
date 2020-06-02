@@ -1,12 +1,11 @@
 % -----------------------------
-% ring example
+% deployable ring example
 % -----------------------------
 
-E  = 200e3 ;   nu = 0.3   ;
+E  = 200e3 ;   nu = 0.3   ;  R = 120   ;
 
-R = 120   ;
-
-inputONSASversion = '0.1.9';
+dirOnsas = [ pwd '/..' ] ;
+inputONSASversion = '0.1.10';
 problemName = 'ring' ;
 
 hyperElasParams = cell(1,1) ;
@@ -63,3 +62,9 @@ plotsViewAxis = [ 2 -1 1];     printflag = 0;
 numericalMethodParams = [ 2 ...
  stopTolDeltau stopTolForces stopTolIts ...
  targetLoadFactr nLoadSteps  incremArcLen ] ; 
+
+
+acdir = pwd ;
+cd(dirOnsas);
+ONSAS
+cd(acdir) ;

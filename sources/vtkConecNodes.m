@@ -27,7 +27,7 @@ function [Conecvtk, Nodesvtk, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( 
       
       if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
       
-        [xdef, ydef, zdef, conecElem] = outputFrameElementPlot( coordsElem(i,:)', dispsElemsMat(i,:)', elemType ) ;
+        [xdef, ydef, zdef, conecElem] = outputFrameElementPlot( coordsElem(i,1:12)', dispsElemsMat(i,:)', elemType ) ;
         titax = [] ; titay = [] ; titaz = [] ;
       elseif nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
     

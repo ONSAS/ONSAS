@@ -27,7 +27,6 @@ function ...
   convDeltau, stabilityAnalysisBoolean, booleanScreenOutput ) ;
 % ------------------------------------------------------------------------------
 
-
   % --------------------------------------------------------------------
   % -----------      pre-iteration definitions     ---------------------
   nelems    = size(Conec,1) ; ndofpnode = 6;
@@ -59,20 +58,35 @@ function ...
   while  booleanConverged == 0
     dispIter = dispIter + 1 ;
 
-auxT = cputime();
+%~ <<<<<<< HEAD
+  auxT = time();
     % system matrix
     systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
-tiempoComputeMatrix = cputime() - auxT
+tiempoComputeMatrix = time() - auxT ;
+%~ =======
+%~ auxT = cputime();
+    % system matrix
+    %~ systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, solutionMethod, bendStiff);
+%~ tiempoComputeMatrix = cputime() - auxT
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 auxT = cputime();    
     % system rhs
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, solutionMethod, neumdofs, FintGk)  ;
-tiempoComputeRHS = cputime() - auxT
+%~ <<<<<<< HEAD
+tiempoComputeRHS = time() - auxT;
+%~ =======
+%~ tiempoComputeRHS = cputime() - auxT
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
 
 opa = cputime();
     % computes deltaU
     [deltaured, currLoadFactor] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, currLoadFactor , currDeltau );
-tiempoSystemSolve = cputime() - opa
+%~ <<<<<<< HEAD
+tiempoSystemSolve = time() - opa;
+%~ =======
+%~ tiempoSystemSolve = cputime() - opa
+%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
     
     % updates: model variables and computes internal forces
     Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;

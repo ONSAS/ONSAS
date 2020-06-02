@@ -1,4 +1,4 @@
-%% Von Mises truss example
+%% Von Mises truss example using Newton-Raphson Arc-Length Method
 %
 %%
 
@@ -6,7 +6,7 @@ clear all, close all
 
 %% General data
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'VonMisesTrussNRAL' ;
+problemName = 'staticVonMisesTruss' ;
 
 % uncomment to delete variables and close windows
 % clear all, close all
@@ -19,14 +19,15 @@ hyperElasParams = cell(1,1) ;
 hyperElasParams{1} = [1 Es nu] ;
 
 % each row shows the properties of each section: A, Iy Iz and J
-A = 2.5e-4 ; 
+A = 2.5e-4 ;
 secGeomProps = [ A 2 2 4 ] ;
 
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
+imperfPerc = .2 ;
 
 Nodes = [      0  0     0  ; ...
-            auxx  0  auxy  ; ...
+            auxx*(1+imperfPerc)  0  auxy  ; ...
           2*auxx  0     0  ] ;
 
 % in global system of coordinates
@@ -46,7 +47,8 @@ nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
 %% Analysis parameters
 
 % [ node nodaldof scalefactor(positive or negative) ]
-controlDofInfo = [ 2 5 -1 ] ;
+%~ controlDofInfo = [ 2 5 -1 ] ;
+controlDofInfo = [ 2 1 +1 ] ;
 
 % analysis parameters
 nonLinearAnalysisBoolean = 1 ;  dynamicAnalysisBoolean   = 0 ; 
@@ -54,27 +56,25 @@ LBAAnalyFlag             = 0 ;
 
 stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-10 ;
-stopTolForces    = 1.0e-6 ;
+%~ stopTolForces    = 1.0e-6  ;
+stopTolForces    = 1.0e-10  ;
 
-% arc length
-targetLoadFactr  = 5e7    ;
+targetLoadFactrNR   = 1e7    ; % newton
+targetLoadFactrNRAL = 5e7    ; % arc length
 
-% newton
-%~ targetLoadFactr  = 1e7    ;
-
-nLoadSteps       = 50    ;
-incremArcLen     = .1    ;
+nLoadSteps       = 100    ;
+incremArcLen     = .1     ;
 
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactr nLoadSteps ] ; 
+                            %~ targetLoadFactrNR nLoadSteps ] ; 
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactr nLoadSteps incremArcLen ] ; 
+                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
 
 stabilityAnalysisBoolean = 1 ;
 
 % analytical solution using engineering strain
-analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
+%~ analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
 analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
@@ -92,3 +92,5 @@ cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
+figure
+plot( controlDisps, loadFactors )
