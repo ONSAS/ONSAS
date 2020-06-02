@@ -129,7 +129,6 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  (nextLoadFactor - numericalMethodParams(5))
   if ( (nextLoadFactor - numericalMethodParams(5)) > 1e-6*numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end

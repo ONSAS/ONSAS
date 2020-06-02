@@ -27,25 +27,15 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
   %~ deltaErrLoad  = norm( redFint - redFext - redFinet )   ;
-  deltaErrLoad  = norm( systemDeltauRHS )   ;
+  deltaErrLoad  = norm( systemDeltauRHS )     ;
   normFext      = norm( redFext )             ;
-  
-  %~ redFext
-  %~ redFint
-  %~ redFinet
-  %~ deltaErrLoad
-  %~ normFext * stopTolForces
-  
-  deltaErrLoad
-  normFext
-  stopTolForces
   
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
   logicForcStop = ( deltaErrLoad < ( normFext * stopTolForces ) )  ;
                 
   if logicForcStop
     stopCritPar = 1 ;      booleanConverged = 1 ;
-    warning('stopped by forcesssss')
+    fprintf('stopped by forcesssss')
 
   elseif logicDispStop
     stopCritPar = 2 ;      booleanConverged = 1 ;
