@@ -91,7 +91,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
 
 			else
-				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,:)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
+				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
 
 			end
 			plot3( xselemdef, yselemdef, zselemdef, 'b-', 'linewidth', lw, 'markersize', ms );
@@ -222,7 +222,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
 	
 				else
-					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,:)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
+					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
 	
 				end
 				plot3( xselemdef, yselemdef, zselemdef, 'color',cmapi,'linewidth',lw*0.7 );

@@ -158,6 +158,8 @@ else
       nodeselem = Conec(elem,1:2)' ;
       dofselem  = nodes2dofs( nodeselem , 6 ) ;
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
+
+      dofselemRed = dofselem  ;
   
       sizeTensor = 1 ;
   

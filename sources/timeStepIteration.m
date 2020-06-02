@@ -104,11 +104,14 @@ while  booleanConverged == 0
   
   
   if solutionMethod == 3
-    Fine = massMat * Udotdottp1 ;
+    Fine    = massMat * Udotdottp1 ;
+    Finered = Fine( neumdofs ) ;
+  else
+    Finered    = [] ;
   end
 
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Fine(neumdofs), systemDeltauRHS ) ;
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Finered, systemDeltauRHS ) ;
 
   if  booleanScreenOutput
     fprintf(' %3i %12.3e \n' , dispIter, deltaErrLoad ) ;

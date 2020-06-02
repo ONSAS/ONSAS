@@ -39,7 +39,6 @@ tReadingInput = 0;
 % verifies the definition of input variables and sets default values
 inputVarsVerification
 
-
 inputAuxDefinitions
 
 % ==============================================================================

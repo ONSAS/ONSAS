@@ -112,21 +112,22 @@ end
 
 systemDeltauMatrix = [];
 
-massMat = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
 
 if dynamicAnalysisBoolean == 1,
+  massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
   dampingMat = speye( size(massMat) ) * nodalDamping   ;
 else
   dampingMat = [] ;
+  massMat    = [] ;
 end
 
 
 % Udotdott
-a = massMat(neumdofs,neumdofs) \ ( -FintGt(neumdofs) ) ;
-Udotdott (neumdofs) = a 
-%~ stop
 
-%
+if dynamicAnalysisBoolean == 1
+  a = massMat( neumdofs, neumdofs ) \ ( -FintGt( neumdofs ) ) ;
+  Udotdott (neumdofs) = a 
+end
 
 % stores model data structures
 modelCompress

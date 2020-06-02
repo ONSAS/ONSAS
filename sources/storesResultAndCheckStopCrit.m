@@ -28,11 +28,12 @@ if dynamicAnalysisBoolean == 0
   finalTime = numericalMethodParams(5) ;
 end
 
+
 % --------------   computes magnitudes for next step  -------------------------- 
 Utp1 = modelNextState.Ut ;
 Ut   = modelCurrState.Ut ;
 
-Udott = modelNextState.Udott 
+Udott    = modelNextState.Udott    ;
 Udotdott = modelNextState.Udotdott ;
  
 % updates displacements
@@ -128,7 +129,8 @@ if dynamicAnalysisBoolean == 1
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 else
-  if ( nextLoadFactor > numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+  (nextLoadFactor - numericalMethodParams(5))
+  if ( (nextLoadFactor - numericalMethodParams(5)) > 1e-6*numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   end
 end
