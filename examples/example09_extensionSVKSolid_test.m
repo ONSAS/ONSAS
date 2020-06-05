@@ -12,7 +12,7 @@ clear all, close all
 
 %% General data
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'uniaxialSVKSolidManual' ;
+problemName = 'extensionSVKSolid' ;
 
 %% Structural properties
 

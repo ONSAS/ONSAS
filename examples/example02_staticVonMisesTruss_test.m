@@ -65,10 +65,10 @@ targetLoadFactrNRAL = 5e7    ; % arc length
 nLoadSteps       = 100    ;
 incremArcLen     = .1     ;
 
-%~ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
-numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactrNR nLoadSteps ] ; 
+numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
+%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactrNR nLoadSteps ] ; 
 
 stabilityAnalysisBoolean = 1 ;
 

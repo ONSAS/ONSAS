@@ -126,3 +126,9 @@ else
   end
 end
 % ------------------------------------------------------------------------------
+
+
+while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
+  contProgr = contProgr + 1 ;
+  fprintf('=')
+end

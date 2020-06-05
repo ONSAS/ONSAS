@@ -51,6 +51,8 @@ inputAuxDefinitions
 % Initial computations: sets initial matrices and vectors.
 initialDefinitions
 
+contProgr = 0 ;
+
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
   auxT = cputime() ;
@@ -64,10 +66,6 @@ while ( stopTimeIncrBoolean == 0 )
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
   
-  if mod( timeIndex, round( nLoadSteps*.05 ) ) == 0
-    fprintf('=')
-  end
-
 end
 
 % if analytical solution is provided, numerical results are validated. 
@@ -93,7 +91,7 @@ if plotParamsVector(1) > 0
 		tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
     Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
-    outputdir, problemName, loadFactors, sectPar, ...
+    outputDir, problemName, loadFactors, sectPar, ...
     nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
     timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput ) ;
 end
