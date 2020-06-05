@@ -39,7 +39,6 @@ nodalSprings = [ 1  inf  0  inf  0  inf 0 ; ...
 Conec = [ 1 2 0 0 1 1 1 ;
           2 3 0 0 1 1 1 ] ;
 
-
 %% Loading parameters
 
 nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
@@ -65,10 +64,10 @@ targetLoadFactrNRAL = 5e7    ; % arc length
 nLoadSteps       = 100    ;
 incremArcLen     = .1     ;
 
-%~ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
-numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactrNR nLoadSteps ] ; 
+numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
+%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactrNR nLoadSteps ] ; 
 
 stabilityAnalysisBoolean = 1 ;
 
@@ -94,6 +93,5 @@ cd(acdir) ;
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             %~ targetLoadFactrNR nLoadSteps ] ; 
 
-
 figure
-plot( controlDisps, loadFactors )
+plot( controlDisps, loadFactors,'r-s' )

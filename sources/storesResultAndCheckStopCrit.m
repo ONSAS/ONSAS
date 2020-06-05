@@ -28,7 +28,6 @@ if dynamicAnalysisBoolean == 0
   finalTime = numericalMethodParams(5) ;
 end
 
-
 % --------------   computes magnitudes for next step  -------------------------- 
 Utp1 = modelNextState.Ut ;
 Ut   = modelCurrState.Ut ;
@@ -126,3 +125,9 @@ else
   end
 end
 % ------------------------------------------------------------------------------
+
+
+while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
+  contProgr = contProgr + 1 ;
+  fprintf('=')
+end

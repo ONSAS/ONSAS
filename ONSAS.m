@@ -53,26 +53,19 @@ initialDefinitions
 
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
-  auxT = cputime() ;
-  
+
   % --------   computes the model state at the next load/time step   --------
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
   % -------------------------------------------------------------------------
-  
-  tCallSolver = cputime() - auxT ;
-  
+
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
   
-  if mod( timeIndex, round( nLoadSteps*.05 ) ) == 0
-    fprintf('=')
-  end
-
 end
 
 % if analytical solution is provided, numerical results are validated. 
 if analyticSolFlag > 0
-  [numericalVals] = analyticSolVerif ...
+  [numericalVals, analyticVals] = analyticSolVerif ...
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
     analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir );
 
@@ -93,7 +86,7 @@ if plotParamsVector(1) > 0
 		tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
     Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
     visualloadfactor, linearDeformedScaleFactor, printflag, ...
-    outputdir, problemName, loadFactors, sectPar, ...
+    outputDir, problemName, loadFactors, sectPar, ...
     nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
     timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput ) ;
 end
