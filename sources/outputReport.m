@@ -22,7 +22,7 @@
 
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
-fileReport = fopen( [ outputdir  problemName '_Report.tex' ] ,'w') ;
+fileReport = fopen( [ outputDir  problemName '_Report.tex' ] ,'w') ;
 fprintf(fileReport, [ '\\documentclass[a4paper,10pt]{article} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage[a4paper,margin=20mm]{geometry} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{longtable} \n'] ) ;

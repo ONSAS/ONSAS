@@ -52,7 +52,6 @@ coordsElemsMat = zeros(nelems,24) ;
 for i=1:nelems
   % obtains nodes and dofs of element
   nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
-  nodeselem
   dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
   for j=1:length(nodeselem)
     coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j), : ) ;

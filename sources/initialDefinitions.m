@@ -34,6 +34,7 @@ timesVec = [ 0 ] ;
 
 factorescriticos = [] ;
 
+
 % create velocity and displacements vectors
 Ut      = zeros( ndofpnode*nnodes,   1 ) ;  
 Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
@@ -94,6 +95,7 @@ stopCritPar = 0;
 loadFactors( timeIndex,1) = currLoadFactor ;
 controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
 
+
 [ FintGt, ~, Strainst, Stresst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
 
 factorCrit = 0 ;
@@ -132,7 +134,6 @@ end
 % stores model data structures
 modelCompress
 
-
 %~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
@@ -141,6 +142,10 @@ matNts = currentNormalForces ;
 
 tCallSolver = 0 ;
 tStores = 0 ;
-printsOutputScreen
+
+% --- prints headers and time0 values ---
+printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
+
+fprintf(' timeSteps progress: 1|                   |%4i\n                       ', nLoadSteps)
 
 tInitialDefs = toc ;

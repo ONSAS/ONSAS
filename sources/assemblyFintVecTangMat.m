@@ -135,8 +135,8 @@ else
     case 1 % Co-rotational Truss with Engineering strain
   
       % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)' ;
-      dofselem  = nodes2dofs( nodeselem , 6 ) ;
+      nodeselem = Conec(elem,1:2)'             ;
+      dofselem  = nodes2dofs( nodeselem , 6 )  ;
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
   
       dofselemRed = dofselem(1:2:end)  ;
@@ -148,15 +148,12 @@ else
       
       [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
       
-      %~ size(Finte)
-      %~ size(KTe)
-      %~ stop  
     % -------------------------------------------
     case 2 % Co-rotational Frame element (bernoulli beam)
   
       % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)' ;
-      dofselem  = nodes2dofs( nodeselem , 6 ) ;
+      nodeselem = Conec(elem,1:2)'             ;  
+      dofselem  = nodes2dofs( nodeselem , 6 )  ;
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
 
       dofselemRed = dofselem  ;

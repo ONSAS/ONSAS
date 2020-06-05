@@ -23,13 +23,10 @@ function  [ modelCurrState, BCsData, auxIO ]  = timeStepIteration( modelCurrStat
 
 % -----------------------------------
 % ------   extracts variables  ------
-auxT = cputime();
+auxT = cputime() ;
 modelExtract
 tiempoModelExtract = cputime() - auxT ;
 % -------------------------
-
-%~ Ut
-%~ stop
 
 % -----------      pre-iteration definitions     ---------------------
 nelems    = size(Conec,1) ; ndofpnode = 6;
@@ -56,10 +53,6 @@ end
 % --------------------------------------------------------------------
 % --- iteration in displacements (NR) or load-displacements (NR-AL) --
 % --------------------------------------------------------------------
-
-if  booleanScreenOutput
-  fprintf(' iter  normResLoad\n----------------------\n' ) ;
-end
 
 
 % --- start iteration with previous displacements ---
@@ -95,13 +88,9 @@ while  booleanConverged == 0
   tiempoSystemSolve = cputime() - auxT ;
 
   % --- updates: model variables and computes internal forces ---
-  Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
-  if solutionMethod == 2
-    currDeltau      = currDeltau    + deltaured ;
-  end
+  [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+
   [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
-  
-  
   
   if solutionMethod == 3
     Fine    = massMat * Udotdottp1 ;
@@ -113,19 +102,12 @@ while  booleanConverged == 0
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Finered, systemDeltauRHS ) ;
 
-  if  booleanScreenOutput
-    fprintf(' %3i %12.3e \n' , dispIter, deltaErrLoad ) ;
-  end
+  % prints iteration info in file
+  printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIter deltaErrLoad norm(deltaured) ] ) ;
   
   [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
-  %~ currTime
-  %~ nextTime
 
 end % iteration while
-
-if  booleanScreenOutput
-  fprintf('----  iteration ended ------\n' ) ;
-end
 % --------------------------------------------------------------------
 % --------------------------------------------------------------------
 
@@ -148,6 +130,9 @@ else
 end
 
 
+% prints iteration info in file
+printSolverOutput( outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIter stopCritPar nKeigpos nKeigneg ] ) ;
+
 % --- stores next step as Ut and Ft ---
 
 % -------------------------------------
@@ -157,7 +142,7 @@ Ut       = Utp1 ;
 FintGt   = FintGtp1 ;
 Udott    = Udottp1 ;
 Udotdott = Udotdottp1 ;
-
+timeIndex = timeIndex + 1;
 
 modelCompress
 
@@ -185,3 +170,12 @@ else
   Udotdottp1 = [] ;
   Udottp1    = [] ;
 end  
+
+
+function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
+
+  Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
+
+  if solutionMethod == 2
+    currDeltau      = currDeltau    + deltaured ;
+  end

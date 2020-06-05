@@ -24,7 +24,7 @@ secGeomProps = [ A 2 2 4 ] ;
 
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
-imperfPerc = .2 ;
+imperfPerc = .0 ;
 
 Nodes = [      0  0     0  ; ...
             auxx*(1+imperfPerc)  0  auxy  ; ...
@@ -47,8 +47,8 @@ nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
 %% Analysis parameters
 
 % [ node nodaldof scalefactor(positive or negative) ]
-%~ controlDofInfo = [ 2 5 -1 ] ;
-controlDofInfo = [ 2 1 +1 ] ;
+controlDofInfo = [ 2 5 -1 ] ;
+%~ controlDofInfo = [ 2 1 +1 ] ;
 
 % analysis parameters
 nonLinearAnalysisBoolean = 1 ;  dynamicAnalysisBoolean   = 0 ; 
@@ -65,16 +65,15 @@ targetLoadFactrNRAL = 5e7    ; % arc length
 nLoadSteps       = 100    ;
 incremArcLen     = .1     ;
 
-%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactrNR nLoadSteps ] ; 
-
-numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
+%~ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
+numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactrNR nLoadSteps ] ; 
 
 stabilityAnalysisBoolean = 1 ;
 
 % analytical solution using engineering strain
-%~ analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
+analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
 analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
@@ -91,6 +90,10 @@ acdir = pwd ;
 cd(dirOnsas);
 ONSAS
 cd(acdir) ;
+
+%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            %~ targetLoadFactrNR nLoadSteps ] ; 
+
 
 figure
 plot( controlDisps, loadFactors )
