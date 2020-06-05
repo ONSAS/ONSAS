@@ -39,7 +39,6 @@ nodalSprings = [ 1  inf  0  inf  0  inf 0 ; ...
 Conec = [ 1 2 0 0 1 1 1 ;
           2 3 0 0 1 1 1 ] ;
 
-
 %% Loading parameters
 
 nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
@@ -94,6 +93,5 @@ cd(acdir) ;
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             %~ targetLoadFactrNR nLoadSteps ] ; 
 
-
 figure
-plot( controlDisps, loadFactors )
+plot( controlDisps, loadFactors,'r-s' )

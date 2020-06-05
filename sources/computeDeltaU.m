@@ -38,21 +38,20 @@ function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, syst
       if norm(convDeltau)==0
         deltalambda = targetLoadFactr / nLoadSteps ;
       else
-        aux = sign( convDeltau' * deltaubar ) ;
-        deltalambda =   incremArcLen * aux / ( sqrt( deltaubar' * deltaubar ) ) ;
+        deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
       end
       
     else
       ca =    deltaubar' * deltaubar ;
       cb = 2*(currDeltau + deltauast)' * deltaubar ;
-      cc = (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ; 
+      cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ; 
       disc = cb^2 - 4 * ca * cc ;
       if disc < 0
         disc, error( 'negative discriminant'); 
       end
       sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
       
-      vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau;
+      vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
                ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
      
       deltalambda = sols( find( vals == max(vals) ) ) ;

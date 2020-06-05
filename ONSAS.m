@@ -51,18 +51,13 @@ inputAuxDefinitions
 % Initial computations: sets initial matrices and vectors.
 initialDefinitions
 
-contProgr = 0 ;
-
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
-  auxT = cputime() ;
-  
+
   % --------   computes the model state at the next load/time step   --------
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
   % -------------------------------------------------------------------------
-  
-  tCallSolver = cputime() - auxT ;
-  
+
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
   
@@ -70,7 +65,7 @@ end
 
 % if analytical solution is provided, numerical results are validated. 
 if analyticSolFlag > 0
-  [numericalVals] = analyticSolVerif ...
+  [numericalVals, analyticVals] = analyticSolVerif ...
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
     analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir );
 

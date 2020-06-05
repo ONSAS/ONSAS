@@ -23,9 +23,7 @@ function  [ modelCurrState, BCsData, auxIO ]  = timeStepIteration( modelCurrStat
 
 % -----------------------------------
 % ------   extracts variables  ------
-auxT = cputime() ;
 modelExtract
-tiempoModelExtract = cputime() - auxT ;
 % -------------------------
 
 % -----------      pre-iteration definitions     ---------------------
@@ -64,40 +62,30 @@ Udotdottp1 = Udotdott ;
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
+
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
 % ---------------------------------------------------
 
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
   % --- system matrix ---
-  auxT = cputime();
   systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat);
-  tiempoComputeMatrix = cputime() - auxT ;
   
-  % --- system rhs ---
-  auxT = cputime();    
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
-  tiempoComputeRHS = cputime() - auxT ;
-
   % --- solve system ---
-  auxT = cputime();
-  
-  %~ size( systemDeltauMatrix)
-  %~ size( systemDeltauRHS)
-  [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau );
-  tiempoSystemSolve = cputime() - auxT ;
+  [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
 
   % --- updates: model variables and computes internal forces ---
   [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+  [FintGk, ~ ]     = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
-  [FintGk, ~ ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+  % --- system rhs ---
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
   
   if solutionMethod == 3
     Fine    = massMat * Udotdottp1 ;
     Finered = Fine( neumdofs ) ;
-  else
-    Finered    = [] ;
-  end
+  else, Finered    = [] ; end
 
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Finered, systemDeltauRHS ) ;
@@ -146,7 +134,6 @@ timeIndex = timeIndex + 1;
 
 modelCompress
 
-
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
@@ -158,7 +145,7 @@ function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott
 
   Utp1       = Uk                                         ;
   FintGtp1   = FintGk                                     ;
-  nextTime = currTime + deltaT ;
+  nextTime   = currTime + deltaT                          ;
 
 if solutionMethod == 3
   [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
@@ -169,8 +156,7 @@ if solutionMethod == 3
 else
   Udotdottp1 = [] ;
   Udottp1    = [] ;
-end  
-
+end
 
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
 

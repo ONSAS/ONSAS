@@ -149,3 +149,5 @@ printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 fprintf(' timeSteps progress: 1|                   |%4i\n                       ', nLoadSteps)
 
 tInitialDefs = toc ;
+
+contProgr = 0 ;

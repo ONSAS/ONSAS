@@ -48,6 +48,7 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
     if norm(constantFext)>0, error('not implemented yet'); end
     
     FextG  = variableFext * nextLoadFactor ;
+    
     Resred = FintGk(neumdofs) - FextG(neumdofs)  ;
 
     % incremental displacement
