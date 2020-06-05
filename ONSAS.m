@@ -34,15 +34,14 @@ if exist('booleanScreenOutput') == 0 || booleanScreenOutput
   fprintf('==============================================\n');
 end
 
+
 tReadingInput = 0;
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
-
 inputAuxDefinitions
 
 % ==============================================================================
-
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
@@ -52,7 +51,6 @@ inputAuxDefinitions
 % Initial computations: sets initial matrices and vectors.
 initialDefinitions
 
-
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
   auxT = cputime() ;
@@ -61,18 +59,14 @@ while ( stopTimeIncrBoolean == 0 )
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
   % -------------------------------------------------------------------------
   
-  tCallSolver = cputime() - auxT
+  tCallSolver = cputime() - auxT ;
   
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
-
-%~ massMat
-%~ currTime
-%~ pause(2)
-%~ if timeIndex == 4
-timeIndex
-%~ stop
-%~ end
+  
+  if mod( timeIndex, round( nLoadSteps*.05 ) ) == 0
+    fprintf('=')
+  end
 
 end
 
@@ -80,7 +74,7 @@ end
 if analyticSolFlag > 0
   [numericalVals] = analyticSolVerif ...
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
-    analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir );
+    analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir );
 
 end
 

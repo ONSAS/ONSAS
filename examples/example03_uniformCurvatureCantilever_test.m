@@ -56,7 +56,6 @@ numericalMethodParams = [ 1 ...
 analyticSolFlag = 1 ; analyticCheckTolerance = 1e-4 ;
 analyticFunc = @(w) w*l / ( E * Iy )  ; 
 
-
 acdir = pwd ;
 cd(dirOnsas);
 ONSAS

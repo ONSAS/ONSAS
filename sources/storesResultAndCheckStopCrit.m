@@ -67,13 +67,6 @@ modelCurrState.convDeltau = convDeltau     ;
 %~ modelCurrState.Udott 
 %~ modelCurrState.Udotdott 
 
-%~ stop
-if timeIndex == 1,
-  fprintf('Time/step: %4i, ',timeIndex);
-elseif mod( timeIndex, 20) == 0,
-  fprintf('%4i,',timeIndex);
-end
-
 timeIndex      = timeIndex +1      ;
 currTime       = currTime + deltaT ;
 
@@ -100,7 +93,7 @@ tangentMatricesCell{timeIndex} = modelNextState.systemDeltauMatrix ;
  
 % normal forces calculation
 
-indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
+%~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
 currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 
@@ -121,7 +114,6 @@ else
   nKeigpos = 0 ;
 end
 tStores = toc ;
-printsOutputScreen
 
 % ---------------       evals stop time incr crit          ---------------------
 if dynamicAnalysisBoolean == 1

@@ -222,7 +222,7 @@ tVarVer = toc ;
 
 
 % creates outputdir
-outputdir = [ './output/' problemName '/' ] ;
+outputDir = [ './output/' problemName '/' ] ;
 
 if exist( './output/' ) ~= 7
   fprintf( '  - Creating directory ./output/ ...' );
@@ -230,7 +230,7 @@ if exist( './output/' ) ~= 7
   fprintf( ' done. \n' );
 end
 
-if exist( outputdir ) == 7 % problemName is a directory
+if exist( outputDir ) == 7 % problemName is a directory
   % the content is erased
   fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
   if octaveBoolean
@@ -241,7 +241,7 @@ if exist( outputdir ) == 7 % problemName is a directory
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   % it is created
   fprintf( ['  - Creating directory ./output/' problemName '/ ...'] ) ;
-  mkdir( outputdir );
+  mkdir( outputDir );
 end
 
 fprintf( ' done. \n' );
