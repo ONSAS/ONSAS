@@ -24,12 +24,14 @@ incrementsResultsFilename = [ outputdir  problemName '_incrementsOutput.tex' ] ;
 incrementsNormalForce 		= [ outputdir  problemName '_incrementsNormalForceOutput.tex' ] ;
 %~ incrementsTimePerformance = [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
 
-headerIncrements  = [ '\\begin{tabular}{cccccccc}\n' ...
-                      '$\\#t$ & $ \\lambda(t)$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ & flagExit ' ...
-                      ' & npos & nneg  \\\\ \\hline \n'] ;
+headerIncrements  = [ '$\\#t$ & $ \\lambda(t)$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ & flagExit ' ...
+                      ' & npos & nneg  \\\\ \\hline \n \\endhead \n'] ;
+%
 headerNormalForce = [ 'timeInd & t & $ \\lambda(t)$ & $N_{max}$ & $N_{min}$ \\\\ \\toprule \n'] ;
 
-timeStepEndLine   = [ '%4i & %9.2e & %4i &           &           & %2i & %3i & %3i \\\\ \n' ] ;
+timeStepEndLine   = [ '\\hdashline\n' ...
+                      '%4i & %9.2e & %4i &           &           & %2i & %3i & %3i \\\\ \n' ] ;
+%
 timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &    &     &     \\\\ \n' ] ;
 
 if timeIndex == 1 && lineData(1)~=1

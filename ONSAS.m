@@ -27,11 +27,19 @@ ONSASversion = '0.1.10' ;
 addpath( [ pwd '/sources' ':' pwd '/input' ':' pwd '/user'  ] );
 
 if exist('booleanScreenOutput') == 0 || booleanScreenOutput
-  fprintf('==============================================\n');
-  fprintf( [ 'Welcome to ONSAS v' ONSASversion '.\n' ] )
-  fprintf( [ 'This program comes with ABSOLUTELY NO WARRANTY. Please ' ...
-             'read COPYING.txt and README.md files for more information. \n' ]);
-  fprintf('==============================================\n');
+  fprintf([ '|=================================================|\n' ...
+            '|         _ _             _ _     _ _     _ _     |\n' ...
+            '|       /    /  /|   /  /       /    /  /         |\n' ...
+            '|      /    /  / |  /  /_ _    /_ _ /  /_ _       |\n' ...
+            '|     /    /  /  | /       /  /    /       /      |\n' ...
+            '|    /_ _ /  /   |/   _ _ /  /    /   _ _ /       |\n' ...
+            '|                                                 |\n' ... 
+            '|-------------------------------------------------|\n' ] );
+  fprintf([ '| Welcome to ONSAS v' ONSASversion '.                       |\n' ...
+            '| This program comes with ABSOLUTELY NO WARRANTY. |\n' ...
+            '| Read files COPYING.txt and README.md for more   |\n' ...
+            '| information.                                    |\n' ...
+            '--------------------------------------------------|\n'] ) ;
 end
 
 
@@ -56,7 +64,6 @@ while ( stopTimeIncrBoolean == 0 )
 
   % --------   computes the model state at the next load/time step   --------
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
-  % -------------------------------------------------------------------------
 
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit
@@ -91,16 +98,8 @@ if plotParamsVector(1) > 0
     timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput ) ;
 end
 
-tic
 % report with results is generated
-if reportBoolean
-  if nelems < 500
-    if nnodes < 53
-      outputReport
-    end  
-  end  
-end
-tReport = toc ;
-
-noErrorsOccurred = 1 ;
+outputReport
+fprintf(' -----  ONSAS finished.  -----\n')
+fprintf('==============================================\n');
 % ==============================================================================
