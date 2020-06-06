@@ -46,6 +46,7 @@ fprintf(fileReport, [ '\\renewcommand{\\headrulewidth}{1.5pt} \n'] ) ;
 fprintf(fileReport, [ '\\setlength{\\parindent}{0pt} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage[T1]{fontenc} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{libertine} \n'] ) ;
+fprintf(fileReport, [ '\\usepackage{arydshln} \n'] ) ;
 fprintf(fileReport, [ '\\definecolor{miblue}{rgb}{0,0.1,0.38} \n' ] ) ;
 fprintf(fileReport, [ '\\usepackage{titlesec} \n'] ) ;
 fprintf(fileReport, [ '\\titleformat{\\section}{\\normalfont\\Large\\color{miblue}\\bfseries}{\\color{miblue}\\sectionmark\\thesection}{0.5em}{}[{\\color{miblue}\\titlerule[0.5pt]}] \n\n' ] ) ;
@@ -120,13 +121,13 @@ vecMat = [ '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' ] ;
 vecVal = [] ;
 for i = 1:numberMaterials
 	Et 	= hyperElasParams{i}(2) ;
-  rho = hyperElasParams{i}(end) ;
   if hyperElasParams{i}(1) == 1
     nu = hyperElasParams{i}(3) ; Ec = Et ; G = Et/(2*(1+nu)) ; Prestrain = 0 ;
   elseif hyperElasParams{i}(1) == 2
     Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = 0 ;
   else
-    Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = hyperElasParams{i}(4) ;
+    %~ Ec = hyperElasParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = hyperElasParams{i}(4) ;
+    Ec = 0 ; nu = 0 ; G = 0 ; Prestrain = 0 ;
   end
   
   vecVal = [ Et, Ec, nu, G, rho, Prestrain ] ;
@@ -372,6 +373,7 @@ end
 
 %
 if plotParamsVector(1)>0
+  disp('hola') , stop
 	fprintf(fileReport, [ '\\textbf{Plots}\n'] ) ;
 	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Plots time spent.') ;
 	fprintf(fileReport, '%s', enc )
@@ -395,7 +397,7 @@ if plotParamsVector(1)>0
 		fprintf(fileReport, [ 'Total elapsed time in vtk plots: & %5.3f \\\\ \n'], tVtkConecNodes+tVtkWriter) ;
 	end
 end
-fprintf(fileReport, '%s', fin )
+
 %
 
 

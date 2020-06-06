@@ -80,7 +80,6 @@ analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( 
 %% Output parameters
 printflag = 0 ;
 plotParamsVector = [ 0 ];
-reportBoolean = 1 ;
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
