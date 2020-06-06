@@ -8,9 +8,8 @@ clear all, close all
 inputONSASversion = '0.1.10';
 
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'pendulumNM' ;
+problemName = 'simplePendulumTightTol' ;
 % ------------------------------------
-
 
 Es = 10e11 ;
 nu      =  0    ;
@@ -96,8 +95,11 @@ cd(acdir) ;
 
 angs = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
 
+close all
 
-stopTolForces = 3e4           ;
+stopTolForces = 1e0           ;
+problemName = 'simplePendulumLooseTol' ;
+
 numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
 acdir = pwd ;
@@ -123,7 +125,8 @@ plot(timesVec, angs2,'r-x','linewidth',lw,'markersize',ms);
 	%~ set(tit, "FontSize", plotfontsize) ;
 	set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ;
   legend('tight tolerances','loose tolerances','location','southeast')
+
 cd(dirOnsas);
-	cd(outputdir )
-		print( [ problemName '_Bathe'  ] ,'-dpdflatex','-tight') ;
+cd(outputDir )
+print( [ problemName(1:end-8) '_Bathe'  ] ,'-dpdflatex','-tight') ;
 cd(acdir)

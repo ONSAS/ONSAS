@@ -395,6 +395,7 @@ if plotParamsVector(1)>0
 	else
 		fprintf(fileReport, [ 'Total elapsed time in vtk plots: & %5.3f \\\\ \n'], tVtkConecNodes+tVtkWriter) ;
 	end
+  fprintf(fileReport,'%s',fin);
 end
 
 %

@@ -21,7 +21,6 @@
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
-
 ONSASversion = '0.1.10' ;
 
 addpath( [ pwd '/sources' ':' pwd '/input' ':' pwd '/user'  ] );
@@ -42,13 +41,10 @@ if exist('booleanScreenOutput') == 0 || booleanScreenOutput
             '--------------------------------------------------|\n'] ) ;
 end
 
-
 tReadingInput = 0;
 
 % verifies the definition of input variables and sets default values
-inputVarsVerification
-inputAuxDefinitions
-
+inputVarsVerification, inputAuxDefinitions
 % ==============================================================================
 
 % ==============================================================================
@@ -66,8 +62,7 @@ while ( stopTimeIncrBoolean == 0 )
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
 
   % checks stopping criteria and stores model state
-  storesResultAndCheckStopCrit
-  
+  storesResultAndCheckStopCrit  
 end
 
 % if analytical solution is provided, numerical results are validated. 
@@ -75,14 +70,12 @@ if analyticSolFlag > 0
   [numericalVals, analyticVals] = analyticSolVerif ...
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
     analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir );
-
 end
 
 if nonLinearAnalysisBoolean == 1 && ( numericalMethodParams(1) == 2 || numericalMethodParams(1) == 1 )
   timeIncr = 1;
 end
 % ==============================================================================
-
 
 % ==============================================================================
 % ----------------------------     Output      ---------------------------------
@@ -100,6 +93,5 @@ end
 
 % report with results is generated
 outputReport
-fprintf(' -----  ONSAS finished.  -----\n')
-fprintf('==============================================\n');
-% ==============================================================================
+fprintf(  '                ONSAS finished.                    \n')
+fprintf([ '|=================================================|\n'])

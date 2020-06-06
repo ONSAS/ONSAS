@@ -116,7 +116,7 @@ systemDeltauMatrix = [];
 
 
 if dynamicAnalysisBoolean == 1,
-  massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes ) ;
+  massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes, booleanConsistentMassMat ) ;
   dampingMat = speye( size(massMat) ) * nodalDamping   ;
 else
   dampingMat = [] ;

@@ -70,7 +70,7 @@ while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
   % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat);
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat, booleanConsistentMassMat );
   
   % --- solve system ---
   [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;

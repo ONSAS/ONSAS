@@ -131,6 +131,10 @@ else
   linearDeformedScaleFactor = 1 ;
 end
 
+if exist( 'booleanConsistentMassMat' ) == 0
+  booleanConsistentMassMat = 0 ;
+end
+
 if exist( 'analyticSolFlag' ) == 0
   analyticSolFlag = 0 ;
 else
