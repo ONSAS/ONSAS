@@ -373,7 +373,6 @@ end
 
 %
 if plotParamsVector(1)>0
-  disp('hola') , stop
 	fprintf(fileReport, [ '\\textbf{Plots}\n'] ) ;
 	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Plots time spent.') ;
 	fprintf(fileReport, '%s', enc )
