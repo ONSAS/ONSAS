@@ -22,6 +22,7 @@
 
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
+fprintf(  '  - writing report file ... ')
 fileReport = fopen( [ outputDir  problemName '_Report.tex' ] ,'w') ;
 fprintf(fileReport, [ '\\documentclass[a4paper,10pt]{article} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage[a4paper,margin=20mm]{geometry} \n'] ) ;
@@ -227,21 +228,26 @@ fprintf(fileReport, [ '\\subsection{General parameters}\n\n'] ) ;
 % Prints numerical methods and analysis parameters
 
 if length(numericalMethodParams) > 0
+  %
   if numericalMethodParams(1) == 0 
     vecMethod = { 'Numerical method' ; '$\delta_t$' ; '$t_f$'} ;
     vecParams = [ {'Linear variable force'} ; num2cell(numericalMethodParams(2:end-1)') ] ; 
+  %
   elseif numericalMethodParams(1) == 1
     vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' } ;
     vecParams = [ {'Newton Raphson'} ; num2cell(numericalMethodParams(2:end)') ] ; 
+  %
   elseif numericalMethodParams(1) == 2  
     vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' ; 'Arc Length increment'} ;
     vecParams = [ {'Newton Raphson - Arc Length'} ; num2cell(numericalMethodParams(2:end)') ] ;
+  %
   elseif numericalMethodParams(1) == 3
-    vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' } ; 
-    vecParams = [ {'Central Difference'} ; num2cell(numericalMethodParams(2:end)') ] ; 
-  elseif numericalMethodParams(1) == 4 
     vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\delta_{NW}$' ; '$\alpha_{NW}$' } ;
     vecParams = [ {'Newmark'} ; num2cell(numericalMethodParams(2:end)') ] ;
+  %
+  elseif numericalMethodParams(1) == 4 
+    vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\alpha_{NW}$' } ;
+    vecParams = [ {'HHT'} ; num2cell(numericalMethodParams(2:end)') ] ;
   end 
 end
 
@@ -852,3 +858,5 @@ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
   % -----------------------------------
 	end % endif nbeam
 end
+
+fprintf(  ' done. \n')

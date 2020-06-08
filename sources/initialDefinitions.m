@@ -22,7 +22,7 @@
 tic ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-[neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
+[ neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
 % -------------------------------------------------------------
 
 loadFactors     = 0 ;
@@ -114,7 +114,6 @@ end
 
 systemDeltauMatrix = [];
 
-
 if dynamicAnalysisBoolean == 1,
   massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes, booleanConsistentMassMat ) ;
   dampingMat = speye( size(massMat) ) * nodalDamping   ;
@@ -127,10 +126,14 @@ end
 % Udotdott
 
 if dynamicAnalysisBoolean == 1
-  a = massMat( neumdofs, neumdofs ) \ ( -FintGt( neumdofs ) ) ;
-  Udotdott (neumdofs) = a 
+  Fext0 = zeros( 12,1);
+  %~ Fext0(11) = -98 ;
+  FintGt(neumdofs)
+  a = massMat( neumdofs, neumdofs ) \ ( Fext0(neumdofs) -FintGt( neumdofs ) ) ;
+  Udotdott (neumdofs) = a ;
 end
 
+%~ stop
 % stores model data structures
 modelCompress
 

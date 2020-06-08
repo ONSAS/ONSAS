@@ -23,7 +23,7 @@
 % ----------------------------     Input       ---------------------------------
 ONSASversion = '0.1.10' ;
 
-addpath( [ pwd '/sources' ':' pwd '/input' ':' pwd '/user'  ] );
+addpath( [ pwd '/sources' ':' pwd '/user'  ] );
 
 if exist('booleanScreenOutput') == 0 || booleanScreenOutput
   fprintf([ '|=================================================|\n' ...
@@ -47,6 +47,7 @@ tReadingInput = 0;
 inputVarsVerification, inputAuxDefinitions
 % ==============================================================================
 
+
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
@@ -63,6 +64,12 @@ while ( stopTimeIncrBoolean == 0 )
 
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit  
+  
+%~ fprintf(            '--------------------------------------------------|\n' ) ;
+%~ fprintf(            '--------------------------------------------------|\n' ) ;
+%~ fprintf(            '--------------------------------------------------|\n' ) ;
+%~ fprintf(            '--------------------------------------------------|\n' ) ;
+  %~ stop
 end
 
 % if analytical solution is provided, numerical results are validated. 
@@ -71,11 +78,8 @@ if analyticSolFlag > 0
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
     analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir );
 end
-
-if nonLinearAnalysisBoolean == 1 && ( numericalMethodParams(1) == 2 || numericalMethodParams(1) == 1 )
-  timeIncr = 1;
-end
 % ==============================================================================
+
 
 % ==============================================================================
 % ----------------------------     Output      ---------------------------------

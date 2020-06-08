@@ -37,7 +37,7 @@ currDeltau      = zeros( length(neumdofs), 1 ) ;
 
 [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
 % current stiffness matrix for buckling analysis
@@ -57,15 +57,19 @@ end
 Uk     = Ut     ;   % initial guess
 FintGk = FintGt ;
 Finet  = zeros(size(FintGk));
-Udotdottp1 = Udotdott ;
+
+%~ Udotdottp1 = Udotdott ;
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
 
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) ;
 % ---------------------------------------------------
 
+%~ FextG
+
+%~ stop
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
@@ -77,12 +81,16 @@ while  booleanConverged == 0
 
   % --- updates: model variables and computes internal forces ---
   [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+
   [FintGk, ~ ]     = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
 
   % --- system rhs ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt )  ;
+
+  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
   
-  if solutionMethod == 3
+  if solutionMethod == 3 || solutionMethod == 4
+  %~ Udotdottp1
     Fine    = massMat * Udotdottp1 ;
     Finered = Fine( neumdofs ) ;
   else, Finered    = [] ; end
@@ -93,7 +101,6 @@ while  booleanConverged == 0
   % prints iteration info in file
   printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIter deltaErrLoad norm(deltaured) ] ) ;
   
-  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 
 end % iteration while
 % --------------------------------------------------------------------
@@ -140,14 +147,20 @@ function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
   Utp1       = Uk                                         ;
   FintGtp1   = FintGk                                     ;
   nextTime   = currTime + deltaT                          ;
 
-if solutionMethod == 3
+if solutionMethod == 3 || solutionMethod == 4
+
+  if solutionMethod == 4
+      deltaNW = (1-2*alphaHHT)/2 ;
+      AlphaNW = (1-alphaHHT^2)/4 ;
+  end
+  
   [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
   
   Udotdottp1 = a0NM*(Utp1-Ut) - a2NM*Udott - a3NM*Udotdott;
