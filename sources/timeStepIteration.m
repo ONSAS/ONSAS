@@ -47,16 +47,15 @@ end
 % --------------------------------------------------------------------
   
 
-
 % --------------------------------------------------------------------
-% --- iteration in displacements (NR) or load-displacements (NR-AL) --
+% ----       iteration in displacements or load-displacements     ----
 % --------------------------------------------------------------------
 
 
 % --- start iteration with previous displacements ---
 Uk     = Ut     ;   % initial guess
 FintGk = FintGt ;
-Finet  = zeros(size(FintGk));
+Finet  = zeros( size( FintGk ) ) ;
 
 %~ Udotdottp1 = Udotdott ;
 
@@ -64,43 +63,40 @@ if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
 
+% --- compute RHS for initial guess ---
 [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) ;
 % ---------------------------------------------------
 
-%~ FextG
 
-%~ stop
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat, booleanConsistentMassMat );
+  % ---------------------------------------------------
   
   % --- solve system ---
   [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+  % ---------------------------------------------------
 
   % --- updates: model variables and computes internal forces ---
   [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-
   [FintGk, ~ ]     = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+  % ---------------------------------------------------
 
-  % --- system rhs ---
+  % --- new rhs ---
   [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt )  ;
+  % ---------------------------------------------------
 
+  % --- update next time magnitudes ---
   [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
-  
-  if solutionMethod == 3 || solutionMethod == 4
-  %~ Udotdottp1
-    Fine    = massMat * Udotdottp1 ;
-    Finered = Fine( neumdofs ) ;
-  else, Finered    = [] ; end
 
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Finered, systemDeltauRHS ) ;
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, [], systemDeltauRHS ) ;
+  % ---------------------------------------------------
 
   % prints iteration info in file
   printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIter deltaErrLoad norm(deltaured) ] ) ;
-  
 
 end % iteration while
 % --------------------------------------------------------------------
@@ -109,10 +105,6 @@ end % iteration while
 
 % computes KTred at converged Uk
 [~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
-
-%~ if solutionMethod == 2;    
-  %~ nextLoadFactor = currLoadFactor ;
-%~ end
 
 factor_crit = 0;
 
@@ -131,18 +123,19 @@ printSolverOutput( outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispI
 % --- stores next step as Ut and Ft ---
 
 % -------------------------------------
-
-currTime = nextTime ;
-Ut       = Utp1 ;
-FintGt   = FintGtp1 ;
-Udott    = Udottp1 ;
-Udotdott = Udotdottp1 ;
+currTime  = nextTime ;
+Ut        = Utp1 ;
+FintGt    = FintGtp1 ;
+Udott     = Udottp1 ;
+Udotdott  = Udotdottp1 ;
 timeIndex = timeIndex + 1;
 
 modelCompress
 
-% ------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------
+
+
+% ==============================================================================
+% ==============================================================================
 function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
@@ -171,6 +164,9 @@ else
   Udottp1    = [] ;
 end
 
+
+% ==============================================================================
+% ==============================================================================
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
 
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;

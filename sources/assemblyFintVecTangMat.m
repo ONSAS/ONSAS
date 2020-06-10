@@ -26,6 +26,15 @@ function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, s
 
 booleanCppAssembler = 0 ;
 
+
+  %~ if solutionMethod == 3 || solutionMethod == 4
+  %~ Udotdottp1
+    %~ Fine    = massMat * Udotdottp1 ;
+    %~ Finered = Fine( neumdofs ) ;
+  %~ else, Finered    = [] ; end
+
+
+
 % -----------------------------------------------
 % -----------------------------------------------
 % C++ assembler
@@ -92,6 +101,8 @@ if booleanCppAssembler
 
   StrainVec   = sparse( nelems, 6 ) ;
   StressVec   = sparse( nelems, 6 ) ;
+
+
 
 
 
@@ -173,7 +184,10 @@ else
       [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
   
       KL0e = KTe;
-  
+
+			%~ [Fine_e,~,~] = elementFuerzaInercial(xelem, Dte, Ddote, Ddotdote, params,Jrho );
+
+
   
     % -------------------------------------------
     case 3 % linear solid element
