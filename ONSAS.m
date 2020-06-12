@@ -33,7 +33,8 @@ inputVarsVerification, inputAuxDefinitions
 % ----------------------------    Analysis     ---------------------------------
 
 % Initial computations: sets initial state.
-[modelCurrState, BCsData, auxIO] = initialDefinitions( ...
+[modelCurrState, BCsData, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean ] = ...
+  initialDefinitions( ...
   Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
   , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
@@ -42,14 +43,12 @@ inputVarsVerification, inputAuxDefinitions
   , problemName, outputDir, nLoadSteps ...
    ) ;
 
-stop
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
 
   % --------   computes the model state at the next load/time step   --------
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
 
-stop
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit  
   

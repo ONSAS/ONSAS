@@ -19,7 +19,8 @@
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
-function [ modelCurrState, BCsData, auxIO, controlDisps, loadFactors ] = initialDefinitions( ...
+function [ modelCurrState, BCsData, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean ] ...
+  = initialDefinitions( ...
   Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
   , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
@@ -110,7 +111,6 @@ controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
 % ----------------------------------------------
 
 
-
 [ FintGt, ~, Strainst, Stresst ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , [] , 1 ) ;
 
 factorCrit = 0 ;
@@ -122,9 +122,8 @@ if dynamicAnalysisBoolean == 0,
   nextLoadFactor  = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 
 else 
-  deltaT         = numericalMethodParams(2)        ;
-  nextLoadFactor = loadFactorsFunc(currTime+deltaT);
-
+  deltaT         = numericalMethodParams(2)         ;
+  nextLoadFactor = loadFactorsFunc(currTime+deltaT) ;
 end
 
 systemDeltauMatrix = [];
@@ -137,15 +136,10 @@ else
   massMat    = [] ;
 end
 
-
-% Udotdott
-
+% --- computation of initial Udotdott for truss elements only!!!
 if dynamicAnalysisBoolean == 1
-  Fext0 = zeros( 12,1);
-  %~ Fext0(11) = -98 ;
-  FintGt(neumdofs)
-  a = massMat( neumdofs, neumdofs ) \ ( Fext0(neumdofs) -FintGt( neumdofs ) ) ;
-  Udotdott (neumdofs) = a ;
+  Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
+  Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -FintGt( neumdofs ) ) ;
 end
 
 % stores model data structures

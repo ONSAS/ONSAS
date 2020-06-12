@@ -63,8 +63,6 @@ if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
 
-stop
-
 % --- compute RHS for initial guess ---
 [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) ;
 % ---------------------------------------------------
@@ -74,7 +72,7 @@ while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
   % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat, booleanConsistentMassMat );
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, [], massMat, dampingMat, booleanConsistentMassMat );
   % ---------------------------------------------------
   
   % --- solve system ---
@@ -83,7 +81,7 @@ while  booleanConverged == 0
 
   % --- updates: model variables and computes internal forces ---
   [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-  [FintGk, ~ ]     = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+  [FintGk, ~ ]     = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
   % ---------------------------------------------------
 
   % --- new rhs ---
@@ -106,11 +104,11 @@ end % iteration while
 
 
 % computes KTred at converged Uk
-[~, KTt ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+[~, KTt ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 2 ) ;
 
 factor_crit = 0;
 
-[FintGk, ~, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+[FintGk, ~, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
 
 if stabilityAnalysisBoolean == 1
   [ factor_crit, nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;

@@ -44,7 +44,7 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
 
     [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
 
-    FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename )
+    FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
     Fhat      = FextG(neumdofs) ...
                 - massMat( neumdofs, neumdofs ) * ...

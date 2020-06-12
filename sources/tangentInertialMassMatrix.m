@@ -25,8 +25,8 @@ massMat = sparse( ndofpnode*nnodes, ndofpnode*nnodes) ;
 
 for elem = 1:nelems
 
-  A  = secGeomProps(Conec(elem,6),1) ;
-  rho = hyperElasParamsMat(Conec(elem,5),end) ;
+  A         = secGeomProps(Conec(elem,6), 1) ;
+  rho       = hyperElasParamsMat(Conec(elem, 5), end) ;
   nodeselem = Conec(elem,1:2)' ;
   dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
 
@@ -34,6 +34,8 @@ for elem = 1:nelems
     massMate = elementTruss3DMassMats(coordsElemsMat(elem,:), rho, A, booleanConsistentMassMat ) ;
     %~ elseif Conec(elem,7)==2
     %~ massMate = elementBeam3DMassMats( coordsElemsMat(elem,:), rho, A, deltamassMat );
+  elseif Conec( elem,7) == 2
+    error('to be implemented')
   end
     % matrices assembly
   massMat (dofselem, dofselem ) = massMat (dofselem,dofselem) + massMate     ;
