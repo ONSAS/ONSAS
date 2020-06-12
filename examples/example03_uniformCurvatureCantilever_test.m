@@ -44,7 +44,8 @@ stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-6 ;
 stopTolForces  = 1.0e-8 ;
 targetLoadFactr = E * Iy / ( l / (2 * pi) ) ;  % curvradius corresponding to perimeter = l
-nLoadSteps      = 10 ;
+%~ nLoadSteps      = 10 ;
+nLoadSteps      = 20 ;
 
 plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
 %~ plotParamsVector = [ 3 ] ;

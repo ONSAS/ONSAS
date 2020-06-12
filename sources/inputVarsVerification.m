@@ -20,6 +20,23 @@
 
 tic
 
+
+if exist('booleanScreenOutput') == 0 || booleanScreenOutput
+  fprintf([ '|=================================================|\n' ...
+            '|         _ _             _ _     _ _     _ _     |\n' ...
+            '|       /    /  /|   /  /       /    /  /         |\n' ...
+            '|      /    /  / |  /  /_ _    /_ _ /  /_ _       |\n' ...
+            '|     /    /  /  | /       /  /    /       /      |\n' ...
+            '|    /_ _ /  /   |/   _ _ /  /    /   _ _ /       |\n' ...
+            '|                                                 |\n' ... 
+            '|-------------------------------------------------|\n' ] );
+  fprintf([ '| Welcome to ONSAS v' ONSASversion '.                       |\n' ...
+            '| This program comes with ABSOLUTELY NO WARRANTY. |\n' ...
+            '| Read files COPYING.txt and README.md for more   |\n' ...
+            '| information.                                    |\n' ...
+            '|-------------------------------------------------|\n'] ) ;
+end
+
 if exist( 'booleanScreenOutput' ) == 0
   booleanScreenOutput = 1 ;
 end
@@ -234,6 +251,12 @@ if exist( './output/' ) ~= 7
   fprintf( ' done. \n' );
 end
 
+
+if booleanScreenOutput
+  fprintf( ' done. \n' );
+end
+
+
 if exist( outputDir ) == 7 % problemName is a directory
   % the content is erased
   fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
@@ -248,4 +271,13 @@ elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   mkdir( outputDir );
 end
 
+
+
+if exist( 'nonHomogeneousInitialCondU0') ==0
+  nonHomogeneousInitialCondU0 = [] ;
+end
+
+if exist( 'nonHomogeneousInitialCondUdot0') ==0 
+  nonHomogeneousInitialCondUdot0 = [] ;
+end
 fprintf( ' done. \n' );

@@ -26,7 +26,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
   tiem=time();
 
   % computes static tangent matrix
-  [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  [~, KT ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
   tiempoAssembly = time() - tiem ;
 

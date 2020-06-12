@@ -16,7 +16,6 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-tic
 % ---------------------------------------------------
 
 ndofpnode = 6; 
@@ -25,15 +24,16 @@ strucsize = strucSize(Nodes) ;
 
 %~ absoluteimperfection = imperfactor * strucsize ;
 
-if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-  controlDofInfo = [ ] ;
-else 
-  % control dof info
-  aux              = nodes2dofs( controlDofInfo(1), 6) ;
-  controlDof       = aux(        controlDofInfo(2)   ) ;
-  controlDofFactor = controlDofInfo(3)                 ; 
-end
+if length( controlDofInfo ) > 0
 
+  controlDofsAndFactors = zeros( size( controlDofInfo,1 ) , 2 ) ;
+  
+  % control dof info
+  for i=1:size(controlDofInfo,1)
+    aux                = nodes2dofs( controlDofInfo(i,1), 6 ) ;
+    controlDofsAndFactors(i,:) = [ aux( controlDofInfo(i, 2) ) controlDofInfo(i,3) ] ; 
+  end
+end
 
 tangentMatricesCell = cell(2,1) ;
 
@@ -131,4 +131,3 @@ cellStress = [] ;
 matNts = [] ;
 matUts = [] ;
 % ------------------------------------------------------------
-tInputAuxDefs = toc;

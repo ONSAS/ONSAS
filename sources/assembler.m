@@ -16,24 +16,16 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-%function for assembly of tangent stiffness matrix and/or internal forces vector.
+%function for assembly of tangent matrices and/or forces vectors.
 %
 % Inputs:
-%   paramOut: parameter used to set output: only internal forces vector (1) or only tangent matrices (2)  
+%   paramOut: parameter used to set output:
+%     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [FintGt, KT, StrainVec, StressVec ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
+function [Fs, Ks, StrainVec, StressVec ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
 
 booleanCppAssembler = 0 ;
-
-
-  %~ if solutionMethod == 3 || solutionMethod == 4
-  %~ Udotdottp1
-    %~ Fine    = massMat * Udotdottp1 ;
-    %~ Finered = Fine( neumdofs ) ;
-  %~ else, Finered    = [] ; end
-
-
 
 % -----------------------------------------------
 % -----------------------------------------------
@@ -135,6 +127,16 @@ else
   contTiempoLlamadasIndexs = 0;
   contTiempoLlamadasAssembly = 0;
   contTiempoLlamadasAssemblyFint = 0;
+
+
+  %~ if solutionMethod == 3 || solutionMethod == 4
+  %~ Udotdottp1
+    %~ Fine    = massMat * Udotdottp1 ;
+    %~ Finered = Fine( neumdofs ) ;
+  %~ else, Finered    = [] ; end
+
+
+
 
   % ----------------------------------------------
   % loop for assembly
@@ -306,11 +308,17 @@ else
   
   %~ fintiem = time() - chetiem;
   % ------------------------------------
-
+  
+  
 end % if booleanCppAssembler
 % ----------------------------------------
 
 
+
+Fs = FintGt ;
+if paramOut == 2
+  Ks = KT     ;
+end
 
 
 %~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;

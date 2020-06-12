@@ -22,26 +22,7 @@
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
 ONSASversion = '0.1.10' ;
-
 addpath( [ pwd '/sources' ':' pwd '/user'  ] );
-
-if exist('booleanScreenOutput') == 0 || booleanScreenOutput
-  fprintf([ '|=================================================|\n' ...
-            '|         _ _             _ _     _ _     _ _     |\n' ...
-            '|       /    /  /|   /  /       /    /  /         |\n' ...
-            '|      /    /  / |  /  /_ _    /_ _ /  /_ _       |\n' ...
-            '|     /    /  /  | /       /  /    /       /      |\n' ...
-            '|    /_ _ /  /   |/   _ _ /  /    /   _ _ /       |\n' ...
-            '|                                                 |\n' ... 
-            '|-------------------------------------------------|\n' ] );
-  fprintf([ '| Welcome to ONSAS v' ONSASversion '.                       |\n' ...
-            '| This program comes with ABSOLUTELY NO WARRANTY. |\n' ...
-            '| Read files COPYING.txt and README.md for more   |\n' ...
-            '| information.                                    |\n' ...
-            '--------------------------------------------------|\n'] ) ;
-end
-
-tReadingInput = 0;
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification, inputAuxDefinitions
@@ -51,25 +32,27 @@ inputVarsVerification, inputAuxDefinitions
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
-% --- Incremental steps analysis ---
+% Initial computations: sets initial state.
+[modelCurrState, BCsData, auxIO] = initialDefinitions( ...
+  Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
+  , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
+  , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
+  , loadFactorsFunc, booleanConsistentMassMat, nodalDamping, booleanScreenOutput ...
+  , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
+  , problemName, outputDir, nLoadSteps ...
+   ) ;
 
-% Initial computations: sets initial matrices and vectors.
-initialDefinitions
-
+stop
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
 
   % --------   computes the model state at the next load/time step   --------
   [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
 
+stop
   % checks stopping criteria and stores model state
   storesResultAndCheckStopCrit  
   
-%~ fprintf(            '--------------------------------------------------|\n' ) ;
-%~ fprintf(            '--------------------------------------------------|\n' ) ;
-%~ fprintf(            '--------------------------------------------------|\n' ) ;
-%~ fprintf(            '--------------------------------------------------|\n' ) ;
-  %~ stop
 end
 
 % if analytical solution is provided, numerical results are validated. 

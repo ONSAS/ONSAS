@@ -19,28 +19,34 @@
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
-tic ;
+function [ modelCurrState, BCsData, auxIO, controlDisps, loadFactors ] = initialDefinitions( ...
+  Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
+  , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
+  , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
+  , loadFactorsFunc, booleanConsistentMassMat, nodalDamping, booleanScreenOutput ...
+  , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
+  , problemName, outputDir, nLoadSteps ...
+  )
+
+nelems = size(Conec,1) ;
 
 % ----------- fixeddofs and spring matrix computation ---------
 [ neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
 % -------------------------------------------------------------
 
-loadFactors     = 0 ;
 itersPerTime    = 0 ;
 itersPerTimeVec = 0 ;
-controlDisps    = 0 ;
 
 timesVec = [ 0 ] ;
 
 factorescriticos = [] ;
-
 
 % create velocity and displacements vectors
 Ut      = zeros( ndofpnode*nnodes,   1 ) ;  
 Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
-if exist( 'nonHomogeneousInitialCondU0') ~=0
+if length( 'nonHomogeneousInitialCondU0') > 0
   for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
     dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), ndofpnode ) ;
     Ut( dofs (nonHomogeneousInitialCondU0(i,2)))=nonHomogeneousInitialCondU0(i,3);
@@ -92,11 +98,20 @@ convDeltau      = zeros(nnodes*ndofpnode,1) ;
 
 stopCritPar = 0;
 
+
+
+% --- load factors and control displacements ---
+loadFactors     = 0 ;
 loadFactors( timeIndex,1) = currLoadFactor ;
-controlDisps(timeIndex,1) = Ut(controlDof)*controlDofFactor ;
+
+controlDisps    = 0 ;
+controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
+                              .* controlDofsAndFactors(:,2) ;
+% ----------------------------------------------
 
 
-[ FintGt, ~, Strainst, Stresst ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , bendStiff, 1 ) ;
+
+[ FintGt, ~, Strainst, Stresst ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , [] , 1 ) ;
 
 factorCrit = 0 ;
 factor_crit = 0 ;
@@ -133,7 +148,6 @@ if dynamicAnalysisBoolean == 1
   Udotdott (neumdofs) = a ;
 end
 
-%~ stop
 % stores model data structures
 modelCompress
 
@@ -143,14 +157,10 @@ currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
 
 matNts = currentNormalForces ;
 
-tCallSolver = 0 ;
-tStores = 0 ;
-
 % --- prints headers and time0 values ---
 printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 
-fprintf(' timeSteps progress: 1|                   |%4i\n                       ', nLoadSteps)
-
-tInitialDefs = toc ;
+fprintf( '|-------------------------------------------------|\n' ) ;
+fprintf( '| TimeSteps progress: 1|                   |%4i  |\n                        ', nLoadSteps)
 
 contProgr = 0 ;
