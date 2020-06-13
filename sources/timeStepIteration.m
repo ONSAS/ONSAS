@@ -42,7 +42,7 @@ currDeltau      = zeros( length(neumdofs), 1 ) ;
 
 % current stiffness matrix for buckling analysis
 if stabilityAnalysisBoolean == 1
-  [~, KTtm1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, 2 ) ;
+  [~, KTtm1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, [], 2 ) ;
 end
 % --------------------------------------------------------------------
   
@@ -124,17 +124,25 @@ printSolverOutput( outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispI
 
 % -------------------------------------
 currTime  = nextTime ;
+if solutionMethod == 2
+  currTime = nextLoadFactor ;
+end
+
 Ut        = Utp1 ;
 FintGt    = FintGtp1 ;
 Udott     = Udottp1 ;
 Udotdott  = Udotdottp1 ;
-timeIndex = timeIndex + 1;
+timeIndex = timeIndex + 1 ;
 
 modelCompress
 
 
 
+
+
+
 % ==============================================================================
+%
 % ==============================================================================
 function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
 
@@ -166,6 +174,7 @@ end
 
 
 % ==============================================================================
+%
 % ==============================================================================
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
 

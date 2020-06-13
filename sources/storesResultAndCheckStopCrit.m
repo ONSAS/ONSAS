@@ -38,8 +38,10 @@ Udotdott = modelNextState.Udotdott ;
 % updates displacements
 convDeltau = Utp1 - Ut ;
 
+timeIndex = modelCurrState.timeIndex ;
+
 loadFactors  ( timeIndex +1 )  = BCsData.nextLoadFactor  ;
-controlDisps ( timeIndex +1 )  = Utp1(controlDof)*controlDofFactor ;
+controlDisps ( timeIndex +1 )  = Utp1( controlDofsAndFactors(1) ) * controlDofsAndFactors(2) ;
 timesVec     ( timeIndex +1 )  = deltaT * timeIndex ;
 % ------------------------------------------------------------------------------
 
@@ -66,8 +68,8 @@ modelCurrState.convDeltau = convDeltau     ;
 %~ modelCurrState.Udott 
 %~ modelCurrState.Udotdott 
 
-timeIndex      = timeIndex +1      ;
-currTime       = currTime + deltaT ;
+%~ timeIndex      = timeIndex +1      ;
+%~ currTime       = currTime + deltaT ;
 
 % ------------------------------------------------------------------------------
 
@@ -82,11 +84,8 @@ currTime       = currTime + deltaT ;
 % ---------------------------------------------------
 
 
-% updates load factor
-
-% stores displacements
+% --- stores displacements ---
 matUts = [ matUts modelNextState.Ut ] ;
-
 
 tangentMatricesCell{timeIndex} = modelNextState.systemDeltauMatrix ;
  
@@ -114,20 +113,27 @@ else
 end
 tStores = toc ;
 
+
+
 % ---------------       evals stop time incr crit          ---------------------
-if dynamicAnalysisBoolean == 1
-  if ( timeIndex > nLoadSteps ) || ( abs( currTime - finalTime) < (deltaT*1e-10))
+%~ if dynamicAnalysisBoolean == 1
+%~ modelNextState.currTime 
+%~ finalTime
+
+  if ( modelNextState.currTime > finalTime )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
+  else
+    while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
+      contProgr = contProgr + 1 ;
+      fprintf('=')
+    end
   end
-else
-  if ( (nextLoadFactor - numericalMethodParams(5)) > 1e-6*numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
-    stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
-  end
-end
+%~ else
+  %~ if ( (nextLoadFactor - numericalMethodParams(5)) > 1e-6*numericalMethodParams(5) ) || ( timeIndex > nLoadSteps ) % || ( abs( currTime - finalTime) < (deltaT*1e-4) )
+    %~ stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
+  %~ end
+%~ end
 % ------------------------------------------------------------------------------
 
+%~ stop
 
-while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
-  contProgr = contProgr + 1 ;
-  fprintf('=')
-end

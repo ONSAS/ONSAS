@@ -47,7 +47,7 @@ Ut      = zeros( ndofpnode*nnodes,   1 ) ;
 Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
 Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
 
-if length( 'nonHomogeneousInitialCondU0') > 0
+if length( nonHomogeneousInitialCondU0 ) > 0
   for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
     dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), ndofpnode ) ;
     Ut( dofs (nonHomogeneousInitialCondU0(i,2)))=nonHomogeneousInitialCondU0(i,3);
@@ -55,7 +55,7 @@ if length( 'nonHomogeneousInitialCondU0') > 0
 end % if nonHomIniCond
 
 
-if exist( 'nonHomogeneousInitialCondUdot0') ~=0 
+if length( nonHomogeneousInitialCondUdot0 ) > 0 
   if dynamicAnalysisBoolean == 1
     for i=1:size(nonHomogeneousInitialCondUdot0,1)
       dofs = nodes2dofs(nonHomogeneousInitialCondUdot0(i,1), ndofpnode ) ;
@@ -156,5 +156,3 @@ printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 
 fprintf( '|-------------------------------------------------|\n' ) ;
 fprintf( '| TimeSteps progress: 1|                   |%4i  |\n                        ', nLoadSteps)
-
-contProgr = 0 ;

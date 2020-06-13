@@ -40,8 +40,9 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
       incremArcLen = [] ;
     end
     
-    deltaT = []; finalTime = []; deltaNW = []; AlphaNW = [] ;
-    alphaHHT = [] ;
+    deltaT = targetLoadFactr/nLoadSteps ; finalTime = targetLoadFactr ;
+    
+    deltaNW = []; AlphaNW = [] ; alphaHHT = [] ;
   
   elseif solutionMethod == 3
     deltaT         = numericalMethodParams(2)        ;
