@@ -142,9 +142,9 @@ if ( nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 )
   end
 
 else
-  if exist( 'linearDeformedScaleFactor' ) ~= 0
-    warning(' linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
-  end
+  %~ if exist( 'linearDeformedScaleFactor' ) ~= 0
+    %~ warning(' linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
+  %~ end
   linearDeformedScaleFactor = 1 ;
 end
 

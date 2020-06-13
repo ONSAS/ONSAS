@@ -346,18 +346,21 @@ if length(numericalMethodParams) > 0
 end
 
 % Time report
-fprintf(fileReport, [ '\\subsection{Time performance}\n\n'] ) ;
+%~ fprintf(fileReport, [ '\\subsection{Time performance}\n\n'] ) ;
+%~ %
+%~ fprintf(fileReport, [ '\\textbf{Reading and variables definition/verification}\n'] ) ;
+%~ [enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Reading and variables definition/verification time performance.') ;
+%~ fprintf(fileReport, '%s', enc )
+%~ fprintf(fileReport, [ 'Reading input file: & %5.3e \\\\ \n'], tReadingInput) ;
+%~ fprintf(fileReport, [ 'Variables verification: & %5.3e \\\\ \n'], tVarVer) ;
+%~ fprintf(fileReport, [ 'Input auxiliar definitions: & %5.3e \\\\ \n'], tInputAuxDefs) ;
+%~ fprintf(fileReport, [ '\\midrule\n'])
+%~ fprintf(fileReport, [ 'Total elapsed time in reading and verification: & %5.3e \\\\ \n'], tReadingInput+tVarVer+tInputAuxDefs) ;
+%~ fprintf(fileReport, '%s', fin )
 %
-fprintf(fileReport, [ '\\textbf{Reading and variables definition/verification}\n'] ) ;
-[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Reading and variables definition/verification time performance.') ;
-fprintf(fileReport, '%s', enc )
-fprintf(fileReport, [ 'Reading input file: & %5.3e \\\\ \n'], tReadingInput) ;
-fprintf(fileReport, [ 'Variables verification: & %5.3e \\\\ \n'], tVarVer) ;
-fprintf(fileReport, [ 'Input auxiliar definitions: & %5.3e \\\\ \n'], tInputAuxDefs) ;
-fprintf(fileReport, [ '\\midrule\n'])
-fprintf(fileReport, [ 'Total elapsed time in reading and verification: & %5.3e \\\\ \n'], tReadingInput+tVarVer+tInputAuxDefs) ;
-fprintf(fileReport, '%s', fin )
-%
+
+
+
 fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Analysis time spent.') ;
@@ -377,32 +380,34 @@ else
   fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
 end	
 
+
+
 %
-if plotParamsVector(1)>0
-	fprintf(fileReport, [ '\\textbf{Plots}\n'] ) ;
-	[enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Plots time spent.') ;
-	fprintf(fileReport, '%s', enc )
-	if plotParamsVector(1) < 3
-		fprintf(fileReport, [ 'Deformed shape: & %5.3f \\\\ \n'], tDefShape) ;
-		fprintf(fileReport, [ 'Normal force: & %5.3f \\\\ \n'], tNormalForce) ;
-		if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
-			fprintf(fileReport, [ 'Load factor vs control disp:: & %5.3f \\\\ \n'], tLoadFac) ;
-		end
-	else
-		fprintf(fileReport, [ 'VTK ConecNodes function: & %5.3f \\\\ \n'], tVtkConecNodes) ;
-		fprintf(fileReport, [ 'VTK writer: & %5.3f \\\\ \n'], tVtkWriter) ;
-	end
-	if length(loadFactors)>1	
-		fprintf(fileReport, [ 'Load vs Disps.: & %5.3f \\\\ \n'], tLoadDisps) ;
-	end
-	fprintf(fileReport, [ '\\midrule\n'])
-	if plotParamsVector(1) < 3
-		fprintf(fileReport, [ 'Total elapsed time in octave plots: & %5.3f \\\\ \n'], tDefShape+tLoadFac+tNormalForce+tLoadDisps) ;
-	else
-		fprintf(fileReport, [ 'Total elapsed time in vtk plots: & %5.3f \\\\ \n'], tVtkConecNodes+tVtkWriter) ;
-	end
-  fprintf(fileReport,'%s',fin);
-end
+%~ if plotParamsVector(1)>0
+	%~ fprintf(fileReport, [ '\\textbf{Plots}\n'] ) ;
+	%~ [enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Plots time spent.') ;
+	%~ fprintf(fileReport, '%s', enc )
+	%~ if plotParamsVector(1) < 3
+		%~ fprintf(fileReport, [ 'Deformed shape: & %5.3f \\\\ \n'], tDefShape) ;
+		%~ fprintf(fileReport, [ 'Normal force: & %5.3f \\\\ \n'], tNormalForce) ;
+		%~ if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
+			%~ fprintf(fileReport, [ 'Load factor vs control disp:: & %5.3f \\\\ \n'], tLoadFac) ;
+		%~ end
+	%~ else
+		%~ fprintf(fileReport, [ 'VTK ConecNodes function: & %5.3f \\\\ \n'], tVtkConecNodes) ;
+		%~ fprintf(fileReport, [ 'VTK writer: & %5.3f \\\\ \n'], tVtkWriter) ;
+	%~ end
+	%~ if length(loadFactors)>1	
+		%~ fprintf(fileReport, [ 'Load vs Disps.: & %5.3f \\\\ \n'], tLoadDisps) ;
+	%~ end
+	%~ fprintf(fileReport, [ '\\midrule\n'])
+	%~ if plotParamsVector(1) < 3
+		%~ fprintf(fileReport, [ 'Total elapsed time in octave plots: & %5.3f \\\\ \n'], tDefShape+tLoadFac+tNormalForce+tLoadDisps) ;
+	%~ else
+		%~ fprintf(fileReport, [ 'Total elapsed time in vtk plots: & %5.3f \\\\ \n'], tVtkConecNodes+tVtkWriter) ;
+	%~ end
+  %~ fprintf(fileReport,'%s',fin);
+%~ end
 
 %
 

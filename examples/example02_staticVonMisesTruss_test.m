@@ -58,10 +58,10 @@ stopTolDeltau    = 1.0e-10 ;
 %~ stopTolForces    = 1.0e-6  ;
 stopTolForces    = 1.0e-10  ;
 
-targetLoadFactrNR   = 1e7    ; % newton
-targetLoadFactrNRAL = 5e7    ; % arc length
+targetLoadFactrNR   = 2e7    ; % newton
+targetLoadFactrNRAL = 4e7    ; % arc length
 
-nLoadSteps       = 100    ;
+nLoadSteps       = 60    ;
 incremArcLen     = .1     ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
@@ -72,14 +72,15 @@ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
 stabilityAnalysisBoolean = 1 ;
 
 % analytical solution using engineering strain
-analyticSolFlag = 2 ; analyticCheckTolerance = 1e-4 ;
+analyticSolFlag        = 2    ;
+analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
 analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
 printflag = 0 ;
-plotParamsVector = [ 0 ];
+plotParamsVector = [ 1 ];
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
@@ -89,8 +90,19 @@ cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
-%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactrNR nLoadSteps ] ; 
+compar = figure ;
+plot( controlDisps, loadFactors,'b-x' )
+hold on, grid on
 
-figure
+numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactrNR nLoadSteps ] ; 
+
+plotParamsVector = [ 0 ];
+
+acdir = pwd ;
+cd(dirOnsas);
+ONSAS
+cd(acdir) ;
+
+
 plot( controlDisps, loadFactors,'r-s' )
