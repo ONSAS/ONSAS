@@ -19,7 +19,7 @@
 % ======================================================================
 function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
            stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-           incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+           incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
            = extractMethodParams( numericalMethodParams ) 
 
   solutionMethod   = numericalMethodParams(1) ;
@@ -33,15 +33,18 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     targetLoadFactr  = numericalMethodParams(5) ;
     nLoadSteps       = numericalMethodParams(6) ;
   
+
     if solutionMethod ==2
       incremArcLen     = numericalMethodParams(7) ;
     else
       incremArcLen = [] ;
     end
     
-    deltaT = []; finalTime = []; deltaNW = []; AlphaNW = [] ;
+    deltaT = targetLoadFactr/nLoadSteps ; finalTime = targetLoadFactr ;
+    
+    deltaNW = []; AlphaNW = [] ; alphaHHT = [] ;
   
-  else
+  elseif solutionMethod == 3
     deltaT         = numericalMethodParams(2)        ;
     finalTime      = numericalMethodParams(3)        ;
     stopTolDeltau  = numericalMethodParams(4)        ;
@@ -50,6 +53,19 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     deltaNW        = numericalMethodParams(7)        ;
     AlphaNW        = numericalMethodParams(8)        ;
 
+    alphaHHT = [] ;
+    targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;    
+
+  elseif solutionMethod == 4
+  
+    deltaT         = numericalMethodParams(2)        ;
+    finalTime      = numericalMethodParams(3)        ;
+    stopTolDeltau  = numericalMethodParams(4)        ;
+    stopTolForces  = numericalMethodParams(5)        ;
+    stopTolIts     = numericalMethodParams(6)        ;
+    alphaHHT       = numericalMethodParams(7)        ;
+    
+    deltaNW = []; AlphaNW = [] ;
     targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;    
     
   end

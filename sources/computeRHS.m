@@ -17,52 +17,34 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott ) 
+function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) 
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
-
-
-  if strcmp( userLoadsFilename , '')
-    FextUser = zeros(size(constantFext)) ;
-  else
-    if solutionMethod == 2
-      error('user load not valid for this implementation of arc-length');
-    end
-    FextUser = feval( userLoadsFilename, nextLoadFactor)  ;
-  end
-
 
   if solutionMethod == 1
 
-    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
-
-    Resred          = FintGk(neumdofs) - FextG(neumdofs) ;
-
-    systemDeltauRHS = - ( Resred ) ;
+    FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
+    systemDeltauRHS = - ( FintGk(neumdofs) - FextG(neumdofs) ) ;
 
   elseif solutionMethod == 2
     
-    if norm(constantFext)>0, error('not implemented yet'); end
+    if norm(constantFext)>0 || ~(strcmp( userLoadsFilename , '')),
+      error('load case not implemented yet for Arc-Length method');
+    end
     
-    FextG  = variableFext * nextLoadFactor ;
+    FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
-    Resred = FintGk(neumdofs) - FextG(neumdofs)  ;
-
     % incremental displacement
-    systemDeltauRHS = [ -Resred  variableFext(neumdofs) ] ;
+    systemDeltauRHS = [ -(FintGk(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
 
   elseif solutionMethod == 3
 
     [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
 
-    FextG  = variableFext * nextLoadFactor + constantFext  + FextUser ;
-
-%~ variableFext
-%~ nextLoadFactor
-%~ FextG(neumdofs)
+    FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
     Fhat      = FextG(neumdofs) ...
                 - massMat( neumdofs, neumdofs ) * ...
@@ -75,5 +57,63 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
                 
     systemDeltauRHS = Fhat ;
 
+  elseif solutionMethod == 4
+  
+    deltaNW = (1-2*alphaHHT)/2 ;
+    AlphaNW = (1-alphaHHT^2)/4 ;
+        
+    [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
+
+    if ~(strcmp( userLoadsFilename , ''))
+      FextUsert = feval( userLoadsFilename, currLoadFactor ) ;
+    else
+      FextUsert = zeros( size(FextUser)) ;
+    end
+
+    FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
+
+    FextGt = computeFext( constantFext, variableFext, currLoadFactor, userLoadsFilename ) ;
+      
+termalpha = alphaHHT * ( ...
+                FextGt( neumdofs ) ...
+                %~ - dampingMat( neumdofs, neumdofs ) * Udott(neumdofs) ...
+                - FintGt(neumdofs) ...
+                ) ; 
+              %~ ...
+termmass =        - massMat( neumdofs, neumdofs ) * ...
+              (   a0NM * ( Uk(neumdofs)  - Ut(neumdofs) ) ...
+                - a2NM * Udott(neumdofs) - a3NM * Udotdott(neumdofs) );
+                                
+                  termalphap1 = ( 1 + alphaHHT ) * ( ...
+                FextG( neumdofs ) ...
+                + dampingMat( neumdofs, neumdofs) * ...
+                (   a1NM * ( Ut(neumdofs) - Uk(neumdofs) ) ...
+                + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs) )    ...
+                - FintGk(neumdofs) ...
+                ) ;              
+            
+                
+    Fhat   =  ( 1 + alphaHHT ) * ( ...
+                FextG( neumdofs ) ...
+                + dampingMat( neumdofs, neumdofs) * ...
+                (   a1NM * ( Ut(neumdofs) - Uk(neumdofs) ) ...
+                + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs) )    ...
+                - FintGk(neumdofs) ...
+                )  ...
+                ...
+              - alphaHHT * ( ...
+                FextGt( neumdofs ) ...
+                - dampingMat( neumdofs, neumdofs ) * Udott(neumdofs) ...
+                - FintGt(neumdofs) ...
+                ) ...
+              ...
+              - massMat( neumdofs, neumdofs ) * ...
+              (   a0NM * ( Uk(neumdofs)  - Ut(neumdofs) ) ...
+                - a2NM * Udott(neumdofs) - a3NM * Udotdott(neumdofs) ) ;
+
+    %~ [  termalphap1 termalpha termmass  FintGk(neumdofs) FintGt(neumdofs)   Fhat ], %pause(0.5)
+                
+    systemDeltauRHS = Fhat ;
+    
   end
     

@@ -37,63 +37,66 @@ currDeltau      = zeros( length(neumdofs), 1 ) ;
 
 [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
 % current stiffness matrix for buckling analysis
 if stabilityAnalysisBoolean == 1
-  [~, KTtm1 ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, 2 ) ;
+  [~, KTtm1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, [], 2 ) ;
 end
 % --------------------------------------------------------------------
   
 
-
 % --------------------------------------------------------------------
-% --- iteration in displacements (NR) or load-displacements (NR-AL) --
+% ----       iteration in displacements or load-displacements     ----
 % --------------------------------------------------------------------
 
 
 % --- start iteration with previous displacements ---
 Uk     = Ut     ;   % initial guess
 FintGk = FintGt ;
-Finet  = zeros(size(FintGk));
-Udotdottp1 = Udotdott ;
+Finet  = zeros( size( FintGk ) ) ;
+
+%~ Udotdottp1 = Udotdott ;
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
 
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
+% --- compute RHS for initial guess ---
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) ;
 % ---------------------------------------------------
+
 
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
   % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, bendStiff, massMat, dampingMat);
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, [], massMat, dampingMat, booleanConsistentMassMat );
+  % ---------------------------------------------------
   
   % --- solve system ---
   [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+  % ---------------------------------------------------
 
   % --- updates: model variables and computes internal forces ---
   [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-  [FintGk, ~ ]     = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+  [FintGk, ~ ]     = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
+  % ---------------------------------------------------
 
-  % --- system rhs ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott )  ;
-  
-  if solutionMethod == 3
-    Fine    = massMat * Udotdottp1 ;
-    Finered = Fine( neumdofs ) ;
-  else, Finered    = [] ; end
+  % --- new rhs ---
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt )  ;
+  % ---------------------------------------------------
+
+  % --- update next time magnitudes ---
+  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, Finered, systemDeltauRHS ) ;
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, [], systemDeltauRHS ) ;
+  % ---------------------------------------------------
 
   % prints iteration info in file
   printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIter deltaErrLoad norm(deltaured) ] ) ;
-  
-  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 
 end % iteration while
 % --------------------------------------------------------------------
@@ -101,15 +104,11 @@ end % iteration while
 
 
 % computes KTred at converged Uk
-[~, KTt ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
-
-%~ if solutionMethod == 2;    
-  %~ nextLoadFactor = currLoadFactor ;
-%~ end
+[~, KTt ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 2 ) ;
 
 factor_crit = 0;
 
-[FintGk, ~, Strainsk, Stressk ] = assemblyFintVecTangMat ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 1 ) ;
+[FintGk, ~, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
 
 if stabilityAnalysisBoolean == 1
   [ factor_crit, nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;
@@ -124,30 +123,45 @@ printSolverOutput( outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispI
 % --- stores next step as Ut and Ft ---
 
 % -------------------------------------
+currTime  = nextTime ;
+if solutionMethod == 2
+  currTime = nextLoadFactor ;
+end
 
-currTime = nextTime ;
-Ut       = Utp1 ;
-FintGt   = FintGtp1 ;
-Udott    = Udottp1 ;
-Udotdott = Udotdottp1 ;
-timeIndex = timeIndex + 1;
+Ut        = Utp1 ;
+FintGt    = FintGtp1 ;
+Udott     = Udottp1 ;
+Udotdott  = Udotdottp1 ;
+timeIndex = timeIndex + 1 ;
 
 modelCompress
 
-% ------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------
+
+
+
+
+
+% ==============================================================================
+%
+% ==============================================================================
 function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
   Utp1       = Uk                                         ;
   FintGtp1   = FintGk                                     ;
   nextTime   = currTime + deltaT                          ;
 
-if solutionMethod == 3
+if solutionMethod == 3 || solutionMethod == 4
+
+  if solutionMethod == 4
+      deltaNW = (1-2*alphaHHT)/2 ;
+      AlphaNW = (1-alphaHHT^2)/4 ;
+  end
+  
   [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
   
   Udotdottp1 = a0NM*(Utp1-Ut) - a2NM*Udott - a3NM*Udotdott;
@@ -158,6 +172,10 @@ else
   Udottp1    = [] ;
 end
 
+
+% ==============================================================================
+%
+% ==============================================================================
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
 
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;

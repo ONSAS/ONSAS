@@ -19,7 +19,7 @@
 
 
 function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
-( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir );
+( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir, plotParamsVector );
 
   fprintf('----------------------------------------------- \n')
   fprintf('  Analytical solution verification ... ')
@@ -29,13 +29,15 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
     numericalVecy   = controlDisps ;
     numericalVecx   = timesVec     ;
     analitMagnitude = 'Control displacement' ;
-   
+    xmagnitude      = 'Load Factors' ;
+
   elseif analyticSolFlag == 2
-    analyticalVecy  = analyticFunc( controlDisps) ;
+    analyticalVecy  = analyticFunc( controlDisps ) ;
     numericalVecy   = loadFactors  ;
     numericalVecx   = controlDisps ;
     analitMagnitude = 'Load Factors' ;
-  
+    xmagnitude      = 'Control displacement' ;
+    
   elseif analyticSolFlag == 3
     absError    = ( controlDisps-analytSol ) ;
     normRelativeError = norm( absError ) / norm( analytSol ) ;
@@ -50,14 +52,19 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
 
   end
 
-  if analyticSolFlag == 1 || analyticSolFlag == 2
+
+
+
+
+
+  if analyticSolFlag == 1 || analyticSolFlag == 2 
     nonZeroEntries    = find( analyticalVecy ~= 0 ) ;
     absError          = abs( numericalVecy - analyticalVecy ) ;
     normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ; 
   end
   
   % ----------------------------------------
-  if analyticSolFlag == 1 || analyticSolFlag == 2 
+  if ( analyticSolFlag == 1 || analyticSolFlag == 2 ) &&  plotParamsVector(1) > 0
 
     nvals = length( numericalVecx); nmaxvistos = 10 ;
     indsMs = (1:nvals)';
@@ -77,7 +84,9 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
 
     plot( numericalVecx, numericalVecy  , 'b', 'linewidth', lw,'markersize',ms)
     plot( numericalVecx, analyticalVecy , 'r', 'linewidth', lw,'markersize',ms)
-    labx = xlabel('step/time');  laby = ylabel(analitMagnitude) ;
+    
+    % labels
+    labx = xlabel(xmagnitude);   laby = ylabel(analitMagnitude) ;
     legend('numeric', 'analytic','location','North')
     set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
     set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -94,8 +103,9 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
     if printflag > 0  
       close(figaux);
     end
-  
   end
+
+
 
   if normRelativeError > analyticCheckTolerance ;
     normRelativeError

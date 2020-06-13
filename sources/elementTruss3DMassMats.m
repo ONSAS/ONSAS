@@ -16,25 +16,27 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [ Me ] = elementTruss3DMassMats( Xe, rho, A )
+function [ Me ] = elementTruss3DMassMats( Xe, rho, A, booleanConsistentMassMat )
 
   Xe ;
   localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
 
   Me = sparse( 12, 12 ) ;
-  Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
 
+  if booleanConsistentMassMat == 1
+    Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
+    
+    Me (      1,       7) = rho * A * lini * 1 / 6            ;
+    Me (      7,       1) = rho * A * lini * 1 / 6            ;
+    
+    Me (      3,       9) = rho * A * lini * 1 / 6            ;
+    Me (      9,       3) = rho * A * lini * 1 / 6            ;
+    
+    Me (      5,      11) = rho * A * lini * 1 / 6            ;
+    Me (     11,       5) = rho * A * lini * 1 / 6            ;
+  else
+    Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
+  end
 
-  %~ Me = sparse( 12, 12 ) ;
-  %~ Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
-  
-  %~ Me (      1,       7) = rho * A * lini * 1 / 6            ;
-  %~ Me (      7,       1) = rho * A * lini * 1 / 6            ;
-  
-  %~ Me (      3,       9) = rho * A * lini * 1 / 6            ;
-  %~ Me (      9,       3) = rho * A * lini * 1 / 6            ;
-  
-  %~ Me (      5,      11) = rho * A * lini * 1 / 6            ;
-  %~ Me (     11,       5) = rho * A * lini * 1 / 6            ;
   

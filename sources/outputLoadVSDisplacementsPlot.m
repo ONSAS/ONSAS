@@ -22,6 +22,10 @@ lw = 1.5; ms = 3;
 
 flagMarkersLoadDisp = 1;
 
+loadFactors 
+
+timeVals 
+stop
 figure , hold on, grid on
 plot( timeVals, loadFactors        , 'b-x', 'linewidth', lw,'markersize',ms)
 labx = xlabel('step/time'); laby = ylabel('Load factors');

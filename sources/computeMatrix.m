@@ -16,17 +16,17 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams , bendStiff, massMat, dampingMat )
+function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams , bendStiff, massMat, dampingMat, booleanConsistentMassMat )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
   tiem=time();
 
   % computes static tangent matrix
-  [~, KT ] = assemblyFintVecTangMat( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
+  [~, KT ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, bendStiff, 2 ) ;
 
   tiempoAssembly = time() - tiem ;
 
@@ -35,14 +35,17 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
     
   elseif solutionMethod == 3
-  
-  %~ KT ( neumdofs, neumdofs )
-  %~ massMat(neumdofs, neumdofs ) 
-  %~ stop
+
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
       + deltaNW / ( AlphaNW*deltaT) * dampingMat(neumdofs, neumdofs)  ;
 
-%~ neumdofs
-%~ size(systemDeltauMatrix)
-%~ stop    
+  elseif solutionMethod == 4
+
+    deltaNW = (1 - 2 * alphaHHT ) / 2 ;
+    AlphaNW = (1 - alphaHHT ^ 2 ) / 4 ;
+
+    systemDeltauMatrix = (1 + alphaHHT )                                 * KT( neumdofs, neumdofs ) ...
+                       + (1 + alphaHHT ) * deltaNW / ( AlphaNW*deltaT  ) * dampingMat( neumdofs, neumdofs)  ...
+                       +                         1 / ( AlphaNW*deltaT^2) * massMat( neumdofs, neumdofs) ;
+
   end
