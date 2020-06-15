@@ -16,7 +16,8 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [ Me ] = elementTruss3DMassMats( Xe, rho, A, booleanConsistentMassMat )
+function [ Fmasse, Me ] = elementTrussMassForce ( Xe, rho, A, booleanConsistentMassMat, ...
+paramOut, Udotdotte )
 
   Xe ;
   localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
@@ -38,5 +39,11 @@ function [ Me ] = elementTruss3DMassMats( Xe, rho, A, booleanConsistentMassMat )
   else
     Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
   end
-
   
+  Me = Me( 1:2:end, 1:2:end) ;
+   
+  Fmasse = Me * Udotdotte(1:2:end) ;
+  
+  
+  
+

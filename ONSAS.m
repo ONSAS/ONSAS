@@ -25,7 +25,9 @@ ONSASversion = '0.1.10' ;
 addpath( [ pwd '/sources' ':' pwd '/user'  ] );
 
 % verifies the definition of input variables and sets default values
-inputVarsVerification, inputAuxDefinitions
+inputVarsVerification
+
+inputAuxDefinitions
 % ==============================================================================
 
 
@@ -33,8 +35,8 @@ inputVarsVerification, inputAuxDefinitions
 % ----------------------------    Analysis     ---------------------------------
 
 % Initial computations: sets initial state.
-[modelCurrState, BCsData, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, ...
-dispsElemsMat ] = ...
+[ modelCurrState, modelProperties, BCsCurrState, auxIO ...
+  , controlDisps, loadFactors, stopTimeIncrBoolean, dispsElemsMat ] = ...
   initialDefinitions( ...
   Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
@@ -44,15 +46,20 @@ dispsElemsMat ] = ...
   , problemName, outputDir, nLoadSteps ...
    ) ;
 
+stop
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
 
-  % --------   computes the model state at the next load/time step   --------
-  [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
+  % -----   computes the model state at the next load/time step   -----
+  [ modelNextState, BCsNextState ] = timeStepIteration ...
+  ( modelCurrState, BCsCurrState, modelProperties, auxIO );
 
-  % checks stopping criteria and stores model state
-  storesResultAndCheckStopCrit  
+stop
+  % --- checks stopping criteria and stores model state
+  storesResultAndCheckStopCrit
   
+  % --- update state data --- 
+  modelCurrState = modelNextState ;   BCsCurrState = BCsNextState   ;  
 end
 
 % if analytical solution is provided, numerical results are validated. 

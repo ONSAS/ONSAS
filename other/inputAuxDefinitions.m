@@ -18,24 +18,6 @@
 
 % ---------------------------------------------------
 
-ndofpnode = 6; 
-
-strucsize = strucSize(Nodes) ;
-
-%~ absoluteimperfection = imperfactor * strucsize ;
-
-if length( controlDofInfo ) > 0
-
-  controlDofsAndFactors = zeros( size( controlDofInfo,1 ) , 2 ) ;
-  
-  % control dof info
-  for i=1:size(controlDofInfo,1)
-    aux                = nodes2dofs( controlDofInfo(i,1), 6 ) ;
-    controlDofsAndFactors(i,:) = [ aux( controlDofInfo(i, 2) ) controlDofInfo(i,3) ] ; 
-  end
-end
-
-tangentMatricesCell = cell(2,1) ;
 
 %~ releasesDofs = [];
 %~ for i=1:nelems
@@ -47,48 +29,6 @@ tangentMatricesCell = cell(2,1) ;
 
 %~ releasesDofs = unique( releasesDofs);
 
-coordsElemsMat = zeros(nelems,24) ;
-
-for i=1:nelems
-  % obtains nodes and dofs of element
-  nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
-  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
-  for j=1:length(nodeselem)
-    coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j), : ) ;
-  end
-end
-
-
-hyperElasParamsMat = [] ;
-for i=1:size(hyperElasParams,1)
-  hyperElasParamsMat (i,1:length(hyperElasParams{i})) = hyperElasParams{i} ;
-end
-
-% ---------------- load vectors assembly -----------------------
-variableFext = zeros( ndofpnode*nnodes , 1 );
-constantFext = zeros( ndofpnode*nnodes , 1 );
-
-if exist( 'nodalVariableLoads' ) ~= 0
-  for i=1:size(nodalVariableLoads,1)
-    aux = nodes2dofs ( nodalVariableLoads(i,1), ndofpnode ) ;
-    variableFext( aux ) = variableFext( aux ) + nodalVariableLoads(i,2:7)' ;
-  end
-end
-
-if exist( 'nodalConstantLoads' ) ~= 0
-  for i=1:size(nodalConstantLoads,1)
-    aux = nodes2dofs ( nodalConstantLoads(i,1), ndofpnode ) ;
-    constantFext( aux ) = constantFext( aux ) + nodalConstantLoads(i,2:7)' ;
-  end
-end
-
-
-% ------------------------------------------------------------
-if exist( 'nodalConstantLoads' ) ~= 0 || exist( 'nodalVariableLoads' ) ~= 0
-  [maxNorm2F, visualloadfactor] = visualLoadFac(strucsize, variableFext, constantFext, nnodes) ;
-else
-  visualloadfactor = 1 ;
-end
 
 % -------------------- indexes computation --------------------
 indexesElems = zeros(nelems,1) ;
@@ -124,13 +64,5 @@ for i = 1:nelems
     plateElem  = [ plateElem ; i ] ;
   end
 end
-
-% Output parameters
-
-cellStress = [] ;
-matNts = [] ;
-matUts = [] ;
-
-contProgr = 0 ;
 
 % ------------------------------------------------------------

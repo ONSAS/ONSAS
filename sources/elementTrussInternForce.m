@@ -19,7 +19,7 @@
 % of 3D truss elements using engineering strain.
 
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussEngStr( Xe, Ue, hyperelasparams, A , paramout )
+  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout )
 
   % vector reference element
   localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) ;

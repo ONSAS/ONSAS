@@ -2,14 +2,16 @@
 % deployable ring example
 % -----------------------------
 
+clear all, close all
+
 E  = 200e3 ;   nu = 0.3   ;  R = 120   ;
 
 dirOnsas = [ pwd '/..' ] ;
 inputONSASversion = '0.1.10';
-problemName = 'ring' ;
+problemName = 'deployableRing' ;
 
-hyperElasParams = cell(1,1) ;
-hyperElasParams{1} = [1 E nu] ;
+materialsParams = cell(1,1) ;
+materialsParams{1} = [1 E nu] ;
 
 b = .6;   h = 6 ;
 
@@ -18,7 +20,7 @@ sectPar = [12 b h ];
 A  = b*h      ; It = h*b^3/3 ;
 Iy = b*h^3/12 ; Iz = h*b^3/12 ;
 
-secGeomProps = [ A Iy Iz It ] ;
+crossSecsParams = [ A Iy Iz It ] ;
 
 % Defino los apoyos de la estructura
 

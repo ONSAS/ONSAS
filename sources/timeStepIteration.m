@@ -19,31 +19,19 @@
 % the next time step using the numerical method and parameters provided by the
 % user.
 
-function  [ modelCurrState, BCsData, auxIO ]  = timeStepIteration( modelCurrState, BCsData, auxIO ) ;
+function  [ modelCurrState, BCsCurrState, auxIO ]  = timeStepIteration( modelCurrState, BCsCurrState, modelProperties, auxIO ) ;
 
-% -----------------------------------
-% ------   extracts variables  ------
+% ----   extracts variables  ----
 modelExtract
-% -------------------------
 
-% -----------      pre-iteration definitions     ---------------------
-nelems    = size(Conec,1) ; ndofpnode = 6;
-
-booleanConverged = 0 ;
-dispIter         = 0 ;
-
-% parameters for the Arc-Length iterations
-currDeltau      = zeros( length(neumdofs), 1 ) ;
+% -----   pre-iteration definitions     ----------
+nelems     = size(Conec,1) ; ndofpnode = 6;
 
 [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
   incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
-% current stiffness matrix for buckling analysis
-if stabilityAnalysisBoolean == 1
-  [~, KTtm1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, [], 2 ) ;
-end
 % --------------------------------------------------------------------
   
 
@@ -51,64 +39,80 @@ end
 % ----       iteration in displacements or load-displacements     ----
 % --------------------------------------------------------------------
 
+KTt = systemDeltauMatrix ;
 
 % --- start iteration with previous displacements ---
-Uk     = Ut     ;   % initial guess
-FintGk = FintGt ;
-Finet  = zeros( size( FintGk ) ) ;
 
-%~ Udotdottp1 = Udotdott ;
+Utp1k       = Ut     ;   % initial guess
+Finttp1k    = Fintt  ;
+Fmastp1k    = Fmast  ;
+Udottp1k    = Udotdott ;
+Udotdottp1k = Udotdott ;
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess
 end
 
 % --- compute RHS for initial guess ---
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt ) ;
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmast ) ;
 % ---------------------------------------------------
 
+
+booleanConverged = 0 ;
+dispIter         = 0 ;
+currDeltau = zeros( length(neumdofs), 1 ) ;
 
 while  booleanConverged == 0
   dispIter = dispIter + 1 ;
 
-  % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, [], massMat, dampingMat, booleanConsistentMassMat );
-  % ---------------------------------------------------
-  
+%~ systemDeltauMatrix
+%~ systemDeltauRHS
+%~ st
   % --- solve system ---
-  [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+  [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
   % ---------------------------------------------------
 
   % --- updates: model variables and computes internal forces ---
-  [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-  [FintGk, ~ ]     = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
+  [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+
+  % --- update next time magnitudes ---
+  [ Utp1k, Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
+    Ut, Udott, Udotdott, Fintt, Utp1k, Finttp1k, numericalMethodParams, currTime ) ;
+
+  Fs = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Utp1k, [], 1, Udotdottp1k, booleanConsistentMassMat ) ;
+  % ---------------------------------------------------
+  
+stop
+  % --- system matrix ---
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, ...
+    hyperElasParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, [], massMat, ...
+    dampingMat, booleanConsistentMassMat, Udotdott );
   % ---------------------------------------------------
 
   % --- new rhs ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, dispIter, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, massMat, dampingMat, Ut, Udott, Udotdott, FintGt )  ;
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, ...
+    hyperElasParamsMat, KS, Utp1k, constantFext, variableFext, ...
+    userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
+    neumdofs, Fs{1}, massMat, dampingMat, Ut, Udott, Udotdott, Fintt ) ;
   % ---------------------------------------------------
-
-  % --- update next time magnitudes ---
-  [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime ) ;
 
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, FintGk(neumdofs), FextG(neumdofs), deltaured, Uk(neumdofs), dispIter, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
 
-  % prints iteration info in file
+  % --- prints iteration info in file ---
   printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIter deltaErrLoad norm(deltaured) ] ) ;
 
 end % iteration while
 % --------------------------------------------------------------------
 % --------------------------------------------------------------------
 
-
 % computes KTred at converged Uk
-[~, KTt ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 2 ) ;
+[ KTtp1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 2, Udotdott, booleanConsistentMassMat ) ;
 
 factor_crit = 0;
 
-[FintGk, ~, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1 ) ;
+[FintGk, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1, Udotdott, booleanConsistentMassMat ) ;
 
 if stabilityAnalysisBoolean == 1
   [ factor_crit, nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;
@@ -118,7 +122,8 @@ end
 
 
 % prints iteration info in file
-printSolverOutput( outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIter stopCritPar nKeigpos nKeigneg ] ) ;
+printSolverOutput( ...
+  outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIter stopCritPar nKeigpos nKeigneg ] ) ;
 
 % --- stores next step as Ut and Ft ---
 
@@ -139,12 +144,10 @@ modelCompress
 
 
 
-
-
 % ==============================================================================
 %
 % ==============================================================================
-function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
+function [ Utp1, Udottp1, Udotdottp1, nextTime ] = updateTime(Ut,Udott,Udotdott, FintGt, Uk, FintGk, numericalMethodParams, currTime )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -152,7 +155,6 @@ function [ Utp1, Udottp1, Udotdottp1, FintGtp1, nextTime ] = updateTime(Ut,Udott
       = extractMethodParams( numericalMethodParams ) ;
 
   Utp1       = Uk                                         ;
-  FintGtp1   = FintGk                                     ;
   nextTime   = currTime + deltaT                          ;
 
 if solutionMethod == 3 || solutionMethod == 4

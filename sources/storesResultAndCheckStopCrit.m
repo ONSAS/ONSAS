@@ -21,13 +21,6 @@
 % of all nodes, including rotation of releases. 
 % In this script the analysis stopping criteria is checked.
 
-tic ;
-
-if dynamicAnalysisBoolean == 0
-  deltaT    = numericalMethodParams(5)/nLoadSteps ;
-  finalTime = numericalMethodParams(5) ;
-end
-
 % --------------   computes magnitudes for next step  -------------------------- 
 Utp1 = modelNextState.Ut ;
 Ut   = modelCurrState.Ut ;
@@ -54,8 +47,8 @@ if dynamicAnalysisBoolean == 0
   nextLoadFactor = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 else
 
-  currLoadFactor = loadFactorsFunc( currTime + deltaT ) ;
-  nextLoadFactor = loadFactorsFunc( currTime + 2*deltaT ) ;
+  currLoadFactor = loadFactorsFunc( modelCurrState.currTime + deltaT ) ;
+  nextLoadFactor = loadFactorsFunc( modelCurrState.currTime + 2*deltaT ) ;
   
 end
 
@@ -111,9 +104,6 @@ else
   nKeigneg = 0 ;
   nKeigpos = 0 ;
 end
-tStores = toc ;
-
-
 
 % ---------------       evals stop time incr crit          ---------------------
 %~ if dynamicAnalysisBoolean == 1

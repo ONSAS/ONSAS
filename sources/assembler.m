@@ -23,105 +23,55 @@
 %     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [Fs, Ks, StrainVec, StressVec ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, bendStiff, paramOut )
+function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, paramOut, Udotdott, booleanConsistentMassMat )
 
 booleanCppAssembler = 0 ;
 
 % -----------------------------------------------
+% ---     C++ assembler    ---
 % -----------------------------------------------
-% C++ assembler
 if booleanCppAssembler
-
-  timer = time();
-  nelems    = size(Conec,1);
-
-  currDir = pwd ;
-  cd( '~/work/repos/inomiso/onsaspp/src' )
-
-  % --------------------------------------------------------------------
-  % --------------------------------------------------------------------
-  % write to file the following variables  
+  CppAssembly
   
-  % write files
-  varsInps = [ Ut; paramOut] ;
-  
-  save -ascii 'varsInps.dat' varsInps;
-  save -ascii 'Conec.dat' Conec;
-  save -ascii 'coordsElemsMat.dat' coordsElemsMat;
-  save -ascii 'hyperElasParamsMat.dat' hyperElasParamsMat;
-
-  timeEscritaArchivos = time() - timer
-
-  % --------------------------------------------------------------------
-  % --------------------------------------------------------------------
-  
-  % run sts
-  timer = time();
-  [status, output] = system('./onsasAssembler')
-  %~ system('g++ onsasAssembler.cpp -larmadillo -o onsasAssembler')
-  %~ system('make')
-  %~ system('./onsasAssembler > salidaaa.txt');
-  timeEnsamblado = time() - timer
-  
-  
-  % read file
-  FintGt = load( '-ascii', 'FintGt.dat') ;
-  
-  if paramOut==2
-
-  timer = time();
-    
-    indsIKT = load( '-ascii', 'indsIKT.dat') ;
-    indsJKT = load( '-ascii', 'indsJKT.dat') ;
-    valsKT  = load( '-ascii', 'valsIKT.dat') ;
-  timeLectura = time() - timer
-    
-    KT = ...
-      sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) ...
-      + KS ;
-  end
-
-  %~ issparse(KT)
-  timeLLamadaCpp = time() - timer
-  
-  % ------------------
-  %~ if stopit
-    %~ cd([currDir '/examples']), stop
-  %~ else
-    cd([currDir ])
-  %~ end
-
-  StrainVec   = sparse( nelems, 6 ) ;
-  StressVec   = sparse( nelems, 6 ) ;
-
-
-
-
-
-
 % -----------------------------------------------
+% ---    octave assembler    ---
 % -----------------------------------------------
-% --- octave assembler ---
 else
-
   % -----------------------------------------------
-  nelems    = size(Conec,1)   ;
-  nnodes    = length( Ut) / 6 ;
+  nelems  = size(Conec,1) ;   nnodes  = length( Ut) / 6 ;
   
   %~ profile clear, profile on
-  
-  % creates Fint vector
-  FintGt = zeros( nnodes*6 , 1 ) ;
-  
-  % assumes maximum 4 nodes per element
-  indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
-  indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
-  valsKT  =         zeros( nelems*24*24, 1 ) ;
 
-  counterInds = 0 ;
+  Assembled = cell( 2, 1 ) ;
+    
+  % --- creates Fint vector ---
+  if paramOut == 1
+    Fintt = zeros( nnodes*6 , 1 ) ;
   
-  StrainVec   = zeros( nelems, 6 ) ;
-  StressVec   = zeros( nelems, 6 ) ;
+    if nargout == 3
+      StrainVec   = zeros( nelems, 6 ) ;
+      StressVec   = zeros( nelems, 6 ) ;
+    end
+    
+    if dynamicAnalysisBoolean
+      Fmast = zeros( nnodes*6 , 1 ) ;
+    end
+  
+  elseif paramOut == 2
+  
+    % assumes maximum 4 nodes per element
+    indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
+    indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
+    valsKT  =         zeros( nelems*24*24, 1 )   ;
+    
+    if dynamicAnalysisBoolean
+      valsMT  =         zeros( nelems*24*24, 1 )   ;
+    end
+    
+    counterInds = 0 ;
+  
+  end
+  
   % ----------------------------------------------
   
   contTiempoLlamadasIndexs = 0;
@@ -134,8 +84,6 @@ else
     %~ Fine    = massMat * Udotdottp1 ;
     %~ Finered = Fine( neumdofs ) ;
   %~ else, Finered    = [] ; end
-
-
 
 
   % ----------------------------------------------
@@ -159,7 +107,16 @@ else
       A  = secGeomProps(Conec(elem,6),1) ;
       hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
       
-      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussEngStr( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
+      rho = hyperAux(end) ;
+      
+      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
+ 
+      if dynamicAnalysisBoolean
+        dotdotdispsElem = u2ElemDisps( Udotdott , dofselem ) ;
+        
+        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', rho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem  );
+      end
+      
       
     % -------------------------------------------
     case 2 % Co-rotational Frame element (bernoulli beam)
@@ -242,18 +199,29 @@ else
   
     end   % case tipo elemento
     % -------------------------------------------
+
+
   
+
   
   
     % -------------------------------------------
+    % ---   assemble   ----
+    % -------------------------------------------
     if paramOut == 1
       % internal loads vector assembly
-      FintGt ( dofselemRed ) = FintGt( dofselemRed ) + Finte ;
+      Fintt ( dofselemRed ) = Fintt( dofselemRed ) + Finte ;
       %~ FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
-    
-      StrainVec(elem,(1:sizeTensor) ) = strain ;
-      StressVec(elem,(1:sizeTensor) ) = stress ;
-    
+      
+      if dynamicAnalysisBoolean
+        Fmast ( dofselemRed ) = Fmast( dofselemRed ) + Fmase ;
+      end
+        
+      if nargout == 3
+        StrainVec(elem,(1:sizeTensor) ) = strain ;
+        StressVec(elem,(1:sizeTensor) ) = stress ;
+      end
+      
     elseif paramOut == 2
       % matrices assembly
       %~ KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
@@ -271,81 +239,59 @@ else
   
         indsJKT ( entriesSparseStorVecs ) = dofselemRed       ;
         valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
+
+        if dynamicAnalysisBoolean
+          valsMT( entriesSparseStorVecs ) = Mmasse( indRow, : )' ;
+        end
         
         counterInds = counterInds + length( dofselemRed ) ;
-
       end
     
-    end % if paramout
-    % ---------------------
-   
+    end % if paramOut
+
   end % for elements ----
+    
   
-  %~ loopelemtie = time() - chetiem ;
+  if paramOut == 1,
+
+    Fintt = Fintt + KS * Ut ;
+
+    Assembled{1} = Fintt ;
+    if dynamicAnalysisBoolean
+      Assembled{2} = Fmast ;
+    else
+      Assembled{2} = [] ;
+    end
+
+  elseif paramOut == 2,
   
-  indsIKT = indsIKT(1:counterInds) ;
-  indsJKT = indsJKT(1:counterInds) ;
-  valsKT  = valsKT (1:counterInds) ;
+    indsIKT = indsIKT(1:counterInds) ;
+    indsJKT = indsJKT(1:counterInds) ;
+    valsKT  = valsKT (1:counterInds) ;
+    KT      = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) + KS ;
+
+    Assembled{1} = KT ;
+    
+    if dynamicAnalysisBoolean
+      valsMT  = valsMT (1:counterInds) ;
+      MT    = sparse( indsIKT, indsJKT, valsMT, size(KS,1), size(KS,1) )      ;
   
-  if paramOut == 2
-    KT     = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) + KS ;
+      Assembled{2} = MT ;
+    else
+      Assembled{2} = [] ;
+    end
+
+    
   end
-  
-  FintGt = FintGt + KS * Ut ;
-  
-  if length(bendStiff) >0
-  
-    Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
-  
-    [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
-  
-    fextAngSpr = KTAngSpr*Ut ;
-  
-    KT     += sparse(KTAngSpr)   ;
-    FintGt += fextAngSpr ;
-  
-  end % if bend stiff ----
-  
-  %~ fintiem = time() - chetiem;
-  % ------------------------------------
-  
   
 end % if booleanCppAssembler
 % ----------------------------------------
 
 
-
-Fs = FintGt ;
-if paramOut == 2
-  Ks = KT     ;
-end
-
-
-%~ KTsparse = sparse( indsIKT, indsJKT, valsKT ) ;
-
-%~ KT     = KT  + KS ;
-%~ FintGt = FintGt + KS*Ut ;
-
-
-%~ if length(bendStiff) >0
-
-  %~ Nodes = conv ( Conec, coordsElemsMat+dispsElemsMat ) ;
-
-  %~ [ ~, KTAngSpr ] = loadsAngleSpring( Nodes, Conec, bendStiff ) ;
-
-  %~ fextAngSpr = KTAngSpr*Ut ;
-
-  %~ KT     = KT     + KTAngSpr   ;
-  %~ FintGt = FintGt + fextAngSpr ;
-
-%~ end
-
-%~ % ------------------------------------
-%~ >>>>>>> 85df745bf8cc84eb567a52786a477589e9d8673e
-
-
-
-
+% ==============================================================================
+%
+%
+% ==============================================================================
 
 function nodesmat = conv ( conec, coordsElemsMat ) 
 nodesmat  = [] ;
@@ -359,9 +305,11 @@ for i=1:size(conec,1)
   end
 end
 
-% ---------------------
+% ==============================================================================
+%
 % function to convert vector of displacements into displacements of element.
-% ---------------------
+%
+% ==============================================================================
 function elemDisps = u2ElemDisps( U, dofselem)
 
 elemDisps = U(dofselem);

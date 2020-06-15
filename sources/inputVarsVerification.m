@@ -18,10 +18,11 @@
 % Script for verification of the input variables definition. Default
 % values ar assigned.
 
-tic
-
-
 if exist('booleanScreenOutput') == 0 || booleanScreenOutput
+
+  % default value
+  booleanScreenOutput = 1 ;
+
   fprintf([ '|=================================================|\n' ...
             '|         _ _             _ _     _ _     _ _     |\n' ...
             '|       /    /  /|   /  /       /    /  /         |\n' ...
@@ -37,9 +38,6 @@ if exist('booleanScreenOutput') == 0 || booleanScreenOutput
             '|-------------------------------------------------|\n'] ) ;
 end
 
-if exist( 'booleanScreenOutput' ) == 0
-  booleanScreenOutput = 1 ;
-end
 
 if booleanScreenOutput
   fprintf('  - input variables verification ... ') ;
@@ -47,19 +45,20 @@ end
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
-                      'hyperElasParams', 'secGeomProps', 'nodalSprings'} ;
-for j=1:length(checkVarNamesList)
+                      'materialsParams', 'crossSecsParams', 'nodalSprings', ...
+                      'numericalMethodParams' } ;
+for j = 1:length(checkVarNamesList)
   varName = checkVarNamesList{j} ;
-  if exist( varName, 'var' )==0,
+  if exist( varName, 'var' ) == 0,
     error([ varName ' variable was not defined.'] );
   end
 end
 % ------------------------------------------
 
-nmats  = length( hyperElasParams ) ;
-nsecs  = length( secGeomProps    ) ;
-nnodes = size(Nodes,1) ;
-nelems = size(Conec,1) ;
+nMats  = length( materialsParams    ) ;
+nSecs  = size( crossSecsParams, 1  ) ;
+nNodes = size( Nodes,           1  ) ;
+nElems = size( Conec,           1  ) ;
 
 % -----------------------
 % default values
@@ -81,10 +80,6 @@ if exist( 'plotsViewAxis' ) == 0
   plotsViewAxis = [] ;
 end
 
-if exist( 'bendStiff' ) == 0
-  bendStiff = [] ;
-end
-
 if  exist( 'nodalDamping' ) == 0
   nodalDamping = [] ;
 end
@@ -97,59 +92,25 @@ if exist( 'loadFactorsFunc') == 0
   loadFactorsFunc = @(t) t ;
 end
 
-if exist( 'selfWeightBoolean') == 0
-  selfWeightBoolean = 0 ;
-else
-  if ~selfWeightBoolean == 0
-    if exist( 'rho' ) == 0, error( 'Density was not defined.' ) ; end
-	end
-end
-
 if exist( 'userLoadsFilename') == 0
   userLoadsFilename = '' ;
 end
-
-if exist( 'unifLoad' ) == 0
-  unifLoad = [] ;
-end
 % -----------------------
-
 
 
 % -----------------------
 % analysis settings
 
-if exist( 'nonLinearAnalysisBoolean' ) == 0
-  nonLinearAnalysisBoolean  = 1 ; 
+if exist( 'stabilityAnalysisBoolean' ) == 0
+  stabilityAnalysisBoolean = 0 ;
 end
 
-if exist( 'dynamicAnalysisBoolean' ) == 0
-  dynamicAnalysisBoolean  = 0 ; 
-end
-
-if exist( 'LBAAnalyFlag' ) == 0
-  LBAAnalyFlag = 0 ;
-end
-
-if ( exist( 'numericalMethodParams' ) == 0 ) && ( nonLinearAnalysisBoolean ~= 0 || dynamicAnalysisBoolean ~= 0 )
-  error( 'numericalMethodParams must be defined by the user if a nonlinear/dynamic analysis is performed.') ; 
-end
-
-
-if ( nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 )
-  if ( exist( 'linearDeformedScaleFactor' ) == 0 ) 
-    linearDeformedScaleFactor = 1 ;
-  end
-
-else
-  %~ if exist( 'linearDeformedScaleFactor' ) ~= 0
-    %~ warning(' linearDeformedScaleFactor set in input but not considered by ONSAS.\n');
-  %~ end
-  linearDeformedScaleFactor = 1 ;
+if ( exist( 'deformedScaleFactor' ) == 0 ) 
+  deformedScaleFactor = 1 ;
 end
 
 if exist( 'booleanConsistentMassMat' ) == 0
-  booleanConsistentMassMat = 0 ;
+  booleanConsistentMassMat = 1 ;
 end
 
 if exist( 'analyticSolFlag' ) == 0
@@ -179,22 +140,8 @@ else
 end
 
 
-if exist( 'numericalMethodParams' ) == 0 && ( nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0 )
-  numericalMethodParams = [] ;
-end
-
-
 if exist( 'plotParamsVector' ) == 0
-  plotParamsVector = [1] ;
-else
-	if length(plotParamsVector) == 2
-		plotParamsVector = [plotParamsVector 0] ;
-	end
-end
-
-
-if exist( 'stabilityAnalysisBoolean' ) == 0
-  stabilityAnalysisBoolean = 0 ;
+  plotParamsVector = [ 1 ] ;
 end
 
 if exist( 'octaveBoolean' ) == 0
@@ -209,57 +156,31 @@ if exist( 'reportBoolean' ) == 0
   reportBoolean = 1 ;
 end
 
-if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-  timeIncr = 0 ;
-end
-
-if dynamicAnalysisBoolean == 1
-  if exist('rho')== 0, error('Density was not defined.');end
-
-  if exist( 'nodalDamping') == 0
-    nodalDamping = 0 ;
-  end
-  
-  if exist( 'deltamassMat' ) == 0
-    if sum( Conec(:,7) == 2 ) > 0
-      error(' a value for deltamassMat is required.');
-    else
-      deltamassMat = 0 ;
-    end
-  end
-
-else
-  if exist('rho') == 0
-    rho = 0 ;
-  end  
-end
-
-
-if plotParamsVector(1)>0
+if booleanScreenOutput
   fprintf(' done.\n');
 end
-
-tVarVer = toc ;
-
 
 % creates outputdir
 outputDir = [ './output/' problemName '/' ] ;
 
 if exist( './output/' ) ~= 7
-  fprintf( '  - Creating directory ./output/ ...' );
+  if booleanScreenOutput
+    fprintf( '  - Creating directory ./output/ ...' );
+  end
+
   mkdir('./', './output/' );
-  fprintf( ' done. \n' );
+
+  if booleanScreenOutput
+    fprintf( ' done. \n' );
+  end
 end
 
-
-if booleanScreenOutput
-  fprintf( ' done. \n' );
-end
-
-
+% -----------------
 if exist( outputDir ) == 7 % problemName is a directory
   % the content is erased
-  fprintf( ['  - Cleaning directory ./output/' problemName '/ ...'] ) ;
+  if booleanScreenOutput
+    fprintf( ['  - Cleaning output directory ...'] ) ;
+  end
   if octaveBoolean
     confirm_recursive_rmdir (0)
   end
@@ -267,11 +188,15 @@ if exist( outputDir ) == 7 % problemName is a directory
 
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   % it is created
-  fprintf( ['  - Creating directory ./output/' problemName '/ ...'] ) ;
+  if booleanScreenOutput
+    fprintf( ['  - Creating output directory ...'] ) ;
+  end
   mkdir( outputDir );
 end
-
-
+if booleanScreenOutput
+  fprintf( ' done. \n' );
+end
+% ------------------
 
 if exist( 'nonHomogeneousInitialCondU0') ==0
   nonHomogeneousInitialCondU0 = [] ;
@@ -280,4 +205,73 @@ end
 if exist( 'nonHomogeneousInitialCondUdot0') ==0 
   nonHomogeneousInitialCondUdot0 = [] ;
 end
-fprintf( ' done. \n' );
+
+
+
+
+
+
+if length( controlDofs ) > 0
+  controlDofsAndFactors = zeros( size( controlDofs,1 ) , 2 ) ;
+  
+  % control dof info
+  for i=1:size(controlDofs,1)
+    aux                = nodes2dofs( controlDofs(i,1), 6 ) ;
+    controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ; 
+  end
+end
+
+tangentMatricesCell = cell(2,1) ;
+
+
+
+coordsElemsMat = zeros(nElems,4*6) ; % 6 dofs per node, maximum 4 nodes per element
+
+for i = 1 : nElems
+  % obtains nodes and dofs of element
+  nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
+  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+  for j=1:length(nodeselem)
+    coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j), : ) ;
+  end
+end
+
+% ---------------- load vectors assembly -----------------------
+variableFext = zeros( 6*nnodes , 1 );
+constantFext = zeros( 6*nnodes , 1 );
+
+if exist( 'nodalVariableLoads' ) ~= 0
+  for i=1:size(nodalVariableLoads,1)
+    aux = nodes2dofs ( nodalVariableLoads(i,1), ndofpnode ) ;
+    variableFext( aux ) = variableFext( aux ) + nodalVariableLoads(i,2:7)' ;
+  end
+end
+
+if exist( 'nodalConstantLoads' ) ~= 0
+  for i=1:size(nodalConstantLoads,1)
+    aux = nodes2dofs ( nodalConstantLoads(i,1), ndofpnode ) ;
+    constantFext( aux ) = constantFext( aux ) + nodalConstantLoads(i,2:7)' ;
+  end
+end
+
+% ------------------------------------------------------------
+if exist( 'nodalConstantLoads' ) ~= 0 || exist( 'nodalVariableLoads' ) ~= 0
+  [maxNorm2F, visualloadfactor] = visualLoadFac( strucSize( Nodes ) , variableFext, constantFext, nnodes) ;
+else
+  error( ' user loads not included yet in computation of visual load factor ') ;
+end
+
+
+%~ cellStress = [] ;
+%~ matNts = [] ;
+%~ matUts = [] ;
+
+%~ contProgr = 0 ;
+
+%~ if dynamicAnalysisBoolean == 0
+  %~ deltaT    = numericalMethodParams(5)/nLoadSteps ;
+  %~ finalTime = numericalMethodParams(5) ;
+%~ else
+  %~ deltaT = timeIncr;
+  
+%~ end

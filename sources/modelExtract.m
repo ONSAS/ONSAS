@@ -18,17 +18,19 @@
 
 %script for extracting variables from struct data sets.
 
-arrfie =cell(6,1);
+arrfie    = cell(8,1);
 arrfie{1} = modelCurrState;
-arrfie{2} = BCsData ;
+arrfie{2} = BCsCurrState ;
 arrfie{3} = auxIO  ;
-arrfie{4} = 'modelCurrState';
-arrfie{5} = 'BCsData' ;
-arrfie{6} = 'auxIO'  ;
+arrfie{4} = modelProperties  ;
+arrfie{5} = 'modelCurrState';
+arrfie{6} = 'BCsCurrState' ;
+arrfie{7} = 'auxIO'  ;
+arrfie{8} = 'modelProperties'  ;
 
-for k=1:3
+for k=1:4
   fieldNames = fieldnames( arrfie{k} ) ;
   for i=1:length(fieldNames)
-    eval( [ fieldNames{i} '= getfield(' arrfie{k+3} ',''' fieldNames{i} ''');' ] )
+    eval( [ fieldNames{i} '= getfield(' arrfie{k+4} ',''' fieldNames{i} ''');' ] )
   end
 end

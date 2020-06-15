@@ -12,7 +12,7 @@ E = 200e9 ;  nu = 0.3 ;  l = 10   ;
 problemName = 'cantileverNodalMoment' ;
 inputONSASversion = '0.1.10';
 
-hyperElasParams = cell(1,1) ; hyperElasParams{1} = [1 E nu] ;
+materialsParams = cell(1,1) ; materialParams{1} = [1 E nu] ;
 
 % --- cross section ---
 b = .1 ;  h = .2 ;  Nelem = 20 ;
@@ -24,7 +24,7 @@ It = 1 ;
 
 sectPar = [ b h ]; 
 
-secGeomProps = [ A Iy Iz It ] ;
+crossSecsParams = [ A Iy Iz It ] ;
 
 nodalSprings = [ 1  inf  inf  inf  inf  inf  inf ] ;
 
@@ -44,8 +44,7 @@ stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-6 ;
 stopTolForces  = 1.0e-8 ;
 targetLoadFactr = E * Iy / ( l / (2 * pi) ) ;  % curvradius corresponding to perimeter = l
-%~ nLoadSteps      = 10 ;
-nLoadSteps      = 20 ;
+nLoadSteps      = 10 ;
 
 plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
 %~ plotParamsVector = [ 3 ] ;

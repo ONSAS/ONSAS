@@ -19,7 +19,7 @@
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
-function [ modelCurrState, BCsData, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, dispsElemsMat ] ...
+function [ modelCurrState, modelProperties, BCsCurrState, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, dispsElemsMat ] ...
   = initialDefinitions( ...
   Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
@@ -71,9 +71,9 @@ end
 % --------------------------------------------------- 
 
 
-Utp1    = zeros( ndofpnode*nnodes,   1 ) ;  
+Utp1   = zeros( ndofpnode*nnodes,   1 ) ;  
 
-FintGt  = zeros( ndofpnode*nnodes,   1 ) ;  
+Fintt  = zeros( ndofpnode*nnodes,   1 ) ;  
 
 matUts = Ut ;
 
@@ -97,7 +97,7 @@ currTime        = 0 ;
 timeIndex       = 1 ;
 convDeltau      = zeros(nnodes*ndofpnode,1) ;
 
-stopCritPar = 0;
+stopCritPar = 0 ;
 
 
 
@@ -110,14 +110,6 @@ controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
                               .* controlDofsAndFactors(:,2) ;
 % ----------------------------------------------
 
-
-[ FintGt, ~, Strainst, Stresst ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , [] , 1 ) ;
-
-factorCrit = 0 ;
-factor_crit = 0 ;
-nKeigpos   = 0 ;
-nKeigneg   = 0 ;
-
 if dynamicAnalysisBoolean == 0,
   nextLoadFactor  = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
 
@@ -126,30 +118,62 @@ else
   nextLoadFactor = loadFactorsFunc(currTime+deltaT) ;
 end
 
-systemDeltauMatrix = [];
 
-if dynamicAnalysisBoolean == 1,
-  massMat    = tangentInertialMassMatrix ( Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes, booleanConsistentMassMat ) ;
-  dampingMat = speye( size(massMat) ) * nodalDamping   ;
+% --- initial force vectors ---
+if length(nodalDamping)>0
+  dampingMat = speye( nnodes*6, nnodes*6 ) * nodalDamping   ;
 else
   dampingMat = [] ;
-  massMat    = [] ;
 end
 
-% --- computation of initial Udotdott for truss elements only!!!
-if dynamicAnalysisBoolean == 1
-  Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
-  Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -FintGt( neumdofs ) ) ;
-end
+[ fs, Strainst, Stresst ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , dynamicAnalysisBoolean , 1, Udotdott, booleanConsistentMassMat ) ;
 
-% stores model data structures
-modelCompress
+Fintt = fs{1} ;
+Fmast = fs{2} ;
+
+  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, ...
+    hyperElasParamsMat, KS, Ut, neumdofs, numericalMethodParams, [], ...
+    dampingMat, booleanConsistentMassMat, Udotdott );
+
+% ----------------------------
+
+
+
+% --- initial tangent matrices ---
+%~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, booleanConsistentMassMat ) ;
+
+
+%~ systemDeltauMatrix = mats{1} 
+
+%~ stop
+%~ if dynamicAnalysisBoolean == 1,
+
+  %~ massMat    = mats{2} ;
+
+  %~ % --- computation of initial Udotdott for truss elements only!!!
+  %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
+
+  %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;  
+
+%~ else
+  %~ dampingMat = [] ;
+  %~ massMat    = [] ;
+%~ end
+
+factorCrit = 0 ;
+nKeigpos   = 0 ;
+nKeigneg   = 0 ;
+% ----------------------------
+
 
 %~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
 Areas = secGeomProps(Conec(:,6),1) ;
-currentNormalForces = modelCurrState.Stresst(:,1) .* Areas ;
+currentNormalForces = Stresst(:,1) .* Areas ;
 
 matNts = currentNormalForces ;
+
+% stores model data structures
+modelCompress
 
 % --- prints headers and time0 values ---
 printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
