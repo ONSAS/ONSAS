@@ -59,11 +59,11 @@ end
 
 
 booleanConverged = 0 ;
-dispIter         = 0 ;
-currDeltau = zeros( length(neumdofs), 1 ) ;
+dispIters        = 0 ;
+currDeltau       = zeros( length(neumdofs), 1 ) ;
 
 while  booleanConverged == 0
-  dispIter = dispIter + 1 ;
+  dispIters = dispIters + 1 ;
 
 %~ systemDeltauMatrix
 %~ systemDeltauRHS
@@ -138,6 +138,7 @@ FintGt    = FintGtp1 ;
 Udott     = Udottp1 ;
 Udotdott  = Udotdottp1 ;
 timeIndex = timeIndex + 1 ;
+
 
 modelCompress
 

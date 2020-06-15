@@ -23,7 +23,7 @@
 %     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, paramOut, Udotdott, booleanConsistentMassMat )
+function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
 
 booleanCppAssembler = 0 ;
 
@@ -31,7 +31,7 @@ booleanCppAssembler = 0 ;
 % ---     C++ assembler    ---
 % -----------------------------------------------
 if booleanCppAssembler
-  CppAssembly
+  %~ CppAssembly
   
 % -----------------------------------------------
 % ---    octave assembler    ---
@@ -53,9 +53,7 @@ else
       StressVec   = zeros( nelems, 6 ) ;
     end
     
-    if dynamicAnalysisBoolean
-      Fmast = zeros( nnodes*6 , 1 ) ;
-    end
+    Fmast = zeros( nnodes*6 , 1 ) ;
   
   elseif paramOut == 2
   
@@ -64,7 +62,7 @@ else
     indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
     valsKT  =         zeros( nelems*24*24, 1 )   ;
     
-    if dynamicAnalysisBoolean
+    if rho > 0
       valsMT  =         zeros( nelems*24*24, 1 )   ;
     end
     
@@ -89,7 +87,13 @@ else
   % ----------------------------------------------
   % loop for assembly
   for elem = 1:nelems
-  
+
+    elemCrossSecParams = crossSecsParams( Conec( elem, 6 ) , : ) ;
+
+    elemMaterialParams     = materialsParams{ Conec( elem, 5 )     } ;
+    elemrho                = elemMaterialParams(1) ;
+    elemConstitutiveParams = elemMaterialParams( 2:end ) ;
+
     switch Conec(elem,7)
   
     % -------------------------------------------
@@ -101,22 +105,18 @@ else
       dispsElem = u2ElemDisps( Ut , dofselem ) ;
   
       dofselemRed = dofselem(1:2:end)  ;
+        
+      A = elemCrossSecParams(1) ;
       
       sizeTensor = 1 ;
-  
-      A  = secGeomProps(Conec(elem,6),1) ;
-      hyperAux  = hyperElasParamsMat( Conec(elem,5),:) ;
       
-      rho = hyperAux(end) ;
-      
-      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, hyperAux , A, paramOut ) ;
+      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemMaterialParams , A, paramOut ) ;
  
-      if dynamicAnalysisBoolean
-        dotdotdispsElem = u2ElemDisps( Udotdott , dofselem ) ;
+      if elemrho > 0
+        dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
         
-        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', rho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem  );
+        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem  );
       end
-      
       
     % -------------------------------------------
     case 2 % Co-rotational Frame element (bernoulli beam)
@@ -136,8 +136,8 @@ else
       J   = secGeomProps(Conec(elem,6),4) ;
   
       xs = coordsElemsMat(elem,1:2:end)'        ;
-      E  = hyperElasParamsMat( Conec(elem,5),2) ;
-      nu = hyperElasParamsMat( Conec(elem,5),3) ;
+      E  = elemMaterialParams(2) ;
+      nu = elemMaterialParams(3) ;
       G  = E/(2*(1+nu)) ;
   
       [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
@@ -166,9 +166,9 @@ else
       
       sizeTensor = 6 ;
   
-      if hyperElasParamsMat( Conec(elem,5), 1 ) == 6
-        E  = hyperElasParamsMat( Conec(elem,5),2) ;
-        nu = hyperElasParamsMat( Conec(elem,5),3) ;
+      if elemMaterialParams( 1 ) == 6
+        E  = elemMaterialParams( 2) ;
+        nu = elemMaterialParams( 3) ;
   
         if paramOut==1
         
@@ -192,8 +192,8 @@ else
         end
         
       else
-        E  = hyperElasParamsMat( Conec(elem,5),2) ;
-        nu = hyperElasParamsMat( Conec(elem,5),3) ;
+        E  = elemMaterialParams( 2) ;
+        nu = elemMaterialParams( 3) ;
         [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
       end
   
@@ -202,6 +202,7 @@ else
 
 
   
+
 
   
   
@@ -213,7 +214,7 @@ else
       Fintt ( dofselemRed ) = Fintt( dofselemRed ) + Finte ;
       %~ FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
       
-      if dynamicAnalysisBoolean
+      if elemrho > 0
         Fmast ( dofselemRed ) = Fmast( dofselemRed ) + Fmase ;
       end
         
@@ -240,7 +241,7 @@ else
         indsJKT ( entriesSparseStorVecs ) = dofselemRed       ;
         valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
 
-        if dynamicAnalysisBoolean
+        if elemrho > 0
           valsMT( entriesSparseStorVecs ) = Mmasse( indRow, : )' ;
         end
         
@@ -257,11 +258,7 @@ else
     Fintt = Fintt + KS * Ut ;
 
     Assembled{1} = Fintt ;
-    if dynamicAnalysisBoolean
-      Assembled{2} = Fmast ;
-    else
-      Assembled{2} = [] ;
-    end
+    Assembled{2} = Fmast ;
 
   elseif paramOut == 2,
   
@@ -272,15 +269,9 @@ else
 
     Assembled{1} = KT ;
     
-    if dynamicAnalysisBoolean
-      valsMT  = valsMT (1:counterInds) ;
-      MT    = sparse( indsIKT, indsJKT, valsMT, size(KS,1), size(KS,1) )      ;
-  
-      Assembled{2} = MT ;
-    else
-      Assembled{2} = [] ;
-    end
-
+    valsMT  = valsMT (1:counterInds) ;
+    MT      = sparse( indsIKT, indsJKT, valsMT, size(KS,1), size(KS,1) )      ;
+    Assembled{2} = MT ;
     
   end
   
@@ -310,6 +301,7 @@ end
 % function to convert vector of displacements into displacements of element.
 %
 % ==============================================================================
+% _____&&&&&&&&&&&&&& GENERALIZAR PARA RELEASES &&&&&&&&&&&&&&&
 function elemDisps = u2ElemDisps( U, dofselem)
 
 elemDisps = U(dofselem);

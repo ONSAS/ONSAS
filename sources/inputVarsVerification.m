@@ -81,7 +81,7 @@ if exist( 'plotsViewAxis' ) == 0
 end
 
 if  exist( 'nodalDamping' ) == 0
-  nodalDamping = [] ;
+  nodalDamping = 0 ;
 end
 
 if exist( 'sectPar' ) == 0
@@ -221,8 +221,6 @@ if length( controlDofs ) > 0
   end
 end
 
-tangentMatricesCell = cell(2,1) ;
-
 
 
 coordsElemsMat = zeros(nElems,4*6) ; % 6 dofs per node, maximum 4 nodes per element
@@ -230,35 +228,28 @@ coordsElemsMat = zeros(nElems,4*6) ; % 6 dofs per node, maximum 4 nodes per elem
 for i = 1 : nElems
   % obtains nodes and dofs of element
   nodeselem = Conec(i, find(Conec(i,1:4)>0) )' ;
-  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
+  dofselem  = nodes2dofs( nodeselem , 6 ) ;
   for j=1:length(nodeselem)
     coordsElemsMat( i, (j-1)*6+[1:2:5] ) = Nodes( nodeselem(j), : ) ;
   end
 end
 
 % ---------------- load vectors assembly -----------------------
-variableFext = zeros( 6*nnodes , 1 );
-constantFext = zeros( 6*nnodes , 1 );
+variableFext = zeros( 6*nNodes , 1 );
+constantFext = zeros( 6*nNodes , 1 );
 
 if exist( 'nodalVariableLoads' ) ~= 0
   for i=1:size(nodalVariableLoads,1)
-    aux = nodes2dofs ( nodalVariableLoads(i,1), ndofpnode ) ;
+    aux = nodes2dofs ( nodalVariableLoads(i,1), 6 ) ;
     variableFext( aux ) = variableFext( aux ) + nodalVariableLoads(i,2:7)' ;
   end
 end
 
 if exist( 'nodalConstantLoads' ) ~= 0
   for i=1:size(nodalConstantLoads,1)
-    aux = nodes2dofs ( nodalConstantLoads(i,1), ndofpnode ) ;
+    aux = nodes2dofs ( nodalConstantLoads(i,1), 6 ) ;
     constantFext( aux ) = constantFext( aux ) + nodalConstantLoads(i,2:7)' ;
   end
-end
-
-% ------------------------------------------------------------
-if exist( 'nodalConstantLoads' ) ~= 0 || exist( 'nodalVariableLoads' ) ~= 0
-  [maxNorm2F, visualloadfactor] = visualLoadFac( strucSize( Nodes ) , variableFext, constantFext, nnodes) ;
-else
-  error( ' user loads not included yet in computation of visual load factor ') ;
 end
 
 
@@ -266,7 +257,11 @@ end
 %~ matNts = [] ;
 %~ matUts = [] ;
 
-%~ contProgr = 0 ;
+tangentMatricesCell = cell(2,1) ;
+contProgr = 0 ; % counter for progress bar
+itersVec = [] ;
+
+matUts = [] ;
 
 %~ if dynamicAnalysisBoolean == 0
   %~ deltaT    = numericalMethodParams(5)/nLoadSteps ;

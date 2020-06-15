@@ -21,48 +21,51 @@
 
 function [ modelCurrState, modelProperties, BCsCurrState, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, dispsElemsMat ] ...
   = initialDefinitions( ...
-  Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
-  , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
-  , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
+  Conec, nnodes, nodalSprings, nonHomogeneousInitialCondU0 ...
+  , nonHomogeneousInitialCondUdot0, controlDofsAndFactors ...
+  , crossSecsParams, coordsElemsMat, materialsParams, numericalMethodParams ...
   , loadFactorsFunc, booleanConsistentMassMat, nodalDamping, booleanScreenOutput ...
   , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
-  , problemName, outputDir, nLoadSteps ...
+  , problemName, outputDir ...
   )
 
-nelems = size(Conec,1) ;
+nElems    = size(Conec,1) ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-[ neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings ) ;
+[ neumdofs, diridofs, KS] = computeBCDofs( nnodes, Conec, nElems, nodalSprings ) ;
 % -------------------------------------------------------------
 
-itersPerTime    = 0 ;
-itersPerTimeVec = 0 ;
-
-timesVec = [ 0 ] ;
-
-factorescriticos = [] ;
-
 % create velocity and displacements vectors
-Ut      = zeros( ndofpnode*nnodes,   1 ) ;  
-Udott   = zeros( ndofpnode*nnodes,   1 ) ;  
-Udotdott= zeros( ndofpnode*nnodes,   1 ) ;
+Ut       = zeros( 6*nnodes,   1 ) ;  
+Udott    = zeros( 6*nnodes,   1 ) ;  
+Udotdott = zeros( 6*nnodes,   1 ) ;
 
 if length( nonHomogeneousInitialCondU0 ) > 0
   for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
-    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), ndofpnode ) ;
-    Ut( dofs (nonHomogeneousInitialCondU0(i,2)))=nonHomogeneousInitialCondU0(i,3);
+    dofs= nodes2dofs(nonHomogeneousInitialCondU0(i,1), 6 ) ;
+    Ut( dofs ( nonHomogeneousInitialCondU0(i,2))) = ...
+      nonHomogeneousInitialCondU0(i,3);
   end 
 end % if nonHomIniCond
 
+dispsElemsMat = zeros(nElems,2*6) ;
+for i=1:nElems
+  % obtains nodes and dofs of element
+  nodeselem = Conec(i,1:2)' ;
+  dofselem  = nodes2dofs( nodeselem , 6 ) ;
+  dispsElemsMat( i, : ) = Ut(dofselem)' ;
+end
 
-if length( nonHomogeneousInitialCondUdot0 ) > 0 
-  if dynamicAnalysisBoolean == 1
-    for i=1:size(nonHomogeneousInitialCondUdot0,1)
-      dofs = nodes2dofs(nonHomogeneousInitialCondUdot0(i,1), ndofpnode ) ;
-      Udott( dofs(nonHomogeneousInitialCondUdot0(i,2)))=nonHomogeneousInitialCondUdot0(i,3);
+
+if length( nonHomogeneousInitialCondUdot0 ) > 0
+  if numericalMethodParams(1) >= 3
+    for i=1:size(nonHomogeneousInitialCondUdot0, 1)
+      dofs = nodes2dofs( nonHomogeneousInitialCondUdot0(i, 1), 6 ) ;
+      Udott( dofs( nonHomogeneousInitialCondUdot0(i,2))) = ...
+        nonHomogeneousInitialCondUdot0(i,3);
     end
   else
-    error('Velocity initial conditions set for static analysis.');
+    error( ' velocity initial conditions set for a static analysis method');  
   end
 end
 
@@ -70,70 +73,46 @@ end
 % computation of initial acceleration for some cases
 % --------------------------------------------------- 
 
-
-Utp1   = zeros( ndofpnode*nnodes,   1 ) ;  
-
-Fintt  = zeros( ndofpnode*nnodes,   1 ) ;  
-
-matUts = Ut ;
-
-
-dispsElemsMat = zeros(nelems,2*ndofpnode) ;
-for i=1:nelems
-  % obtains nodes and dofs of element
-  nodeselem = Conec(i,1:2)' ;
-  dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
-  dispsElemsMat( i, : ) = Ut(dofselem)' ;
-end
-
-Stresst   = zeros(nelems,1) ;
-Strainst  = zeros(nelems,1) ;
-dsigdepst = zeros(nelems,1) ;
-
 stopTimeIncrBoolean = 0 ;
 
-currLoadFactor  = 0 ;
 currTime        = 0 ;
 timeIndex       = 1 ;
-convDeltau      = zeros(nnodes*ndofpnode,1) ;
+convDeltau      = zeros(nnodes*6,1) ;
 
-stopCritPar = 0 ;
-
+timeStepIters    = 0 ;
+timeStepStopCrit = 0 ;
 
 
 % --- load factors and control displacements ---
-loadFactors     = 0 ;
-loadFactors( timeIndex,1) = currLoadFactor ;
+currLoadFactor           = loadFactorsFunc( currTime ) ;
+loadFactors              = currLoadFactor ; % initialize
 
 controlDisps    = 0 ;
 controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
                               .* controlDofsAndFactors(:,2) ;
 % ----------------------------------------------
 
-if dynamicAnalysisBoolean == 0,
-  nextLoadFactor  = currLoadFactor + numericalMethodParams(5) / nLoadSteps ;
-
-else 
-  deltaT         = numericalMethodParams(2)         ;
-  nextLoadFactor = loadFactorsFunc(currTime+deltaT) ;
-end
-
+[ solutionMethod, stopTolDeltau,   stopTolForces, ...
+  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
+  = extractMethodParams( numericalMethodParams ) ;
+           
+nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
 % --- initial force vectors ---
-if length(nodalDamping)>0
-  dampingMat = speye( nnodes*6, nnodes*6 ) * nodalDamping   ;
-else
-  dampingMat = [] ;
-end
+dampingMat = speye( nnodes*6, nnodes*6 ) * nodalDamping   ;
 
-[ fs, Strainst, Stresst ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut , dynamicAnalysisBoolean , 1, Udotdott, booleanConsistentMassMat ) ;
+[ fs, Strainst, Stresst ] = assembler ( ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, 1, Udotdott, booleanConsistentMassMat ) ;
 
 Fintt = fs{1} ;
 Fmast = fs{2} ;
 
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, ...
-    hyperElasParamsMat, KS, Ut, neumdofs, numericalMethodParams, [], ...
-    dampingMat, booleanConsistentMassMat, Udotdott );
+stop
+systemDeltauMatrix          = computeMatrix( ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, ...
+  neumdofs, numericalMethodParams, [], ...
+  dampingMat, booleanConsistentMassMat, Udotdott );
 
 % ----------------------------
 
@@ -180,3 +159,5 @@ printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 
 fprintf( '|-------------------------------------------------|\n' ) ;
 fprintf( '| TimeSteps progress: 1|                   |%4i  |\n                        ', nLoadSteps)
+
+

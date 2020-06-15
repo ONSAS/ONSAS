@@ -113,6 +113,7 @@ end
   if ( modelNextState.currTime > finalTime )
     stopTimeIncrBoolean = 1 ; fprintf('%4i.\n',timeIndex);
   else
+    
     while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
       contProgr = contProgr + 1 ;
       fprintf('=')

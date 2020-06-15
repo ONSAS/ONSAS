@@ -13,9 +13,9 @@ problemName = 'staticVonMisesTruss' ;
 
 %% Structural properties
 
-E = 210e9 ;  nu = 0 ;
+E = 210e9 ;  nu = 0 ; rho = 0 ;
 materialParams = cell(1,1) ;
-materialsParams{1} = [1 E nu] ;
+materialsParams{1} = [1 rho E nu ] ;
 
 % each row shows the properties of each section: A, Iy Iz and J
 A = 2.5e-4 ;
