@@ -2,47 +2,39 @@
 %%%%%%%%%%% 			Fuerza Inercial Battini      	 %%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [Fine,MassMatrix,GyroMatrix] = elementFuerzaInercial(xelem, Dte, Ddote, Ddotdote, params,Jrho )
+function [Fine,MassMatrix,GyroMatrix] = elementBeamMassForce(xelem, Dte, Ddote, Ddotdote, params,Jrho )
 
 %---------Material and geomtrical params---------
 %params = [ E G A Iyy Izz J rho] mass intertia and torsional rotation 
 E   = params(1);
-G   = params(2);
-A   = params(3);
+nu  = param
+G   computed
+
+A   = params ;
+
 Iyy = params(4);
 Izz = params(5);
 J   = params(6);
+
 rho = params(7);
+
 %Irho es el tensor de inercia de rotacional de segundo orden en la config indeformada
 
 
 %---------Global displacements and volocities---------
-%Displacements
-dg = zeros(size(Dte));%Golbal displacements [u1, theta1, u2 Theta 2]^t
-dg([1:3]  ) = Dte([1:2:5]  ) ;
-dg([1:3]+6) = Dte([1:2:5]+6) ;
-dg([4:6]  ) = Dte([2:2:6]  ) ;
-dg([4:6]+6) = Dte([2:2:6]+6) ;
+% permutation
+permutIndxs = [1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ] ;
 
-%Velocities
-ddotg = zeros(size(Dte));%Golbal velocities [udot1, thetadot1, udot2 Thetadot 2]^t
-ddotg([1:3]  ) = Ddote([1:2:5]  ) ;
-ddotg([1:3]+6) = Ddote([1:2:5]+6) ;
-ddotg([4:6]  ) = Ddote([2:2:6]  ) ;
-ddotg([4:6]+6) = Ddote([2:2:6]+6) ;
-
-%Acelerations
-ddotdotg = zeros(size(Dte));%Golbal displacements [udotdot1, thetadotdot1, udotdot2 Thetadotdot 2]^t
-ddotdotg([1:3]  ) = Ddotdote([1:2:5]  ) ;
-ddotdotg([1:3]+6) = Ddotdote([1:2:5]+6) ;
-ddotdotg([4:6]  ) = Ddotdote([2:2:6]  ) ;
-ddotdotg([4:6]+6) = Ddotdote([2:2:6]+6) ;
-
+dg       = Dte     ( permutIndxs ) ;
+ddotg    = Ddote   ( permutIndxs ) ;
+ddotdotg = Ddotdote( permutIndxs ) ;
+% ----------------------------------------------------
 
 %---------Rotations matrix Rg Ro Rr Rtecho---------
 
 %Global rotation Rg
-tg1=dg(4:6);  tg2=dg(10:12);% tita global nodo 1 y 2 
+tg1 = dg(  4:6  ) ;
+tg2 = dg( 10:12 ) ;% tita global nodo 1 y 2 
 
 Rg1 = expon(tg1); Rg2 = expon(tg2); %Matrices Rg de rotacion globales
 
@@ -52,12 +44,12 @@ I3 = eye(3);
 
 d21 = dg(7:9) - dg(1:3); %Vector desplzamiento que va de 2 a 1
 
-lo = sqrt(x21'*x21); %longitud inicial
-l  = sqrt((x21+d21)'*(x21+d21)); % largo deformado 
+lo = sqrt( ( x21       )' * ( x21       ) ) ; %longitud inicial
+l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; % largo deformado 
 u  = l-lo; %variable del estiramiento axial
 
 %Material rotation Ro
-Ro = rotRol(x21); %Matriz que va del material a la comfgiguracion indeformada
+Ro = rotRol( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
 
 %Rigid rotation Rr
 
@@ -270,4 +262,7 @@ Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
 
 %Usar la funcion cambio de base 
 end
+
+
+function quadSum = integr( hola )
 
