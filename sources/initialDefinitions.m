@@ -100,7 +100,10 @@ controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
 nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
 % --- initial force vectors ---
-dampingMat = speye( nNodes*6, nNodes*6 ) * nodalDamping   ;
+dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
+dampingMat(1:2:end) = nodalDispDamping             ;
+dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
+
 
 [ fs, Strainst, Stresst ] = assembler ( ...
   Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, 1, Udotdott, booleanConsistentMassMat ) ;

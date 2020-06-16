@@ -80,8 +80,8 @@ if exist( 'plotsViewAxis' ) == 0
   plotsViewAxis = [] ;
 end
 
-if  exist( 'nodalDamping' ) == 0
-  nodalDamping = 0 ;
+if  exist( 'nodalDispDamping' ) == 0
+  nodalDispDamping = 0 ;
 end
 
 if exist( 'sectPar' ) == 0
