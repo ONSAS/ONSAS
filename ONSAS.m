@@ -28,7 +28,6 @@ addpath( [ pwd '/sources' ':' pwd '/user'  ] );
 inputVarsVerification
 % ==============================================================================
 
-
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
@@ -44,12 +43,11 @@ inputVarsVerification
   , problemName, outputDir ...
    ) ;
 
-stop
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
 
   % -----   computes the model state at the next load/time step   -----
-  [ modelNextState, BCsNextState ] = timeStepIteration ...
+  [ modelNextState, BCsNextState, auxIO ] = timeStepIteration ...
   ( modelCurrState, BCsCurrState, modelProperties, auxIO );
 
 stop

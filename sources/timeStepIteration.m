@@ -24,6 +24,9 @@ function  [ modelCurrState, BCsCurrState, auxIO ]  = timeStepIteration( modelCur
 % ----   extracts variables  ----
 modelExtract
 
+materialsParamsMat
+stop
+
 % -----   pre-iteration definitions     ----------
 nelems     = size(Conec,1) ; ndofpnode = 6;
 
@@ -54,7 +57,7 @@ if solutionMethod == 2
 end
 
 % --- compute RHS for initial guess ---
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmast ) ;
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmast ) ;
 % ---------------------------------------------------
 
 
@@ -69,9 +72,10 @@ while  booleanConverged == 0
 %~ systemDeltauRHS
 %~ st
   % --- solve system ---
-  [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+  [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
   % ---------------------------------------------------
 
+materialsParams
   % --- updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
 
@@ -79,19 +83,18 @@ while  booleanConverged == 0
   [ Utp1k, Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Fintt, Utp1k, Finttp1k, numericalMethodParams, currTime ) ;
 
-  Fs = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Utp1k, [], 1, Udotdottp1k, booleanConsistentMassMat ) ;
+  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Utp1k, 1, Udotdottp1k, booleanConsistentMassMat ) ;
   % ---------------------------------------------------
   
-stop
   % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, secGeomProps, coordsElemsMat, ...
-    hyperElasParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, [], massMat, ...
+  systemDeltauMatrix          = computeMatrix( Conec, crossSecsParams, coordsElemsMat, ...
+    materialsParams, KS, Utp1k, neumdofs, numericalMethodParams, ...
     dampingMat, booleanConsistentMassMat, Udotdott );
   % ---------------------------------------------------
 
   % --- new rhs ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, secGeomProps, coordsElemsMat, ...
-    hyperElasParamsMat, KS, Utp1k, constantFext, variableFext, ...
+  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, ...
+    materialsParams, KS, Utp1k, constantFext, variableFext, ...
     userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
     neumdofs, Fs{1}, massMat, dampingMat, Ut, Udott, Udotdott, Fintt ) ;
   % ---------------------------------------------------
@@ -108,11 +111,11 @@ end % iteration while
 % --------------------------------------------------------------------
 
 % computes KTred at converged Uk
-[ KTtp1 ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 2, Udotdott, booleanConsistentMassMat ) ;
+[ KTtp1 ] = assembler( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Uk, [], 2, Udotdott, booleanConsistentMassMat ) ;
 
 factor_crit = 0;
 
-[FintGk, Strainsk, Stressk ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, [], 1, Udotdott, booleanConsistentMassMat ) ;
+[FintGk, Strainsk, Stressk ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Uk, [], 1, Udotdott, booleanConsistentMassMat ) ;
 
 if stabilityAnalysisBoolean == 1
   [ factor_crit, nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtm1( neumdofs, neumdofs ), KTt( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;

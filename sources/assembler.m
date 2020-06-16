@@ -23,7 +23,7 @@
 %     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
+function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
 
 booleanCppAssembler = 0 ;
 
@@ -61,10 +61,7 @@ else
     indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
     indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
     valsKT  =         zeros( nelems*24*24, 1 )   ;
-    
-    if rho > 0
-      valsMT  =         zeros( nelems*24*24, 1 )   ;
-    end
+    valsMT  =         zeros( nelems*24*24, 1 )   ;
     
     counterInds = 0 ;
   
@@ -72,8 +69,8 @@ else
   
   % ----------------------------------------------
   
-  contTiempoLlamadasIndexs = 0;
-  contTiempoLlamadasAssembly = 0;
+  contTiempoLlamadasIndexs       = 0;
+  contTiempoLlamadasAssembly     = 0;
   contTiempoLlamadasAssemblyFint = 0;
 
 
@@ -90,9 +87,9 @@ else
 
     elemCrossSecParams = crossSecsParams( Conec( elem, 6 ) , : ) ;
 
-    elemMaterialParams     = materialsParams{ Conec( elem, 5 )     } ;
-    elemrho                = elemMaterialParams(1) ;
-    elemConstitutiveParams = elemMaterialParams( 2:end ) ;
+    elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
+    elemrho                = elemMaterialParams( 1     )              ;
+    elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
     switch Conec(elem,7)
   
@@ -110,8 +107,8 @@ else
       
       sizeTensor = 1 ;
       
-      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemMaterialParams , A, paramOut ) ;
- 
+      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut ) ;
+       
       if elemrho > 0
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
         
@@ -242,7 +239,7 @@ else
         valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
 
         if elemrho > 0
-          valsMT( entriesSparseStorVecs ) = Mmasse( indRow, : )' ;
+          valsMT( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
         end
         
         counterInds = counterInds + length( dofselemRed ) ;

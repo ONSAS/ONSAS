@@ -263,6 +263,11 @@ itersVec = [] ;
 
 matUts = [] ;
 
+materialsParamsMat = [] ;
+for i = 1 : size( materialsParams, 1)
+  materialsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
+end
+
 %~ if dynamicAnalysisBoolean == 0
   %~ deltaT    = numericalMethodParams(5)/nLoadSteps ;
   %~ finalTime = numericalMethodParams(5) ;

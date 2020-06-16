@@ -21,9 +21,9 @@
 
 function [ modelCurrState, modelProperties, BCsCurrState, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, dispsElemsMat ] ...
   = initialDefinitions( ...
-  Conec, nnodes, nodalSprings, nonHomogeneousInitialCondU0 ...
+  Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0, controlDofsAndFactors ...
-  , crossSecsParams, coordsElemsMat, materialsParams, numericalMethodParams ...
+  , crossSecsParams, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
   , loadFactorsFunc, booleanConsistentMassMat, nodalDamping, booleanScreenOutput ...
   , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
   , problemName, outputDir ...
@@ -32,13 +32,13 @@ function [ modelCurrState, modelProperties, BCsCurrState, auxIO, controlDisps, l
 nElems    = size(Conec,1) ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-[ neumdofs, diridofs, KS] = computeBCDofs( nnodes, Conec, nElems, nodalSprings ) ;
+[ neumdofs, diridofs, KS] = computeBCDofs( nNodes, Conec, nElems, nodalSprings ) ;
 % -------------------------------------------------------------
 
 % create velocity and displacements vectors
-Ut       = zeros( 6*nnodes,   1 ) ;  
-Udott    = zeros( 6*nnodes,   1 ) ;  
-Udotdott = zeros( 6*nnodes,   1 ) ;
+Ut       = zeros( 6*nNodes,   1 ) ;  
+Udott    = zeros( 6*nNodes,   1 ) ;  
+Udotdott = zeros( 6*nNodes,   1 ) ;
 
 if length( nonHomogeneousInitialCondU0 ) > 0
   for i=1:size(nonHomogeneousInitialCondU0,1) % loop over rows of matrix
@@ -77,7 +77,7 @@ stopTimeIncrBoolean = 0 ;
 
 currTime        = 0 ;
 timeIndex       = 1 ;
-convDeltau      = zeros(nnodes*6,1) ;
+convDeltau      = zeros(nNodes*6,1) ;
 
 timeStepIters    = 0 ;
 timeStepStopCrit = 0 ;
@@ -100,19 +100,18 @@ controlDisps(timeIndex, :) = Ut( controlDofsAndFactors(:,1) ) ...
 nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
 % --- initial force vectors ---
-dampingMat = speye( nnodes*6, nnodes*6 ) * nodalDamping   ;
+dampingMat = speye( nNodes*6, nNodes*6 ) * nodalDamping   ;
 
 [ fs, Strainst, Stresst ] = assembler ( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, 1, Udotdott, booleanConsistentMassMat ) ;
+  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, 1, Udotdott, booleanConsistentMassMat ) ;
 
+stop
 Fintt = fs{1} ;
 Fmast = fs{2} ;
 
-stop
-systemDeltauMatrix          = computeMatrix( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, Ut, ...
-  neumdofs, numericalMethodParams, [], ...
-  dampingMat, booleanConsistentMassMat, Udotdott );
+systemDeltauMatrix     = computeMatrix( ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, ...
+  neumdofs, numericalMethodParams, dampingMat, booleanConsistentMassMat, Udotdott );
 
 % ----------------------------
 
@@ -120,7 +119,6 @@ systemDeltauMatrix          = computeMatrix( ...
 
 % --- initial tangent matrices ---
 %~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, booleanConsistentMassMat ) ;
-
 
 %~ systemDeltauMatrix = mats{1} 
 
@@ -140,13 +138,13 @@ systemDeltauMatrix          = computeMatrix( ...
 %~ end
 
 factorCrit = 0 ;
-nKeigpos   = 0 ;
-nKeigneg   = 0 ;
+
+[ nKeigpos, nKeigneg ] = stabilityAnalysis ( [], systemDeltauMatrix, currLoadFactor, nextLoadFactor )
 % ----------------------------
 
 
 %~ indselems12 = find( ( Conec(:,7) == 1) | ( Conec(:,7) == 2) ) ;
-Areas = secGeomProps(Conec(:,6),1) ;
+Areas = crossSecsParams (Conec(:,6),1) ;
 currentNormalForces = Stresst(:,1) .* Areas ;
 
 matNts = currentNormalForces ;
@@ -160,4 +158,6 @@ printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 fprintf( '|-------------------------------------------------|\n' ) ;
 fprintf( '| TimeSteps progress: 1|                   |%4i  |\n                        ', nLoadSteps)
 
+printSolverOutput( ...
+  outputDir, problemName, timeIndex, [ 2 currLoadFactor 0 0 nKeigpos nKeigneg ] ) ;
 
