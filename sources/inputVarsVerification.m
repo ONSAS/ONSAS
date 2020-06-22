@@ -38,7 +38,6 @@ if exist('booleanScreenOutput') == 0 || booleanScreenOutput
             '|-------------------------------------------------|\n'] ) ;
 end
 
-
 if booleanScreenOutput
   fprintf('  - input variables verification ... ') ;
 end
@@ -63,18 +62,14 @@ nElems = size( Conec,           1  ) ;
 % -----------------------
 % default values
 
-if exist( 'prescribedDisps' ) == 0
-  prescribedDisps = [] ; 
-elseif length(prescribedDisps)>0
-  if size( prescribedDisps, 2) ~= 3
-    error('The prescribedDisps matrix must have 3 columns') ; 
-  end
-end  
+if exist( 'prescribedDispsMat' ) == 0
+  prescribedDispsMat = [] ; 
+end
 
 %% default variables
-if exist( 'Releases' ) == 0
-  Releases = [] ;
-end
+%~ if exist( 'Releases' ) == 0
+  %~ Releases = [] ;
+%~ end
 
 if exist( 'plotsViewAxis' ) == 0
   plotsViewAxis = [] ;
@@ -148,8 +143,8 @@ if exist( 'octaveBoolean' ) == 0
   octaveBoolean = 1 ;
 end
 
-if exist( 'printflag' ) == 0
-  printflag = 0 ;
+if exist( 'printFlag' ) == 0
+  printFlag = 0 ;
 end
 
 if exist( 'reportBoolean' ) == 0
@@ -184,7 +179,7 @@ if exist( outputDir ) == 7 % problemName is a directory
   if octaveBoolean
     confirm_recursive_rmdir (0)
   end
-  [aux,msg] = rmdir( problemName ,'s'); 
+  [aux, msg] = rmdir( problemName ,'s'); 
 
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   % it is created
@@ -207,10 +202,6 @@ if exist( 'nonHomogeneousInitialCondUdot0') ==0
 end
 
 
-
-
-
-
 if length( controlDofs ) > 0
   controlDofsAndFactors = zeros( size( controlDofs,1 ) , 2 ) ;
   
@@ -220,7 +211,6 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ; 
   end
 end
-
 
 
 coordsElemsMat = zeros(nElems,4*6) ; % 6 dofs per node, maximum 4 nodes per element
@@ -252,26 +242,13 @@ if exist( 'nodalConstantLoads' ) ~= 0
   end
 end
 
-
-%~ cellStress = [] ;
-%~ matNts = [] ;
-%~ matUts = [] ;
-
 tangentMatricesCell = cell(2,1) ;
-contProgr = 0 ; % counter for progress bar
-itersVec = [] ;
+contProgr           = 0 ; % counter for progress bar
+itersPerTimeVec     = 0 ;
 
-matUts = [] ;
 
 materialsParamsMat = [] ;
 for i = 1 : size( materialsParams, 1)
-  materialsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
+  materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
 end
 
-%~ if dynamicAnalysisBoolean == 0
-  %~ deltaT    = numericalMethodParams(5)/nLoadSteps ;
-  %~ finalTime = numericalMethodParams(5) ;
-%~ else
-  %~ deltaT = timeIncr;
-  
-%~ end

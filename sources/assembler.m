@@ -23,7 +23,7 @@
 %     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [ Assembled, StrainVec, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
+function [ Assembled, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
 
 booleanCppAssembler = 0 ;
 
@@ -48,8 +48,7 @@ else
   if paramOut == 1
     Fintt = zeros( nnodes*6 , 1 ) ;
   
-    if nargout == 3
-      StrainVec   = zeros( nelems, 6 ) ;
+    if nargout == 2
       StressVec   = zeros( nelems, 6 ) ;
     end
     
@@ -88,6 +87,7 @@ else
     elemCrossSecParams = crossSecsParams( Conec( elem, 6 ) , : ) ;
 
     elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
+    
     elemrho                = elemMaterialParams( 1     )              ;
     elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
@@ -216,7 +216,7 @@ else
       end
         
       if nargout == 3
-        StrainVec(elem,(1:sizeTensor) ) = strain ;
+        %~ StrainVec(elem,(1:sizeTensor) ) = strain ;
         StressVec(elem,(1:sizeTensor) ) = stress ;
       end
       

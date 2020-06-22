@@ -1,7 +1,6 @@
 %% Von Mises truss example using Newton-Raphson Arc-Length Method
 %
 %%
-
 clear all, close all
 
 %% General data
@@ -47,8 +46,8 @@ controlDofs = [ 2 5 -1 ] ;
 
 % analysis parameters
 stopTolIts       = 30     ;
-stopTolDeltau    = 1.0e-10 ;
-stopTolForces    = 1.0e-10  ;
+stopTolDeltau    = 1.0e-8 ;
+stopTolForces    = 1.0e-8  ;
 
 targetLoadFactrNR   = 2e7    ; % newton
 targetLoadFactrNRAL = 4e7    ; % arc length
@@ -67,18 +66,17 @@ stabilityAnalysisBoolean = 1 ;
 analyticSolFlag        = 2    ;
 analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
-analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
+analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
-printflag = 0 ;
+printFlag = 0 ;
 plotParamsVector = [ 1 ];
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
 
-acdir = pwd ;
-cd(dirOnsas);
+acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
@@ -88,13 +86,10 @@ hold on, grid on
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
-
 plotParamsVector = [ 0 ];
 
-acdir = pwd ;
-cd(dirOnsas);
+acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
-
 
 plot( controlDisps, loadFactors,'r-s' )

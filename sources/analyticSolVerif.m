@@ -19,7 +19,8 @@
 
 
 function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
-( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir, plotParamsVector );
+  ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
+    analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir, plotParamsVector );
 
   fprintf('----------------------------------------------- \n')
   fprintf('  Analytical solution verification ... ')
@@ -41,20 +42,8 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
   elseif analyticSolFlag == 3
     absError    = ( controlDisps-analytSol ) ;
     normRelativeError = norm( absError ) / norm( analytSol ) ;
-
-  elseif analyticSolFlag == 4
-    absError    = ( analytSol - controlDisps ) ;
-    normRelativeError = norm( absError  ) / norm( analytSol ) ;
-
-  elseif analyticSolFlag == 5
-    absError    = ( controlDisps - analytSol ) ;
-    normRelativeError = norm( absError  ) / norm( analytSol ) ;
-
+    
   end
-
-
-
-
 
 
   if analyticSolFlag == 1 || analyticSolFlag == 2 
@@ -104,8 +93,6 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
       close(figaux);
     end
   end
-
-
 
   if normRelativeError > analyticCheckTolerance ;
     normRelativeError

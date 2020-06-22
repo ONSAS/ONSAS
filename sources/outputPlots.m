@@ -19,16 +19,17 @@
 %Script for generation of the plots of the deformed structure.
 
 function outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
-  Conec, Nodes, constantFext, variableFext, strucsize, ...
-  controlDisps, visualloadfactor, linearDeformedScaleFactor, ...
+  Conec, Nodes, constantFext, variableFext, ...
+  controlDisps, linearDeformedScaleFactor, ...
   printflag, outputdir, problemName, loadFactors, sectPar, ...
-  nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
-  timeIncr, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput )
+  timeIncr, cellStress, plotsViewAxis, booleanScreenOutput )
 
 	if size(matUts,2) == 1 && size(matNts,2) == 1 
 		matUts = [zeros(size(matUts,1),1) matUts] ;
 		matNts = [zeros(size(matNts,1),1) matNts] ;
 	end
+  
+  strucsize = strucSize(Nodes) ; 
   
   nTimesTotal = size( matUts, 2 ) ;
 
@@ -44,9 +45,7 @@ function outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
   
   if plotParamsVector(1) > 0
     if length(loadFactors) > 1
-      if nonLinearAnalysisBoolean || dynamicAnalysisBoolean ~= 0
         %~ outputLoadVSDisplacementsPlot
-      end
     end
   end
       
