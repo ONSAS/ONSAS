@@ -17,14 +17,14 @@
 
 % function for computation of nodal forces and tangent stiffness matrix for 3D co-rotational beam element. Based on files provided by Prof. Jean-Marc Battini.
 
-function [ Finte, KTe, strain, stress, locDisp, Rr] = elementBeam3DInternLoads( x, Ue, params )
+function [ Finte, KTe, strain, stress, locDisp, Rr] = elementBeamInternLoads( x, Ue, params )
 
-E   = params(1);
-G   = params(2);
-A   = params(3);
-Iyy = params(4);
-Izz = params(5);
-J   = params(6);
+E   = params(1) ;
+G   = params(2) ;
+A   = params(3) ;
+Iyy = params(4) ;
+Izz = params(5) ;
+J   = params(6) ;
 
 p = zeros(size(Ue));
 p([1:3]  ) = Ue([1:2:5]  ) ;

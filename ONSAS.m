@@ -21,64 +21,77 @@
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
-ONSASversion = '0.1.10' ;
-addpath( [ pwd '/sources' ':' pwd '/user'  ] );
+ONSASversion = '0.1.10';   addpath( [ pwd '/sources' ':' pwd '/user' ] );
 
 % verifies the definition of input variables and sets default values
-inputVarsVerification, inputAuxDefinitions
-% ==============================================================================
+inputVarsVerification
 
+% ==============================================================================
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
 % Initial computations: sets initial state.
-[modelCurrState, BCsData, auxIO, controlDisps, loadFactors, stopTimeIncrBoolean, ...
-dispsElemsMat ] = ...
+[ modelCurrSol, modelProperties, BCsData, ...
+  controlDisps, loadFactors, stopTimeIncrBoolean, finalTime, matUs, cellStress ] = ...
   initialDefinitions( ...
-  Conec, nnodes, nodalSprings, ndofpnode, nonHomogeneousInitialCondU0 ...
-  , nonHomogeneousInitialCondUdot0, dynamicAnalysisBoolean, controlDofsAndFactors ...
-  , secGeomProps, coordsElemsMat, hyperElasParamsMat, numericalMethodParams ...
-  , loadFactorsFunc, booleanConsistentMassMat, nodalDamping, booleanScreenOutput ...
+  Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
+  , nonHomogeneousInitialCondUdot0, controlDofsAndFactors ...
+  , crossSecsParams, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
+  , loadFactorsFunc, booleanConsistentMassMat, nodalDispDamping, booleanScreenOutput ...
   , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
-  , problemName, outputDir, nLoadSteps ...
+  , problemName, outputDir ...
    ) ;
 
 % --- increment step analysis ---
 while ( stopTimeIncrBoolean == 0 )
 
-  % --------   computes the model state at the next load/time step   --------
-  [modelNextState, BCsData, auxIO] = timeStepIteration ( modelCurrState, BCsData, auxIO );
+  % -----   computes the model state at the next load/time step   -----
+  [ modelNextSol, BCsData ] = timeStepIteration ...
+  ( modelCurrSol, BCsData, modelProperties );
 
-  % checks stopping criteria and stores model state
-  storesResultAndCheckStopCrit  
+  % --- checks stopping criteria and stores model state
+  storesResult
+
+  % --- update state data --- 
+  modelCurrSol           = modelNextSol ;
   
+  BCsData.currLoadFactor = BCsData.nextLoadFactor                   ;
+  BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
+
+  % ----   evals stop time incr crit    --------
+  stopTimeIncrBoolean = modelCurrSol.currTime > finalTime ;
+    
 end
+
+fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%4.1f) | \n ',...
+  modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
+ 
 
 % if analytical solution is provided, numerical results are validated. 
 if analyticSolFlag > 0
   [numericalVals, analyticVals] = analyticSolVerif ...
     ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
-    analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputDir, plotParamsVector );
+    analyticCheckTolerance, analyticSolFlag, problemName, printFlag, outputDir, plotParamsVector );
 end
 % ==============================================================================
 
 
-%~ stop
 % ==============================================================================
 % ----------------------------     Output      ---------------------------------
 
 % plots and/or visualization files are generated
 if plotParamsVector(1) > 0
-  outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
-    Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
-    visualloadfactor, linearDeformedScaleFactor, printflag, ...
+  outputPlots( matUs, coordsElemsMat, plotParamsVector, ...
+    Conec, Nodes, constantFext, variableFext, controlDisps, ...
+    deformedScaleFactor, printFlag, ...
     outputDir, problemName, loadFactors, sectPar, ...
-    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
-    deltaT, cellStress, matNts, indexesElems, plotsViewAxis, booleanScreenOutput ) ;
+    deltaT, cellStress, plotsViewAxis, booleanScreenOutput ) ;
 end
 
 % report with results is generated
-outputReport
+if reportBoolean
+  outputReport
+end
 fprintf(  '                ONSAS finished.                    \n')
 fprintf([ '|=================================================|\n'])

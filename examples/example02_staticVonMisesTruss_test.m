@@ -1,7 +1,6 @@
 %% Von Mises truss example using Newton-Raphson Arc-Length Method
 %
 %%
-
 clear all, close all
 
 %% General data
@@ -12,15 +11,13 @@ problemName = 'staticVonMisesTruss' ;
 % clear all, close all
 
 %% Structural properties
-
-Es = 210e9 ;
-nu = 0 ;
-hyperElasParams = cell(1,1) ;
-hyperElasParams{1} = [1 Es nu] ;
+E = 210e9 ;  nu = 0 ;  rho = 0 ;
+materialParams     =   cell(1,1)    ;
+materialsParams{1} = [ rho 1 E nu ] ;
 
 % each row shows the properties of each section: A, Iy Iz and J
 A = 2.5e-4 ;
-secGeomProps = [ A 2 2 4 ] ;
+crossSecsParams = [ A 2 2 4 ] ;
 
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
@@ -44,19 +41,13 @@ Conec = [ 1 2 0 0 1 1 1 ;
 nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
 
 %% Analysis parameters
-
 % [ node nodaldof scalefactor(positive or negative) ]
-controlDofInfo = [ 2 5 -1 ] ;
-%~ controlDofInfo = [ 2 1 +1 ] ;
+controlDofs = [ 2 5 -1 ] ;
 
 % analysis parameters
-nonLinearAnalysisBoolean = 1 ;  dynamicAnalysisBoolean   = 0 ; 
-LBAAnalyFlag             = 0 ; 
-
 stopTolIts       = 30     ;
-stopTolDeltau    = 1.0e-10 ;
-%~ stopTolForces    = 1.0e-6  ;
-stopTolForces    = 1.0e-10  ;
+stopTolDeltau    = 1.0e-8 ;
+stopTolForces    = 1.0e-8  ;
 
 targetLoadFactrNR   = 2e7    ; % newton
 targetLoadFactrNRAL = 4e7    ; % arc length
@@ -75,18 +66,17 @@ stabilityAnalysisBoolean = 1 ;
 analyticSolFlag        = 2    ;
 analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
-analyticFunc = @(w) -2 * Es*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
+analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
  .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
-printflag = 0 ;
+printFlag = 0 ;
 plotParamsVector = [ 1 ];
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
 
-acdir = pwd ;
-cd(dirOnsas);
+acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
@@ -96,13 +86,10 @@ hold on, grid on
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
-
 plotParamsVector = [ 0 ];
 
-acdir = pwd ;
-cd(dirOnsas);
+acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
-
 
 plot( controlDisps, loadFactors,'r-s' )

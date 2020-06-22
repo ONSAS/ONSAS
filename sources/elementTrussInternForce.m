@@ -19,7 +19,7 @@
 % of 3D truss elements using engineering strain.
 
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussEngStr( Xe, Ue, hyperelasparams, A , paramout )
+  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout )
 
   % vector reference element
   localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) ;
@@ -46,7 +46,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   % --- stress and constitutive tensor ---
   [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
-
+  
   TTcl              = zeros(12,1) ;
   TTcl(1:2:5)       = -e1def ;    TTcl([(1:2:5)+6]) =  e1def ;
 
@@ -81,6 +81,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
         KTe(i,:) = imag( FinteComp ) / step;
       end
     end
+
   else
     KTe = [] ;
   end

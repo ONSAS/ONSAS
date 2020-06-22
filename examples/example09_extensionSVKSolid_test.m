@@ -39,10 +39,10 @@ Conec = [ 1 4 2 6 1 1 3 ; ...
 % Material and geometry properties
 E = 1 ; nu = 0.3 ;
   
-hyperElasParams = cell(1,1) ;  
-hyperElasParams{1} = [ 6 E nu ] ;
+materialsParams = cell(1,1) ;  
+materialsParams{1} = [ 6 E nu ] ;
 
-secGeomProps = [ 0 0 0 0 ] ;
+crossSecsParams = [ 0 0 0 0 ] ;
 
 % Displacement boundary conditions and springs
 nodalSprings = [ 1 inf 0  inf 0   inf 0 ; ...
