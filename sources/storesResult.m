@@ -16,32 +16,26 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-deltaT = modelNextSol.currTime - modelCurrSol.currTime ;
-
-% --- update state data --- 
-modelCurrSol   = modelNextSol ;
-BCsData.currLoadFactor = BCsData.nextLoadFactor                            ;
-BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
-
+deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
+timeIndex = modelCurrSol.timeIndex ; 
 
 % ----------------   updates data structures and time --------------------------
-timeIndex                   = modelCurrSol.timeIndex ;
 
-loadFactors  ( timeIndex )       = BCsData.currLoadFactor  ;
-controlDisps ( timeIndex )       = modelCurrSol.U ( controlDofsAndFactors(:,1) ) ...
-                                                 .* controlDofsAndFactors(:,2) ;
-timesVec     ( timeIndex )       = deltaT * timeIndex ;
-matUs                            = [ matUs modelCurrSol.U ] ;
-tangentMatricesCell{ timeIndex } = modelCurrSol.systemDeltauMatrix ;
+loadFactors  ( timeIndex+1 )       = BCsData.nextLoadFactor  ;
+controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
+                                                   .* controlDofsAndFactors(:,2) ;
+timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
-cellStress{ timeIndex } = modelCurrSol.Stress ;
+matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
+cellStress   { timeIndex+1 }       = modelNextSol.Stress             ;
+tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
 
 % ------------------------------------------------------------------------------
 
 % stores iterations
-itersPerTimeVec( timeIndex )    = modelCurrSol.timeStepIters ;
+itersPerTimeVec( timeIndex )    = modelNextSol.timeStepIters ;
 
-while contProgr < ( timeIndex / ( nLoadSteps*.05 ) )
+while contProgr < ( modelCurrSol.currTime / ( finalTime*.05 ) )
   contProgr = contProgr + 1 ;
   fprintf('=')
 end

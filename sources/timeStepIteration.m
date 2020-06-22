@@ -119,7 +119,7 @@ Finttp1 = Fs{1} ;  Fmastp1 = Fs{2} ;
 if stabilityAnalysisBoolean == 1
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
 else
-  [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTt( neumdofs, neumdofs ), KTtp1( neumdofs, neumdofs ), currLoadFactor, nextLoadFactor ) ;
+  [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   factorCrit = 0;
 end
 
@@ -130,19 +130,18 @@ printSolverOutput( ...
 
 
 % --- stores next step values ---
-U        = Utp1 ;
-Udot     = Udottp1  ;
-Udotdot  = Udotdottp1 ;
-
+U          = Utp1 ;
+Udot       = Udottp1  ;
+Udotdot    = Udotdottp1 ;
 convDeltau = Utp1 - Ut ;
+%
+Fint       = Finttp1k ;
+Fmas       = Fmastp1k ;
+Stress     = Stresstp1 ;
 
-Fint     = Finttp1k ;
-Fmas     = Fmastp1k ;
-Stress   = Stresstp1 ;
+timeIndex  = timeIndex + 1 ;
 
-timeIndex = timeIndex + 1 ;
-
-currTime  = nextTime ;
+currTime   = nextTime ;
 if solutionMethod == 2
   currTime = nextLoadFactor ;
 end

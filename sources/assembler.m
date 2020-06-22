@@ -127,22 +127,21 @@ else
   
       sizeTensor = 1 ;
   
-      A   = secGeomProps(Conec(elem,6),1) ;
-      Iyy = secGeomProps(Conec(elem,6),2) ;
-      Izz = secGeomProps(Conec(elem,6),3) ;
-      J   = secGeomProps(Conec(elem,6),4) ;
+      A   = elemCrossSecParams(Conec(elem,6),1) ;
+      Iyy = elemCrossSecParams(Conec(elem,6),2) ;
+      Izz = elemCrossSecParams(Conec(elem,6),3) ;
+      J   = elemCrossSecParams(Conec(elem,6),4) ;
   
       xs = coordsElemsMat(elem,1:2:end)'        ;
-      E  = elemMaterialParams(2) ;
-      nu = elemMaterialParams(3) ;
+      E  = elemConstitutiveParams(2) ;
+      nu = elemConstitutiveParams(3) ;
       G  = E/(2*(1+nu)) ;
+      
+      [ Finte, KTe, strain, stress ]= elementBeamInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
   
-      [ Finte, KTe, strain, stress ]= elementBeam3DInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
-  
-      KL0e = KTe;
-
-			%~ [Fine_e,~,~] = elementFuerzaInercial(xelem, Dte, Ddote, Ddotdote, params,Jrho );
-
+      if elemrho > 0
+        [Fmase,~,~] = elementFuerzaInercial(xs, Dte, Ddote, Ddotdote, params,Jrho );
+      end
 
   
     % -------------------------------------------
@@ -212,6 +211,7 @@ else
       %~ FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
       
       if elemrho > 0
+      elemrho
         Fmast ( dofselemRed ) = Fmast( dofselemRed ) + Fmase ;
       end
         

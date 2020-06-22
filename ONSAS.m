@@ -51,7 +51,13 @@ while ( stopTimeIncrBoolean == 0 )
   ( modelCurrSol, BCsData, modelProperties );
 
   % --- checks stopping criteria and stores model state
-  storesResultAndCheckStopCrit
+  storesResult
+
+  % --- update state data --- 
+  modelCurrSol           = modelNextSol ;
+  
+  BCsData.currLoadFactor = BCsData.nextLoadFactor                   ;
+  BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
 
   % ----   evals stop time incr crit    --------
   stopTimeIncrBoolean = modelCurrSol.currTime > finalTime ;
