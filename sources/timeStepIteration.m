@@ -76,14 +76,14 @@ while  booleanConverged == 0
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
 
-  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udotdottp1k, booleanConsistentMassMat ) ;
+  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udottp1k,Udotdottp1k, booleanConsistentMassMat ) ;
   Finttp1k = Fs{1} ;  Fmastp1k = Fs{2} ;
   % ---------------------------------------------------
   
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( Conec, crossSecsParams, coordsElemsMat, ...
     materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
-    dampingMat, booleanConsistentMassMat, Udotdott );
+    dampingMat, booleanConsistentMassMat, Udott, Udotdott );
   % ---------------------------------------------------
 
   % --- new rhs ---
@@ -112,7 +112,7 @@ KTtp1red = systemDeltauMatrix ;
 
 % --------------------------------------------------------------------
 
-[ Fs, Stresstp1 ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 1, Udotdott, booleanConsistentMassMat ) ;
+[ Fs, Stresstp1 ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 1, Udott, Udotdott, booleanConsistentMassMat ) ;
 
 Finttp1 = Fs{1} ;  Fmastp1 = Fs{2} ;
   

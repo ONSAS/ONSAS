@@ -5,12 +5,10 @@
 function [Fine,MassMatrix,GyroMatrix] = elementBeamMassForce(xelem, Dte, Ddote, Ddotdote, params,Jrho )
 
 %---------Material and geomtrical params---------
-%params = [ E G A Iyy Izz J rho] mass intertia and torsional rotation 
-E   = params(1);
-nu  = param
-G   computed
 
-A   = params ;
+E   = params(1) ;
+G   = params(2) ;
+A   = params(3) ;
 
 Iyy = params(4);
 Izz = params(5);
@@ -19,7 +17,6 @@ J   = params(6);
 rho = params(7);
 
 %Irho es el tensor de inercia de rotacional de segundo orden en la config indeformada
-
 
 %---------Global displacements and volocities---------
 % permutation

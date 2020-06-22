@@ -23,7 +23,7 @@
 %     only internal forces vector (1) or only tangent matrices (2)  
 %
 
-function [ Assembled, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
+function [ Assembled, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, booleanConsistentMassMat )
 
 booleanCppAssembler = 0 ;
 
@@ -127,20 +127,27 @@ else
   
       sizeTensor = 1 ;
   
-      A   = elemCrossSecParams(Conec(elem,6),1) ;
-      Iyy = elemCrossSecParams(Conec(elem,6),2) ;
-      Izz = elemCrossSecParams(Conec(elem,6),3) ;
-      J   = elemCrossSecParams(Conec(elem,6),4) ;
+      A   = elemCrossSecParams( Conec(elem, 6), 1 ) ;
+      Iyy = elemCrossSecParams( Conec(elem, 6), 2 ) ;
+      Izz = elemCrossSecParams( Conec(elem, 6), 3 ) ;
+      J   = elemCrossSecParams( Conec(elem, 6), 4 ) ;
   
       xs = coordsElemsMat(elem,1:2:end)'        ;
       E  = elemConstitutiveParams(2) ;
       nu = elemConstitutiveParams(3) ;
       G  = E/(2*(1+nu)) ;
       
-      [ Finte, KTe, strain, stress ]= elementBeamInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
-  
+      params = [E G A Iyy Izz J elemrho ] ;
+      
+      [ Finte, KTe, strain, stress ]= elementBeamInternLoads( xs, dispsElem , params ) ;
+
       if elemrho > 0
-        [Fmase,~,~] = elementFuerzaInercial(xs, Dte, Ddote, Ddotdote, params,Jrho );
+      global Jrho
+      %~ Jrho
+        [Fmase,Mass,~] = elementBeamMassForce(xs, u2ElemDisps( Ut       , dofselem ) , ...
+                                               u2ElemDisps( Udott    , dofselem ) , ...
+                                               u2ElemDisps( Udotdott , dofselem ) , ...
+                                               params, Jrho ) ;
       end
 
   

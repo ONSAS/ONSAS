@@ -114,15 +114,14 @@ dampingMat(1:2:end) = nodalDispDamping             ;
 dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
 
 [ fs, Stress ] = assembler ( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, Udot, ...
   Udotdot, booleanConsistentMassMat ) ;
 
-Fint = fs{1} ;
-Fmas = fs{2} ;
+Fint = fs{1} ;   Fmas = fs{2} ;
 
 systemDeltauMatrix     = computeMatrix( ...
   Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, ...
-  neumdofs, numericalMethodParams, dampingMat, booleanConsistentMassMat, Udotdot );
+  neumdofs, numericalMethodParams, dampingMat, booleanConsistentMassMat, Udot, Udotdot );
 
 % ----------------------------
 
