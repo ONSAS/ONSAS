@@ -108,23 +108,20 @@ controlDisps(timeIndex, :) = U( controlDofsAndFactors(:,1) ) ...
            
 nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
-% --- initial force vectors ---
-dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
-dampingMat(1:2:end) = nodalDispDamping             ;
-dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
-
-[ fs, Stress ] = assembler ( ...
+fs = assembler ( ...
   Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, Udot, ...
-  Udotdot, booleanConsistentMassMat ) ;
+  Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat ) ;
 
-Fint = fs{1} ;   Fmas = fs{2} ;
+Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;
 
 systemDeltauMatrix     = computeMatrix( ...
   Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, ...
-  neumdofs, numericalMethodParams, dampingMat, booleanConsistentMassMat, Udot, Udotdot );
+  neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udot, Udotdot );
 
+Stress = assembler ( ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 3, Udot, ...
+  Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat ) ;
 % ----------------------------
-
 
 factorCrit = 0 ;
 [ nKeigpos, nKeigneg ] = stabilityAnalysis ( ...
@@ -162,8 +159,3 @@ printSolverOutput( ...
   %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
 
   %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;  
-
-%~ else
-  %~ dampingMat = [] ;
-  %~ massMat    = [] ;
-%~ end

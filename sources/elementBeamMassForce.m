@@ -14,7 +14,7 @@ Iyy = params(4);
 Izz = params(5);
 J   = params(6);
 
-rho = params(7);
+rho = params(7) ;
 
 %Irho es el tensor de inercia de rotacional de segundo orden en la config indeformada
 
@@ -50,23 +50,22 @@ Ro = rotRol( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
 
 %Rigid rotation Rr
 
-
 r1 = (x21+d21)/l;%vector que une el punto 2 con el 1 en la deformada
-q1=Rg1*Ro*[0;1;0];%vector q1 y q2
-q2=Rg2*Ro*[0;1;0];
-q=(q1+q2)/2; %vector q muestra en cierto sentido el angulo de torsión
+q1 = Rg1*Ro*[0;1;0];%vector q1 y q2
+q2 = Rg2*Ro*[0;1;0];
+q  = (q1+q2)/2; %vector q muestra en cierto sentido el angulo de torsión
 
-r3= cross (r1, q);
+r3 = cross (r1, q);
 
-r3=r3/norm(r3);% calcula e3 como en el paper
+r3 = r3 / norm( r3 ) ;% calcula e3 como en el paper
 
 r2 = cross (r3, r1);%e2 y ya queda definida la matriz
 
-Rr=[r1 r2 r3];
+Rr = [r1 r2 r3];
 
-q  = Rr'*q; % Parametros para la construccion de G
-q1 = Rr'*q1;
-nu = q(1)/q(2);
+q    = Rr'*q; % Parametros para la construccion de G
+q1   = Rr'*q1;
+nu   = q(1)/q(2);
 nu11 = q1(1)/q(2);
 nu12 = q1(2)/q(2);
 nu21 = 2*nu-nu11;
@@ -261,5 +260,5 @@ Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
 end
 
 
-function quadSum = integr( hola )
+%~ function quadSum = integr( hola )
 

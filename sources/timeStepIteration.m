@@ -44,18 +44,19 @@ KTtred = systemDeltauMatrix ;
 Ut = U ; Udott = Udot ; Udotdott = Udotdot ; Fintt = Fint ; Fmast = Fmas ;
 
 % --- start iteration with previous displacements ---
-Utp1k       = Ut     ;   % initial guess
-Udottp1k    = Udott ;
+Utp1k       = Ut       ;   % initial guess
+Udottp1k    = Udott    ;
 Udotdottp1k = Udotdott ;
-Finttp1k    = Fintt  ;
-Fmastp1k    = Fmast  ;
+Finttp1k    = Fintt    ;
+Fmastp1k    = Fmast    ;
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess for next load factor
 end
 
 % --- compute RHS for initial guess ---
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmast ) ;
+[ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, nodalDispDamping, Ut, Udott, Udotdott, Fintt, Fmast, ...
+booleanConsistentMassMat ) ;
 % ---------------------------------------------------
 
 booleanConverged = 0                              ;
@@ -76,21 +77,23 @@ while  booleanConverged == 0
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
 
-  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udottp1k,Udotdottp1k, booleanConsistentMassMat ) ;
-  Finttp1k = Fs{1} ;  Fmastp1k = Fs{2} ;
+  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udottp1k,Udotdottp1k, nodalDispDamping, solutionMethod, booleanConsistentMassMat ) ;
+
+  Finttp1k = Fs{1} ;  Fvistp1k = Fs{2} ; Fmastp1k = Fs{3} ;
   % ---------------------------------------------------
   
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( Conec, crossSecsParams, coordsElemsMat, ...
     materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
-    dampingMat, booleanConsistentMassMat, Udott, Udotdott );
+    nodalDispDamping, booleanConsistentMassMat, Udott, Udotdott );
   % ---------------------------------------------------
 
   % --- new rhs ---
   [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, ...
     materialsParamsMat, KS, Utp1k, constantFext, variableFext, ...
     userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
-    neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmastp1k ) ;
+    neumdofs, Finttp1k, nodalDispDamping, Ut, Udott, Udotdott, Fintt, Fmastp1k, ...
+    booleanConsistentMassMat ) ;
   % ---------------------------------------------------
 
   % --- check convergence ---
@@ -112,9 +115,9 @@ KTtp1red = systemDeltauMatrix ;
 
 % --------------------------------------------------------------------
 
-[ Fs, Stresstp1 ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 1, Udott, Udotdott, booleanConsistentMassMat ) ;
+Stresstp1 = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat ) ;
 
-Finttp1 = Fs{1} ;  Fmastp1 = Fs{2} ;
+Finttp1 = Finttp1k ; Fvistp1 = Fvistp1k ;   Fmastp1 = Fmastp1k ;
   
 if stabilityAnalysisBoolean == 1
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
