@@ -62,7 +62,7 @@ while ( stopTimeIncrBoolean == 0 )
     
 end
 
-fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%4.1f) | \n ',...
+fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
   modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
  
 

@@ -58,8 +58,8 @@ lo = sqrt( ( x21       )' * ( x21       ) ) ; %longitud inicial
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; % largo deformado 
 u  = l-lo; %variable del estiramiento axial
 
-%Material rotation Ro
-Ro = rotRol( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
+% Material rotation Ro
+Ro = beamRefConfRotMat( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
 
 %Rigid rotation Rr
 
