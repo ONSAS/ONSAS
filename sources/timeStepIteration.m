@@ -21,6 +21,8 @@
 
 function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties ) ;
 
+startPreviousVels = 0 ; % 0 recommended
+
 % ----   extracts variables  ----
 modelExtract
 
@@ -47,12 +49,14 @@ Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
 
 % --- start iteration with previous displacements ---
 Utp1k       = Ut       ;   % initial guess
-Udottp1k    = Udott    ;
-Udotdottp1k = Udotdott ;
 
-%~ Finttp1k    = Fintt    ;
-%~ Fmastp1k    = Fmast    ;
-%~ Fvistp1k    = Fvist    ;
+if startPreviousVels == 1
+  Udottp1k    = Udott    ;
+  Udotdottp1k = Udotdott ;
+else
+  [ Udottp1k, Udotdottp1k ] = updateTime( ...
+    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+end
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess for next load factor
@@ -84,10 +88,6 @@ while  booleanConverged == 0
   % --- update next time magnitudes ---
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
-
-  %~ Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udottp1k,Udotdottp1k, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
-
-  %~ Finttp1k = Fs{1} ;  Fvistp1k = Fs{2} ; Fmastp1k = Fs{3} ;
   % ---------------------------------------------------
   
   % --- system matrix ---
@@ -123,15 +123,14 @@ KTtp1red = systemDeltauMatrix ;
 
 % --------------------------------------------------------------------
 
-Stresstp1 = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
-  
+Stresstp1 = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
+
 if stabilityAnalysisBoolean == 1
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
 else
   [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   factorCrit = 0;
 end
-
 
 % prints iteration info in file
 printSolverOutput( ...
@@ -158,7 +157,6 @@ timeStepIters = dispIters ;
 
 modelCompress
 % -------------------------------------
-
 
 
 % ==============================================================================
@@ -198,6 +196,4 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod,
 
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
 
-  if solutionMethod == 2
-    currDeltau      = currDeltau    + deltaured ;
-  end
+  currDeltau      = currDeltau    + deltaured ;

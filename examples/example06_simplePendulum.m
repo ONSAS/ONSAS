@@ -23,6 +23,8 @@ rho    = 2*10 / ( A * l0 ) ;
 
 nodalDispDamping = 0.000 ;
 
+booleanConsistentMassMat = 0 ;
+
 % method
 timeIncr   =  0.1    ;
 finalTime  =  4.13                ;
@@ -33,7 +35,7 @@ AlphaNW    =  0.25              ;
 
 % tolerances
 stopTolDeltau = 0           ; 
-stopTolForces = 1e-7           ;
+stopTolForces = 1e-6           ;
 %~ stopTolDeltau = 1e-2           ; 
 %~ stopTolForces = 1e-2           ;
 stopTolIts    = 30              ;

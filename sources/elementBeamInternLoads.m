@@ -218,25 +218,25 @@ if booleanCSTangs == 1
     
     KTe(:,i) = imag( FinteComp ) / step;
     
-    if i==1
-      holaaafintecomp = FinteComp(1) ;    
+    %~ if i==1
+      %~ holaaafintecomp = FinteComp(1) ;    
     %~ ei
-FinteComp
+%~ FinteComp
 %~ stop
-    end
+    %~ end
   end
-  KTeCS = KTe ;
-KTe = zeros( size(Kt));
-  KTe( dofscomb, dofscomb ) = Kt ;
-  normareldif = norm( KTeCS - KTe ) / norm( KTe )
-  dife = KTeCS - KTe
-  normareldif11 = norm( KTeCS(1,1) - KTe(1,1) ) / norm( KTe(1,1) )
-  entridif = [ KTeCS(1,1) KTe(1,1) holaaafintecomp ]
-  holacomplejos = [ KTeCS(1,1) holaaafintecomp ]
+  %~ KTeCS = KTe ;
+%~ KTe = zeros( size(Kt));
+  %~ KTe( dofscomb, dofscomb ) = Kt ;
+  %~ normareldif = norm( KTeCS - KTe ) / norm( KTe )
+  %~ dife = KTeCS - KTe
+  %~ normareldif11 = norm( KTeCS(1,1) - KTe(1,1) ) / norm( KTe(1,1) )
+  %~ entridif = [ KTeCS(1,1) KTe(1,1) holaaafintecomp ]
+  %~ holacomplejos = [ KTeCS(1,1) holaaafintecomp ]
 
-  full(dife)
+  %~ full(dife)
     
-  stop
+  %~ stop
 else
 
   KTe( dofscomb, dofscomb ) = Kt ;

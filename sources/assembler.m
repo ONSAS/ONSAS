@@ -15,14 +15,11 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
-%function for assembly of tangent matrices and/or forces vectors.
 %
-% Inputs:
-%   paramOut: parameter used to set output:
-%     only forces vectors (1)
-%     only tangent matrices (2)
-%     only stress (3)
+% function for assembly of:
+%  - residual force vectors (paramOut = 1 )
+%  - residual tangent matrices (paramOut = 2)
+%  - stresses (paramOut = 3).
 %
 
 function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...

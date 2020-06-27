@@ -23,7 +23,7 @@ Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
 Conec = [ (1:(Nelem))' (2:(Nelem+1))'  zeros(Nelem,2) (ones(Nelem,1)*[ 1 1 2]) ] ;
 
-booleanCSTangs = 1 ;
+%~ booleanCSTangs = 1 ;
 
 nodalVariableLoads   = [ Nelem+1  0 0 0 -1 0 0 ] ;
 
