@@ -75,3 +75,5 @@ plotfontsize = 22 ;
 
 figure
 plot(controlDisps,'b--o','linewidth',lw,'markersize',ms);
+%~ plot(timesVec, controlDisps,'b--o','linewidth',lw,'markersize',ms);
+%~ print('rightAngle.png','-dpng')
