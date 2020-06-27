@@ -21,7 +21,7 @@
 
 function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties ) ;
 
-startPreviousVels = 0 ; % 0 recommended
+startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
 
 % ----   extracts variables  ----
 modelExtract
