@@ -21,6 +21,8 @@
 
 function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties ) ;
 
+startPreviousVels = 0 ; % 0 recommended
+
 % ----   extracts variables  ----
 modelExtract
 
@@ -41,21 +43,32 @@ nElems     = size( Conec, 1 ) ; ndofpnode = 6;
 KTtred = systemDeltauMatrix ;
 
 % assign time t
-Ut = U ; Udott = Udot ; Udotdott = Udotdot ; Fintt = Fint ; Fmast = Fmas ;
+Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
+
+%~ Fintt = Fint ; Fmast = Fmas ; Fvist = Fvis ;
 
 % --- start iteration with previous displacements ---
-Utp1k       = Ut     ;   % initial guess
-Udottp1k    = Udott ;
-Udotdottp1k = Udotdott ;
-Finttp1k    = Fintt  ;
-Fmastp1k    = Fmast  ;
+Utp1k       = Ut       ;   % initial guess
+
+if startPreviousVels == 1
+  Udottp1k    = Udott    ;
+  Udotdottp1k = Udotdott ;
+else
+  [ Udottp1k, Udotdottp1k ] = updateTime( ...
+    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+end
 
 if solutionMethod == 2
   nextLoadFactor = currLoadFactor ; % initial guess for next load factor
 end
 
 % --- compute RHS for initial guess ---
-[ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmast ) ;
+[ systemDeltauRHS, FextG ]  = computeRHS( ...
+  Conec, crossSecsParams, coordsElemsMat, ...
+  materialsParamsMat, KS, constantFext, variableFext, userLoadsFilename, ...
+  currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, nodalDispDamping, ...
+  booleanConsistentMassMat, booleanCSTangs, ...
+  Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k ) ;
 % ---------------------------------------------------
 
 booleanConverged = 0                              ;
@@ -75,26 +88,24 @@ while  booleanConverged == 0
   % --- update next time magnitudes ---
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
-
-  Fs = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1k, 1, Udotdottp1k, booleanConsistentMassMat ) ;
-  Finttp1k = Fs{1} ;  Fmastp1k = Fs{2} ;
   % ---------------------------------------------------
   
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( Conec, crossSecsParams, coordsElemsMat, ...
     materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
-    dampingMat, booleanConsistentMassMat, Udotdott );
+    nodalDispDamping, booleanConsistentMassMat, Udott, Udotdott, booleanCSTangs ) ;
   % ---------------------------------------------------
 
   % --- new rhs ---
   [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParams, coordsElemsMat, ...
-    materialsParamsMat, KS, Utp1k, constantFext, variableFext, ...
+    materialsParamsMat, KS, constantFext, variableFext, ...
     userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
-    neumdofs, Finttp1k, dampingMat, Ut, Udott, Udotdott, Fintt, Fmastp1k ) ;
+    neumdofs, nodalDispDamping, booleanConsistentMassMat, booleanCSTangs, ...
+    Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k ) ;
   % ---------------------------------------------------
 
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, Finttp1k(neumdofs), FextG(neumdofs), deltaured, Utp1k(neumdofs), dispIters, [], systemDeltauRHS ) ;
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, [], FextG(neumdofs), deltaured, Utp1k(neumdofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
 
   % --- prints iteration info in file ---
@@ -112,17 +123,14 @@ KTtp1red = systemDeltauMatrix ;
 
 % --------------------------------------------------------------------
 
-[ Fs, Stresstp1 ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 1, Udotdott, booleanConsistentMassMat ) ;
+Stresstp1 = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
 
-Finttp1 = Fs{1} ;  Fmastp1 = Fs{2} ;
-  
 if stabilityAnalysisBoolean == 1
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
 else
   [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   factorCrit = 0;
 end
-
 
 % prints iteration info in file
 printSolverOutput( ...
@@ -135,8 +143,6 @@ Udot       = Udottp1  ;
 Udotdot    = Udotdottp1 ;
 convDeltau = Utp1 - Ut ;
 %
-Fint       = Finttp1k ;
-Fmas       = Fmastp1k ;
 Stress     = Stresstp1 ;
 
 timeIndex  = timeIndex + 1 ;
@@ -151,7 +157,6 @@ timeStepIters = dispIters ;
 
 modelCompress
 % -------------------------------------
-
 
 
 % ==============================================================================
@@ -175,7 +180,7 @@ if solutionMethod == 3 || solutionMethod == 4
   
   [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
   
-  Udotdottp1 = a0NM*(Utp1-Ut) - a2NM*Udott - a3NM*Udotdott;
+  Udotdottp1 = a0NM*(Uk-Ut) - a2NM*Udott - a3NM*Udotdott;
   Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
   
 else
@@ -191,6 +196,4 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod,
 
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
 
-  if solutionMethod == 2
-    currDeltau      = currDeltau    + deltaured ;
-  end
+  currDeltau      = currDeltau    + deltaured ;

@@ -19,15 +19,14 @@
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
-function [ modelCurrSol, modelProperties, BCsData, controlDisps, loadFactors, ...
-  stopTimeIncrBoolean, finalTime, matUs, cellStress ] ...
+function [ modelCurrSol, modelProperties, BCsData, finalTime ] ...
   = initialDefinitions( ...
   Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
-  , nonHomogeneousInitialCondUdot0, controlDofsAndFactors ...
+  , nonHomogeneousInitialCondUdot0 ...
   , crossSecsParams, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
   , loadFactorsFunc, booleanConsistentMassMat, nodalDispDamping, booleanScreenOutput ...
   , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
-  , problemName, outputDir ...
+  , problemName, outputDir, booleanCSTangs ...
   )
 
 nElems    = size(Conec, 1 ) ;
@@ -41,6 +40,7 @@ U       = zeros( 6*nNodes,   1 ) ;
 Udot    = zeros( 6*nNodes,   1 ) ;  
 Udotdot = zeros( 6*nNodes,   1 ) ;
 
+% adds non homogeneous initial conditions 
 if length( nonHomogeneousInitialCondU0 ) > 0
   for i = 1 : size( nonHomogeneousInitialCondU0, 1 ) % loop over rows of matrix
     dofs = nodes2dofs(nonHomogeneousInitialCondU0(i, 1 ), 6 ) ;
@@ -76,8 +76,6 @@ end
 % computation of initial acceleration for some cases
 % --------------------------------------------------- 
 
-stopTimeIncrBoolean = 0 ;
-
 currTime        = 0 ;
 timeIndex       = 1 ;
 convDeltau      = zeros( nNodes*6, 1 ) ;
@@ -85,8 +83,7 @@ convDeltau      = zeros( nNodes*6, 1 ) ;
 timeStepIters    = 0 ;
 timeStepStopCrit = 0 ;
 
-
-if numericalMethodParams(1)>3
+if numericalMethodParams(1) > 3
   finalTime = numericalMethodParams(3);
 else
   finalTime = numericalMethodParams(5);
@@ -96,9 +93,6 @@ end
 currLoadFactor   = loadFactorsFunc( currTime ) ;
 loadFactors      = currLoadFactor ; % initialize
 
-controlDisps    = 0 ;
-controlDisps(timeIndex, :) = U( controlDofsAndFactors(:,1) ) ...
-                             .* controlDofsAndFactors(:,2) ;
 % ----------------------------------------------
 
 [ solutionMethod, stopTolDeltau,   stopTolForces, ...
@@ -108,24 +102,21 @@ controlDisps(timeIndex, :) = U( controlDofsAndFactors(:,1) ) ...
            
 nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
-% --- initial force vectors ---
-dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
-dampingMat(1:2:end) = nodalDispDamping             ;
-dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
+%~ fs = assembler ( ...
+  %~ Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, Udot, ...
+  %~ Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
 
-[ fs, Stress ] = assembler ( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, ...
-  Udotdot, booleanConsistentMassMat ) ;
-
-Fint = fs{1} ;
-Fmas = fs{2} ;
+%~ Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;
 
 systemDeltauMatrix     = computeMatrix( ...
   Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, ...
-  neumdofs, numericalMethodParams, dampingMat, booleanConsistentMassMat, Udotdot );
+  neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udot, Udotdot, ...
+  booleanCSTangs );
 
+Stress = assembler ( ...
+  Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 3, Udot, ...
+  Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
 % ----------------------------
-
 
 factorCrit = 0 ;
 [ nKeigpos, nKeigneg ] = stabilityAnalysis ( ...
@@ -134,10 +125,6 @@ factorCrit = 0 ;
 
 % stores model data structures
 modelCompress
-
-matUs = U ;
-cellStress = {} ;
-cellStress{1} = Stress ;
 
 % --- prints headers and time0 values ---
 printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
@@ -163,8 +150,3 @@ printSolverOutput( ...
   %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
 
   %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;  
-
-%~ else
-  %~ dampingMat = [] ;
-  %~ massMat    = [] ;
-%~ end

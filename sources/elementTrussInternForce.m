@@ -19,7 +19,7 @@
 % of 3D truss elements using engineering strain.
 
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout )
+  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout, booleanCSTangs )
 
   % vector reference element
   localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) ;
@@ -56,10 +56,9 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   if paramout == 2
   
     KTe = zeros(12,12) ;
-    booleanAnalytical = 1 ;
 
     % tangent matrix computation  
-    if booleanAnalytical
+    if booleanCSTangs == 0
     
       B = zeros( 12,3) ;
       B(1:2:5     , :) = -eye(3);   B([1:2:5]+6 , :) = +eye(3);
@@ -76,9 +75,9 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
       for i=1:2:12
         ei = zeros(12,1);   ei(i) = j ;
         
-        FinteComp = elementTrussEngStr( Xe, Ue + ei*step , hyperelasparams, A, 1 );
+        FinteComp = elementTrussInternForce( Xe, Ue + ei*step , hyperelasparams, A, 1 );
         
-        KTe(i,:) = imag( FinteComp ) / step;
+        KTe(i,1:2:end) = imag( FinteComp ) / step;
       end
     end
 

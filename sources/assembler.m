@@ -15,15 +15,16 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
-%function for assembly of tangent matrices and/or forces vectors.
 %
-% Inputs:
-%   paramOut: parameter used to set output:
-%     only internal forces vector (1) or only tangent matrices (2)  
+% function for assembly of:
+%  - residual force vectors (paramOut = 1 )
+%  - residual tangent matrices (paramOut = 2)
+%  - stresses (paramOut = 3).
 %
 
-function [ Assembled, StressVec ] = assembler ( Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Ut, paramOut, Udotdott, booleanConsistentMassMat )
+function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...
+  materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
+  solutionMethod, booleanConsistentMassMat, booleanCSTangs )
 
 booleanCppAssembler = 0 ;
 
@@ -38,56 +39,58 @@ if booleanCppAssembler
 % -----------------------------------------------
 else
   % -----------------------------------------------
-  nelems  = size(Conec,1) ;   nnodes  = length( Ut) / 6 ;
+  nElems  = size(Conec, 1) ;   nNodes  = length( Ut) / 6 ;
   
   %~ profile clear, profile on
+  
+  % ============================================================================
+  %  --- 1 declarations ---
+  % ============================================================================
 
-  Assembled = cell( 2, 1 ) ;
+  switch paramOut
+  % ------------------------------------------------
+  case 1
+    % --- creates Fint vector ---
+    Fint = zeros( nNodes*6 , 1 ) ;
+    Fmas = zeros( nNodes*6 , 1 ) ;
+    Fvis = zeros( nNodes*6 , 1 ) ;
     
-  % --- creates Fint vector ---
-  if paramOut == 1
-    Fintt = zeros( nnodes*6 , 1 ) ;
-  
-    if nargout == 2
-      StressVec   = zeros( nelems, 6 ) ;
-    end
-    
-    Fmast = zeros( nnodes*6 , 1 ) ;
-  
-  elseif paramOut == 2
-  
-    % assumes maximum 4 nodes per element
-    indsIKT = uint32( zeros( nelems*24*24, 1 ) ) ;
-    indsJKT = uint32( zeros( nelems*24*24, 1 ) ) ;
-    valsKT  =         zeros( nelems*24*24, 1 )   ;
-    valsMT  =         zeros( nelems*24*24, 1 )   ;
-    
-    counterInds = 0 ;
+  % ------------------------------------------------
+  case 2
+    indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
+    indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
+
+    valsK  =         zeros( nElems*24*24, 1 )   ;
+
+    valsC  =         zeros( nElems*24*24, 1 )   ;
+    valsM  =         zeros( nElems*24*24, 1 )   ;
+
+    counterInds = 0 ; % counter non-zero indexes    
+
+  % ------------------------------------------------
+  case 3
+    StressVec   = zeros( nElems, 6 ) ;
   
   end
   
   % ----------------------------------------------
   
-  contTiempoLlamadasIndexs       = 0;
-  contTiempoLlamadasAssembly     = 0;
-  contTiempoLlamadasAssemblyFint = 0;
+  %~ contTiempoLlamadasIndexs       = 0;
+  %~ contTiempoLlamadasAssembly     = 0;
+  %~ contTiempoLlamadasAssemblyFint = 0;
+
+  % ============================================================================
 
 
-  %~ if solutionMethod == 3 || solutionMethod == 4
-  %~ Udotdottp1
-    %~ Fine    = massMat * Udotdottp1 ;
-    %~ Finered = Fine( neumdofs ) ;
-  %~ else, Finered    = [] ; end
+  % ============================================================================
+  %  --- 2 loop assembly ---
+  % ============================================================================
 
+  for elem = 1:nElems
 
-  % ----------------------------------------------
-  % loop for assembly
-  for elem = 1:nelems
-
-    elemCrossSecParams = crossSecsParams( Conec( elem, 6 ) , : ) ;
-
+    % extract element properties
+    elemCrossSecParams     = crossSecsParams( Conec( elem, 6 ) , : ) ;
     elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
-    
     elemrho                = elemMaterialParams( 1     )              ;
     elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
@@ -95,7 +98,7 @@ else
   
     % -------------------------------------------
     case 1 % Co-rotational Truss with Engineering strain
-  
+
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:2)'             ;
       dofselem  = nodes2dofs( nodeselem , 6 )  ;
@@ -107,12 +110,11 @@ else
       
       sizeTensor = 1 ;
       
-      [ Finte, KTe, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut ) ;
+      [ Finte, Ke, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut, booleanCSTangs ) ;
        
-      if elemrho > 0
+      if solutionMethod > 2
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        
-        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem  );
+        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
       end
       
     % -------------------------------------------
@@ -127,20 +129,27 @@ else
   
       sizeTensor = 1 ;
   
-      A   = elemCrossSecParams(Conec(elem,6),1) ;
-      Iyy = elemCrossSecParams(Conec(elem,6),2) ;
-      Izz = elemCrossSecParams(Conec(elem,6),3) ;
-      J   = elemCrossSecParams(Conec(elem,6),4) ;
+      A   = elemCrossSecParams( Conec(elem, 6), 1 ) ;
+      Iyy = elemCrossSecParams( Conec(elem, 6), 2 ) ;
+      Izz = elemCrossSecParams( Conec(elem, 6), 3 ) ;
+      J   = elemCrossSecParams( Conec(elem, 6), 4 ) ;
   
       xs = coordsElemsMat(elem,1:2:end)'        ;
       E  = elemConstitutiveParams(2) ;
       nu = elemConstitutiveParams(3) ;
       G  = E/(2*(1+nu)) ;
       
-      [ Finte, KTe, strain, stress ]= elementBeamInternLoads( xs, dispsElem , [E G A Iyy Izz J] ) ;
-  
-      if elemrho > 0
-        [Fmase,~,~] = elementFuerzaInercial(xs, Dte, Ddote, Ddotdote, params,Jrho );
+      params = [E G A Iyy Izz J elemrho ] ;
+      
+      [ Finte, Ke, strain, stress ]= elementBeamInternLoads( xs, dispsElem , params, booleanCSTangs ) ;
+
+      if solutionMethod > 2
+        global Jrho
+        [Fmase, Mase, Ce ] = elementBeamMassForce(xs, u2ElemDisps( Ut       , dofselem ) , ...
+                                               u2ElemDisps( Udott    , dofselem ) , ...
+                                               u2ElemDisps( Udotdott , dofselem ) , ...
+                                               params, Jrho ) ;
+        %~ Fvise = zeros( size( Fmase)) ;
       end
 
   
@@ -162,9 +171,9 @@ else
       
       sizeTensor = 6 ;
   
-      if elemMaterialParams( 1 ) == 6
-        E  = elemMaterialParams( 2) ;
-        nu = elemMaterialParams( 3) ;
+      if elemConstitutiveParams( 1 ) == 6
+        E  = elemConstitutiveParams( 2) ;
+        nu = elemConstitutiveParams( 3) ;
   
         if paramOut==1
         
@@ -181,16 +190,16 @@ else
   
           iniAss = time() ;
   
-          [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
+          [ Finte, Ke, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
   
           contTiempoLlamadasAssembly = contTiempoLlamadasAssembly + ( time() - iniAss) ;
   
         end
         
       else
-        E  = elemMaterialParams( 2) ;
-        nu = elemMaterialParams( 3) ;
-        [ Finte, KTe, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
+        E  = elemConstitutiveParams( 2) ;
+        nu = elemConstitutiveParams( 3) ;
+        [ Finte, Ke, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
       end
   
     end   % case tipo elemento
@@ -198,82 +207,106 @@ else
 
 
   
-
-
-  
-  
     % -------------------------------------------
     % ---   assemble   ----
     % -------------------------------------------
-    if paramOut == 1
+    switch paramOut
+    case 1
       % internal loads vector assembly
-      Fintt ( dofselemRed ) = Fintt( dofselemRed ) + Finte ;
-      %~ FintGt ( dofstet ) = FintGt( dofstet ) + Finte ;
-      
-      if elemrho > 0
-      elemrho
-        Fmast ( dofselemRed ) = Fmast( dofselemRed ) + Fmase ;
+      Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
+      if solutionMethod > 2
+        Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
       end
-        
-      if nargout == 3
-        %~ StrainVec(elem,(1:sizeTensor) ) = strain ;
-        StressVec(elem,(1:sizeTensor) ) = stress ;
-      end
-      
-    elseif paramOut == 2
-      % matrices assembly
-      %~ KT  (dofselem,dofselem) = KT(dofselem,dofselem) + KTe     ;
-    %~ else
+
+    case 2
+    
       for indRow = 1:length( dofselemRed )
   
-        %~ indVec = (indRow+1)/2 ;
-      
-        %~ entriesSparseStorVecs = (elem-1)*24*24 + (indRow-1) * 24 + (1:24) ;
         entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;        
         
-        indsIKT ( entriesSparseStorVecs  ) = dofselemRed( indRow )     ;
-        %~ indsJKT ( entriesSparseStorVecs ) = dofselem            ;
-        %~ valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : ) ;
-  
-        indsJKT ( entriesSparseStorVecs ) = dofselemRed       ;
-        valsKT  ( entriesSparseStorVecs ) = KTe( indRow, : )' ;
+        indsIK ( entriesSparseStorVecs  ) = dofselemRed( indRow )     ;
+        indsJK ( entriesSparseStorVecs )  = dofselemRed       ;
+        valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
 
-        if elemrho > 0
-          valsMT( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
+        if solutionMethod > 2
+          valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
+          if exist('Ce')~=0
+            valsC( entriesSparseStorVecs ) = Ce   ( indRow, : )' ;
+          end
         end
         
         counterInds = counterInds + length( dofselemRed ) ;
       end
     
-    end % if paramOut
-
+              
+    case 3
+        StressVec(elem,(1:sizeTensor) ) = stress ;
+    end % case paramOut ---
   end % for elements ----
+  % ============================================================================
+
+
+
+
+  % ============================================================================
+  %  --- 3 global additions and output ---
+  % ============================================================================
+
+  Assembled = cell( 1 + ( ( solutionMethod > 2) && ( paramOut <= 2 ) ), 1 ) ;
+
+  if solutionMethod > 2
+    dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
+    dampingMat(1:2:end) = nodalDispDamping             ;
+    dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
+  end
+      
+  switch paramOut
+
+  case 1,
+
+    Fint = Fint + KS * Ut ;
+
+    Assembled{1} = Fint ;
+
+    if solutionMethod > 2,
+      Fvis = dampingMat * Udott ;
+    end
+
+    Assembled{2} = Fvis ;
+    Assembled{3} = Fmas ;
+
+  case 2,
+
+    indsIK = indsIK(1:counterInds) ;
+    indsJK = indsJK(1:counterInds) ;
+    valsK  = valsK (1:counterInds) ;
+    K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
+
+    Assembled{1} = K ;
+
+    if solutionMethod > 2    
+      valsM = valsM (1:counterInds) ;
+      valsC = valsC (1:counterInds) ;
+      M     = sparse( indsIK, indsJK, valsM , size(KS,1), size(KS,1) )  ;
+      C     = sparse( indsIK, indsJK, valsC , size(KS,1), size(KS,1) ) + dampingMat ;
+    else
+      M = sparse(size( K ) ) ;
+      C = sparse(size( K ) ) ;
+    end
     
-  
-  if paramOut == 1,
+    Assembled{2} = C ;
+    Assembled{3} = M ;
 
-    Fintt = Fintt + KS * Ut ;
+  case 3
+    Assembled{1} = StressVec ;
 
-    Assembled{1} = Fintt ;
-    Assembled{2} = Fmast ;
-
-  elseif paramOut == 2,
-  
-    indsIKT = indsIKT(1:counterInds) ;
-    indsJKT = indsJKT(1:counterInds) ;
-    valsKT  = valsKT (1:counterInds) ;
-    KT      = sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) + KS ;
-
-    Assembled{1} = KT ;
-    
-    valsMT  = valsMT (1:counterInds) ;
-    MT      = sparse( indsIKT, indsJKT, valsMT, size(KS,1), size(KS,1) )      ;
-    Assembled{2} = MT ;
-    
   end
   
 end % if booleanCppAssembler
 % ----------------------------------------
+
+
+
 
 
 % ==============================================================================

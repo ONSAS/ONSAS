@@ -19,12 +19,24 @@
 deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 timeIndex = modelCurrSol.timeIndex ; 
 
+if timeIndex == 1
+  matUs      = modelCurrSol.U ;
+  cellStress = { modelCurrSol.Stress } ;
+  
+  controlDisps               = 0 ;
+  controlDisps(timeIndex, :) = modelCurrSol.U( controlDofsAndFactors(:,1) ) ...
+                                            .* controlDofsAndFactors(:,2) ;
+
+  loadFactors                = BCsData.currLoadFactor  ;
+end
+
 % ----------------   updates data structures and time --------------------------
 
 loadFactors  ( timeIndex+1 )       = BCsData.nextLoadFactor  ;
 controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
                                                    .* controlDofsAndFactors(:,2) ;
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
+
 
 matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
 cellStress   { timeIndex+1 }       = modelNextSol.Stress             ;

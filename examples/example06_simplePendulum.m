@@ -21,8 +21,9 @@ l0 = 3.0443     ;
 
 rho    = 2*10 / ( A * l0 ) ;
 
-nodalDamping = 0.000 ;
-%~ nodalMass    = 
+nodalDispDamping = 0.000 ;
+
+booleanConsistentMassMat = 0 ;
 
 % method
 timeIncr   =  0.1    ;
@@ -34,7 +35,7 @@ AlphaNW    =  0.25              ;
 
 % tolerances
 stopTolDeltau = 0           ; 
-stopTolForces = 1e-7           ;
+stopTolForces = 1e-6           ;
 %~ stopTolDeltau = 1e-2           ; 
 %~ stopTolForces = 1e-2           ;
 stopTolIts    = 30              ;
@@ -43,10 +44,9 @@ stopTolIts    = 30              ;
 
 
 % --- structural properties ---
-hyperElasParams = cell(1,1) ;
-hyperElasParams{1} = [1 Es nu rho] ;
+materialsParams = {[rho 1 Es nu ]} ;
 
-secGeomProps = [ A 0 0 0 ] ;
+crossSecsParams = [ A 0 0 0 ] ;
 
 nodalSprings = [ 1  inf  0  inf  0  inf 0  ...
                ];
@@ -57,7 +57,6 @@ Nodes = [    0  0  0   ; ...
 
 Conec = [ 1 2 0 0 1 1 1 ] ; 
 
-
 % -------------------
 nodalConstantLoads   = [ 2  0  0  0  0  -rho*A*l0*0.5*9.8  0 ];
 % or
@@ -67,12 +66,11 @@ nodalConstantLoads   = [ 2  0  0  0  0  -rho*A*l0*0.5*9.8  0 ];
 %~ nodalDamping = cres ;
 % -------------------
 
-controlDofInfo = [ 2 1 1 ] ;
+controlDofs = [ 2 1 1 ] ;
 % ------------------------------
 
 % ------------------------------
 % analysis parameters
-dynamicAnalysisBoolean   = 1 ; 
 
 % initial conditions
 %~ u0    = 0 ;
@@ -83,15 +81,12 @@ dynamicAnalysisBoolean   = 1 ;
 
 numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
+plotParamsVector = [1 ];
 %~ plotParamsVector = [2 5 ];
-plotParamsVector = [ 3 20 ];
-printflag = 0 ;
+%~ plotParamsVector = [ 3 20 ];
+printFlag = 0 ;
 
-acdir = pwd ;
-cd(dirOnsas);
-ONSAS
-cd(acdir) ;
-
+acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
 angs = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
 
@@ -102,10 +97,7 @@ problemName = 'simplePendulumLooseTol' ;
 
 numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
-acdir = pwd ;
-cd(dirOnsas);
-ONSAS
-cd(acdir) ;
+acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
 angs2 = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
 

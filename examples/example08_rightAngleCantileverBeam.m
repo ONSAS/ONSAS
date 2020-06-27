@@ -1,39 +1,34 @@
-% ------------------------------------
-% TEST example pendulum
-% ------------------------------------
+% ------------------------------------------------------------------------------
+% example Right-angle cantilever
+% ------------------------------------------------------------------------------
 
 clear all, close all
+dirOnsas = [ pwd '/..' ] ;   problemName = 'rightAngleCantileverBeam' ;
 
-% --- general data ---
-inputONSASversion = '0.1.10';
-
-dirOnsas = [ pwd '/..' ] ;
-problemName = 'rightAngleCantileverBeam' ;
 % ------------------------------------
+E   =  1e6  ;
+nu  = -0.5  ;
+A   =  1    ;
+I   =  1e-3 ;
+L   =  10   ;
+rho =  1    ;
 
-Es = 1 ;
-nu = 0    ;
-A  = 1 ;
-l0 = 1     ;
+% inconsistent
+J   = I ;
+global Jrho
+Jrho = diag( [ 20; 10; 10 ] ) ;
 
-% 2*10 = rho*A*l0 ;
-mconc = 10;
-rho    = 2*mconc / ( A * l0 ) ;
+materialsParams = {[ rho 1 E nu ]} ;
 
-omega = sqrt(Es*A/l0/mconc) 
-nodalDamping = 0 ;
+crossSecsParams = [ A I I J ] ;
 
-perio = 1/ ( omega/(2*pi) )
-
-%~ stop
 % method
-timeIncr   =  5    ;
-finalTime  = 20*perio     
+timeIncr   =  0.025    ;
+finalTime  = 5    
 nLoadSteps = finalTime/timeIncr ;
 
-%~ alphaHHT = 0 ;
-alphaHHT = -0.05 ;
-
+alphaHHT = 0 ;
+%~ alphaHHT = -0.05 ;
 
 % tolerances
 stopTolDeltau = 0           ; 
@@ -41,66 +36,34 @@ stopTolForces = 1e-10        ;
 stopTolIts    = 30          ;
 % ------------------------------------
 
-
-
-% --- structural properties ---
-hyperElasParams = cell(1,1) ;
-hyperElasParams{1} = [1 Es nu rho] ;
-
-secGeomProps = [ A 0 0 0 ] ;
-
 nodalSprings = [  1  inf  0  inf  0  inf 0  ; ...
 2  0  0  inf  0  inf 0  ...
                ];
 
-Nodes = [    0  0  0   ; ...
-             l0 0  0 ] ;
-             %~ 0  0  -l0 ] ;
+nElemsPerBeam = 4 ;
+Nodes = [ zeros(nElemsPerBeam+1,1)       linspace(0,L,nElemsPerBeam+1)'  zeros(nElemsPerBeam+1,1) ; ...
+          -linspace(0,L,nElemsPerBeam+1)(2:end)' zeros(nElemsPerBeam,1)       zeros(nElemsPerBeam,1) ] ;
 
-Conec = [ 1 2 0 0 1 1 1 ] ; 
-
+Conec = [ (1:(2*nElemsPerBeam))' (2:(2*nElemsPerBeam+1))' zeros(2*nElemsPerBeam,2) ones(2*nElemsPerBeam,2) 2*ones(2*nElemsPerBeam,1) ] ; 
 
 % -------------------
-nodalConstantLoads   = [ 2  0  0  0  0  -rho*A*l0*0.5*9.8  0 ];
-% or
-%~ nodalVariableLoads   = [ 2  0  0  0  0  0  0 ];
-%~ userLoadsFilename = 'myLoadSpringMass' ;
+nodalVariableLoads   = [ nElemsPerBeam+1  0  0  0  0  1  0 ];
 
-%~ nodalDamping = cres ;
-% -------------------
+controlDofs = [ nElemsPerBeam 5 +1 ] ;
 
-controlDofInfo = [ 2 1 +1 ] ;
-% ------------------------------
-
-% ------------------------------
-% analysis parameters
-dynamicAnalysisBoolean   = 1 ; 
-
-% initial conditions
-u0    = l0*0.1 ;
-%~ udot0 = 7.725   ; % m/sec
-
-nonHomogeneousInitialCondU0    = [ 2 1 u0    ] ;
-%~ nonHomogeneousInitialCondUdot0 = [ 2 1 udot0 ] ;
+loadFactorsFunc = @(t) t ;
 
 numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
 
 plotParamsVector = [0 ];
 %~ plotParamsVector = [ 3 30 ];
-printflag = 0 ;
+printFlag = 0 ;
 
-acdir = pwd ;
-cd(dirOnsas);
-ONSAS
-cd(acdir) ;
+acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
+%~ lw  = 2   ; ms  = 5.5 ;
+%~ lw2 = 3.2 ; ms2 = 23 ;
+%~ plotfontsize = 22 ;
 
-%~ angs = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
-
-
-lw  = 2   ; ms  = 5.5 ;
-lw2 = 3.2 ; ms2 = 23 ;
-plotfontsize = 22 ;
-
-figure
-plot(timesVec, controlDisps,'b--o','linewidth',lw,'markersize',ms);
+%~ figure
+%~ plot(timesVec, controlDisps,'b--o','linewidth',lw,'markersize',ms);

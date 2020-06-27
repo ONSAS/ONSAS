@@ -17,17 +17,28 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, constantFext, variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, FintGk, dampingMat, Ut, Udott, Udotdott, FintGt, Fmastp1k ) 
+function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( Conec, ...
+  crossSecsParams, coordsElemsMat, materialsParamsMat, KS, constantFext, ...
+  variableFext, userLoadsFilename, currLoadFactor, nextLoadFactor, ...
+  numericalMethodParams, neumdofs, nodalDispDamping, ...
+  booleanConsistentMassMat, booleanCSTangs, ...
+  Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1 ) 
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
   incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
+  fs = assembler ( ...
+    Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, Utp1, 1, Udottp1, ...
+    Udotdottp1, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
+  
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;  
+
   if solutionMethod == 1
 
     FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
-    systemDeltauRHS = - ( FintGk(neumdofs) - FextG(neumdofs) ) ;
+    systemDeltauRHS = - ( Fint(neumdofs) - FextG(neumdofs) ) ;
 
   elseif solutionMethod == 2
     
@@ -38,11 +49,11 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
     FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
     % incremental displacement
-    systemDeltauRHS = [ -(FintGk(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
+    systemDeltauRHS = [ -(Fint(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
 
   elseif solutionMethod == 3
 
-    [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
+    %~ [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
 
     FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
@@ -55,16 +66,16 @@ function [systemDeltauRHS, FextG] = computeRHS( Conec, secGeomProps, coordsElems
                     %~ + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs))    ...
                 %~ - FintGk(neumdofs)                                             ;
 
-    Fextvisc  = + dampingMat( neumdofs, neumdofs) * ...
-                  (   a1NM * ( Ut(neumdofs) - Uk(neumdofs) ) ...
-                    + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs)) ;
+    %~ Fvis  = + dampingMat( neumdofs, neumdofs) * ...
+                  %~ (   a1NM * ( Ut(neumdofs) - Uk(neumdofs) ) ...
+                    %~ + a4NM * Udott(neumdofs) + a5NM * Udotdott(neumdofs)) ;
                     
-    Fhat      =   FextG(neumdofs) ...
-                + Fextvisc ...
-                - Fmastp1k( neumdofs ) ...
-                - FintGk  ( neumdofs )  ;
+    rhat      =   Fint ( neumdofs ) ...
+                + Fvis ( neumdofs ) ...
+                + Fmas ( neumdofs ) ...
+                - FextG( neumdofs ) ;
                 
-    systemDeltauRHS = Fhat ;
+    systemDeltauRHS = -rhat ;
 
   elseif solutionMethod == 4
   

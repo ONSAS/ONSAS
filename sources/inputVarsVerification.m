@@ -136,6 +136,10 @@ else
 end
 
 
+if exist( 'booleanCSTangs' ) == 0
+  booleanCSTangs = [ 0 ] ;
+end
+
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
 end
