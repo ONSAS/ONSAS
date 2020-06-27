@@ -16,7 +16,8 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udott, Udotdott )
+function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udott, Udotdott, ... 
+booleanCSTangs )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -24,7 +25,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
       = extractMethodParams( numericalMethodParams ) ;
 
   % computes static tangent matrix
-  [ mats ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat ) ;
+  [ mats ] = assembler( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
 
   KT      = mats{1} ;
   if solutionMethod > 2
@@ -40,7 +41,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
   elseif solutionMethod == 3
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
-      + deltaNW / ( AlphaNW*deltaT) * dampingMat(neumdofs, neumdofs)  ;
+      + deltaNW / ( AlphaNW*deltaT) * dampingMat( neumdofs, neumdofs )  ;
 
   elseif solutionMethod == 4
 

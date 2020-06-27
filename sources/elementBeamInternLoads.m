@@ -17,7 +17,7 @@
 
 % function for computation of nodal forces and tangent stiffness matrix for 3D co-rotational beam element. Based on files provided by Prof. Jean-Marc Battini.
 
-function [ Finte, KTe, strain, stress, locDisp, Rr] = elementBeamInternLoads( x, Ue, params )
+function [ Finte, KTe, strain, stress, locDisp, Rr] = elementBeamInternLoads( x, Ue, params, booleanCSTangs )
 
 E   = params(1) ;
 G   = params(2) ;
@@ -45,17 +45,29 @@ I3 = eye(3);
 d21 = p(7:9) - p(1:3);
 
 lo = sqrt(x21'*x21);
-l  = sqrt((x21+d21)'*(x21+d21));
+%~ l  = sqrt( (x21+d21)' * (x21+d21) ) ;
+%~ l  = norm( x21 + d21 ) ;
+
+l = sqrt( sum( ( x21+d21).^2 ) ) ;
+
 u  = l-lo;
+
+%~ if norm(imag(p))>0
+  %~ u, d21, l, lo, imag(d21), Ue
+  
+  %~ uimprov = ( l^2 - lo^2 ) / (lo + l)
+
+  %~ stop
+%~ end
 
 Ro = rotRo1(x21);
 
 % rigid rotation
 
 e1 = (x21+d21)/l;
-q1=Rg1*Ro*[0;1;0];
-q2=Rg2*Ro*[0;1;0];
-q=(q1+q2)/2;
+q1 = Rg1*Ro*[0;1;0];
+q2 = Rg2*Ro*[0;1;0];
+q  = (q1+q2)/2;
 
 e3= cross (e1, q);
 
@@ -194,7 +206,45 @@ dofscomb = [ 1:2:5 2:2:6 7:2:11 8:2:12 ] ;
 
 Finte( dofscomb ) = q ;
 KTe = zeros( size(Kt));
-KTe( dofscomb, dofscomb ) = Kt ;
+
+if booleanCSTangs == 1
+
+  step = 1e-4 * norm(x) ;
+  
+  for i=1:12
+    ei = zeros(12,1);   ei(i) = j ;
+    
+    FinteComp = elementBeamInternLoads( x, Ue + ei*step, params, 0 ) ;
+    
+    KTe(:,i) = imag( FinteComp ) / step;
+    
+    if i==1
+      holaaafintecomp = FinteComp(1) ;    
+    %~ ei
+FinteComp
+%~ stop
+    end
+  end
+  KTeCS = KTe ;
+KTe = zeros( size(Kt));
+  KTe( dofscomb, dofscomb ) = Kt ;
+  normareldif = norm( KTeCS - KTe ) / norm( KTe )
+  dife = KTeCS - KTe
+  normareldif11 = norm( KTeCS(1,1) - KTe(1,1) ) / norm( KTe(1,1) )
+  entridif = [ KTeCS(1,1) KTe(1,1) holaaafintecomp ]
+  holacomplejos = [ KTeCS(1,1) holaaafintecomp ]
+
+  full(dife)
+    
+  stop
+else
+
+  KTe( dofscomb, dofscomb ) = Kt ;
+end
+
+
+
+
 
 % ==============================================================================
 % ==============================================================================

@@ -27,7 +27,7 @@
 
 function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...
   materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
-  solutionMethod, booleanConsistentMassMat )
+  solutionMethod, booleanConsistentMassMat, booleanCSTangs )
 
 booleanCppAssembler = 0 ;
 
@@ -113,11 +113,11 @@ else
       
       sizeTensor = 1 ;
       
-      [ Finte, Ke, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut ) ;
+      [ Finte, Ke, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut, booleanCSTangs ) ;
        
       if solutionMethod > 2
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem  );
+        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
       end
       
     % -------------------------------------------
@@ -144,7 +144,7 @@ else
       
       params = [E G A Iyy Izz J elemrho ] ;
       
-      [ Finte, Ke, strain, stress ]= elementBeamInternLoads( xs, dispsElem , params ) ;
+      [ Finte, Ke, strain, stress ]= elementBeamInternLoads( xs, dispsElem , params, booleanCSTangs ) ;
 
       if solutionMethod > 2
         global Jrho
@@ -219,8 +219,6 @@ else
       Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
       if solutionMethod > 2
         Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
-
-        if norm(Fvise) > 0, error('implement!'), end
       end
 
     case 2
@@ -235,7 +233,9 @@ else
 
         if solutionMethod > 2
           valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
-          valsC( entriesSparseStorVecs ) = Ce   ( indRow, : )' ;
+          if exist('Ce')~=0
+            valsC( entriesSparseStorVecs ) = Ce   ( indRow, : )' ;
+          end
         end
         
         counterInds = counterInds + length( dofselemRed ) ;
@@ -288,17 +288,17 @@ else
     Assembled{1} = K ;
 
     if solutionMethod > 2    
-      valsMT  = valsMT (1:counterInds) ;
-      valsC   = valsC  (1:counterInds) ;
-      MT      = sparse( indsIK, indsJK, valsMT, size(KS,1), size(KS,1) )  ;
-      CT      = sparse( indsIK, indsJK, valsC , size(KS,1), size(KS,1) ) + dampingMat ;
+      valsM = valsM (1:counterInds) ;
+      valsC = valsC (1:counterInds) ;
+      M     = sparse( indsIK, indsJK, valsM , size(KS,1), size(KS,1) )  ;
+      C     = sparse( indsIK, indsJK, valsC , size(KS,1), size(KS,1) ) + dampingMat ;
     else
-      MT = sparse(size(K));
-      CT = sparse(size(K));
+      M = sparse(size( K ) ) ;
+      C = sparse(size( K ) ) ;
     end
     
-    Assembled{2} = CT ;
-    Assembled{3} = MT ;
+    Assembled{2} = C ;
+    Assembled{3} = M ;
 
   case 3
     Assembled{1} = StressVec ;
