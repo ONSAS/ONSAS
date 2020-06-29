@@ -15,7 +15,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
 function [Fine,MassMatrix,GyroMatrix] = elementBeamMassForce(xelem, Dte, Ddote, Ddotdote, params,Jrho )
 
 % ----- Material and geometrical params -----
@@ -61,16 +60,15 @@ u  = l-lo; %variable del estiramiento axial
 % Material rotation Ro
 Ro = beamRefConfRotMat( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
 
-%Rigid rotation Rr
+% Rigid rotation Rr
 
-r1 = (x21+d21)/l;%vector que une el punto 2 con el 1 en la deformada
-q1 = Rg1*Ro*[0;1;0];%vector q1 y q2
-q2 = Rg2*Ro*[0;1;0];
-q  = (q1+q2)/2; %vector q muestra en cierto sentido el angulo de torsión
+r1 = ( x21 + d21 ) / l   ;
+q1 = Rg1 * Ro * [0 1 0]' ;
+q2 = Rg2 * Ro * [0 1 0]' ;
+q  = ( q1 + q2 ) / 2     ;
 
-r3 = cross (r1, q);
-
-r3 = r3 / norm( r3 ) ;% calcula e3 como en el paper
+aux = cross ( r1, q ) ;
+r3  = aux / norm( aux );
 
 r2 = cross (r3, r1);%e2 y ya queda definida la matriz
 

@@ -184,8 +184,8 @@ if solutionMethod == 3 || solutionMethod == 4
   Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
   
 else
-  Udotdottp1 = [] ;
-  Udottp1    = [] ;
+  Udotdottp1 = Udotdott ;
+  Udottp1    = Udott ;
 end
 
 

@@ -21,16 +21,17 @@ function Ro = beamRefConfRotMat( x ) ;
 		
     eyG = [0 1 0]' ;
 		ezG = [0 0 1]' ;
+
+    % Vector normal to beam in reference configuration
+    aux = cross ( ezG, exL ); 	
 		
-		aux = cross ( ezG, exL ); %Vector perpendicular a la barra en su config inde y e3
-		
-		if norm( aux ) > 0
+    if norm( aux ) < 1e-12
 		  eyL = aux / norm( aux );
 		else		  
       eyL = eyG ;
 		end
 
-    ezL = cross( exL, eyL ) / norm( cross( exL, eyL ) ) ;
-
+    ezL = cross( exL, eyL ) ;
+    
 		Ro = [ exL eyL ezL ] ;
 end
