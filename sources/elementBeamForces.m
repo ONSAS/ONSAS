@@ -18,10 +18,14 @@
 function  [ fs, ks, stress ]= elementBeamForces( ...
   xs, params, booleanCSTangs, solutionMethod, Ue, Udote, Udotdote ) ;
 
+if solutionMethod > 2
+  global Jrho
+end
+
 % parameters
-E   = params(1) ;
-G   = params(2) ;
-A   = params(3) ;
+E    = params(1) ;
+G    = params(2) ;
+Area = params(3) ;
 
 Iyy = params(4) ;
 Izz = params(5) ;
@@ -40,6 +44,8 @@ dg       = Ue      ( permutIndxs ) ;
 ddotg    = Udote   ( permutIndxs ) ;
 ddotdotg = Udotdote( permutIndxs ) ;
 
+%~ [dg ddotdotg ddotg ] 
+
 % global thetas
 tg1 = dg (4:6);
 tg2 = dg (10:12);
@@ -52,11 +58,14 @@ x21 = xs(4:6) - xs(1:3) ;
 d21 = dg(7:9) - dg(1:3) ;
 
 
-lo = sqrt(x21'*x21);
+lo = sqrt( ( x21       )' * ( x21       ) ) ; %
+l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
+
+%~ lo = sqrt(x21'   *   x21);
+%~ l = sqrt( sum( ( x21+d21).^2 ) ) ;
 %~ l  = sqrt( (x21+d21)' * (x21+d21) ) ;
 %~ l  = norm( x21 + d21 ) ;
 
-l = sqrt( sum( ( x21+d21).^2 ) ) ;
 
 %~ if norm(imag(dg))>0
   %~ u, d21, l, lo, imag(d21), dg
@@ -69,17 +78,17 @@ Ro = beamRefConfRotMat( x21 ) ;
 % --- rigid rotation ---
 
 % deformed x axis
-e1 = ( x21 + d21 ) / l ;
+e1 = ( x21 + d21 ) / l   ;
 
 q1 = Rg1 * Ro * [0 1 0]' ;
 q2 = Rg2 * Ro * [0 1 0]' ;
-q  = ( q1 + q2 ) / 2 ;
+q  = ( q1 + q2 ) / 2     ;
 
 % deformed z local axis
 e3 = cross (e1, q) ;
 e3 = e3 / norm(e3) ; % normalization
 
-% deformed z local axis
+% deformed y local axis
 e2 = cross (e3, e1);
 
 % rotation matrix
@@ -89,22 +98,22 @@ Rr = [ e1 e2 e3 ] ;
 
 % --- local displacements ---
 
-% axial strain
+% axial displacement
 u  = l - lo;
 
 % local rotations
-Re1 = Rr'*Rg1*Ro;
-Re2 = Rr'*Rg2*Ro;
+Re1 = Rr' * Rg1 * Ro;
+Re2 = Rr' * Rg2 * Ro;
 
-tl1 = logar(Re1);
-tl2 = logar(Re2);
+tl1 = logar( Re1 ) ;
+tl2 = logar( Re2 ) ;
 
-locDisp = [ u tl1' tl2' ] ;
+%~ locDisp = [ u tl1' tl2' ] ;
 % -----------------------
 
 
 % --- local force vector and tangent stiffness matrix ---
-[fl, kl, strain, stress] = beamLocalStaticForces (u, tl1, tl2, lo, E, G, A, Iyy, Izz, J ) ;
+[fl, kl, strain, stress] = beamLocalStaticForces (u, tl1, tl2, lo, E, G, Area, Iyy, Izz, J ) ;
 % -------------------------------------------------------
 
 
@@ -143,7 +152,7 @@ Kh = [ 0   O1   O1
 ke = H' * kl * H + Kh ;
 
 % transformation to the global coordinates
-r = [-e1;0;0;0;e1;0;0;0];
+r = [ -e1' O1  e1' O1 ]' ;
 
 B = [ r'
    -nu/l*e3' (1-nu12/2)*e1'+nu11/2*e2'  nu/l*e3' 1/2*(-nu22*e1'+nu21*e2')
@@ -155,7 +164,7 @@ B = [ r'
 
 fg = B' * fe ;
 
-A=(I3-e1*e1')/l;
+A  = (I3-e1*e1')/l;
 
 Dr=[A  O3 -A  O3
     O3 O3  O3 O3
@@ -169,9 +178,9 @@ G=[0   0    nu/l  nu12/2  -nu11/2  0  0  0    -nu/l  nu22/2  -nu21/2  0
 II=[O3 I3 O3 O3
     O3 O3 O3 I3];
 
-P=II-[G';G'];
+P = II - [G'; G'] ;
 
-F=P'*fe(2:7);
+F = P' * fe(2:7);
 
 sF=[skew(F(1:3))
     skew(F(4:6))
@@ -192,8 +201,8 @@ Kg = B' * ke * B + Dr * fe(1) - EE*sF*G'*EE' + EE*G*nab*r' ;
 
 % --- transformation to the new global coordinates ---
 
-Dg1=Ts(tg1);
-Dg2=Ts(tg2);
+Dg1 = Ts( tg1 ) ;
+Dg2 = Ts( tg2 ) ;
 
 q=[fg(1:3)
    Dg1'*fg(4:6)
@@ -260,6 +269,190 @@ fs = {Finte} ;
 ks = {KTe};
 
 
+
+
+
+
+
+if solutionMethod > 2
+
+  % ------- interpolation functions ------
+  % linear
+  N1 = @(x) 1 -x/lo			 ;
+  N2 = @(x) x/lo				 ;
+  
+  % cubic
+  N3 = @(x) x*(1-x/lo)^2		 ;
+  N4 = @(x) -(1-x/lo)*(x^2)/lo ; 
+  N5 = @(x) (1-3*x/lo)*(1-x/lo);
+  N6 = @(x) (3*x/lo-2)*(x/lo)	 ;
+  
+  N7 = @(x) N3(x)+N4(x)		 ;
+  N8 = @(x) N5(x)+N6(x)-1		 ;
+  % -------------------------------------
+  
+  P1    = @(x) [ 0      0       0  0      0      0 ; ...
+                 0      0   N3(x)  0      0  N4(x) ; ...
+                 0 -N3(x)	      0  0 -N4(x)      0 ] ; % Eq. 38
+  
+  ul    = @(x) P1(x) * [ tl1; tl2 ] ; % Eq. 38
+
+  P2    = @(x) [ N1(x)      0      0  N2(x)      0     0 ; ...
+                     0  N5(x)      0      0  N6(x)     0 ; ...
+                     0      0  N5(x)      0      0 N6(x) ] ; % Eq. 39
+       
+  N     = @(x) [ N1(x)*I3   O3   N2(x)*I3    O3 ];
+  
+  H1    = @(x) N(x) + P1( x ) * P - 1*skew( ul(x) ) * G' ; % Eq 59
+  
+  wdoter= G' * EE' * ddotg ;% Eq. 65
+  
+  A1    = [   O1          O1   O1       O1 ;
+               0 -1    0  O1 	 0  1  0	O1 ;
+               0  0 	-1  O1	 0  0  1  O1 ] ; %Eq. A.4
+      
+  udotl = @(x)  P1(x) * P * EE' * ddotg ; %Ec A.9
+  
+  % -------------------
+  % r is defined as column vector!!
+  H1dot = @(x)  N7(x)/(l^2)*A1*(r' * ddotg) - skew( udotl(x) ) * G' ; %Ec A.8
+  % -------------------
+  
+  ET = [skew(wdoter)      O3         		O3 			 O3			;
+        O3		skew(wdoter)  		O3   		 O3			;		
+        O3			O3 			skew(wdoter)     O3			;							
+        O3			O3  			O3       skew(wdoter)   ];
+  
+  C1 = @(x)  skew(wdoter)*H1(x) + H1dot(x) -H1(x)*ET; % Ec  66
+  
+  udot    = @(x) Rr*H1(x)*EE'*ddotg; %Ec 61
+  udotdot = @(x) Rr*H1(x)*EE'*ddotdotg+Rr*C1(x)*EE'*ddotg; % Ec 67
+  
+  
+  
+  %Matrix to compute wdot y wdtotdot
+  
+  H2 = @(x) P2(x)*P+G'; %Ec 72 se puede usar para comprobar con ec A.10
+  
+  wdot  = @(x) Rr*H2(x)*EE'*ddotg;%Ec74
+  
+  
+  A2    = [   O1    O1    O1     O1;
+        0 0  1  O1  0 0 -1   O1;
+        0 -1 0  O1  0 1  0   O1];%Ec A.12
+        
+  H2dot    = @(x)	N8(x)/l^2*A2*(r'*ddotg) ;%Ec A.14	  
+  
+  C2       = @(x) skew(wdoter)*H2(x) + H2dot(x) - H2(x)*ET ;%Ec 76	  
+  
+  wdotdot  = @(x) Rr*H2(x)*EE'*ddotdotg  + Rr*C2(x)*EE'*ddotg ;%Ec 77
+  
+  %---------Tensor dyadc of Intertia ---------
+  %compute Rg(x)
+  thethaRoof  = @(x) P2(x)*[tl1;tl2];% Ec 39
+  Rex         = @(x) expon(thethaRoof(x)); %Ec 19 elevado en ambos lados
+  Rgx  	    = @(x) Rr*Rex(x)*Ro'; 
+  
+  
+  Irho		= @(x) Rgx(x)*Ro*(Jrho)*(Rgx(x)*Ro)'; %Ec 45
+  Irhoe       = @(x) Rr'*Irho(x)*Rr;   	 		%Ec 80
+  
+  % ---------Compute interial force by quadrature ---------
+  xIntPoints = [ -sqrt(3/5)     0  sqrt(3/5)  ] ;
+  wIntPoints = [        5/9	  8/9        5/9  ] ;
+  
+  IntegrandoForce  = @(x)  H1(x)'*Rr'*Area*rho*udotdot(x) ...
+                         + H2(x)'*Rr'*( ...
+                           Irho(x)*wdotdot(x)...
+                           + skew(wdot(x)) * Irho(x) * wdot(x) ...
+                         ) ;  %Eq 78
+
+  %~ IntegrandoForce  = @(x) H1(x)'*Rr'*Area*rho*udotdot(x)+H2(x)'*Rr'*(Irho(x)*wdotdot(x)...
+                    %~ +skew(wdot(x))*Irho(x)*wdot(x));  %Ec 78
+  %~ irho=Irho(sqrt(3/5))
+  %~ termino=H2(1)'*Rr'*(Irho(1)*wdotdot(1)+skew(wdot(1))*Irho(1)*wdot(1))
+
+
+  IntegrandoMassMatrix  = @(x) 1*H1(x)'*Area*rho*H1(x)+1*H2(x)'*Irhoe(x)*H2(x); 
+  
+  
+  
+  
+  
+  %~ %Compute C3 and C4
+  
+  h1 = @(x) H1(x) * ddotg ; %Eq B6
+  h2 = @(x) H2(x) * ddotg ;
+  
+  rElem = [ [-1 0 0]   O1  [1 0 0] O1]; %Ec B10
+  
+  F1    = [skew(udot(0))' skew(wdot(0))' skew(udot(lo))' skew(wdot(lo))']'; %Chequear con los nodales
+  %~ F1aux    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']' %Chequear con los nodales
+  
+  C3  = @(x) -skew(h1(x))*G'  + (N7(x)/l^2)*A1*(ddotg*rElem)...	
+                +skew(wdoter)*P1(x)*P + H1(x)*F1*G'; % B13
+  
+  C4  = @(x) -skew(h2(x))*G' + (N8(x)/l^2)*A2*ddotg*rElem + H2(x)*F1*G'; %B14
+  
+  %~ Irhoe(l)
+  %~ c1prueba = C1(l/2)
+  %~ c3prueba =C3(l/2)
+
+  % --------------------------------
+  % Compute Gyroscopic Matrix
+  IntegrandoGyroMatrix  = @(x)  H2(x)' * ( ( skew(wdoter) * Irhoe(x) ) - skew( Irhoe(x) * wdoter) ) * H2(x) ...
+                              + H1(x)' * Area*rho*(C1(x) + C3(x))  + H2(x)'*Irhoe(x)*(C2(x)+C4(x)) ; %Ec88
+  
+  sumForce = zeros (12, 1 ) ;
+  sumGyro  = zeros (12    ) ;
+  sumMass  = zeros (12    ) ;
+  
+
+  for ind = 1 : length( xIntPoints )
+    sumForce = sumForce ...
+      + lo/2 * wIntPoints( ind ) * IntegrandoForce     ( lo/2 * (xIntPoints( ind ) + 1) ) ;
+    %
+    sumGyro = sumGyro ...
+      + lo/2 * wIntPoints( ind ) * IntegrandoGyroMatrix( lo/2 * (xIntPoints( ind ) + 1) ) ;
+    %
+    sumMass = sumMass ...
+      + lo/2 * wIntPoints( ind ) * IntegrandoMassMatrix( lo/2 * (xIntPoints( ind ) + 1) ) ;
+  end
+
+  Fine       = EE * sumForce      ;
+  GyroMatrix = EE * sumGyro * EE' ;
+  MassMatrix = EE * sumMass * EE' ;
+    
+  %~ MassMatrix
+  Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
+  GyroMatrix = Cambio_Base(GyroMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
+  MassMatrix = Cambio_Base(MassMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
+
+%~ GyroMatrix  
+  %~ MassCambiada = MassMatrix
+  %~ stop
+  %~ invPermutIndxs          = zeros(12,1) ;
+  %~ invPermutIndxs(1:2:end) = [ 1:3  7:9  ] ;
+  %~ invPermutIndxs(2:2:end) = [ 4:6 10:12 ] ;
+
+  %~ Fine       = Fine      ( invPermutIndxs                 ) ;
+  %~ GyroMatrix = GyroMatrix( invPermutIndxs, invPermutIndxs ) ;
+  %~ MassMatrix = MassMatrix( invPermutIndxs, invPermutIndxs ) ;
+  
+  %~ Fine(permutIndxs)       = Fine ;
+  %~ GyroMatrix( permutIndxs, permutIndxs) = GyroMatrix ;
+  %~ MassMatrix( permutIndxs, permutIndxs) = MassMatrix ;
+  
+  %~ function quadSum = integr( hola )
+
+%~ Fine
+
+  fs{3} = Fine ;
+  
+  ks{2} = GyroMatrix ;
+  ks{3} = MassMatrix ;
+
+end
 
 
 

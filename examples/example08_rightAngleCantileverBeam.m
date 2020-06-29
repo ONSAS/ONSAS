@@ -25,7 +25,8 @@ crossSecsParams = [ A I I J ] ;
 
 % method
 timeIncr   =  0.05    ;
-finalTime  = 10    
+%~ finalTime  = .1    
+finalTime  = 10 ;    
 nLoadSteps = finalTime/timeIncr ;
 
 % tolerances

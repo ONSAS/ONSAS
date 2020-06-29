@@ -14,8 +14,8 @@ Pch (6,6) = 1;
 P = [Pch sparse(6,6);sparse(6,6) Pch];
 	
     if size(A,2)>1
-		B = P'*A*P;
+		B = P*A*P';
 	 else
-		B = P'*A;
+		B = P*A;
 	end
 end
