@@ -140,16 +140,18 @@ else
       G  = E/(2*(1+nu)) ;
       
       params = [E G A Iyy Izz J elemrho ] ;
-      
-      [ Finte, Ke, strain, stress ]= elementBeamInternLoads( xs, dispsElem , params, booleanCSTangs ) ;
 
-      if solutionMethod > 2
-        global Jrho
-        [Fmase, Mase, Ce ] = elementBeamMassForce(xs, u2ElemDisps( Ut       , dofselem ) , ...
+      [ fs, ks, stress ] = elementBeamForces( xs, params, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) , ...
-                                               params, Jrho ) ;
-        %~ Fvise = zeros( size( Fmase)) ;
+                                               u2ElemDisps( Udotdott , dofselem ) ) ;
+      Finte = fs{1} ;
+      Ke    = ks{1} ;
+      
+      if solutionMethod > 2
+
+        Fmase = fs{3} ;
+        Ce    = ks{2} ;
+        Mmase = ks{3} ;
       end
 
   

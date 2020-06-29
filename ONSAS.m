@@ -21,7 +21,7 @@
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
-ONSASversion = '0.1.10';   addpath( [ pwd '/sources' ':' pwd '/user' ] );
+ONSASversion ='0.1.10'; addpath([ pwd '/sources' ':' pwd '/user' ]); Taux =time();
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
@@ -58,11 +58,11 @@ while ( stopTimeIncrBoolean == 0 )
   BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
 
   % ----   evals stop time incr crit    --------
-  stopTimeIncrBoolean = modelCurrSol.currTime > finalTime ;
+  stopTimeIncrBoolean = modelCurrSol.currTime >= finalTime ;
     
 end
 
-fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%4.1f) | \n ',...
+fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
   modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
  
 
@@ -91,5 +91,7 @@ end
 if reportBoolean
   outputReport
 end
-fprintf(  '                ONSAS finished.                    \n')
-fprintf([ '|=================================================|\n'])
+totalTime = time()-Taux ;
+fprintf([ '|-------------------------------------------------|\n'])
+fprintf(  '|  ONSAS finished in: %6.1f seconds /%5.2f mins  |\n', totalTime, totalTime/60 )
+fprintf([ '|=================================================|\n\n\n'])

@@ -1,14 +1,26 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% 			Fuerza Inercial Battini      	 %%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function [Fine,MassMatrix,GyroMatrix] = elementBeamMassForce(xelem, Dte, Ddote, Ddotdote, params,Jrho )
 
-%---------Material and geomtrical params---------
-
-E   = params(1) ;
-G   = params(2) ;
-A   = params(3) ;
+% ----- Material and geometrical params -----
+E    = params(1) ;
+G    = params(2) ;
+Area = params(3) ;
 
 Iyy = params(4);
 Izz = params(5);
@@ -26,6 +38,7 @@ dg       = Dte     ( permutIndxs ) ;
 ddotg    = Ddote   ( permutIndxs ) ;
 ddotdotg = Ddotdote( permutIndxs ) ;
 % ----------------------------------------------------
+
 
 %---------Rotations matrix Rg Ro Rr Rtecho---------
 
@@ -45,19 +58,18 @@ lo = sqrt( ( x21       )' * ( x21       ) ) ; %longitud inicial
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; % largo deformado 
 u  = l-lo; %variable del estiramiento axial
 
-%Material rotation Ro
-Ro = rotRol( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
+% Material rotation Ro
+Ro = beamRefConfRotMat( x21 ) ; %Matriz que va del material a la comfgiguracion indeformada
 
-%Rigid rotation Rr
+% Rigid rotation Rr
 
-r1 = (x21+d21)/l;%vector que une el punto 2 con el 1 en la deformada
-q1 = Rg1*Ro*[0;1;0];%vector q1 y q2
-q2 = Rg2*Ro*[0;1;0];
-q  = (q1+q2)/2; %vector q muestra en cierto sentido el angulo de torsión
+r1 = ( x21 + d21 ) / l   ;
+q1 = Rg1 * Ro * [0 1 0]' ;
+q2 = Rg2 * Ro * [0 1 0]' ;
+q  = ( q1 + q2 ) / 2     ;
 
-r3 = cross (r1, q);
-
-r3 = r3 / norm( r3 ) ;% calcula e3 como en el paper
+aux = cross ( r1, q ) ;
+r3  = aux / norm( aux );
 
 r2 = cross (r3, r1);%e2 y ya queda definida la matriz
 
@@ -70,8 +82,6 @@ nu11 = q1(1)/q(2);
 nu12 = q1(2)/q(2);
 nu21 = 2*nu-nu11;
 nu22 = 2-nu12;
-
-
 
 
 %cuelga la transofrmada de los vectores y eso resulta la matriz que da el movimiento deformable
@@ -188,31 +198,32 @@ Irhoe       = @(x) Rr'*Irho(x)*Rr;   	 		%Ec 80
 InterPoints  = [-sqrt(3/5)   0    sqrt(3/5)];
 WhightPoints = [    5/9	   8/9     5/9    ];
 
-IntegrandoForce  = @(x) H1(x)'*Rr'*A*rho*udotdot(x)+H2(x)'*Rr'*(Irho(x)*wdotdot(x)...
-									+skew(wdot(x))*Irho(x)*wdot(x));  %Ec 78
+IntegrandoForce  = @(x)  H1(x)'*Rr'*Area*rho*udotdot(x) ...
+                       + H2(x)'*Rr'*( ...
+                           Irho(x)*wdotdot(x)...
+                           + skew(wdot(x)) * Irho(x) * wdot(x) ...
+                         ) ;  %Eq 78
 %~ irho=Irho(sqrt(3/5))
 %~ termino=H2(1)'*Rr'*(Irho(1)*wdotdot(1)+skew(wdot(1))*Irho(1)*wdot(1))
 sumForce   = zeros(12,1);
 for index = 1:size(InterPoints,2)
-	
-	sumForce = sumForce +  WhightPoints(index)*IntegrandoForce(l/2*InterPoints(index)+l/2);
-   if index == size(InterPoints,2)
-		sumForce = sumForce*l/2;
-   end	
+
+	sumForce = sumForce ...
+     + WhightPoints(index) * IntegrandoForce( l/2*InterPoints(index)+l/2 ) *l/2 ;
 end
 Fine = EE*sumForce;
+
 %---------------- Mass matrix  -------------------
 
 
 sumMass = zeros(12,12) ;
 
-IntegrandoMassMatrix  = @(x) H1(x)'*A*rho*H1(x)+H2(x)'*Irhoe(x)*H2(x); %Ec87
+IntegrandoMassMatrix  = @(x) H1(x)' * Area * rho * H1(x) + ...
+                             H2(x)' * Irhoe(x) * H2(x) ; %Ec87
 
 for index = 1:size(InterPoints,2)
-	sumMass = sumMass +  WhightPoints(index)*IntegrandoMassMatrix(l/2*InterPoints(index)+l/2);
-   if index == size(InterPoints,2)
-		sumMass = sumMass*l/2; %sale de la integracion con  cuadrature
-   end	
+	sumMass = sumMass ...
+    + WhightPoints(index) * IntegrandoMassMatrix( l/2*InterPoints(index)+l/2 )  *l/2 ;
 end
 
 MassMatrix = EE*sumMass*EE';
@@ -238,17 +249,15 @@ C4  = @(x) -skew(h2(x))*G' + (N8(x)/l^2)*A2*ddotg*rElem + H2(x)*F1*G'; %B14
 %~ Irhoe(l)
 %~ c1prueba = C1(l/2)
 %~ c3prueba =C3(l/2)
-IntegrandoGyroMatrix  = @(x) H2(x)'*( ( skew(wdoter)*Irhoe(x) ) - Irhoe(x) * skew(wdoter) ) * H2(x) ...
-									+	H1(x)'*A*rho*(C1(x) + C3(x))  + H2(x)'*Irhoe(x)*(C2(x)+C4(x)) ; %Ec88
+IntegrandoGyroMatrix  = @(x) H2(x)'*( ( skew(wdoter)*Irhoe(x) ) - skew( Irhoe(x) * wdoter) ) * H2(x) ...
+									+	H1(x)'*Area*rho*(C1(x) + C3(x))  + H2(x)'*Irhoe(x)*(C2(x)+C4(x)) ; %Ec88
 sumGyro = zeros (12,12);
-  for index = 1:size(InterPoints,2)
-	sumGyro = sumGyro +  WhightPoints(index)*IntegrandoGyroMatrix(l/2*InterPoints(index)+l/2);
-	if index == size(InterPoints,2)
-	sumGyro = sumGyro*l/2;
-  end
+for index = 1:size(InterPoints,2)
+  sumGyro = sumGyro ...
+    +  WhightPoints(index) * IntegrandoGyroMatrix(l/2*InterPoints(index)+l/2) *l/2 ;
+end
 
 GyroMatrix = EE*sumGyro*EE';
-
 
 %Cambio de Bases
 
@@ -257,7 +266,7 @@ GyroMatrix = Cambio_Base(GyroMatrix); % En formato [u1 theta1 u2 theta2 u3 theta
 Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
 
 %Usar la funcion cambio de base 
-end
+%~ end
 
 
 %~ function quadSum = integr( hola )

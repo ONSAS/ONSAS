@@ -21,7 +21,7 @@
 
 function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties ) ;
 
-startPreviousVels = 0 ; % 0 recommended
+startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
 
 % ----   extracts variables  ----
 modelExtract
@@ -184,8 +184,8 @@ if solutionMethod == 3 || solutionMethod == 4
   Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
   
 else
-  Udotdottp1 = [] ;
-  Udottp1    = [] ;
+  Udotdottp1 = Udotdott ;
+  Udottp1    = Udott ;
 end
 
 
