@@ -351,10 +351,9 @@ if solutionMethod > 2
   %compute Rg(x)
   thethaRoof  = @(x) P2(x)*[tl1;tl2];% Ec 39
   Rex         = @(x) expon(thethaRoof(x)); %Ec 19 elevado en ambos lados
-  Rgx  	    = @(x) Rr*Rex(x)*Ro'; 
+  Rgx  	      = @(x) Rr*Rex(x)*Ro';   
   
-  
-  Irho		= @(x) Rgx(x)*Ro*(Jrho)*(Rgx(x)*Ro)'; %Ec 45
+  Irho		    = @(x) Rgx(x)*Ro*(Jrho)*(Rgx(x)*Ro)'; %Ec 45
   Irhoe       = @(x) Rr'*Irho(x)*Rr;   	 		%Ec 80
   
   % ---------Compute interial force by quadrature ---------

@@ -178,10 +178,9 @@ if solutionMethod == 3 || solutionMethod == 4
       AlphaNW = (1-alphaHHT^2)/4 ;
   end
   
-  [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
-  
-  Udotdottp1 = a0NM*(Uk-Ut) - a2NM*Udott - a3NM*Udotdott;
-  Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
+  Udotdottp1 = 1.0     / ( AlphaNW * (deltaT)^2 )  * (Uk - Ut) - 1.0     / ( AlphaNW *  deltaT    )   * Udott - (1.0     / ( AlphaNW * 2          ) - 1  ) * Udotdott ;
+
+  Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
   
 else
   Udotdottp1 = Udotdott ;
@@ -197,3 +196,14 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod,
   Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
 
   currDeltau      = currDeltau    + deltaured ;
+
+
+
+
+
+
+
+
+
+
+
