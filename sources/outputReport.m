@@ -121,7 +121,7 @@ fprintf(fileReport, [ '\\subsection{Material properties} \n\n'] ) ;
 fprintf(fileReport, [ 'The mechanical properties and the constitutive model of the defined materials are listed in the corresponding tables below. The number of defined materials is: %i. \\\\ \n\n'], nMats ) ;
 
 [enc, fin] = tablesFunc( 'Parameter & Value', 2, 'c|c', 'Constitutive parameters of the material.') ;
-vecMat = [ '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' ] ; 
+vecMat = { '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' } ; 
 vecVal = [] ;
 for i = 1:nMats
 	Et 	= materialsParams{i}(2) ;
@@ -138,7 +138,7 @@ for i = 1:nMats
   fprintf(fileReport, [ '\\textbf{Material %i}: material parameters are presented in the table.\n'], i ) ;
   fprintf(fileReport, '%s', enc ) ;
   for j = 1:size(vecMat,1)
-    fprintf(fileReport, ['%s & ' formatMaterial ], vecMat(j,:), vecVal(j) );
+    fprintf(fileReport, ['%s & ' formatMaterial ], vecMat{j}, vecVal(j) );
     fprintf(fileReport, '\\\\ \n' ) ;
   end
   fprintf(fileReport, '%s', fin ) ;
@@ -152,12 +152,12 @@ fprintf(fileReport, [ '\\subsection{Sections properties}\n\n'] ) ;
 fprintf(fileReport, [ 'The geometrical properties of the defined sections are listed below. The number of defined sections is: %i. \\\\ \n\n'], numberSections ) ;
 
 [enc, fin] = tablesFunc( 'Geometrical property & Value ', 3, 'c|c', 'Geometrical properties of the section.') ;
-vecSec = [ '$A$' ; '$I_y$' ; '$I_z$' ; '$J$' ] ;
+vecSec = { '$A$' ; '$I_y$' ; '$I_z$' ; '$J$' } ;
 for i = 1:numberSections
   fprintf(fileReport, [ '\\textbf{Section %i}: geometry parameters are presented in the table.\n'], i ) ;
   fprintf(fileReport, '%s', enc ) ;
   for j = 1:size(vecSec,1)
-    fprintf(fileReport, ['%s & ' formatSections ], vecSec(j,:), crossSecsParams(i,j) );
+    fprintf(fileReport, ['%s & ' formatSections ], vecSec{j}, crossSecsParams(i,j) );
   fprintf(fileReport, '\\\\ \n' ) ;
   end
   fprintf(fileReport, '%s', fin ) ;  
@@ -240,6 +240,7 @@ if length(numericalMethodParams) > 0
     vecParams = [ {'HHT'} ; num2cell(numericalMethodParams(2:end)') ] ;
   end 
 end
+
 
 if exist('nonHomogeneousInitialCondU0') ~= 0
   initialCondU0 = 'yes' ;
@@ -359,10 +360,12 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 	%~ fprintf(fileReport, '%s', fin )
 %~ else
 	fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
-  fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] )
+  fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] );
   fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;  
   fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
 %~ end	
+
+
 
 
 
@@ -404,7 +407,7 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 %~ else
   fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
   
-  fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] )
+  fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] );
   fprintf(fileReport, [ '\\input{' problemName '_incrementsOutput.tex' '} \n'] ) ;  
   fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n\n'] ) ;
   fprintf(fileReport, [ '\\newpage \n\n' ] ) ;
@@ -436,6 +439,7 @@ if (length(plotParamsVector)>1)
 else
   timesPlotsVec = 1: size(matUs,2) ;
 end
+
 
 if plotParamsVector(1) < 3 && ( printFlag == 1 || printFlag == 2 )
   fprintf(fileReport, [ '\\subsection{Plots}\n\n'] ) ;
@@ -499,10 +503,11 @@ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
     elseif printFlag == 2
       fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_loadDisp}\n']) ;
     end  
-    fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] )
-    fprintf(fileReport,  '\\end{figure} \n\n' )
+    fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] );
+    fprintf(fileReport,  '\\end{figure} \n\n' );
   end   
 %~ end
+
 
 %-------------------------------- Solicitations --------------------------------
 
@@ -704,6 +709,7 @@ fprintf(fileReport, [ '\\caption{Conectivity matrix.}\n\\end{longtable}\n\n' ] )
 fprintf(fileReport, [ '\\end{document}'] ) ;
 fclose(fileReport);
 
+
 % ==============================================================================
 % -------------------------------    Tables    ---------------------------------
 
@@ -848,4 +854,4 @@ fclose(fileReport);
 	%~ end % endif nbeam
 %~ end
 
-fprintf(  ' done. \n')
+fprintf(  ' done. \n');

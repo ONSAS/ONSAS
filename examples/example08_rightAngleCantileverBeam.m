@@ -39,9 +39,9 @@ nodalSprings = [ 1 inf inf inf inf inf inf ] ;
 
 %~ nElemsPerBeam = 4 ;
 nElemsPerBeam = 10 ;
-
-Nodes = [ zeros(nElemsPerBeam+1,1)       linspace(0,L,nElemsPerBeam+1)'  zeros(nElemsPerBeam+1,1) ; ...
-          -linspace(0,L,nElemsPerBeam+1)(2:end)' zeros(nElemsPerBeam,1)       zeros(nElemsPerBeam,1) ] ;
+auxCoords = linspace(0,L,nElemsPerBeam+1)' ;
+Nodes = [ zeros(nElemsPerBeam+1,1)       auxCoords  zeros(nElemsPerBeam+1,1) ; ...
+          -auxCoords(2:end) zeros(nElemsPerBeam,1)       zeros(nElemsPerBeam,1) ] ;
 
 aux = (1:(2*nElemsPerBeam+1))' ;
 Conec = [ aux(1:(end-1)) aux(2:end) zeros(2*nElemsPerBeam,2) ...
@@ -69,9 +69,7 @@ reportBoolean = 0 ;
 
 storeBoolean = 0 ;
 
-timeAnalysisONSAS = time() ;
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
-timeAnalysisONSAS = time() - timeAnalysisONSAS
 
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
@@ -80,4 +78,6 @@ plotfontsize = 22 ;
 figure
 plot(controlDisps,'b--o','linewidth',lw,'markersize',ms);
 %~ plot(timesVec, controlDisps,'b--o','linewidth',lw,'markersize',ms);
-%~ print('rightAngle.png','-dpng')
+cd(outputDir);
+print('rightAngle.png','-dpng')
+cd(acdir);

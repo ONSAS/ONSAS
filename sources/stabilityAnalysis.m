@@ -19,13 +19,13 @@
 
 function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor, nextLoadFactor );  
 
-  [a,b] = eig( KTtred ) ;
+  [a,b] = eigs( KTtred ) ;
   Keigvals = diag(b) ;
   nKeigpos = length( find(Keigvals >  0 ) ) ;
   nKeigneg = length( find(Keigvals <= 0 ) ) ;
 
   if nargout > 2
-    [vecgamma, gammas ] = eig( KTtred, KTtm1red ) ;
+    [vecgamma, gammas ] = eigs( KTtred, KTtm1red ) ;
     
     gammas = diag( gammas);
    

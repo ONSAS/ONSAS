@@ -18,10 +18,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 % ==============================================================================
 
+Taux = cputime();
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
-ONSASversion ='0.1.10'; addpath([ pwd '/sources' ':' pwd '/user' ]); Taux =time();
+ONSASversion ='0.1.10';
+
+if isunix, dirSep = '/'; else, dirSep = '\'; end
+addpath( [ pwd dirSep 'sources'] ) ;
+addpath( [ pwd dirSep 'user'   ] ) ;
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
@@ -91,7 +96,7 @@ end
 if reportBoolean
   outputReport
 end
-totalTime = time()-Taux ;
+totalTime = cputime()-Taux ;
 fprintf([ '|-------------------------------------------------|\n'])
-fprintf(  '|  ONSAS finished in: %6.1f seconds /%5.2f mins  |\n', totalTime, totalTime/60 )
+fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
 fprintf([ '|=================================================|\n\n\n'])

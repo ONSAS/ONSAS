@@ -38,7 +38,7 @@ controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1)
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
 
-if storeBoolean = 1
+if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
   cellStress   { timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;

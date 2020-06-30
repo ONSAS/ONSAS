@@ -144,8 +144,10 @@ if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
 end
 
-if exist( 'octaveBoolean' ) == 0
+if exist('OCTAVE_VERSION','builtin') > 0
   octaveBoolean = 1 ;
+else
+  octaveBoolean = 0 ;
 end
 
 if exist( 'storeBoolean' ) == 0
@@ -186,7 +188,7 @@ if exist( outputDir ) == 7 % problemName is a directory
     fprintf( ['  - Cleaning output directory ...'] ) ;
   end
   if octaveBoolean
-    confirm_recursive_rmdir (0)
+    confirm_recursive_rmdir(0)
   end
   [aux, msg] = rmdir( problemName ,'s'); 
 
