@@ -57,13 +57,15 @@ else
     
   % ------------------------------------------------
   case 2
-    indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
-    indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
+    %~ if octaveBoolean
+      %~ indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
+      %~ indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
+      indsIK =         zeros( nElems*24*24, 1 )   ;
+      indsJK =         zeros( nElems*24*24, 1 )   ;
+    valsK    =         zeros( nElems*24*24, 1 )   ;
 
-    valsK  =         zeros( nElems*24*24, 1 )   ;
-
-    valsC  =         zeros( nElems*24*24, 1 )   ;
-    valsM  =         zeros( nElems*24*24, 1 )   ;
+    valsC    =         zeros( nElems*24*24, 1 )   ;
+    valsM    =         zeros( nElems*24*24, 1 )   ;
 
     counterInds = 0 ; % counter non-zero indexes    
 
