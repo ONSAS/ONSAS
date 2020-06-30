@@ -37,7 +37,8 @@ stopTolIts    = 30          ;
 
 nodalSprings = [ 1 inf inf inf inf inf inf ] ;
 
-nElemsPerBeam = 4 ;
+%~ nElemsPerBeam = 4 ;
+nElemsPerBeam = 10 ;
 
 Nodes = [ zeros(nElemsPerBeam+1,1)       linspace(0,L,nElemsPerBeam+1)'  zeros(nElemsPerBeam+1,1) ; ...
           -linspace(0,L,nElemsPerBeam+1)(2:end)' zeros(nElemsPerBeam,1)       zeros(nElemsPerBeam,1) ] ;
@@ -65,6 +66,8 @@ plotParamsVector = [0 ];
 printFlag = 0 ;
 
 reportBoolean = 0 ;
+
+storeBoolean = 0 ;
 
 timeAnalysisONSAS = time() ;
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;

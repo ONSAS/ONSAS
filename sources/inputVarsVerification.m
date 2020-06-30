@@ -148,6 +148,10 @@ if exist( 'octaveBoolean' ) == 0
   octaveBoolean = 1 ;
 end
 
+if exist( 'storeBoolean' ) == 0
+  storeBoolean = 1 ;
+end
+
 if exist( 'printFlag' ) == 0
   printFlag = 0 ;
 end
