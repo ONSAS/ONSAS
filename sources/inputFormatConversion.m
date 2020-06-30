@@ -1,25 +1,28 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
 % Function that converts from the gui format to the .m input format
 
 function [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
-  
+
+nodesMat(:,4:6) = [] ;
+conecMat = [ conecMat(:,5) conecMat(:,1:4) conecMat(:,6:9) ] ;
+
 ndofpnode = 6 ;  
 
 nnodes = size(nodesMat,1) ;
@@ -77,11 +80,14 @@ for i = 1:nelems
   type = conecMat(i,1) ;
   sec  = conecMat(i,6) ;
   mat  = conecMat(i,7) ;
-  loa  = conecMat(i,8) ;
-  sup  = conecMat(i,9) ;
+  sup  = conecMat(i,8) ;
+  loa  = conecMat(i,9) ;
   
   switch type
 
+  % ----------------------------------------------------------------------------
+  % ---------------        triangles             -------------------------------
+  % ----------------------------------------------------------------------------
   case 5
     nodestrng = conecMat(i,2:4) ;
 
@@ -90,6 +96,7 @@ for i = 1:nelems
                        nodestrng' ones(3,1)*suppsMat(sup, :) ] ;
     end
 
+    % --- loaded ---
     if loa > 0,
 
       area = 0.5 * norm( cross( ...
@@ -97,20 +104,20 @@ for i = 1:nelems
         Nodes( nodestrng(3),:) - Nodes( nodestrng(1),:) ...
         ) ) ;
 
-      if loadsMat(loa, 1) == 1
+      if loadsMat(loa, 1) == 1  % global coordinates load
 
-        Fx = loadsMat(loa, 2)*area/3 ;
-        Fy = loadsMat(loa, 4)*area/3 ;
-        Fz = loadsMat(loa, 6)*area/3 ;
+        Fx = loadsMat(loa, 2) * area / 3 ;
+        Fy = loadsMat(loa, 4) * area / 3 ;
+        Fz = loadsMat(loa, 6) * area / 3 ;
         
-      elseif loadsMat(loa, 1) == 0
+      elseif loadsMat(loa, 1) == 0 % local coordinates load
 
         dofsaux = nodes2dofs( nodestrng , ndofpnode ) ;
         dofs    = dofsaux(1:2:length(dofsaux)) ;
         nmod    = norm( cross( ...
           Nodes( nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
           Nodes( nodestrng(3),:) - Nodes( nodestrng(1),: ) ) ) ;
-        
+
         n = cross( ...
           Nodes(nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
           Nodes( nodestrng(3),:) - Nodes( nodestrng(1),: ) ) / nmod ;
@@ -119,25 +126,34 @@ for i = 1:nelems
         Fy = n(2)*loadsMat(loa,6)*area/3 ;
         Fz = n(3)*loadsMat(loa,6)*area/3 ;
       
+      else
+        error('load not assigned')
       end
-
-      nodalConstantLoads = [ nodalConstantLoads ; ...
+      
+      % add nodal loads to nodes of triangle
+      nodalVariableLoads = [ nodalVariableLoads ; ...
                            nodestrng' ones(3,1)*[Fx 0 Fy 0 Fz 0] ] ;
 
-    end
+    end % if loaded or not
+  % ----------------------------------------------------------------------------
 
-    case 3 
+  % ----------------------------------------------------------------------------
+  case 3 
 
-      Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
-     
-    case 2 
+    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
+   
 
-			Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
-			
-		case 1	
+  % ----------------------------------------------------------------------------
+  case 2 
 
-			Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
-			
+    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
+    
+
+  % ----------------------------------------------------------------------------
+  case 1	
+
+    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
+    
 			%~ if loa > 0
 				%~ elem = i ;
 				%~ axi = loadsMat(i,1) ;

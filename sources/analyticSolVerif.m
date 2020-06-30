@@ -1,25 +1,26 @@
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
 %function for verification of the numerical results provided by ONSAS, using the analytical expression provided by the user.
 
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
 
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-
-function analyticSolVerif ...
-( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir );
+function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
+  ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
+    analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir, plotParamsVector );
 
   fprintf('----------------------------------------------- \n')
   fprintf('  Analytical solution verification ... ')
@@ -29,36 +30,30 @@ function analyticSolVerif ...
     numericalVecy   = controlDisps ;
     numericalVecx   = timesVec     ;
     analitMagnitude = 'Control displacement' ;
-   
+    xmagnitude      = 'Load Factors' ;
+
   elseif analyticSolFlag == 2
-    analyticalVecy  = analyticFunc( controlDisps) ;
+    analyticalVecy  = analyticFunc( controlDisps ) ;
     numericalVecy   = loadFactors  ;
     numericalVecx   = controlDisps ;
     analitMagnitude = 'Load Factors' ;
-  
+    xmagnitude      = 'Control displacement' ;
+    
   elseif analyticSolFlag == 3
     absError    = ( controlDisps-analytSol ) ;
     normRelativeError = norm( absError ) / norm( analytSol ) ;
-
-  elseif analyticSolFlag == 4
-    absError    = ( analytSol - controlDisps ) ;
-    normRelativeError = norm( absError  ) / norm( analytSol ) ;
-
-  elseif analyticSolFlag == 5
-    absError    = ( controlDisps - analytSol ) ;
-    normRelativeError = norm( absError  ) / norm( analytSol ) ;
-
+    
   end
 
-  if analyticSolFlag == 1 || analyticSolFlag == 2
+
+  if analyticSolFlag == 1 || analyticSolFlag == 2 
     nonZeroEntries    = find( analyticalVecy ~= 0 ) ;
     absError          = abs( numericalVecy - analyticalVecy ) ;
     normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ; 
   end
   
-
   % ----------------------------------------
-  if analyticSolFlag == 1 || analyticSolFlag == 2 
+  if ( analyticSolFlag == 1 || analyticSolFlag == 2 ) &&  plotParamsVector(1) > 0
 
     nvals = length( numericalVecx); nmaxvistos = 10 ;
     indsMs = (1:nvals)';
@@ -78,10 +73,12 @@ function analyticSolVerif ...
 
     plot( numericalVecx, numericalVecy  , 'b', 'linewidth', lw,'markersize',ms)
     plot( numericalVecx, analyticalVecy , 'r', 'linewidth', lw,'markersize',ms)
-    labx = xlabel('step/time');  laby = ylabel(analitMagnitude) ;
+    
+    % labels
+    labx = xlabel(xmagnitude);   laby = ylabel(analitMagnitude) ;
     legend('numeric', 'analytic','location','North')
     set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
-    set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ;
+    set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 
     currdir = pwd;
     cd(outputdir )
@@ -95,12 +92,11 @@ function analyticSolVerif ...
     if printflag > 0  
       close(figaux);
     end
-  
   end
 
   if normRelativeError > analyticCheckTolerance ;
     normRelativeError
-    error('error: large difference between analytical and numerical solutions!') ;
+    warning(' large difference between analytical and numerical solutions!') ;
   else
     fprintf('PASSED.\n')
     fprintf('  Numerical solution error: %12.4e < %10.2e \n',normRelativeError, analyticCheckTolerance)
