@@ -5,7 +5,7 @@ clear all, close all
 
 dirOnsas = [ pwd '/..' ] ;      problemName = 'cantileverNodalMoment' ;
 
-l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 20 ;
+l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 4 ;
 
 E = 200e9 ;  nu = 0.3 ;  rho = 0 ;
 materialsParams = { [ rho 1 E nu] } ;
