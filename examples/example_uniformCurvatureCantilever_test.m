@@ -32,11 +32,12 @@ controlDofs = [ Nelem+1  4  -1 ] ;
 stopTolIts      = 30     ;
 stopTolDeltau   = 0 ;
 stopTolForces   = 1.0e-10 ;
-targetLoadFactr = E * Iy / ( l / (2 * pi) ) ;  % curvradius corresponding to perimeter = l
-nLoadSteps      = 10 ;
+targetLoadFactr = E * Iy / ( l / ( 2 * pi ) ) ;  % curvradius corresponding to perimeter = l
+%~ nLoadSteps      = 2 ;
+nLoadSteps      = 20 ;
 
-plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
-plotParamsVector = [ 1 ] ;
+%~ plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
+plotParamsVector = [ 3 ] ;
 printFlag = 0 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 

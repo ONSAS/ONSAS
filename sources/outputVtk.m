@@ -41,7 +41,7 @@ tVtkConecNodes = 0 ;
 for indplot = 1 : length( timesPlotsVec ) ;
 
   Utplot = matUts ( :, timesPlotsVec( indplot) ) ;
-	tic
+
   [vtkConec, vtkNodesDef, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, indexesElems, sectPar , Utplot, nonLinearAnalysisBoolean, ...
                                                                             dynamicAnalysisBoolean, coordsElemsMat, matNts(:, timesPlotsVec(indplot)) ) ;
 	auxVtkConecNodes = toc ;
@@ -111,7 +111,6 @@ for indplot = 1 : length( timesPlotsVec ) ;
 
   tic 
   vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData ) ;
-  auxtVtkWriter = toc ;
   tVtkWriter = auxtVtkWriter + tVtkWriter	;
 end
 

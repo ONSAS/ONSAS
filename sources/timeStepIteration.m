@@ -196,36 +196,29 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod,
   oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
   evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
 
-
-  %~ disp('HOLAIIIIIIIIIIIIIIIIIIIII')
-  %~ Uk  
   Uk ( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured (oddNeumDofsInds ) ;
-  
+
   nNodes = length( Uk) / 6 ;
   
   deltauComplete = zeros( size( Uk)) ;
-  deltauComplete( neumdofs) = deltaured ;
-  
-  %~ disp('HOLAAAAAAAAAAAAAa')
-  %~ Uk'
-  %~ deltauComplete
+  deltauComplete( neumdofs ) = deltaured ;
   
   for i=1:nNodes
     nodeDofs = nodes2dofs( i , 6 ) ;
     nodeAngDofs = nodeDofs(2:2:6)  ;
     
-    %~ skew( deltauComplete ( nodeAngDofs ) )
     
-    %~ expm( skew( Uk             ( nodeAngDofs ) ) )
-    
-    %~ Uk ( nodeAngDofs ) = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
+    %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
                                          %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
                                        %~ ) ) ;
-    Uk ( nodeAngDofs ) = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
+    updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
+
+    %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
+                                %~ expon( Uk             ( nodeAngDofs ) ) ) ;
+                                
+    Uk ( nodeAngDofs ) = updateB ;
+    
   end
-  %~ Uk'
-  
-  %~ stop
   
   currDeltau      = currDeltau    + deltaured ;
 
