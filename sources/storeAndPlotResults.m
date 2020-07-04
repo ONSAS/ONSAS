@@ -37,11 +37,18 @@ controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1)
                                                    .* controlDofsAndFactors(:,2) ;
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
+normalForces = zeros( nElems, 1 ) ;
+indsNormal = [ find( Conec(:,7) == 1 ) ; find( Conec(:,7) == 2 ) ]' ;
+
+sigxs = modelNextSol.Stress(:,1) ;
+
+normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
 
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
-  cellStress   { timeIndex+1 }       = modelNextSol.Stress             ;
+  cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
+  matNs      (:, timeIndex+1 )       = normalForces                    ;
 end
 % ------------------------------------------------------------------------------
 
@@ -51,4 +58,45 @@ itersPerTimeVec( timeIndex )    = modelNextSol.timeStepIters ;
 while contProgr < ( modelCurrSol.currTime / ( finalTime*.05 ) )
   contProgr = contProgr + 1 ;
   fprintf('=')
+end
+
+
+if plotParamsVector(1) == 3
+
+  if modelCurrSol.timeIndex == 1,
+    
+    % generate connectivity
+    [ vtkNodes, vtkConec, elem2VTKCellMap, vtkDispMat ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U ) ;
+
+      % data
+      %~ [ cellPointData, cellCellData, filename ] = vtkDefConfData()
+
+    filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i',1-1) '.vtk'] ;
+
+    % writes file
+    %~ vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData ) ;
+    vtkWriter( filename, vtkNodes, vtkConec , {}, {} ) ;
+
+  end
+
+  aux = timesPlotsVec == modelNextSol.timeIndex ;
+  
+  if sum( aux ) > 0
+
+    indplot = find( aux ) ;
+
+    % generates deformed nodes coords
+    [ vtkNodes, vtkConec, elem2VTKCellMap, vtkDispMat ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U ) ;
+
+    filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i',indplot-1) '.vtk'] ;
+
+    % data
+    %~ [ cellPointData, cellCellData ] = vtkDefConfData()
+    
+    % writes file
+    vtkWriter( filename, vtkNodes, vtkConec , {}, {} ) ;
+      
+  end
 end

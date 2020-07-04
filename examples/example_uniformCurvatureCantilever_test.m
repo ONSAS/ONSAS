@@ -5,7 +5,7 @@ clear all, close all
 
 dirOnsas = [ pwd '/..' ] ;      problemName = 'cantileverNodalMoment' ;
 
-l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 4 ;
+l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 10 ;
 
 E = 200e9 ;  nu = 0.3 ;  rho = 0 ;
 materialsParams = { [ rho 1 E nu] } ;
@@ -29,15 +29,15 @@ nodalVariableLoads   = [ Nelem+1  0 0 0 -1 0 0 ] ;
 
 controlDofs = [ Nelem+1  4  -1 ] ;
 
-stopTolIts      = 30     ;
-stopTolDeltau   = 0 ;
+stopTolIts      = 30      ;
+stopTolDeltau   = 0       ;
 stopTolForces   = 1.0e-10 ;
 targetLoadFactr = E * Iy / ( l / ( 2 * pi ) ) ;  % curvradius corresponding to perimeter = l
 %~ nLoadSteps      = 2 ;
-nLoadSteps      = 20 ;
+nLoadSteps      = 10 ;
 
 %~ plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
-plotParamsVector = [ 3 ] ;
+plotParamsVector = [ 3 ] ; sectPar = [ 12 b h ] ;
 printFlag = 0 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 

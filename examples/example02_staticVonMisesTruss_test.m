@@ -86,7 +86,9 @@ hold on, grid on
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
-plotParamsVector = [ 0 ];
+plotParamsVector = [ 3 ];
+%~ plotParamsVector = [ 0 ];
+sectPar = [12 .1 .1]
 
 acdir = pwd ; cd(dirOnsas);
 ONSAS

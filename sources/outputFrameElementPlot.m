@@ -16,9 +16,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
 % ---------------------------------------------------
-% Function for computation of (approximate) deformed configuration of element 
+% Function for computation of (approximate) deformed configuration of one 
+% beam or truss element using interpolations.
+% 
 % Inputs:
 %  - coordsElem: column vector with the coordinates of the nodes of the element at the reference configuration
 %  - dispsElem: colum vector with the displacements of the nodes of the element (rotations are measured with respect to the initial configuration)
@@ -30,7 +31,8 @@
 %  - vector with xs, ys and zs coordinates for plot.
 % ---------------------------------------------------
 
-function [xsdef, ysdef, zsdef, conecElem ] = outputFrameElementPlot( coordsElem, dispsElem, elemType )
+function [ xsdef, ysdef, zsdef, conecElem, titax, titay, titaz, Rr ] = ...
+  outputFrameElementPlot( coordsElem, dispsElem, elemType )
 
 % reads input
 xsref = coordsElem( [ 1   7  ] ) ;
@@ -46,31 +48,34 @@ if elemType == 1
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
-  titax = [] ;
-  titay = [] ;
-  titaz = [] ;
+  titax = [0 0]' ;
+  titay = [0 0]' ;
+  titaz = [0 0]' ;
 	conecElem = [1 2] ;
 
-
-
-
-
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  
+  % global rotation matrix 
+  %~ Rr     = rotData{2}
+  Rr     = eye(3);
+  
 
 elseif elemType == 2
 
-%~ coordsElem
-%~ dispsElem
   xsdefA = (coordsElem + dispsElem )( [ 1   7  ] ) ;
   ysdefA = (coordsElem + dispsElem )( [ 1+2 7+2] ) ;
   zsdefA = (coordsElem + dispsElem )( [ 1+4 7+4] ) ;
 
-  nPlotPoints    = 20 ; 
+  nPlotPoints    = 10 ; 
 
-  [ ~, ~, ~, ~, locDisp, Rr] = elementBeam3DInternLoads( coordsElem(1:2:end), dispsElem, ones(6,1) ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
   
-  ul  = locDisp(1)   ;
-  tl1 = locDisp(2:4) ;
-  tl2 = locDisp(5:7) ;
+  % 
+  locDisp = rotData{1} ;
+  ul  = locDisp(1)   ;   tl1 = locDisp(2:4) ;  tl2 = locDisp(5:7) ;
+
+  % global rotation matrix 
+  Rr     = rotData{2} ;
 
   l      = sqrt( sum( (xsref(2)-xsref(1))^2 + (ysref(2)-ysref(1))^2  + (zsref(2)-zsref(1))^2 ) ) ;
   
@@ -78,11 +83,13 @@ elseif elemType == 2
   ysglo  = linspace( ysdefA(1) , ysdefA(2), nPlotPoints ) ;
   zsglo  = linspace( zsdefA(1) , zsdefA(2), nPlotPoints ) ;
   
+  % loc axial coords to evaluate magnitudes 
   xsloc  = linspace( 0 , l, nPlotPoints )' ;
   
   ux     = zeros( size(xsloc) ) ; 
   uy     = zeros( size(xsloc) ) ; 
   uz     = zeros( size(xsloc) ) ;
+  
   titax	 = zeros( size(xsloc) ) ;
   titay	 = zeros( size(xsloc) ) ;
   titaz	 = zeros( size(xsloc) ) ;
@@ -92,7 +99,7 @@ elseif elemType == 2
   LocBendXYdofs = [ 3  6           3+ndofpnode 6+ndofpnode] ;
   LocBendXZdofs = [ 5  4           5+ndofpnode 4+ndofpnode] ;
 
-localUelem = zeros(2,1);
+  localUelem = zeros(2,1);
   localUelem( LocAxialdofs  ) = [ 0; ul ] ;
   localUelem( LocTorsidofs  ) = [ tl1(1); tl2(1) ] ;
   localUelem( LocBendXZdofs ) = [ 0; tl1(2); 0; tl2(2) ] ;
@@ -100,31 +107,33 @@ localUelem = zeros(2,1);
 
   for i=1:nPlotPoints,
   
-    % bending
     N = bendingInterFuns( xsloc(i), l, 0 );
-    uy(i)  = N * localUelem( LocBendXYdofs ) ;
 
-    Rb = eye(4);
-    Rb(2,2) = -1;
-    Rb(4,4) = -1;
+    Nlin1 = (l - xsloc(i))/l ;
+    Nlin2 = xsloc(i)/l       ;
 
+    % bending
+    Rb      = eye(4) ;
+    Rb(2,2) = -1     ;
+    Rb(4,4) = -1     ;
+
+    uy(i)  = N       * localUelem( LocBendXYdofs ) ;
     uz(i)  = N * Rb' * localUelem( LocBendXZdofs ) ;
     
     % stretching
-    Nlin1 = (l - xsloc(i))/l ;
-    Nlin2 = xsloc(i)/l       ;
     ux(i) = Nlin1 * localUelem(LocAxialdofs(1)) + Nlin2 * localUelem(LocAxialdofs(2)) ;
 		
     % torsion
 		titax(i) = Nlin1 * localUelem(LocTorsidofs(1)) + Nlin2 * localUelem(LocTorsidofs(2)) ;
 		
     % rots
-    %~ Nrots = bendingInterFuns( xsloc(i), l, 1 ) ;
-    %~ titaz(i) = Nrots * localUelem( LocBendXYdofs ) ; 
+    Nrots    = bendingInterFuns( xsloc(i), l, 1 ) ;
+    titaz(i) = Nrots       * localUelem( LocBendXYdofs ) ; 
     %~ titay(i) = Nrots * Rb' * localUelem( LocBendXZdofs ) ;
+    titay(i) = - (Nrots * Rb' * localUelem( LocBendXZdofs ) ) ;
     
-		if i<nPlotPoints
-			conecElem = [conecElem ; (i-1)+1 (i-1)+2] ;
+		if i < nPlotPoints
+			conecElem = [ conecElem ; (i-1)+1 (i-1)+2 ] ;
 		end
 		
   end
@@ -136,4 +145,11 @@ localUelem = zeros(2,1);
   ysdef = ( ysdefA(1) + XsGlo(2,:) )' ;
   zsdef = ( zsdefA(1) + XsGlo(3,:) )' ;
   
+  %~ for k=1:length( titax)
+    %~ auxtitaGlo = logar( expon( [ titax(k) titay(k) titaz(k) ]' ) * Rr ) ;
+    %~ auxtitaGlo = logar( Rr * expon( [ titax(k) titay(k) titaz(k) ]' ) ) ;
+    %~ titax(k) = auxtitaGlo(1);
+    %~ titay(k) = auxtitaGlo(2);
+    %~ titaz(k) = auxtitaGlo(3);
+  %~ end
 end
