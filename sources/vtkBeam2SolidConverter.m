@@ -42,11 +42,11 @@ if typeSolid == 12
              -ey*by*.5+ez*bz*.5 ] ;
   
   % rotated section
-  matsecR = ( Rr * expon( vecrotNode1 ) * matsec' )' ;
+  matsecR = ( Rr * locglos' * expon( vecrotNode1 ) * matsec' )' ;
   
   candsini = (nodesCoords( 1, : )+Ue(1:2:5)') + matsecR      ;
   
-  matsecR = ( Rr * expon( vecrotNode2) * matsec' )'  ;
+  matsecR = ( Rr * locglos' * expon( vecrotNode2) * matsec' )'  ;
 
   candsfin = (nodesCoords( 2, : )+Ue(7:2:11)') + matsecR      ;
         

@@ -5,7 +5,7 @@ clear all, close all
 
 %% General data
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'staticVonMisesTruss' ;
+problemName = 'staticVonMisesTrussNRAL' ;
 
 % uncomment to delete variables and close windows
 % clear all, close all
@@ -71,7 +71,9 @@ analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l
 
 %% Output parameters
 printFlag = 0 ;
-plotParamsVector = [ 1 ];
+plotParamsVector = [ 3 10];
+
+sectPar = [12 .1 .1]
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
@@ -88,7 +90,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
 plotParamsVector = [ 3 ];
 %~ plotParamsVector = [ 0 ];
-sectPar = [12 .1 .1]
+problemName = 'staticVonMisesTrussNR' ;
 
 acdir = pwd ; cd(dirOnsas);
 ONSAS

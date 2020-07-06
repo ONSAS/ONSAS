@@ -18,8 +18,8 @@
 % this function creates the conectivities and coordinates data structures for producing
 % vtk files of the solids or structures.
 
-function [ Nodesvtk, Conecvtk, elem2VTKCellMap, vtkDispMat ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U )
+function [ Nodesvtk, vtkDispMat, vtkNormalForces, Conecvtk, elem2VTKCellMap ] = ...
+  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ vtkDispMat = [] ;
 if nElemsTrussOrFrame == nelems, % all are truss or beams
 
   Nodesvtk = [] ;
+  vtkNormalForces = [] ;
   
   if nargout>1
 
@@ -74,6 +75,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
     if length( secc ) > 0
         
+
       for j = 1 : (ndivNodes-1)
 
         dispsSubElem       = zeros(12,1) ;
@@ -92,13 +94,17 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
         Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
         vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
 
-        if nargout > 1
+        if nargout > 3
           ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
           Conecvtk = [ Conecvtk ; ConecCell ] ;
         end
+
       end
 
-      if nargout > 1
+      vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
+
+
+      if nargout > 3
         elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
       
         counterNodesVtk = counterNodesVtk +   ndivNodes * 4   ;

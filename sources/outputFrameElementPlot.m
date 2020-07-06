@@ -48,17 +48,26 @@ if elemType == 1
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
+	conecElem = [1 2] ;
+
+dispsElem
+
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  
+  % global rotation matrix 
+  Rr     = rotData{2} ;
+  %~ Rr     = eye(3);
+  
+  locDisp = rotData{1} ;
+  ul  = locDisp(1)   ;   tl1 = locDisp(2:4);  tl2 = locDisp(5:7) ;
+
   titax = [0 0]' ;
   titay = [0 0]' ;
   titaz = [0 0]' ;
-	conecElem = [1 2] ;
-
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
-  
-  % global rotation matrix 
-  %~ Rr     = rotData{2}
-  Rr     = eye(3);
-  
+  %~ titax = [tl1(1) tl2(1)]' ;
+  %~ titay = [tl1(2) tl2(2)]' ;
+  %~ titaz = [tl1(3) tl2(3)]' ;
 
 elseif elemType == 2
 
