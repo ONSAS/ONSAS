@@ -50,8 +50,6 @@ if elemType == 1
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
 	conecElem = [1 2] ;
 
-dispsElem
-
   [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
   
@@ -71,9 +69,9 @@ dispsElem
 
 elseif elemType == 2
 
-  xsdefA = (coordsElem + dispsElem )( [ 1   7  ] ) ;
-  ysdefA = (coordsElem + dispsElem )( [ 1+2 7+2] ) ;
-  zsdefA = (coordsElem + dispsElem )( [ 1+4 7+4] ) ;
+  xsdefA = coordsElem( [ 1   7  ] ) + dispsElem( [ 1   7  ] ) ;
+  ysdefA = coordsElem( [ 1+2 7+2] ) + dispsElem( [ 1+2 7+2] ) ;
+  zsdefA = coordsElem( [ 1+4 7+4] ) + dispsElem( [ 1+4 7+4] ) ;
 
   nPlotPoints    = 10 ; 
 
