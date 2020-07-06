@@ -418,7 +418,7 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 % ==============================================================================
 % --------------------------    Plots and Tables    ----------------------------
 
-fprintf(fileReport, [ '\\section{Plots and Tables}\n\n'] ) ;
+%fprintf(fileReport, [ '\\section{Plots and Tables}\n\n'] ) ;
 
 %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 	%~ auxv = max ( abs( matUs((3:6:end),:) ) ) ;  auxw = max ( abs( matUs((5:6:end), :) ) ) ;  auxf = max ( abs( matFs(:,:) ) ) ; auxstrain = max ( abs( trussStrain(:,:) ) ) ; 
@@ -427,85 +427,102 @@ fprintf(fileReport, [ '\\section{Plots and Tables}\n\n'] ) ;
 
 %-------------------------------- Deformed Shape -------------------------------
 
-if size(matUs,2) == 1 && size(matNts,2) == 1 
-	matUs = [zeros(size(matUs,1),1) matUs] ;
-	matNts = [zeros(size(matNts,1),1) matNts] ;
-end
+%~ if size(matUs,2) == 1 && size(matNts,2) == 1 
+	%~ matUs = [zeros(size(matUs,1),1) matUs] ;
+	%~ matNts = [zeros(size(matNts,1),1) matNts] ;
+%~ end
 
-nTimesTotal = size( matUs, 2 ) ;
+%~ nTimesTotal = size( matUs, 2 ) ;
 
-if (length(plotParamsVector)>1)
-  timesPlotsVec = round( linspace(1, nTimesTotal, plotParamsVector(2) ) ) ;
-else
-  timesPlotsVec = 1: size(matUs,2) ;
-end
+%~ if (length(plotParamsVector)>1)
+  %~ timesPlotsVec = round( linspace(1, nTimesTotal, plotParamsVector(2) ) ) ;
+%~ else
+  %~ timesPlotsVec = 1: size(matUs,2) ;
+%~ end
 
 
-if plotParamsVector(1) < 3 && ( printFlag == 1 || printFlag == 2 )
-  fprintf(fileReport, [ '\\subsection{Plots}\n\n'] ) ;
-  %~ fprintf(fileReport, [ 'The deformed shape of the structure is plotted in Octave as shown below. \n'] ) ;
-  fprintf(fileReport, [ '\\subsubsection{Deformed Shape}\n\n'] ) ;
+%~ if plotParamsVector(1) < 3 && ( printFlag == 1 || printFlag == 2 )
+  %~ fprintf(fileReport, [ '\\subsection{Plots}\n\n'] ) ;
+  %%%fprintf(fileReport, [ 'The deformed shape of the structure is plotted in Octave as shown below. \n'] ) ;
+  %~ fprintf(fileReport, [ '\\subsubsection{Deformed Shape}\n\n'] ) ;
 
-	if printFlag > 0
-		fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-		if printFlag == 1  
-			fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-		elseif printFlag == 2  
-			fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
-		end
+	%~ if printFlag > 0
+		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
+		%~ if printFlag == 1  
+			%~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
+		%~ elseif printFlag == 2  
+			%~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
+		%~ end
+    
+    
+    
+    
+    
 		%~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 			%~ if norm(variableFext) == 0
 				%~ fprintf(fileReport, [ '\\caption{Deformed structure. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'] )
 			%~ else
 				%~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
 			%~ end
-		%~ else	
-			fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
-		%~ end
-		fprintf(fileReport,  '\\end{figure} \n\n' )
-	end
+		%~ else
+    
+    
+    	
+			%~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+		%end
+		%~ fprintf(fileReport,  '\\end{figure} \n\n' )
+	%~ end
 	
-  fprintf(fileReport, [ '\\subsubsection{Normal Force}\n\n'] ) ;
+  %~ fprintf(fileReport, [ '\\subsubsection{Normal Force}\n\n'] ) ;
   
-  if printFlag > 0
-		fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-		if printFlag == 1  
-			fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-		elseif printFlag == 2  
-			fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
-		end
-		%~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-			%~ if norm(variableFext) == 0
-				%~ fprintf(fileReport, [ '\\caption{Normal Force.}\n'] )
-			%~ else
-				%~ fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
-			%~ end
-		%~ else	
-			fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+  %~ if printFlag > 0
+		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
+		%~ if printFlag == 1  
+			%~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
+		%~ elseif printFlag == 2  
+			%~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
 		%~ end
-		fprintf(fileReport,  '\\end{figure} \n\n' )
-	end
-end
-fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+		
+    
+   % if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
+			%if norm(variableFext) == 0
+			%	fprintf(fileReport, [ '\\caption{Normal Force.}\n'] )
+			%else
+				%fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+			%end
+		%else	
+		
+    
+    	%~ fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
+		
+    %end
+		
+    %~ fprintf(fileReport,  '\\end{figure} \n\n' )
+	%~ end
+%~ end
+%~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
 %--------------------------------- Control node --------------------------------
 
+
+
+
 %~ if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
-  if length(loadFactors) > 1
-    fprintf(fileReport, [ '\\subsection{Control Dof}\n\n' ] ) ;
-    fprintf(fileReport, [ 'The control node information and displacement are shown below. \n' ] ) ; 
-    [enc,fin] = tablesFunc( 'Node & Dof & Scale factor', 3, 'c|c|c', 'Control node information for incremental analysis.') ;
-    fprintf(fileReport, '%s', enc) ;
-    %~ fprintf(fileReport, '%i & %i & %i \n', controlDofInfo(1), controlDofInfo(2), controlDofInfo(3)) ;
-    fprintf(fileReport, '%s', fin) ;
-    fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;
-    if printFlag == 1
-      fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_loadDisp.tex}} \n ' ] ) ;
-    elseif printFlag == 2
-      fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_loadDisp}\n']) ;
-    end  
-    fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] );
-    fprintf(fileReport,  '\\end{figure} \n\n' );
-  end   
+  %~ if length(loadFactors) > 1
+    %~ fprintf(fileReport, [ '\\subsection{Control Dof}\n\n' ] ) ;
+    %~ fprintf(fileReport, [ 'The control node information and displacement are shown below. \n' ] ) ; 
+    %~ [enc,fin] = tablesFunc( 'Node & Dof & Scale factor', 3, 'c|c|c', 'Control node information for incremental analysis.') ;
+    %~ fprintf(fileReport, '%s', enc) ;
+    %%%fprintf(fileReport, '%i & %i & %i \n', controlDofInfo(1), controlDofInfo(2), controlDofInfo(3)) ;
+    %~ fprintf(fileReport, '%s', fin) ;
+    %~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;
+    %~ if printFlag == 1
+      %~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_loadDisp.tex}} \n ' ] ) ;
+    %~ elseif printFlag == 2
+      %~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_loadDisp}\n']) ;
+    %~ end  
+    %~ fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] );
+    %~ fprintf(fileReport,  '\\end{figure} \n\n' );
+  %~ end   
 %~ end
 
 

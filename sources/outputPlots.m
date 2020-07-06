@@ -35,12 +35,6 @@ function outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
 
   timeVals = (0:(nTimesTotal-1))*timeIncr;
   
-  if length(plotParamsVector) > 1
-    timesPlotsVec = round( linspace(1, nTimesTotal, plotParamsVector(2) ) ) ;
-  else
-    % default value: 4 times ploted
-    timesPlotsVec = round( linspace(1, nTimesTotal, 4 ) ) ;
-  end
 	
   
   if plotParamsVector(1) > 0

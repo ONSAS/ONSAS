@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function  [ fs, ks, stress ]= elementBeamForces( ...
+function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   xs, params, booleanCSTangs, solutionMethod, Ue, Udote, Udotdote ) ;
 
 if solutionMethod > 2
@@ -41,10 +41,10 @@ O1 = zeros(1,3) ;
 permutIndxs = [1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ] ;
 
 dg       = Ue      ( permutIndxs ) ;
-ddotg    = Udote   ( permutIndxs ) ;
-ddotdotg = Udotdote( permutIndxs ) ;
-
-%~ [dg ddotdotg ddotg ] 
+if solutionMethod > 2
+  ddotg    = Udote   ( permutIndxs ) ;
+  ddotdotg = Udotdote( permutIndxs ) ;
+end
 
 % global thetas
 tg1 = dg (4:6);
@@ -56,7 +56,6 @@ Rg2 = expon( tg2 ) ;
 
 x21 = xs(4:6) - xs(1:3) ;
 d21 = dg(7:9) - dg(1:3) ;
-
 
 lo = sqrt( ( x21       )' * ( x21       ) ) ; %
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
@@ -108,7 +107,7 @@ Re2 = Rr' * Rg2 * Ro;
 tl1 = logar( Re1 ) ;
 tl2 = logar( Re2 ) ;
 
-%~ locDisp = [ u tl1' tl2' ] ;
+locDisp = [ u tl1' tl2' ] ;
 % -----------------------
 
 
@@ -268,6 +267,8 @@ end
 fs = {Finte} ;
 ks = {KTe};
 
+rotData = {locDisp, Rr} ;
+
 
 
 
@@ -351,10 +352,9 @@ if solutionMethod > 2
   %compute Rg(x)
   thethaRoof  = @(x) P2(x)*[tl1;tl2];% Ec 39
   Rex         = @(x) expon(thethaRoof(x)); %Ec 19 elevado en ambos lados
-  Rgx  	    = @(x) Rr*Rex(x)*Ro'; 
+  Rgx  	      = @(x) Rr*Rex(x)*Ro';   
   
-  
-  Irho		= @(x) Rgx(x)*Ro*(Jrho)*(Rgx(x)*Ro)'; %Ec 45
+  Irho		    = @(x) Rgx(x)*Ro*(Jrho)*(Rgx(x)*Ro)'; %Ec 45
   Irhoe       = @(x) Rr'*Irho(x)*Rr;   	 		%Ec 80
   
   % ---------Compute interial force by quadrature ---------

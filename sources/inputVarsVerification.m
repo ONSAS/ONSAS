@@ -151,7 +151,7 @@ else
 end
 
 if exist( 'storeBoolean' ) == 0
-  storeBoolean = 1 ;
+  storeBoolean = 0 ;
 end
 
 if exist( 'printFlag' ) == 0
@@ -257,9 +257,24 @@ tangentMatricesCell = cell(2,1) ;
 contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
-
 materialsParamsMat = [] ;
 for i = 1 : size( materialsParams, 1)
   materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
 end
 
+if numericalMethodParams(1) > 3
+  finalTime = numericalMethodParams(3);
+  %~ nTimes = numericalMethodParams(6) ;
+else
+  finalTime = numericalMethodParams(5);
+  nTimes = numericalMethodParams(6) +1 ;
+end
+
+if length( plotParamsVector ) > 1
+  nplots = nTimes ;
+else
+  % default value: 4 times ploted
+  nplots = min( [ 4 nTimes ] ) ;
+end
+
+timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;

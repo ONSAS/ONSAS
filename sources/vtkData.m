@@ -15,34 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problemName, indplot, vtkNormalForce, cellStress, vtkDispMat )
 
-% script for vtk output data generation
-
-xs = Nodes(:,1) ;
-ys = Nodes(:,2) ;
-zs = Nodes(:,3) ;
-
-% ------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------
-currdir = pwd ;
-lw  = 2   ; ms  = 5.5 ;
-lw2 = 3.2 ; ms2 = 23 ;
-plotfontsize = 22 ;
-
-nelems = size(Conec) ;
-nnodes = size(Nodes) ;
-ndofpnode = 6 ;
-
-% -----------------------------------------
-
-for indplot = 1 : length( timesPlotsVec ) ;
-
-
-
-  Utplot = matUts ( :, timesPlotsVec( indplot) ) ;
-
-  [vtkConec, vtkNodesDef, vtkDispMat, vtkNormalForceMat ] = vtkConecNodes ( Nodes, Conec, indexesElems, sectPar , Utplot, coordsElemsMat, matNts(:, timesPlotsVec(indplot)) ) ;
-	
   filename = [ outputdir problemName '_' sprintf('%04i',indplot-1) '.vtk'] ;
 
   % Scalars vals
@@ -61,8 +35,8 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	cellCellData    = cell(1) ;
   cellTensorData  = cell(1) ;	
   
-	if size(matNts,1) > 0
-    cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForceMat ;
+	if size(vtkNormalForce,1) > 0
+    cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForce ;
 	end
     
   if size(cellStress,1) > 0 && size(cellStress{3},1) > 0
@@ -105,8 +79,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
   cellPointData = cell(1,3) ;
   cellPointData{1,1} = 'VECTORS' ; cellPointData{1,2} = 'Displacements' ; cellPointData{1,3} = vtkDispMat ;
 
-  vtkWriter( filename, vtkNodesDef, vtkConec , cellPointData, cellCellData ) ;
-end
+
 
 
 
