@@ -24,9 +24,9 @@ materialsParams = {[ rho 1 E nu ]} ;
 crossSecsParams = [ A I I J ] ;
 
 % method
-timeIncr   =  0.05    ;
-%~ finalTime  = .1    
-finalTime  = 10 ;    
+timeIncr   =  0.050    ;
+%~ finalTime  = .5    ;
+finalTime  = 15 ;    
 nLoadSteps = finalTime/timeIncr ;
 
 % tolerances
@@ -40,8 +40,9 @@ nodalSprings = [ 1 inf inf inf inf inf inf ] ;
 %~ nElemsPerBeam = 4 ;
 nElemsPerBeam = 10 ;
 auxCoords = linspace(0,L,nElemsPerBeam+1)' ;
+
 Nodes = [ zeros(nElemsPerBeam+1,1)       auxCoords  zeros(nElemsPerBeam+1,1) ; ...
-          -auxCoords(2:end) zeros(nElemsPerBeam,1)       zeros(nElemsPerBeam,1) ] ;
+          -auxCoords(2:end) ones(nElemsPerBeam,1)*L       zeros(nElemsPerBeam,1) ] ;
 
 aux = (1:(2*nElemsPerBeam+1))' ;
 Conec = [ aux(1:(end-1)) aux(2:end) zeros(2*nElemsPerBeam,2) ...
@@ -61,8 +62,8 @@ numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopT
 %~ alphaHHT = -0.05 ;
 %~ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
 
-plotParamsVector = [0 ];
-%~ plotParamsVector = [ 3 30 ];
+%~ plotParamsVector = [0 ];
+plotParamsVector = [ 3 60 ]; sectPar = [ 12 .2 .2 ] ;
 printFlag = 0 ;
 
 reportBoolean = 0 ;
@@ -78,6 +79,6 @@ plotfontsize = 22 ;
 figure
 plot(controlDisps,'b--o','linewidth',lw,'markersize',ms);
 %~ plot(timesVec, controlDisps,'b--o','linewidth',lw,'markersize',ms);
-cd(outputDir);
+cd(dirOnsas); cd(outputDir);
 print('rightAngle.png','-dpng')
 cd(acdir);

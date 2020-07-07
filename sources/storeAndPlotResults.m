@@ -37,11 +37,23 @@ controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1)
                                                    .* controlDofsAndFactors(:,2) ;
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
+normalForces = zeros( nElems, 1 ) ;
+indsNormal = [ find( Conec(:,7) == 1 ) ; find( Conec(:,7) == 2 ) ]' ;
+
+if timeIndex == 1
+normalForcesIni = zeros( nElems, 1 ) ;
+  sigxs = modelCurrSol.Stress(:,1) ;
+  normalForcesIni( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+end
+
+sigxs = modelNextSol.Stress(:,1) ;
+normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
 
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
-  cellStress   { timeIndex+1 }       = modelNextSol.Stress             ;
+  cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
+  matNs      (:, timeIndex+1 )       = normalForces                    ;
 end
 % ------------------------------------------------------------------------------
 
@@ -51,4 +63,39 @@ itersPerTimeVec( timeIndex )    = modelNextSol.timeStepIters ;
 while contProgr < ( modelCurrSol.currTime / ( finalTime*.05 ) )
   contProgr = contProgr + 1 ;
   fprintf('=')
+end
+
+
+if plotParamsVector(1) == 3
+
+  if modelCurrSol.timeIndex == 1,
+    
+    % generate connectivity
+    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni ) ;
+
+    % data
+    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, {}, vtkDispMat ) ;
+
+    % writes file
+    vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
+  end
+
+  aux = timesPlotsVec == modelNextSol.timeIndex ;
+  
+  if sum( aux ) > 0
+
+    indplot = find( aux ) ;
+
+    % generates deformed nodes coords
+    [ vtkNodes, vtkDispMat, vtkNormalForces ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces ) ;
+
+    % data
+    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, {}, vtkDispMat ) ;
+    
+    % writes file
+    vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
+      
+  end
 end

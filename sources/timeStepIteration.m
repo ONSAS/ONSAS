@@ -162,7 +162,7 @@ modelCompress
 % ==============================================================================
 %
 % ==============================================================================
-function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut,Udott,Udotdott, Uk, numericalMethodParams, currTime )
+function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, numericalMethodParams, currTime )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -174,14 +174,13 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut,Udott,Udotdott, Uk, n
 if solutionMethod == 3 || solutionMethod == 4
 
   if solutionMethod == 4
-      deltaNW = (1-2*alphaHHT)/2 ;
-      AlphaNW = (1-alphaHHT^2)/4 ;
+    deltaNW = (1-2*alphaHHT)/2 ;
+    AlphaNW = (1-alphaHHT^2)/4 ;
   end
   
-  [a0NM, a1NM, a2NM, a3NM, a4NM, a5NM, a6NM, a7NM ] = coefsNM( AlphaNW, deltaNW, deltaT ) ;
-  
-  Udotdottp1 = a0NM*(Uk-Ut) - a2NM*Udott - a3NM*Udotdott;
-  Udottp1    = Udott + a6NM*Udotdott + a7NM*Udotdottp1    ;
+  Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
+
+  Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
   
 else
   Udotdottp1 = Udotdott ;
@@ -194,6 +193,40 @@ end
 % ==============================================================================
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, solutionMethod, currDeltau ) 
 
-  Uk ( neumdofs ) = Uk(neumdofs ) + deltaured ;
+  oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
+  evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
 
+  Uk ( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured (oddNeumDofsInds ) ;
+
+  nNodes = length( Uk) / 6 ;
+  
+  deltauComplete = zeros( size( Uk)) ;
+  deltauComplete( neumdofs ) = deltaured ;
+  
+  for i=1:nNodes
+    nodeDofs = nodes2dofs( i , 6 ) ;
+    nodeAngDofs = nodeDofs(2:2:6)  ;
+    
+    
+    %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
+                                         %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
+                                       %~ ) ) ;
+    updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
+
+    %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
+                                %~ expon( Uk             ( nodeAngDofs ) ) ) ;
+                                
+    Uk ( nodeAngDofs ) = updateB ;
+    
+  end
+  
   currDeltau      = currDeltau    + deltaured ;
+
+function vec = antiSkew( mat ) 
+  vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
+
+
+
+
+
+
