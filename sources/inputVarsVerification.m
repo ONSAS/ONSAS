@@ -262,13 +262,16 @@ for i = 1 : size( materialsParams, 1)
   materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
 end
 
-if numericalMethodParams(1) > 3
+
+
+if numericalMethodParams(1) > 2
   finalTime = numericalMethodParams(3);
-  %~ nTimes = numericalMethodParams(6) ;
+  nTimes = round( numericalMethodParams(3) / numericalMethodParams(2) ) ;
 else
   finalTime = numericalMethodParams(5);
   nTimes = numericalMethodParams(6) +1 ;
 end
+
 
 if length( plotParamsVector ) > 1
   nplots = nTimes ;
