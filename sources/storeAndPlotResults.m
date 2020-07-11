@@ -41,14 +41,17 @@ normalForces = zeros( nElems, 1 ) ;
 indsNormal = [ find( Conec(:,7) == 1 ) ; find( Conec(:,7) == 2 ) ]' ;
 
 if timeIndex == 1
-normalForcesIni = zeros( nElems, 1 ) ;
+  normalForcesIni = zeros( nElems, 1 ) ;
   sigxs = modelCurrSol.Stress(:,1) ;
-  normalForcesIni( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+  if length(indsNormal) > 0
+    normalForcesIni( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+  end
 end
 
-sigxs = modelNextSol.Stress(:,1) ;
-normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
-
+if length(indsNormal) > 0
+  sigxs = modelNextSol.Stress(:,1) ;
+  normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+end
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
   cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
@@ -72,7 +75,7 @@ if plotParamsVector(1) == 3
     
     % generate connectivity
     [ vtkNodes, vtkDispMat, vtkNormalForces, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni ) ;
+      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni, Nodes ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, {}, vtkDispMat ) ;
@@ -89,7 +92,7 @@ if plotParamsVector(1) == 3
 
     % generates deformed nodes coords
     [ vtkNodes, vtkDispMat, vtkNormalForces ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces ) ;
+      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces, Nodes ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, {}, vtkDispMat ) ;

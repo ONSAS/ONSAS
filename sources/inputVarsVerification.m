@@ -162,6 +162,11 @@ if exist( 'reportBoolean' ) == 0
   reportBoolean = 1 ;
 end
 
+if exist( 'consMatFlag' ) == 0
+  global consMatFlag
+  consMatFlag = 2 ;
+end
+
 if booleanScreenOutput
   fprintf(' done.\n');
 end

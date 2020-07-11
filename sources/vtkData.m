@@ -31,9 +31,9 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
 	vecII   = [] ;
 	vecIII  = [] ;
   
-  cellPointData   = cell(1) ;
-	cellCellData    = cell(1) ;
-  cellTensorData  = cell(1) ;	
+  cellPointData   = cell ;
+	cellCellData    = cell ;
+  cellTensorData  = cell ;	
   
 	if size(vtkNormalForce,1) > 0
     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForce ;
