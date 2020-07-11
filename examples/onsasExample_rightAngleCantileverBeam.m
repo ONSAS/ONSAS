@@ -25,8 +25,9 @@ crossSecsParams = [ A I I J ] ;
 
 % method
 timeIncr   =  0.050    ;
-finalTime  = .5    ;
-%~ finalTime  = 15 ;    
+%~ finalTime  = .5    ;
+%~ finalTime  = 3 ;    
+finalTime  = 15 ;    
 nLoadSteps = finalTime/timeIncr ;
 
 % tolerances
@@ -91,3 +92,7 @@ print('rightAngle','-dpdflatex','-tight')
 cd(acdir);
 
 
+
+figure
+grid on
+plot(timesVec, loadFactors,'r','linewidth',lw,'markersize',ms);

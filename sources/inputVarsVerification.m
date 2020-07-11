@@ -282,12 +282,11 @@ else
   nTimes = numericalMethodParams(6) +1 ;
 end
 
-
 if length( plotParamsVector ) > 1
-  nplots = nTimes ;
+  nplots = min( [ nTimes plotParamsVector(2) ] ) ;
 else
-  % default value: 4 times ploted
-  nplots = min( [ 4 nTimes ] ) ;
+  % default value: all
+  nplots = nTimes ;
 end
 
 timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
