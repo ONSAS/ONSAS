@@ -63,8 +63,8 @@ stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
 targetLoadFactr  = 2    ;
 
-nLoadSteps       = 2    ;
-%~ nLoadSteps       = 10    ;
+%~ nLoadSteps       = 2    ;
+nLoadSteps       = 10    ;
 
 controlDofs = [ 7 1 1 ] ;
 
@@ -77,7 +77,7 @@ analyticCheckTolerance = 1e-8 ;
 analyticFunc = @(w) E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
 
 %% Output parameters
-plotParamsVector = [ 3 ] ;
+plotParamsVector = [ 0 ] ;
 printflag = 2 ;
 
 reportBoolean = 0;
@@ -115,7 +115,7 @@ loadsMat = [1   p 0 0 0 0 0 ] ; % --- global loading ---
 
 clear nodesMat conecMat loadsMat suppsMat
 
-plotParamsVector = [ 0 ] ;
+plotParamsVector = [ 3 ] ;
 
 % run ONSAS
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
@@ -139,4 +139,4 @@ legend('analytic Sol','numerical Sol 1','numerical Sol 2','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %~ print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
-print( [ 'plotsExtensionSVK'  ] ,'-dpdflatex','tight') ;
+print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;

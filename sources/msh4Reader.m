@@ -58,7 +58,8 @@ if strncmp( X, '$Physic',5)
   physicalNames  = cell ( nPhysicalNames, 1 ) ; 
 
   for i=1:nPhysicalNames
-    numsPhysProp(i) = fscanf(fid,'%g %g',[2 1])(2) ;  
+    aux              = fscanf(fid,'%g %g',[2 1]) ;
+    numsPhysProp(i)  = aux(2) ;  
     physicalNames{i} = fscanf(fid,'%s ',[1 1])     ;   
   end
   X = fgets(fid) ; % read end physical
