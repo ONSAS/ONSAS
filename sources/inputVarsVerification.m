@@ -195,7 +195,12 @@ if exist( outputDir ) == 7 % problemName is a directory
   if octaveBoolean
     confirm_recursive_rmdir(0)
   end
-  [aux, msg] = rmdir( problemName ,'s'); 
+  
+  % delete
+  [aux, msg] = rmdir( outputDir ,'s') ;
+  
+  % create empty
+  mkdir( outputDir );
 
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   % it is created
