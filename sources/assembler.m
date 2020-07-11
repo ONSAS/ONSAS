@@ -180,24 +180,15 @@ else
         nu = elemConstitutiveParams( 3) ;
   
         if paramOut==1
-        
-          iniAss = time() ;
   
           [ Finte ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, dispsElem , [E nu], paramOut ) ; 
-          
-          contTiempoLlamadasAssemblyFint = contTiempoLlamadasAssemblyFint + ( time() - iniAss) ;
           
           strain = zeros(6,1) ;
           stress = zeros(6,1) ;
   
-        elseif paramOut == 2
-  
-          iniAss = time() ;
-  
+        %~ elseif paramOut == 2
+        elseif paramOut >= 2
           [ Finte, Ke, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
-  
-          contTiempoLlamadasAssembly = contTiempoLlamadasAssembly + ( time() - iniAss) ;
-  
         end
         
       else
