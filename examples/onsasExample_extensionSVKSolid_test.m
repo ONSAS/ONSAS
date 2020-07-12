@@ -122,7 +122,7 @@ acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
 % --- plots ---
 
-    lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
+lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
 
 figure
 plot( controlDisps, analyticVals ,'b-o' , 'linewidth', lw,'markersize',ms )
@@ -139,4 +139,7 @@ legend('analytic Sol','numerical Sol 1','numerical Sol 2','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %~ print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
+
+cd(dirOnsas); cd(outputDir);
 print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
+cd(acdir);
