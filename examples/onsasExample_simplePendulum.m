@@ -24,7 +24,8 @@ nodalDispDamping = 0.000 ;
 booleanConsistentMassMat = 0 ;
 
 % method
-timeIncr   =  0.1    ;
+%~ timeIncr   =  0.1    ;
+timeIncr   =  0.01    ;
 finalTime  =  4.13                ;
 %~ timeIncr   =  0.01    ;
 %~ finalTime  =  2                ;
@@ -76,7 +77,9 @@ controlDofs = [ 2 1 1 ] ;
 numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts DeltaNW AlphaNW] ;
 %~ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts alphaHHT ] ;
 
-plotParamsVector = [ 1 ];
+%~ plotParamsVector = [ 1 ];
+sectPar = [12 .3 .3 ] 
+plotParamsVector = [ 3 40 ];
 %~ plotParamsVector = [2 5 ];
 %~ plotParamsVector = [ 3 20 ];
 printFlag = 0 ;
