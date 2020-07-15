@@ -58,12 +58,18 @@ if (storeBoolean == 1)
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
   matNs      (:, timeIndex+1 )       = normalForces                    ;
 end
-% ------------------------------------------------------------------------------
 
 % stores iterations
-itersPerTimeVec( timeIndex )    = modelNextSol.timeStepIters ;
+itersPerTimeVec( timeIndex+1 )  = modelNextSol.timeStepIters ;
 
-while contProgr < ( modelCurrSol.currTime / ( finalTime*.05 ) )
+% ------------------------------------------------------------------------------
+
+
+%~ contProgr
+%~ modelNextSol.currTime
+%~ ( finalTime*.05 )
+
+while contProgr <= ( modelNextSol.currTime / ( finalTime*.05 ) )
   contProgr = contProgr + 1 ;
   fprintf('=')
 end
