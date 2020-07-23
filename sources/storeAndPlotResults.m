@@ -52,6 +52,7 @@ if length(indsNormal) > 0
   sigxs = modelNextSol.Stress(:,1) ;
   normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
 end
+
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
   cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
