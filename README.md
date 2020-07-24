@@ -1,6 +1,5 @@
-![afiche](https://www.fing.edu.uy/~jorgepz/files/aficheONSAS.png "Afiche evento presentación.")
 
-# ONSAS: an Open Nonlinear Structural Analysis System (v. 0.1.9)
+# ONSAS: an Open Nonlinear Structural Analysis Solver (v. 0.1.9)
 
 ## Table of Contents
 1. [About ONSAS](#aboutonsas)
@@ -17,21 +16,12 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/) code for static/dy
   
 ### What can ONSAS be used for?
 
-The current version allows to perform dynamic/static nonlinear analyses of beam/truss 3D structures, as well as static linear analyses for truss, beams, plates and solids. A reduced list of features is listed at next:
+The current version allows to perform dynamic/static nonlinear analyses of beam/truss/solid 3D structures. A reduced list of features is listed at next:
 
-The nonlinear analysis capabilities include:
-
-* **Elements** 2-node truss, 2-node Bernoulli frame.
+* **Elements** 2-node truss, 2-node Bernoulli frame, 4-node tetrahedron.
 * **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method.
+* **Dynamic analysis methods** Newmark Method.
 * **Loads** nodal loads, time-history user-defined loading program.
-
-The linear analysis module includes the following features:
-
-*	**Elements** 4-node tetrahedron, 2-node truss, 2-node Bernoulli frame and 4-node rectangular plate.
-* **Loads** static nodal loads, distributed load (for frame elements)
-* **Imposed displacements** non-zero displacements can be imposed on nodes.
-* **Releases** bending moment nodal releases at each beam element.
-
 
 ### License
 
