@@ -268,7 +268,7 @@ contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
 materialsParamsMat = [] ;
-for i = 1 : size( materialsParams, 1)
+for i = 1 : length( materialsParams )
   materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
 end
 

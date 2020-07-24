@@ -91,8 +91,8 @@ else
   for elem = 1:nElems
 
     % extract element properties
-    elemCrossSecParams     = crossSecsParams( Conec( elem, 6 ) , : ) ;
     elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
+    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
     elemrho                = elemMaterialParams( 1     )              ;
     elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
@@ -131,10 +131,10 @@ else
   
       sizeTensor = 1 ;
   
-      A   = elemCrossSecParams( Conec(elem, 6), 1 ) ;
-      Iyy = elemCrossSecParams( Conec(elem, 6), 2 ) ;
-      Izz = elemCrossSecParams( Conec(elem, 6), 3 ) ;
-      J   = elemCrossSecParams( Conec(elem, 6), 4 ) ;
+      A   = elemCrossSecParams( 1 ) ;
+      Iyy = elemCrossSecParams( 2 ) ;
+      Izz = elemCrossSecParams( 3 ) ;
+      J   = elemCrossSecParams( 4 ) ;
   
       xs = coordsElemsMat(elem,1:2:end)'        ;
       E  = elemConstitutiveParams(2) ;
