@@ -131,7 +131,7 @@ else
   [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   factorCrit = 0;
 end
-nKeigpos
+
 % prints iteration info in file
 printSolverOutput( ...
   outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIters stopCritPar nKeigpos nKeigneg ] ) ;

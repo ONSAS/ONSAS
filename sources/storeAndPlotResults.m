@@ -52,18 +52,25 @@ if length(indsNormal) > 0
   sigxs = modelNextSol.Stress(:,1) ;
   normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
 end
+
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
   cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
   matNs      (:, timeIndex+1 )       = normalForces                    ;
 end
-% ------------------------------------------------------------------------------
 
 % stores iterations
-itersPerTimeVec( timeIndex )    = modelNextSol.timeStepIters ;
+itersPerTimeVec( timeIndex+1 )  = modelNextSol.timeStepIters ;
 
-while contProgr < ( modelCurrSol.currTime / ( finalTime*.05 ) )
+% ------------------------------------------------------------------------------
+
+
+%~ contProgr
+%~ modelNextSol.currTime
+%~ ( finalTime*.05 )
+
+while contProgr <= ( modelNextSol.currTime / ( finalTime*.05 ) )
   contProgr = contProgr + 1 ;
   fprintf('=')
 end
