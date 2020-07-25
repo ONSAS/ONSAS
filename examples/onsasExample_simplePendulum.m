@@ -24,12 +24,8 @@ nodalDispDamping = 0.000 ;
 booleanConsistentMassMat = 0 ;
 
 % method
-%~ timeIncr   =  0.1    ;
-timeIncr   =  0.01    ;
+timeIncr   =  0.1    ;
 finalTime  =  4.13                ;
-%~ timeIncr   =  0.01    ;
-%~ finalTime  =  2                ;
-%~ finalTime  = 0.3                 ;
 nLoadSteps = finalTime/timeIncr ;
 
 
@@ -74,8 +70,8 @@ controlDofs = [ 2 1 1 ] ;
 
 % analysis parameters
 
-numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts DeltaNW AlphaNW] ;
-%~ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts alphaHHT ] ;
+%~ numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts DeltaNW AlphaNW] ;
+numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts alphaHHT ] ;
 
 %~ plotParamsVector = [ 1 ];
 sectPar = [12 .3 .3 ] 
@@ -92,7 +88,8 @@ close all
 
 problemName = 'simplePendulumLooseTol' ;
 
-numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesLoose stopTolIts DeltaNW AlphaNW] ;
+%~ numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesLoose stopTolIts DeltaNW AlphaNW] ;
+numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesLoose stopTolIts alphaHHT ] ;
 
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 

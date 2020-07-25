@@ -24,10 +24,10 @@ materialsParams = {[ rho 1 E nu ]} ;
 crossSecsParams = [ A I I J ] ;
 
 % method
-timeIncr   =  0.050    ;
+timeIncr   =  0.25    ;
 %~ finalTime  = .5    ;
 %~ finalTime  = 3 ;    
-finalTime  = 15 ;    
+finalTime  = 20 ;    
 nLoadSteps = finalTime/timeIncr ;
 
 % tolerances
@@ -57,11 +57,11 @@ controlDofs = [ nElemsPerBeam+1 3  1 ] ;
 loadFactorsFunc = @(t) 50*t*(t<1) + (100-50*t)*(t>=1)*(t<2) + 0 ;
 DeltaNW    =  0.5               ;
 AlphaNW    =  0.25              ;
-numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
+%~ numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
 
 %~ alphaHHT = 0 ;
-%~ alphaHHT = -0.05 ;
-%~ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
+alphaHHT = -0.05 ;
+numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
 
 %~ plotParamsVector = [0 ];
 plotParamsVector = [ 3 ]; sectPar = [ 12 .25 .25 ] ;
