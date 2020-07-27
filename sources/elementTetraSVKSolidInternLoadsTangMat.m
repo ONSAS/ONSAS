@@ -18,14 +18,14 @@
 % function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes tetraedron element with hyperelastic behavior. based on equation 4.9.25 from belytschko 2nd edition.
 %
 
-function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, Ue, params, paramOut )
+function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, Ue, consParams, paramOut )
 
   Finte = zeros(12,1) ;
   
   booleanKTAnalytic = 1 ;
   
   elecoordmat = tetcoordmat ;
-  eledispmat = reshape( Ue, 3,4) ;
+  eledispmat  = reshape( Ue, 3,4) ;
   elecoordspa = tetcoordmat + eledispmat ;
 
   xi = 0.25 ;  wi = 1/6  ;
@@ -46,69 +46,45 @@ function [ Finte, KTe, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat
 
   F = H + eye(3) ;
 
-  %~ Egreen = 0.5 * ( H + H' + H' * H ) ;
   Egreen = 0.5 * ( H + transpose(H) + transpose(H) * H ) ;
 
-  % constitutive params
-  young  = params(1) ;
-  nu     = params(2) ;
-
-  S = cosserat( young, nu, Egreen) ;
+  global consMatFlag
+  
+  [ S, ConsMat ] = cosseratSVK( consParams, Egreen, consMatFlag ) ;
 
   matBgrande = BgrandeMats ( funder , F ) ;
-     
-  Svoigt = tranvoigSin2( S ) ;
   
-  ConsMat = constTensor ( young, nu, Egreen ) ;
-  
+  Svoigt = mat2voigt( S, 1 ) ;
+    
   Finte    = transpose(matBgrande) * Svoigt * vol ;
     
   strain = zeros(6,1);
-  stress = zeros(6,1);
+  stress = Svoigt ;
+
+  KTe = zeros(12,12) ;
 
   if paramOut == 2
 
-    KTe = zeros(12,12) ;
+    Kml        = matBgrande' * ConsMat * matBgrande * vol ;
 
-    if booleanKTAnalytic
-      Kml        = matBgrande' * ConsMat * matBgrande * vol ;
-      matauxgeom = funder' * S * funder  * vol ;
-      Kgl        = zeros(12,12) ;
-      for i=1:4
-        for j=1:4
-          Kgl( (i-1)*3+1 , (j-1)*3+1 ) = matauxgeom(i,j);
-          Kgl( (i-1)*3+2 , (j-1)*3+2 ) = matauxgeom(i,j);
-          Kgl( (i-1)*3+3 , (j-1)*3+3 ) = matauxgeom(i,j);
-        end
+    matauxgeom = funder' * S * funder  * vol ;
+    Kgl        = zeros(12,12) ;
+    for i=1:4
+      for j=1:4
+        Kgl( (i-1)*3+1 , (j-1)*3+1 ) = matauxgeom(i,j);
+        Kgl( (i-1)*3+2 , (j-1)*3+2 ) = matauxgeom(i,j);
+        Kgl( (i-1)*3+3 , (j-1)*3+3 ) = matauxgeom(i,j);
       end
-      
-      KTe = Kml + Kgl ;
-
-    else
+    end
     
-      step = 1e-8;
-      
-      for i=1:2:12
-        ei = zeros(12,1);   ei(i) = step * j ;
-        
-        FinteComp = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, Ue + ei, params, 1 ) ; 
-        KTe(:,i) = imag( FinteComp ) / step;
-      end % for 
-      
-    end % if analytic calc
+
+    KTe = Kml + Kgl ;
+
   end % if param out
 
 
-
 % ======================================================================
 % ======================================================================
-function S = cosserat( young, nu, Egreen)
-
-lambda  = young * nu / ( (1 + nu) * (1 - 2*nu) ) ;
-shear   = young      / ( 2 * (1 + nu) )          ;
-
-S = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
-
 
 %~ S = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
 
@@ -141,99 +117,7 @@ function matBgrande = BgrandeMats ( deriv , F )
   end
 
 
-  
-
 % ======================================================================
 % ======================================================================
-function v = tranvoigCon2(Tensor)
-    
-  if norm( Tensor - Tensor' ) > 1e-10
-    Tensor
-    norm( Tensor - Tensor' )
-    %~ error('tensor not symmetric')
-  end
-  
-  v = zeros(6,1) ;
-  
-  v(1) = Tensor(1,1) ;
-  v(2) = Tensor(2,2) ;
-  v(3) = Tensor(3,3) ;
-  v(4) = Tensor(2,3)*2 ;
-  v(5) = Tensor(1,3)*2 ;
-  v(6) = Tensor(1,2)*2 ;
-
-function v = tranvoigSin2(Tensor)
-    
-  %~ if norm( Tensor - Tensor' ) > 1e-5
-    %~ Tensor
-    %~ norm( Tensor - Tensor' )
-    %~ error('tensor not symmetric')
-  %~ end
-  
-  v = [ Tensor(1,1)  Tensor(2,2)  Tensor(3,3)  Tensor(2,3) Tensor(1,3) Tensor(1,2) ]' ;
 
 
-% ======================================================================
-% ======================================================================
-function ConsMat = constTensor ( young, nu, Egreen )
-
-  booleanCAnalytic = 1 ;
-
-  ConsMat= zeros(6,6);
-  
-  if booleanCAnalytic 
-
-    shear   = young / ( 2 * (1+ nu) ) ;
-
-    ConsMat (1,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ 1-nu , nu   , nu   ] ; 
-    ConsMat (2,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ nu   , 1-nu , nu   ] ;
-    ConsMat (3,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ nu   , nu   , 1-nu ] ;
-    ConsMat (4,4  ) = shear ;
-    ConsMat (5,5  ) = shear ;
-    ConsMat (6,6  ) = shear ;
-
-  else
-  
-    compStep = 1e-8 ;
-  
-    for i=1:6
-  
-      direction = zeros( 3,3) ;
-      if i<4
-        direction(i,i) = 1 ;
-      elseif i==4
-        direction(2,3) = 1 ;
-        direction(3,2) = 1 ;
-      elseif i==5
-        direction(1,3) = 1 ;
-        direction(3,1) = 1 ;
-      elseif i==6
-        direction(1,2) = 1 ;
-        direction(2,1) = 1 ;
-      end
-  
-      EgreenComp = Egreen  + compStep * direction * j ;
-    
-      Scomp = cosserat( young, nu, EgreenComp) ;
-      
-      dsde = tranvoigSin2 ( imag( Scomp ) / compStep ) ;
-    
-      %~ ConsMat(1:3,i) = dsde(1:3) ;
-      %~ ConsMat(4:6,i) = dsde(4:6)*0.5 ;
-      ConsMat(:,i) = dsde ;
-
-    end % for compone
-  end
-
-
-
-
-function detVal = analyDet(A)
-
-
-detVal =   A(1,1)*A(2,2)*A(3,3)  ...
-          - A(1,1)*A(2,3)*A(3,2)  ...
-          - A(1,2)*A(2,1)*A(3,3)  ...
-          + A(1,2)*A(2,3)*A(3,1)  ...
-          + A(1,3)*A(2,1)*A(3,2)  ...
-          - A(1,3)*A(2,2)*A(3,1) ;

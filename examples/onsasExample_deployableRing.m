@@ -11,7 +11,7 @@ inputONSASversion = '0.1.10';
 problemName = 'deployableRing' ;
 
 materialsParams = cell(1,1) ;
-materialsParams{1} = [1 E nu] ;
+materialsParams{1} = [0 1 E nu] ;
 
 b = .6;   h = 6 ;
 
@@ -45,7 +45,7 @@ Nodes(end,:)=[];
 
 nodalVariableLoads   = [ Nelem/2+1  0 1  0 0 0 0 ] ;
 
-controlDofInfo = [ Nelem/2+1 2 1 ] ;
+controlDofs = [ Nelem/2+1 2 1 ] ;
 
 stopTolIts     = 30     ;
 stopTolDeltau  = 1.0e-10 ;
@@ -70,3 +70,18 @@ acdir = pwd ;
 cd(dirOnsas);
 ONSAS
 cd(acdir) ;
+
+lw = 3.0 ; ms = 11 ; plotfontsize = 22 ;
+
+figure
+plot( controlDisps , loadFactors, 'b-.' , 'linewidth', lw,'markersize',ms )
+grid on
+
+labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
+%~ legend('analytic','NRAL','NR','location','North')
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+
+cd(dirOnsas); cd(outputDir);
+print( [ 'ring' ] ,'-dpdflatex','-tight') ;
+cd(acdir);

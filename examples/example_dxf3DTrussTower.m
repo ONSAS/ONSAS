@@ -1,8 +1,14 @@
-% ONSAS version
-inputONSASversion = '0.1.10';
+
+%%
+clear all, close all
+
+%% General data
+dirOnsas = [ pwd '/..' ] ;
 
 % Problem name in order to write LaTex report 
-problemName = 'torre' ; 
+problemName = 'dxf3DTrussTower' ; 
+
+addpath( [ dirOnsas '/sources/' ] );
 
 % Nodes and Conectivity matrix from .dxf file
 [ nodesMat, conecMat ] = dxf2ONSAS('torre.dxf') ;
@@ -40,7 +46,6 @@ reportBoolean 		= 1 ;
 printflag 				= 0 ; 
 linearDeformedScaleFactor = 70 ; 
 plotsViewAxis 						= [ -1.5 1 1 ] ; 
-
 
 acdir = pwd ;
 cd(dirOnsas);

@@ -49,11 +49,11 @@ stopTolIts       = 30     ;
 stopTolDeltau    = 1.0e-8 ;
 stopTolForces    = 1.0e-8  ;
 
-targetLoadFactrNR   = 2e7    ; % newton
+targetLoadFactrNR   = 2.5e7    ; % newton
 targetLoadFactrNRAL = 4e7    ; % arc length
 
 nLoadSteps       = 60    ;
-incremArcLen     = .1     ;
+incremArcLen     = .2     ;
 
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
@@ -82,18 +82,40 @@ acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
-compar = figure ;
-plot( controlDisps, loadFactors,'b-x' )
-hold on, grid on
+controlDispsNRAL = controlDisps ;
+loadFactorsNRAL  = loadFactors ;
+analyticNRAL = analyticVals ;
+
+nLoadSteps       = 6    ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
-plotParamsVector = [ 3 ];
-%~ plotParamsVector = [ 0 ];
+%~ plotParamsVector = [ 3 ];
+plotParamsVector = [ 0 ];
 problemName = 'staticVonMisesTrussNR' ;
 
 acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
 
-plot( controlDisps, loadFactors,'r-s' )
+controlDispsNR = controlDisps ;
+loadFactorsNR  = loadFactors ;
+
+
+lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+
+figure
+plot( controlDispsNRAL, analyticNRAL ,'b-x' , 'linewidth', lw,'markersize',ms )
+hold on, grid on
+plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
+
+labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
+legend('analytic','NRAL','NR','location','North')
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+
+cd(dirOnsas); cd(outputDir);
+print( [ 'vonmises' ] ,'-dpdflatex','-tight') ;
+cd(acdir);
+

@@ -19,7 +19,7 @@
 % vtk files of the solids or structures.
 
 function [ Nodesvtk, vtkDispMat, vtkNormalForces, Conecvtk, elem2VTKCellMap ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces )
+  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
@@ -138,9 +138,12 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
   
 elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
 
-  Nodesvtk = [ Nodes ] ;
+  vtkNormalForces = [] ;
+  vtkDispMat = reshape( U(1:2:end)', [3, size(Nodes,1) ])' ;
 
-  if nargout > 1
+  Nodesvtk = Nodes + vtkDispMat ;
+    
+  if nargout > 3
     Conecvtk = [ Conec(:,7) Conec(:,1:4) ] ;
     elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Colums should be changed.
   end

@@ -175,7 +175,7 @@ if solutionMethod == 3 || solutionMethod == 4
 
   if solutionMethod == 4
     deltaNW = (1-2*alphaHHT)/2 ;
-    AlphaNW = (1-alphaHHT^2)/4 ;
+    AlphaNW = (1-alphaHHT)^2/4 ;
   end
   
   Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
