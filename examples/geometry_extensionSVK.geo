@@ -55,12 +55,12 @@ Surface Loop(1) = {5, 6, 2, 1, 4, 3};
 Volume(1) = {1};
 
 //+
-Physical Surface("05x00x00x01x00") = {5};
+Physical Surface("00_05_00_00_01") = {5};
 //+
-Physical Surface("05x00x00x02x00") = {6};
+Physical Surface("00_05_00_00_02") = {6};
 //+
-Physical Surface("05x00x00x03x00") = {2};
+Physical Surface("00_05_00_00_03") = {2};
 //+
-Physical Surface("05x00x00x00x01") = {3};
+Physical Surface("00_05_01_00_00") = {3};
 //+
-Physical Volume("03x01x01x00x00") = {1};
+Physical Volume("01_03_00_00_00") = {1};

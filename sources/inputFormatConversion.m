@@ -15,33 +15,22 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+% Function for conversion from msh/dxf data structures to the ONSAS data format
 
-% Function that converts from the gui format to the .m input format
-
-function [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
-
-nodesMat(:,4:6) = [] ;
-conecMat = [ conecMat(:,5) conecMat(:,1:4) conecMat(:,6:9) ] ;
+function [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
 
 ndofpnode = 6 ;  
 
 nnodes = size(nodesMat,1) ;
 nelems = size(conecMat,1) ;
 
-
 Nodes = nodesMat(:,1:3) ;
 
 Conec = [];
 
-
 nodalConstantLoads = [] ;
 nodalVariableLoads = [] ;
-
-unifDisLoadL       = [] ;
-unifDisLoadG       = [] ;
-
 nodalSprings       = [] ;
-
 
 % add nodal loads
 for i = 1:nnodes
@@ -73,23 +62,62 @@ for i = 1:nnodes
 end
 
 
-
-
 for i = 1:nelems
 
-  type = conecMat(i,1) ;
-  sec  = conecMat(i,6) ;
-  mat  = conecMat(i,7) ;
-  sup  = conecMat(i,8) ;
-  loa  = conecMat(i,9) ;
+  mat  = conecMat(i,1+4) ;
+  type = conecMat(i,2+4) ;
+  loa  = conecMat(i,3+4) ;
+  sec  = conecMat(i,4+4) ;
+  sup  = conecMat(i,4+5) ;
   
   switch type
 
   % ----------------------------------------------------------------------------
+  case 1 % truss
+    if sec > 0
+      Conec = [Conec ; conecMat( i, 1:4 ) mat sec type ] ;
+    end
+    
+    nodesElem = conecMat(i, 1:2) ;
+
+    if sup > 0,
+      nodalSprings = [ nodalSprings ; ...
+                       nodesElem' ones(2,1)*suppsMat(sup, :) ] ;
+    end
+
+    if loa > 0,
+      length = norm( Nodes( nodesElem(2),:) - Nodes( nodesElem(1),:) ) ;
+
+      if loadsMat(loa, 1) == 1  % global coordinates load
+
+        Fx = loadsMat(loa, 2) * length / 2 ;
+        Fy = loadsMat(loa, 4) * length / 2 ;
+        Fz = loadsMat(loa, 6) * length / 2 ;
+
+        nodalVariableLoads = [ nodalVariableLoads ; ...
+                             nodesElem' ones(2,1)*[Fx 0 Fy 0 Fz 0] ] ;
+      else
+        error('option not implemented, please create an issue.')
+      end
+     
+    end
+
+  % ----------------------------------------------------------------------------
+  case 2 % frame
+
+    Conec = [Conec ; conecMat( i, 1:4 ) mat sec type ] ;
+    
+  % ----------------------------------------------------------------------------
+  case 3 % tetrahedron
+
+    Conec = [Conec ; conecMat( i, 1:4 ) mat sec type ] ;
+
+  % ----------------------------------------------------------------------------
   % ---------------        triangles             -------------------------------
+  % used only for adding boundary conditions over a set of nodes of a solid.
   % ----------------------------------------------------------------------------
   case 5
-    nodestrng = conecMat(i,2:4) ;
+    nodestrng = conecMat(i, 1:3) ; 
 
     if sup > 0,
       nodalSprings = [ nodalSprings ; ...
@@ -138,21 +166,9 @@ for i = 1:nelems
   % ----------------------------------------------------------------------------
 
   % ----------------------------------------------------------------------------
-  case 3 
-
-    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
    
 
-  % ----------------------------------------------------------------------------
-  case 2 
 
-    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
-    
-
-  % ----------------------------------------------------------------------------
-  case 1	
-
-    Conec = [Conec ; conecMat( i, 2:5 ) conecMat(i,7) conecMat(i,6) type ] ;
     
 			%~ if loa > 0
 				%~ elem = i ;
@@ -203,9 +219,3 @@ end
 %~ % Conec matrix for tetrahedron elements
 
 %~ Conec = [ tet_elem(:,3:end) ones(size(tet_elem,1),1) zeros(size(tet_elem,1),1) ones(size(tet_elem,1),1)*3 ] ; 
-
-
-
-%~ % collapse springs
-
-%~ % sum loads

@@ -45,8 +45,9 @@ end
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
-                      'materialsParams', 'crossSecsParams', 'nodalSprings', ...
+                      'materialsParams', 'nodalSprings', ...
                       'numericalMethodParams' } ;
+
 for j = 1:length(checkVarNamesList)
   varName = checkVarNamesList{j} ;
   if exist( varName, 'var' ) == 0,
@@ -54,6 +55,11 @@ for j = 1:length(checkVarNamesList)
   end
 end
 % ------------------------------------------
+
+if exist( 'crossSecsParams' ) == 0
+   crossSecsParams = [] ; 
+end
+
 
 nMats  = length( materialsParams    ) ;
 nSecs  = size( crossSecsParams, 1  ) ;
@@ -63,6 +69,7 @@ nElems = size( Conec,           1  ) ;
 % -----------------------
 % default values
 
+ 
 if exist( 'prescribedDispsMat' ) == 0
   prescribedDispsMat = [] ; 
 end

@@ -1,5 +1,9 @@
-
+%% Three dimensional truss tower
+% In this example dxf reading feature is shown. A simple 3D truss structure is 
+% considered for a nonlinear elastic analysis.
+%
 %%
+
 clear all, close all
 
 %% General data
@@ -11,7 +15,7 @@ problemName = 'dxf3DTrussTower' ;
 addpath( [ dirOnsas '/sources/' ] );
 
 % Nodes and Conectivity matrix from .dxf file
-[ nodesMat, conecMat ] = dxf2ONSAS('torre.dxf') ;
+[ nodesMat, conecMat ] = meshFileReader('torre.dxf') ;
 
 
 % Support matrix	: Is defined by the corresponding support label. I.e., in torre.dxf there is ony one label for supports, then
@@ -22,6 +26,7 @@ suppsMat = [ inf 0 inf 0 inf 0 ] ;
 %										Global axis -> 1, local axis -> 0. 
 %										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
 loadsMat = [1 0 0 -4e5 0 -2e5 0 ] ;
+
 
 % Previously defined matrices to ONSAS format
 [Nodes, Conec, nodalVariableLoads, nodalConstantLoads, unifDisLoadL, unifDisLoadG, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat )
