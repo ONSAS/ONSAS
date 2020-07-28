@@ -22,7 +22,6 @@ fileExtension = fileName( (end-2):end ) ;
 if strcmp( fileExtension , 'msh' )
   [ nodesMatinp, conecMatinp, physicalNames ] = msh4Reader( fileName ) ;
 
-
   matInds = zeros( length( physicalNames), 5 ) ;
   for i=1:size( matInds, 1)
     for j=1:5

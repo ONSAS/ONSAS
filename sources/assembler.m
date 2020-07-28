@@ -92,14 +92,16 @@ else
 
     % extract element properties
     elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
-    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
     elemrho                = elemMaterialParams( 1     )              ;
+
     elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
     switch Conec(elem,7)
   
     % -------------------------------------------
     case 1 % Co-rotational Truss with Engineering strain
+
+    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
 
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:2)'             ;
@@ -121,6 +123,8 @@ else
       
     % -------------------------------------------
     case 2 % Co-rotational Frame element (bernoulli beam)
+
+    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
   
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:2)'             ;  
