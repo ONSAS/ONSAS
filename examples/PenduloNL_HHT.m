@@ -1,4 +1,4 @@
-%%%%%% Din·mica No-Lineal: PÈndulo con Barra el·stica (Green)
+%%%%%% Din√°mica No-Lineal: P√©ndulo con Barra el√°stica (Green)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc
@@ -68,7 +68,7 @@ while t<tf %% Paso temporal de HHT
  ut = u(:,k); vt = v(:,k); at = a(:,k);
  aktdt = a(:,k);
  
- while and(j<Maxiter,ferr>ftol) %% IteraciÛn tipo N-R para Equilibrio en t+Dt
+ while and(j<Maxiter,ferr>ftol) %% Iteraci√≥n tipo N-R para Equilibrio
     uktdt = ut + dt*vt + dt^2*((1/2-beta)*at+beta*aktdt);
     vktdt = vt + dt*((1-delta)*at+delta*aktdt);
     Keff = (1-alfa)*beta*dt^2*KT(uktdt) + M;
@@ -94,7 +94,7 @@ plot(u(1,:),u(2,:),'-r',0,2,'*k')
 axis([-1.1*L 1.1*L -0.1*L 2.1*L],'square')
 xlabel('x_1')
 ylabel('x_2')
-title('SoluciÛn Con Newmark')
+title('Soluci√≥n Con HHT')
 
 subplot(1,2,2)
 plot(t(2:end),E*A*epsg(2:end))
