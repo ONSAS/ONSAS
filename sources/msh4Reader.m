@@ -165,10 +165,12 @@ if strncmp( X, '$Elements',5)
     aux = fscanf(fid,'%g %g %g %g\n',[4  1]) ; %fgetl(fid);
     
     if aux(4) > 0 % if there are elements in the block
-      if aux(1)==2
-        auxMatCon = fscanf(fid,'%g %g %g %g \n',[1+aux(1)+1, aux(4)] )' ;
+      if     aux(1)==1
+        auxMatCon = fscanf(fid,'%g %g %g \n'       ,[ 1+aux(1)+1 aux(4)] )' ;
+      elseif aux(1)==2
+        auxMatCon = fscanf(fid,'%g %g %g %g \n'    ,[ 1+aux(1)+1 aux(4)] )' ;
       elseif aux(1)==3
-        auxMatCon = fscanf(fid,'%g %g %g %g %g \n',[ 1+aux(1)+1 aux(4)] )' ;
+        auxMatCon = fscanf(fid,'%g %g %g %g %g \n' ,[ 1+aux(1)+1 aux(4)] )' ;
       else
         error('dimension not implemented yet. Please create an issue.')
       end

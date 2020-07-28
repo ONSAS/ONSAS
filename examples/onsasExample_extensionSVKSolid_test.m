@@ -97,8 +97,7 @@ problemName = 'extensionSVKGMSHAndComplexStep' ;
 
 consMatFlag = 1 ;
 
-[ nodesMat, conecMat, physicalNames ] = msh4Reader('geometry_extensionSVK.msh') ;
-[ nodesMat, conecMat ] = esmacParser( nodesMat, conecMat, physicalNames ) ;
+[ nodesMat, conecMat ] = meshFileReader( 'geometry_extensionSVK.msh' ) ;
 
 suppsMat = [ inf 0  0 	0   0 	0 ; ...
              0 	 0  inf 0   0   0 ; ...

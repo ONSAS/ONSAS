@@ -17,18 +17,14 @@
 
 function fileName = auxReadDXF(nomArch)
 
-%~ cd '../input'
-cd input
 fid = fopen(nomArch);
-cd '../sources'
-fileName = 'auxTxt.txt' ;
 
-auxFile = fopen(fileName, 'w+');
+fileName = [ nomArch(1:(end-4)) '_noEmpyLines.dxf' ] ;
+auxFile = fopen( fileName, 'w+');
 
-line = fgetl(fid);
-s={};
+line = fgetl(fid); s={};
 while ischar(line)
-	s=[s;line];
+	s = [ s; line ] ;
 	if length(line) == 0
 		line = 'lala';
 	else
@@ -42,5 +38,4 @@ for i=1:rows
 	fprintf(auxFile, '%s\n', s{i});
 end
 
-cd ..
 fclose(auxFile);
