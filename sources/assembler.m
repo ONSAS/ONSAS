@@ -23,8 +23,8 @@
 %
 
 function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...
-  materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
-  solutionMethod, booleanConsistentMassMat, booleanCSTangs )
+  materialsParams, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
+  solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParams )
 
 booleanCppAssembler = 0 ;
 
@@ -90,13 +90,16 @@ else
 
   for elem = 1:nElems
 
+Conec( elem, 5)
     % extract element properties
-    elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
+    materialsParams
+    elemMaterialParams     = materialsParams{ Conec( elem, 5) } ;
     elemrho                = elemMaterialParams( 1     )              ;
-
     elemConstitutiveParams = elemMaterialParams( 2:end )              ;
 
-    switch Conec(elem,7)
+    elemElementParams      = elementsParams{ Conec( elem, 6) } ;
+    
+    switch elemElementParams(1)
   
     % -------------------------------------------
     case 1 % Co-rotational Truss with Engineering strain
