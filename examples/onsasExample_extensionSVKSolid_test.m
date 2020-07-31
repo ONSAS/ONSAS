@@ -3,8 +3,6 @@
 % Geometry given by $L_x$, $L_y$ and $L_z$, tension $p$ applied on 
 % face $x=L_x$.
 %
-% Analytical solution to be compared with numerical:
-% $$ u_x(x=L_x,y,z) = \frac{p L_x}{E} $$
 %%
 
 % uncomment to delete variables and close windows
@@ -29,49 +27,71 @@ Nodes = [ 0    0    0 ; ...
           Lx  Ly   Lz ; ...
           Lx  Ly    0 ] ;
 
-Conec = [ 1 4 2 6 1 1 3 ; ...
-          6 2 3 4 1 1 3 ; ...
-          4 3 6 7 1 1 3 ; ...
-          4 1 5 6 1 1 3 ; ...
-          4 6 5 8 1 1 3 ; ...
-          4 7 6 8 1 1 3 ] ;
+Conec = [ 5 7 6 0   0 1 1 0 0 ; ... % loaded face
+          5 8 7 0   0 1 1 0 0 ; ... % loaded face
+          4 1 2 0   0 1 0 0 1 ; ... % x=0 supp face
+          4 2 3 0   0 1 0 0 1 ; ... % x=0 supp face
+          6 2 1 0   0 1 0 0 2 ; ... % y=0 supp face
+          6 1 5 0   0 1 0 0 2 ; ... % y=0 supp face
+          5 6 8 0   0 1 0 0 3 ; ... % z=0 supp face
+          6 7 8 0   0 1 0 0 3 ; ... % z=0 supp face
+          1 4 2 6   1 2 0 0 0 ; ... % tetrahedron
+          6 2 3 4   1 2 0 0 0 ; ... % tetrahedron
+          4 3 6 7   1 2 0 0 0 ; ... % tetrahedron
+          4 1 5 6   1 2 0 0 0 ; ... % tetrahedron
+          4 6 5 8   1 2 0 0 0 ; ... % tetrahedron
+          4 7 6 8   1 2 0 0 0 ; ... % tetrahedron
+        ] ;
 
-% Material and geometry properties
+% ======================================================================
+% --- MELCS parameters ---
+
+materialsParams = cell(1,1) ; % M
+elementsParams  = cell(1,1) ; % E
+loadsParams     = cell(1,1) ; % L
+crossSecsParams = cell(1,1) ; % C
+springsParams   = cell(1,1) ; % S
+
+% ----------------------------------------------------------------------
+% --- Material parameters ---
 E = 1 ; nu = 0.3 ;
-  
-materialsParams = cell(1,1) ;  
 materialsParams{1} = [ 0 6 E nu ] ;
 
-crossSecsParams = [ 0 0 0 0 ] ;
+% ----------------------------------------------------------------------
+% --- Element parameters ---
+elementsParams{1,1} = [ 5 ] ;
+elementsParams{2,1} = [ 3 ] ;
 
-% Displacement boundary conditions and springs
-nodalSprings = [ 1 inf 0  inf 0   inf 0 ; ...
-                 2 inf 0  inf 0   0   0 ; ...
-                 3 inf 0  0   0   0   0 ; ...
-                 4 inf 0  0   0   inf 0 ; ...
-                 5 0   0  inf 0   inf 0 ; ...
-                 6 0   0  inf 0   0   0 ; ...
-                 8 0   0  0   0   inf 0 ] ;
+% ----------------------------------------------------------------------
+% --- Load parameters ---
+loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
 
-%% Loading parameters
-nodalForce = p * Ly * Lz / 6 ;
-nodalVariableLoads = [ (5:8)' nodalForce*[1 2 1 2]' zeros(4,5) ] ;
+% ----------------------------------------------------------------------
+% --- CrossSection parameters ---
 
-%% Analysis parameters
-stopTolIts       = 30     ;
+
+% ----------------------------------------------------------------------
+% --- springsAndSupports parameters ---
+springsParams{1, 1} = [ inf 0  0   0   0   0 ] ;
+springsParams{2, 1} = [ 0   0  inf 0   0   0 ] ;
+springsParams{3, 1} = [ 0   0  0   0   inf 0 ] ;
+
+% ======================================================================
+
+
+%% --- Analysis parameters ---
+stopTolIts       = 30      ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
-targetLoadFactr  = 2    ;
+targetLoadFactr  = 2       ;
+nLoadSteps       = 10      ;
 
-%~ nLoadSteps       = 2    ;
-nLoadSteps       = 10    ;
+numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactr nLoadSteps ] ;
 
 controlDofs = [ 7 1 1 ] ;
 
-numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactr nLoadSteps ] ; 
-
-% Analytic sol
+% --- Analytic sol ---
 analyticSolFlag = 2 ;
 analyticCheckTolerance = 1e-8 ;
 analyticFunc = @(w) E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
@@ -88,6 +108,11 @@ acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 controlDispsCase1 = controlDisps ;
 analyticValsCase1 = analyticVals ;
 loadFactorsCase1  = loadFactors  ;
+
+
+stop
+
+
 
 close all
 
