@@ -15,7 +15,7 @@ problemName = 'extensionSVKSolidManual' ;
 %% Structural properties
 
 % tension applied and x, y, z dimensions
-p = 1 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
+p = 2 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
 % an 8-node mesh is considered with its connectivity matrix
 Nodes = [ 0    0    0 ; ...
@@ -27,18 +27,18 @@ Nodes = [ 0    0    0 ; ...
           Lx  Ly   Lz ; ...
           Lx  Ly    0 ] ;
 
-Conec = [ 5 7 6 0   0 1 1 0 0 ; ... % loaded face
-          5 8 7 0   0 1 1 0 0 ; ... % loaded face
+Conec = [ 5 8 6 0   0 1 1 0 0 ; ... % loaded face
+          6 8 7 0   0 1 1 0 0 ; ... % loaded face
           4 1 2 0   0 1 0 0 1 ; ... % x=0 supp face
           4 2 3 0   0 1 0 0 1 ; ... % x=0 supp face
           6 2 1 0   0 1 0 0 2 ; ... % y=0 supp face
           6 1 5 0   0 1 0 0 2 ; ... % y=0 supp face
-          5 6 8 0   0 1 0 0 3 ; ... % z=0 supp face
-          6 7 8 0   0 1 0 0 3 ; ... % z=0 supp face
+          1 4 5 0   0 1 0 0 3 ; ... % z=0 supp face
+          4 8 5 0   0 1 0 0 3 ; ... % z=0 supp face
           1 4 2 6   1 2 0 0 0 ; ... % tetrahedron
           6 2 3 4   1 2 0 0 0 ; ... % tetrahedron
-          4 3 6 7   1 2 0 0 0 ; ... % tetrahedron
           4 1 5 6   1 2 0 0 0 ; ... % tetrahedron
+          4 3 6 7   1 2 0 0 0 ; ... % tetrahedron
           4 6 5 8   1 2 0 0 0 ; ... % tetrahedron
           4 7 6 8   1 2 0 0 0 ; ... % tetrahedron
         ] ;
@@ -59,8 +59,8 @@ materialsParams{1} = [ 0 6 E nu ] ;
 
 % ----------------------------------------------------------------------
 % --- Element parameters ---
-elementsParams{1,1} = [ 5 ] ;
-elementsParams{2,1} = [ 3 ] ;
+elementsParams{1,1} = [ 5   ] ;
+elementsParams{2,1} = [ 3 2 0 ] ;
 
 % ----------------------------------------------------------------------
 % --- Load parameters ---
@@ -83,7 +83,7 @@ springsParams{3, 1} = [ 0   0  0   0   inf 0 ] ;
 stopTolIts       = 30      ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
-targetLoadFactr  = 2       ;
+targetLoadFactr  = 1       ;
 nLoadSteps       = 10      ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
@@ -92,9 +92,9 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 controlDofs = [ 7 1 1 ] ;
 
 % --- Analytic sol ---
-analyticSolFlag = 2 ;
+analyticSolFlag        = 2 ;
 analyticCheckTolerance = 1e-8 ;
-analyticFunc = @(w) E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
+analyticFunc           = @(w) 1/p *E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
 
 %% Output parameters
 plotParamsVector = [ 0 ] ;
@@ -108,9 +108,6 @@ acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 controlDispsCase1 = controlDisps ;
 analyticValsCase1 = analyticVals ;
 loadFactorsCase1  = loadFactors  ;
-
-
-stop
 
 
 

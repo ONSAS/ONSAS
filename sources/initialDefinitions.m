@@ -23,17 +23,17 @@ function [ modelCurrSol, modelProperties, BCsData ] ...
   = initialDefinitions( ...
   Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
   , nonHomogeneousInitialCondUdot0 ...
-  , crossSecsParams, coordsElemsMat, materialsParams, numericalMethodParams ...
+  , crossSecsParamsMat, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
   , loadFactorsFunc, booleanConsistentMassMat, nodalDispDamping, booleanScreenOutput ...
   , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
-  , problemName, outputDir, booleanCSTangs, finalTime, elementsParams ...
+  , problemName, outputDir, booleanCSTangs, finalTime, elementsParamsMat ...
   )
 
 
 nElems    = size(Conec, 1 ) ;
 
 % ----------- fixeddofs and spring matrix computation ---------
-[ neumdofs, diridofs, KS] = computeBCDofs( nNodes, Conec, nElems, nodalSprings ) ;
+[ neumdofs, diridofs, KS] = computeBCDofs( nNodes, Conec, nElems, nodalSprings, elementsParamsMat ) ;
 % -------------------------------------------------------------
 
 % create velocity and displacements vectors
@@ -74,7 +74,6 @@ end
 
 
 
-
 % computation of initial acceleration for some cases
 % --------------------------------------------------- 
 
@@ -105,33 +104,27 @@ nextLoadFactor = loadFactorsFunc ( currTime + deltaT ) ;
 
 %~ Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;
 
-systemDeltauMatrix     = computeMatrix( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, U, ...
-  neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udot, Udotdot, ...
-  booleanCSTangs, elementsParams );
+neumdofs
 
+systemDeltauMatrix     = computeMatrix( ...
+  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, U, ...
+  neumdofs, numericalMethodParams, nodalDispDamping, booleanConsistentMassMat, Udot, Udotdot, ...
+  booleanCSTangs, elementsParamsMat );
 
 Stress = assembler ( ...
-  Conec, crossSecsParams, coordsElemsMat, materialsParams, KS, U, 3, Udot, ...
-  Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParams ) ;
+  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, U, 3, Udot, ...
+  Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat ) ;
 % ----------------------------
-
 
 factorCrit = 0 ;
 [ nKeigpos, nKeigneg ] = stabilityAnalysis ( ...
   [], systemDeltauMatrix, currLoadFactor, nextLoadFactor ) ;
 % ----------------------------
 
+
 % stores model data structures
 modelCompress
 
-
-materialsParams
-stop
-
-modelProperties.materialsParams
-materialsParams
-stop
 % --- prints headers and time0 values ---
 printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
 

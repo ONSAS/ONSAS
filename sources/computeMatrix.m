@@ -16,9 +16,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat, ...
-  materialsParams, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, ...
-  booleanConsistentMassMat, Udott, Udotdott, booleanCSTangs, elementsParams )
+function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
+  materialsParamsMat, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, ...
+  booleanConsistentMassMat, Udott, Udotdott, booleanCSTangs, elementsParamsMat )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -26,7 +26,7 @@ function systemDeltauMatrix = computeMatrix( Conec, secGeomProps, coordsElemsMat
       = extractMethodParams( numericalMethodParams ) ;
 
   % computes static tangent matrix
-  [ mats ] = assembler( Conec, secGeomProps, coordsElemsMat, materialsParams, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParams ) ;
+  [ mats ] = assembler( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat ) ;
 
   KT      = mats{1} ;
   if solutionMethod > 2

@@ -22,9 +22,9 @@
 %  - stresses (paramOut = 3).
 %
 
-function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...
-  materialsParams, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
-  solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParams )
+function Assembled = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, ...
+  materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
+  solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat )
 
 booleanCppAssembler = 0 ;
 
@@ -90,21 +90,19 @@ else
 
   for elem = 1:nElems
 
-Conec( elem, 5)
     % extract element properties
-    materialsParams
-    elemMaterialParams     = materialsParams{ Conec( elem, 5) } ;
+    elemMaterialParams     = materialsParamsMat( Conec( elem, 5) , : ) ;
     elemrho                = elemMaterialParams( 1     )              ;
-    elemConstitutiveParams = elemMaterialParams( 2:end )              ;
+    elemConstitutiveParams = elemMaterialParams( 2:end )             ; 
 
-    elemElementParams      = elementsParams{ Conec( elem, 6) } ;
-    
+    elemElementParams      = elementsParamsMat( Conec( elem, 6),: ) ;
+
     switch elemElementParams(1)
   
     % -------------------------------------------
     case 1 % Co-rotational Truss with Engineering strain
 
-    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
+    elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 6 ) , : ) ;
 
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:2)'             ;
@@ -169,11 +167,11 @@ Conec( elem, 5)
       
       
       % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:4)' ;
-      dofselem  = nodes2dofs( nodeselem , 6 ) ;
+      nodeselem   = Conec(elem,1:4)' ;
+      dofselem    = nodes2dofs( nodeselem , 6 ) ;
       dofselemRed = dofselem(1:2:end) ;
 
-      dispsElem = u2ElemDisps( Ut , dofselemRed ) ;
+      dispsElem   = u2ElemDisps( Ut , dofselemRed ) ;
          
       tetcoordmat        = zeros(3,4) ;
       tetcoordmat(1,1:4) = coordsElemsMat(elem,1:6:end) ;

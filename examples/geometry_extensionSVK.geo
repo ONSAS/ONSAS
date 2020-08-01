@@ -6,7 +6,8 @@ Lz = 1.0 ;
 
 // mesh sizes
 //ms = 0.05;
-ms = 0.2 ;
+//ms = 0.2 ;
+ms = 1.0 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {0,0,Lz, ms} ;

@@ -2,26 +2,43 @@
 % functions for computation of Boundary Conditions Degrees of Freedom..
 %
 
-function [neumdofs, diridofs, KS] = computeBCDofs(nnodes, Conec, nelems, nodalSprings )
+function [neumDofs, diridofs, KS] = computeBCDofs( nnodes, Conec, nelems, nodalSprings, elementsParamsMat )
+
 
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 
-for elem = 1:nelems
+% loop for construction of vector of dofs
+for elemNum = 1:size(elementsParamsMat,1)
+
+  elements = find( Conec( :, 4+2 ) == elemNum ) ;
+
+  if length( elements ) > 0
+    elemType = elementsParamsMat(elemNum,1)        
+    switch elemType
+    case 1
+      numNodes = 2 ;
+      dofsStep = 2 ;
+    case 2
+      numNodes = 2 ;
+      dofsStep = 2 ;
+    case 3
+      numNodes = 4 ;
+      dofsStep = 2 ;
+    end
   
-  aux = nodes2dofs( Conec( elem, 1:4), 6)' ;
+    nodes    = Conec( elements, 1:numNodes) ;
+    dofs     = nodes2dofs( nodes, 6)'       ;
+    dofs     = dofs(1:dofsStep:end)         ;  
   
-  switch Conec( elem, 7)
-  case 1 % truss
-    neumdofs ( aux(1:2:11) ) = aux(1:2:11) ;
-  case 2 % beam
-    neumdofs ( aux(1:11) ) = aux(1:11) ;
-  case 3 % solid
-    neumdofs ( aux(1:2:(6*4-1) ) ) = aux(1:2:(6*4-1)) ;
-  end  
+    neumDofs ( dofs ) = dofs ;
+  end
 end
+% ----------------------------------------------------------------------
+
+
 % ----------------------
 fixeddofs = [] ;
-KS      = sparse( 6*nnodes, 6*nnodes );  
+KS        = sparse( 6*nnodes, 6*nnodes );  
 
 for i=1:size(nodalSprings,1)
   aux = nodes2dofs ( nodalSprings (i,1) , 6 ) ;
@@ -35,14 +52,14 @@ for i=1:size(nodalSprings,1)
   end
 end
 
+
 diridofs = unique( fixeddofs ) ; % remove repeated dofs
 %~ diridofs = [ diridofs ; releasesDofs] ;
 
 
-neumdofs( diridofs ) = 0 ;
-
-neumdofs = unique( neumdofs ) ;
-if neumdofs(1) == 0,
-  neumdofs(1)=[];
+neumDofs( diridofs ) = 0 ;
+neumDofs = unique( neumDofs ) ;
+if neumDofs(1) == 0,
+  neumDofs(1)=[];
 end
 % -------------------------------------------------------------

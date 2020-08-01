@@ -79,7 +79,6 @@ nElems = size( Conec,           1  ) ;
 
 % -----------------------
 % default values
-
  
 if exist( 'prescribedDispsMat' ) == 0
   prescribedDispsMat = [] ; 
@@ -285,12 +284,6 @@ tangentMatricesCell = cell(2,1) ;
 contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
-%~ materialsParamsMat = [] ;
-%~ for i = 1 : length( materialsParams )
-  %~ materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
-%~ end
-
-
 
 if numericalMethodParams(1) > 2
   finalTime = numericalMethodParams(3);
@@ -308,3 +301,21 @@ else
 end
 
 timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
+
+
+% -- conver to matrices to store M., E. & C. in the struct type model ---
+materialsParamsMat = [] ;
+for i = 1 : length( materialsParams )
+  materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
+end
+elementsParamsMat = [] ;
+for i = 1 : length( elementsParams )
+  elementsParamsMat (i, 1:length( elementsParams{i} ) ) = elementsParams{i} ;
+end
+crossSecsParamsMat = [] ;
+for i = 1 : length( crossSecsParams )
+  crossSecsParamsMat (i, 1:length( crossSecsParams{i} ) ) = crossSecsParams{i} ;
+end
+clear materialsParams elementsParams crossSecsParams
+% ----------------------------------------------------------------------
+
