@@ -84,7 +84,7 @@ stopTolIts       = 30      ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
 targetLoadFactr  = 1       ;
-nLoadSteps       = 10      ;
+nLoadSteps       = 10     ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps ] ;
@@ -110,33 +110,22 @@ analyticValsCase1 = analyticVals ;
 loadFactorsCase1  = loadFactors  ;
 
 
-
 close all
 
 % --------------------------------------------------------
 
 problemName = 'extensionSVKGMSHAndComplexStep' ;
 
-consMatFlag = 1 ;
-
-[ nodesMat, conecMat ] = meshFileReader( 'geometry_extensionSVK.msh' ) ;
-
-suppsMat = [ inf 0  0 	0   0 	0 ; ...
-             0 	 0  inf 0   0   0 ; ...
-             0 	 0  0   0   inf 0 ] ;
+[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
 % Loads matrix: 		Is defined by the corresponding load label. First entry is a boolean to assign load in Global or Local axis. (Recommendation: Global axis). 
-%										Global axis -> 1, local axis -> 0. 
+%										Global axis -> 1, local axis -> 0.
 %										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
 
-%~ loadsMat = [0   0 0 0 0 p 0 ] ;  % --- local loading ---
-loadsMat = [1   p 0 0 0 0 0 ] ; % --- global loading ---
+loadsParams{1,1} = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
 
-[Nodes, Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = inputFormatConversion ( nodesMat, conecMat, loadsMat, suppsMat ) ;
-
-clear nodesMat conecMat loadsMat suppsMat
-
-plotParamsVector = [ 3 ] ;
+%~ plotParamsVector = [ 3 ] ;
+analyticSolFlag        = 0 ;
 
 % run ONSAS
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;

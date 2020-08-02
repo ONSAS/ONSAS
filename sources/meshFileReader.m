@@ -29,12 +29,12 @@ if strcmp( fileExtension , 'msh' )
     end
   end
   
-  nodesMat = zeros( size( nodesMatinp, 1 ), 3+5 ) ;
+  nodesMat = zeros( size( nodesMatinp, 1 ), 3 ) ;
   nodesMat(:,1:3) = nodesMatinp(:, 1:3) ;
   
   % adds melcs parameters to nodes with params defined
-  indsNZ = find( nodesMatinp(:,4) ) ;
-  nodesMat(indsNZ,4:end) = matInds( nodesMatinp(indsNZ,4), :) ;
+  %~ indsNZ = find( nodesMatinp(:,4) ) ;
+  %~ nodesMat(indsNZ,4:end) = matInds( nodesMatinp(indsNZ,4), :) ;
   
   conecMat = zeros( size( conecMatinp, 1 ), 4+5 ) ;
   conecMat(:,1:4) = conecMatinp(:, 1:4) ;
@@ -45,7 +45,7 @@ if strcmp( fileExtension , 'msh' )
   
 %
 elseif strcmp( fileExtension , 'dxf' )
-[ nodesMat, conecMat ] = dxfReader('torre.dxf') ;
+  [ nodesMat, conecMat ] = dxfReader('torre.dxf') ;
 %
 else
   error('extension not implemented yet. Please report an issue.')

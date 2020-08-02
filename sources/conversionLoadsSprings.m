@@ -72,9 +72,9 @@ for i = 1:size(conecAuxElems,1)
           Nodes(nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
           Nodes( nodestrng(3),:) - Nodes( nodestrng(1),: ) ) / nmod ;
 
-        Fx = n(1) * loadvals(loa,2+5) * area/3 ;
-        Fy = n(2) * loadvals(loa,2+5) * area/3 ;
-        Fz = n(3) * loadvals(loa,2+5) * area/3 ;
+        Fx = n(1) * loadvals(loadNum, 2+5 ) * area/3 ;
+        Fy = n(2) * loadvals(loadNum, 2+5 ) * area/3 ;
+        Fz = n(3) * loadvals(loadNum, 2+5 ) * area/3 ;
         
         if loadvals(2+1) ~= 0 || loadvals(2+3) ~= 0
           error('only local pressure implemented. create an issue!')

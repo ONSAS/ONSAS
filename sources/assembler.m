@@ -60,12 +60,12 @@ else
     %~ if octaveBoolean
       %~ indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
       %~ indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
-      indsIK =         zeros( nElems*24*24, 1 )   ;
-      indsJK =         zeros( nElems*24*24, 1 )   ;
-    valsK    =         zeros( nElems*24*24, 1 )   ;
+    indsIK =         zeros( nElems*24*24, 1 )   ;
+    indsJK =         zeros( nElems*24*24, 1 )   ;
+    valsK  =         zeros( nElems*24*24, 1 )   ;
 
-    valsC    =         zeros( nElems*24*24, 1 )   ;
-    valsM    =         zeros( nElems*24*24, 1 )   ;
+    valsC  =         zeros( nElems*24*24, 1 )   ;
+    valsM  =         zeros( nElems*24*24, 1 )   ;
 
     counterInds = 0 ; % counter non-zero indexes    
 
@@ -102,7 +102,7 @@ else
     % -------------------------------------------
     case 1 % Co-rotational Truss with Engineering strain
 
-    elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 6 ) , : ) ;
+      elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 6 ) , : ) ;
 
       % obtains nodes and dofs of element
       nodeselem = Conec(elem,1:2)'             ;

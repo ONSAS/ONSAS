@@ -13,7 +13,7 @@ for elemNum = 1:size(elementsParamsMat,1)
   elements = find( Conec( :, 4+2 ) == elemNum ) ;
 
   if length( elements ) > 0
-    elemType = elementsParamsMat(elemNum,1)        
+    elemType = elementsParamsMat(elemNum,1)  ;
     switch elemType
     case 1
       numNodes = 2 ;

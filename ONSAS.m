@@ -36,6 +36,7 @@ inputVarsVerification
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
+
 % Initial computations: sets initial state.
 [ modelCurrSol, modelProperties, BCsData ] =  initialDefinitions( ...
   Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...

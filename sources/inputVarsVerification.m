@@ -316,6 +316,6 @@ crossSecsParamsMat = [] ;
 for i = 1 : length( crossSecsParams )
   crossSecsParamsMat (i, 1:length( crossSecsParams{i} ) ) = crossSecsParams{i} ;
 end
-clear materialsParams elementsParams crossSecsParams
+
 % ----------------------------------------------------------------------
 
