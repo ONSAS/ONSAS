@@ -18,6 +18,14 @@
 % function for computation of the normal force and tanget matrix 
 % of 3D truss elements using engineering strain.
 
+
+
+
+% Co-rotational Truss with Engineering strain
+
+
+
+
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
   elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout, booleanCSTangs )
 

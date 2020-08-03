@@ -18,6 +18,18 @@
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   xs, params, booleanCSTangs, solutionMethod, Ue, Udote, Udotdote ) ;
 
+      A   = elemCrossSecParams( 1 ) ;
+      Iyy = elemCrossSecParams( 2 ) ;
+      Izz = elemCrossSecParams( 3 ) ;
+      J   = elemCrossSecParams( 4 ) ;
+  
+      xs = coordsElemsMat(elem,1:2:end)'        ;
+      E  = elemConstitutiveParams(2) ;
+      nu = elemConstitutiveParams(3) ;
+      G  = E/(2*(1+nu)) ;
+      
+      params = [E G A Iyy Izz J elemrho ] ;
+
 if solutionMethod > 2
   global Jrho
 end

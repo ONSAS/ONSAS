@@ -15,7 +15,7 @@ problemName = 'extensionSVKSolidManual' ;
 %% Structural properties
 
 % tension applied and x, y, z dimensions
-p = 2 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
+p = 1 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
 % an 8-node mesh is considered with its connectivity matrix
 Nodes = [ 0    0    0 ; ...
@@ -37,12 +37,13 @@ Conec = [ 5 8 6 0   0 1 1 0 0 ; ... % loaded face
           4 8 5 0   0 1 0 0 3 ; ... % z=0 supp face
           1 4 2 6   1 2 0 0 0 ; ... % tetrahedron
           6 2 3 4   1 2 0 0 0 ; ... % tetrahedron
-          4 1 5 6   1 2 0 0 0 ; ... % tetrahedron
           4 3 6 7   1 2 0 0 0 ; ... % tetrahedron
+          4 1 5 6   1 2 0 0 0 ; ... % tetrahedron
           4 6 5 8   1 2 0 0 0 ; ... % tetrahedron
           4 7 6 8   1 2 0 0 0 ; ... % tetrahedron
         ] ;
 
+          
 % ======================================================================
 % --- MELCS parameters ---
 
@@ -52,21 +53,17 @@ loadsParams     = cell(1,1) ; % L
 crossSecsParams = cell(1,1) ; % C
 springsParams   = cell(1,1) ; % S
 
-% ----------------------------------------------------------------------
 % --- Material parameters ---
 E = 1 ; nu = 0.3 ;
-materialsParams{1} = [ 0 6 E nu ] ;
+materialsParams{1} = [ 0 2 E nu ] ;
 
-% ----------------------------------------------------------------------
 % --- Element parameters ---
 elementsParams{1,1} = [ 5   ] ;
 elementsParams{2,1} = [ 3 2 0 ] ;
 
-% ----------------------------------------------------------------------
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
 
-% ----------------------------------------------------------------------
 % --- CrossSection parameters ---
 
 
@@ -83,18 +80,13 @@ springsParams{3, 1} = [ 0   0  0   0   inf 0 ] ;
 stopTolIts       = 30      ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
-targetLoadFactr  = 1       ;
-nLoadSteps       = 10     ;
+targetLoadFactr  = 2       ;
+nLoadSteps       = 10      ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps ] ;
 
 controlDofs = [ 7 1 1 ] ;
-
-% --- Analytic sol ---
-analyticSolFlag        = 2 ;
-analyticCheckTolerance = 1e-8 ;
-analyticFunc           = @(w) 1/p *E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
 
 %% Output parameters
 plotParamsVector = [ 0 ] ;
@@ -102,12 +94,23 @@ printflag = 2 ;
 
 reportBoolean = 0;
 
+% --- Analytic sol ---
+analyticSolFlag        = 2 ;
+analyticCheckTolerance = 1e-8 ;
+analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
+
+
 %% run ONSAS
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
 controlDispsCase1 = controlDisps ;
 analyticValsCase1 = analyticVals ;
 loadFactorsCase1  = loadFactors  ;
+
+[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
+
+%~ materialsParams{1} = [ 0 6 E nu ] ;
+
 
 
 close all
@@ -124,7 +127,7 @@ problemName = 'extensionSVKGMSHAndComplexStep' ;
 
 loadsParams{1,1} = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
 
-%~ plotParamsVector = [ 3 ] ;
+plotParamsVector = [ 0 ] ;
 analyticSolFlag        = 0 ;
 
 % run ONSAS
