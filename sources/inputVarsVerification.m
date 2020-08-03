@@ -63,6 +63,22 @@ if exist( 'crossSecsParams' ) == 0
    crossSecsParams = {} ; 
 end
 
+
+% ===  Conversion conec cell to matrix format... to improve in the future.... ===
+if iscell( Conec )
+  aux = Conec ;
+  nElems = size( aux,1) 
+  Conec = zeros( nElems,9) ;
+  for i=1:nElems
+    aux2 = aux{i} ; 
+    auxnnodes = length( aux2) - 5 ;
+    Conec ( i,1:auxnnodes) = aux2( (5+1):(5+auxnnodes) ) ;
+    Conec ( i,5:9        ) = aux2( (  1):(5          ) ) ;
+  end
+  clear aux aux2
+end
+% ====================================
+
 [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = ...
   conversionLoadsSprings ( Nodes, Conec, ...
                           materialsParams, ...

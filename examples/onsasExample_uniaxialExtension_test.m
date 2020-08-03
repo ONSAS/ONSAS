@@ -10,7 +10,7 @@ clear all, close all
 
 %% General data
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'extensionSVKSolidManual' ;
+problemName = 'uniaxialExtension_Manual' ;
 
 %% Structural properties
 
@@ -27,21 +27,21 @@ Nodes = [ 0    0    0 ; ...
           Lx  Ly   Lz ; ...
           Lx  Ly    0 ] ;
 
-Conec = [ 5 8 6 0   0 1 1 0 0 ; ... % loaded face
-          6 8 7 0   0 1 1 0 0 ; ... % loaded face
-          4 1 2 0   0 1 0 0 1 ; ... % x=0 supp face
-          4 2 3 0   0 1 0 0 1 ; ... % x=0 supp face
-          6 2 1 0   0 1 0 0 2 ; ... % y=0 supp face
-          6 1 5 0   0 1 0 0 2 ; ... % y=0 supp face
-          1 4 5 0   0 1 0 0 3 ; ... % z=0 supp face
-          4 8 5 0   0 1 0 0 3 ; ... % z=0 supp face
-          1 4 2 6   1 2 0 0 0 ; ... % tetrahedron
-          6 2 3 4   1 2 0 0 0 ; ... % tetrahedron
-          4 3 6 7   1 2 0 0 0 ; ... % tetrahedron
-          4 1 5 6   1 2 0 0 0 ; ... % tetrahedron
-          4 6 5 8   1 2 0 0 0 ; ... % tetrahedron
-          4 7 6 8   1 2 0 0 0 ; ... % tetrahedron
-        ] ;
+Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
+         [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
+         [ 0 1 0 0 1   4 1 2   ]; ... % x=0 supp face
+         [ 0 1 0 0 1   4 2 3   ]; ... % x=0 supp face
+         [ 0 1 0 0 2   6 2 1   ]; ... % y=0 supp face
+         [ 0 1 0 0 2   6 1 5   ]; ... % y=0 supp face
+         [ 0 1 0 0 3   1 4 5   ]; ... % z=0 supp face
+         [ 0 1 0 0 3   4 8 5   ]; ... % z=0 supp face
+         [ 1 2 0 0 0   1 4 2 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   6 2 3 4 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 3 6 7 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 1 5 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 6 5 8 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 7 6 8 ]  ... % tetrahedron
+        } ;
 
           
 % ======================================================================
@@ -89,7 +89,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 controlDofs = [ 7 1 1 ] ;
 
 %% Output parameters
-plotParamsVector = [ 0 ] ;
+plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
 reportBoolean = 0;
@@ -97,7 +97,7 @@ reportBoolean = 0;
 % --- Analytic sol ---
 analyticSolFlag        = 2 ;
 analyticCheckTolerance = 1e-8 ;
-analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) )
+analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 
 
 %% run ONSAS
@@ -109,15 +109,13 @@ loadFactorsCase1  = loadFactors  ;
 
 [ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
-%~ materialsParams{1} = [ 0 6 E nu ] ;
-
-
+materialsParams{1} = [ 0 2 E nu ] ;
 
 close all
 
 % --------------------------------------------------------
 
-problemName = 'extensionSVKGMSHAndComplexStep' ;
+problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 
 [ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 

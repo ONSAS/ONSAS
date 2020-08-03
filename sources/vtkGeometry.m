@@ -19,12 +19,19 @@
 % vtk files of the solids or structures.
 
 function [ Nodesvtk, vtkDispMat, vtkNormalForces, Conecvtk, elem2VTKCellMap ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes )
+  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes, elementsParamsMat )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
-nElemsTrussOrFrame = sum( ( Conec(:, 7) == 1 ) + ( Conec(:, 7) == 2 ) ) ;
-nElemsTetraOrPlate = sum( ( Conec(:, 7) == 3 ) + ( Conec(:, 7) == 4 ) ) ;
+% filter non-material elements
+inds = find( Conec( :, 4+1 )== 0) ;
+
+Conec( inds,:) = [] ;
+
+types = elementsParamsMat( Conec(:, 4+2), 1) ;
+
+nElemsTrussOrFrame = sum( ( types == 1 ) + ( types == 2 ) ) ;
+nElemsTetraOrPlate = sum( ( types == 3 ) + ( types == 4 ) ) ;
 
 nelems = size( Conec, 1 ) ;
 
@@ -47,9 +54,9 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
   
   % loop in elements
   for i = 1:nelems
-    elemMat  = Conec(i,5) ;
-    elemSec  = Conec(i,6) ;
-    elemType = Conec(i,7) ;
+    elemMat  = Conec(i, 4+1 ) ;
+    elemType = elementsParamsMat( Conec(i, 4+2 ), 1 ) ;
+    elemSec  = Conec(i, 4+5 ) ;
         
     nodeselem  = Conec(i,1:2)' ;
     dofselem   = nodes2dofs( nodeselem , 6 ) ;
@@ -144,7 +151,7 @@ elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
   Nodesvtk = Nodes + vtkDispMat ;
     
   if nargout > 3
-    Conecvtk = [ Conec(:,7) Conec(:,1:4) ] ;
+    Conecvtk = [ types Conec(:,1:4) ] ;
     elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Colums should be changed.
   end
 

@@ -41,9 +41,6 @@ else
   % -----------------------------------------------
   nElems  = size(Conec, 1) ;   nNodes  = length( Ut ) / 6 ;
   
-  % vecTotNumNodes: vector with numbers of total nodes for each element type
-  % vecDofStep: vector with steps of dof for reduced computation for each element type
-  vecTotNumNodes = [ 2 2 4 ] ;   vecDofsStep    = [ 2 1 2 ] ;
   
   % ====================================================================
   %  --- 1 declarations ---
@@ -84,6 +81,7 @@ else
 
   for elem = 1:nElems
 
+
     % extract element properties
     elemMaterialParams     = materialsParamsMat( Conec( elem, 5) , : ) ;
     elemrho                = elemMaterialParams( 1     )              ;
@@ -92,16 +90,17 @@ else
     elemElementParams      = elementsParamsMat( Conec( elem, 6),: ) ;
 
     typeElem = elemElementParams(1) ;
+
+    [numNodes, dofsStep] = elementTypeInfo ( typeElem ) ;
     
     % obtains nodes and dofs of element
-    nodeselem   = Conec( elem, 1:vecTotNumNodes( typeElem ) )'      ;
+    nodeselem   = Conec( elem, 1:numNodes )'      ;
     dofselem    = nodes2dofs( nodeselem , 6 )  ;
-    dofselemRed = dofselem ( 1 : vecDofsStep( typeElem ) : end ) ;
+    dofselemRed = dofselem ( 1 : dofsStep : end ) ;
 
     elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
     
-    elemCoords  = coordsElemsMat( elem, ...
-      1 : vecDofsStep( typeElem ) : ( vecTotNumNodes( typeElem ) * 6 ) ) ; 
+    elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ; 
     
     
     if typeElem == 1 || typeElem == 2
@@ -110,13 +109,12 @@ else
 
     stress = [] ;
     
-    
     switch typeElem
 
     % -----------   truss element   ------------------------------------
     case 1 
 
-      [ Finte, Ke, stress, dstressdeps, strain ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
+      [ Finte, Ke, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
       
       Finte = fs{1} ;
       Ke    = ks{1} ;

@@ -82,7 +82,7 @@ if plotParamsVector(1) == 3
     
     % generate connectivity
     [ vtkNodes, vtkDispMat, vtkNormalForces, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni, Nodes ) ;
+      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni, Nodes, elementsParamsMat ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, {}, vtkDispMat ) ;
@@ -99,7 +99,7 @@ if plotParamsVector(1) == 3
 
     % generates deformed nodes coords
     [ vtkNodes, vtkDispMat, vtkNormalForces ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces, Nodes ) ;
+      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces, Nodes, elementsParamsMat ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, {}, vtkDispMat ) ;

@@ -13,19 +13,10 @@ for elemNum = 1:size(elementsParamsMat,1)
   elements = find( Conec( :, 4+2 ) == elemNum ) ;
 
   if length( elements ) > 0
-    elemType = elementsParamsMat(elemNum,1)  ;
-    switch elemType
-    case 1
-      numNodes = 2 ;
-      dofsStep = 2 ;
-    case 2
-      numNodes = 2 ;
-      dofsStep = 2 ;
-    case 3
-      numNodes = 4 ;
-      dofsStep = 2 ;
-    end
-  
+    elemType = elementsParamsMat(elemNum,1)  
+    
+    [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
+    
     nodes    = Conec( elements, 1:numNodes) ;
     dofs     = nodes2dofs( nodes, 6)'       ;
     dofs     = dofs(1:dofsStep:end)         ;  
