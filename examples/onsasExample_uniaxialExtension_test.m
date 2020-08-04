@@ -140,7 +140,6 @@ loadFactorNumericalValsCase2  = numericalVals ;
 
 problemName = 'uniaxialExtension_truss' ;
 
-% an 8-node mesh is considered with its connectivity matrix
 Nodes = [ 0    0    0 ; ...
           Lx   0    0   ...
         ] ;

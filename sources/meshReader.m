@@ -15,36 +15,28 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% run all test examples from examples folder.
 
-keyword = 'test.m' ;
-%~ keyword = 'example' ;
+function [ nodesMat, conecMat ] = meshReader( mshFilename )
 
-fileslist = readdir('../examples');
-keyfiles  = {} ;
+fid = fopen( mshFilename ,'r') ;
 
-totalRuns = 0 ;
+maxLengthLine = 200 ;
 
-for i=1:length(fileslist)
-  if length( strfind( fileslist{i}, keyword ) ) > 0
-    totalRuns = totalRuns +1 ; 
-    keyfiles{totalRuns} = fileslist{i} ;
-  end
-end
+% ---- header reading --------------------------
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid);
 
-keyfiles
+nnodes = str2num(fgets(fid)) ;
 
-current       = 1 ;
-totalRuns
+nodesMat = fscanf(fid,'%g %g %g %g\n' ,[4 nnodes])' ;
+nodesMat(:,4) = [] ;
 
-while current <= totalRuns
+X = fgets(fid);
 
-  save('-mat', 'exData.mat','current','totalRuns', 'keyfiles' );
-  
-  run( [ '../examples/' keyfiles{current} ] ) ;
-  pause(0.5)
-  fprintf([' === test ' problemName ' problem executed === \n\n']);
-  
-  load('exData.mat');
-  current = current + 1 ; 
-end
+nElems = str2num( fgets(fid) ) ;
+
+conecMat = fscanf(fid,'%g %g %g %g\n' ,[4 nElems ])' ;
+
+fclose(fid);

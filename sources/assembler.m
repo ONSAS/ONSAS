@@ -132,9 +132,9 @@ else
     % -----------   frame element   ------------------------------------
     case 3
 
-      [ fs, ks, stress ] = elementBeamForces( xs, elemCrossSecParams, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
+      [ fs, ks, stress ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) ) ;
+                                               u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
       Finte = fs{1} ;  Ke    = ks{1} ;
       
       if solutionMethod > 2

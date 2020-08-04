@@ -7,7 +7,6 @@ clear all, close all
 dirOnsas = [ pwd '/..' ] ;
 problemName = 'staticVonMisesTrussNRAL' ;
 
-
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
 imperfPerc = .0 ;
@@ -16,11 +15,11 @@ Nodes = [      0  0     0  ; ...
             auxx*(1+imperfPerc)  0  auxy  ; ...
           2*auxx  0     0  ] ;
 
-Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
-         [ 0 1 1 0 2  2   ] ; ... % loaded node
-         [ 0 1 0 0 1  3   ] ; ... % fixed node
-         [ 1 2 0 1 0  1 2 ] ; ... % truss element
-         [ 1 2 0 1 0  2 3 ]   ... % truss element
+Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
+          [ 0 1 1 0 2  2   ] ; ... % loaded node
+          [ 0 1 0 0 1  3   ] ; ... % fixed node
+          [ 1 2 0 1 0  1 2 ] ; ... % truss element
+          [ 1 2 0 1 0  2 3 ]   ... % truss element
          } ;
 
 % ======================================================================
@@ -31,10 +30,8 @@ loadsParams     = cell(1,1) ; % L
 crossSecsParams = cell(1,1) ; % C
 springsParams   = cell(1,1) ; % S
 
-
 E = 210e9 ;  nu = 0 ;  rho = 0 ;
 materialsParams = {[ rho 3 E nu ]} ;
-
 
 elementsParams = { 1; 2} ;
 
@@ -44,7 +41,7 @@ A = 2.5e-4 ;
 crossSecsParams = {[ A ] } ;
 
 springsParams = { [ inf  0  inf  0  inf   0 ] ; ...
-                 [ 0    0  inf  0    0   0 ]   ...
+                  [ 0    0  inf  0    0   0 ]   ...
                } ;
 
 
@@ -79,7 +76,8 @@ analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l
 
 %% Output parameters
 printFlag = 0 ;
-plotParamsVector = [ 3 10];
+%~ plotParamsVector = [ 3 10];
+plotParamsVector = [ 0 ];
 
 sectPar = [12 .1 .1]
 

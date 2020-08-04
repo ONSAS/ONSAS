@@ -24,7 +24,8 @@ booleanCSTangs = 0 ;
       Iyy = elemCrossSecParams( 2 ) ;
       Izz = elemCrossSecParams( 3 ) ;
       J   = elemCrossSecParams( 4 ) ;
-  
+
+elemConstitutiveParams  
       %~ xs = coordsElemsMat(elem,1:2:end)'        ;
       E  = elemConstitutiveParams(2) ;
       nu = elemConstitutiveParams(3) ;
