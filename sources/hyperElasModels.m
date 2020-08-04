@@ -28,8 +28,18 @@ case 1
   E = paramsmodel(1) ;
   sigma = E * epsilon ;
   dsigdeps = E ;
-
 case 2
+  % Linear material model (saint-venant-kirchhoff )
+  E = paramsmodel(1) ;
+  sigma = E * epsilon ;
+  dsigdeps = E ;
+case 3
+  % Linear material model (saint-venant-kirchhoff )
+  E = paramsmodel(1) ;
+  sigma = E * epsilon ;
+  dsigdeps = E ;
+
+case 7
   % Bi-modulus material model: param1: Tension young modulus, param2: Compression modulus
   ET = paramsmodel(1) ;
   EC = paramsmodel(2) ;
@@ -42,7 +52,7 @@ case 2
     dsigdeps = EC ;
   end    
 
-case 3
+case 8
   % Bi-modulus material model with pre-strain: param1: Tension young modulus, 
   % param2: Compression modulus, param3: epszero (pre-strain)
   ET = paramsmodel(1) ;
@@ -57,7 +67,7 @@ case 3
     dsigdeps = EC ;
   end    
 
-case 4
+case 9
   % Example 5.11 from Reddy nonlinear sqrt stress-strain constitutive relation
   E = paramsmodel(1) ;
   sigma    = sign(epsilon) * E * sqrt( abs( epsilon) )  ;

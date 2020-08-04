@@ -6,7 +6,8 @@ Lz = 1.0 ;
 
 // mesh sizes
 //ms = 0.05;
-ms = 0.2 ;
+//ms = 0.25 ;
+ms = 1.0 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {0,0,Lz, ms} ;
@@ -55,12 +56,12 @@ Surface Loop(1) = {5, 6, 2, 1, 4, 3};
 Volume(1) = {1};
 
 //+
-Physical Surface("00_05_00_00_01") = {5};
+Physical Surface("00_01_00_00_01") = {5};
 //+
-Physical Surface("00_05_00_00_02") = {6};
+Physical Surface("00_01_00_00_02") = {6};
 //+
-Physical Surface("00_05_00_00_03") = {2};
+Physical Surface("00_01_00_00_03") = {2};
 //+
-Physical Surface("00_05_01_00_00") = {3};
+Physical Surface("00_01_01_00_00") = {3};
 //+
-Physical Volume("01_03_00_00_00") = {1};
+Physical Volume("01_02_00_00_00") = {1};

@@ -18,6 +18,7 @@
 
 % Octave function for nodes-to-dof conversion
 function [dofs] = nodes2dofs( nodes , degreespernode )
+nodes= nodes(:) ;
 n    = length(nodes);
 dofs = zeros( n*degreespernode , 1 ) ;
 for i=1:n

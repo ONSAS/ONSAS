@@ -45,7 +45,10 @@ end
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
-                      'materialsParams', 'nodalSprings', ...
+                      'materialsParams', ...
+                      'elementsParams', ...
+                      'loadsParams', ...
+                      'springsParams', ...
                       'numericalMethodParams' } ;
 
 for j = 1:length(checkVarNamesList)
@@ -57,9 +60,33 @@ end
 % ------------------------------------------
 
 if exist( 'crossSecsParams' ) == 0
-   crossSecsParams = [] ; 
+   crossSecsParams = {} ; 
 end
 
+
+% ===  Conversion conec cell to matrix format... to improve in the future.... ===
+if iscell( Conec )
+  aux = Conec ;
+  nElems = size( aux,1) 
+  Conec = zeros( nElems,9) ;
+  for i=1:nElems
+    aux2 = aux{i} ; 
+    auxnnodes = length( aux2) - 5 ;
+    Conec ( i,1:auxnnodes) = aux2( (5+1):(5+auxnnodes) ) ;
+    Conec ( i,5:9        ) = aux2( (  1):(5          ) ) ;
+  end
+  clear aux aux2
+end
+% ====================================
+
+[ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = ...
+  conversionLoadsSprings ( Nodes, Conec, ...
+                          materialsParams, ...
+                          elementsParams, ...
+                          loadsParams, ...
+                          crossSecsParams, ...
+                          springsParams ...
+                        ) ;
 
 nMats  = length( materialsParams    ) ;
 nSecs  = size( crossSecsParams, 1  ) ;
@@ -68,7 +95,6 @@ nElems = size( Conec,           1  ) ;
 
 % -----------------------
 % default values
-
  
 if exist( 'prescribedDispsMat' ) == 0
   prescribedDispsMat = [] ; 
@@ -112,10 +138,6 @@ if ( exist( 'deformedScaleFactor' ) == 0 )
   deformedScaleFactor = 1 ;
 end
 
-if exist( 'booleanConsistentMassMat' ) == 0
-  booleanConsistentMassMat = 1 ;
-end
-
 if exist( 'analyticSolFlag' ) == 0
   analyticSolFlag = 0 ;
 else
@@ -142,10 +164,6 @@ else
 	end
 end
 
-
-if exist( 'booleanCSTangs' ) == 0
-  booleanCSTangs = [ 0 ] ;
-end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
@@ -274,12 +292,6 @@ tangentMatricesCell = cell(2,1) ;
 contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
-materialsParamsMat = [] ;
-for i = 1 : length( materialsParams )
-  materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
-end
-
-
 
 if numericalMethodParams(1) > 2
   finalTime = numericalMethodParams(3);
@@ -297,3 +309,20 @@ else
 end
 
 timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
+
+
+% -- conver to matrices to store M., E. & C. in the struct type model ---
+materialsParamsMat = [] ;
+for i = 1 : length( materialsParams )
+  materialsParamsMat (i, 1:length( materialsParams{i} ) ) = materialsParams{i} ;
+end
+elementsParamsMat = [] ;
+for i = 1 : length( elementsParams )
+  elementsParamsMat (i, 1:length( elementsParams{i} ) ) = elementsParams{i} ;
+end
+crossSecsParamsMat = [] ;
+for i = 1 : length( crossSecsParams )
+  crossSecsParamsMat (i, 1:length( crossSecsParams{i} ) ) = crossSecsParams{i} ;
+end
+
+% ----------------------------------------------------------------------

@@ -17,195 +17,141 @@
 
 %
 % function for assembly of:
-%  - residual force vectors (paramOut = 1 )
+%  - residual force vectors    (paramOut = 1 )
 %  - residual tangent matrices (paramOut = 2)
-%  - stresses (paramOut = 3).
+%  - matrix with stresses      (paramOut = 3).
 %
 
-function Assembled = assembler ( Conec, crossSecsParams, coordsElemsMat, ...
+function Assembled = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, ...
   materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
-  solutionMethod, booleanConsistentMassMat, booleanCSTangs )
+  solutionMethod, elementsParamsMat )
 
 booleanCppAssembler = 0 ;
 
 % -----------------------------------------------
-% ---     C++ assembler    ---
+% ---     C++ assembler (under development)   ---
 % -----------------------------------------------
 if booleanCppAssembler
-  %~ CppAssembly
+  CppAssembly
   
 % -----------------------------------------------
-% ---    octave assembler    ---
+% ---    octave/matlab assembler    ---
 % -----------------------------------------------
 else
   % -----------------------------------------------
-  nElems  = size(Conec, 1) ;   nNodes  = length( Ut) / 6 ;
+  nElems  = size(Conec, 1) ;   nNodes  = length( Ut ) / 6 ;
   
-  %~ profile clear, profile on
   
-  % ============================================================================
+  % ====================================================================
   %  --- 1 declarations ---
-  % ============================================================================
+  % ====================================================================
 
   switch paramOut
-  % ------------------------------------------------
+  % -------  residual forces vector ------------------------------------
   case 1
     % --- creates Fint vector ---
     Fint = zeros( nNodes*6 , 1 ) ;
     Fmas = zeros( nNodes*6 , 1 ) ;
     Fvis = zeros( nNodes*6 , 1 ) ;
     
-  % ------------------------------------------------
+  % -------  tangent matrix        -------------------------------------
   case 2
     %~ if octaveBoolean
       %~ indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
       %~ indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
-      indsIK =         zeros( nElems*24*24, 1 )   ;
-      indsJK =         zeros( nElems*24*24, 1 )   ;
-    valsK    =         zeros( nElems*24*24, 1 )   ;
+    indsIK =         zeros( nElems*24*24, 1 )   ;
+    indsJK =         zeros( nElems*24*24, 1 )   ;
+    valsK  =         zeros( nElems*24*24, 1 )   ;
 
-    valsC    =         zeros( nElems*24*24, 1 )   ;
-    valsM    =         zeros( nElems*24*24, 1 )   ;
+    valsC  =         zeros( nElems*24*24, 1 )   ;
+    valsM  =         zeros( nElems*24*24, 1 )   ;
 
     counterInds = 0 ; % counter non-zero indexes    
 
-  % ------------------------------------------------
+  % -------  matrix with stress per element ----------------------------
   case 3
-    StressVec   = zeros( nElems, 6 ) ;
-  
+    stressMat = zeros( nElems, 6 ) ;
   end
-  
-  % ----------------------------------------------
-  
-  %~ contTiempoLlamadasIndexs       = 0;
-  %~ contTiempoLlamadasAssembly     = 0;
-  %~ contTiempoLlamadasAssemblyFint = 0;
-
-  % ============================================================================
+  % ====================================================================
 
 
-  % ============================================================================
+  % ====================================================================
   %  --- 2 loop assembly ---
-  % ============================================================================
+  % ====================================================================
 
   for elem = 1:nElems
 
+
     % extract element properties
-    elemMaterialParams     = materialsParamsMat( Conec( elem, 5), : ) ;
+    elemMaterialParams     = materialsParamsMat( Conec( elem, 5) , : ) ;
     elemrho                = elemMaterialParams( 1     )              ;
+    elemConstitutiveParams = elemMaterialParams( 2:end )             ; 
 
-    elemConstitutiveParams = elemMaterialParams( 2:end )              ;
+    elemElementParams      = elementsParamsMat( Conec( elem, 6),: ) ;
 
-    switch Conec(elem,7)
-  
-    % -------------------------------------------
-    case 1 % Co-rotational Truss with Engineering strain
+    typeElem = elemElementParams(1) ;
 
-    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
+    [numNodes, dofsStep] = elementTypeInfo ( typeElem ) ;
+    
+    % obtains nodes and dofs of element
+    nodeselem   = Conec( elem, 1:numNodes )'      ;
+    dofselem    = nodes2dofs( nodeselem , 6 )  ;
+    dofselemRed = dofselem ( 1 : dofsStep : end ) ;
 
-      % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)'             ;
-      dofselem  = nodes2dofs( nodeselem , 6 )  ;
-      dispsElem = u2ElemDisps( Ut , dofselem ) ;
-  
-      dofselemRed = dofselem(1:2:end)  ;
-        
-      A = elemCrossSecParams(1) ;
+    elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
+    
+    elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ; 
+    
+    
+    if typeElem == 2 || typeElem == 3
+      elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 4+4 ) , : ) ;
+    end   
+
+    stress = [] ;
+    
+    switch typeElem
+
+    % -----------   truss element   ------------------------------------
+    case 2
+
+      [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
       
-      sizeTensor = 1 ;
-      
-      [ Finte, Ke, stress, dstressdeps, strain ] = elementTrussInternForce( coordsElemsMat(elem,1:12)', dispsElem, elemConstitutiveParams, A, paramOut, booleanCSTangs ) ;
-       
-      if solutionMethod > 2
-        dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        [ Fmase, Mmase ] = elementTrussMassForce( coordsElemsMat(elem,1:12)', elemrho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
-      end
-      
-    % -------------------------------------------
-    case 2 % Co-rotational Frame element (bernoulli beam)
-
-    elemCrossSecParams     = crossSecsParams   ( Conec( elem, 6 ) , : ) ;
-  
-      % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:2)'             ;  
-      dofselem  = nodes2dofs( nodeselem , 6 )  ;
-      dispsElem = u2ElemDisps( Ut , dofselem ) ;
-
-      dofselemRed = dofselem  ;
-  
-      sizeTensor = 1 ;
-  
-      A   = elemCrossSecParams( 1 ) ;
-      Iyy = elemCrossSecParams( 2 ) ;
-      Izz = elemCrossSecParams( 3 ) ;
-      J   = elemCrossSecParams( 4 ) ;
-  
-      xs = coordsElemsMat(elem,1:2:end)'        ;
-      E  = elemConstitutiveParams(2) ;
-      nu = elemConstitutiveParams(3) ;
-      G  = E/(2*(1+nu)) ;
-      
-      params = [E G A Iyy Izz J elemrho ] ;
-
-      [ fs, ks, stress ] = elementBeamForces( xs, params, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
-                                               u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) ) ;
       Finte = fs{1} ;
       Ke    = ks{1} ;
+       
+      if solutionMethod > 2
+        booleanConsistentMassMat = elemElementParams(2) ;
+        
+        dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
+        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, rho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
+        %
+        Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
+      end
+    
+      
+    % -----------   frame element   ------------------------------------
+    case 3
+
+      [ fs, ks, stress ] = elementBeamForces( xs, elemCrossSecParams, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
+                                               u2ElemDisps( Udott    , dofselem ) , ...
+                                               u2ElemDisps( Udotdott , dofselem ) ) ;
+      Finte = fs{1} ;  Ke    = ks{1} ;
       
       if solutionMethod > 2
-
-        Fmase = fs{3} ;
-        Ce    = ks{2} ;
-        Mmase = ks{3} ;
-      end
-
-  
-    % -------------------------------------------
-    case 3 % linear solid element
-      
-      
-      % obtains nodes and dofs of element
-      nodeselem = Conec(elem,1:4)' ;
-      dofselem  = nodes2dofs( nodeselem , 6 ) ;
-      dofselemRed = dofselem(1:2:end) ;
-
-      dispsElem = u2ElemDisps( Ut , dofselemRed ) ;
-         
-      tetcoordmat        = zeros(3,4) ;
-      tetcoordmat(1,1:4) = coordsElemsMat(elem,1:6:end) ;
-      tetcoordmat(2,1:4) = coordsElemsMat(elem,3:6:end) ;
-      tetcoordmat(3,1:4) = coordsElemsMat(elem,5:6:end) ;
-      
-      sizeTensor = 6 ;
-  
-      if elemConstitutiveParams( 1 ) == 6
-        E  = elemConstitutiveParams( 2) ;
-        nu = elemConstitutiveParams( 3) ;
-  
-        if paramOut==1
-  
-          [ Finte ] = elementTetraSVKSolidInternLoadsTangMat( tetcoordmat, dispsElem , [E nu], paramOut ) ; 
-          
-          strain = zeros(6,1) ;
-          stress = zeros(6,1) ;
-  
-        %~ elseif paramOut == 2
-        elseif paramOut >= 2
-          [ Finte, Ke, strain, stress ] = elementTetraSVKSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu] , paramOut) ;
-        end
-        
-      else
-        E  = elemConstitutiveParams( 2) ;
-        nu = elemConstitutiveParams( 3) ;
-        [ Finte, Ke, strain, stress ]= elementTetraSolidInternLoadsTangMat ( tetcoordmat, dispsElem , [E nu], paramOut ) ;
+        Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
       end
   
+  
+    % ---------  tetrahedron solid element -----------------------------
+    case 4
+      
+      [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
+                              elemConstitutiveParams, paramOut ) ;
+
     end   % case tipo elemento
     % -------------------------------------------
 
 
-  
     % -------------------------------------------
     % ---   assemble   ----
     % -------------------------------------------
@@ -237,11 +183,13 @@ else
         counterInds = counterInds + length( dofselemRed ) ;
       end
     
-              
     case 3
-        StressVec(elem,(1:sizeTensor) ) = stress ;
+      StressVec( elem, (1:length(stress) ) ) = stress ;
+
     end % case paramOut ---
+
   end % for elements ----
+
   % ============================================================================
 
 
