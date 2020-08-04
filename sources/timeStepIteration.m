@@ -67,7 +67,6 @@ end
   Conec, crossSecsParamsMat, coordsElemsMat, ...
   materialsParamsMat, KS, constantFext, variableFext, userLoadsFilename, ...
   currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, nodalDispDamping, ...
-  booleanConsistentMassMat, booleanCSTangs, ...
   Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
 % ---------------------------------------------------
 
@@ -93,14 +92,14 @@ while  booleanConverged == 0
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
     materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
-    nodalDispDamping, booleanConsistentMassMat, Udott, Udotdott, booleanCSTangs, elementsParamsMat ) ;
+    nodalDispDamping, Udott, Udotdott, elementsParamsMat ) ;
   % ---------------------------------------------------
 
   % --- new rhs ---
   [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParamsMat, coordsElemsMat, ...
     materialsParamsMat, KS, constantFext, variableFext, ...
     userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
-    neumdofs, nodalDispDamping, booleanConsistentMassMat, booleanCSTangs, ...
+    neumdofs, nodalDispDamping, ...
     Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
   % ---------------------------------------------------
 
@@ -114,6 +113,7 @@ while  booleanConverged == 0
 end % iteration while
 % --------------------------------------------------------------------
 
+
 Utp1       = Utp1k ;
 Udottp1    = Udottp1k ;
 Udotdottp1 = Udotdottp1k ;
@@ -121,16 +121,27 @@ Udotdottp1 = Udotdottp1k ;
 % computes KTred at converged Uk
 KTtp1red = systemDeltauMatrix ;
 
+
+
 % --------------------------------------------------------------------
 
-Stresstp1 = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat ) ;
+Stresstp1 = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
 
-if stabilityAnalysisBoolean == 1
+
+% %%%%%%%%%%%%%%%%
+stabilityAnalysisFlag = stabilityAnalysisBoolean ;
+% %%%%%%%%%%%%%%%%
+
+if stabilityAnalysisFlag == 2
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-else
+elseif stabilityAnalysisFlag == 1
   [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   factorCrit = 0;
+else
+  nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
 end
+
+
 
 % prints iteration info in file
 printSolverOutput( ...

@@ -138,10 +138,6 @@ if ( exist( 'deformedScaleFactor' ) == 0 )
   deformedScaleFactor = 1 ;
 end
 
-if exist( 'booleanConsistentMassMat' ) == 0
-  booleanConsistentMassMat = 1 ;
-end
-
 if exist( 'analyticSolFlag' ) == 0
   analyticSolFlag = 0 ;
 else
@@ -168,10 +164,6 @@ else
 	end
 end
 
-
-if exist( 'booleanCSTangs' ) == 0
-  booleanCSTangs = [ 0 ] ;
-end
 
 if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
@@ -334,4 +326,3 @@ for i = 1 : length( crossSecsParams )
 end
 
 % ----------------------------------------------------------------------
-

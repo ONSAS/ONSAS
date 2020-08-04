@@ -23,9 +23,9 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         )
 
 % auxiliar elements separation
-indsElemsAux            = find( Conec(:,5) == 0 ) ;
-conecAuxElems           = Conec(indsElemsAux, : ) ;
-Conec(indsElemsAux, : ) = [] ;
+indsElemsAux             = find( Conec(:,5) == 0 ) ;
+conecAuxElems            = Conec(indsElemsAux, : ) ;
+Conec( indsElemsAux, : ) = [] ;
 
 nodalConstantLoads = [] ;
 nodalVariableLoads = [] ;
@@ -43,7 +43,31 @@ for i = 1:size(conecAuxElems,1)
   % --- loads ---
   if loadNum > 0,
 
-    if elementsParams{ elemNum } ;
+    if elementsParams{ elemNum } == 1 ; % node
+      
+      loadvals = loadsParams{loadNum} ;
+      node     = conecAuxElems( i, 1 ) ; 
+
+      % ------------------------------------------------------------------    
+      if loadvals(1) ~= 1 
+        error(' wrong global/local flag in load');
+      end
+
+      if loadvals(2) == 1 % variable load
+        nodalVariableLoads = [ nodalVariableLoads ; ...
+                             node loadvals(3:end) ] ;
+
+      elseif loadvals(2) == 0 % constant load
+        nodalConstantLoads = [ nodalConstantLoads ; ...
+                             node loadvals(3:end) ] ;
+      
+      else
+        error(' constant/variable load param must be 1 or 0')
+      end
+      % ------------------------------------------------------------------    
+
+
+    elseif elementsParams{ elemNum } == 5 ; % triangle
 
       nodestrng = conecAuxElems( i, 1:3 ) ; 
 
@@ -143,6 +167,7 @@ for i = 1:size(conecAuxElems,1)
      
     end
   end
+
   % --------------------------------------------------------------------
   
   

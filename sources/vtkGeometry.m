@@ -30,8 +30,8 @@ Conec( inds,:) = [] ;
 
 types = elementsParamsMat( Conec(:, 4+2), 1) ;
 
-nElemsTrussOrFrame = sum( ( types == 1 ) + ( types == 2 ) ) ;
-nElemsTetraOrPlate = sum( ( types == 3 ) + ( types == 4 ) ) ;
+nElemsTrussOrFrame = sum( ( types == 2 ) + ( types == 3 ) ) ;
+nElemsTetraOrPlate = sum( ( types == 4 )                  ) ;
 
 nelems = size( Conec, 1 ) ;
 

@@ -24,7 +24,7 @@
 
 function Assembled = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, ...
   materialsParamsMat, KS, Ut, paramOut, Udott, Udotdott, nodalDispDamping, ...
-  solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat )
+  solutionMethod, elementsParamsMat )
 
 booleanCppAssembler = 0 ;
 
@@ -103,8 +103,8 @@ else
     elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ; 
     
     
-    if typeElem == 1 || typeElem == 2
-      elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 6 ) , : ) ;
+    if typeElem == 2 || typeElem == 3
+      elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 4+4 ) , : ) ;
     end   
 
     stress = [] ;
@@ -112,23 +112,25 @@ else
     switch typeElem
 
     % -----------   truss element   ------------------------------------
-    case 1 
+    case 2
 
-      [ Finte, Ke, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
+      [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
       
       Finte = fs{1} ;
       Ke    = ks{1} ;
        
       if solutionMethod > 2
+        booleanConsistentMassMat = elemElementParams(2) ;
+        
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemCrossSecParams, paramOut, dotdotdispsElem ) ;
+        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, rho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
         %
         Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
       end
     
       
     % -----------   frame element   ------------------------------------
-    case 2
+    case 3
 
       [ fs, ks, stress ] = elementBeamForces( xs, elemCrossSecParams, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
@@ -141,7 +143,7 @@ else
   
   
     % ---------  tetrahedron solid element -----------------------------
-    case 3
+    case 4
       
       [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
                               elemConstitutiveParams, paramOut ) ;
@@ -150,7 +152,6 @@ else
     % -------------------------------------------
 
 
-  
     % -------------------------------------------
     % ---   assemble   ----
     % -------------------------------------------

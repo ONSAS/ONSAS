@@ -19,81 +19,56 @@
 % of 3D truss elements using engineering strain.
 
 
-
-
-% Co-rotational Truss with Engineering strain
-
-
-
-
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout, booleanCSTangs )
+  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout )
 
-  % vector reference element
-  localAxisRef = Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) ;
-  
-  % initial length
-  lini = sqrt( sum( localAxisRef.^2 ) ) ;
-
-  % normalized reference vector
-  e1ref = localAxisRef / lini ;
-  
-  % vector deformed element
+  Xe    = Xe'     ;
   Xedef = Xe + Ue ;
+
+  Bdif = [ -eye(3) eye(3) ] ;
+
+  % initial/deformed lengths
+  lini = sqrt( sum( ( Bdif * Xe    ).^2 ) ) ;
+  ldef = sqrt( sum( ( Bdif * Xedef ).^2 ) ) ;
   
-  localAxisDef = Xedef( [(1:2:5)+6]) - Xedef( [(1:2:5)]) ;
-
-  % deformed length
-  ldef = sqrt( sum( localAxisDef.^2 ) ) ;
-
-  % normalized deformed co-rotational vector
-  e1def = localAxisDef / ldef ;
+  % normalized reference and deformed co-rotational vector
+  e1ref = Bdif * Xe    / lini ; 
+  e1def = Bdif * Xedef / ldef ;
 
   % --- strain ---
-  strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
-
+  if hyperelasparams(1) == 2
+    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;
+  elseif hyperelasparams(1) == 3
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
+  end
+  
   % --- stress and constitutive tensor ---
   [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
   
-  TTcl              = zeros(12,1) ;
-  TTcl(1:2:5)       = -e1def ;    TTcl([(1:2:5)+6]) =  e1def ;
+  %~ TTcl              = zeros(12,1) ;
+  %~ TTcl(1:2:5)       = -e1def ;    TTcl([(1:2:5)+6]) =  e1def ;
+  TTcl              = Bdif' * e1def ;
 
   % internal forces computation
-  Finte = stress * A * TTcl  ;
+  Finte = stress * A * TTcl ;
+
+  %~ Finte = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif * Ue + 0.5 * Ue' * Bdif' * Bdif * Ue ) * hyperelasparams(2) * A ;
 
   if paramout == 2
-  
-    KTe = zeros(12,12) ;
-
-    % tangent matrix computation  
-    if booleanCSTangs == 0
     
-      B = zeros( 12,3) ;
-      B(1:2:5     , :) = -eye(3);   B([1:2:5]+6 , :) = +eye(3);
+    if hyperelasparams(1) == 2
+      KTe = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif + Ue' * Bdif' * Bdif ) * hyperelasparams(2) * A ; 
+    elseif hyperelasparams(1) == 3
+      KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
+      Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
+      KTe   = KMe + Ksige ;
     
-      KMe   = dstressdeps * A / lini * ( TTcl * TTcl' ) ;
-      Ksige = A    * stress / (ldef) * ( B * B' - TTcl * (TTcl')  ) ;
-    
-      KTe = KMe + Ksige ;
-    
-    else
-      %
-      step = 1e-10;
-      
-      for i=1:2:12
-        ei = zeros(12,1);   ei(i) = j ;
-        
-        FinteComp = elementTrussInternForce( Xe, Ue + ei*step , hyperelasparams, A, 1 );
-        
-        KTe(i,1:2:end) = imag( FinteComp ) / step;
-      end
     end
-
   else
     KTe = [] ;
   end
   
   % reduce to keep only displacements dofs
-  Finte = Finte(1:2:end);
-  KTe   = KTe(1:2:end,1:2:end);
-
+  
+  Finte = {Finte};
+  KTe   = {KTe};

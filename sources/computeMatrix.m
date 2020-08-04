@@ -18,7 +18,7 @@
 % ======================================================================
 function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
   materialsParamsMat, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, ...
-  booleanConsistentMassMat, Udott, Udotdott, booleanCSTangs, elementsParamsMat )
+  Udott, Udotdott, elementsParamsMat )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
@@ -26,7 +26,7 @@ function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsEl
       = extractMethodParams( numericalMethodParams ) ;
 
   % computes static tangent matrix
-  [ mats ] = assembler( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs, elementsParamsMat ) ;
+  [ mats ] = assembler( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
 
   KT      = mats{1} ;
   if solutionMethod > 2

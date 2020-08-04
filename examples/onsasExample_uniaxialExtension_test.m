@@ -15,7 +15,7 @@ problemName = 'uniaxialExtension_Manual' ;
 %% Structural properties
 
 % tension applied and x, y, z dimensions
-p = 1 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
+p = 3 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
 % an 8-node mesh is considered with its connectivity matrix
 Nodes = [ 0    0    0 ; ...
@@ -59,13 +59,12 @@ materialsParams{1} = [ 0 2 E nu ] ;
 
 % --- Element parameters ---
 elementsParams{1,1} = [ 5   ] ;
-elementsParams{2,1} = [ 3 2 0 ] ;
+elementsParams{2,1} = [ 4 0 ] ;
 
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
 
 % --- CrossSection parameters ---
-
 
 % ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
@@ -80,7 +79,7 @@ springsParams{3, 1} = [ 0   0  0   0   inf 0 ] ;
 stopTolIts       = 30      ;
 stopTolDeltau    = 1.0e-12 ;
 stopTolForces    = 1.0e-12 ;
-targetLoadFactr  = 2       ;
+targetLoadFactr  = 1       ;
 nLoadSteps       = 10      ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
@@ -102,17 +101,17 @@ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 
 %% run ONSAS
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+% --------------------------------------------------------
 
-controlDispsCase1 = controlDisps ;
-analyticValsCase1 = analyticVals ;
-loadFactorsCase1  = loadFactors  ;
-
-[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
-
-materialsParams{1} = [ 0 2 E nu ] ;
+controlDispsValsCase1         = controlDisps  ;
+loadFactorAnalyticalValsCase1 = analyticVals  ;
+loadFactorNumericalValsCase1  = numericalVals ;
 
 close all
 
+
+% --------------------------------------------------------
+% solid model using gmsh mesh, local tension load and complex step 
 % --------------------------------------------------------
 
 problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
@@ -131,25 +130,90 @@ analyticSolFlag        = 0 ;
 % run ONSAS
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 
+controlDispsValsCase2         = controlDisps  ;
+loadFactorNumericalValsCase2  = numericalVals ;
+
+
+% --------------------------------------------------------
+% truss element model
+% --------------------------------------------------------
+
+problemName = 'uniaxialExtension_truss' ;
+
+% an 8-node mesh is considered with its connectivity matrix
+Nodes = [ 0    0    0 ; ...
+          Lx   0    0   ...
+        ] ;
+
+Conec = {[ 0 1 0 0 1   1   ] ; ... % fixed node
+         [ 0 1 1 0 2   2   ] ; ... % loaded node
+         [ 1 2 0 1 0   1 2 ]   ... % truss element
+        } ;
+
+
+% ======================================================================
+% --- MELCS parameters ---
+
+materialsParams = cell(1,1) ; % M
+elementsParams  = cell(1,1) ; % E
+loadsParams     = cell(1,1) ; % L
+crossSecsParams = cell(1,1) ; % C
+springsParams   = cell(1,1) ; % S
+
+% --- Material parameters ---
+E = 1 ; nu = 0.3 ;
+materialsParams{1} = [ 0 2 E nu ] ;
+
+% --- Element parameters ---
+elementsParams{1,1} = [ 1   ] ;
+elementsParams{2,1} = [ 2 0 ] ;
+
+% --- Load parameters ---
+loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
+
+% --- CrossSection parameters ---
+crossSecsParams{1,1} = 1*1 ;
+
+% ----------------------------------------------------------------------
+% --- springsAndSupports parameters ---
+springsParams{1, 1} = [ inf 0  inf 0   inf 0 ] ;
+springsParams{2, 1} = [ 0   0  inf 0   inf 0 ] ;
+
+% ======================================================================
+
+plotParamsVector       = [ 0 ] ;
+
+
+controlDofs = [ 2 1 1 ] ;
+
+
+%% run ONSAS
+acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+
+controlDispsValsCase3         = controlDisps  ;
+loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
+
+
 % --- plots ---
 
 lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
 
 figure
-plot( controlDisps, analyticVals ,'b-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
 grid on, hold on
-plot( controlDispsCase1, loadFactorsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
-plot( controlDisps, loadFactors  ,'r-x' , 'linewidth', lw,'markersize',ms)
+plot( controlDispsValsCase1, loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
+plot( controlDispsValsCase2, loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
+plot( controlDispsValsCase3, loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
 
-%~ figure
-%~ semilogy(controlDisps, abs( analyticVals-loadFactors) )
+%~ %%figure
+%~ %%semilogy(controlDisps, abs( analyticVals-loadFactors) )
 
 % ---------------
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic Sol','numerical Sol 1','numerical Sol 2','location','North')
+legend('analytic Sol','numerical Sol 1','numerical Sol 2','numerical Sol 3','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-%~ print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
+%~ %%print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
 
 cd(dirOnsas); cd(outputDir);
 print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
