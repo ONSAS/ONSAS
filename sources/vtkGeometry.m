@@ -142,8 +142,15 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
                                 %~ ones(size(conecElem,1),1)*elemMat ones(size(conecElem,1),1)*elemSec ones(size(conecElem,1),1)*elemType ] ;  
       %~ end
         
+
+
     end
   end
+  
+  vtkStress = {} ;
+  
+  vtkStress{3,1} = stressMat ;
+
   
 elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
 

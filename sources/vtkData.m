@@ -38,8 +38,8 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
 	if size(vtkNormalForce,1) > 0
     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForce ;
 	end
-    
-  if size( cellStress, 1 ) > 0 && size( cellStress{3}, 1) > 0
+
+  if size( cellStress, 1 ) > 0 && size( cellStress{3}, 1) > 0 && size( cellStress{3}, 2) > 1
     stressMat = cellStress{3} ;
     nelems    = size( stressMat, 1 ) ;
     
@@ -89,6 +89,15 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
     cellCellData{5,1} = 'SCALARS' ; cellCellData{5,2} = 'SigI'        ; cellCellData{5,3} = vecSigI ;
     cellCellData{6,1} = 'SCALARS' ; cellCellData{6,2} = 'SigII'       ; cellCellData{6,3} = vecSigII ;
     cellCellData{7,1} = 'SCALARS' ; cellCellData{7,2} = 'SigIII'      ; cellCellData{7,3} = vecSigIII ;
+  
+  elseif size( cellStress, 1 ) > 0 && size( cellStress{3}, 1) > 0
+    stressMat = cellStress{3} ;
+    nelems    = size( stressMat, 1 ) ;
+    
+    sxx = stressMat(:, 1 ) ;
+    
+    cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'sig x loc'   ; cellCellData{1,3} = sxx ;
+  
   end
 
   cellPointData = cell(1,3) ;

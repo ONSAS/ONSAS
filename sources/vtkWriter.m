@@ -23,7 +23,6 @@
 
 function vtkWriter( filename, nodes, conect, cellPointData, cellCellData )
 
-
 format_A = '%18.6e' ;
 format_B = '%20.8e' ;
 
