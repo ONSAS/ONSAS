@@ -16,14 +16,16 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
-  xs, params, booleanCSTangs, solutionMethod, Ue, Udote, Udotdote ) ;
+  xs, elemCrossSecParams, elemConstitutiveParams, solutionMethod, Ue, Udote, Udotdote, elemrho ) ;
+
+booleanCSTangs = 0 ;
 
       A   = elemCrossSecParams( 1 ) ;
       Iyy = elemCrossSecParams( 2 ) ;
       Izz = elemCrossSecParams( 3 ) ;
       J   = elemCrossSecParams( 4 ) ;
   
-      xs = coordsElemsMat(elem,1:2:end)'        ;
+      %~ xs = coordsElemsMat(elem,1:2:end)'        ;
       E  = elemConstitutiveParams(2) ;
       nu = elemConstitutiveParams(3) ;
       G  = E/(2*(1+nu)) ;
