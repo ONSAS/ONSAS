@@ -103,12 +103,12 @@ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
 % --------------------------------------------------------
 
+
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = numericalVals ;
 
 close all
-
 
 % --------------------------------------------------------
 % solid model using gmsh mesh, local tension load and complex step 

@@ -18,13 +18,15 @@
 % this function creates the conectivities and coordinates data structures for producing
 % vtk files of the solids or structures.
 
-function [ Nodesvtk, vtkDispMat, vtkNormalForces, Conecvtk, elem2VTKCellMap ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes, elementsParamsMat )
+function [ Nodesvtk, vtkDispMat, vtkNormalForces, vtkStress, Conecvtk, elem2VTKCellMap ] = ...
+  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes, elementsParamsMat, stressMat )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
 % filter non-material elements
 inds = find( Conec( :, 4+1 )== 0) ;
+
+numminout = 4 ;
 
 Conec( inds,:) = [] ;
 
@@ -101,7 +103,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
         Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
         vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
 
-        if nargout > 3
+        if nargout > numminout
           ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
           Conecvtk = [ Conecvtk ; ConecCell ] ;
         end
@@ -148,12 +150,17 @@ elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
   vtkNormalForces = [] ;
   vtkDispMat = reshape( U(1:2:end)', [3, size(Nodes,1) ])' ;
 
+  vtkStress = {} ;
+  
+  vtkStress{3,1} = stressMat ;
+  
   Nodesvtk = Nodes + vtkDispMat ;
-    
-  if nargout > 3
+  
+  if nargout > numminout
     Conecvtk = [ types Conec(:,1:4) ] ;
     elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Colums should be changed.
   end
+    
 
 else
   error(' mixed elements plot not implemented yet. Please create an issue.')

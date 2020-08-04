@@ -39,29 +39,44 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForce ;
 	end
     
-  if size(cellStress,1) > 0 && size(cellStress{3},1) > 0
+  if size( cellStress, 1 ) > 0 && size( cellStress{3}, 1) > 0
     stressMat = cellStress{3} ;
-    sxx = stressMat(:,1);
-    syy = stressMat(:,2);
-    szz = stressMat(:,3);
-    tyz = stressMat(:,4);
-    txz = stressMat(:,5);
-    txy = stressMat(:,6);
+    nelems    = size( stressMat, 1 ) ;
+    
+    sxx = stressMat(:, 1 ) ;
+    syy = stressMat(:, 2 ) ;
+    szz = stressMat(:, 3 ) ;
+    tyz = stressMat(:, 4 ) ;
+    txz = stressMat(:, 5 ) ;
+    txy = stressMat(:, 6 ) ;
+
     svm = sqrt( 0.5*( (sxx-syy).^2 + (syy-szz).^2 + (szz-sxx).^2  + 6*(tyz.^2 + txz.^2 + txy.^2) ) ) ;
+
     for i = 1:nelems
       tensor = [ sxx(i) txy(i) txz(i) ; txy(i) syy(i) tyz(i) ; txz(i) tyz(i) szz(i) ] ;
-      [vec,val] = eig(tensor) ;
-      [sigI,indI] = max(diag(val)) ;
-      [sigIII,indIII] = min(diag(val)) ;
-      indII = setdiff([1 2 3], [indI indIII]) ;
+
+      [vec, val] = eig(tensor) ;
+      
+      [ sigI  , indI   ] = max( diag(val) ) ;
+      [ sigIII, indIII ] = min( diag(val) ) ;
+
+      if indI ~= indIII
+        indII = setdiff( [1 2 3], [indI indIII]) ;
+      else
+        indII = indI ;
+      end
+      
       aux = diag(val) ;
       sigII = aux(indII) ;
+
       % Sigma I
       vecSigI = [vecSigI ; sigI] ;
       vecI = [vecI ; vec(:,indI)'/(norm(vec(:,indI)'))*abs(sigI)] ;
+
       % Sigma II
       vecSigII = [ vecSigII ; sigII ] ;
       vecII = [ vecII ; vec(:,indII)'/(norm(vec(:,indII)'))*abs(sigII)] ;
+
       % Sigma III
       vecSigIII = [vecSigIII ; sigIII] ;
       vecIII = [vecIII ; vec(:,indIII)'/(norm(vec(:,indIII)'))*abs(sigIII)] ;
@@ -78,9 +93,5 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
 
   cellPointData = cell(1,3) ;
   cellPointData{1,1} = 'VECTORS' ; cellPointData{1,2} = 'Displacements' ; cellPointData{1,3} = vtkDispMat ;
-
-
-
-
 
 
