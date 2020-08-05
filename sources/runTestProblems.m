@@ -48,3 +48,5 @@ while current <= totalRuns
   load('exData.mat');
   current = current + 1 ; 
 end
+
+delete('exData.mat')

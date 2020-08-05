@@ -7,7 +7,6 @@ dirOnsas = [ pwd '/..' ] ;      problemName = 'cantileverNodalMoment' ;
 
 l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 20 ;
 
-
 Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
 auxconec = [ (ones(Nelem,1)*[ 1 2 0 1 0]) (1:(Nelem))' (2:(Nelem+1))' ] ;
@@ -19,6 +18,8 @@ Conec{2, 1} = [ 0 1 1 0 0                     Nelem+1 ] ; % loaded node
 for i=1:Nelem
   Conec{2+i, 1} =  auxconec(i,:) ;
 end
+
+
 % ======================================================================
 % --- MELCS parameters ---
 
@@ -35,9 +36,7 @@ crossSecsParams = {[ A Iy Iz It ]} ;
 
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
 
-
 storeBoolean = 1 ;
-
 
 controlDofs = [ Nelem+1  4  -1 ] ;
 
@@ -49,8 +48,10 @@ targetLoadFactr = E * Iy / ( l / ( 2 * pi ) ) ;  % curvradius corresponding to p
 nLoadSteps      = 10 ;
 
 %~ plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
-plotParamsVector = [ 0 ] ; sectPar = [ 12 b h ] ;
+plotParamsVector = [ 3 ] ; sectPar = [ 12 b h ] ;
 printFlag = 2 ;
+
+reportBoolean = 0 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
 

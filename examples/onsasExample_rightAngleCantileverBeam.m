@@ -16,12 +16,10 @@ rho =  1    ;
 
 % inconsistent
 J   = I ;
-global Jrho
-Jrho = diag( [ 20; 10; 10 ] ) ;
 
 materialsParams = {[ rho 1 E nu ]} ;
 
-crossSecsParams = [ A I I J ] ;
+crossSecsParams = [ A I I J 20 10 10 ] ;
 
 % method
 timeIncr   =  0.25    ;

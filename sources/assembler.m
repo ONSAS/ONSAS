@@ -102,10 +102,9 @@ else
     
     elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ; 
     
-    
     if typeElem == 2 || typeElem == 3
       elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 4+4 ) , : ) ;
-    end   
+    end
 
     stress = [] ;
     

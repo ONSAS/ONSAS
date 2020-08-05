@@ -17,21 +17,21 @@
 
 function Ro = beamRefConfRotMat( x ) ;  
 
-		exL = x / norm(x) ;
-		
-    eyG = [0 1 0]' ;
-		ezG = [0 0 1]' ;
+  exL = x / norm(x) ;
+  
+  eyG = [0 1 0]' ;
+  ezG = [0 0 1]' ;
 
-    % Vector normal to beam in reference configuration
-    aux = cross ( ezG, exL ); 	
-		
-    if norm( aux ) > 1e-15
-		  eyL = aux / norm( aux );
-		else		  
-      eyL = eyG ;
-		end
+  % Vector normal to beam in reference configuration
+  aux = cross ( ezG, exL ) ;
+  
+  if norm( aux ) > 1e-15
+    eyL = aux / norm( aux );
+  else		  
+    eyL = eyG ;
+  end
 
-    ezL = cross( exL, eyL ) ;
-    
-		Ro = [ exL eyL ezL ] ;
+  ezL = cross( exL, eyL ) ;
+  
+  Ro = [ exL eyL ezL ] ;
 end

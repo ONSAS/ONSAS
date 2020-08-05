@@ -96,7 +96,7 @@ function [ cellPointData, cellCellData, filename ] = vtkData( outputdir, problem
     
     sxx = stressMat(:, 1 ) ;
     
-    cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'sig x loc'   ; cellCellData{1,3} = sxx ;
+    cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'SigXLoc'   ; cellCellData{1,3} = sxx ;
   
   end
 

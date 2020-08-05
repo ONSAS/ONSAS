@@ -43,6 +43,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
   Nodesvtk = [] ;
   vtkNormalForces = [] ;
+  vtkStressMat    = [] ;
   
   if nargout>1
 
@@ -82,7 +83,8 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
     yloc = linspace( coordsElem(3), coordsElem( 9), ndivNodes )' ;  
     zloc = linspace( coordsElem(5), coordsElem(11), ndivNodes )' ;
 
-    if length( secc ) > 0
+    % ------------------------------------------------------------------
+    if length( secc ) > 0 % solid is used for representation
         
 
       for j = 1 : (ndivNodes-1)
@@ -108,10 +110,10 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
           Conecvtk = [ Conecvtk ; ConecCell ] ;
         end
 
-      end
+      end % if divisions solids
 
       vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
-
+      vtkStressMat    = [ vtkStressMat    ; ones( (ndivNodes-1),1)*stressMat(i)    ] ;
 
       if nargout > 3
         elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
@@ -121,6 +123,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
       end
 
     else
+      error('Polyline not implemented yet. please create an issue.')
       %~ polilyine
       
       %~ % Undeformed nodes matrix
@@ -147,11 +150,10 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
     end
   end
   
-  vtkStress = {} ;
-  
-  vtkStress{3,1} = stressMat ;
+  vtkStress = {}                ;
+  vtkStress{3,1} = vtkStressMat ;
 
-  
+
 elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
 
   vtkNormalForces = [] ;
