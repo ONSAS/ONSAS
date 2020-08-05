@@ -102,10 +102,9 @@ else
     
     elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ; 
     
-    
     if typeElem == 2 || typeElem == 3
       elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 4+4 ) , : ) ;
-    end   
+    end
 
     stress = [] ;
     
@@ -132,9 +131,9 @@ else
     % -----------   frame element   ------------------------------------
     case 3
 
-      [ fs, ks, stress ] = elementBeamForces( xs, elemCrossSecParams, booleanCSTangs, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
+      [ fs, ks, stress ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) ) ;
+                                               u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
       Finte = fs{1} ;  Ke    = ks{1} ;
       
       if solutionMethod > 2

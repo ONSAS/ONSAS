@@ -23,30 +23,33 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         )
 
 % auxiliar elements separation
-indsElemsAux             = find( Conec(:,5) == 0 ) ;
-conecAuxElems            = Conec(indsElemsAux, : ) ;
-Conec( indsElemsAux, : ) = [] ;
+indsElemsLoad            = find( Conec(:,4+3) ~= 0 ) ;
+indsElemsSpri            = find( Conec(:,4+5) ~= 0 ) ;
 
 nodalConstantLoads = [] ;
 nodalVariableLoads = [] ;
 nodalSprings       = [] ;
 
-% looop in auxiliar elements ( with material = 0 ) 
-for i = 1:size(conecAuxElems,1)
+indsLoop = unique( [ indsElemsLoad; indsElemsSpri ] ) ;
 
-  elemNum  = conecAuxElems( i, 4 + 2 ) ;
-  loadNum  = conecAuxElems( i, 4 + 3 ) ;
-  crosNum  = conecAuxElems( i, 4 + 4 ) ;
-  spriNum  = conecAuxElems( i, 4 + 5 ) ;
+% looop in auxiliar elements ( with material = 0 ) 
+for ind = 1:length(indsLoop)
+  
+  i = indsLoop ( ind ) ;
+
+  elemNum  = Conec( i, 4 + 2 ) ;
+  loadNum  = Conec( i, 4 + 3 ) ;
+  crosNum  = Conec( i, 4 + 4 ) ;
+  spriNum  = Conec( i, 4 + 5 ) ;
 
   % --------------------------------------------------------------------
   % --- loads ---
   if loadNum > 0,
-
+  
     if elementsParams{ elemNum } == 1 ; % node
       
       loadvals = loadsParams{loadNum} ;
-      node     = conecAuxElems( i, 1 ) ; 
+      node     = Conec( i, 1 ) ; 
 
       % ------------------------------------------------------------------    
       if loadvals(1) ~= 1 
@@ -69,7 +72,7 @@ for i = 1:size(conecAuxElems,1)
 
     elseif elementsParams{ elemNum } == 5 ; % triangle
 
-      nodestrng = conecAuxElems( i, 1:3 ) ; 
+      nodestrng = Conec( i, 1:3 ) ; 
 
       area = 0.5 * norm( cross( ...
         Nodes( nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
@@ -175,7 +178,7 @@ for i = 1:size(conecAuxElems,1)
   % --- springs ---
   if spriNum > 0,
 
-    nodesElem    = nonzeros( conecAuxElems (i, 1:4 ) ) ;
+    nodesElem    = nonzeros( Conec (i, 1:4 ) ) ;
     nodalSprings = [ nodalSprings ; ...
                      nodesElem ones(size(nodesElem))*springsParams{ spriNum } ] ;
     
@@ -191,6 +194,11 @@ for i = 1:size(conecAuxElems,1)
 
 end
 
+
+
+indsElemsAux             = find( Conec(:,4+1) == 0 ) ;
+conecAuxElems            = Conec(indsElemsAux, : ) ;
+Conec( indsElemsAux, : ) = [] ;
 
 
 

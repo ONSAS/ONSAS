@@ -92,11 +92,11 @@ fprintf(fid,'\n') ;
 
 fprintf(fid,'CELL_TYPES %g\n', nelem ) ;
 for i=1:nelem,
-  if (conect(i,1) == 1) || (conect(i,1) == 2)
+  if (conect(i,1) == 2) || (conect(i,1) == 3)
     fprintf(fid,'3\n') ;
-  elseif (conect(i,1) == 3) 
-    fprintf(fid,'10\n') ;
   elseif (conect(i,1) == 4) 
+    fprintf(fid,'10\n') ;
+  elseif (conect(i,1) == 5) 
     fprintf(fid,'9\n') ;
   elseif (conect(i,1) == 12) 
     fprintf(fid,'12\n') ;
@@ -125,10 +125,12 @@ for k = 1:size(cellPointData,1)
     % Data ...
   end  
 end
+
 %
 % Cell CellData
 %
-if size(cellCellData,1) > 0 
+
+if size( cellCellData, 1 ) > 0 
   fprintf(fid, 'CELL_DATA  %8i \n' , nelem ) ;
   for k = 1:size(cellCellData,1)
     auxtype = cellCellData(k,1) ;

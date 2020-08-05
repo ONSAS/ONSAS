@@ -13,6 +13,35 @@ I   =  5^4/12 ;
 L   =  30   ;
 rho =  8e3    ;
 
+nElemsPerBeam = 8 ;
+
+auxRs = linspace(0,L, nElemsPerBeam+1 )' ;
+auxRs(1) = [] ;
+
+c1 = cos(2*pi*1/3) ; s1 = sin(2*pi*1/3) ;
+c2 = cos(2*pi*2/3) ; s2 = sin(2*pi*2/3) ;
+
+Nodes = [ 0                        0         0        ; ...
+          zeros(nElemsPerBeam, 1)  auxRs*1   auxRs*0  ; ...
+          zeros(nElemsPerBeam, 1)  auxRs*c1  auxRs*s1 ; ...
+          zeros(nElemsPerBeam, 1)  auxRs*c2  auxRs*s2 ] ;
+
+aux = (1:(nElemsPerBeam+1))' ;
+
+Conec = [ aux(1:(end-1)) aux(2:end) zeros(nElemsPerBeam,2) ; ...
+           1             aux(2)+nElemsPerBeam 0 0 ; ...
+          aux(2:(end-1))+nElemsPerBeam aux(3:end)+nElemsPerBeam zeros(nElemsPerBeam-1,2) ; ...
+           1             aux(2)+2*nElemsPerBeam 0 0 ; ...
+          aux(2:(end-1))+2*nElemsPerBeam aux(3:end)+2*nElemsPerBeam zeros(nElemsPerBeam-1,2) ] ; 
+
+Conec = [ Conec [(ones(size(Conec,1)/3,1)*[ 1 1 2])   ; ...
+                 (ones(size(Conec,1)/3,1)*[ 1 2 2])   ; ...
+                 (ones(size(Conec,1)/3,1)*[ 2 2 2]) ] ] ;
+
+
+
+
+
 J   = I ;
 
 global Jrho
@@ -23,8 +52,10 @@ materialsParams = {[ rho 1 E nu ],[ rho 1 2*E nu ]} ;
 crossSecsParams = [   A I I J ;
                     2*A I I J ] ;
 
+
+
 % method
-timeIncr   =  0.050    ;
+timeIncr   =  0.1    ;
 finalTime  = 3 ;    
 %~ finalTime  = 15 ;    
 nLoadSteps = finalTime/timeIncr ;
@@ -37,35 +68,17 @@ stopTolIts    = 30          ;
 
 nodalSprings = [ 1 inf 0 inf inf inf inf ] ;
 
-nElemsPerBeam = 8 ;
-
-auxRs = linspace(0,L, nElemsPerBeam+1 )' ;
-
-Nodes = [ zeros(nElemsPerBeam+1,1)     auxRs                zeros(nElemsPerBeam+1,1) ; ...
-          zeros(nElemsPerBeam  ,1)     auxRs(2:end)*cos(2*pi  /3)  auxRs(2:end)*sin(2*pi  /3) ; ...
-          zeros(nElemsPerBeam  ,1)     auxRs(2:end)*cos(2*pi*2/3)  auxRs(2:end)*sin(2*pi*2/3) ] ;
-
-aux = (1:(nElemsPerBeam+1))' ;
-Conec = [ aux(1:(end-1)) aux(2:end) zeros(nElemsPerBeam,2) ; ...
-           1             aux(2)+nElemsPerBeam 0 0 ; ...
-          aux(2:(end-1))+nElemsPerBeam aux(3:end)+nElemsPerBeam zeros(nElemsPerBeam-1,2) ; ...
-           1             aux(2)+2*nElemsPerBeam 0 0 ; ...
-          aux(2:(end-1))+2*nElemsPerBeam aux(3:end)+2*nElemsPerBeam zeros(nElemsPerBeam-1,2) ] ; 
-
-Conec = [ Conec [(ones(size(Conec,1)/3,1)*[ 1 1 2])   ; ...
-                 (ones(size(Conec,1)/3,1)*[ 1 2 2])   ; ...
-                 (ones(size(Conec,1)/3,1)*[ 2 2 2]) ] ] ;
 
 % -------------------
 nodalVariableLoads   = [ nElemsPerBeam+1  0  0  0  0  1  0 ];
 
 controlDofs = [ 1 2 1 ] ;
 
-loadFactorsFunc = @(t) 5e5*t*(t<1) + (10e5-5e5*t)*(t>=1)*(t<2) + 0 ;
+%~ loadFactorsFunc = @(t) 5e5*t*(t<1) + (10e5-5e5*t)*(t>=1)*(t<2) + 0 ;
+loadFactorsFunc = @(t) 5e5*sin( 2*pi * t / ( finalTime/4 ) ) ;
 
-DeltaNW    =  0.5               ;
-AlphaNW    =  0.25              ;
-numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts DeltaNW AlphaNW] ;
+alphahht    =  -0.05               ;
+numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphahht ] ;
 
 storeBoolean = 1;
 
