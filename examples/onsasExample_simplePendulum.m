@@ -4,6 +4,11 @@
 
 clear all, close all
 
+
+
+uNum = PenduloNL_HHT ;
+
+stop
 % --- general data ---
 inputONSASversion = '0.1.10';
 
@@ -11,17 +16,23 @@ dirOnsas = [ pwd '/..' ] ;
 problemName = 'simplePendulumTightTol' ;
 % ------------------------------------
 
-Es = 10e11 ;
-nu      =  0    ;
+Es  = 10e11  ;
+nu  = 0      ;
+A   = 0.1    ;
+l0  = 3.0443 ;
 
-A  = 0.1 ;
-l0 = 3.0443     ;
+
+Nodes = [    0  0  0   ; ...
+             l0 0  0 ] ;
+
+Conec = [ 1 2 0 0 1 1 1 ] ; 
+
+
+
 
 rho    = 2*10 / ( A * l0 ) ;
 
 nodalDispDamping = 0.000 ;
-
-booleanConsistentMassMat = 0 ;
 
 % method
 timeIncr   =  0.1    ;
@@ -50,17 +61,11 @@ materialsParams = {[rho 1 Es nu ]} ;
 
 crossSecsParams = [ A 10 10 10 ] ;
 
-global Jrho
-Jrho = diag( [ 20; 10; 10 ] ) ;
 
 
 nodalSprings = [ 1  inf  0  inf  0  inf 0  ...
                ];
 
-Nodes = [    0  0  0   ; ...
-             l0 0  0 ] ;
-
-Conec = [ 1 2 0 0 1 1 1 ] ; 
 
 % -------------------
 nodalConstantLoads   = [ 2  0  0  0  0  -rho*A*l0*0.5*9.8  0 ];
