@@ -1,7 +1,7 @@
 %%%%%% Dinámica No-Lineal: Péndulo con Barra elástica (Green)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function u = PenduloNL_HHT( L, A, E, m, c, g, dt, alfa, tf, ftol, Maxiter, plotflag )
+function u = PenduloNL_HHT( L, A, E, m, c, g, dt, alfa, tf, ftol, Maxiter, plotflag, t0 )
 
 if nargin() == 0
   %%% Parametros Estructura
@@ -21,12 +21,13 @@ if nargin() == 0
   
   plotflag = 1 ;
 
+  t0 = 0;
 end
 
 %% Defino Vector de fuerzas Internas: fint(u)
 %%    u = [u1 , u2]^T
 
-Fint = @(u) E*A*L*(u(1)^2-2*L*u(2)+u(2)^2)/2/L^4*[u(1);-(L-u(2))];
+Fint = @(u) E*A*L * 0.5 * ( u(1)^2-2*L*u(2)+u(2)^2 )/L^4 * [ u(1) ; -(L-u(2)) ] ;
 
 %% Defino Matriz Tangente: Kt(u) = d Fint / du
 
@@ -35,7 +36,7 @@ KT = @(u) E*A/2/L^3 * ([u(1),-(L-u(2))]'*[2*u(1), -2*L+2*u(2)] + (u(1)^2-2*L*u(2
 %% Defino Vector de fuerzas Externas: gravedad
 
 ft = @(t) [  0     ; ...
-            -m*g ] ; %N
+            -m*g*(t>t0) ] ; % N  -  mass is free right after t0
 
 %% Defino Matriz de Masa Concentrada
 
@@ -49,12 +50,11 @@ C = [ c 0   ; ...
 
 %% Defino Condiciones Iniciales y Tiempo Final
 
-t0 = 0;
 %u0 = [0;-m*g/(E*A/L)];
 %v0 = [2;.010];
-u0 = [L;L];
-v0 = [0;0];
-ac0 = M\(ft(t0)-C*v0-Fint(u0)); % de ec de movimiento Mu.. + Fint(u) = ft
+u0  = [ L; L ] ; % u is the vector of position of the mass.
+v0  = [ 0; 0 ] ;
+ac0 = M \ ( ft(t0) - C*v0 - Fint(u0) ) ; % de ec de movimiento Mu.. + Fint(u) = ft
 
 
 % Inicializacion HHT
@@ -81,11 +81,11 @@ while t<tf %% Paso temporal de HHT
  while and(j<Maxiter,ferr>ftol) %% Iteración tipo N-R para Equilibrio
     uktdt = ut + dt*vt + dt^2*((1/2-beta)*at+beta*aktdt);
     vktdt = vt + dt*((1-delta)*at+delta*aktdt);
-    Keff = (1-alfa)*beta*dt^2*KT(uktdt) + M;
-    feff = -( M*aktdt + (1-alfa)*Fint(uktdt) + alfa*Fint(ut) - (1-alfa)*ft(t(k)+dt) - alfa*ft(t(k)) );
-    da = Keff\feff;
+    Keff  = (1-alfa)*beta*dt^2*KT(uktdt) + M;
+    feff  = -( M*aktdt + (1-alfa)*Fint(uktdt) + alfa*Fint(ut) - (1-alfa)*ft(t(k)+dt) - alfa*ft(t(k)) );
+    da    = Keff\feff;
     aktdt = aktdt + da;
-    ferr = norm(feff)/norm(ft(t(k)+dt));
+    ferr  = norm(feff)/norm(ft(t(k)+dt));
     j = j+1;
   end
   u(:,k+1) = ut + dt*vt + dt^2*((1/2-beta)*at+beta*aktdt);

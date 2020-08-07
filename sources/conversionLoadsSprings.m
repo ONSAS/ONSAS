@@ -23,8 +23,8 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         )
 
 % auxiliar elements separation
-indsElemsLoad            = find( Conec(:,4+3) ~= 0 ) ;
-indsElemsSpri            = find( Conec(:,4+5) ~= 0 ) ;
+indsElemsLoad      = find( Conec(:,4+3) ~= 0 ) ;
+indsElemsSpri      = find( Conec(:,4+5) ~= 0 ) ;
 
 nodalConstantLoads = [] ;
 nodalVariableLoads = [] ;

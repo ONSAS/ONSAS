@@ -122,9 +122,10 @@ else
         booleanConsistentMassMat = elemElementParams(2) ;
         
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, rho, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
+        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemrho, elemCrossSecParams(1), elemElementParams(2), paramOut, dotdotdispsElem ) ;
         %
-        Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
+        %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
+        %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
       end
     
       

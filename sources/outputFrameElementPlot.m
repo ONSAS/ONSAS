@@ -50,7 +50,7 @@ if elemType == 2
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
 	conecElem = [1 2] ;
 
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(7, 1), [1 1 0], 0, dispsElem, [], [], 0  ) ;
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
   
   % global rotation matrix 
