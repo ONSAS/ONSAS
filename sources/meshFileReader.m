@@ -45,7 +45,7 @@ if strcmp( fileExtension , 'msh' )
   
 %
 elseif strcmp( fileExtension , 'dxf' )
-  [ nodesMat, conecMat ] = dxfReader('torre.dxf') ;
+  [ nodesMat, conecMat ] = dxfReader( fileName ) ;
 %
 else
   error('extension not implemented yet. Please report an issue.')

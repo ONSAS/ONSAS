@@ -79,7 +79,7 @@ printFlag = 0 ;
 %~ plotParamsVector = [ 3 10];
 plotParamsVector = [ 0 ];
 
-sectPar = [12 .1 .1]
+sectPar = [12 .1 .1] ;
 
 reportBoolean = 0 ;
 
@@ -91,13 +91,16 @@ ONSAS
 cd(acdir) ;
 % ======================================================================
 
-Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
-         [ 0 1 1 0 2  2   ] ; ... % loaded node
-         [ 0 1 0 0 1  3   ] ; ... % fixed node
-         [ 1 2 0 1 0  1 2 ] ; ... % truss element
-         [ 1 2 0 1 0  2 3 ]   ... % truss element
-         } ;
+%~ Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
+         %~ [ 0 1 1 0 2  2   ] ; ... % loaded node
+         %~ [ 0 1 0 0 1  3   ] ; ... % fixed node
+         %~ [ 1 2 0 1 0  1 2 ] ; ... % truss element
+         %~ [ 1 2 0 1 0  2 3 ]   ... % truss element
+         %~ } ;
+       %~ Conec
          
+[ Nodes, Conec ] = meshFileReader( 'vonMises.dxf' ) ;
+
          
 controlDispsNRAL = controlDisps ;
 loadFactorsNRAL  = loadFactors ;
@@ -109,7 +112,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNR nLoadSteps ] ; 
 %~ plotParamsVector = [ 3 ];
 plotParamsVector = [ 0 ];
-problemName = 'staticVonMisesTrussNR' ;
+problemName = 'staticVonMisesTrussNR_DXF' ;
 
 acdir = pwd ; cd(dirOnsas); ONSAS; cd(acdir) ;
 
@@ -126,7 +129,7 @@ plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms 
 plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
 
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic','NRAL','NR','location','North')
+legend('analytic','NRAL','NR-DXF','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 

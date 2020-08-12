@@ -17,15 +17,20 @@
 
 function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName ) 
 
-  [c_Line, c_Poly, c_Cir, c_Arc, c_Poi] = f_LectDxf( fileName )
-
+	
+  [c_Line, c_Poly, c_Cir, c_Arc, c_Poi] = f_LectDxf( fileName ) ;
+	
   ndofpnode = 6 ;
   nelems = size(c_Line,1) ;
   
   Nodes = [] ;
-  conecMat = [] ;
-
+  conecMat = cell(nelems,1) ;
   pos = 1 ;
+  
+  nnodesEntity = size(c_Poi,1) ;
+	auxLength = length(c_Poi{1}) ;
+  typesElem = [] ;
+  
   for i = 1:nelems
     aux1 = [] ;
     aux2 = [] ;  
@@ -33,17 +38,26 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
     nod2 = c_Line{i}(4:6) ;
     nnodes = size(Nodes,1) ;
     
-    elemEntity = str2num(c_Line{i,2}(1:2)) ;
-    secEntity = str2num(c_Line{i,2}(4:5)) ;
-    matEntity = str2num(c_Line{i,2}(7:8)) ;
-    suppEntity = str2num(c_Line{i,2}(10:11)) ;
-    loadEntity = str2num(c_Line{i,2}(13:14)) ;
+    % MELCS
+    % M: Material
+    % E: Element type
+    % L: Load
+    % C: Cross section
+    % S: Springs
+
+		matEntity = str2num(c_Line{i,2}(1:2)) ;
+    elemEntity = str2num(c_Line{i,2}(4:5)) ;
+    loadEntity = str2num(c_Line{i,2}(7:8)) ;
+    secEntity = str2num(c_Line{i,2}(10:11)) ;
+    suppEntity = str2num(c_Line{i,2}(13:14)) ;
     
-    entityVec = [ secEntity matEntity loadEntity suppEntity ] ;
+    entityVec = [ elemEntity loadEntity secEntity suppEntity ] ;
+    
+    typesElem = [ typesElem ; elemEntity ] ;
     
     if i == 1
-      Nodes = [ Nodes ; nod1 ; nod2 ] ;
-      conecMat = [ conecMat ; elemEntity pos pos+1 0 0 entityVec] ;
+			Nodes = [ Nodes ; nod1 ; nod2 ] ;
+      conecMat{i,1} = [ matEntity entityVec pos pos+1 ] ;
       pos = pos+2 ;
     else
       for j = 1:nnodes
@@ -53,43 +67,55 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
           aux2 = [ j ] ;
         end
       end
+    
+      
       if length(aux1) == 0 && length(aux2) == 0 
           Nodes = [ Nodes ; nod1 ; nod2 ] ;
-          conecMat = [ conecMat ; elemEntity pos pos+1 0 0 entityVec] ;
+          conecMat{i,1} = [ matEntity entityVec pos pos+1 ] ;
           pos = pos+2 ;
       elseif length(aux1) == 0 && length(aux2) == 1
           Nodes = [ Nodes ; nod1 ] ;
-          conecMat = [ conecMat ; elemEntity pos aux2 0 0 entityVec] ;
+          conecMat{i,1} = [ matEntity entityVec pos aux2 ] ;
           pos = pos+1 ;
       elseif length(aux1) == 1 &&  length(aux2) == 0
           Nodes = [ Nodes ; nod2 ] ;
-          conecMat = [ conecMat ; elemEntity aux1 pos 0 0 entityVec] ;
+          conecMat{i,1} = [ matEntity entityVec aux1 pos ] ;
           pos = pos+1 ;
       elseif length(aux1) == 1 && length(aux2) == 1
 
-          conecMat = [ conecMat ; elemEntity aux1 aux2 0 0 entityVec ] ;
+          conecMat{i,1} = [ matEntity entityVec aux1 aux2 ] ;
 
       end
          
     end
     
-        
-  end   
-
+  end  
+  
+  typesElem = unique(typesElem);
+  
+	nodesMat = Nodes ;
+	
+	lastElemType = typesElem(end) ;
+	
   nnodes = size(Nodes,1) ;
   nnodesEntity = size(c_Poi,1) ;
   auxLength = length(c_Poi{1}) ;
-  nodesMat = [ Nodes zeros(nnodes,2) ] ;
   if auxLength > 0
     for i = 1:nnodesEntity
       nod = c_Poi{i}(1:3) ;
       aux = [] ;
-      suppEntity = str2num(c_Poi{i,2}(10:11)) ;
-      loadEntity = str2num(c_Poi{i,2}(13:14)) ;
+      elemEntity = str2num(c_Poi{i,2}(4:5)) ;
       for j = 1:nnodes
-        if norm(Nodes(j,:)-nod) < 1e-10 
-          nodesMat(j,4) = loadEntity ;
-          nodesMat(j,5) = suppEntity ;
+        if norm(Nodes(j,:)-nod) < 1e-10  
+          nod = j ;
+
+          suppEntity = str2num(c_Poi{i,2}(13:14)) ;
+					loadEntity = str2num(c_Poi{i,2}(7:8)) ;
+					entityVec = [ 0 elemEntity loadEntity 0 suppEntity  ] ;
+					
+          conecMat{nelems+1,1} = [ entityVec nod ] ;
+          nelems=nelems+1 ;
+
         end  
       end
     end
