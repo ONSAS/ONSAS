@@ -70,8 +70,8 @@ if iscell( Conec )
   nElems = size(  aux,    1 ) ; 
   Conec  = zeros( nElems, 9 ) ;
   for i=1:nElems
-    aux2                   = aux{i} ; 
-    auxnnodes              = length( aux2) - 5 ;
+    aux2                   = aux{i,1} ;  
+    auxnnodes              = length( aux2) - 5  ;
     Conec ( i,1:auxnnodes) = aux2( (5+1):(5+auxnnodes) ) ;
     Conec ( i,5:9        ) = aux2( (  1):(5          ) ) ;
   end
