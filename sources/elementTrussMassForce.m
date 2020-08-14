@@ -19,8 +19,9 @@
 function [ Fmasse, Me ] = elementTrussMassForce ( Xe, rho, A, booleanConsistentMassMat, ...
 paramOut, Udotdotte )
 
-  Xe ;
-  localAxisRef = ( Xe( [(1:2:5)+6]) - Xe( [(1:2:5)]) )' ;
+  Xe = Xe(:) ;
+  localAxisRef = Xe(4:6) - Xe(1:3) ;
+
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
 
   Me = sparse( 12, 12 ) ;
