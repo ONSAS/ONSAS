@@ -79,46 +79,48 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
 
   F = H + eye(3) ;
 
-  if elemConstitutiveParams(1) == 2
-  
-    Egreen = 0.5 * ( H + transpose( H ) + transpose( H ) * H ) ;
-  
-    global consMatFlag
+  Egreen = 0.5 * ( H + transpose( H ) + transpose( H ) * H ) ;
+
+  global consMatFlag  
+
+  if elemConstitutiveParams(1) == 2 % Saint-Venant-Kirchhoff compressible solid
     
     [ S, ConsMat ] = cosseratSVK( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
 
-    matBgrande = BgrandeMats ( funder , F ) ;
-    
-    Svoigt = mat2voigt( S, 1 ) ;
-      
-    Finte    = transpose(matBgrande) * Svoigt * vol ;
-      
-    strain = zeros(6,1);
-    stress = Svoigt ;
-  
-    KTe = zeros(12,12) ;
-  
-    if paramOut == 2
-  
-      Kml        = matBgrande' * ConsMat * matBgrande * vol ;
-  
-      matauxgeom = funder' * S * funder  * vol ;
-      Kgl        = zeros(12,12) ;
-      for i=1:4
-        for j=1:4
-          Kgl( (i-1)*3+1 , (j-1)*3+1 ) = matauxgeom(i,j);
-          Kgl( (i-1)*3+2 , (j-1)*3+2 ) = matauxgeom(i,j);
-          Kgl( (i-1)*3+3 , (j-1)*3+3 ) = matauxgeom(i,j);
-        end
-      end
-      
-  
-      KTe = Kml + Kgl ;
-  
-    end % if param out
+  elseif elemConstitutiveParams(1) == 3 % Neo-Hookean Compressible
 
+    [ S, ConsMat ] = cosseratNH ( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
   end
+  
+  matBgrande = BgrandeMats ( funder , F ) ;
+  
+  Svoigt = mat2voigt( S, 1 ) ;
+    
+  Finte    = transpose(matBgrande) * Svoigt * vol ;
+    
+  strain = zeros(6,1);
+  stress = Svoigt ;
 
+  KTe = zeros(12,12) ;
+
+  if paramOut == 2
+
+    Kml        = matBgrande' * ConsMat * matBgrande * vol ;
+
+    matauxgeom = funder' * S * funder  * vol ;
+    Kgl        = zeros(12,12) ;
+    for i=1:4
+      for j=1:4
+        Kgl( (i-1)*3+1 , (j-1)*3+1 ) = matauxgeom(i,j);
+        Kgl( (i-1)*3+2 , (j-1)*3+2 ) = matauxgeom(i,j);
+        Kgl( (i-1)*3+3 , (j-1)*3+3 ) = matauxgeom(i,j);
+      end
+    end
+    
+
+    KTe = Kml + Kgl ;
+
+  end % if param out
 
 % ======================================================================
 % ======================================================================
