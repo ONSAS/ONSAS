@@ -59,7 +59,7 @@ materialsParams{1} = [ 0 2 E nu ] ;
 
 % --- Element parameters ---
 elementsParams{1,1} = [ 5   ] ;
-elementsParams{2,1} = [ 4 0 ] ;
+elementsParams{2,1} = [ 4 2 ] ;
 
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
@@ -122,7 +122,9 @@ problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 %										Global axis -> 1, local axis -> 0.
 %										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
 
-loadsParams{1,1} = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
+loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
+
+elementsParams{2,1} = [ 4 1 ] ;
 
 plotParamsVector = [ 0 ] ;
 analyticSolFlag        = 0 ;
