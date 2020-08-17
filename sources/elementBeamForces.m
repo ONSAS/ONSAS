@@ -33,17 +33,16 @@ G   = E/(2*(1+nu)) ;
 
 % --- cross section ---
 Area = elemCrossSecParams( 1 ) ;
-Iyy  = elemCrossSecParams( 2 ) ;
-Izz  = elemCrossSecParams( 3 ) ;
-J    = elemCrossSecParams( 4 ) ;
+J    = elemCrossSecParams( 2 ) ;
+Iyy  = elemCrossSecParams( 3 ) ;
+Izz  = elemCrossSecParams( 4 ) ;
 
-if length( elemCrossSecParams ) > 4 && elemCrossSecParams(5) > 0
+if length( elemCrossSecParams ) > 5 && elemCrossSecParams(5) > 0
   Jrho =  diag( elemCrossSecParams( 5:7 ) ) ;
 else
   Jrho = rho * diag( [ J Iyy Izz ] ) ;
 end  
 % -------------------------------
-
 
 % auxiliar matrices
 I3 = eye(3)     ;

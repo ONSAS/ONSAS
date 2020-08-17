@@ -1,11 +1,8 @@
 %% Example uniaxialSolid
-% Linear elastic solid submitted to uniaxial loading. 
+% Elastic solid submitted to uniaxial loading. 
 % Geometry given by $L_x$, $L_y$ and $L_z$, tension $p$ applied on 
 % face $x=L_x$.
-%
-%%
 
-% uncomment to delete variables and close windows
 clear all, close all
 
 %% General data
@@ -47,33 +44,27 @@ Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
 % ======================================================================
 % --- MELCS parameters ---
 
-materialsParams = cell(1,1) ; % M
-elementsParams  = cell(1,1) ; % E
-loadsParams     = cell(1,1) ; % L
-crossSecsParams = cell(1,1) ; % C
-springsParams   = cell(1,1) ; % S
-
 % --- Material parameters ---
 E = 1 ; nu = 0.3 ;
-materialsParams{1} = [ 0 2 E nu ] ;
+materialsParams = {[ 0 2 E nu ]} ;
 
 % --- Element parameters ---
-elementsParams{1,1} = [ 5   ] ;
-elementsParams{2,1} = [ 4 2 ] ;
+elementsParams = { [ 5   ] ; ...
+                   [ 4 2 ] } ;
 
 % --- Load parameters ---
-loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
+loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;
 
 % --- CrossSection parameters ---
+crossSecsParams = cell(1,1) ; %
 
 % ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
-springsParams{1, 1} = [ inf 0  0   0   0   0 ] ;
-springsParams{2, 1} = [ 0   0  inf 0   0   0 ] ;
-springsParams{3, 1} = [ 0   0  0   0   inf 0 ] ;
+springsParams = {[ inf 0  0   0   0   0 ] ; ...
+                 [ 0   0  inf 0   0   0 ] ; ...
+                 [ 0   0  0   0   inf 0 ] } ;
 
 % ======================================================================
-
 
 %% --- Analysis parameters ---
 stopTolIts       = 30      ;
@@ -98,12 +89,13 @@ analyticSolFlag        = 2 ;
 analyticCheckTolerance = 1e-8 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 
-
 %% run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+addpath( dirOnsas );
+ONSAS
 % --------------------------------------------------------
 
 
+return  
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = numericalVals ;

@@ -3,6 +3,6 @@
 # --- script for running test examples of ONSAS ---
 # -------------------------------------------------
 
-cd sources
+cd examples
 octave runTestProblems.m
 cd ..

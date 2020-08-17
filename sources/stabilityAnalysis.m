@@ -19,14 +19,24 @@
 
 function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor, nextLoadFactor );  
 
-  [a,b] = eigs( KTtred, 10, 0 ) ;
+  if isThisOctave
+    [a,b] = eig( KTtred ) ;
+  else
+    [a,b] = eigs( KTtred, 10, 0 ) ;
+  end
+      
   Keigvals = diag(b) ;
   nKeigpos = length( find(Keigvals >  0 ) ) ;
   nKeigneg = length( find(Keigvals <= 0 ) ) ;
 
   if nargout > 2
-    [vecgamma, gammas ] = eigs( KTtred, KTtm1red, 10, 0 ) ;
-    
+
+    if isThisOctave
+      [vecgamma, gammas ] = eig( KTtred, KTtm1red ) ;
+    else
+      [vecgamma, gammas ] = eigs( KTtred, KTtm1red, 10, 0 ) ;
+    end
+      
     gammas = diag( gammas);
    
     if length( find( gammas >  0 ) ) > 0,
