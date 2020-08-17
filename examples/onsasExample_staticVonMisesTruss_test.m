@@ -7,18 +7,6 @@ clear all, close all
 dirOnsas = [ pwd '/..' ] ;
 problemName = 'staticVonMisesTrussNRAL' ;
 
-% uncomment to delete variables and close windows
-% clear all, close all
-
-%% Structural properties
-E = 210e9 ;  nu = 0 ;  rho = 0 ;
-materialParams     =   cell(1,1)    ;
-materialsParams{1} = [ rho 1 E nu ] ;
-
-% each row shows the properties of each section: A, Iy Iz and J
-A = 2.5e-4 ;
-crossSecsParams = [ A 2 2 4 ] ;
-
 auxx = cos(65*pi/180) * 2 ;
 auxy = sin(65*pi/180) * 2 ;
 imperfPerc = .0 ;
@@ -27,18 +15,35 @@ Nodes = [      0  0     0  ; ...
             auxx*(1+imperfPerc)  0  auxy  ; ...
           2*auxx  0     0  ] ;
 
-% in global system of coordinates
-nodalSprings = [ 1  inf  0  inf  0  inf 0 ; ...
-                 2    0  0  inf  0    0 0 ; ...
-                 3  inf  0  inf  0  inf 0   ...
-               ];
+Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
+          [ 0 1 1 0 2  2   ] ; ... % loaded node
+          [ 0 1 0 0 1  3   ] ; ... % fixed node
+          [ 1 2 0 1 0  1 2 ] ; ... % truss element
+          [ 1 2 0 1 0  2 3 ]   ... % truss element
+         } ;
 
-Conec = [ 1 2 0 0 1 1 1 ;
-          2 3 0 0 1 1 1 ] ;
+% ======================================================================
+% --- MELCS parameters ---
+materialsParams = cell(1,1) ; % M
+elementsParams  = cell(1,1) ; % E
+loadsParams     = cell(1,1) ; % L
+crossSecsParams = cell(1,1) ; % C
+springsParams   = cell(1,1) ; % S
 
-%% Loading parameters
+E = 210e9 ;  nu = 0 ;  rho = 0 ;
+materialsParams = {[ rho 3 E nu ]} ;
 
-nodalVariableLoads   = [ 2  0  0  0  0 -1  0 ];
+elementsParams = { 1; 2} ;
+
+loadsParams = { [ 1 1   0 0 0 0 -1 0] } ;
+
+A = 2.5e-4 ;
+crossSecsParams = {[ A ] } ;
+
+springsParams = { [ inf  0  inf  0  inf   0 ] ; ...
+                  [ 0    0  inf  0    0   0 ]   ...
+               } ;
+
 
 %% Analysis parameters
 % [ node nodaldof scalefactor(positive or negative) ]
@@ -60,7 +65,7 @@ numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
 %~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             %~ targetLoadFactrNR nLoadSteps ] ; 
 
-stabilityAnalysisBoolean = 1 ;
+stabilityAnalysisBoolean = 0 ;
 
 % analytical solution using engineering strain
 analyticSolFlag        = 2    ;
@@ -71,9 +76,12 @@ analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l
 
 %% Output parameters
 printFlag = 0 ;
-plotParamsVector = [ 3 10];
+%~ plotParamsVector = [ 3 10];
+plotParamsVector = [ 0 ];
 
 sectPar = [12 .1 .1]
+
+reportBoolean = 0 ;
 
 %% ONSAS execution
 % move to onsas directory and ONSAS execution
@@ -81,7 +89,16 @@ sectPar = [12 .1 .1]
 acdir = pwd ; cd(dirOnsas);
 ONSAS
 cd(acdir) ;
+% ======================================================================
 
+Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
+         [ 0 1 1 0 2  2   ] ; ... % loaded node
+         [ 0 1 0 0 1  3   ] ; ... % fixed node
+         [ 1 2 0 1 0  1 2 ] ; ... % truss element
+         [ 1 2 0 1 0  2 3 ]   ... % truss element
+         } ;
+         
+         
 controlDispsNRAL = controlDisps ;
 loadFactorsNRAL  = loadFactors ;
 analyticNRAL = analyticVals ;
@@ -94,9 +111,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 plotParamsVector = [ 0 ];
 problemName = 'staticVonMisesTrussNR' ;
 
-acdir = pwd ; cd(dirOnsas);
-ONSAS
-cd(acdir) ;
+acdir = pwd ; cd(dirOnsas); ONSAS; cd(acdir) ;
 
 controlDispsNR = controlDisps ;
 loadFactorsNR  = loadFactors ;

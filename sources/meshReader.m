@@ -16,23 +16,27 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [ nodesMat, conecMat ] = esmacParser( nodesMatinp, conecMatinp, physicalNames )
+function [ nodesMat, conecMat ] = meshReader( mshFilename )
 
-matInds = zeros( length( physicalNames), 5 ) ;
-for i=1:size( matInds, 1)
-  for j=1:5
-    matInds(i,j) = str2num( physicalNames{i}( 1+(j-1)*3+(1:2)) ) ;
-  end
-end
+fid = fopen( mshFilename ,'r') ;
 
-nodesMat = zeros( size(nodesMatinp,1), 8 ) ;
-nodesMat(:,1:3) = nodesMatinp(:, 1:3) ;
-indsNZ = find( nodesMatinp(:,4) ) ;
-nodesMat(indsNZ,4:end) = matInds( nodesMatinp(indsNZ,4), :) ;
+maxLengthLine = 200 ;
 
-conecMat = zeros( size(conecMatinp,1), 9 ) ;
-conecMat(:,1:4) = conecMatinp(:, 1:4) ;
+% ---- header reading --------------------------
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid); X = fgets(fid);
+X = fgets(fid);
 
+nnodes = str2num(fgets(fid)) ;
 
-indsNZ = find( conecMatinp(:,5) ) ;
-conecMat(indsNZ,5:end) = matInds( conecMatinp(indsNZ, 5), :) ;
+nodesMat = fscanf(fid,'%g %g %g %g\n' ,[4 nnodes])' ;
+nodesMat(:,4) = [] ;
+
+X = fgets(fid);
+
+nElems = str2num( fgets(fid) ) ;
+
+conecMat = fscanf(fid,'%g %g %g %g\n' ,[4 nElems ])' ;
+
+fclose(fid);

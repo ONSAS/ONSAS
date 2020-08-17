@@ -17,12 +17,12 @@
 
 % run all test examples from examples folder.
 
-keyword = 'test' ;
+keyword = 'test.m' ;
 %~ keyword = 'example' ;
 
 fileslist = readdir('../examples');
 keyfiles  = {} ;
- 
+
 totalRuns = 0 ;
 
 for i=1:length(fileslist)
@@ -31,6 +31,8 @@ for i=1:length(fileslist)
     keyfiles{totalRuns} = fileslist{i} ;
   end
 end
+
+keyfiles
 
 current       = 1 ;
 totalRuns
@@ -46,3 +48,5 @@ while current <= totalRuns
   load('exData.mat');
   current = current + 1 ; 
 end
+
+delete('exData.mat')

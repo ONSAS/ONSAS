@@ -18,7 +18,7 @@
 %function for verification of the numerical results provided by ONSAS, using the analytical expression provided by the user.
 
 
-function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
+function [ verifBoolean, numericalVecy, analyticalVecy ] = analyticSolVerif ...
   ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
     analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir, plotParamsVector );
 
@@ -26,7 +26,7 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
   fprintf('  Analytical solution verification ... ')
 
   if analyticSolFlag == 1
-    analyticalVecy  = analyticFunc(timesVec);
+    analyticalVecy  = analyticFunc( timesVec );
     numericalVecy   = controlDisps ;
     numericalVecx   = timesVec     ;
     analitMagnitude = 'Control displacement' ;
@@ -97,9 +97,11 @@ function [ numericalVecy, analyticalVecy ] = analyticSolVerif ...
   if normRelativeError > analyticCheckTolerance ;
     normRelativeError
     warning(' large difference between analytical and numerical solutions!') ;
+    verifBoolean = 0 ;
   else
     fprintf('PASSED.\n')
     fprintf('  Numerical solution error: %12.4e < %10.2e \n',normRelativeError, analyticCheckTolerance)
+    verifBoolean = 1 ;
   end
 
   fprintf('----------------------------------------------- \n')

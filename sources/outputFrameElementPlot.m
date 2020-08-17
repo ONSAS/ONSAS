@@ -43,14 +43,14 @@ ndofpnode =  6 ;
 conecElem = [] ;
 
 % converts global coord displacements to local
-if elemType == 1
+if elemType == 2
 
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
 	conecElem = [1 2] ;
 
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(7, 1), [1 1 0], 0, dispsElem, [], [], 0  ) ;
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
   
   % global rotation matrix 
@@ -67,7 +67,7 @@ if elemType == 1
   %~ titay = [tl1(2) tl2(2)]' ;
   %~ titaz = [tl1(3) tl2(3)]' ;
 
-elseif elemType == 2
+elseif elemType == 3
 
   xsdefA = coordsElem( [ 1   7  ] ) + dispsElem( [ 1   7  ] ) ;
   ysdefA = coordsElem( [ 1+2 7+2] ) + dispsElem( [ 1+2 7+2] ) ;
@@ -75,7 +75,7 @@ elseif elemType == 2
 
   nPlotPoints    = 10 ; 
 
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(7, 1), [1 1 1], 0, dispsElem, [], [] ,0 ) ;
   
   % 
   locDisp = rotData{1} ;

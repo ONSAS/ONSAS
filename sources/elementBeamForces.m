@@ -16,22 +16,34 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
-  xs, params, booleanCSTangs, solutionMethod, Ue, Udote, Udotdote ) ;
+  elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod, Ue, Udote, Udotdote, elemrho ) ;
 
-if solutionMethod > 2
-  global Jrho
-end
+elemCoords = elemCoords(:)       ;
+xs         = elemCoords(1:2:end) ;
 
-% parameters
-E    = params(1) ;
-G    = params(2) ;
-Area = params(3) ;
+booleanCSTangs = 0 ;
 
-Iyy = params(4) ;
-Izz = params(5) ;
-J   = params(6) ;
+% --- material constit params ---
+rho = elemrho ;
+E   = elemConstitutiveParams(2) ;
+nu  = elemConstitutiveParams(3) ;
+G   = E/(2*(1+nu)) ;
+% -------------------------------
 
-rho = params( 7 ) ;
+
+% --- cross section ---
+Area = elemCrossSecParams( 1 ) ;
+Iyy  = elemCrossSecParams( 2 ) ;
+Izz  = elemCrossSecParams( 3 ) ;
+J    = elemCrossSecParams( 4 ) ;
+
+if length( elemCrossSecParams ) > 4 && elemCrossSecParams(5) > 0
+  Jrho =  diag( elemCrossSecParams( 5:7 ) ) ;
+else
+  Jrho = rho * diag( [ J Iyy Izz ] ) ;
+end  
+% -------------------------------
+
 
 % auxiliar matrices
 I3 = eye(3)     ;
@@ -54,7 +66,7 @@ tg2 = dg (10:12);
 Rg1 = expon( tg1 ) ;
 Rg2 = expon( tg2 ) ;
 
-x21 = xs(4:6) - xs(1:3) ;
+x21 = xs(4:6) - xs(1:3) ; 
 d21 = dg(7:9) - dg(1:3) ;
 
 lo = sqrt( ( x21       )' * ( x21       ) ) ; %

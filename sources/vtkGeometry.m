@@ -18,13 +18,22 @@
 % this function creates the conectivities and coordinates data structures for producing
 % vtk files of the solids or structures.
 
-function [ Nodesvtk, vtkDispMat, vtkNormalForces, Conecvtk, elem2VTKCellMap ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes )
+function [ Nodesvtk, vtkDispMat, vtkNormalForces, vtkStress, Conecvtk, elem2VTKCellMap ] = ...
+  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes, elementsParamsMat, stressMat )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
-nElemsTrussOrFrame = sum( ( Conec(:, 7) == 1 ) + ( Conec(:, 7) == 2 ) ) ;
-nElemsTetraOrPlate = sum( ( Conec(:, 7) == 3 ) + ( Conec(:, 7) == 4 ) ) ;
+% filter non-material elements
+inds = find( Conec( :, 4+1 )== 0) ;
+
+numminout = 4 ;
+
+Conec( inds,:) = [] ;
+
+types = elementsParamsMat( Conec(:, 4+2), 1) ;
+
+nElemsTrussOrFrame = sum( ( types == 2 ) + ( types == 3 ) ) ;
+nElemsTetraOrPlate = sum( ( types == 4 )                  ) ;
 
 nelems = size( Conec, 1 ) ;
 
@@ -34,6 +43,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
   Nodesvtk = [] ;
   vtkNormalForces = [] ;
+  vtkStressMat    = [] ;
   
   if nargout>1
 
@@ -47,9 +57,9 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
   
   % loop in elements
   for i = 1:nelems
-    elemMat  = Conec(i,5) ;
-    elemSec  = Conec(i,6) ;
-    elemType = Conec(i,7) ;
+    elemMat  = Conec(i, 4+1 ) ;
+    elemType = elementsParamsMat( Conec(i, 4+2 ), 1 ) ;
+    elemSec  = Conec(i, 4+5 ) ;
         
     nodeselem  = Conec(i,1:2)' ;
     dofselem   = nodes2dofs( nodeselem , 6 ) ;
@@ -73,7 +83,8 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
     yloc = linspace( coordsElem(3), coordsElem( 9), ndivNodes )' ;  
     zloc = linspace( coordsElem(5), coordsElem(11), ndivNodes )' ;
 
-    if length( secc ) > 0
+    % ------------------------------------------------------------------
+    if length( secc ) > 0 % solid is used for representation
         
 
       for j = 1 : (ndivNodes-1)
@@ -94,15 +105,15 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
         Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
         vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
 
-        if nargout > 3
+        if nargout > numminout
           ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
           Conecvtk = [ Conecvtk ; ConecCell ] ;
         end
 
-      end
+      end % if divisions solids
 
       vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
-
+      vtkStressMat    = [ vtkStressMat    ; ones( (ndivNodes-1),1)*stressMat(i)    ] ;
 
       if nargout > 3
         elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
@@ -112,6 +123,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
       end
 
     else
+      error('Polyline not implemented yet. please create an issue.')
       %~ polilyine
       
       %~ % Undeformed nodes matrix
@@ -133,20 +145,31 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
                                 %~ ones(size(conecElem,1),1)*elemMat ones(size(conecElem,1),1)*elemSec ones(size(conecElem,1),1)*elemType ] ;  
       %~ end
         
+
+
     end
   end
   
+  vtkStress = {}                ;
+  vtkStress{3,1} = vtkStressMat ;
+
+
 elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
 
   vtkNormalForces = [] ;
   vtkDispMat = reshape( U(1:2:end)', [3, size(Nodes,1) ])' ;
 
+  vtkStress = {} ;
+  
+  vtkStress{3,1} = stressMat ;
+  
   Nodesvtk = Nodes + vtkDispMat ;
-    
-  if nargout > 3
-    Conecvtk = [ Conec(:,7) Conec(:,1:4) ] ;
+  
+  if nargout > numminout
+    Conecvtk = [ types Conec(:,1:4) ] ;
     elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Colums should be changed.
   end
+    
 
 else
   error(' mixed elements plot not implemented yet. Please create an issue.')

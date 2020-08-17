@@ -81,11 +81,11 @@ if plotParamsVector(1) == 3
   if modelCurrSol.timeIndex == 1,
     
     % generate connectivity
-    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni, Nodes ) ;
+    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelCurrSol.U, normalForcesIni, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
 
     % data
-    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, {}, vtkDispMat ) ;
+    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, vtkStress, vtkDispMat ) ;
 
     % writes file
     vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
@@ -98,11 +98,11 @@ if plotParamsVector(1) == 3
     indplot = find( aux ) ;
 
     % generates deformed nodes coords
-    [ vtkNodes, vtkDispMat, vtkNormalForces ] = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces, Nodes ) ;
+    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ] = vtkGeometry( ...
+      modelProperties.coordsElemsMat , Conec, sectPar, modelNextSol.U, normalForces, Nodes, elementsParamsMat, modelNextSol.Stress  ) ;
 
     % data
-    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, {}, vtkDispMat ) ;
+    [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, vtkStress, vtkDispMat ) ;
     
     % writes file
     vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
