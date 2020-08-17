@@ -24,7 +24,16 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
 
   solutionMethod   = numericalMethodParams(1) ;
   
-  if ( solutionMethod == 1) || ( solutionMethod == 2)
+  if solutionMethod == 0
+
+    % ----- resolution method params -----
+    stopTolDeltau    = 0     ;
+    stopTolForces    = 1e-10 ;
+    stopTolIts       = 2     ;
+    targetLoadFactr  = 1     ;
+    nLoadSteps       = 1     ; 
+
+  elseif ( solutionMethod == 1) || ( solutionMethod == 2)
 
     % ----- resolution method params -----
     stopTolDeltau    = numericalMethodParams(2) ;

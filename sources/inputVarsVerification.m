@@ -49,8 +49,7 @@ checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
                       'materialsParams', ...
                       'elementsParams', ...
                       'loadsParams', ...
-                      'springsParams', ...
-                      'numericalMethodParams' } ;
+                      'springsParams' } ;
 
 for j = 1:length(checkVarNamesList)
   varName = checkVarNamesList{j} ;
@@ -64,6 +63,10 @@ if exist( 'crossSecsParams' ) == 0
   crossSecsParams = {} ; 
 end
 
+if exist( 'numericalMethodParams' ) == 0
+  numericalMethodParams = [ 0 ] ;
+end
+                      
 
 % ===  Conversion conec cell to matrix format... to improve in the future.... ===
 if iscell( Conec )
