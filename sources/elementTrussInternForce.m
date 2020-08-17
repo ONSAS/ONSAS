@@ -36,10 +36,15 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   e1def = Bdif * Xedef / ldef ;
 
   % --- strain ---
-  if hyperelasparams(1) == 2
-    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;
+  if hyperelasparams(1) == 1
+    ldef   = e1def' * e1ref * ldef ;         e1def = e1ref ;
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % small disp eng
+  
+  elseif hyperelasparams(1) == 2
+    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ; % green-lagrange
+  
   elseif hyperelasparams(1) == 3
-    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ;
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
   end
   
   % --- stress and constitutive tensor ---
@@ -49,15 +54,31 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   %~ TTcl(1:2:5)       = -e1def ;    TTcl([(1:2:5)+6]) =  e1def ;
   TTcl              = Bdif' * e1def ;
 
-  % internal forces computation
-  Finte = stress * A * TTcl ;
+  if hyperelasparams(1) == 1
+    % internal forces computation
+  elseif hyperelasparams(1) == 2
 
-  %~ Finte = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif * Ue + 0.5 * Ue' * Bdif' * Bdif * Ue ) * hyperelasparams(2) * A ;
+      Ge = Bdif' * Bdif ;
+      
+      b1 = 1/(lini^2) * Xe' * Ge ;
+      b2 = 1/(lini^2) * Ue' * Ge ;
 
+    Finte =  A*stress*lini * (b1+b2)' ;
+  
+  elseif hyperelasparams(1) == 3
+    Finte = stress * A * TTcl ;
+  end
+  
   if paramout == 2
     
-    if hyperelasparams(1) == 2
-      KTe = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif + Ue' * Bdif' * Bdif ) * hyperelasparams(2) * A ; 
+    if hyperelasparams(1) == 1
+      KTe   = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif ) * hyperelasparams(2) * A ; 
+    elseif hyperelasparams(1) == 2
+      %
+      KTe   = stress * A / lini * Ge  ...
+            + A*hyperelasparams(2)*lini* ( ... %
+            (b1 + b2)' * (b1+b2) ) ;
+
     elseif hyperelasparams(1) == 3
       KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
       Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
@@ -67,8 +88,6 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   else
     KTe = [] ;
   end
-  
-  % reduce to keep only displacements dofs
   
   Finte = {Finte};
   KTe   = {KTe};

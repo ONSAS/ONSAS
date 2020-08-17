@@ -40,7 +40,8 @@ if exist('booleanScreenOutput') == 0 || booleanScreenOutput
 end
 
 if booleanScreenOutput
-  fprintf('  - input variables verification ... ') ;
+  fprintf( ['| Solving problem:  ' problemName '\n' ] ) ;
+  fprintf(  '|  - input variables verification ... ') ;
 end
 
 % --- verification of relevant variables ---
@@ -113,10 +114,6 @@ if  exist( 'nodalDispDamping' ) == 0
   nodalDispDamping = 0 ;
 end
 
-if exist( 'sectPar' ) == 0
-  sectPar = [0 0 ] ;
-end 
-
 if exist( 'loadFactorsFunc') == 0
   loadFactorsFunc = @(t) t ;
 end
@@ -169,12 +166,6 @@ if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
 end
 
-if exist('OCTAVE_VERSION','builtin') > 0
-  octaveBoolean = 1 ;
-else
-  octaveBoolean = 0 ;
-end
-
 if exist( 'storeBoolean' ) == 0
   storeBoolean = 0 ;
 end
@@ -184,7 +175,7 @@ if exist( 'printFlag' ) == 0
 end
 
 if exist( 'reportBoolean' ) == 0
-  reportBoolean = 1 ;
+  reportBoolean = 0 ;
 end
 
 if exist( 'consMatFlag' ) == 0
@@ -215,9 +206,9 @@ end
 if exist( outputDir ) == 7 % problemName is a directory
   % the content is erased
   if booleanScreenOutput
-    fprintf( ['  - Cleaning output directory ...'] ) ;
+    fprintf( ['|  - Cleaning output directory ...'] ) ;
   end
-  if octaveBoolean
+  if isThisOctave
     confirm_recursive_rmdir(0)
   end
   
@@ -230,7 +221,7 @@ if exist( outputDir ) == 7 % problemName is a directory
 elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   % it is created
   if booleanScreenOutput
-    fprintf( ['  - Creating output directory ...'] ) ;
+    fprintf( ['|  - Creating output directory ...'] ) ;
   end
   mkdir( outputDir );
 end

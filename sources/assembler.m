@@ -112,8 +112,18 @@ else
 
     % -----------   truss element   ------------------------------------
     case 2
-
-      [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, elemCrossSecParams, paramOut ) ;
+      
+      if elemCrossSecParams(1) == 1
+        A = elemCrossSecParams(2) ;
+      elseif elemCrossSecParams(1) == 2
+        A = elemCrossSecParams(2)*elemCrossSecParams(3) ;
+      elseif elemCrossSecParams(1) == 3
+        A = pi*elemCrossSecParams(2)^2 / 4.0 ;
+      else
+        error('missing cross section case')
+      end
+      
+      [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, A, paramOut ) ;
 
       Finte = fs{1} ;
       Ke    = ks{1} ;
@@ -122,7 +132,7 @@ else
         booleanConsistentMassMat = elemElementParams(2) ;
 
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemrho, elemCrossSecParams(1), elemElementParams(2), paramOut, dotdotdispsElem ) ;
+        [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemrho, A, elemElementParams(2), paramOut, dotdotdispsElem ) ;
         %
         %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
         %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;

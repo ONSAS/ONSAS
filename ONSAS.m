@@ -24,6 +24,12 @@ Taux = cputime() ;
 % ----------------------------     Input       ---------------------------------
 ONSASversion ='0.1.10';
 
+if exist(dirOnsas)~=0 && strcmp( dirOnsas, pwd )
+  acdir = pwd ;
+else
+  acdir = pwd ; cd(dirOnsas);
+end
+
 if isunix, dirSep = '/'; else, dirSep = '\'; end
 addpath( [ pwd dirSep 'sources'] ) ;
 addpath( [ pwd dirSep 'user'   ] ) ;
@@ -101,3 +107,5 @@ totalTime = cputime()-Taux ;
 fprintf([ '|-------------------------------------------------|\n'])
 fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
 fprintf([ '|=================================================|\n\n\n'])
+
+cd( acdir );

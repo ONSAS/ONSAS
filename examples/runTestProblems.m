@@ -20,7 +20,7 @@
 keyword = 'test.m' ;
 %~ keyword = 'example' ;
 
-fileslist = readdir('../examples');
+fileslist = readdir('./');
 keyfiles  = {} ;
 
 totalRuns = 0 ;
@@ -40,8 +40,8 @@ totalRuns
 while current <= totalRuns
 
   save('-mat', 'exData.mat','current','totalRuns', 'keyfiles' );
-  
-  run( [ '../examples/' keyfiles{current} ] ) ;
+
+  run( [ './' keyfiles{current} ] ) ;
   pause(0.5)
   fprintf([' === test ' problemName ' problem executed === \n\n']);
   

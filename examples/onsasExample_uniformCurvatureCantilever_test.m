@@ -32,7 +32,7 @@ loadsParams   = {[ 1 1   0 0 0 -1 0 0 ]} ;
 
 % --- cross section ---
 A = b*h ;     Iy = b*h^3/12 ;    Iz = h*b^3/12 ;     It = 1 ;
-crossSecsParams = {[ A Iy Iz It ]} ;
+crossSecsParams = {[ 1 A It Iy Iz ]} ;
 
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
 
@@ -58,8 +58,8 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFac
 analyticSolFlag = 1 ; analyticCheckTolerance = 1e-4 ; analyticFunc = @(w) w * l / ( E * Iy ) ;
 
 % --- ONSAS execution ---
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
-
+addpath( dirOnsas );
+ONSAS
 
 
 lw = 3.5 ; ms = 11 ; plotfontsize = 22 ;

@@ -19,7 +19,7 @@
 % vtk files of the solids or structures.
 
 function [ Nodesvtk, vtkDispMat, vtkNormalForces, vtkStress, Conecvtk, elem2VTKCellMap ] = ...
-  vtkGeometry ( coordsElemsMat, Conec, secc, U, normalForces, Nodes, elementsParamsMat, stressMat )
+  vtkGeometry ( coordsElemsMat, Conec, crossSecsParamsMat, U, normalForces, Nodes, elementsParamsMat, stressMat )
   %~ vtkGeometry ( Nodes, Conec, secc, U )
 % ------------------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
   for i = 1:nelems
     elemMat  = Conec(i, 4+1 ) ;
     elemType = elementsParamsMat( Conec(i, 4+2 ), 1 ) ;
-    elemSec  = Conec(i, 4+5 ) ;
+    elemCrossSecParams = crossSecsParamsMat( Conec(i, 4+4 ) , : ) ;
         
     nodeselem  = Conec(i,1:2)' ;
     dofselem   = nodes2dofs( nodeselem , 6 ) ;
@@ -83,71 +83,51 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
     yloc = linspace( coordsElem(3), coordsElem( 9), ndivNodes )' ;  
     zloc = linspace( coordsElem(5), coordsElem(11), ndivNodes )' ;
 
-    % ------------------------------------------------------------------
-    if length( secc ) > 0 % solid is used for representation
-        
+    for j = 1 : (ndivNodes-1)
 
-      for j = 1 : (ndivNodes-1)
+      dispsSubElem       = zeros(12,1) ;
+      dispsSubElem(1:6 ) = [ xdef(j  )-xloc(j  ) titax(j  ) ydef(j  )-yloc(j  ) titay(j  ) zdef(j  )-zloc(j  ) titaz(j  ) ]' ;
+      dispsSubElem(7:12) = [ xdef(j+1)-xloc(j+1) titax(j+1) ydef(j+1)-yloc(j+1) titay(j+1) zdef(j+1)-zloc(j+1) titaz(j+1) ]' ;
 
-        dispsSubElem       = zeros(12,1) ;
-        dispsSubElem(1:6 ) = [ xdef(j  )-xloc(j  ) titax(j  ) ydef(j  )-yloc(j  ) titay(j  ) zdef(j  )-zloc(j  ) titaz(j  ) ]' ;
-        dispsSubElem(7:12) = [ xdef(j+1)-xloc(j+1) titax(j+1) ydef(j+1)-yloc(j+1) titay(j+1) zdef(j+1)-zloc(j+1) titaz(j+1) ]' ;
-
-        coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ] ;
-        
-        [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, secc, dispsSubElem, Rr ) ;
-        
-        if j==1
-          Nodesvtk = [ Nodesvtk ; NodesCell( 1:4, :) ] ;
-          vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(1:2:5)') ] ;
-        end
-        
-        Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
-        vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
-
-        if nargout > numminout
-          ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
-          Conecvtk = [ Conecvtk ; ConecCell ] ;
-        end
-
-      end % if divisions solids
-
-      vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
-      vtkStressMat    = [ vtkStressMat    ; ones( (ndivNodes-1),1)*stressMat(i)    ] ;
-
-      if nargout > 3
-        elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
+      coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ] ;
+   
+      if elemCrossSecParams(1) == 1
+        auxh = sqrt( elemCrossSecParams(4)/elemCrossSecParams(2)*12 ) ;
+        auxb = elemCrossSecParams(2) / auxh ;
+        secc = [ 12 auxb auxh ] ;
+      elseif elemCrossSecParams(1) == 2
+        secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
+      elseif elemCrossSecParams(1) == 3
+        secc = [ 25 elemCrossSecParams(2) ] ;
+      end
       
-        counterNodesVtk = counterNodesVtk +   ndivNodes * 4   ;
-        counterCellsVtk = counterCellsVtk + ( ndivNodes - 1 ) ;
+      [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, secc, dispsSubElem, Rr ) ;
+      
+      if j==1
+        Nodesvtk = [ Nodesvtk ; NodesCell( 1:4, :) ] ;
+        vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(1:2:5)') ] ;
+      end
+      
+      Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
+      vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
+
+      if nargout > numminout
+        ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
+        Conecvtk = [ Conecvtk ; ConecCell ] ;
       end
 
-    else
-      error('Polyline not implemented yet. please create an issue.')
-      %~ polilyine
-      
-      %~ % Undeformed nodes matrix
-      %~ NodesAux 		= [ NodesAux			; xloc yloc zloc ] ;   
-  
-      %~ % Deformed nodes matrix
-      %~ NodesDefAux = [ NodesDefAux		; xdef ydef zdef ] ;
-  
-      %~ % Rots aux
-      %~ RotsAux     = [ RotsAux       ; titax titay titaz ] ;   
+    end % if divisions solids
 
-      %~ % New connectivity
-      %~ if elemType == 2
-        %~ ConecAux = [ ConecAux ; ((i-1)*ndivselem+conecElem) zeros(size(conecElem,1),2) ...
-                                %~ ones(size(conecElem,1),1)*elemMat ones(size(conecElem,1),1)*elemSec ones(size(conecElem,1),1)*elemType ] ; 
-  
-      %~ else 
-        %~ ConecAux = [ ConecAux ; 2*i-1 2*i zeros(size(conecElem,1),2) ...
-                                %~ ones(size(conecElem,1),1)*elemMat ones(size(conecElem,1),1)*elemSec ones(size(conecElem,1),1)*elemType ] ;  
-      %~ end
-        
+    vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
+    vtkStressMat    = [ vtkStressMat    ; ones( (ndivNodes-1),1)*stressMat(i)    ] ;
 
-
+    if nargout > 3
+      elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
+    
+      counterNodesVtk = counterNodesVtk +   ndivNodes * 4   ;
+      counterCellsVtk = counterCellsVtk + ( ndivNodes - 1 ) ;
     end
+
   end
   
   vtkStress = {}                ;
