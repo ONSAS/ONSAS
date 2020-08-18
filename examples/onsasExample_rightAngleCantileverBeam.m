@@ -19,7 +19,7 @@ J   = I ;
 
 materialsParams = {[ rho 1 E nu ]} ;
 
-crossSecsParams = {[ A I I J 20 10 10 ]} ;
+crossSecsParams = {[ 1 A I I J 20 10 10 ]} ;
 							%Inertia dyadic tensor
 
 %Node Mat
@@ -30,9 +30,6 @@ Nodes = [ zeros(nElemsPerBeam+1,1)       auxCoords  zeros(nElemsPerBeam+1,1) ; .
           -auxCoords(2:end) ones(nElemsPerBeam,1)*L       zeros(nElemsPerBeam,1) ] ;
 
 aux = (1:(2*nElemsPerBeam+1))' ;
-
-%~ Conec = [ aux(1:(end-1)) aux(2:end) zeros(2*nElemsPerBeam,2) ...
-          %~ ones(2*nElemsPerBeam,2) 2*ones(2*nElemsPerBeam, 1) ] ; 
           
 %Conec Mat-------
 
@@ -128,7 +125,7 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 
 cd(dirOnsas); cd(outputDir);
-print('rightAngle','-dpdflatex','-tight')
+%print('rightAngle','-dpdflatex','-tight')
 %~ print('rightAngle','-dpdflatex')
 %~ print('rightAngle.png','-dpng')
 cd(acdir);

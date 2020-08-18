@@ -19,7 +19,8 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         elementsParams, ...
                         loadsParams, ...
                         crossSecsParams, ...
-                        springsParams ...
+                        springsParams, ...
+                        BooleanSelfWheight ...
                         )
 
 % auxiliar elements separation
@@ -172,9 +173,11 @@ for ind = 1:length(indsLoop)
   end
 
   % --------------------------------------------------------------------
-  
-  
-  % --------------------------------------------------------------------
+
+ % --- SefWheight ---
+ 
+     
+     % --------------------------------------------------------------------
   % --- springs ---
   if spriNum > 0,
 
@@ -194,7 +197,41 @@ for ind = 1:length(indsLoop)
 
 end
 
+ if BooleanSelfWheight==1
+     indsElems      = find( Conec(:,2) ~= 0 ) ; 
+     NumElems       = length(indsElems);
+    
+    for i = indsElems(1):indsElems(end)
+  
+      matNum   = Conec( i, 4 + 1 ) ;
+      elemNum  = Conec( i, 4 + 2 ) ;
+      crosNum  = Conec( i, 4 + 4 ) ;
+ 
+  
+     if elementsParams{ elemNum }(1) == 2 ; % truss
 
+            nodeselem = Conec( i, 1:2 ) ;       %element Nodes
+            xelem     = Nodes(nodeselem,:);     
+            Lelem     = norm( xelem(1,:)-xelem(2,:));%element length
+            crossSecsParamsElem =crossSecsParams {crosNum}; %element cross sec params
+            if crossSecsParamsElem (1)==3                               %DUDA DE COMO CORREGIR SI NO ES UNO, DONDE SE GUARDA EL AREA EN LA NUEVA NOMENCLATURA?
+                Areaelem = pi*crossSecsParamsElem(2)^2;
+             elseif crossSecsParamsElem (1)==2
+                Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
+             elseif crossSecsParamsElem (1)==1
+                Areaelem = crossSecsParamsElem (2)
+            end
+            Matelem   = materialsParams {matNum} ;   %element material vec
+            rhoelem   = Matelem(1);                  %densidad del elemento
+
+            Fz = rhoelem*Lelem*Areaelem*9.8/2;
+        
+            nodalConstantLoads = [ nodalConstantLoads ; ...
+                nodeselem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+            %No habria que sumarlas a nodal ConstaLoads?
+       end     
+    end 
+  end
 
 indsElemsAux             = find( Conec(:,4+1) == 0 ) ;
 conecAuxElems            = Conec(indsElemsAux, : ) ;
