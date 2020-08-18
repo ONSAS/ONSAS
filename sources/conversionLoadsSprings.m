@@ -214,11 +214,11 @@ end
             xelem     = Nodes(nodestrng,:);     
             Lelem     = norm( xelem(1,:)-xelem(2,:));%element length
             crossSecsParamsElem =crossSecsParams {crosNum}; %element cross sec params
-            if crossSecsParamsElem (1)==1                               %DUDA DE COMO CORREGIR SI NO ES UNO, DONDE SE GUARDA EL AREA EN LA NUEVA NOMENCLATURA?
-                Areaelem = pi*crossSecsParamsElem(2)^2/4;
+            if crossSecsParamsElem (1)==3                               %DUDA DE COMO CORREGIR SI NO ES UNO, DONDE SE GUARDA EL AREA EN LA NUEVA NOMENCLATURA?
+                Areaelem = pi*crossSecsParamsElem(2)^2;
              elseif crossSecsParamsElem (1)==2
                 Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
-             else
+             elseif crossSecsParamsElem (1)==1
                 Areaelem = crossSecsParamsElem (2)
             end
             Matelem   = materialsParams {matNum} ;   %element material vec
