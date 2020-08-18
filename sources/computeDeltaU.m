@@ -24,11 +24,7 @@ function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, syst
   
   convDeltau = redConvDeltau ;  
 
-  if solutionMethod == 1 || solutionMethod == 3  || solutionMethod == 4
-    % incremental displacement
-    deltaured = systemDeltauMatrix \ systemDeltauRHS ;
-  
-  elseif solutionMethod == 2
+  if solutionMethod == 2
   
     aux = systemDeltauMatrix \ systemDeltauRHS ;
     
@@ -60,6 +56,12 @@ function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, syst
     nextLoadFactor  = nextLoadFactor  + deltalambda(1) ;
     
     deltaured = deltauast + deltalambda(1) * deltaubar ;
+  
+  
+  else   % incremental displacement
+    deltaured = systemDeltauMatrix \ systemDeltauRHS ;
+  
+  
   end
 % ======================================================================
 

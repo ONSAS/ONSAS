@@ -33,6 +33,7 @@ function [ verifBoolean, numericalVecy, analyticalVecy ] = analyticSolVerif ...
     xmagnitude      = 'Load Factors' ;
 
   elseif analyticSolFlag == 2
+  
     analyticalVecy  = analyticFunc( controlDisps ) ;
     numericalVecy   = loadFactors  ;
     numericalVecx   = controlDisps ;

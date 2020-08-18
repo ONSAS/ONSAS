@@ -49,8 +49,7 @@ checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
                       'materialsParams', ...
                       'elementsParams', ...
                       'loadsParams', ...
-                      'springsParams', ...
-                      'numericalMethodParams' } ;
+                      'springsParams' } ;
 
 for j = 1:length(checkVarNamesList)
   varName = checkVarNamesList{j} ;
@@ -64,6 +63,10 @@ if exist( 'crossSecsParams' ) == 0
   crossSecsParams = {} ; 
 end
 
+if exist( 'numericalMethodParams' ) == 0
+  numericalMethodParams = [ 0 ] ;
+end
+                      
 
 % ===  Conversion conec cell to matrix format... to improve in the future.... ===
 if iscell( Conec )
@@ -140,7 +143,7 @@ if exist( 'analyticSolFlag' ) == 0
 else
 	if analyticSolFlag ~= 0
 		if exist( 'analyticCheckTolerance' ) == 0
-			error('analyticCheckTolerance must be defined.')
+			analyticCheckTolerance = 1e-8 ;
 		end
 	end
 	if analyticSolFlag == 1 || analyticSolFlag == 2
@@ -284,12 +287,17 @@ contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
 
-if numericalMethodParams(1) > 2
+if numericalMethodParams(1) == 0
+  finalTime = 1 ;
+  nTimes    = 2 ;
+
+elseif numericalMethodParams(1) <= 2
+  finalTime = numericalMethodParams(5) ;
+  nTimes = numericalMethodParams(6) +1 ;
+
+elseif numericalMethodParams(1) > 2
   finalTime = numericalMethodParams(3);
   nTimes = round( numericalMethodParams(3) / numericalMethodParams(2) ) ;
-else
-  finalTime = numericalMethodParams(5);
-  nTimes = numericalMethodParams(6) +1 ;
 end
 
 if length( plotParamsVector ) > 1

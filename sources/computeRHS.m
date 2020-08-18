@@ -33,7 +33,7 @@ function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( Conec, ...
   
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;  
 
-  if solutionMethod == 1
+  if solutionMethod <= 1
 
     FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     systemDeltauRHS = - ( Fint(neumdofs) - FextG(neumdofs) ) ;
