@@ -1,8 +1,8 @@
 % ======================================================================
 % Von Mises truss example
 clear all, close all
-dirOnsas    = [ pwd '/..' ] ;
-problemName = 'staticVonMisesTrussNR' ;
+dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
+problemName = 'staticVonMisesTrussLin' ;
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
 E = 210e9 ;  A = 2.5e-4 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
@@ -10,7 +10,7 @@ E = 210e9 ;  A = 2.5e-4 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ;
 % ----------------------------------------------------------------------
 % MELCS parameters
 % Materials
-materialsParams = {[ rho 2 E nu ]} ;
+materialsParams = {[ rho 1 E nu ]} ;
 % Elements
 elementsParams  = { 1; 2} ;
 % Loads
@@ -23,10 +23,10 @@ springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
 
 % ----------------------------------------------------------------------
 % nodes coordinates matrix and connectivity cell
-auxx = cos( ang1*pi/180 ) * L ;        auxy = sin( ang1*pi/180 ) * L ;
+auxx = cos( ang1*pi/180 ) * L ;        auxz = sin( ang1*pi/180 ) * L ;
 % nodes matrix
 Nodes = [      0  0     0  ; ...
-            auxx  0  auxy  ; ...
+            auxx  0  auxz  ; ...
           2*auxx  0     0  ] ;
 
 % connectivity cell
@@ -35,27 +35,45 @@ Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
           [ 0 1 0 0 1  3   ] ; ... % fixed node
           [ 1 2 0 1 0  1 2 ] ; ... % truss element
           [ 1 2 0 1 0  2 3 ] } ;   % truss element
-         
+
+controlDofs      = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
+plotParamsVector = [ 3 ];
+
+analyticSolFlag        = 2    ;
+analyticFunc = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ; 
+
+ONSAS
+
 % ----------------------------------------------------------------------
+% connectivity cell
+Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
+          [ 0 1 1 0 2  2   ] ; ... % loaded node
+          [ 0 1 0 0 1  3   ] ; ... % fixed node
+          [ 1 2 0 1 0  1 2 ] ; ... % truss element
+          [ 1 2 0 1 0  2 3 ] } ;   % truss element
+
+problemName = 'staticVonMisesTrussNR' ;
+
+materialsParams = {[ rho 2 E nu ]} ;
+
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
 targetLoadFactr  = 1.5e7  ;    nLoadSteps       = 6      ;
 stopTolIts       = 30     ;
+
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps ] ; 
+
 stabilityAnalysisBoolean = 2 ;
 
-% ----------------------------------------------------------------------
-% analysis parameters
-controlDofs      = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
-plotParamsVector = [ 3 ];
+l0 = sqrt(auxx^2 + auxz^2) ;
+analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+ .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-addpath( dirOnsas );
-ONSAS;
 
+ONSAS
 
 return
-
 
 targetLoadFactrNRAL = 4e7    ; % arc length
 incremArcLen     = .2     ;
@@ -70,8 +88,8 @@ incremArcLen     = .2     ;
 analyticSolFlag        = 2    ;
 analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
-analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
- .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
+analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+ .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
 printFlag = 0 ;

@@ -35,7 +35,7 @@ function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsEl
   end
 
   % extracts matrix entries
-  if solutionMethod == 1 || solutionMethod == 2
+  if solutionMethod <= 2
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 
