@@ -57,6 +57,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
   
   % loop in elements
   for i = 1:nelems
+  
     elemMat  = Conec(i, 4+1 ) ;
     elemType = elementsParamsMat( Conec(i, 4+2 ), 1 ) ;
     elemCrossSecParams = crossSecsParamsMat( Conec(i, 4+4 ) , : ) ;
@@ -90,29 +91,32 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
       dispsSubElem(7:12) = [ xdef(j+1)-xloc(j+1) titax(j+1) ydef(j+1)-yloc(j+1) titay(j+1) zdef(j+1)-zloc(j+1) titaz(j+1) ]' ;
 
       coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ] ;
-   
+			
       if elemCrossSecParams(1) == 1
         auxh = sqrt( elemCrossSecParams(4)/elemCrossSecParams(2)*12 ) ;
         auxb = elemCrossSecParams(2) / auxh ;
         secc = [ 12 auxb auxh ] ;
+				cant = 4 ;
       elseif elemCrossSecParams(1) == 2
         secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
+				cant = 4 ;
       elseif elemCrossSecParams(1) == 3
         secc = [ 25 elemCrossSecParams(2) ] ;
+        cant = 20 ;
       end
-      
+
       [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, secc, dispsSubElem, Rr ) ;
       
       if j==1
         Nodesvtk = [ Nodesvtk ; NodesCell( 1:4, :) ] ;
-        vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(1:2:5)') ] ;
+        vtkDispMat = [ vtkDispMat ; ones(cant,1)*(dispsSubElem(1:2:5)') ] ;
       end
       
       Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
-      vtkDispMat = [ vtkDispMat ; ones(4,1)*(dispsSubElem(7:2:11)') ] ;
+      vtkDispMat = [ vtkDispMat ; ones(cant,1)*(dispsSubElem(7:2:11)') ] ;
 
       if nargout > numminout
-        ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * 4 + counterNodesVtk ;
+        ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * cant + counterNodesVtk ;
         Conecvtk = [ Conecvtk ; ConecCell ] ;
       end
 
@@ -123,8 +127,13 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
     if nargout > 3
       elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
-    
-      counterNodesVtk = counterNodesVtk +   ndivNodes * 4   ;
+			if cant == 4
+				cant = 4 ;
+			else
+				cant = cant/2 ;
+			end
+				
+      counterNodesVtk = counterNodesVtk +   ndivNodes * cant  ;
       counterCellsVtk = counterCellsVtk + ( ndivNodes - 1 ) ;
     end
 
@@ -155,3 +164,4 @@ else
   error(' mixed elements plot not implemented yet. Please create an issue.')
 
 end
+
