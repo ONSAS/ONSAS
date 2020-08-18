@@ -26,20 +26,22 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   Xedef = Xe + Ue ;
 
   Bdif = [ -eye(3) eye(3) ] ;
-
+  Ge   = Bdif' * Bdif       ;
+    
   % initial/deformed lengths
   lini = sqrt( sum( ( Bdif * Xe    ).^2 ) ) ;
   ldef = sqrt( sum( ( Bdif * Xedef ).^2 ) ) ;
   
   % normalized reference and deformed co-rotational vector
-  e1ref = Bdif * Xe    / lini ; 
+  e1ref = Bdif * Xe    / lini ;
   e1def = Bdif * Xedef / ldef ;
+
+  b1 = 1/(lini^2) * Xe' * Ge ;
 
   % --- strain ---
   if hyperelasparams(1) == 1
-    ldef   = e1def' * e1ref * ldef ;         e1def = e1ref ;
-    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % small disp eng
-  
+    strain = b1 * Ue ; % small displacements eng. strain
+
   elseif hyperelasparams(1) == 2
     strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ; % green-lagrange
   
@@ -50,34 +52,35 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   % --- stress and constitutive tensor ---
   [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
   
-  %~ TTcl              = zeros(12,1) ;
-  %~ TTcl(1:2:5)       = -e1def ;    TTcl([(1:2:5)+6]) =  e1def ;
   TTcl              = Bdif' * e1def ;
 
-  if hyperelasparams(1) == 1
-    % internal forces computation
-  elseif hyperelasparams(1) == 2
 
-      Ge = Bdif' * Bdif ;
-      
-      b1 = 1/(lini^2) * Xe' * Ge ;
-      b2 = 1/(lini^2) * Ue' * Ge ;
+  % --- internal forces computation ---
+  if hyperelasparams(1) == 1,
+
+    Finte =  A * stress * lini * b1' ;
+
+  elseif hyperelasparams(1) == 2
+    
+    b2 = 1/(lini^2) * Ue' * Ge ;
 
     Finte =  A*stress*lini * (b1+b2)' ;
   
   elseif hyperelasparams(1) == 3
     Finte = stress * A * TTcl ;
+
   end
-  
+  % ----------------------------------
+    
+  % --- tangent matrix computation ---
   if paramout == 2
     
     if hyperelasparams(1) == 1
-      KTe   = [ -Bdif ; Bdif ] * Xe * ( Xe' * Bdif' * Bdif ) * hyperelasparams(2) * A ; 
+      KTe   = dstressdeps * A * lini * b1' * b1 ;
+ 
     elseif hyperelasparams(1) == 2
-      %
-      KTe   = stress * A / lini * Ge  ...
-            + A*hyperelasparams(2)*lini* ( ... %
-            (b1 + b2)' * (b1+b2) ) ;
+      KTe   =   stress      * A / lini * Ge  ...
+              + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
 
     elseif hyperelasparams(1) == 3
       KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;

@@ -143,7 +143,7 @@ if exist( 'analyticSolFlag' ) == 0
 else
 	if analyticSolFlag ~= 0
 		if exist( 'analyticCheckTolerance' ) == 0
-			error('analyticCheckTolerance must be defined.')
+			analyticCheckTolerance = 1e-8 ;
 		end
 	end
 	if analyticSolFlag == 1 || analyticSolFlag == 2
@@ -287,12 +287,17 @@ contProgr           = 0 ; % counter for progress bar
 itersPerTimeVec     = 0 ;
 
 
-if numericalMethodParams(1) > 2
+if numericalMethodParams(1) == 0
+  finalTime = 1 ;
+  nTimes    = 2 ;
+
+elseif numericalMethodParams(1) <= 2
+  finalTime = numericalMethodParams(5) ;
+  nTimes = numericalMethodParams(6) +1 ;
+
+elseif numericalMethodParams(1) > 2
   finalTime = numericalMethodParams(3);
   nTimes = round( numericalMethodParams(3) / numericalMethodParams(2) ) ;
-else
-  finalTime = numericalMethodParams(5);
-  nTimes = numericalMethodParams(6) +1 ;
 end
 
 if length( plotParamsVector ) > 1

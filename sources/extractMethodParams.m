@@ -33,6 +33,10 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     targetLoadFactr  = 1     ;
     nLoadSteps       = 1     ; 
 
+    deltaT = targetLoadFactr/nLoadSteps ; finalTime = targetLoadFactr ;
+
+    incremArcLen = [] ; deltaNW = []; AlphaNW = [] ; alphaHHT = [] ;
+
   elseif ( solutionMethod == 1) || ( solutionMethod == 2)
 
     % ----- resolution method params -----
