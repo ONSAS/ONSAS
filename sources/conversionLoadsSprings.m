@@ -210,8 +210,8 @@ end
   
      if elementsParams{ elemNum }(1) == 2 ; % truss
 
-            nodestrng = Conec( i, 1:2 ) ;       %element Nodes
-            xelem     = Nodes(nodestrng,:);     
+            nodeselem = Conec( i, 1:2 ) ;       %element Nodes
+            xelem     = Nodes(nodeselem,:);     
             Lelem     = norm( xelem(1,:)-xelem(2,:));%element length
             crossSecsParamsElem =crossSecsParams {crosNum}; %element cross sec params
             if crossSecsParamsElem (1)==3                               %DUDA DE COMO CORREGIR SI NO ES UNO, DONDE SE GUARDA EL AREA EN LA NUEVA NOMENCLATURA?
@@ -227,7 +227,7 @@ end
             Fz = rhoelem*Lelem*Areaelem*9.8/2;
         
             nodalConstantLoads = [ nodalConstantLoads ; ...
-                nodestrng', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+                nodeselem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
             %No habria que sumarlas a nodal ConstaLoads?
        end     
     end 
