@@ -173,9 +173,7 @@ for ind = 1:length(indsLoop)
   end
 
   % --------------------------------------------------------------------
- indsElems      = find( Conec(:,2) ~= 0 ) ; 
- 
- NumElems       = length(indsElems);
+
  % --- SefWheight ---
  
      
@@ -200,6 +198,9 @@ for ind = 1:length(indsLoop)
 end
 
  if BooleanSelfWheight==1
+     indsElems      = find( Conec(:,2) ~= 0 ) ; 
+     NumElems       = length(indsElems);
+    
     for i = indsElems(1):indsElems(end)
   
       matNum   = Conec( i, 4 + 1 ) ;
