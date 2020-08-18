@@ -19,7 +19,7 @@ J   = I ;
 
 materialsParams = {[ rho 1 E nu ]} ;
 
-crossSecsParams = {[ 2 A I I J 20 10 10 ]} ;
+crossSecsParams = {[ 1 A I I J 20 10 10 ]} ;
 							%Inertia dyadic tensor
 
 %Node Mat
