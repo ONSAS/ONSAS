@@ -62,8 +62,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   elseif hyperelasparams(1) == 2
     
-    b2 = 1/(lini^2) * Ue' * Ge ;
-
+    b2    = 1/(lini^2) * Ue' * Ge ;
     Finte =  A*stress*lini * (b1+b2)' ;
   
   elseif hyperelasparams(1) == 3

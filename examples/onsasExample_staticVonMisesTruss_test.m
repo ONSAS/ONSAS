@@ -1,7 +1,7 @@
 % ======================================================================
 % Von Mises truss example
 clear all, close all
-dirOnsas    = [ pwd '/..' ] ;
+dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
 problemName = 'staticVonMisesTrussLin' ;
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
@@ -42,13 +42,19 @@ plotParamsVector = [ 3 ];
 analyticSolFlag        = 2    ;
 analyticFunc = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ; 
 
-addpath( dirOnsas );
-ONSAS;
+ONSAS
 
 % ----------------------------------------------------------------------
+% connectivity cell
+Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
+          [ 0 1 1 0 2  2   ] ; ... % loaded node
+          [ 0 1 0 0 1  3   ] ; ... % fixed node
+          [ 1 2 0 1 0  1 2 ] ; ... % truss element
+          [ 1 2 0 1 0  2 3 ] } ;   % truss element
+
 problemName = 'staticVonMisesTrussNR' ;
 
-materialsParams = {[ rho 3 E nu ]} ;
+materialsParams = {[ rho 2 E nu ]} ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
@@ -60,7 +66,12 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 stabilityAnalysisBoolean = 2 ;
 
-ONSAS;
+l0 = sqrt(auxx^2 + auxz^2) ;
+analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+ .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
+
+
+ONSAS
 
 return
 
@@ -77,8 +88,8 @@ incremArcLen     = .2     ;
 analyticSolFlag        = 2    ;
 analyticCheckTolerance = 1e-4 ;
 l0 = sqrt(auxx^2 + auxy^2) ;
-analyticFunc = @(w) -2 * E*A* ( (  (auxy+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxy+(-w)).^2 + auxx^2) )) ) ...
- .* (auxy+(-w)) ./ ( sqrt((auxy+(-w)).^2 + auxx^2) )  ; 
+analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+ .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
 %% Output parameters
 printFlag = 0 ;
