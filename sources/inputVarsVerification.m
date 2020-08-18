@@ -43,6 +43,11 @@ if booleanScreenOutput
   fprintf( ['| Solving problem:  ' problemName '\n' ] ) ;
   fprintf(  '|  - input variables verification ... ') ;
 end
+if exist( 'loadsParams' ) == 0
+  loadsParams = {} ; 
+end
+
+
 
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
@@ -63,7 +68,9 @@ end
 if exist( 'crossSecsParams' ) == 0
   crossSecsParams = {} ; 
 end
-
+if exist( 'BooleanSelfWheight' ) == 0
+  BooleanSelfWheight = 0 ; 
+end
 
 % ===  Conversion conec cell to matrix format... to improve in the future.... ===
 if iscell( Conec )
@@ -86,7 +93,8 @@ end
                           elementsParams, ...
                           loadsParams, ...
                           crossSecsParams, ...
-                          springsParams ...
+                          springsParams, ...
+                          BooleanSelfWheight...
                         ) ;
 
 nMats  = length( materialsParams     ) ;

@@ -1,5 +1,5 @@
 % ------------------------------------
-% TEST example simple pendulum
+% TEST example simple pendulum Boolean Self Whight
 % ------------------------------------
 
 clear all, close all
@@ -7,7 +7,7 @@ clear all, close all
 % --- general data ---
 inputONSASversion = '0.1.10';
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'simplePendulumTrussHHT' ;
+problemName = 'simplePendulumBooleanSFTrussHHT' ;
 % ------------------------------------
 
 % -- scalar params -----
@@ -27,7 +27,7 @@ Nodes = [     0 0  l0   ; ...
              l0 0  l0 ] ;
 
 Conec = { [ 0 1 0 0 1  1   ] ; ...
-          [ 0 1 1 0 2  2   ] ; ...
+          [ 0 1 0 0 2  2   ] ; ...
           [ 1 2 0 1 0  1 2 ] } ;
 
 
@@ -37,7 +37,8 @@ materialsParams = { [ rho 3 Es nu ] } ;
 
 elementsParams = { 1 ; [ 2 0 ] } ;
 
-loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
+% loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
+BooleanSelfWheight = 1 ;
 
 crossSecsParams = { [2 sqrt(A) sqrt(A) ] } ;
 
@@ -87,7 +88,9 @@ plotParamsVector = [ 3 40 ];
 %~ plotParamsVector = [ 3 20 ];
 printFlag = 0 ;
 
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+acdir = pwd ; cd(dirOnsas); ONSAS, cd examples ;
+
+
 
 uNum = PenduloNL_HHT( l0, A, Es, m, nodalDispDamping, g, timeIncr, -alphaHHT, finalTime, stopTolForcesTight, stopTolIts, 1, 0 ) ;
 
@@ -99,41 +102,3 @@ ylabel('control displacement')
 xlabel('time (s)')
 legend('onsas','semi-analytic')
 print(['../../salida_dt_' sprintf('%05.3f',timeIncr) '.png'],'-dpng')
-%~ stop
-
-%~ angs2 = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
-
-%~ lw  = 2   ; ms  = 5.5 ;
-%~ lw2 = 3.2 ; ms2 = 23 ;
-%~ plotfontsize = 22 ;
-
-%~ figure
-%~ plot(timesVec, angs,'b--o','linewidth',lw,'markersize',ms);
-%~ grid on, hold on
-%~ plot(timesVec, angs2,'r-x','linewidth',lw,'markersize',ms);
-
-%~ labx=xlabel('time (s)'); laby=ylabel('Angle (degrees)'); labz=zlabel('z') ;
-%~ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize*0.8 ) ;
-%~ set(tit, "FontSize", plotfontsize) ;
-%~ set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ;
-%~ legend('tight tolerances','loose tolerances','location','southeast')
-
-%~ cd(dirOnsas); cd(outputDir ); 
-%~ print( [ problemName(1:end-8) '_Bathe'  ] ,'-dpdflatex','-tight') ;
-%~ cd(acdir)
-
-
-
-
-
-
-%~ angs = asin( (l0+controlDisps) ./ l0 ) * 180 / pi ;
-
-%~ close all
-
-%~ problemName = 'simplePendulumLooseTol' ;
-
-%~ numericalMethodParams = [ 3 timeIncr finalTime stopTolDeltau stopTolForcesLoose stopTolIts DeltaNW AlphaNW] ;
-%~ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesLoose stopTolIts alphaHHT ] ;
-
-%~ acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
