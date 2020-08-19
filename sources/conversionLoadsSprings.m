@@ -209,27 +209,60 @@ end
   
      if elementsParams{ elemNum }(1) == 2 ; % truss
 
-            nodeselem = Conec( i, 1:2 ) ;       %element Nodes
-            xelem     = Nodes(nodeselem,:);     
-            Lelem     = norm( xelem(1,:)-xelem(2,:));%element length
-            crossSecsParamsElem =crossSecsParams {crosNum}; %element cross sec params
-            if crossSecsParamsElem (1)==3                               %DUDA DE COMO CORREGIR SI NO ES UNO, DONDE SE GUARDA EL AREA EN LA NUEVA NOMENCLATURA?
+            nodesElem = Conec( i, 1:2 ) ;       
+            xelem     = Nodes(nodesElem,:);     
+            Lelem     = norm( xelem(1,:)-xelem(2,:));
+            crossSecsParamsElem =crossSecsParams {crosNum};
+            if crossSecsParamsElem (1)==3                               
                 Areaelem = pi*crossSecsParamsElem(2)^2;
              elseif crossSecsParamsElem (1)==2
                 Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
              elseif crossSecsParamsElem (1)==1
                 Areaelem = crossSecsParamsElem (2)
             end
-            Matelem   = materialsParams {matNum} ;   %element material vec
-            rhoelem   = Matelem(1);                  %densidad del elemento
+            Matelem   = materialsParams {matNum} ;   
+            rhoelem   = Matelem(1);                 
 
             Fz = rhoelem*Lelem*Areaelem*9.8/2;
         
             nodalConstantLoads = [ nodalConstantLoads ; ...
-                nodeselem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
-            %No habria que sumarlas a nodal ConstaLoads?
-       end     
-    end 
+                nodesElem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+     
+     end
+     
+       
+     if elementsParams{ elemNum }(1) == 3 ; % beam WHITHOU weight MOMENTS
+
+            nodesElem = Conec( i, 1:2 ) ; 
+            xelem     = Nodes(nodesElem,:);  
+            Lelem     = norm( xelem(1,:)-xelem(2,:));
+            crossSecsParamsElem =crossSecsParams {crosNum};
+            if crossSecsParamsElem (1)==3                            
+                Areaelem = pi*crossSecsParamsElem(2)^2;
+             elseif crossSecsParamsElem (1)==2
+                Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
+             elseif crossSecsParamsElem (1)==1
+                Areaelem = crossSecsParamsElem (2)
+            end
+            Matelem   = materialsParams {matNum} ;  
+            rhoelem   = Matelem(1);                 
+            Fz = rhoelem*Lelem*Areaelem*9.8/2;
+        
+            nodalConstantLoads = [ nodalConstantLoads ; ...
+                nodesElem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+
+     end
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    end
   end
 
 indsElemsAux             = find( Conec(:,4+1) == 0 ) ;
