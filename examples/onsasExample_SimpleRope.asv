@@ -18,7 +18,7 @@ l   = 40      ;
 rho  = 7850   ;
 g   = 9.81    ;
 
-nodalDispDamping = 0.5 ;
+nodalDispDamping = 0 ;
 
 
 
@@ -43,7 +43,7 @@ end
 materialsParams = { [ rho 3 Es nu ] } ; %truss
 % materialsParams = { [ rho 3 Es nu ] } ; %beam
 % elementsParams = { 1 ; [ 3 ] } ;
-elementsParams = { 1 ; [ 2 0] } ;
+elementsParams = { 1 ; [ 2 0 ] } ;
 
 % loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
 booleanSelfWeightZ = 1 ;
