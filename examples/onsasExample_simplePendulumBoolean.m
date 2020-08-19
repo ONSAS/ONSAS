@@ -38,7 +38,7 @@ materialsParams = { [ rho 3 Es nu ] } ;
 elementsParams = { 1 ; [ 2 0 ] } ;
 
 % loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
-BooleanSelfWheight = 1 ;
+booleanSelfWeightZ = 1 ;
 
 crossSecsParams = { [2 sqrt(A) sqrt(A) ] } ;
 

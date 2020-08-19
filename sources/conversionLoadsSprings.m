@@ -20,7 +20,7 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         loadsParams, ...
                         crossSecsParams, ...
                         springsParams, ...
-                        BooleanSelfWheight ...
+                        booleanSelfWeightZ ...
                         )
 
 % auxiliar elements separation
@@ -197,9 +197,8 @@ for ind = 1:length(indsLoop)
 
 end
 
- if BooleanSelfWheight==1
+ if booleanSelfWeightZ==1
      indsElems      = find( Conec(:,2) ~= 0 ) ; 
-     NumElems       = length(indsElems);
     
     for i = indsElems(1):indsElems(end)
   
