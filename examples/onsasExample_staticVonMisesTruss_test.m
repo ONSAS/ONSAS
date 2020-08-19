@@ -41,6 +41,7 @@ plotParamsVector = [ 3 ];
 
 analyticSolFlag        = 2    ;
 analyticFunc = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ; 
+reportBoolean = 1 
 
 ONSAS
 
@@ -66,7 +67,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 stabilityAnalysisBoolean = 2 ;
 
-l0 = sqrt(auxx^2 + auxz^2) ;
+l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 

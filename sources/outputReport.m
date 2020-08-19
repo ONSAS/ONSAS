@@ -59,7 +59,7 @@ fprintf(fileReport, [ '\\begin{center} \n'] );
 fprintf(fileReport, [ '\\textbf{ONSAS v.' ONSASversion  ' analysis report \\\\ Problem: ' titleReport '} \n'] );
 fprintf(fileReport, [ '\\end{center} \n\n'] );
 
-fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part of the results obtained by the analysis. The user might obtain other magnitudes and results through the GNU-Octave console. The code is provided AS IS \\textbf{WITHOUT WARRANTY of any kind}, express or implied.\n\n'] );
+fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part of the results obtained after the analysis. The user can access other magnitudes and results through the GNU-Octave/MATLAB console. The code is provided AS IS \\textbf{WITHOUT WARRANTY of any kind}, express or implied.\n\n'] );
 
 % ==============================================================================
 % ----------------------------    Problem Data    ------------------------------
@@ -93,121 +93,113 @@ for i = 1:size(nodalSprings,1)
 end
 fprintf(fileReport, '%s', fin ) ;
 
-fprintf(fileReport, [ '\\subsubsection{Elements data} \n\n'] ) ;
-% Elements
-fprintf(fileReport, [ 'The number and type of elements are listed below. \n\n'] ) ;
+%~ fprintf(fileReport, [ '\\subsubsection{Elements data} \n\n'] ) ;
+%~ % Elements
+%~ fprintf(fileReport, [ 'The number and type of elements are listed below. \n\n'] ) ;
 
-[enc,fin] = tablesFunc( 'Data & Number', 2, 'c|c', 'General data of elements.' ) ;
+%~ [enc,fin] = tablesFunc( 'Data & Number', 2, 'c|c', 'General data of elements.' ) ;
 
-ntruss = sum(Conec(:,7)==1) ;
-nbeam  = sum(Conec(:,7)==2) ;
-ntet   = sum(Conec(:,7)==3) ;
-nplate = sum(Conec(:,7)==4) ;
+%~ ntruss = sum(Conec(:,7)==1) ;
+%~ nbeam  = sum(Conec(:,7)==2) ;
+%~ ntet   = sum(Conec(:,7)==3) ;
+%~ nplate = sum(Conec(:,7)==4) ;
 
-fprintf(fileReport, '%s', enc );
-fprintf(fileReport, [ 'Number of elements & %i \\\\ \n' ], nElems ) ;
-fprintf(fileReport, [ 'Number of truss elements & %i \\\\ \n' ], ntruss ) ;
-fprintf(fileReport, [ 'Number of beam elements & %i \\\\ \n' ], nbeam ) ;
-fprintf(fileReport, [ 'Number of plate elements & %i \\\\ \n' ], nplate ) ;
-fprintf(fileReport, [ 'Number of tetrahedron elements & %i \n' ], ntet ) ;
-fprintf(fileReport, '%s', fin ) ;
+%~ fprintf(fileReport, '%s', enc );
+%~ fprintf(fileReport, [ 'Number of elements & %i \\\\ \n' ], nElems ) ;
+%~ fprintf(fileReport, [ 'Number of truss elements & %i \\\\ \n' ], ntruss ) ;
+%~ fprintf(fileReport, [ 'Number of beam elements & %i \\\\ \n' ], nbeam ) ;
+%~ fprintf(fileReport, [ 'Number of plate elements & %i \\\\ \n' ], nplate ) ;
+%~ fprintf(fileReport, [ 'Number of tetrahedron elements & %i \n' ], ntet ) ;
+%~ fprintf(fileReport, '%s', fin ) ;
 
-fprintf(fileReport, [ '\\clearpage\n\n']) ;
+%~ fprintf(fileReport, [ '\\clearpage\n\n']) ;
 
 % Materials
-formatMaterial = '%12.3e' ;
+%~ formatMaterial = '%12.3e' ;
 
-fprintf(fileReport, [ '\\subsection{Material properties} \n\n'] ) ;
-fprintf(fileReport, [ 'The mechanical properties and the constitutive model of the defined materials are listed in the corresponding tables below. The number of defined materials is: %i. \\\\ \n\n'], nMats ) ;
+%~ fprintf(fileReport, [ '\\subsection{Material properties} \n\n'] ) ;
+%~ fprintf(fileReport, [ 'The mechanical properties and the constitutive model of the defined materials are listed in the corresponding tables below. The number of defined materials is: %i. \\\\ \n\n'], nMats ) ;
 
-[enc, fin] = tablesFunc( 'Parameter & Value', 2, 'c|c', 'Constitutive parameters of the material.') ;
-vecMat = { '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' } ; 
-vecVal = [] ;
-for i = 1:nMats
-	Et 	= materialsParams{i}(2) ;
-  if materialsParams{i}(1) == 1
-    nu = materialsParams{i}(3) ; Ec = Et ; G = Et/(2*(1+nu)) ; Prestrain = 0 ;
-  elseif materialsParams{i}(1) == 2
-    Ec = materialsParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = 0 ;
-  else
-    %~ Ec = materialsParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = materialsParams{i}(4) ;
-    Ec = 0 ; nu = 0 ; G = 0 ; Prestrain = 0 ;
-  end
+%~ [enc, fin] = tablesFunc( 'Parameter & Value', 2, 'c|c', 'Constitutive parameters of the material.') ;
+%~ vecMat = { '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' } ; 
+%~ vecVal = [] ;
+%~ for i = 1:nMats
+	%~ Et 	= materialsParams{i}(2) ;
+  %~ if materialsParams{i}(1) == 1
+    %~ nu = materialsParams{i}(3) ; Ec = Et ; G = Et/(2*(1+nu)) ; Prestrain = 0 ;
+  %~ elseif materialsParams{i}(1) == 2
+    %~ Ec = materialsParams{i}(3) ; nu = 0 ; G = 0 ; Prestrain = 0 ;
+  %~ else
+    %~ Ec = 0 ; nu = 0 ; G = 0 ; Prestrain = 0 ;
+  %~ end
   
-  vecVal = [ Et, Ec, nu, G, rho, Prestrain ] ;
-  fprintf(fileReport, [ '\\textbf{Material %i}: material parameters are presented in the table.\n'], i ) ;
-  fprintf(fileReport, '%s', enc ) ;
-  for j = 1:size(vecMat,1)
-    fprintf(fileReport, ['%s & ' formatMaterial ], vecMat{j}, vecVal(j) );
-    fprintf(fileReport, '\\\\ \n' ) ;
-  end
-  fprintf(fileReport, '%s', fin ) ;
-end
+  %~ vecVal = [ Et, Ec, nu, G, rho, Prestrain ] ;
+  %~ fprintf(fileReport, [ '\\textbf{Material %i}: material parameters are presented in the table.\n'], i ) ;
+  %~ fprintf(fileReport, '%s', enc ) ;
+  %~ for j = 1:size(vecMat,1)
+    %~ fprintf(fileReport, ['%s & ' formatMaterial ], vecMat{j}, vecVal(j) );
+    %~ fprintf(fileReport, '\\\\ \n' ) ;
+  %~ end
+  %~ fprintf(fileReport, '%s', fin ) ;
+%~ end
 
-% Sections
-numberSections  = size( crossSecsParams, 1 ) ;
-formatSections = '%12.3e' ;
+%~ % Sections
+%~ numberSections  = size( crossSecsParams, 1 ) ;
+%~ formatSections = '%12.3e' ;
 
-fprintf(fileReport, [ '\\subsection{Sections properties}\n\n'] ) ;
-fprintf(fileReport, [ 'The geometrical properties of the defined sections are listed below. The number of defined sections is: %i. \\\\ \n\n'], numberSections ) ;
+%~ fprintf(fileReport, [ '\\subsection{Sections properties}\n\n'] ) ;
+%~ fprintf(fileReport, [ 'The geometrical properties of the defined sections are listed below. The number of defined sections is: %i. \\\\ \n\n'], numberSections ) ;
 
-[enc, fin] = tablesFunc( 'Geometrical property & Value ', 3, 'c|c', 'Geometrical properties of the section.') ;
-vecSec = { '$A$' ; '$I_y$' ; '$I_z$' ; '$J$' } ;
-for i = 1:numberSections
-  fprintf(fileReport, [ '\\textbf{Section %i}: geometry parameters are presented in the table.\n'], i ) ;
-  fprintf(fileReport, '%s', enc ) ;
-  for j = 1:size(vecSec,1)
-    fprintf(fileReport, ['%s & ' formatSections ], vecSec{j}, crossSecsParams(i,j) );
-  fprintf(fileReport, '\\\\ \n' ) ;
-  end
-  fprintf(fileReport, '%s', fin ) ;  
-end
+%~ [enc, fin] = tablesFunc( 'Geometrical property & Value ', 3, 'c|c', 'Geometrical properties of the section.') ;
+%~ vecSec = { '$A$' ; '$I_y$' ; '$I_z$' ; '$J$' } ;
+%~ for i = 1:numberSections
+  %~ fprintf(fileReport, [ '\\textbf{Section %i}: geometry parameters are presented in the table.\n'], i ) ;
+  %~ fprintf(fileReport, '%s', enc ) ;
+  %~ for j = 1:size(vecSec,1)
+    %~ fprintf(fileReport, ['%s & ' formatSections ], vecSec{j}, crossSecsParams(i,j) );
+  %~ fprintf(fileReport, '\\\\ \n' ) ;
+  %~ end
+  %~ fprintf(fileReport, '%s', fin ) ;  
+%~ end
 
-% Load Cases
-fprintf(fileReport, [ '\\subsection{Load Cases}\n\n'] ) ;
-fprintf(fileReport, [ 'The load cases considered in the problem are listed in the table below. \n\n'] ) ;
+%~ % Load Cases
+%~ fprintf(fileReport, [ '\\subsection{Load Cases}\n\n'] ) ;
+%~ fprintf(fileReport, [ 'The load cases considered in the problem are listed in the table below. \n\n'] ) ;
 
-if norm(constantFext) > 0 
-	constant = 'yes' ;
-else
-	constant = 'no' ;	
-end
+%~ if norm(constantFext) > 0 
+	%~ constant = 'yes' ;
+%~ else
+	%~ constant = 'no' ;	
+%~ end
 
-selfWeightText = 'no' ;  
+%~ selfWeightText = 'no' ;  
 
-if norm(variableFext) > 0
-	variable = 'yes' ;
-	%~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-		%~ timesVec = 0:deltaT:tf ;
-		%~ lambdamax = max(loadFactorsFunc(timesVec)) ; lambdamin = min(loadFactorsFunc(timesVec)) ; lambda0 = loadFactorsFunc(0) ;
-	%~ elseif nonLinearAnalysisBoolean == 1 && dynamicAnalysisBoolean == 0
-		%~ lambdamax = max(loadFactors) ; lambdamin = min(loadFactors) ; lambda0 = loadFactors(1) ;
-	%~ else
-		timesVec = 0:deltaT:finalTime ;
-		lambdamax = max(loadFactorsFunc(timesVec)) ; lambdamin = min(loadFactorsFunc(timesVec)) ; lambda0 = loadFactorsFunc(0) ; 
-	%~ end	
-else 
-	variable = 'no' ; lambdamax = 0 ; lambdamin = 0 ; lambda0 = 0 ;
-end
+%~ if norm(variableFext) > 0
+	%~ variable = 'yes' ;
+		%~ timesVec = 0:deltaT:finalTime ;
+		%~ lambdamax = max(loadFactorsFunc(timesVec)) ; lambdamin = min(loadFactorsFunc(timesVec)) ; lambda0 = loadFactorsFunc(0) ; 
+%~ else 
+	%~ variable = 'no' ; lambdamax = 0 ; lambdamin = 0 ; lambda0 = 0 ;
+%~ end
 
-if length(userLoadsFilename) > 0
-	userLoads = 'yes' ;
-else
-	userLoads = 'no' ;
-end
+%~ if length(userLoadsFilename) > 0
+	%~ userLoads = 'yes' ;
+%~ else
+	%~ userLoads = 'no' ;
+%~ end
 
-fprintf(fileReport, [ '\\begin{table}[!htb]\n\\centering\n\\begin{tabular}{c|c}\n Load Case & Status \\\\ \\toprule \n' ] ) ;
+%~ fprintf(fileReport, [ '\\begin{table}[!htb]\n\\centering\n\\begin{tabular}{c|c}\n Load Case & Status \\\\ \\toprule \n' ] ) ;
 
-fprintf(fileReport, [ 'Self Weight & %s \\\\ \n' ], selfWeightText ) ;
-fprintf(fileReport, [ 'Constant Loads & %s \\\\ \n' ], constant ) ;
-fprintf(fileReport, [ 'Variable Loads & %s \\\\ \n' ], variable ) ;
-fprintf(fileReport, [ '$\\lambda_{0}$ & %12.3e \\\\ \n' ], lambda0 ) ;
-fprintf(fileReport, [ '$\\lambda_{min}$ & %12.3e \\\\ \n' ], lambdamin ) ;
-fprintf(fileReport, [ '$\\lambda_{max}$ & %12.3e \\\\ \n' ], lambdamax ) ;
-fprintf(fileReport, [ 'User Loads Func & %s\\\\ \n' ], userLoads ) ;
-fprintf(fileReport, [ '\\end{tabular}\n\\caption{Load cases definition.}\n\\end{table}\n' ] ) ;
+%~ fprintf(fileReport, [ 'Self Weight & %s \\\\ \n' ], selfWeightText ) ;
+%~ fprintf(fileReport, [ 'Constant Loads & %s \\\\ \n' ], constant ) ;
+%~ fprintf(fileReport, [ 'Variable Loads & %s \\\\ \n' ], variable ) ;
+%~ fprintf(fileReport, [ '$\\lambda_{0}$ & %12.3e \\\\ \n' ], lambda0 ) ;
+%~ fprintf(fileReport, [ '$\\lambda_{min}$ & %12.3e \\\\ \n' ], lambdamin ) ;
+%~ fprintf(fileReport, [ '$\\lambda_{max}$ & %12.3e \\\\ \n' ], lambdamax ) ;
+%~ fprintf(fileReport, [ 'User Loads Func & %s\\\\ \n' ], userLoads ) ;
+%~ fprintf(fileReport, [ '\\end{tabular}\n\\caption{Load cases definition.}\n\\end{table}\n' ] ) ;
 
-fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
+%~ fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
 % ==============================================================================
 % --------------------------    Analysis Output    -----------------------------
 
@@ -359,10 +351,10 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 	%~ fprintf(fileReport, [ 'Total elapsed time in analysis: & %5.3e \\\\ \n'], tGeomReading+tStiffMatrix+tLoadsAssembly+tSystemResolution+tSolicDisps) ;
 	%~ fprintf(fileReport, '%s', fin )
 %~ else
-	fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
-  fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] );
-  fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;  
-  fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
+	%~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+  %~ fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] );
+  %~ fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;  
+  %~ fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
 %~ end	
 
 
