@@ -37,10 +37,11 @@ Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
           [ 1 2 0 1 0  2 3 ] } ;   % truss element
 
 controlDofs      = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
-plotParamsVector = [ 3 ];
+plotParamsVector = [ 3 ] ;
+reportBoolean    = 1     ;
 
-analyticSolFlag        = 2    ;
-analyticFunc = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ; 
+analyticSolFlag = 2    ;
+analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
 ONSAS
 
@@ -66,7 +67,8 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 stabilityAnalysisBoolean = 2 ;
 
-l0 = sqrt(auxx^2 + auxz^2) ;
+analyticSolFlag = 0    ;
+l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
@@ -74,35 +76,26 @@ analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l
 ONSAS
 
 return
+% arc length params
+targetLoadFactrNRAL   = 4e7  ;
+incremArcLen          = 0.2  ;
+numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
+                            targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
 
-targetLoadFactrNRAL = 4e7    ; % arc length
-incremArcLen     = .2     ;
-
-%~ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            %~ targetLoadFactrNR nLoadSteps ] ; 
-
-%% Analysis parameters
-
+materialsParams = {[ rho 3 E nu ]} ;
 
 % analytical solution using engineering strain
-analyticSolFlag        = 2    ;
-analyticCheckTolerance = 1e-4 ;
-l0 = sqrt(auxx^2 + auxy^2) ;
-analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+analyticSolFlag = 2    ;
+analyticFunc    = @(w) ...
+  -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-%% Output parameters
-printFlag = 0 ;
-%~ plotParamsVector = [ 3 10];
-plotParamsVector = [ 0 ];
-
-sectPar = [12 .1 .1] ;
-
-reportBoolean = 0 ;
+plotParamsVector = [ 3 ];
 
 %% ONSAS execution
 ONSAS
 
+return
 % ======================================================================
 
 %~ Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
