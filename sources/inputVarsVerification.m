@@ -74,8 +74,8 @@ if exist( 'numericalMethodParams' ) == 0
 end
                       
 
-if exist( 'BooleanSelfWheight' ) == 0
-  BooleanSelfWheight = 0 ; 
+if exist( 'booleanSelfWeightZ' ) == 0
+  booleanSelfWeightZ = 0 ; 
 end
 
 
@@ -101,7 +101,7 @@ end
                           loadsParams, ...
                           crossSecsParams, ...
                           springsParams, ...
-                          BooleanSelfWheight...
+                          booleanSelfWeightZ...
                         ) ;
 
 nMats  = length( materialsParams     ) ;

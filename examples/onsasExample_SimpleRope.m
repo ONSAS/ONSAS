@@ -7,43 +7,50 @@ clear all, close all
 % --- general data ---
 inputONSASversion = '0.1.10';
 dirOnsas = [ pwd '/..' ] ;
-problemName = 'simplePendulumBooleanSFTrussHHT' ;
+problemName = 'simpleRope' ;
 % ------------------------------------
 
 % -- scalar params -----
-Es  = 10e11  ;
-nu  = 0      ;
-A   = 0.1    ;
-l0  = 3.0443 ;
-m   = 10     ;
-g   = 9.81   ;
+Es  = 10e11   ;
+nu  = 0       ;
+d   = .1      ;
+l   = 40      ;
+rho  = 7850   ;
+g   = 9.81    ;
 
-nodalDispDamping = 0 ;
-rho = 2*m / ( A * l0 ) ;
+nodalDispDamping = 0.5 ;
+
+
 
 
 % ----- geometry -----------------
-Nodes = [     0 0  l0   ; ...
-             l0 0  l0 ] ;
+Nelem = 20 ;
 
-Conec = { [ 0 1 0 0 1  1   ] ; ...
-          [ 0 1 0 0 2  2   ] ; ...
-          [ 1 2 0 1 0  1 2 ] } ;
+Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
+auxconec = [ (ones(Nelem,1)*[ 1 2 0 1 0]) (1:(Nelem))' (2:(Nelem+1))' ] ;
+
+Conec = cell(2+Nelem,1) ;
+
+Conec{1, 1} = [ 0 1 0 0 1                     1       ] ; % fixed node
+Conec{2, 1} = [ 0 1 0 0 1                     Nelem+1 ] ; % fixed node
+for i=1:Nelem
+  Conec{2+i, 1} =  auxconec(i,:) ;
+end
 
 %  --- MELCS params ---
 
-materialsParams = { [ rho 3 Es nu ] } ;
-
-elementsParams = { 1 ; [ 2 0 ] } ;
+materialsParams = { [ rho 3 Es nu ] } ; %truss
+% materialsParams = { [ rho 3 Es nu ] } ; %beam
+% elementsParams = { 1 ; [ 3 ] } ;
+elementsParams = { 1 ; [ 2 0] } ;
 
 % loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
 booleanSelfWeightZ = 1 ;
 
-crossSecsParams = { [2 sqrt(A) sqrt(A) ] } ;
+crossSecsParams = { [2 d/2 d/2 ] } ;
 
-springsParams = {[  inf  0  inf  0  inf 0 ] ; ...
-                 [  0    0  inf  0  0   0 ] };
+springsParams = {[  inf  0  inf  0  inf 0 ]};
 
 % -------------------
 
@@ -66,9 +73,6 @@ alphaHHT = -0.05 ;
 stopTolDeltau = 0           ; 
 stopTolForcesTight = 1e-6           ;
 
-stopTolForcesTight = 1e-6           ;
-stopTolForcesLoose = 1e+0           ;
-
 stopTolIts    = 30              ;
 % ------------------------------------
 
@@ -82,23 +86,12 @@ controlDofs = [ 2 1 1 ] ;
 numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForcesTight stopTolIts alphaHHT ] ;
 
 %~ plotParamsVector = [ 1 ];
-sectPar = [12 .3 .3 ] ;
-plotParamsVector = [ 3 40 ];
-%~ plotParamsVector = [2 5 ];
-%~ plotParamsVector = [ 3 20 ];
+% sectPar = [12 .3 .3 ] ;
+plotParamsVector = [ 3 50 ];
+
 printFlag = 0 ;
 
 acdir = pwd ; cd(dirOnsas); ONSAS, cd examples ;
 
 
 
-uNum = PenduloNL_HHT( l0, A, Es, m, nodalDispDamping, g, timeIncr, -alphaHHT, finalTime, stopTolForcesTight, stopTolIts, 1, 0 ) ;
-
-figure
-hold on, grid on
-plot(timesVec, controlDisps, 'b-o')
-plot(timesVec, uNum(1,:)-l0 ,'r-x')
-ylabel('control displacement')
-xlabel('time (s)')
-legend('onsas','semi-analytic')
-print(['../../salida_dt_' sprintf('%05.3f',timeIncr) '.png'],'-dpng')
