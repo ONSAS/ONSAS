@@ -123,61 +123,11 @@ for ind = 1:length(indsLoop)
       else
         error(' constant/variable load param must be 1 or 0')
       end
-
-
-%~ % add nodal loads
-%~ for i = 1:nnodes
-
-  %~ loa = nodesMat(i,4) ;
-  %~ if loa > 0
-		%~ if loa == 1
-			%~ if loadsMat(loa, 1) == 1
-				%~ nodalConstantLoads = [ nodalConstantLoads ; ...
-															 %~ i loadsMat(loa, 2:7) ] ;
-			%~ else
-				%~ ms = msgbox('local node considered in node.') ;
-			%~ end
-    %~ elseif loa == 2
-			%~ if loadsMat(loa, 1) == 1
-				%~ nodalVariableLoads = [ nodalVariableLoads ; ...
-															 %~ i loadsMat(loa, 2:7) ] ;
-			%~ else
-				%~ ms = msgbox('local node considered in node.') ;
-			%~ end
-    %~ end
-  %~ end     
-
-  %~ sup = nodesMat(i,5) ;
-  %~ if sup > 0,
-    %~ nodalSprings = [ nodalSprings ; ...
-                     %~ i suppsMat(sup, :) ] ;
-  %~ end     
-%~ end
-
-    
-      %~ length = norm( Nodes( nodesElem(2),:) - Nodes( nodesElem(1),:) ) ;
-
-      %~ if loadsMat(loa, 1) == 1  % global coordinates load
-
-        %~ Fx = loadsMat(loa, 2) * length / 2 ;
-        %~ Fy = loadsMat(loa, 4) * length / 2 ;
-        %~ Fz = loadsMat(loa, 6) * length / 2 ;
-
-        %~ nodalVariableLoads = [ nodalVariableLoads ; ...
-                             %~ nodesElem' ones(2,1)*[Fx 0 Fy 0 Fz 0] ] ;
-      %~ else
-        %~ error('option not implemented, please create an issue.')
-      %~ end
-     
-    end
-  end
-
+           
+    end % if type elem
+  end % if load
   % --------------------------------------------------------------------
 
- % --- SefWheight ---
- 
-     
-     % --------------------------------------------------------------------
   % --- springs ---
   if spriNum > 0,
 
@@ -197,8 +147,12 @@ for ind = 1:length(indsLoop)
 
 end
 
- if booleanSelfWeightZ==1
-     indsElems      = find( Conec(:,2) ~= 0 ) ; 
+
+
+if booleanSelfWeightZ == 1
+  g = 9.81 ;
+
+     indsElems      = find( Conec(:,4+2) ~= 0 ) ; 
     
     for i = indsElems(1):indsElems(end)
   
@@ -223,7 +177,7 @@ end
             Matelem   = materialsParams {matNum} ;   
             rhoelem   = Matelem(1);                 
 
-            Fz = rhoelem*Lelem*Areaelem*9.8/2;
+            Fz = rhoelem * Lelem * Areaelem * g/2;
         
             nodalConstantLoads = [ nodalConstantLoads ; ...
                 nodesElem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
