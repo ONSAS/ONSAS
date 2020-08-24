@@ -254,6 +254,11 @@ if exist( 'nonHomogeneousInitialCondUdot0') ==0
 end
 
 
+if exist( 'controlDofs') ==0 
+  controlDofs = [] ;
+  controlDofsAndFactors = [] ;
+end
+
 if length( controlDofs ) > 0
   controlDofsAndFactors = zeros( size( controlDofs,1 ) , 2 ) ;
   
