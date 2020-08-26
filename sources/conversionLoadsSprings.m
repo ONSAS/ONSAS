@@ -192,7 +192,7 @@ if booleanSelfWeightZ == 1
             Lelem     = norm( xelem(1,:)-xelem(2,:));
             crossSecsParamsElem =crossSecsParams {crosNum};
             if crossSecsParamsElem (1)==3                            
-                Areaelem =  A = pi*crossSecsParamsElem(2)^2 / 4.0 ;
+                Areaelem = pi*crossSecsParamsElem(2)^2 / 4.0 ;
              elseif crossSecsParamsElem (1)==2
                 Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
              elseif crossSecsParamsElem (1)==1
