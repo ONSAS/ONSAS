@@ -193,11 +193,10 @@ if booleanSelfWeightZ == 1
             crossSecsParamsElem =crossSecsParams {crosNum};
             if crossSecsParamsElem (1)==3                            
                 Areaelem = pi*crossSecsParamsElem(2)^2 / 4.0 ;
-                %CAMBIO
              elseif crossSecsParamsElem (1)==2
                 Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
              elseif crossSecsParamsElem (1)==1
-                Areaelem = crossSecsParamsElem (2)
+                Areaelem = crossSecsParamsElem (2);
             end
             Matelem   = materialsParams {matNum} ;  
             rhoelem   = Matelem(1);                 
