@@ -6,36 +6,36 @@ clear all, close all
 
 addpath('../sources/')
 
-nelem  = 1 ;
-Tfinal = .0003 ;
+nelem  = 100 ;
+Tfinal = 1 ;
 dt     = .0001 ;
 Area   = 1 ;
 rho    = 1 ;
 cSpHe  = 1 ;
 kCond  = 1 ;
-Ltot   = 2 ;
+Ltot   = 1 ;
 
-Temp0  = 10 ;
-
-diridofs = 1 ;
-Tdiri  = 10 ;
-
+%~ nt     = Tfinal / dt ;
+nt     = 10 ;
 
 nnodes = nelem +1 ;
+
+xs = linspace(0,Ltot,nnodes )' ;
+T0     = sin(pi*xs) + 0.5*sin(3*pi*xs) ;
+
+diridofs = [ 1 nnodes ] ;
+Tdiri  = 0 ;
 
 neumdofs = 1:nnodes ;
 
 neumdofs( diridofs ) = [] ;
 
-nt     = Tfinal / dt ;
 
 lelem  = Ltot/nelem ;
 
 Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
 
 MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
-
-T0     = ones( nnodes, 1)*Temp0 ;
 
 Ts     = T0 ;
 
@@ -61,23 +61,20 @@ CNN = MintEG(neumdofs, neumdofs) ;
 qext = zeros(nnodes,1) ;
 
 %~ qext (1) = 1*Area ;
-qext (end) = -1e6*Area ;
+%~ qext (end) = -1e1*Area ;
 
 figure
 hold on
 plot( Ts(:,1) )  
 
-
 for i=1:nt
-  qext ( neumdofs    ) * dt
-  - KdiffG( neumdofs, : ) * Ts( :, i ) * dt
-  + MintEG( neumdofs, : ) * Ts( :, i ) 
   
   f = (    qext ( neumdofs    ) * dt ...
         - KdiffG( neumdofs, : ) * Ts( :, i ) * dt ...
         + MintEG( neumdofs, : ) * Ts( :, i ) 
-      )
-  
+      ) ;
+      
+  eig(CNN)
   Ts( neumdofs, i+1 ) = CNN \ f ;
   Ts( diridofs, i+1 ) = Tdiri ;
   
