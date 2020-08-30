@@ -6,7 +6,7 @@ clear all, close all
 
 addpath('../sources/')
 
-nelem  = 10 ;
+nelem  = 5 ;
 Tfinal = .5 ;
 dt     = .001 ;
 rho    = 1 ;
@@ -104,3 +104,11 @@ for i=0:nt
   end
 end
 % ------------------------
+
+figure
+plot( Ts(2,:) )
+
+
+KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
+
+save -mat auxVars.mat KdiffGNN CNN
