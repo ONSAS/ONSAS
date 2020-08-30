@@ -22,3 +22,4 @@ octave-workspace
 /input/*.bak
 /sources/*.txt
 /sources/*.oct
+*.mat
