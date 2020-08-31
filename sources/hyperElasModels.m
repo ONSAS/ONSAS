@@ -1,19 +1,21 @@
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% function for hyperelastic models input.
 
 function [sigma, dsigdeps ] = hyperElasModels (epsilon, paramsmodel )
 
@@ -26,8 +28,18 @@ case 1
   E = paramsmodel(1) ;
   sigma = E * epsilon ;
   dsigdeps = E ;
-
 case 2
+  % Linear material model (saint-venant-kirchhoff )
+  E = paramsmodel(1) ;
+  sigma = E * epsilon ;
+  dsigdeps = E ;
+case 3
+  % Linear material model (saint-venant-kirchhoff )
+  E = paramsmodel(1) ;
+  sigma = E * epsilon ;
+  dsigdeps = E ;
+
+case 7
   % Bi-modulus material model: param1: Tension young modulus, param2: Compression modulus
   ET = paramsmodel(1) ;
   EC = paramsmodel(2) ;
@@ -40,7 +52,7 @@ case 2
     dsigdeps = EC ;
   end    
 
-case 3
+case 8
   % Bi-modulus material model with pre-strain: param1: Tension young modulus, 
   % param2: Compression modulus, param3: epszero (pre-strain)
   ET = paramsmodel(1) ;
@@ -55,7 +67,7 @@ case 3
     dsigdeps = EC ;
   end    
 
-case 4
+case 9
   % Example 5.11 from Reddy nonlinear sqrt stress-strain constitutive relation
   E = paramsmodel(1) ;
   sigma    = sign(epsilon) * E * sqrt( abs( epsilon) )  ;

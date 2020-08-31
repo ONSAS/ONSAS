@@ -1,90 +1,88 @@
 % ==============================================================================
 % --------     ONSAS: an Open Non-linear Structural Analysis System     --------
-%~ Copyright (C) 2019, Jorge M. Pérez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquín Viera, Mauricio Vanzulli  
-
-%~ This file is part of ONSAS.
-
-%~ ONSAS is free software: you can redistribute it and/or modify
-%~ it under the terms of the GNU General Public License as published by
-%~ the Free Software Foundation, either version 3 of the License, or
-%~ (at your option) any later version.
-
-%~ ONSAS is distributed in the hope that it will be useful,
-%~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-%~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%~ GNU General Public License for more details.
-
-%~ You should have received a copy of the GNU General Public License
-%~ along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 % ==============================================================================
 
+Taux = cputime() ;
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
+ONSASversion ='0.1.10';
 
-ONSASversion = '0.1.9'; 
-
-addpath( [ pwd '/sources' ] ) ;
-addpath( [ pwd '/input'   ] ) ;
-addpath( [ pwd '/user'    ] ) ;
-
-if ~(exist('environInputVars') == 1) || (environInputVars == 0)
-  % reads/loads the input data from input file
-  inputFileReading
+if exist(dirOnsas)~=0 && strcmp( dirOnsas, pwd )
+  acdir = pwd ;
 else
-	tReadingInput = 0 ;
+  acdir = pwd ; cd(dirOnsas);
 end
+
+if isunix, dirSep = '/'; else, dirSep = '\'; end
+addpath( [ pwd dirSep 'sources'] ) ;
+addpath( [ pwd dirSep 'user'   ] ) ;
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
 
-inputAuxDefinitions
-
 % ==============================================================================
-
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
 
-if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-	
-  % Linear Analysis
-  linearAnalysis
+
+% Initial computations: sets initial state.
+[ modelCurrSol, modelProperties, BCsData ] =  initialDefinitions( ...
+  Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
+  , nonHomogeneousInitialCondUdot0 ...
+  , crossSecsParamsMat, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
+  , loadFactorsFunc, nodalDispDamping, booleanScreenOutput ...
+  , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
+  , problemName, outputDir, finalTime, elementsParamsMat  ) ;
+
+% --- increment step analysis ---
+stopTimeIncrBoolean = 0 ;
+while ( stopTimeIncrBoolean == 0 )
+
+  % -----   computes the model state at the next load/time step   -----
+  [ modelNextSol, BCsData ] = timeStepIteration ...
+  ( modelCurrSol, BCsData, modelProperties );
+
+  % --- checks stopping criteria and stores model state
+  storeAndPlotResults
+
+  % --- update state data --- 
+  modelCurrSol           = modelNextSol ;
   
-  if LBAAnalyFlag == 1
-    linearBucklingAnalysis
-  end
+  BCsData.currLoadFactor = BCsData.nextLoadFactor                   ;
+  BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
 
-else
-  % --- Incremental steps analysis ---
-
-  % Initial computations: sets initial matrices and vectors.
-  initialDefinitions
-
-  % --- increment step analysis ---
-  while ( stopTimeIncrBoolean == 0 )
-		tic ;
-    % --------   computes the model state at the next load/time step   --------
-    [modelNextState, BCsNextState, auxIO] = callSolver( modelCurrState, BCsNextState, auxIO);
-    % -------------------------------------------------------------------------
-		tCallSolver = toc ;
-    % checks stopping criteria and stores model state
-    storesResultAndCheckStopCrit
-  end
-  % -------------------------------
+  % ----   evals stop time incr crit    --------
+  stopTimeIncrBoolean = modelCurrSol.currTime >= finalTime ;
+    
 end
+
+fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
+  modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
+ 
 
 % if analytical solution is provided, numerical results are validated. 
 if analyticSolFlag > 0
-  analyticSolVerif ...
-( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
-analyticCheckTolerance, analyticSolFlag, problemName, printflag, outputdir );
-
-end
-
-if nonLinearAnalysisBoolean == 1 && ( numericalMethodParams(1) == 2 || numericalMethodParams(1) == 1 )
-  timeIncr = 1;
+  [verifBoolean, numericalVals, analyticVals] = analyticSolVerif ...
+    ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
+    analyticCheckTolerance, analyticSolFlag, problemName, printFlag, outputDir, plotParamsVector );
 end
 % ==============================================================================
 
@@ -93,26 +91,21 @@ end
 % ----------------------------     Output      ---------------------------------
 
 % plots and/or visualization files are generated
-if plotParamsVector(1) > 0
-  [ tDefShape, tLoadFac, tNormalForce, tLoadDisps, ...
-		tVtkWriter, tVtkConecNodes ] = outputPlots( matUts, coordsElemsMat, plotParamsVector, ...
-    Conec, Nodes, constantFext, variableFext, strucsize, controlDisps, ...
-    visualloadfactor, linearDeformedScaleFactor, printflag, ...
-    outputdir, problemName, loadFactors, sectPar, ...
-    nonLinearAnalysisBoolean, dynamicAnalysisBoolean, dispsElemsMat, ...
-    timeIncr, cellStress, matNts, indexesElems, plotsViewAxis ) ;
-end
+%~ if plotParamsVector(1) > 0
+  %~ outputPlots( matUs, coordsElemsMat, plotParamsVector, ...
+    %~ Conec, Nodes, constantFext, variableFext, controlDisps, ...
+    %~ deformedScaleFactor, printFlag, ...
+    %~ outputDir, problemName, loadFactors, sectPar, ...
+    %~ deltaT, cellStress, plotsViewAxis, booleanScreenOutput ) ;
+%~ end
 
-tic
 % report with results is generated
 if reportBoolean
-  if nelems < 500
-    if nnodes < 53
-      outputReport
-    end  
-  end  
+  outputReport
 end
-tReport = toc ;
+totalTime = cputime()-Taux ;
+fprintf([ '|-------------------------------------------------|\n'])
+fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
+fprintf([ '|=================================================|\n\n\n'])
 
-noErrorsOccurred = 1 ;
-% ==============================================================================
+cd( acdir );
