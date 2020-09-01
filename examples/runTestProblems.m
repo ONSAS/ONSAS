@@ -37,16 +37,30 @@ keyfiles
 current       = 1 ;
 totalRuns
 
-while current <= totalRuns
+verifBoolean = 1 ;
+
+while current <= totalRuns && verifBoolean == 1
 
   save('-mat', 'exData.mat','current','totalRuns', 'keyfiles' );
 
   run( [ './' keyfiles{current} ] ) ;
+
   pause(0.5)
-  fprintf([' === test ' problemName ' problem executed === \n\n']);
+
+  if verifBoolean
+    fprintf([' === test ' problemName ' problem:  PASSED === \n\n']);
+  else
+    fprintf([' === test ' problemName ' problem FAILED   === \n\n']);
+  end
   
   load('exData.mat');
   current = current + 1 ; 
 end
 
 delete('exData.mat')
+
+fidVB = fopen('auxVerifBoolean.dat','w') ;
+
+fprintf( fidVB, sprintf('%1i',verifBoolean ) );
+fclose( fidVB );
+
