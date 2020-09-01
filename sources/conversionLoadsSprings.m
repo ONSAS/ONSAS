@@ -19,7 +19,8 @@ function [ Conec, nodalVariableLoads, nodalConstantLoads, nodalSprings ] = conve
                         elementsParams, ...
                         loadsParams, ...
                         crossSecsParams, ...
-                        springsParams ...
+                        springsParams, ...
+                        booleanSelfWeightZ ...
                         )
 
 % auxiliar elements separation
@@ -122,59 +123,11 @@ for ind = 1:length(indsLoop)
       else
         error(' constant/variable load param must be 1 or 0')
       end
-
-
-%~ % add nodal loads
-%~ for i = 1:nnodes
-
-  %~ loa = nodesMat(i,4) ;
-  %~ if loa > 0
-		%~ if loa == 1
-			%~ if loadsMat(loa, 1) == 1
-				%~ nodalConstantLoads = [ nodalConstantLoads ; ...
-															 %~ i loadsMat(loa, 2:7) ] ;
-			%~ else
-				%~ ms = msgbox('local node considered in node.') ;
-			%~ end
-    %~ elseif loa == 2
-			%~ if loadsMat(loa, 1) == 1
-				%~ nodalVariableLoads = [ nodalVariableLoads ; ...
-															 %~ i loadsMat(loa, 2:7) ] ;
-			%~ else
-				%~ ms = msgbox('local node considered in node.') ;
-			%~ end
-    %~ end
-  %~ end     
-
-  %~ sup = nodesMat(i,5) ;
-  %~ if sup > 0,
-    %~ nodalSprings = [ nodalSprings ; ...
-                     %~ i suppsMat(sup, :) ] ;
-  %~ end     
-%~ end
-
-    
-      %~ length = norm( Nodes( nodesElem(2),:) - Nodes( nodesElem(1),:) ) ;
-
-      %~ if loadsMat(loa, 1) == 1  % global coordinates load
-
-        %~ Fx = loadsMat(loa, 2) * length / 2 ;
-        %~ Fy = loadsMat(loa, 4) * length / 2 ;
-        %~ Fz = loadsMat(loa, 6) * length / 2 ;
-
-        %~ nodalVariableLoads = [ nodalVariableLoads ; ...
-                             %~ nodesElem' ones(2,1)*[Fx 0 Fy 0 Fz 0] ] ;
-      %~ else
-        %~ error('option not implemented, please create an issue.')
-      %~ end
-     
-    end
-  end
-
+           
+    end % if type elem
+  end % if load
   % --------------------------------------------------------------------
-  
-  
-  % --------------------------------------------------------------------
+
   % --- springs ---
   if spriNum > 0,
 
@@ -195,6 +148,76 @@ for ind = 1:length(indsLoop)
 end
 
 
+
+if booleanSelfWeightZ == 1
+  g = 9.81 ;
+
+     indsElems      = find( Conec(:,4+2) ~= 0 ) ; 
+    
+    for i = indsElems(1):indsElems(end)
+  
+      matNum   = Conec( i, 4 + 1 ) ;
+      elemNum  = Conec( i, 4 + 2 ) ;
+      crosNum  = Conec( i, 4 + 4 ) ;
+ 
+  
+     if elementsParams{ elemNum }(1) == 2 ; % truss
+
+            nodesElem = Conec( i, 1:2 ) ;       
+            xelem     = Nodes(nodesElem,:);     
+            Lelem     = norm( xelem(1,:)-xelem(2,:));
+            crossSecsParamsElem =crossSecsParams {crosNum};
+            if crossSecsParamsElem (1)==3                               
+                Areaelem = pi*crossSecsParamsElem(2)^2/4;
+             elseif crossSecsParamsElem (1)==2
+                Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
+             elseif crossSecsParamsElem (1)==1
+                Areaelem = crossSecsParamsElem (2)
+            end
+            Matelem   = materialsParams {matNum} ;   
+            rhoelem   = Matelem(1);                 
+
+            Fz = rhoelem * Lelem * Areaelem * g/2;
+        
+            nodalConstantLoads = [ nodalConstantLoads ; ...
+                nodesElem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+     
+     end
+     
+       
+     if elementsParams{ elemNum }(1) == 3 ; % beam WHITHOU weight MOMENTS
+
+            nodesElem = Conec( i, 1:2 ) ; 
+            xelem     = Nodes(nodesElem,:);  
+            Lelem     = norm( xelem(1,:)-xelem(2,:));
+            crossSecsParamsElem =crossSecsParams {crosNum};
+            if crossSecsParamsElem (1)==3                            
+                Areaelem = pi*crossSecsParamsElem(2)^2 / 4.0 ;
+             elseif crossSecsParamsElem (1)==2
+                Areaelem = crossSecsParamsElem(2)*crossSecsParamsElem(3);
+             elseif crossSecsParamsElem (1)==1
+                Areaelem = crossSecsParamsElem (2);
+            end
+            Matelem   = materialsParams {matNum} ;  
+            rhoelem   = Matelem(1);                 
+            Fz = rhoelem*Lelem*Areaelem*9.8/2;
+        
+            nodalConstantLoads = [ nodalConstantLoads ; ...
+                nodesElem', ones(2,1)*[0 0 0 0 -Fz 0]]; 
+
+     end
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    end
+  end
 
 indsElemsAux             = find( Conec(:,4+1) == 0 ) ;
 conecAuxElems            = Conec(indsElemsAux, : ) ;

@@ -22,19 +22,23 @@ timeIndex = modelCurrSol.timeIndex ;
 if timeIndex == 1
   matUs      = modelCurrSol.U ;
   cellStress = { modelCurrSol.Stress } ;
-  
-  controlDisps               = 0 ;
-  controlDisps(timeIndex, :) = modelCurrSol.U( controlDofsAndFactors(:,1) ) ...
-                                            .* controlDofsAndFactors(:,2) ;
 
+  if length( controlDofsAndFactors ) > 0  
+    controlDisps               = 0 ;
+    controlDisps(timeIndex, :) = modelCurrSol.U( controlDofsAndFactors(:,1) ) ...
+                                              .* controlDofsAndFactors(:,2) ;
+  end
+  
   loadFactors                = BCsData.currLoadFactor  ;
 end
 
 % ----------------   updates data structures and time --------------------------
 
 loadFactors  ( timeIndex+1 )       = BCsData.nextLoadFactor  ;
-controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
+if length( controlDofsAndFactors ) > 0  
+  controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
                                                    .* controlDofsAndFactors(:,2) ;
+end
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
 normalForces = zeros( nElems, 1 ) ;
