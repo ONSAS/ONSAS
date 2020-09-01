@@ -30,18 +30,21 @@ nu  = elemConstitutiveParams(3) ;
 G   = E/(2*(1+nu)) ;
 % -------------------------------
 
-
 % --- cross section ---
-Area = elemCrossSecParams( 1 ) ;
-J    = elemCrossSecParams( 2 ) ;
-Iyy  = elemCrossSecParams( 3 ) ;
-Izz  = elemCrossSecParams( 4 ) ;
-
-if length( elemCrossSecParams ) > 5 && elemCrossSecParams(5) > 0
-  Jrho =  diag( elemCrossSecParams( 5:7 ) ) ;
+if elemCrossSecParams(1) == 1, %general section
+  Area = elemCrossSecParams( 2 ) ; 
+  J    = elemCrossSecParams( 3 ) ;
+  Iyy  = elemCrossSecParams( 4 ) ;
+  Izz  = elemCrossSecParams( 5 ) ;
+  %
+  if length( elemCrossSecParams ) > 5
+    Jrho =  diag( elemCrossSecParams( 6:8 ) ) ;
+  else
+    Jrho = rho * diag( [ J Iyy Izz ] ) ;
+  end
 else
-  Jrho = rho * diag( [ J Iyy Izz ] ) ;
-end  
+  error(' section type not implemented yet, please create an issue')
+end
 % -------------------------------
 
 % auxiliar matrices
