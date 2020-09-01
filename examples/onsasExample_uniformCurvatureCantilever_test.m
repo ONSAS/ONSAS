@@ -3,9 +3,10 @@
 % ------------------------------------------------------------------------------
 clear all, close all
 
-dirOnsas = [ pwd '/..' ] ;      problemName = 'cantileverNodalMoment' ;
+dirOnsas = [ pwd '/..' ]; addpath( dirOnsas );
+problemName = 'uniformCurvatureCantilever' ;
 
-l = 10   ;    b = .1 ;  h = .2 ;  Nelem = 20 ;
+l = 10   ;    ty = .1 ;  tz = .2 ;  Nelem = 20 ;
 
 Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
@@ -31,38 +32,32 @@ elementsParams  = { 1; 3} ;
 loadsParams   = {[ 1 1   0 0 0 -1 0 0 ]} ;
 
 % --- cross section ---
-A = b*h ;     Iy = b*h^3/12 ;    Iz = h*b^3/12 ;     It = 1 ;
+A = ty*tz ;     Iy = ty*tz^3/12 ;    Iz = tz*ty^3/12 ;     It = 1 ;
 crossSecsParams = {[ 1 A It Iy Iz ]} ;
 
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
 
-storeBoolean = 1 ;
+storeBoolean    = 1 ;
 
-controlDofs = [ Nelem+1  4  -1 ] ;
+controlDofs     = [ Nelem+1  4  -1 ] ;
 
 stopTolIts      = 30      ;
 stopTolDeltau   = 0       ;
 stopTolForces   = 1.0e-10 ;
-targetLoadFactr = E * Iy / ( l / ( 2 * pi ) ) ;  % curvradius corresponding to perimeter = l
-%~ nLoadSteps      = 2 ;
+targetLoadFactr = E * Iy * 2 * pi / l ;  % moment of curvature 2pi/l
 nLoadSteps      = 10 ;
 
-%~ plotParamsVector = [ 2 5 ] ;    plotsViewAxis = [ 0 -1 0 ] ;
-plotParamsVector = [ 3 ] ; sectPar = [ 12 b h ] ;
-printFlag = 2 ;
-
-reportBoolean = 0 ;
+plotParamsVector = [ 3 ] ; printFlag = 2 ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFactr nLoadSteps ] ; 
 
 analyticSolFlag = 1 ; analyticCheckTolerance = 1e-4 ; analyticFunc = @(w) w * l / ( E * Iy ) ;
 
 % --- ONSAS execution ---
-addpath( dirOnsas );
 ONSAS
+return
 
-
-lw = 3.5 ; ms = 11 ; plotfontsize = 22 ;
+lw = 3.5; ms = 11; plotfontsize = 22 ;
 
 xs = Nodes(:,1) ;
 u  = matUs(1:2:end,11) ;
@@ -90,4 +85,3 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 cd(dirOnsas); cd(outputDir);
 print( [ 'unif' ] ,'-dpdflatex','-tight') ;
 cd(acdir);
-
