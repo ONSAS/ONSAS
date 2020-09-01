@@ -82,8 +82,6 @@ controlDofs = [ 7 1 1 ] ;
 plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
-reportBoolean = 0;
-
 % --- Analytic sol ---
 analyticSolFlag        = 2 ;
 analyticCheckTolerance = 1e-8 ;

@@ -190,7 +190,7 @@ if exist( 'printFlag' ) == 0
 end
 
 if exist( 'reportBoolean' ) == 0
-  reportBoolean = 0 ;
+  reportBoolean = 1 ;
 end
 
 if exist( 'consMatFlag' ) == 0

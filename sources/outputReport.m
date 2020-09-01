@@ -18,6 +18,10 @@
 
 % Script for creation of report file with analysis' results.
 
+% replace underscores in problemName
+problemNameWithoutUnderscores                                      = problemName ;
+problemNameWithoutUnderscores( find( problemNameWithoutUnderscores == '_') ) = [] ;
+
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
 fprintf(  '  - writing report file ... ')
@@ -37,9 +41,10 @@ fprintf(fileReport, [ '\\newcolumntype{?}{!{\\vrule width 1pt}}\n' ] ) ;
 fprintf(fileReport, [ '\\usepackage{fancyhdr} \n'] ) ;
 fprintf(fileReport, [ '\\pagestyle{fancy} \n' ] ) ;
 fprintf(fileReport, [ '\\fancyhf{} \n' ] ) ;
-fprintf(fileReport, [ '\\lhead{ONSAS, Facultad de Ingenieria, Montevideo, Uruguay \\\\ Version %s} \n'], ONSASversion );
-fprintf(fileReport, [ '\\rhead{Page \\thepage \\\\ Date \\today} \n'] );
-fprintf(fileReport, [ '\\lfoot{} \n'] );
+fprintf(fileReport, [ '\\lhead{Report ONSAS version %s} \n'], ONSASversion );
+fprintf(fileReport, [ '\\rhead{Problem: %s } \n'], problemNameWithoutUnderscores );
+fprintf(fileReport, [ '\\lfoot{Date: \\today} \n'] );
+fprintf(fileReport, [ '\\rfoot{Page \\thepage} \n'] );
 fprintf(fileReport, [ '\\renewcommand{\\footrulewidth}{1pt} \n'] ) ;
 fprintf(fileReport, [ '\\renewcommand{\\headrulewidth}{1.5pt} \n'] ) ;
 fprintf(fileReport, [ '\\setlength{\\parindent}{0pt} \n'] ) ;
@@ -50,13 +55,11 @@ fprintf(fileReport, [ '\\definecolor{miblue}{rgb}{0,0.1,0.38} \n' ] ) ;
 fprintf(fileReport, [ '\\usepackage{titlesec} \n'] ) ;
 fprintf(fileReport, [ '\\titleformat{\\section}{\\normalfont\\Large\\color{miblue}\\bfseries}{\\color{miblue}\\sectionmark\\thesection}{0.5em}{}[{\\color{miblue}\\titlerule[0.5pt]}] \n\n' ] ) ;
 
-titleReport = problemName ;
-titleReport ( find(titleReport=='_') ) = [] ;
 
 fprintf(fileReport, [ '\\begin{document} \n'] );
 
 fprintf(fileReport, [ '\\begin{center} \n'] );
-fprintf(fileReport, [ '\\textbf{ONSAS v.' ONSASversion  ' analysis report \\\\ Problem: ' titleReport '} \n'] );
+fprintf(fileReport, [ '\\textbf{ONSAS v.' ONSASversion  ' analysis report \\\\ Problem: ' problemNameWithoutUnderscores '} \n'] );
 fprintf(fileReport, [ '\\end{center} \n\n'] );
 
 fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part of the results obtained after the analysis. The user can access other magnitudes and results through the GNU-Octave/MATLAB console. The code is provided AS IS \\textbf{WITHOUT WARRANTY of any kind}, express or implied.\n\n'] );
@@ -64,34 +67,34 @@ fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part
 % ==============================================================================
 % ----------------------------    Problem Data    ------------------------------
 
-fprintf(fileReport, [ '\\section{Problem data} \n\n'] ) ;
-fprintf(fileReport, [ 'This section contains the model data provided in the input. The information presented are the general mesh data and the constitutive and geometrical properties and the load cases. The nodes and conectivity matrix are presented in the \\textbf{Appendix} section. \n\n'] );
+%~ fprintf(fileReport, [ '\\section{Problem data} \n\n'] ) ;
+%~ fprintf(fileReport, [ 'This section contains the model data provided in the input. The information presented are the general mesh data and the constitutive and geometrical properties and the load cases. The nodes and conectivity matrix are presented in the \\textbf{Appendix} section. \n\n'] );
 
 
-fprintf(fileReport, [ '\\subsection{Mesh data} \n\n'] ) ;
-fprintf(fileReport, [ '\\subsubsection{Nodes data} \n\n'] ) ;
+%~ fprintf(fileReport, [ '\\subsection{Mesh data} \n\n'] ) ;
+%~ fprintf(fileReport, [ '\\subsubsection{Nodes data} \n\n'] ) ;
 
-% Nodes
-fprintf(fileReport, [ 'The number of nodes and fixed nodes are presented below. \n\n'] ) ;
+%~ % Nodes
+%~ fprintf(fileReport, [ 'The number of nodes and fixed nodes are presented below. \n\n'] ) ;
 
-[enc,fin] = tablesFunc( 'Data & Number', 2, 'c|c', 'General data of nodes.' ) ;
-fprintf(fileReport, '%s', enc );
-fprintf(fileReport, [ 'Number of nodes & %i \\\\ \n' ], nNodes ) ;
-fprintf(fileReport, [ 'Number of nodes with disp. constraints & %i \\\\ \n' ], size(nodalSprings,1) ) ;
-fprintf(fileReport, [ 'Number of free nodes & %i \n' ], nNodes-size(nodalSprings,1) ) ;
-fprintf(fileReport, '%s', fin ) ;
+%~ [enc,fin] = tablesFunc( 'Data & Number', 2, 'c|c', 'General data of nodes.' ) ;
+%~ fprintf(fileReport, '%s', enc );
+%~ fprintf(fileReport, [ 'Number of nodes & %i \\\\ \n' ], nNodes ) ;
+%~ fprintf(fileReport, [ 'Number of nodes with disp. constraints & %i \\\\ \n' ], size(nodalSprings,1) ) ;
+%~ fprintf(fileReport, [ 'Number of free nodes & %i \n' ], nNodes-size(nodalSprings,1) ) ;
+%~ fprintf(fileReport, '%s', fin ) ;
 
-fprintf(fileReport, [ 'The fixed nodes are listed in the table below.' ] ) ;
-[enc,fin] = tablesFunc( 'Node & $u_x$ & $\theta_x$ & $u_y$ & $\theta_y$ & $u_z$ & $\theta_z$ ', 7, 'c|c|c|c|c|c|c', 'Fixed nodes data.' ) ;
-fprintf(fileReport, '%s', enc ) ;
-for i = 1:size(nodalSprings,1)
-  fprintf(fileReport, '%i', nodalSprings(i,1) ) ;
-  for j=2:7
-    fprintf(fileReport, ' & %i ', nodalSprings(i,j) ) ;
-  end
-  fprintf(fileReport, '\\\\ \n' ) ;
-end
-fprintf(fileReport, '%s', fin ) ;
+%~ fprintf(fileReport, [ 'The fixed nodes are listed in the table below.' ] ) ;
+%~ [enc,fin] = tablesFunc( 'Node & $u_x$ & $\theta_x$ & $u_y$ & $\theta_y$ & $u_z$ & $\theta_z$ ', 7, 'c|c|c|c|c|c|c', 'Fixed nodes data.' ) ;
+%~ fprintf(fileReport, '%s', enc ) ;
+%~ for i = 1:size(nodalSprings,1)
+  %~ fprintf(fileReport, '%i', nodalSprings(i,1) ) ;
+  %~ for j=2:7
+    %~ fprintf(fileReport, ' & %i ', nodalSprings(i,j) ) ;
+  %~ end
+  %~ fprintf(fileReport, '\\\\ \n' ) ;
+%~ end
+%~ fprintf(fileReport, '%s', fin ) ;
 
 %~ fprintf(fileReport, [ '\\subsubsection{Elements data} \n\n'] ) ;
 %~ % Elements
@@ -203,9 +206,9 @@ fprintf(fileReport, '%s', fin ) ;
 % ==============================================================================
 % --------------------------    Analysis Output    -----------------------------
 
-fprintf(fileReport, [ '\\section{Analysis Output}\n\n'] ) ;
+fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
-fprintf(fileReport, [ '\\subsection{General parameters}\n\n'] ) ;
+%~ fprintf(fileReport, [ '\\subsection{General parameters}\n\n'] ) ;
 
 % Prints numerical methods and analysis parameters
 
@@ -338,7 +341,7 @@ end
 
 
 
-fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
+%~ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
 %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 	%~ [enc, fin] = tablesFunc( 'Task & Time (s)', 2, 'c|c', 'Analysis time spent.') ;
 	%~ fprintf(fileReport, '%s', enc )
@@ -397,7 +400,7 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
     % Salida de datos para caso con load cases en linear analysis
   %~ end
 %~ else
-  fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
+  %~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
   
   fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] );
   fprintf(fileReport, [ '\\input{' problemName '_incrementsOutput.tex' '} \n'] ) ;  
@@ -681,39 +684,41 @@ fprintf(fileReport, [ '\\textbf{Analysis}\n'] ) ;
   %~ fprintf(fileReport, [ '\\caption{Output of incremental Normal Forces analysis.}\n\\end{longtable}\n'] ) ;
 %~ end % endif 
 
-fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
-% ==============================================================================
-% -------------------------------    Appendix    -------------------------------
+%~ fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
+%~ % ==============================================================================
+%~ % -------------------------------    Appendix    -------------------------------
 
-fprintf(fileReport, [ '\\section{Appendix}\n\n'] ) ;
+%~ fprintf(fileReport, [ '\\section{Appendix}\n\n'] ) ;
 
-% Nodes matrix
-fprintf(fileReport, [ '\\subsection{Nodes matrix}\n\n'] ) ;
-fprintf(fileReport, [ 'The nodes matrix is presented in the table below.\n'] ) ;
-fprintf(fileReport, [ '\\begin{longtable}{c|c|c|c|c|c|c}\n\\centering\n' ] ) ;
-fprintf(fileReport, [ 'Node & X & Y & Z \\\\ \\toprule \n' ] ) ;
-for i=1:nNodes
-  fprintf(fileReport, ['%2i & %4i & %4i & %4i'], [i Nodes(i,1) Nodes(i,2) Nodes(i,3)] ) ;
-  fprintf(fileReport, ' \\\\ \n' ) ;
-end
-fprintf(fileReport, [ '\\caption{Nodes coordinate matrix.}\n\\end{longtable}\n\n' ] ) ;
+%~ % Nodes matrix
+%~ fprintf(fileReport, [ '\\subsection{Nodes matrix}\n\n'] ) ;
+%~ fprintf(fileReport, [ 'The nodes matrix is presented in the table below.\n'] ) ;
+%~ fprintf(fileReport, [ '\\begin{longtable}{c|c|c|c|c|c|c}\n\\centering\n' ] ) ;
+%~ fprintf(fileReport, [ 'Node & X & Y & Z \\\\ \\toprule \n' ] ) ;
+%~ for i=1:nNodes
+  %~ fprintf(fileReport, ['%2i & %4i & %4i & %4i'], [i Nodes(i,1) Nodes(i,2) Nodes(i,3)] ) ;
+  %~ fprintf(fileReport, ' \\\\ \n' ) ;
+%~ end
+%~ fprintf(fileReport, [ '\\caption{Nodes coordinate matrix.}\n\\end{longtable}\n\n' ] ) ;
 
-% Conectivity matrix
-fprintf(fileReport, [ '\\subsection{Conectivity matrix}\n\n' ] ) ;
-fprintf(fileReport, [ 'The conectivity matrix is presented in the table below. \n' ] ) ;
-fprintf(fileReport, [ '\\begin{longtable}{c|c|c|c|c|c|c}\n\\centering\n' ] ) ;
-fprintf(fileReport, ['Node 1 & Node 2  & Node 3 & Node 4 & Mat. n$^o$ & Sec. n$^o$ & Elem. type \\\\ \\toprule \n'] ) ;
-for i = 1:nElems
-  for j = 1:7
-    if j == 7
-      fprintf(fileReport, '%i' , Conec(i,j)) ;
-    else
-      fprintf(fileReport, '%i & ' , Conec(i,j)) ;
-    end
-  end
-  fprintf(fileReport, '\\\\ \n' );
-end
-fprintf(fileReport, [ '\\caption{Conectivity matrix.}\n\\end{longtable}\n\n' ] ) ;
+%~ % Conectivity matrix
+%~ fprintf(fileReport, [ '\\subsection{Conectivity matrix}\n\n' ] ) ;
+%~ fprintf(fileReport, [ 'The conectivity matrix is presented in the table below. \n' ] ) ;
+%~ fprintf(fileReport, [ '\\begin{longtable}{c|c|c|c|c|c|c}\n\\centering\n' ] ) ;
+%~ fprintf(fileReport, ['Node 1 & Node 2  & Node 3 & Node 4 & Mat. n$^o$ & Sec. n$^o$ & Elem. type \\\\ \\toprule \n'] ) ;
+%~ for i = 1:nElems
+  %~ for j = 1:7
+    %~ if j == 7
+      %~ fprintf(fileReport, '%i' , Conec(i,j)) ;
+    %~ else
+      %~ fprintf(fileReport, '%i & ' , Conec(i,j)) ;
+    %~ end
+  %~ end
+  %~ fprintf(fileReport, '\\\\ \n' );
+%~ end
+%~ fprintf(fileReport, [ '\\caption{Conectivity matrix.}\n\\end{longtable}\n\n' ] ) ;
+
+
 
 fprintf(fileReport, [ '\\end{document}'] ) ;
 fclose(fileReport);
