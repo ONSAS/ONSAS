@@ -4,73 +4,75 @@
 
 clear all, close all
 
-E  = 200e3 ;   nu = 0.3   ;  R = 120   ;
+% --- scalar parameters ---
+E  = 200e3 ; nu = 0.3 ;  R = 120 ;  wy = .6 ;   wz = 6 ;  halfNElem = 10 ;
 
-dirOnsas = [ pwd '/..' ] ;
-inputONSASversion = '0.1.10';
+dirOnsas = [ pwd '/..' ] ; addpath( dirOnsas );
 problemName = 'deployableRing' ;
 
-materialsParams = cell(1,1) ;
-materialsParams{1} = [0 1 E nu] ;
+% --- MELCS ---
 
-b = .6;   h = 6 ;
+materialsParams = { [ 0 1 E nu ] } ;
 
-sectPar = [12 b h ]; 
+elementsParams  = { 1; 3 } ;
 
-A  = b*h      ; It = h*b^3/3 ;
-Iy = b*h^3/12 ; Iz = h*b^3/12 ;
+loadsParams     = { [ 1 1  0 1 0 0 0 0 ]} ;
 
-crossSecsParams = [ A Iy Iz It ] ;
+A  = wy*wz      ;
+It = wz*wy^3/3 ; % approximation. improve computation in https://github.com/ONSAS/ONSAS/issues/134
 
-% Defino los apoyos de la estructura
+Iy = wy*wz^3/12 ; Iz = wz*wy^3/12 ;
 
-%~ Nelem = 2*32 ;  Np = Nelem +1;
-%~ Nelem = 2*5 ;  Np = Nelem +1;
-%~ Nelem = 2*20 ;  Np = Nelem +1;
-Nelem = 2*22 ;  Np = Nelem +1;
+crossSecsParams = {[ 1 A It Iy Iz ]} ;
 
-al = 2*pi/Nelem ;
-Nodes = zeros(Np,3);
-for i=1:(Np)
-  Nodes(i,1) = R * cos( pi+ (i-1)*al );
-  Nodes(i,2) = R * sin( pi+ (i-1)*al );
+springsParams   = {[ inf  inf  inf  inf  inf  inf ] ; ...
+                   [ 0    0    inf  inf  inf  inf ] } ;
+
+%~ Nelem = 2*32 ;
+%~ Nelem = 2*5 ; 
+%~ Nelem = 2*20 ;
+Nelem = 2*halfNElem ;
+
+Np = Nelem ; % number points (the last is the same as the first)
+
+% --- geometry ---
+deltaAngle = 2 * pi / Nelem ;
+angs       = linspace( 0, 2*pi-deltaAngle , Nelem )' ;
+
+Nodes = [ R*cos( angs )  R*sin( angs ) zeros(size(angs)) ] ;
+
+Conec = {[ 0 1 0 0 1   1          ] ; ...
+         [ 0 1 1 0 2   Nelem/2+1  ] } ;
+for i=1:(Nelem-1)
+  Conec{i+2, 1} = [ 1 2 0 1 0   i i+1 ] ;
 end
+Conec{Nelem+2, 1} = [ 1 2 0 1 0   Nelem 1 ] ;
 
-nodalSprings = [ 1         inf  inf  inf  inf  inf  inf ; ...
-                 Nelem/2+1   0    0  inf  inf  inf  inf ] ;
-
-Conec = [ (1:(Nelem))' (2:(Nelem+1))' zeros(Nelem,2)  (ones(Nelem,1)*[ 1 1 2]) ] ;
-Conec ( end,2) = 1;
-Nodes(end,:)=[];
-
-nodalVariableLoads   = [ Nelem/2+1  0 1  0 0 0 0 ] ;
 
 controlDofs = [ Nelem/2+1 2 1 ] ;
 
-stopTolIts     = 30     ;
-stopTolDeltau  = 1.0e-10 ;
-stopTolForces  = 1.0e-10 ;
-targetLoadFactr = 3*8e2 ;
-%~ nLoadSteps      = 180 ; incremArcLen     = .5    ;
-nLoadSteps      = 3000 ; incremArcLen     = .8    ;
-
-%~ targetLoadFactr = 3*8e1 ;
-%~ nLoadSteps      = 15 ; incremArcLen     = .75    ;
+% --- analysis parameters ---
+stopTolIts      = 30     ;
+stopTolDeltau   = 1.0e-10 ;
+stopTolForces   = 1.0e-10 ;
+targetLoadFactr = 3*8e2  ;
+nLoadSteps      = 180 ; incremArcLen     = .5    ;
+%~ nLoadSteps      = 3000 ; incremArcLen     = .8    ;
 
 plotParamsVector = [ 3 50 ] ;
-%~ plotParamsVector = [ 2  4 ] ;
-plotsViewAxis = [ 2 -1 1];     printflag = 0;
 
 numericalMethodParams = [ 2 ...
  stopTolDeltau stopTolForces stopTolIts ...
  targetLoadFactr nLoadSteps  incremArcLen ] ; 
 
+%~ numericalMethodParams = [ 1 ...
+ %~ stopTolDeltau stopTolForces stopTolIts ...
+ %~ targetLoadFactr nLoadSteps   ] ; 
 
-acdir = pwd ;
-cd(dirOnsas);
+% --- ONSAS execution ---
 ONSAS
-cd(acdir) ;
 
+return
 lw = 3.0 ; ms = 11 ; plotfontsize = 22 ;
 
 figure
