@@ -1,4 +1,5 @@
-% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
 %
@@ -92,15 +93,15 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
       coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ] ;
 			
-      if elemCrossSecParams(1) == 1
-        auxh = sqrt( elemCrossSecParams(4)/elemCrossSecParams(2)*12 ) ;
-        auxb = elemCrossSecParams(2) / auxh ;
+      if elemCrossSecParams(1) == 1  % general section
+        % equivalent square section using A = wy * wz
+        auxh = sqrt( elemCrossSecParams(2) ) ;   auxb = auxh ;
         secc = [ 12 auxb auxh ] ;
 				cant = 4 ;
-      elseif elemCrossSecParams(1) == 2
+      elseif elemCrossSecParams(1) == 2 % rectangular section
         secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
 				cant = 4 ;
-      elseif elemCrossSecParams(1) == 3
+      elseif elemCrossSecParams(1) == 3 % circular section
         secc = [ 25 elemCrossSecParams(2) ] ;
         cant = 20 ;
       end

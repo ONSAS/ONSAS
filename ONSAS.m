@@ -1,6 +1,7 @@
 % ==============================================================================
 % --------     ONSAS: an Open Non-linear Structural Analysis System     --------
-% Copyright (C) 2019, Jorge M. Perez Zerpa, J. Bruno Bazzano, Jean-Marc Battini, Joaquin Viera, Mauricio Vanzulli  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
 %
