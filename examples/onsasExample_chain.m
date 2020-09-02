@@ -63,7 +63,7 @@ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopT
 controlDofs = [ Nelem/2 5 1 ] ;
 plotParamsVector = [ 3 150 ];
 printFlag = 0 ;
-
+storeBoolean = 1;
 ONSAS
 
 disp('verificacion: ')

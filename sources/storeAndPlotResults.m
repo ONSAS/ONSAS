@@ -43,19 +43,39 @@ end
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
 normalForces = zeros( nElems, 1 ) ;
-indsNormal = [ find( Conec(:,7) == 1 ) ; find( Conec(:,7) == 2 ) ]' ;
+indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
 
 if timeIndex == 1
   normalForcesIni = zeros( nElems, 1 ) ;
   sigxs = modelCurrSol.Stress(:,1) ;
   if length(indsNormal) > 0
-    normalForcesIni( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+    areasVector       = zeros(size(crossSecsParamsMat,1),1);
+    for indexElem = 1: size(areasVector,1);
+        if crossSecsParamsMat (indexElem,1)==3
+            areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
+        elseif crossSecsParamsMat (indexElem,1)==2
+             areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
+        elseif crossSecsParamsElem crossSecsParamsMat(indexElem,1)==1
+            areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
+        end
+    end
+    normalForcesIni( indsNormal ) =  sigxs .* areasVector ;
   end
 end
 
 if length(indsNormal) > 0
   sigxs = modelNextSol.Stress(:,1) ;
-  normalForces( indsNormal ) =  sigxs .* crossSecsParams( Conec( indsNormal, 6) , 1 ) ;
+    areasVector       = zeros(size(crossSecsParamsMat,1),1);
+    for indexElem = 1: size(areasVector,1);
+        if crossSecsParamsMat (indexElem,1)==3
+            areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
+        elseif crossSecsParamsMat (indexElem,1)==2
+             areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
+        elseif crossSecsParamsMat(indexElem,1)==1
+            areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
+        end
+    end
+  normalForces( indsNormal ) =  sigxs .* areasVector ;
 end
 
 if (storeBoolean == 1)
