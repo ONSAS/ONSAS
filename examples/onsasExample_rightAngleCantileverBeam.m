@@ -28,7 +28,7 @@ loadsParams     = {[ 1 1   0 0 0  0 1 0 ]} ;
 loadFactorsFunc = @(t) 50*t*(t<1) + (100-50*t)*(t>=1)*(t<2) + 0 ;
 
 % crosssections
-crossSecsParams = {[ 1 A J I I 20 10 10 ]} ;
+crossSecsParams = {[ 1 A J I I 20 10 10 ]} ;  % problem data given
 
 % springs
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
