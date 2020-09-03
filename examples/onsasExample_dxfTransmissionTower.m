@@ -10,12 +10,12 @@ clear all, close all
 dirOnsas = [ pwd '/..' ] ;
 
 % Problem name in order to write LaTex report 
-problemName = 'dxf3DTrussTower' ; 
+problemName = 'dxfTransmissionTower' ; 
 
 addpath( [ dirOnsas ] );
 
 % scalar auxiliar parameters
-E = 210e9 ;  A = 2.5e-4 ; nu = 0 ;  rho = 0 ; 
+E = 210e9 ;  A = 2.5e-1 ; nu = 0 ;  rho = 0 ; 
 
 % ----------------------------------------------------------------------
 % MELCS parameters
@@ -27,16 +27,16 @@ materialsParams = {[ rho 1 E nu ]} ;
 elementsParams  = { 1; 2} ;
 % Loads
 % Structure of the cell: { [ loadLabel global/local Fx Mx Fy My Fz Mz ] }
-loadsParams     = { [ 1 1   0 0 10e4 0 -10e4 0] ;
-										[ 2 1   0 0 15e4 0 -5e4 0] } ;
+loadsParams     = { [ 1 1   0 0 0 0 -15e4 0] ;
+										[ 1 1   0 0 0 0 -5e4 0 ] } ;
 % Cross-Sections
-crossSecsParams = { [ 2 .1 .1 ] } ;
+crossSecsParams = { [ 2 .2 .2 ] } ;
 % Springs
 % structure of the cell: { [ ux thetax uy thetay uz thetaz ] }
 springsParams   = { [ inf  0  inf  0  inf   0 ]} ;
 
 % Nodes and Conectivity matrix from .dxf file
-[ Nodes, Conec ] = meshFileReader( 'torre.dxf' ) ;
+[ Nodes, Conec ] = meshFileReader( 'torreAltaTension.dxf' ) ;
 
 
 % Analysis parameters
