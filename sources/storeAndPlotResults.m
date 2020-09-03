@@ -16,7 +16,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
 deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 timeIndex = modelCurrSol.timeIndex ; 
 
@@ -51,11 +50,11 @@ if timeIndex == 1
   if length(indsNormal) > 0
     areasVector       = zeros(size(crossSecsParamsMat,1),1);
     for indexElem = 1: size(areasVector,1);
-        if crossSecsParamsMat (indexElem,1)==3
+        if crossSecsParamsMat (indexElem,1) == 3 % beam
             areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-        elseif crossSecsParamsMat (indexElem,1)==2
+        elseif crossSecsParamsMat (indexElem,1) == 2 % truss
              areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-        elseif crossSecsParamsElem crossSecsParamsMat(indexElem,1)==1
+        elseif crossSecsParamsMat(indexElem,1)==1
             areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
         end
     end
