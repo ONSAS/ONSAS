@@ -7,12 +7,10 @@
 clear all, close all
 
 %% General data
-dirOnsas = [ pwd '/..' ] ;
+dirOnsas = [ pwd '/..' ] ; addpath( dirOnsas );
 
 % Problem name in order to write LaTex report 
 problemName = 'dxf3DTrussTower' ; 
-
-addpath( [ dirOnsas ] );
 
 % scalar auxiliar parameters
 E = 210e9 ;  A = 2.5e-4 ; nu = 0 ;  rho = 0 ; 
@@ -36,20 +34,11 @@ crossSecsParams = { [ 2 .1 .1 ] } ;
 springsParams   = { [ inf  0  inf  0  inf   0 ]} ;
 
 % Nodes and Conectivity matrix from .dxf file
+addpath( [ dirOnsas '/sources' ] );
 [ Nodes, Conec ] = meshFileReader( 'torre.dxf' ) ;
-
-
-% Analysis parameters
-nonLinearAnalysisBoolean 	= 0 ;
-dynamicAnalysisBoolean 		= 0 ;
-
 
 % Output parameters
 plotParamsVector = [ 3 ] ;
-reportBoolean    = 1     ;
 
-
-acdir = pwd ;
-cd(dirOnsas);
+% run ONSAS
 ONSAS
-cd(acdir) ;
