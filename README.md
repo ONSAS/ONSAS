@@ -1,5 +1,5 @@
 
-# ONSAS: an Open Nonlinear Structural Analysis Solver (v. 0.1.10-RC)
+# ONSAS: an Open Nonlinear Structural Analysis Solver v0.1.10
 
 [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS_docs/dev/)
