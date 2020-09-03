@@ -41,7 +41,6 @@ if length( controlDofsAndFactors ) > 0
 end
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
-normalForces = zeros( nElems, 1 ) ;
 indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
 
 if timeIndex == 1
@@ -49,18 +48,27 @@ if timeIndex == 1
   sigxs = modelCurrSol.Stress(:,1) ;
   if length(indsNormal) > 0
     areasVector       = zeros(size(crossSecsParamsMat,1),1);
+    
     for indexElem = 1: size(areasVector,1);
-        if crossSecsParamsMat (indexElem,1) == 3 % beam
-            areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-        elseif crossSecsParamsMat (indexElem,1) == 2 % truss
-             areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-        elseif crossSecsParamsMat(indexElem,1)==1
-            areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
-        end
+      
+      if crossSecsParamsMat (indexElem,1) == 3 % circular section
+        areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
+      
+      elseif crossSecsParamsMat (indexElem,1) == 2 % rectangular section
+        areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
+      
+      elseif crossSecsParamsMat(indexElem,1)==1 % general section
+        areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
+      end
     end
     normalForcesIni( indsNormal ) =  sigxs .* areasVector ;
+
   end
+
 end
+
+% initiate normalForces with initial values
+normalForces = normalForcesIni ;
 
 if length(indsNormal) > 0
   sigxs = modelNextSol.Stress(:,1) ;
