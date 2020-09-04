@@ -10,7 +10,6 @@ dt     = 0.001 ;
 rho    = 1 ;
 cSpHe  = 1 ;
 kCond  = 1 ;
-hConv  = 1 ;
 Ltot   = 1 ; % domain [0,1]
 Area   = 1 ;
 
@@ -37,7 +36,7 @@ case 2 % diri-hom-neum conds
   diridofs = [ 1 ] ;
   Tdiri    = 0    ;
   anlyBoolean = 1 ;  wx = .5 ;
-  qentr       = 0 ;
+  qentrDer       = 0 ;
 
 case 3 % diri-nonhom neum conds
 
@@ -46,7 +45,7 @@ case 3 % diri-nonhom neum conds
   Tdiri       = 0       ;
   anlyBoolean = 0  ;
    wx = 1 ;
-  qentr       = 2       ;
+  qentrDer       = 2       ;
 
 case 4 % diri-robin
 
@@ -56,13 +55,28 @@ case 4 % diri-robin
   anlyBoolean = 0       ;
   wx          = 1       ;
   Tamb        = .5       ;
-   
+  hConv  = 10 ;
+
+case 5 % homneuman-robin
+
+  Tfinal      = .1      ;
+  diridofs    = [ ] ;
+  anlyBoolean = 0       ;
+  wx          = 1       ;
+  Tamb        = .5       ;
+  qentrIzq    = 1 ;
+  hConv  = 10 ;
+
 end
 
 
 
 if exist('nt')==0
   nt     = Tfinal / dt ;
+end
+
+if exist('nCurves') == 0
+  nCurves = 15 ;
 end
 
 alpha = kCond / ( rho * cSpHe ) ;
@@ -109,7 +123,9 @@ for i = 1 : nelem
 
 end
 
-MrobiG ( end,end) = hConv ;
+if  exist( 'hConv') ~= 0
+  MrobiG ( end,end) = hConv ;
+end
 
 KdiffG = KdiffG + MrobiG ;
 
@@ -120,9 +136,8 @@ CND = MintEG(neumdofs, diridofs) ;
 CNN = MintEG(neumdofs, neumdofs) ;
 
 qext = zeros( nnodes, 1 ) ;
-if exist( 'qentr' ) ~= 0 
-  qext(end) = qentr ;
-end
+if exist( 'qentrIzq' ) ~= 0, qext(  1) = qentrIzq ; end
+if exist( 'qentrDer' ) ~= 0, qext(end) = qentrDer ; end
 
 if exist( 'Tamb' ) ~= 0 
   qext(end) = hConv * Tamb ;
@@ -148,20 +163,22 @@ for i=0:nt
         ) ;
         
     Ts( neumdofs, i+1 ) = CNN \ f ;
-    Ts( diridofs, i+1 ) = Tdiri   ;
+    if length(diridofs)>0,
+      Ts( diridofs, i+1 ) = Tdiri   ;
+    end
   end  
 
   if anlyBoolean
     if caseNum == 1 || caseNum == 2
-      TsAnly (:,i+1) = exp(-(  pi*alpha * wx)^2 * t ) *       sin(     pi * xsAnly * wx ) ...
-                     + exp(-(3*pi*alpha * wx)^2 * t ) * 0.5 * sin( 3 * pi * xsAnly * wx ) ;
+      TsAnly (:,i+1) = exp(-(  pi* wx*alpha )^2 * t ) *       sin(     pi * xsAnly * wx ) ...
+                     + exp(-(3*pi* wx*alpha )^2 * t ) * 0.5 * sin( 3 * pi * xsAnly * wx ) ;
     end
   end
   
   % --- plots ---
   if plotBoolean
   
-    if mod(i, round(nt/10) )==0
+    if mod(i, round(nt/nCurves) )==0
       plot( xs    , Ts    (:, i+1), 'b-o', 'markersize', MS,'linewidth',LW );  
       
       if anlyBoolean
