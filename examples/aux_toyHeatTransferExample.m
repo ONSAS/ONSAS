@@ -10,39 +10,52 @@ dt     = 0.001 ;
 rho    = 1 ;
 cSpHe  = 1 ;
 kCond  = 1 ;
+hConv  = 1 ;
 Ltot   = 1 ; % domain [0,1]
 Area   = 1 ;
 
-%~ nt     = 3 ; % defined if stopped before Tfinal
-
+if nargin < 3
+  plotBoolean = 1 ;
+  if nargin < 2
+    nelem = 10 ; 
+  end
+  close all
+end
 
 switch caseNum
 
 case 1  % diri-diri conds
 
-  Tfinal      = 0.5   ;
-  %~ nelem       = 5     ;
+  Tfinal      = 0.1   ;
   diridofs    = [ 1 nelem+1 ] ;
   Tdiri       = 0 ;
-  anlyBoolean = 1;
+  anlyBoolean = 1 ;   wx = 1 ;
   
-case 2 % diri-neum conds
+case 2 % diri-hom-neum conds
 
-  %~ nelem  = 10     ;
-  Tfinal = 1   ;
+  Tfinal   = .1   ;
   diridofs = [ 1 ] ;
-  Tdiri  = 0 ;
-  anlyBoolean = 0;
-  qentr = -0 ;
+  Tdiri    = 0    ;
+  anlyBoolean = 1 ;  wx = .5 ;
+  qentr       = 0 ;
 
-case 3 % diri-robin conds
+case 3 % diri-nonhom neum conds
 
-  nelem  = 10     ;
-  Tfinal = 1   ;
-  diridofs = [ 1 ] ;
-  Tdiri  = 0 ;
-  anlyBoolean = 0;
-  qentr = -0 ;
+  Tfinal      = .02      ;
+  diridofs    = [ 1 ] ;
+  Tdiri       = 0       ;
+  anlyBoolean = 0  ;
+   wx = 1 ;
+  qentr       = 2       ;
+
+case 4 % diri-robin
+
+  Tfinal      = .1      ;
+  diridofs    = [ 1 ] ;
+  Tdiri       = 0       ;
+  anlyBoolean = 0       ;
+  wx          = 1       ;
+  Tamb        = .5       ;
    
 end
 
@@ -73,7 +86,7 @@ Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
 MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
 
 % initial temperature
-T0     = sin(pi*xs) + 0.5*sin(3*pi*xs) ;
+T0     = sin(pi*xs*wx) + 0.5*sin(3*pi*xs*wx) ;
 Ts     = T0 ;
 
    
@@ -81,6 +94,7 @@ Ts     = T0 ;
 % matrices assembly
 KdiffG = zeros( nnodes, nnodes ) ;
 MintEG = zeros( nnodes, nnodes ) ;
+MrobiG = zeros( nnodes, nnodes ) ;
 
 for i = 1 : nelem
   nodeselem = [ i i+1 ] ;
@@ -94,6 +108,11 @@ for i = 1 : nelem
   MintEG( elemDofs , elemDofs ) + MintEe  ; 
 
 end
+
+MrobiG ( end,end) = hConv ;
+
+KdiffG = KdiffG + MrobiG ;
+
 % ------------------------
 
 CDD = MintEG(diridofs, diridofs) ;
@@ -101,13 +120,17 @@ CND = MintEG(neumdofs, diridofs) ;
 CNN = MintEG(neumdofs, neumdofs) ;
 
 qext = zeros( nnodes, 1 ) ;
-if caseNum == 2
+if exist( 'qentr' ) ~= 0 
   qext(end) = qentr ;
 end
 
+if exist( 'Tamb' ) ~= 0 
+  qext(end) = hConv * Tamb ;
+end
+
 if plotBoolean
-figure
-hold on, grid on
+  figure
+  hold on, grid on
 end
 
 MS = 10 ; 
@@ -129,8 +152,10 @@ for i=0:nt
   end  
 
   if anlyBoolean
-    TsAnly (:,i+1) = exp(-(  pi*alpha)^2 * t ) *       sin(     pi * xsAnly ) ...
-                   + exp(-(3*pi*alpha)^2 * t ) * 0.5 * sin( 3 * pi * xsAnly ) ;
+    if caseNum == 1 || caseNum == 2
+      TsAnly (:,i+1) = exp(-(  pi*alpha * wx)^2 * t ) *       sin(     pi * xsAnly * wx ) ...
+                     + exp(-(3*pi*alpha * wx)^2 * t ) * 0.5 * sin( 3 * pi * xsAnly * wx ) ;
+    end
   end
   
   % --- plots ---
@@ -142,7 +167,6 @@ for i=0:nt
       if anlyBoolean
         plot( xsAnly, TsAnly(:, i+1), 'r--'  , 'markersize', MS,'linewidth',LW );  
       end
-  
     end
   end
     % ---------------
@@ -151,8 +175,9 @@ end
 % ------------------------
 
 if plotBoolean
-  figure
-  plot( Ts(2,:) )
+  print( sprintf('../../1DheatCase_%1i.png', caseNum ),'-dpng'), close all
+
+  %~ figure, plot( Ts(2,:) )
 end
 
 KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
