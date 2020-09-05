@@ -23,7 +23,8 @@ function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTt
   if isThisOctave
     [a,b] = eig( KTtred ) ;
   else
-    [a,b] = eigs( KTtred, 10, 0 ) ;
+    nEigValMatlab = min(10, size(KTtred,1) ) ;
+    [a,b] = eigs( KTtred, nEigValMatlab ) ;
   end
       
   Keigvals = diag(b) ;
@@ -35,7 +36,7 @@ function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTt
     if isThisOctave
       [vecgamma, gammas ] = eig( KTtred, KTtm1red ) ;
     else
-      [vecgamma, gammas ] = eigs( KTtred, KTtm1red, 10, 0 ) ;
+      [vecgamma, gammas ] = eigs( KTtred, KTtm1red, nEigValMatlab ) ;
     end
       
     gammas = diag( gammas);
