@@ -70,7 +70,6 @@ end
 delete('exData.mat')
 
 fidVB = fopen('auxVerifBoolean.dat','w') ;
-
 fprintf( fidVB, sprintf('%1i',verifBoolean ) );
 fclose( fidVB );
 

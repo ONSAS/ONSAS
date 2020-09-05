@@ -190,7 +190,8 @@ function [ fun , vol ] = DerivFun( tetcoordmat , varargin )
   if nargin == 1
     derivOrder = 0 ;
   else
-    derivOrder = varargin(1){1} ;
+    aux4Matlab =  varargin(1)   ;
+    derivOrder =  aux4Matlab{1} ;
   end
 
   A        = zeros(4,4)   ;
