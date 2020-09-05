@@ -18,9 +18,19 @@
 % run all test examples from examples folder.
 
 keyword = 'test.m' ;
-%~ keyword = 'example' ;
 
-fileslist = readdir('./');
+addpath('../sources/');
+
+if isThisOctave
+  fileslist = readdir('./');
+else
+  fileslist = {} ;
+  auxMatlab = dir('*.*');
+  for k=1:length( auxMatlab )
+    fileslist{k} = auxMatlab(k).name ;
+  end
+end
+
 keyfiles  = {} ;
 
 totalRuns = 0 ;
