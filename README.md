@@ -32,6 +32,9 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 # A wind turbine model
 ![wind](https://github.com/ONSAS/ONSAS/blob/master/examples/wind.gif?raw=true)
 
+# A truss tower model
+![tower](https://github.com/ONSAS/ONSAS/blob/master/examples/tower.gif?raw=true)
+
 # A chain model
 ![chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
@@ -46,13 +49,9 @@ The code is distributed under a GNU-GPL 3.0 license.
 
 The user should follow these steps to install and run onsas:
 
-1. Download and install [GNU-Octave](https://www.gnu.org/software/octave/)
-1. Download the ONSAS source files https://github.com/onsas/onsas/archive/v0.1.9.zip
-1. Open GNU-Octave and run the _ONSAS.m_ script
-1. Select one of the available input files (or create one).
-
-We encourage the user to read the user's guide available at [https://www.fing.edu.uy/~jorgepz/onsas/mainUserGuide.html](https://www.fing.edu.uy/~jorgepz/onsas/mainUserGuide.html).
-
+1. Download and install [GNU-Octave](https://www.gnu.org/software/octave/) and [Paraview](https://www.paraview.org/)
+1. Download the ONSAS source files from https://github.com/onsas/onsas/archive/v0.1.10.zip
+1. Open GNU-Octave, move to the _examples_ directory and run one of the examples.
 
 ## Contributions <a name="contributions"></a>
 ------
