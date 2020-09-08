@@ -33,7 +33,8 @@ loadsParams   = {[ 1 1   0 0 0 -1 0 0 ]} ;
 
 % --- cross section ---
 A = ty*tz ;     Iy = ty*tz^3/12 ;    Iz = tz*ty^3/12 ;     It = 1 ;
-crossSecsParams = {[ 1 A It Iy Iz ]} ;
+% crossSecsParams = {[ 1 A It Iy Iz ]} ;
+crossSecsParams = {[ 2 ty tz ]}      ;
 
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
 

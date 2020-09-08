@@ -32,7 +32,7 @@ G   = E/(2*(1+nu)) ;
 % -------------------------------
 
 % --- cross section ---
-if elemCrossSecParams(1) == 1, %general section
+if elemCrossSecParams(1) == 1 %general section
   Area = elemCrossSecParams( 2 ) ; 
   J    = elemCrossSecParams( 3 ) ;
   Iyy  = elemCrossSecParams( 4 ) ;
@@ -43,8 +43,21 @@ if elemCrossSecParams(1) == 1, %general section
   else
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
   end
+elseif elemCrossSecParams(1) == 2
+  Area = elemCrossSecParams(2)*elemCrossSecParams(3)      ;
+  Iyy  = elemCrossSecParams(2)*elemCrossSecParams(3)^3/12 ;
+  Izz  = elemCrossSecParams(2)*elemCrossSecParams(3)^3/12 ;
+  J    = Iyy + Izz ;
+  Jrho = rho * diag( [ J Iyy Izz ] ) ;  
+elseif elemCrossSecParams(1) == 3
+    diameter = elemCrossSecParams(2) ;
+    Area = pi*diameter^2/4           ;
+    Iyy  = pi/diameter^4/64          ;
+    Izz  = pi/diameter^4/64          ;
+    J    = Iyy + Izz ;
+    Jrho = rho * diag( [ J Iyy Izz ] ) ;  
 else
-  error(' section type not implemented yet, please create an issue')
+    error(' section type not implemented yet, please create an issue')
 end
 % -------------------------------
 
