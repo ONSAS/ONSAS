@@ -61,7 +61,7 @@ elseif elemCrossSecParams(1) == 3
     J    = Iyy + Izz ;
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
 else
-    error(' section type not implemented yet, please create an issue')
+  error(' section type not implemented yet, please create an issue')
 end
 % -------------------------------
 
