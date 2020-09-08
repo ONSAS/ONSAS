@@ -30,7 +30,7 @@ function Assembled = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, ...
 booleanCppAssembler = 0 ;
 
 % -----------------------------------------------
-% ---     C++ assembler (under development)   ---
+% ---     C++ assembler                       ---
 % -----------------------------------------------
 if booleanCppAssembler
   CppAssembly
