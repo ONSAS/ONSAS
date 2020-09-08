@@ -17,11 +17,15 @@
 
 % run all test examples from examples folder.
 
+clear all, close all
+
 keyword = 'test.m' ;
 
-addpath('../sources/');
+cd('../sources/')
+  octaveBoolean = isThisOctave ;
+cd('../examples/')
 
-if isThisOctave
+if octaveBoolean
   fileslist = readdir('./');
 else
   fileslist = {} ;
