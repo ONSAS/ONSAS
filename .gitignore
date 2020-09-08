@@ -23,3 +23,5 @@ octave-workspace
 /sources/*.txt
 /sources/*.oct
 *.mat
+*.dat
+*.lnx
