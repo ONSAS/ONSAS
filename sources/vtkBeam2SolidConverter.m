@@ -58,7 +58,7 @@ if typeSolid == 12 % vtkHexa
   
 elseif typeSolid == 25 % vtkQuadHexa
 
-	R = sectPar(2) ;
+	R = sectPar(2) / 2 ;
   Nodesvtk = [] ; Conecvtk = [] ;
   
   NodesDef  = nodesCoords + [ Ue(1:6:end) Ue(3:6:end) Ue(5:6:end) ] ;
