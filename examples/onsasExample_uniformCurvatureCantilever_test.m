@@ -6,7 +6,7 @@ clear all, close all
 dirOnsas = [ pwd '/..' ]; addpath( dirOnsas );
 problemName = 'uniformCurvatureCantilever' ;
 
-l = 10   ;    ty = .1 ;  tz = .2 ;  Nelem = 20 ;
+l = 10   ;    ty = .1 ;  tz = .1 ;  Nelem = 20 ;
 
 Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
