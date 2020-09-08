@@ -6,7 +6,7 @@ clear all, close all
 dirOnsas = [ pwd '/..' ]; addpath( dirOnsas );
 problemName = 'uniformCurvatureCantilever' ;
 
-l = 10   ;    ty = .1 ;  tz = .2 ;  Nelem = 20 ;
+l = 10   ;    ty = .1 ;  tz = .1 ;  Nelem = 20 ;
 
 Nodes = [ (0:(Nelem))'*l/Nelem zeros(Nelem+1,2) ] ;
 
@@ -33,7 +33,8 @@ loadsParams   = {[ 1 1   0 0 0 -1 0 0 ]} ;
 
 % --- cross section ---
 A = ty*tz ;     Iy = ty*tz^3/12 ;    Iz = tz*ty^3/12 ;     It = 1 ;
-crossSecsParams = {[ 1 A It Iy Iz ]} ;
+% crossSecsParams = {[ 1 A It Iy Iz ]} ;
+crossSecsParams = {[ 2 ty tz ]}      ;
 
 springsParams    = {[ inf  inf  inf  inf  inf  inf ]} ;
 
