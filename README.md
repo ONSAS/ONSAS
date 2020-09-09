@@ -57,7 +57,7 @@ The user should follow these steps to install and run onsas:
 ------
 
 ### Authors of code
-The following authors collaborated in various tasks including: design, development and testing of the code, with specific contributions given by the commits history: [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, **J. Bruno Bazzano**<sup>1,2</sup>, **Joaquín Viera** <sup>1</sup>, **Mauricio Vanzulli** <sup>3</sup> and [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en)<sup>4</sup>.
+The following authors collaborated in various tasks including: design, development and testing of the code, with specific contributions given by the commits history: [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, **J. Bruno Bazzano**<sup>1,2</sup>, [**Joaquín Viera**](https://www.researchgate.net/profile/Joaquin_Viera_Sosa) <sup>1</sup>, **Mauricio Vanzulli** <sup>3</sup> and [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en)<sup>4</sup>.
 
 The following authors contributed with specific functions of files, of great relevance for the code: [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en)<sup>5</sup> (contributed functions related to the computation of static internal forces of the nonlinear frame element) and [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es)<sup>6</sup> , provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf import function.
 
