@@ -1,22 +1,28 @@
 % ======================================================================
 % Von Mises truss example
+
 clear all, close all
 dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
 problemName = 'staticVonMisesTrussLin' ;
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
-E = 210e9 ;  A = 2.5e-4 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
+E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
 
 % ----------------------------------------------------------------------
 % MELCS parameters
+
 % Materials
 materialsParams = {[ rho 1 E nu ]} ;
+
 % Elements
 elementsParams  = { 1; 2} ;
+
 % Loads
 loadsParams     = { [ 1 1   0 0 0 0 -1 0] } ;
+
 % Cross-Sections
 crossSecsParams = { [ 2 sqrt(A) sqrt(A) ] } ;
+
 % Springs
 springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
                     [ 0    0  inf  0    0   0 ] } ;
@@ -24,7 +30,8 @@ springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
 % ----------------------------------------------------------------------
 % nodes coordinates matrix and connectivity cell
 auxx = cos( ang1*pi/180 ) * L ;        auxz = sin( ang1*pi/180 ) * L ;
-% nodes matrix
+
+% node coordinates matrix
 Nodes = [      0  0     0  ; ...
             auxx  0  auxz  ; ...
           2*auxx  0     0  ] ;
@@ -55,11 +62,14 @@ Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
 
 problemName = 'staticVonMisesTrussNR' ;
 
-materialsParams = {[ rho 2 E nu ]} ;
+materialsParams = {[ rho 3 E nu ]} ;
+
+% Cross-Sections
+crossSecsParams = { [ 3 sqrt(A*4/pi) ] } ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
-targetLoadFactr  = 1.5e7  ;    nLoadSteps       = 6      ;
+targetLoadFactr  = 1.5e8  ;    nLoadSteps       = 6      ;
 stopTolIts       = 30     ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
@@ -67,11 +77,10 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 stabilityAnalysisBoolean = 2 ;
 
-analyticSolFlag = 0    ;
+analyticSolFlag = 2    ;
 l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
-
 
 ONSAS
 

@@ -77,41 +77,40 @@ elseif typeSolid == 25 % vtkQuadHexa
 															 +ey*R/sqrt(2)+ez*R/sqrt(2) ; ...
 															 -ey*R/sqrt(2)+ez*R/sqrt(2) ] ;
 		
-	matSecNodesExtInter      = [            0-ez*R       ; ...
-																		 +ey*R-0           ; ...
-																					0+ez*R       ; ...
-																		 -ey*R+0           ] ;
-	% Definida solo por claridad ...
-	matSecNodesInter         = [ -ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
-															 +ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
-															 +ey*R/sqrt(2)+ez*R/sqrt(2) ; ...
-															 -ey*R/sqrt(2)+ez*R/sqrt(2) ] ;
-   
+	matSecNodesInter         = matSecNodesExtVertices ;
+
+	matSecNodesExtInter      = [             0-ez*R       ; ...
+                                       +ey*R-0           ; ...
+																				   0+ez*R       ; ...
+                                       -ey*R+0           ] ;
    
    
 	% Rot section 1
-	vecrot = rotsMat( 1, :) ;
-	matSecNodesExtVerticesR  = ( expon( vecrot) * matSecNodesExtVertices' )'  ;
-	matSecNodesExtInterR     = ( expon( vecrot) * matSecNodesExtInter' )'     ;
+	matSecNodesExtVerticesR  = ( expon( vecrotNode1 ) * matSecNodesExtVertices' )'  ;
+	matSecNodesExtInterR     = ( expon( vecrotNode1 ) * matSecNodesExtInter' )'     ;
 	
 	nodeExtVertices1  = NodesDef(1,:) + matSecNodesExtVerticesR    ;
 	nodeExtInter1     = NodesDef(1,:) + matSecNodesExtInterR       ;   
     
 	% Rot section 2
-	vecrot = rotsMat( 2, :) ;
-	matSecNodesExtVerticesR  = ( expon( vecrot) * matSecNodesExtVertices' )'  ;
-	matSecNodesExtInterR     = ( expon( vecrot) * matSecNodesExtInter' )'     ;
+	matSecNodesExtVerticesR  = ( expon( vecrotNode2 ) * matSecNodesExtVertices' )'  ;
+	matSecNodesExtInterR     = ( expon( vecrotNode2 ) * matSecNodesExtInter' )'     ;
 	
 	nodeExtVertices2  = NodesDef(2,:) + matSecNodesExtVerticesR     ;
 	nodeExtInter2     = NodesDef(2,:) + matSecNodesExtInterR        ;  
 	
- % Rot intermediate section
-	vecrot = ( rotsMat( 1, :) + rotsMat( 2, :) ) / 2            ;
-	matSecNodesInterR  = ( expon( vecrot) * matSecNodesInter' )'               ;
+  % Rot intermediate section
+	vecrot = ( vecrotNode1 + vecrotNode2 ) / 2            ;
+	matSecNodesInterR = ( expon( vecrot) * matSecNodesInter' )'               ;
 	nodeInt           = ( NodesDef(1,:) + NodesDef(2,:) ) / 2 + matSecNodesInterR ; % Interpolated linearly ...
 	
- % Nodes
-	Nodesvtk = [ Nodesvtk ; nodeExtVertices1 ; nodeExtVertices2 ; nodeExtInter1 ; nodeExtInter2 ; nodeInt ] ;
+  % Nodes
+	Nodesvtk = [ Nodesvtk         ; ...
+               nodeExtVertices1 ; ...
+               nodeExtVertices2 ; ...
+               nodeExtInter1    ; ...
+               nodeExtInter2    ; ...
+               nodeInt          ] ;
 
 	% Connectivity
 	Conecvtk = [ Conecvtk ; 25 1:20 ] ;  
