@@ -1,7 +1,8 @@
 % ------------------------------------
-% TEST example springmass
+% springmass example
 %
-% From chapter 2 Ray W. Clough and Joseph Penzien, Dynamics of Structures, Third Edition, 2003
+% Notation and analytical based on chapter 3 from
+% Ray W. Clough and Joseph Penzien, Dynamics of Structures, Third Edition, 2003
 % ------------------------------------
 
 function onsasExample_springMass( dirOnsas, scalarParams )
@@ -20,11 +21,11 @@ problemName = 'springMass' ;
 % spring mass system 
 if nargin <= 1
   k        = 39.47 ;
-  c        = 0   ;
+  c        = 0.1   ;
   m        = 1     ;
-  omegaBar = 2*pi  ;
-  p0       = 0     ;
-  u0       = 0.2   ; % initial displacement
+  omegaBar = 4*sqrt(k/m) ;
+  p0       = 40     ;
+  u0       = 0.0   ; % initial displacement
 end
 
 % parameters for truss model
@@ -32,17 +33,19 @@ l   = 1   ;
 A   = 0.1 ;
 rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
+nodalDispDamping = c ;
 
 omegaN = sqrt( k / m );
+xi     = c / m  / ( 2 * omegaN ) ;
 nodalDamping = c ;
 
 freq   = omegaN / (2*pi)      ;
 TN     = 2*pi / omegaN        ;
-dtCrit = TN / pi              ;
+dtCrit = TN / pi              
 
 % numerical method params
 timeIncr      =  0.01 ;
-finalTime     = 2*pi/omegaN                ;
+finalTime     = 5*2*pi/omegaN                ;
 stopTolDeltau = 1e-15           ; 
 stopTolForces = 1e-12           ;
 stopTolIts    = 30              ;
@@ -58,7 +61,7 @@ elementsParams = { 1 ; [2 0]} ;
 loadsParams    = { [ 1 1    1 0 0 0 0 0 ] } ;
 loadFactorsFunc = @(t) p0 *sin( omegaBar*t ) ; 
 
-crossSecsParams = {[ 3 sqrt(A*4/pi) ]} ;
+crossSecsParams = {[ 2 sqrt(A) sqrt(A) ]} ;
 
 springsParams  = {[ inf  0  inf  0  inf 0 ] ; ...
                   [ 0    0  inf  0  inf 0 ] } ;
@@ -87,28 +90,25 @@ if c == 0 && p0 == 0 % free undamped
   analyticFunc = @(t)   (   u0 * cos( omegaN * t )  ) ;
   analyticCheckTolerance = 2e-1 ;
 
-end
-%~ case 2 % forced
-  %~ if u0 < l0
-    %~ omegaReal = omegaN * sqrt( 1-ceda^2 ) ;
-    %~ beta      = omegaBar/omegaN ;
-    %~ G1        = (p0/kres) * ( -2 * ceda * beta / ( ( 1 - beta^2 )^2 + ( 2 * ceda * beta )^2 ) ) ;
-    %~ G2        = (p0/kres) * ( ( 1 - beta^2 )   / ( ( 1 - beta^2 )^2 + ( 2 * ceda * beta )^2 ) ) ;
-    %~ A         = u0 - G1 ;
-    %~ B         =  (ceda*omegaN*A - omegaBar*G2 ) / (omegaReal);
+else
+  beta   = omegaBar / omegaN ;
+  omegaD = omegaN * sqrt( 1-xi^2 ) ;
+
+  G1 = (p0/k) * ( -2 * xi * beta   ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
+  G2 = (p0/k) * (  1      - beta^2 ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
+  if u0 < l
+    A  = u0 - G1 ;
+    B  =  (xi*omegaN*A - omegaBar*G2 ) / (omegaD);
+  else
+    error('this analytical solution is not valid for this u0 and l0');
+  end
   
-    %~ analyticSolFlag = 1 ;
-    %~ analyticFunc = @(t) ...
-      %~ ( A*cos(omegaReal*t)+B*sin(omegaReal*t)).* exp( -ceda * omegaN * t ) ...
-      %~ + G1 * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
-    %~ analyticCheckTolerance = 5e-2 ;
-  %~ else
-    %~ error('this analytical solution is not valid for this u0 and l0');
-  %~ end
-%~ end
+  analyticSolFlag = 1 ;
+  analyticFunc = @(t) ...
+    ( A * cos( omegaD * t ) + B * sin( omegaD * t ) ) .* exp( -xi * omegaN * t ) ...
+    + G1 * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
+    analyticCheckTolerance = 5e-2 ;
+end
 % ------------------------------------------------
 
 ONSAS
-
-
-figure
