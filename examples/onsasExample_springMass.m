@@ -45,9 +45,9 @@ dtCrit = TN / pi
 
 % numerical method params
 timeIncr      =  0.01 ;
-finalTime     = 5*2*pi/omegaN                ;
-stopTolDeltau = 1e-15           ; 
-stopTolForces = 1e-12           ;
+finalTime     = 2*2*pi/omegaN                ;
+stopTolDeltau = 1e-10           ; 
+stopTolForces = 1e-10           ;
 stopTolIts    = 30              ;
 alphaHHT      = 0;
 % ------------------------------------
@@ -111,10 +111,15 @@ else
 end
 % ------------------------------------------------
 
+
 global flagOutputMatrices
 flagOutputMatrices = 1 ;
 
+storeBoolean = 1 ;
+
 ONSAS
 
-%~ save -mat ../../output.mat tangentMatricesCell{1}
+load ../../output.mat 
+
+save -mat ../../output.mat KT dampingMat massMat matUs loadFactors
 
