@@ -40,11 +40,9 @@ inputVarsVerification
 
 % ==============================================================================
 
-dffff
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
-
 
 % Initial computations: sets initial state.
 [ modelCurrSol, modelProperties, BCsData ] =  initialDefinitions( ...
