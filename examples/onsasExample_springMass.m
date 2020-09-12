@@ -12,7 +12,7 @@ close all
 if nargin == 0
   dirOnsas = [ pwd '/..' ] ;
 else
-  dirOnsas = dirOnsas(2:end);
+  %~ dirOnsas = dirOnsas(2:end);
 end
 addpath( dirOnsas ) ;
 
