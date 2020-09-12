@@ -33,6 +33,13 @@ function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsEl
   if solutionMethod > 2
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
+
+    global flagOutputMatrices
+    if exist('flagOutputMatrices') == 1 && flagOutputMatrices == 1
+      save -mat ../outputMatrices.mat KT dampingMat massMat
+      flagOutputMatrices = 0 ;
+    end 
+      
   end
 
   % extracts matrix entries

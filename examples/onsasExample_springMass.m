@@ -111,4 +111,10 @@ else
 end
 % ------------------------------------------------
 
+global flagOutputMatrices
+flagOutputMatrices = 1 ;
+
 ONSAS
+
+%~ save -mat ../../output.mat tangentMatricesCell{1}
+
