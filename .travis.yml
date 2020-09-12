@@ -1,0 +1,2 @@
+language: matlab
+script: matlab -batch 'disp("Hello World")'
