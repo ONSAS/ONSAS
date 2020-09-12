@@ -24,8 +24,17 @@ if nargin <= 1
   c        = 0.1   ;
   m        = 1     ;
   omegaBar = 4*sqrt(k/m) ;
-  p0       = 40     ;
+  p0       = 40    ;
   u0       = 0.0   ; % initial displacement
+  timeIncr =  0.01 ;
+else
+  k        = scalarParams(1) ;
+  c        = scalarParams(2) ;
+  m        = scalarParams(3) ;
+  omegaBar = scalarParams(4) ;
+  p0       = scalarParams(5) ;
+  u0       = scalarParams(6) ;
+  timeIncr = scalarParams(7) ;  
 end
 
 % parameters for truss model
@@ -44,7 +53,6 @@ TN     = 2*pi / omegaN        ;
 dtCrit = TN / pi              
 
 % numerical method params
-timeIncr      =  0.01 ;
 finalTime     = 2*2*pi/omegaN                ;
 stopTolDeltau = 1e-10           ; 
 stopTolForces = 1e-10           ;
@@ -121,5 +129,14 @@ ONSAS
 
 load ../../output.mat 
 
-save -mat ../../output.mat KT dampingMat massMat matUs loadFactors
 
+neumdofs = BCsData.neumdofs                ; 
+K        = KT(neumdofs,neumdofs)           ;
+C        = dampingMat( neumdofs, neumdofs) ;
+M        = massMat(neumdofs, neumdofs)     ;
+fext     = loadFactors                     ;
+us       = matUs(neumdofs,:)               ;
+udots    = matUs(neumdofs,:)               ;
+
+
+save -mat ../../output.mat  K C M fext us udots
