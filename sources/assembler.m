@@ -142,6 +142,11 @@ else
         %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
       end
 
+      if (length( elemCrossSecParams) == 3) && (elemCrossSecParams(3) == 1)
+        [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, A, paramOut ) ;
+        
+      end
+
 
     % -----------   frame element   ------------------------------------
     case 3
