@@ -143,8 +143,9 @@ else
       end
 
       if (length( elemCrossSecParams) == 3) && (elemCrossSecParams(3) == 1)
-        [ fs, ks, stress ] = elementTrussInternForce( elemCoords, elemDisps, elemConstitutiveParams, A, paramOut ) ;
-        
+         disp('hola')
+         stop
+                
       end
 
 
