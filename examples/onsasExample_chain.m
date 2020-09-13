@@ -3,10 +3,8 @@
 % ------------------------------------
 
 clear all, close all
-inputONSASversion = '0.1.10';
-dirOnsas    = [ pwd '/..' ] ; addpath(dirOnsas);
-problemName = 'chain' ;
-% ------------------------------------
+
+problemName       = 'chain' ;
 
 % -- scalar params -----
 Es  = 210e9 ; % Pa
@@ -64,9 +62,9 @@ controlDofs = [ Nelem/2 5 1 ] ;
 plotParamsVector = [ 3 150 ];
 printFlag = 0 ;
 storeBoolean = 1;
-ONSAS
+
+run( [  pwd  '/../ONSAS.m' ] ) ;
 
 disp('verificacion: ')
 sumaFuerzaPesoNum = -sum(BCsData.constantFext)
 sumaFuerzaPesoAna = sqrt( (l/2)^2 + h^2 )*2 * b*b * rho * 9.81
-

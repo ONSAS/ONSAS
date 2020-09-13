@@ -49,9 +49,8 @@ if exist( 'loadsParams' ) == 0
 end
 
 
-
 % --- verification of relevant variables ---
-checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
+checkVarNamesList = { 'problemName', 'Nodes', 'Conec', ...
                       'materialsParams', ...
                       'elementsParams', ...
                       'loadsParams', ...
@@ -203,7 +202,7 @@ if booleanScreenOutput
   fprintf(' done.\n');
 end
 
-% creates outputdir
+% --- creates outputdir ---
 outputDir = [ './output/' problemName '/' ] ;
 
 if exist( './output/' ) ~= 7

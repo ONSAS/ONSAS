@@ -4,7 +4,7 @@
 % ------------------------------------------------------------------------------
 
 clear all, close all
-dirOnsas = [ pwd '/..' ] ;  addpath( dirOnsas );
+
 problemName = 'rightAngleCantileverBeam' ;
 
 % --- Scalar parameters --------------
@@ -76,7 +76,7 @@ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopT
 controlDofs      = [ nElemsPerBeam+1 3  1 ] ;
 plotParamsVector = [ 3 ];
 
-ONSAS
+run( [  pwd  '/../ONSAS.m' ] ) ;
 
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
