@@ -24,4 +24,4 @@ octave-workspace
 *.mat
 *.dat
 *.lnx
-examples/output/*
+/examples/output/*
