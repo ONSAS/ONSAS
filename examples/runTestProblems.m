@@ -18,12 +18,10 @@
 % run all test examples from examples folder.
 
 clear all, close all
-
 keyword = 'test.m' ;
 
-cd('../sources/')
-  octaveBoolean = isThisOctave ;
-cd('../examples/')
+addpath('../sources/');
+octaveBoolean = isThisOctave ;
 
 if octaveBoolean
   fileslist = readdir('./');
@@ -36,21 +34,16 @@ else
 end
 
 keyfiles  = {} ;
-
-totalRuns = 0 ;
+totalRuns = 0  ;
 
 for i=1:length(fileslist)
   if length( strfind( fileslist{i}, keyword ) ) > 0
-    totalRuns = totalRuns +1 ; 
-    keyfiles{totalRuns} = fileslist{i} ;
+    totalRuns             = totalRuns +1 ;
+    keyfiles{ totalRuns } = fileslist{i} ;
   end
 end
 
-keyfiles
-
-current       = 1 ;
-totalRuns
-
+current      = 1 ;
 verifBoolean = 1 ;
 
 while current <= totalRuns && verifBoolean == 1
@@ -59,15 +52,13 @@ while current <= totalRuns && verifBoolean == 1
 
   run( [ './' keyfiles{current} ] ) ;
 
-  pause(0.5)
-
   if verifBoolean
     fprintf([' === test ' problemName ' problem:  PASSED === \n\n']);
   else
     fprintf([' === test ' problemName ' problem FAILED   === \n\n']);
   end
   
-  load('exData.mat');
+  load('exData.mat') ;
   current = current + 1 ; 
 end
 

@@ -27,7 +27,7 @@ ONSASversion ='0.1.10'; % sets the current version
 
 % --- adds onsas src dirs to path ---
 str  = which('ONSAS') ;
-dirs = genpath( [ str(1:end-7) ] ,'.git', 'output', 'other' ) ;
+dirs = genpath( [ str(1:end-8) ] ,'.git', 'output', 'other' ) 
 addpath( dirs );
 
 % verifies the definition of input variables and sets default values
