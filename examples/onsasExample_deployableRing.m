@@ -7,7 +7,6 @@ clear all, close all
 % --- scalar parameters ---
 E  = 200e3 ; nu = 0.3 ;  R = 120 ;  wy = .6 ;   wz = 6 ;  halfNElem = 10 ;
 
-dirOnsas = [ pwd '/..' ] ; addpath( dirOnsas );
 problemName = 'deployableRing' ;
 
 % --- MELCS ---
@@ -70,7 +69,7 @@ numericalMethodParams = [ 2 ...
  %~ targetLoadFactr nLoadSteps   ] ; 
 
 % --- ONSAS execution ---
-ONSAS
+run( [  pwd  '/../ONSAS.m' ] ) ;
 
 return
 lw = 3.0 ; ms = 11 ; plotfontsize = 22 ;

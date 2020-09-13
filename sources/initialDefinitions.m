@@ -30,7 +30,6 @@ function [ modelCurrSol, modelProperties, BCsData ] ...
   , problemName, outputDir, finalTime, elementsParamsMat ...
   )
 
-
 nElems    = size(Conec, 1 ) ;
 
 % ----------- fixeddofs and spring matrix computation ---------

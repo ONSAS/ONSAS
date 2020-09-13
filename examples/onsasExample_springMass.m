@@ -5,23 +5,17 @@
 % Ray W. Clough and Joseph Penzien, Dynamics of Structures, Third Edition, 2003
 % ------------------------------------
 
-function onsasExample_springMass( dirOnsas, scalarParams )
+function onsasExample_springMass( onsasDir, scalarParams )
 
 close all
-
-if nargin == 0
-  dirOnsas = [ pwd '/..' ] ;
-else
-  %~ dirOnsas = dirOnsas(2:end);
-end
-addpath( dirOnsas ) ;
 
 problemName = 'springMass' ;
 
 % scalar parameters
 
 % spring mass system 
-if nargin <= 1
+if nargin < 2
+hofsfssssss = 1 
   k        = 39.47 ;
   c        = 0.1   ;
   m        = 1     ;
@@ -127,10 +121,13 @@ flagOutputMatrices = 1 ;
 
 storeBoolean = 1 ;
 
-ONSAS
+if nargin == 0
+  onsasDir = [ pwd '/../' ] ;
+end
 
-load ../../output.mat 
+run( [ onsasDir 'ONSAS.m' ] ) ;
 
+load( [ onsasDir 'auxiliar.mat']); delete( [ onsasDir 'auxiliar.mat'] );
 
 neumdofs = BCsData.neumdofs                ; 
 K        = KT(neumdofs,neumdofs)           ;
@@ -140,5 +137,4 @@ fext     = loadFactors                     ;
 us       = matUs(neumdofs,:)               ;
 udots    = matUs(neumdofs,:)               ;
 
-
-save -mat ../../output.mat  K C M fext us udots
+save -mat outputMatrices.mat  K C M fext us udots

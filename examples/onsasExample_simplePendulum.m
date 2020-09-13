@@ -4,8 +4,6 @@
 
 clear all, close all
 
-% --- general data ---
-dirOnsas = [ pwd '/..' ] ;  addpath(dirOnsas ) ;
 problemName = 'simplePendulumTrussHHT' ;
 % ------------------------------------
 
@@ -63,7 +61,9 @@ numericalMethodParams = [ 4 ...
 plotParamsVector = [ 3 ];
 
 % run ONSAS
-ONSAS, controlDispsA = controlDisps ;
+run( [  pwd  '/../ONSAS.m' ] ) ;
+
+controlDispsA = controlDisps ;
 
 % ------------------------------------
 
@@ -77,7 +77,9 @@ loadsParams  = {};
 booleanSelfWeightZ = 1 ;
 
 % run ONSAS
-ONSAS, controlDispsB = controlDisps ;
+run( [  pwd  '/../ONSAS.m' ] ) ;
+
+controlDispsB = controlDisps ;
 
 % ------------------------------------
 uNum = PenduloNL_HHT( l0, A, Es, m, nodalDispDamping, g, timeIncr, -alphaHHT, finalTime, stopTolForces, stopTolIts, 1, 0 ) ;

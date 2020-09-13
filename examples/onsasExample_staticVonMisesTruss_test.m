@@ -1,9 +1,8 @@
 % ======================================================================
 % Von Mises truss example
 
-clear all, close all
-dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
-problemName = 'staticVonMisesTrussLin' ;
+close all, clear all %#ok
+problemName = 'staticVonMisesTrussLin' ; %#ok
 
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
@@ -51,7 +50,7 @@ reportBoolean    = 1     ;
 analyticSolFlag = 2    ;
 analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
-ONSAS
+run( [ pwd '/../ONSAS.m' ] ) ;
 % ----------------------------------------------------------------------
 
 
@@ -84,7 +83,7 @@ l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-ONSAS
+run( [ pwd '/../ONSAS.m' ] ) ;
 
 controlDispsNR = controlDisps ;
 loadFactorsNR  = loadFactors ;
@@ -106,7 +105,7 @@ analyticFunc    = @(w) ...
   -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-ONSAS
+run( [ pwd '/../ONSAS.m' ] ) ;
 
 controlDispsNRAL = controlDisps ;
 loadFactorsNRAL  = loadFactors  ;
@@ -128,9 +127,3 @@ labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('analytic','NRAL-DXF','NR','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-
-if isThisOctave
-  cd(dirOnsas); cd(outputDir);
-  print( [ 'vonmises' ] ,'-dpdflatex','-tight') ;
-  cd(acdir);
-end
