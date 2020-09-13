@@ -50,21 +50,20 @@ materialsParams = {[ 0 2 E nu ]} ;
 
 % --- Element parameters ---
 elementsParams = { [ 5   ] ; ...
-                   [ 4 2 ] } ;
+                   [ 4 2 ] } ; % analytic constitutive tensor
 
 % --- Load parameters ---
-loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;
+loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;  % global coords tension applied
 
 % --- CrossSection parameters ---
 crossSecsParams = cell(1,1) ; %
 
-% ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
 springsParams = {[ inf 0  0   0   0   0 ] ; ...
                  [ 0   0  inf 0   0   0 ] ; ...
                  [ 0   0  0   0   inf 0 ] } ;
 
-% ======================================================================
+% ----------------------------------------------------------------------
 
 %% --- Analysis parameters ---
 stopTolIts       = 30      ;
@@ -93,7 +92,6 @@ ONSAS
 % --------------------------------------------------------
 
 
-return  
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = numericalVals ;
@@ -108,19 +106,15 @@ problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 
 [ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
-% Loads matrix: 		Is defined by the corresponding load label. First entry is a boolean to assign load in Global or Local axis. (Recommendation: Global axis). 
-%										Global axis -> 1, local axis -> 0.
-%										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
+loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % local coords appliend tension
 
-loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
-
-elementsParams{2,1} = [ 4 1 ] ;
+elementsParams{2,1} = [ 4 1 ] ; % complex step constitutive tensor
 
 plotParamsVector = [ 0 ] ;
 analyticSolFlag        = 0 ;
 
 % run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+ONSAS
 
 controlDispsValsCase2         = controlDisps  ;
 loadFactorNumericalValsCase2  = numericalVals ;
@@ -141,7 +135,6 @@ Conec = {[ 0 1 0 0 1   1   ] ; ... % fixed node
          [ 1 2 0 1 0   1 2 ]   ... % truss element
         } ;
 
-
 % ======================================================================
 % --- MELCS parameters ---
 
@@ -156,14 +149,13 @@ E = 1 ; nu = 0.3 ;
 materialsParams{1} = [ 0 2 E nu ] ;
 
 % --- Element parameters ---
-elementsParams{1,1} = [ 1   ] ;
-elementsParams{2,1} = [ 2 0 ] ;
+elementsParams = { 1  ; [ 2 0 ]} ;
 
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
 
 % --- CrossSection parameters ---
-crossSecsParams{1,1} = 1*1 ;
+crossSecsParams = { [ 2 Ly Lz] } ; %
 
 % ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
@@ -177,12 +169,12 @@ plotParamsVector       = [ 0 ] ;
 
 controlDofs = [ 2 1 1 ] ;
 
-
 %% run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+ONSAS
 
 controlDispsValsCase3         = controlDisps  ;
-loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
+%~ loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
+loadFactorNumericalValsCase3  = numericalVals ;
 
 
 % --- plots ---
@@ -206,6 +198,5 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %~ %%print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
 
-cd(dirOnsas); cd(outputDir);
-print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
-cd(acdir);
+%~ print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
+print( [ '../plotsExtensionSVK.png' ] ,'-dpng','-tight') ;
