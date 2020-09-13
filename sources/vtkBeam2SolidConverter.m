@@ -89,20 +89,20 @@ elseif typeSolid == 25 % vtkQuadHexa
 	matSecNodesExtVerticesR  = ( expon( vecrotNode1 ) * matSecNodesExtVertices' )'  ;
 	matSecNodesExtInterR     = ( expon( vecrotNode1 ) * matSecNodesExtInter' )'     ;
 	
-	nodeExtVertices1  = NodesDef(1,:) + matSecNodesExtVerticesR    ;
-	nodeExtInter1     = NodesDef(1,:) + matSecNodesExtInterR       ;   
+	nodeExtVertices1  = ones(4,1) * NodesDef(1,:) + matSecNodesExtVerticesR    ;
+	nodeExtInter1     = ones(4,1) * NodesDef(1,:) + matSecNodesExtInterR       ;   
     
 	% Rot section 2
 	matSecNodesExtVerticesR  = ( expon( vecrotNode2 ) * matSecNodesExtVertices' )'  ;
 	matSecNodesExtInterR     = ( expon( vecrotNode2 ) * matSecNodesExtInter' )'     ;
 	
-	nodeExtVertices2  = NodesDef(2,:) + matSecNodesExtVerticesR     ;
-	nodeExtInter2     = NodesDef(2,:) + matSecNodesExtInterR        ;  
+	nodeExtVertices2  = ones(4,1) * NodesDef(2,:) + matSecNodesExtVerticesR     ;
+	nodeExtInter2     = ones(4,1) * NodesDef(2,:) + matSecNodesExtInterR        ;  
 	
   % Rot intermediate section
 	vecrot = ( vecrotNode1 + vecrotNode2 ) / 2            ;
 	matSecNodesInterR = ( expon( vecrot) * matSecNodesInter' )'               ;
-	nodeInt           = ( NodesDef(1,:) + NodesDef(2,:) ) / 2 + matSecNodesInterR ; % Interpolated linearly ...
+	nodeInt           = ones(4,1) * ( NodesDef(1,:) + NodesDef(2,:) ) / 2 + matSecNodesInterR ; % Interpolated linearly ...
 	
   % Nodes
 	Nodesvtk = [ Nodesvtk         ; ...

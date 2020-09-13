@@ -19,8 +19,7 @@
 % Script for verification of the input variables definition. Default
 % values ar assigned.
 
-if exist('booleanScreenOutput') == 0 || booleanScreenOutput
-
+if exist('booleanScreenOutput','var') == 0 || booleanScreenOutput
   % default value
   booleanScreenOutput = 1 ;
 
@@ -44,7 +43,7 @@ if booleanScreenOutput
   fprintf( ['| Solving problem:  ' problemName '\n' ] ) ;
   fprintf(  '|  - input variables verification ... ') ;
 end
-if exist( 'loadsParams' ) == 0
+if exist( 'loadsParams','var' ) == 0
   loadsParams = {} ; 
 end
 
@@ -64,7 +63,7 @@ for j = 1:length(checkVarNamesList)
 end
 % ------------------------------------------
 
-if exist( 'crossSecsParams' ) == 0
+if exist( 'crossSecsParams','var' ) == 0
   crossSecsParams = {} ; 
 end
 
@@ -238,6 +237,7 @@ elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   if booleanScreenOutput
     fprintf( ['|  - Creating output directory ...'] ) ;
   end
+  outputDir
   mkdir( outputDir );
 end
 if booleanScreenOutput

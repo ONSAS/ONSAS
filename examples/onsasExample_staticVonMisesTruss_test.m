@@ -1,9 +1,8 @@
 % ======================================================================
 % Von Mises truss example
 
-clear all, close all
-
-problemName = 'staticVonMisesTrussLin' ;
+close all, clear all %#ok
+problemName = 'staticVonMisesTrussLin' ; %#ok
 
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
@@ -51,8 +50,6 @@ reportBoolean    = 1     ;
 analyticSolFlag = 2    ;
 analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
-pwd 
-[ pwd '/../ONSAS.m' ]
 run( [ pwd '/../ONSAS.m' ] ) ;
 % ----------------------------------------------------------------------
 
