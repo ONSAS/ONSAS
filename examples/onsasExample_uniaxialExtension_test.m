@@ -177,26 +177,29 @@ controlDispsValsCase3         = controlDisps  ;
 loadFactorNumericalValsCase3  = numericalVals ;
 
 
+% ----------------------------------------------------------------------
 % --- plots ---
-
 lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
 
-figure
-plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
-grid on, hold on
-plot( controlDispsValsCase1, loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
-plot( controlDispsValsCase2, loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
-plot( controlDispsValsCase3, loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
+figure, grid on, hold on
 
-%~ %%figure
-%~ %%semilogy(controlDisps, abs( analyticVals-loadFactors) )
+plot( controlDispsValsCase1, ...
+      loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
 
-% ---------------
+plot( controlDispsValsCase1, ...
+      loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
+
+plot( controlDispsValsCase2, ...
+      loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
+
+plot( controlDispsValsCase3, ...
+      loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
+
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('analytic Sol','numerical Sol 1','numerical Sol 2','numerical Sol 3','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-%~ %%print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
-
 %~ print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
-print( [ '../plotsExtensionSVK.png' ] ,'-dpng','-tight') ;
+print( [ '../plotsExtensionSVK.png' ] ,'-dpng') ;
+
+% ----------------------------------------------------------------------
