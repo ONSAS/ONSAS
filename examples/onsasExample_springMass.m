@@ -15,7 +15,6 @@ problemName = 'springMass' ;
 
 % spring mass system 
 if nargin < 2
-hofsfssssss = 1 
   k        = 39.47 ;
   c        = 0.1   ;
   m        = 1     ;
@@ -46,10 +45,10 @@ nodalDamping = c ;
 
 freq   = omegaN / (2*pi)      ;
 TN     = 2*pi / omegaN        ;
-dtCrit = TN / pi              
+dtCrit = TN / pi              ;
 
 % numerical method params
-finalTime     = 2*2*pi/omegaN                ;
+finalTime     = 2*2*pi/omegaN   ;
 stopTolDeltau = 1e-10           ; 
 stopTolForces = 1e-10           ;
 stopTolIts    = 30              ;
@@ -125,9 +124,10 @@ if nargin == 0
   onsasDir = [ pwd '/../' ] ;
 end
 
-run( [ onsasDir 'ONSAS.m' ] ) ;
+addpath( onsasDir ) ;
+ONSAS
 
-load( [ onsasDir 'auxiliar.mat']); delete( [ onsasDir 'auxiliar.mat'] );
+load( [ 'auxiliar.mat']); delete( [ 'auxiliar.mat'] );
 
 neumdofs = BCsData.neumdofs                ; 
 K        = KT(neumdofs,neumdofs)           ;
