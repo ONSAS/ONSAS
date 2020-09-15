@@ -137,4 +137,4 @@ fext     = loadFactors                     ;
 us       = matUs(neumdofs,:)               ;
 udots    = matUs(neumdofs,:)               ;
 
-save -mat outputMatrices.mat  K C M fext us udots
+save -mat outputMatrices.mat  K C M fext us udots timeIncr
