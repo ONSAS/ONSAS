@@ -200,6 +200,6 @@ legend('analytic Sol','numerical Sol 1','numerical Sol 2','numerical Sol 3','loc
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %~ print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
-print( [ '../plotsExtensionSVK.png' ] ,'-dpng') ;
+print( [ '../../plotsExtensionSVK.png' ] ,'-dpng') ;
 
 % ----------------------------------------------------------------------

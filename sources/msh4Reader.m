@@ -179,7 +179,7 @@ if strncmp( X, '$Elements',5)
         error('dimension not implemented yet. Please create an issue.')
       end
       
-      elemInds = auxMatCon(:,1) 
+      elemInds = auxMatCon(:,1)     ;
       nodes    = auxMatCon(:,2:end) ; 
       indEnt = find( vecsPhysicalPropsPerEntity{aux(1)+1}(:,1) == aux(2) ) ;
       auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}( indEnt ,2 ) ;
