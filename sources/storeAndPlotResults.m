@@ -20,7 +20,8 @@ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 timeIndex = modelCurrSol.timeIndex ; 
 
 if timeIndex == 1
-  matUs      = modelCurrSol.U ;
+  matUs      = modelCurrSol.U          ;
+  matUdots   = modelCurrSol.Udot       ;
   cellStress = { modelCurrSol.Stress } ;
 
   if length( controlDofsAndFactors ) > 0  
@@ -87,6 +88,7 @@ end
 
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
+  matUdots   (:, timeIndex+1 )       = modelNextSol.Udot               ;
   cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
   matNs      (:, timeIndex+1 )       = normalForces                    ;

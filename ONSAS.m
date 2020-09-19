@@ -17,23 +17,18 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% ==============================================================================
-
-Taux = cputime() ;
 
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
-ONSASversion ='0.1.10';
+timeAux      = cputime() ; % starts measuring execution time
+ONSASversion = '0.1.10'  ; % sets the current version
 
-if exist(dirOnsas)~=0 && strcmp( dirOnsas, pwd )
-  acdir = pwd ;
-else
-  acdir = pwd ; cd(dirOnsas);
-end
+% --- adds onsas src dirs to path ---
+str  = which('ONSAS') ;
 
-if isunix, dirSep = '/'; else, dirSep = '\'; end
-addpath( [ pwd dirSep 'sources'] ) ;
-addpath( [ pwd dirSep 'user'   ] ) ;
+%if isunix, dirSep = '/'; else dirSep = '\'; end
+dirs = genpath( str(1:end-8) ) ;
+addpath( dirs );
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification
@@ -42,7 +37,6 @@ inputVarsVerification
 
 % ==============================================================================
 % ----------------------------    Analysis     ---------------------------------
-
 
 % Initial computations: sets initial state.
 [ modelCurrSol, modelProperties, BCsData ] =  initialDefinitions( ...
@@ -104,9 +98,12 @@ end
 if reportBoolean
   outputReport
 end
-totalTime = cputime()-Taux ;
-fprintf([ '|-------------------------------------------------|\n'])
-fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
-fprintf([ '|=================================================|\n\n\n'])
 
-cd( acdir );
+totalTime = cputime() - timeAux ;
+
+if booleanScreenOutput
+  fprintf([ '|-------------------------------------------------|\n'])
+  fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
+  fprintf([ '|=================================================|\n\n\n'])
+end
+

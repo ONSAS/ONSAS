@@ -19,9 +19,9 @@
 octave-workspace
 /documentation/*.bbl
 /documentation/*.blg
-/input/*.bak
 /sources/*.txt
 /sources/*.oct
 *.mat
 *.dat
 *.lnx
+/examples/output/*

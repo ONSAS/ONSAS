@@ -3,7 +3,8 @@
 % ------------------------------------------------------------------------------
 
 clear all, close all
-dirOnsas = [ pwd '/..' ] ;   problemName = 'windTurbine' ;
+
+problemName = 'windTurbine' ;
 
 % ------------------------------------
 E         = 200e9 ;
@@ -102,7 +103,7 @@ reportBoolean = 0 ;
 
 
 % --------------------------------------
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+run( [ pwd '/../ONSAS.m' ] ) ;
 % --------------------------------------
 
 lw  = 2   ; ms  = 5.5 ;
