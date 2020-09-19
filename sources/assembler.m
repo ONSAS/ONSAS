@@ -158,7 +158,6 @@ else
 
     % ---------  tetrahedron solid element -----------------------------
     case 4
-
       [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
                               elemConstitutiveParams, paramOut, elemElementParams(2)) ;
 

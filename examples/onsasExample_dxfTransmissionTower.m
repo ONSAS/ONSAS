@@ -6,9 +6,6 @@
 
 clear all, close all
 
-%% General data
-dirOnsas = [ pwd '/..' ] ; addpath( [ dirOnsas ] );
-
 % Problem name in order to write LaTex report 
 problemName = 'dxfTransmissionTower' ; 
 
@@ -34,8 +31,8 @@ crossSecsParams = { [ 2 .2 .2 ] } ;
 springsParams   = { [ inf  0  inf  0  inf   0 ]} ;
 
 % Nodes and Conectivity matrix from .dxf file
-addpath( [ dirOnsas '/sources' ] );
-[ Nodes, Conec ] = meshFileReader( 'torreAltaTension.dxf' ) ;
+addpath( [ pwd '/../sources' ] ) ;
+[ Nodes, Conec ] = meshFileReader( 'geometry_transmissionTower.dxf' ) ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
@@ -51,4 +48,4 @@ stabilityAnalysisBoolean = 1 ;
 plotParamsVector = [ 3 ] ;
 
 % run ONSAS
-ONSAS
+run( [  pwd  '/../ONSAS.m' ] ) ;

@@ -1,12 +1,13 @@
 % ======================================================================
 % Von Mises truss example
 
-clear all, close all
-dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
-problemName = 'staticVonMisesTrussLin' ;
+close all, clear all %#ok
+problemName = 'staticVonMisesTrussLin' ; %#ok
+
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
+
 
 % ----------------------------------------------------------------------
 % MELCS parameters
@@ -27,7 +28,6 @@ crossSecsParams = { [ 2 sqrt(A) sqrt(A) ] } ;
 springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
                     [ 0    0  inf  0    0   0 ] } ;
 
-% ----------------------------------------------------------------------
 % nodes coordinates matrix and connectivity cell
 auxx = cos( ang1*pi/180 ) * L ;        auxz = sin( ang1*pi/180 ) * L ;
 
@@ -50,7 +50,9 @@ reportBoolean    = 1     ;
 analyticSolFlag = 2    ;
 analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
-ONSAS
+run( [ pwd '/../ONSAS.m' ] ) ;
+% ----------------------------------------------------------------------
+
 
 % ----------------------------------------------------------------------
 % connectivity cell
@@ -69,7 +71,7 @@ crossSecsParams = { [ 3 sqrt(A*4/pi) ] } ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
-targetLoadFactr  = 1.5e8  ;    nLoadSteps       = 6      ;
+targetLoadFactr  = 2.0e8  ;    nLoadSteps       = 6      ;
 stopTolIts       = 30     ;
 
 numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
@@ -77,65 +79,42 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 stabilityAnalysisBoolean = 2 ;
 
-analyticSolFlag = 2    ;
 l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-ONSAS
+run( [ pwd '/../ONSAS.m' ] ) ;
 
-return
+controlDispsNR = controlDisps ;
+loadFactorsNR  = loadFactors ;
+% ----------------------------------------------------------------------
+
+
+% ----------------------------------------------------------------------
+problemName = 'staticVonMisesTrussNRAL_DXF' ;
+[ Nodes, Conec ] = meshFileReader( 'geometry_vonMises.dxf' ) ;
+
 % arc length params
-targetLoadFactrNRAL   = 4e7  ;
+targetLoadFactrNRAL   = 4e8  ;
 incremArcLen          = 0.2  ;
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
 
-materialsParams = {[ rho 3 E nu ]} ;
-
 % analytical solution using engineering strain
-analyticSolFlag = 2    ;
 analyticFunc    = @(w) ...
   -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-plotParamsVector = [ 3 ];
+run( [ pwd '/../ONSAS.m' ] ) ;
 
-%% ONSAS execution
-ONSAS
-
-return
-% ======================================================================
-
-%~ Conec = {[ 0 1 0 0 1  1   ] ; ... % fixed node
-         %~ [ 0 1 1 0 2  2   ] ; ... % loaded node
-         %~ [ 0 1 0 0 1  3   ] ; ... % fixed node
-         %~ [ 1 2 0 1 0  1 2 ] ; ... % truss element
-         %~ [ 1 2 0 1 0  2 3 ]   ... % truss element
-         %~ } ;
-       %~ Conec
-         
-[ Nodes, Conec ] = meshFileReader( 'vonMises.dxf' ) ;
-
-         
 controlDispsNRAL = controlDisps ;
-loadFactorsNRAL  = loadFactors ;
-analyticNRAL = analyticVals ;
-
-nLoadSteps       = 6    ;
-
-numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
-                            targetLoadFactrNR nLoadSteps ] ; 
-%~ plotParamsVector = [ 3 ];
-plotParamsVector = [ 0 ];
-problemName = 'staticVonMisesTrussNR_DXF' ;
-
-acdir = pwd ; cd(dirOnsas); ONSAS; cd(acdir) ;
-
-controlDispsNR = controlDisps ;
-loadFactorsNR  = loadFactors ;
+loadFactorsNRAL  = loadFactors  ;
+analyticNRAL     = analyticVals ;
+% ----------------------------------------------------------------------
 
 
+% ----------------------------------------------------------------------
+% --- plots ---
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 
 figure
@@ -145,11 +124,6 @@ plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms 
 plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
 
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic','NRAL','NR-DXF','location','North')
+legend('analytic','NRAL-DXF','NR','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-
-cd(dirOnsas); cd(outputDir);
-print( [ 'vonmises' ] ,'-dpdflatex','-tight') ;
-cd(acdir);
-

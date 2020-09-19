@@ -15,51 +15,42 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% run all test examples from examples folder.
+% This script runs all the *test.m examples from the examples folder.
 
-clear all, close all
-
+close all, clear all %#ok
 keyword = 'test.m' ;
 
-cd('../sources/')
-  octaveBoolean = isThisOctave ;
-cd('../examples/')
+if isunix, dirSep = '/'; else dirSep = '\'; end
+addpath( ['..' dirSep 'sources' ] ); octaveBoolean = isThisOctave ;
 
 if octaveBoolean
   fileslist = readdir('./');
 else
-  fileslist = {} ;
-  auxMatlab = dir('*.*');
+  auxMatlab = dir('*.*')                  ;
+  fileslist = cell(length( auxMatlab ),1) ;
   for k=1:length( auxMatlab )
     fileslist{k} = auxMatlab(k).name ;
   end
 end
 
-keyfiles  = {} ;
-
-totalRuns = 0 ;
+keyfiles = cell(length(fileslist),1); totalRuns = 0  ;
 
 for i=1:length(fileslist)
-  if length( strfind( fileslist{i}, keyword ) ) > 0
-    totalRuns = totalRuns +1 ; 
-    keyfiles{totalRuns} = fileslist{i} ;
+  if ~isempty( strfind( fileslist{i}, keyword ) )
+    totalRuns             = totalRuns +1 ;
+    keyfiles{ totalRuns } = fileslist{i} ;
   end
 end
 
-keyfiles
-
-current       = 1 ;
-totalRuns
-
-verifBoolean = 1 ;
+current  = 1 ;   verifBoolean = 1 ;
 
 while current <= totalRuns && verifBoolean == 1
-
-  save('-mat', 'exData.mat','current','totalRuns', 'keyfiles' );
-
-  run( [ './' keyfiles{current} ] ) ;
-
-  pause(0.5)
+  % save key files data to avoid clear all commands
+  save( '-mat', 'exData.mat', 'current', 'totalRuns', 'keyfiles' );
+ 
+  % run current example
+  fprintf([' === running script: ' keyfiles{current} '\n' ]);
+  run( keyfiles{current} ) ;
 
   if verifBoolean
     fprintf([' === test ' problemName ' problem:  PASSED === \n\n']);
@@ -67,13 +58,11 @@ while current <= totalRuns && verifBoolean == 1
     fprintf([' === test ' problemName ' problem FAILED   === \n\n']);
   end
   
-  load('exData.mat');
-  current = current + 1 ; 
+  % reload key files data and increment current
+  load('exData.mat') ;  current = current + 1 ; 
 end
 
-delete('exData.mat')
-
+delete('exData.mat');
 fidVB = fopen('auxVerifBoolean.dat','w') ;
 fprintf( fidVB, sprintf('%1i',verifBoolean ) );
 fclose( fidVB );
-
