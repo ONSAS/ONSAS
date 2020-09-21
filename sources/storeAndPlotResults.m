@@ -40,9 +40,20 @@ if length( controlDofsAndFactors ) > 0
   controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
                                                    .* controlDofsAndFactors(:,2) ;
 end
+
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
+if exist( 'iniMatUs' )
+  if timeIndex+2 <= size( iniMatUs,2)
+    Utp10 = iniMatUs(:,timeIndex+2) ;
+  else
+    Utp10 = [] ;
+  end
+end
+
 indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
+
+
 
 if timeIndex == 1
   normalForcesIni = zeros( nElems, 1 ) ;
