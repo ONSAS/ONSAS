@@ -20,7 +20,7 @@
 % the next time step using the numerical method and parameters provided by the
 % user.
 
-function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties ) ;
+function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties, Utp10 ) ;
 
 startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
 
@@ -49,7 +49,11 @@ Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
 %~ Fintt = Fint ; Fmast = Fmas ; Fvist = Fvis ;
 
 % --- start iteration with previous displacements ---
-Utp1k       = Ut       ;   % initial guess
+if isempty( Utp10 )
+  Utp1k       = Ut       ;   % initial guess
+else
+  Utp1k       = Utp10    ;
+end
 
 if startPreviousVels == 1
   Udottp1k    = Udott    ;
@@ -113,7 +117,6 @@ while  booleanConverged == 0
 
 end % iteration while
 % --------------------------------------------------------------------
-
 
 Utp1       = Utp1k ;
 Udottp1    = Udottp1k ;
