@@ -144,7 +144,7 @@ else
 
       if (length( elemCrossSecParams) == 3) && (elemCrossSecParams(3) == 1)
          disp('hola')
-         stop
+         %~ stop
                 
       end
 

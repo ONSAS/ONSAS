@@ -12,14 +12,14 @@ close all, problemName = '1DHeatTransfer' ;
 if nargin < 2
 
   timeIncr   = 0.001 ;
-  Tfinal = 1 ;
+  Tfinal = .004 ;
   rho    = 1 ;
   cSpHe  = 1 ;
   kCond  = .5 ;
   L      = 2.75 ; % domain [0,L]
   Area   = 1 ;
   hConv  = 10 ;
-  nelem  = 10  ;
+  nelem  = 3  ;
 
   anlyBoolean = 0 ;              wx = 1 ;
 
@@ -72,7 +72,7 @@ bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
 % initial temperature
 %~ T0     = sin(pi*xs*wx) + 0.5*sin(3*pi*xs*wx) ;
 T0     = 0.5*Tamb * ones( size( xs ) ) ;
-T0     = 0.5*Tamb * ( 1 + .1* sin( pi * xs / L ) ) ;
+T0     = 0.5*Tamb * ( 1 + .0* sin( pi * xs / L ) ) ;
 % ---
 
 Ts     = T0 ;
@@ -88,7 +88,8 @@ QhG    = zeros( nnodes, 1      ) ;
 for i = 1 : nelem
   nodeselem = [ i i+1 ] ;
   
-  elemDofs = nodes2dofs ( nodeselem, 1 ) ;
+  %~ elemDofs = nodes2dofs ( nodeselem, 1 ) ;
+  elemDofs = nodeselem ;
   
   KdiffG( elemDofs , elemDofs ) = ...
   KdiffG( elemDofs , elemDofs ) + Kdiffe  ; 
@@ -151,7 +152,13 @@ for i=0:nt
 
   if i~=0
     fext ( :,i) = qext ( neumdofs    ) ;
+  qext ( neumdofs    ) * dt
   
+  a = hConv * ( Tamb - Ts(:,i) )
+  
+  qext ( neumdofs    ) * dt ...
+          - KdiffG( neumdofs, : ) * Ts( :, i ) * dt
+          
     f = (    qext ( neumdofs    ) * dt ...
           - KdiffG( neumdofs, : ) * Ts( :, i ) * dt ...
           + MintEG( neumdofs, : ) * Ts( :, i ) 
