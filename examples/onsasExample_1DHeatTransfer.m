@@ -11,19 +11,20 @@ close all, problemName = '1DHeatTransfer' ;
 % heat transfer system 
 if nargin < 2
 
-  timeIncr   = 0.001 ;
-  Tfinal = .004 ;
-  rho    = 1 ;
-  cSpHe  = 1 ;
-  kCond  = .5 ;
-  L      = 2.75 ; % domain [0,L]
-  Area   = 1 ;
-  hConv  = 10 ;
-  nelem  = 3  ;
+  timeIncr  = 0.001 ;
+  Tfinal    = 2 ;
+  rho       = 1 ;
+  cSpHe     = 1 ;
+  kCond  = 2  ;
+  L      = 3.4 ; % domain [0,L]
+  Area   = 1   ;
+  hConv  = 2  ;
+  nelem  = 10   ;
 
   anlyBoolean = 0 ;              wx = 1 ;
 
-  Tamb        = 20       ;
+  Tamb        = 12       ;
+  T0val = 10 ;
   diriDofs    = [ ] ;  robiDofs    = [ 1 nelem+1 ] ;  
 
 else
@@ -63,16 +64,17 @@ neumdofs( diriDofs ) = [] ;
 lelem  = L/nelem ;
 
 % local elemental diffussion equation
-Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
+Kke = kCond * Area * lelem * 1/(lelem^2) * [ 1 -1 ; -1 1 ] ;
 
-MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
+%~ Ce  = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
+Ce  = rho * cSpHe * Area * lelem / 2 * [ 1 0 ; 0 1 ] ;
 
 bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
 
 % initial temperature
 %~ T0     = sin(pi*xs*wx) + 0.5*sin(3*pi*xs*wx) ;
-T0     = 0.5*Tamb * ones( size( xs ) ) ;
-T0     = 0.5*Tamb * ( 1 + .0* sin( pi * xs / L ) ) ;
+T0     = T0val * ones( size( xs ) ) ;
+%~ T0     = T0val * ( 1 + .0* sin( pi * xs / L ) ) ;
 % ---
 
 Ts     = T0 ;
@@ -80,9 +82,9 @@ Ts     = T0 ;
    
 % ------------------------
 % matrices/vectors assembly
-KdiffG = zeros( nnodes, nnodes ) ;
-MintEG = zeros( nnodes, nnodes ) ;
-MrobiG = zeros( nnodes, nnodes ) ;
+KkG    = zeros( nnodes, nnodes ) ;
+CG     = zeros( nnodes, nnodes ) ;
+KcG    = zeros( nnodes, nnodes ) ;
 QhG    = zeros( nnodes, 1      ) ;
 
 for i = 1 : nelem
@@ -91,11 +93,11 @@ for i = 1 : nelem
   %~ elemDofs = nodes2dofs ( nodeselem, 1 ) ;
   elemDofs = nodeselem ;
   
-  KdiffG( elemDofs , elemDofs ) = ...
-  KdiffG( elemDofs , elemDofs ) + Kdiffe  ; 
+  KkG( elemDofs , elemDofs ) = ...
+  KkG( elemDofs , elemDofs ) + Kke  ; 
   
-  MintEG( elemDofs , elemDofs ) = ...
-  MintEG( elemDofs , elemDofs ) + MintEe  ; 
+  CG( elemDofs , elemDofs ) = ...
+  CG( elemDofs , elemDofs ) + Ce  ; 
 
   QhG   ( elemDofs            ) = ...
   QhG   ( elemDofs            ) + bQhe  ; 
@@ -103,34 +105,35 @@ for i = 1 : nelem
 end
 
 if  ~isempty( robiDofs )
-  MrobiG ( robiDofs, robiDofs ) = hConv ;
+  
+  KcG ( robiDofs, robiDofs ) = hConv * Area * eye(length(robiDofs)) ;
 end
 
-KdiffG = KdiffG + MrobiG ;
+KG  = KkG + KcG ;
 
 % ------------------------
 
-CDD = MintEG(diriDofs, diriDofs) ;
-CND = MintEG(neumdofs, diriDofs) ;
-CNN = MintEG(neumdofs, neumdofs) ;
+if isempty( diriDofs )
+  systMatrix = CG + KG * dt ;
+else
+  error('add case');
+end
 
 qext = zeros( nnodes, 1 ) ;
 %~ if exist( 'qentrIzq' ) ~= 0, qext(  1) = qentrIzq ; end
 %~ if exist( 'qentrDer' ) ~= 0, qext(end) = qentrDer ; end
 
-if ~isempty( robiDofs )
-  qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
-end
+% convection
+%~ KcG
+qext = qext + KcG * Tamb * ( ones(nnodes,1) ) ;
 
-Tamb
-T0
-hConv
+%~ Tamb
+%~ T0
+%~ hConv
 
-%~ return
+%~ qext 
 
-
-qext = qext + QhG 
-
+qext = qext + QhG  ;
 
 if plotBoolean
   figure
@@ -142,35 +145,47 @@ LW = 1.5 ;
 
 %~ nt
 
-fext = zeros( size(Ts) ) ;
+fext = qext ( neumdofs    ) ;
 
 % ------------------------
 % time loop
-for i=0:nt
-  i
-  t = i*dt 
+for i=1:nt % nt increments
+  
+  Ti = Ts( :, i ) ;  
 
-  if i~=0
-    fext ( :,i) = qext ( neumdofs    ) ;
-  qext ( neumdofs    ) * dt
+  ip1 = i+1  ;
+  tp1 = ip1 * dt ;
+
+  fext ( :,ip1) = qext ( neumdofs    ) ;
+ 
+  %~ qext ( neumdofs    ) * dt
   
-  a = hConv * ( Tamb - Ts(:,i) )
+  %~ a = hConv * ( Tamb - Ts(:,i) )
   
-  qext ( neumdofs    ) * dt ...
-          - KdiffG( neumdofs, : ) * Ts( :, i ) * dt
-          
-    f = (    qext ( neumdofs    ) * dt ...
-          - KdiffG( neumdofs, : ) * Ts( :, i ) * dt ...
-          + MintEG( neumdofs, : ) * Ts( :, i ) 
-        ) 
+  %~ qext ( neumdofs    ) * dt ...
+          %~ - KdiffG( neumdofs, : ) * Ts( :, i ) * dt
+  
+  qconv = qext ( neumdofs  ) * dt 
+  qabs = CG * Ti 
+
+  systIndTerm = ( qconv ...
+                  + qabs ) 
     
-    Tip1 = CNN \ f 
-    Ts( neumdofs, i+1 ) = Tip1 ;
+  Tip1 = systMatrix \ systIndTerm 
+
+  Ts( neumdofs, ip1 ) = Tip1 ;
+  
+  analyIndTeConv = hConv * Tamb * dt 
+  analyIndTeAbs  = rho * cSpHe * lelem * .5 * Ti
+  
+  analyIndTe = hConv * Tamb * dt + rho * cSpHe * lelem * .5 * Ti
+  
+  analyTp1 = analyIndTe / ( rho * cSpHe * lelem * .5 + hConv * dt ) 
+  
+  %~ return
+  
+  
     
-    if ~isempty( diriDofs ),
-      Ts( diridofs, i+1 ) = Tdiri   ;
-    end
-  end  
 
   %~ if anlyBoolean
     %~ if caseNum == 1 || caseNum == 2
@@ -182,7 +197,7 @@ for i=0:nt
   % --- plots ---
   if plotBoolean
     if mod(i, round(nt/nCurves) )==0
-      plot( xs    , Ts    (:, i+1), 'b-o', 'markersize', MS,'linewidth',LW );  
+      plot( xs    , Ts    (:, ip1), 'b-o', 'markersize', MS,'linewidth',LW );  
       
       if anlyBoolean
         plot( xsAnly, TsAnly(:, i+1), 'r--'  , 'markersize', MS,'linewidth',LW );  
@@ -194,6 +209,8 @@ for i=0:nt
 end
 % ------------------------
 
+%~ return
+
 if plotBoolean
   axis equal
   print( '../../1DheatTransfer.png','-dpng')
@@ -201,13 +218,10 @@ if plotBoolean
   %~ figure, plot( Ts(2,:) )
 end
 
-KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
-
-%~ save -mat auxVars.mat KdiffGNN CNN Ts
 
 M = zeros( nnodes, nnodes ) ;
-K = KdiffG ;
-C = MintEG ;
+K = KG ;
+C = CG ;
 
 us = [] ;
 udots = [] ;
