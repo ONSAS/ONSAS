@@ -12,7 +12,7 @@ close all, problemName = '1DHeatTransfer' ;
 if nargin < 2
 
   timeIncr  = 0.001 ;
-  Tfinal    = 2 ;
+  Tfinal    = .004 ;
   rho       = 1 ;
   cSpHe     = 1 ;
   kCond  = 2  ;
@@ -23,7 +23,7 @@ if nargin < 2
 
   anlyBoolean = 0 ;              wx = 1 ;
 
-  Tamb        = 12       ;
+  Tamb        = 8       ;
   T0val = 10 ;
   diriDofs    = [ ] ;  robiDofs    = [ 1 nelem+1 ] ;  
 
@@ -69,7 +69,7 @@ Kke = kCond * Area * lelem * 1/(lelem^2) * [ 1 -1 ; -1 1 ] ;
 %~ Ce  = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
 Ce  = rho * cSpHe * Area * lelem / 2 * [ 1 0 ; 0 1 ] ;
 
-bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
+bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 1 ;
 
 % initial temperature
 %~ T0     = sin(pi*xs*wx) + 0.5*sin(3*pi*xs*wx) ;
@@ -165,26 +165,23 @@ for i=1:nt % nt increments
   %~ qext ( neumdofs    ) * dt ...
           %~ - KdiffG( neumdofs, : ) * Ts( :, i ) * dt
   
-  qconv = qext ( neumdofs  ) * dt 
-  qabs = CG * Ti 
+  qconv = qext ( neumdofs  ) * dt ;
+
+  qabs = CG * Ti ;
 
   systIndTerm = ( qconv ...
-                  + qabs ) 
+                  + qabs ) ;
     
-  Tip1 = systMatrix \ systIndTerm 
+  Tip1 = systMatrix \ systIndTerm  ;
 
   Ts( neumdofs, ip1 ) = Tip1 ;
   
-  analyIndTeConv = hConv * Tamb * dt 
-  analyIndTeAbs  = rho * cSpHe * lelem * .5 * Ti
+  analyIndTeConv = hConv * Tamb * dt ;
+  analyIndTeAbs  = rho * cSpHe * lelem * .5 * Ti;
   
-  analyIndTe = hConv * Tamb * dt + rho * cSpHe * lelem * .5 * Ti
+  analyIndTe = hConv * Tamb * dt + rho * cSpHe * lelem * .5 * Ti ;
   
-  analyTp1 = analyIndTe / ( rho * cSpHe * lelem * .5 + hConv * dt ) 
-  
-  %~ return
-  
-  
+  analyTp1 = analyIndTe / ( rho * cSpHe * lelem * .5 + hConv * dt ) ;
     
 
   %~ if anlyBoolean
@@ -196,11 +193,16 @@ for i=1:nt % nt increments
   
   % --- plots ---
   if plotBoolean
+    if i == 1
+      plot( xs    , Ts    (:, 1), 'g-o', 'markersize', MS,'linewidth',LW );
+    end
+    
     if mod(i, round(nt/nCurves) )==0
       plot( xs    , Ts    (:, ip1), 'b-o', 'markersize', MS,'linewidth',LW );  
       
+      
       if anlyBoolean
-        plot( xsAnly, TsAnly(:, i+1), 'r--'  , 'markersize', MS,'linewidth',LW );  
+        plot( xsAnly, TsAnly(:, ip1), 'r--'  , 'markersize', MS,'linewidth',LW );  
       end
     end
   end
@@ -212,9 +214,9 @@ end
 %~ return
 
 if plotBoolean
-  axis equal
+  ylabel('Temperature (^\circC)')
+  xlabel('height (m)')
   print( '../../1DheatTransfer.png','-dpng')
-
   %~ figure, plot( Ts(2,:) )
 end
 
@@ -226,4 +228,8 @@ C = CG ;
 us = [] ;
 udots = [] ;
 
+fext
+K
+C
+M
 save -mat outputMatrices.mat  K C M fext timeIncr us udots
