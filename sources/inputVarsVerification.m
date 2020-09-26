@@ -19,8 +19,7 @@
 % Script for verification of the input variables definition. Default
 % values ar assigned.
 
-if exist('booleanScreenOutput') == 0 || booleanScreenOutput
-
+if exist('booleanScreenOutput','var') == 0 || booleanScreenOutput
   % default value
   booleanScreenOutput = 1 ;
 
@@ -44,14 +43,13 @@ if booleanScreenOutput
   fprintf( ['| Solving problem:  ' problemName '\n' ] ) ;
   fprintf(  '|  - input variables verification ... ') ;
 end
-if exist( 'loadsParams' ) == 0
+if exist( 'loadsParams','var' ) == 0
   loadsParams = {} ; 
 end
 
 
-
 % --- verification of relevant variables ---
-checkVarNamesList = { 'problemName', 'Nodes', 'Conec', 'dirOnsas', ...
+checkVarNamesList = { 'problemName', 'Nodes', 'Conec', ...
                       'materialsParams', ...
                       'elementsParams', ...
                       'loadsParams', ...
@@ -65,7 +63,7 @@ for j = 1:length(checkVarNamesList)
 end
 % ------------------------------------------
 
-if exist( 'crossSecsParams' ) == 0
+if exist( 'crossSecsParams','var' ) == 0
   crossSecsParams = {} ; 
 end
 
@@ -79,6 +77,11 @@ if exist( 'booleanSelfWeightZ' ) == 0
   booleanSelfWeightZ = 0 ; 
 end
 
+if ~exist( 'iniMatUs' )
+  Utp10 = [] ; 
+else
+  Utp10 = iniMatUs(:,2) ;
+end
 
 % ===  Conversion conec cell to matrix format... to improve in the future.... ===
 if iscell( Conec )
@@ -203,7 +206,7 @@ if booleanScreenOutput
   fprintf(' done.\n');
 end
 
-% creates outputdir
+% --- creates outputdir ---
 outputDir = [ './output/' problemName '/' ] ;
 
 if exist( './output/' ) ~= 7
@@ -239,6 +242,7 @@ elseif exist( ['./' problemName '/' ] ) ~= 7 % problemName is not a directory
   if booleanScreenOutput
     fprintf( ['|  - Creating output directory ...'] ) ;
   end
+  outputDir
   mkdir( outputDir );
 end
 if booleanScreenOutput

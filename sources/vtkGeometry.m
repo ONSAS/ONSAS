@@ -78,7 +78,7 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
     [ xdef, ydef, zdef, conecElem, titax, titay, titaz, Rr ] = outputFrameElementPlot( coordsElem, dispsElem, elemType ) ;
  
     % nodes sub-division 
-    ndivNodes = conecElem( end, 2 ) ;
+    ndivNodes = conecElem( end, 2 ) ; % last node in the sub-division
       
     % Local x coords in the reference config
     xloc = linspace( coordsElem(1), coordsElem( 7), ndivNodes )' ;  
@@ -93,56 +93,69 @@ if nElemsTrussOrFrame == nelems, % all are truss or beams
 
       coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ] ;
 			
-      if elemCrossSecParams(1) == 1  % general section
-        % equivalent square section using A = wy * wz
-        auxh = sqrt( elemCrossSecParams(2) ) ;   auxb = auxh ;
-        secc = [ 12 auxb auxh ] ;
-				cant = 4 ;
-      elseif elemCrossSecParams(1) == 2 % rectangular section
-        secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
-				cant = 4 ;
+      if elemCrossSecParams(1) == 1  || elemCrossSecParams(1) == 2 % general or rectangular section
+        if elemCrossSecParams(1) == 1
+          % equivalent square section using A = wy * wz
+          auxh = sqrt( elemCrossSecParams(2) ) ;   auxb = auxh ;
+          secc = [ 12 auxb auxh ] ;
+        else
+          secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
+        end
+                
+				iniNodes = [ 1 2 3 4  ] ;
+				midNodes = [          ] ;
+        endNodes = [ 5 6 7 8  ] ;
+
       elseif elemCrossSecParams(1) == 3 % circular section
+
         secc = [ 25 elemCrossSecParams(2) ] ;
-        cant = 20 ;
+
+				iniNodes = [ 1 2 3 4 9 10 11 12  ] ;
+				midNodes = [ 17 18 19 20         ] ;
+        endNodes = [ 5 6 7 8 13 14 15 16 ] ;
+
       end
+      
+      nNodesPerExt = length( endNodes ) ; 
+      nNodesMidEle = length( midNodes ) ;
+      totalNodes   = nNodesPerExt*2 + nNodesMidEle ;
+      
+      if length( iniNodes ) ~= nNodesPerExt, error('create issue.'), end
 
       [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, secc, dispsSubElem, Rr ) ;
       
-      if j==1
-        Nodesvtk = [ Nodesvtk ; NodesCell( 1:4, :) ] ;
-        vtkDispMat = [ vtkDispMat ; ones(cant,1)*(dispsSubElem(1:2:5)') ] ;
-      end
+      % disps
+      DispsNodesCell = zeros( size( NodesCell )) ;
+      DispsNodesCell(iniNodes,:) =  ones( nNodesPerExt, 1 )*(dispsSubElem(1:2:5 )') ;
+      DispsNodesCell(endNodes,:) =  ones( nNodesPerExt, 1 )*(dispsSubElem(7:2:11)') ;
+      if nNodesMidEle > 0
+        avgdisps   = (dispsSubElem(1:2:5)' + dispsSubElem(7:2:11)')*.5 ;
+        DispsNodesCell(midNodes,:) =ones( nNodesMidEle, 1 )*(avgdisps) ;
+      end     
       
-      Nodesvtk = [ Nodesvtk ; NodesCell( 5:end, : ) ] ; 
-      vtkDispMat = [ vtkDispMat ; ones(cant,1)*(dispsSubElem(7:2:11)') ] ;
+      if nargout > numminout % Conectivity is required as output
+        ConecCell(:,2:end) = ConecCell(:,2:end)+counterNodesVtk ;
+        Conecvtk = [ Conecvtk ; ConecCell ]   ; 
 
-      if nargout > numminout
-        ConecCell(:,2:end) = ConecCell(:,2:end) + (j-1) * cant + counterNodesVtk ;
-        Conecvtk = [ Conecvtk ; ConecCell ] ;
+        elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
+        counterCellsVtk = counterCellsVtk + ( ndivNodes - 1 ) ;
       end
 
+      % add nodes of the initial section and the displacements
+      Nodesvtk   = [ Nodesvtk   ; NodesCell ] ; % reorders
+      vtkDispMat = [ vtkDispMat ; DispsNodesCell ] ;
+
+      counterNodesVtk = counterNodesVtk + totalNodes ;
+      
     end % if divisions solids
 
     vtkNormalForces = [ vtkNormalForces ; ones( (ndivNodes-1),1)*normalForces(i) ] ;
     vtkStressMat    = [ vtkStressMat    ; ones( (ndivNodes-1),1)*stressMat(i)    ] ;
 
-    if nargout > 3
-      elem2VTKCellMap( i, 1:9 ) = (1:(ndivNodes-1)) + counterCellsVtk ;
-			if cant == 4
-				cant = 4 ;
-			else
-				cant = cant/2 ;
-			end
-				
-      counterNodesVtk = counterNodesVtk +   ndivNodes * cant  ;
-      counterCellsVtk = counterCellsVtk + ( ndivNodes - 1 ) ;
-    end
-
   end
   
   vtkStress = {}                ;
   vtkStress{3,1} = vtkStressMat ;
-
 
 elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
 

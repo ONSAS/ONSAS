@@ -1,9 +1,11 @@
 
-# ONSAS: an Open Nonlinear Structural Analysis Solver v0.1.10
+# ONSAS: an Open Nonlinear Structural Analysis Solver
 
+[![Build Status](https://travis-ci.org/ONSAS/ONSAS.svg?branch=master)](https://travis-ci.org/ONSAS/ONSAS)
 [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS_docs/dev/)
-
+[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
+[![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
 
 ## Table of Contents
 1. [About ONSAS](#aboutonsas)
@@ -36,7 +38,7 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 ![tower](https://github.com/ONSAS/ONSAS/blob/master/examples/tower.gif?raw=true)
 
 # A chain model
-![chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
+![chain](https://user-images.githubusercontent.com/42485529/92779625-9afb3180-f378-11ea-8114-854f2c751fed.gif?raw=true)
 
 ### License
 
@@ -57,7 +59,7 @@ The user should follow these steps to install and run onsas:
 ------
 
 ### Authors of code
-The following authors collaborated in various tasks including: design, development and testing of the code, with specific contributions given by the commits history: [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, **J. Bruno Bazzano**<sup>1,2</sup>, **Joaquín Viera** <sup>1</sup>, **Mauricio Vanzulli** <sup>3</sup> and [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en)<sup>4</sup>.
+The following authors collaborated in various tasks including: design, development and testing of the code, with specific contributions given by the commits history: [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, **J. Bruno Bazzano**<sup>1,2</sup>, [**Joaquín Viera**](https://www.researchgate.net/profile/Joaquin_Viera_Sosa) <sup>1</sup>, **Mauricio Vanzulli** <sup>3</sup> and [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en)<sup>4</sup>.
 
 The following authors contributed with specific functions of files, of great relevance for the code: [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en)<sup>5</sup> (contributed functions related to the computation of static internal forces of the nonlinear frame element) and [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es)<sup>6</sup> , provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf import function.
 

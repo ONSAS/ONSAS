@@ -50,21 +50,20 @@ materialsParams = {[ 0 2 E nu ]} ;
 
 % --- Element parameters ---
 elementsParams = { [ 5   ] ; ...
-                   [ 4 2 ] } ;
+                   [ 4 2 ] } ; % analytic constitutive tensor
 
 % --- Load parameters ---
-loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;
+loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;  % global coords tension applied
 
 % --- CrossSection parameters ---
 crossSecsParams = cell(1,1) ; %
 
-% ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
 springsParams = {[ inf 0  0   0   0   0 ] ; ...
                  [ 0   0  inf 0   0   0 ] ; ...
                  [ 0   0  0   0   inf 0 ] } ;
 
-% ======================================================================
+% ----------------------------------------------------------------------
 
 %% --- Analysis parameters ---
 stopTolIts       = 30      ;
@@ -78,6 +77,8 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 controlDofs = [ 7 1 1 ] ;
 
+storeBoolean = 1 ;
+
 %% Output parameters
 plotParamsVector = [ 3 ] ;
 printflag = 2 ;
@@ -90,10 +91,33 @@ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 %% run ONSAS
 addpath( dirOnsas );
 ONSAS
+
+Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
+         [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
+         [ 0 1 0 0 1   4 1 2   ]; ... % x=0 supp face
+         [ 0 1 0 0 1   4 2 3   ]; ... % x=0 supp face
+         [ 0 1 0 0 2   6 2 1   ]; ... % y=0 supp face
+         [ 0 1 0 0 2   6 1 5   ]; ... % y=0 supp face
+         [ 0 1 0 0 3   1 4 5   ]; ... % z=0 supp face
+         [ 0 1 0 0 3   4 8 5   ]; ... % z=0 supp face
+         [ 1 2 0 0 0   1 4 2 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   6 2 3 4 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 3 6 7 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 1 5 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 6 5 8 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 7 6 8 ]  ... % tetrahedron
+        } ;
+
+iniMatUs = matUs ;
+storeBoolean = 0 ;
+
+ONSAS
+
 % --------------------------------------------------------
 
+clear iniMatUs
 
-return  
+
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = numericalVals ;
@@ -108,19 +132,15 @@ problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 
 [ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
-% Loads matrix: 		Is defined by the corresponding load label. First entry is a boolean to assign load in Global or Local axis. (Recommendation: Global axis). 
-%										Global axis -> 1, local axis -> 0.
-%										The structure of the matrix is: [ 1/0 Fx Mx Fy My Fz Mz ]
+loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % local coords appliend tension
 
-loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % --- global loading ---
-
-elementsParams{2,1} = [ 4 1 ] ;
+elementsParams{2,1} = [ 4 1 ] ; % complex step constitutive tensor
 
 plotParamsVector = [ 0 ] ;
 analyticSolFlag        = 0 ;
 
 % run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+ONSAS
 
 controlDispsValsCase2         = controlDisps  ;
 loadFactorNumericalValsCase2  = numericalVals ;
@@ -141,7 +161,6 @@ Conec = {[ 0 1 0 0 1   1   ] ; ... % fixed node
          [ 1 2 0 1 0   1 2 ]   ... % truss element
         } ;
 
-
 % ======================================================================
 % --- MELCS parameters ---
 
@@ -156,14 +175,13 @@ E = 1 ; nu = 0.3 ;
 materialsParams{1} = [ 0 2 E nu ] ;
 
 % --- Element parameters ---
-elementsParams{1,1} = [ 1   ] ;
-elementsParams{2,1} = [ 2 0 ] ;
+elementsParams = { 1  ; [ 2 0 ]} ;
 
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
 
 % --- CrossSection parameters ---
-crossSecsParams{1,1} = 1*1 ;
+crossSecsParams = { [ 2 Ly Lz] } ; %
 
 % ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
@@ -177,35 +195,37 @@ plotParamsVector       = [ 0 ] ;
 
 controlDofs = [ 2 1 1 ] ;
 
-
 %% run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+ONSAS
 
 controlDispsValsCase3         = controlDisps  ;
-loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
+%~ loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
+loadFactorNumericalValsCase3  = numericalVals ;
 
 
+% ----------------------------------------------------------------------
 % --- plots ---
-
 lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
 
-figure
-plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
-grid on, hold on
-plot( controlDispsValsCase1, loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
-plot( controlDispsValsCase2, loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
-plot( controlDispsValsCase3, loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
+figure, grid on, hold on
 
-%~ %%figure
-%~ %%semilogy(controlDisps, abs( analyticVals-loadFactors) )
+plot( controlDispsValsCase1, ...
+      loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
 
-% ---------------
+plot( controlDispsValsCase1, ...
+      loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
+
+plot( controlDispsValsCase2, ...
+      loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
+
+plot( controlDispsValsCase3, ...
+      loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
+
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('analytic Sol','numerical Sol 1','numerical Sol 2','numerical Sol 3','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-%~ %%print( [ 'plotsExtensionSVK'  ] ,'-depslatex') ;
+%~ print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
+print( [ '../../plotsExtensionSVK.png' ] ,'-dpng') ;
 
-cd(dirOnsas); cd(outputDir);
-print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
-cd(acdir);
+% ----------------------------------------------------------------------

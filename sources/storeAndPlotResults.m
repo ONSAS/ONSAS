@@ -20,7 +20,8 @@ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 timeIndex = modelCurrSol.timeIndex ; 
 
 if timeIndex == 1
-  matUs      = modelCurrSol.U ;
+  matUs      = modelCurrSol.U          ;
+  matUdots   = modelCurrSol.Udot       ;
   cellStress = { modelCurrSol.Stress } ;
 
   if length( controlDofsAndFactors ) > 0  
@@ -39,9 +40,20 @@ if length( controlDofsAndFactors ) > 0
   controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
                                                    .* controlDofsAndFactors(:,2) ;
 end
+
 timesVec     ( timeIndex+1 )       = deltaT * timeIndex ;
 
+if exist( 'iniMatUs' )
+  if timeIndex+2 <= size( iniMatUs,2)
+    Utp10 = iniMatUs(:,timeIndex+2) ;
+  else
+    Utp10 = [] ;
+  end
+end
+
 indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
+
+
 
 if timeIndex == 1
   normalForcesIni = zeros( nElems, 1 ) ;
@@ -87,6 +99,7 @@ end
 
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
+  matUdots   (:, timeIndex+1 )       = modelNextSol.Udot               ;
   cellStress {   timeIndex+1 }       = modelNextSol.Stress             ;
   tangentMatricesCell{ timeIndex+1 } = modelNextSol.systemDeltauMatrix ;
   matNs      (:, timeIndex+1 )       = normalForces                    ;
@@ -113,7 +126,9 @@ if plotParamsVector(1) == 3
   if modelCurrSol.timeIndex == 1,
     
     % generate connectivity
-    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress, vtkConec, elem2VTKCellMap ] = vtkGeometry( ...
+    [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ...
+      , vtkConec, elem2VTKCellMap ] ...
+      = vtkGeometry( ...
       modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelCurrSol.U, normalForcesIni, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
 
     % data

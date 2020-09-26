@@ -37,7 +37,7 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
     fId = fopen(fileName);    
     c_ValAsoc = textscan(fId,'%d%s','Delimiter', '\n');
     fclose(fId);
-    %~ delete(fileName);
+    delete(fileName);
     % Code Group Matrix
     m_GrCode = c_ValAsoc{1};
     % Associated value String Cell

@@ -7,7 +7,7 @@
 cd examples
 
 # run test examples 
-octave runTestProblems.m
+octave-cli runTestProblems.m
 
 # read boolean and delete file
 num=( $(<auxVerifBoolean.dat) )
