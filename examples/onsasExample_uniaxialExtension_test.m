@@ -88,7 +88,7 @@ analyticSolFlag        = 2 ;
 analyticCheckTolerance = 1e-8 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 
-%~ cppSolverBoolean = 1 ;
+cppSolverBoolean = 1 ;
 
 %% run ONSAS
 addpath( dirOnsas );

@@ -13,17 +13,14 @@ nelems = size(Conec,1);
 save -ascii 'Conec.dat' Conec;
 save -ascii  'numericalMethodParams.dat' numericalMethodParams;
 
-%~ systemDeltauMatrix
-
-%~ systemDeltauMatrix
-%~ stop
-%~ save -ascii 'systemDeltauMatrix.dat' ;
 save  'systemDeltauMatrix.dat' systemDeltauMatrix ;
 status = system('tail -n +7 systemDeltauMatrix.dat > aux.dat' ); 
 status = system('mv aux.dat systemDeltauMatrix.dat' ) ; 
-save  -ascii 'U.dat' U ;
-save  -ascii 'Fint.dat' U ;
-%~ save -ascii 'materialsParamsMat.dat' materialsParamsMat;
+
+save -ascii 'U.dat'                  U ;
+save -ascii 'materialsParamsMat.dat' materialsParamsMat;
+save -ascii 'coordsElemsMat.dat'     coordsElemsMat;
+save -ascii 'crossSecsParamsMat.dat' crossSecsParamsMat;
 % --------------------------------------------------------------------
 % --------------------------------------------------------------------
 

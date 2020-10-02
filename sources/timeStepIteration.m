@@ -51,8 +51,6 @@ else
   % assign time t
   Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
   
-  %~ Fintt = Fint ; Fmast = Fmas ; Fvist = Fvis ;
-  
   % --- start iteration with previous displacements ---
   if isempty( Utp10 )
     Utp1k       = Ut       ;   % initial guess
