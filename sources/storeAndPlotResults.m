@@ -54,46 +54,48 @@ end
 indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
 
 
-
 if timeIndex == 1
-  normalForcesIni = zeros( nElems, 1 ) ;
-  sigxs = modelCurrSol.Stress(:,1) ;
-  if length(indsNormal) > 0
-    areasVector       = zeros(size(crossSecsParamsMat,1),1);
-    
-    for indexElem = 1: size(areasVector,1);
-      
-      if crossSecsParamsMat (indexElem,1) == 3 % circular section
-        areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-      
-      elseif crossSecsParamsMat (indexElem,1) == 2 % rectangular section
-        areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-      
-      elseif crossSecsParamsMat(indexElem,1)==1 % general section
-        areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
-      end
+    normalForcesini = zeros( nElems, 1 ) ;
+    sigxs = modelCurrSol.Stress(:,1) ;
+    if length(indsNormal) > 0
+        areasVector       = zeros(nElems,1);
+        for indexElem = 1:nElems ;
+            typeSec = Conec(indexElem,4+4)                        ;
+            elemCrossSecParams = crossSecsParamsMat(typeSec,:)   ;
+            if elemCrossSecParams(1) == 1 %general section
+                areasVector(indexElem) = elemCrossSecParams( 2 ) ;
+            elseif elemCrossSecParams(1) == 2 %rectangular section
+                areasVector(indexElem) = elemCrossSecParams(2)*elemCrossSecParams(3)      ;
+            elseif elemCrossSecParams(1) == 3
+                diameter = elemCrossSecParams(2) ;
+                areasVector(indexElem) = pi*diameter^2/4           ;
+            else
+                error(' section type not implemented yet, please create an issue')
+            end
+        end
+      normalForcesini( indsNormal ) =  sigxs .* areasVector ;    
     end
-    normalForcesIni( indsNormal ) =  sigxs .* areasVector ;
-
-  end
-
 end
-
 % initiate normalForces with initial values
-normalForces = normalForcesIni ;
+normalForces = normalForcesini ;
 
 if length(indsNormal) > 0
-  sigxs = modelNextSol.Stress(:,1) ;
-    areasVector       = zeros(size(crossSecsParamsMat,1),1);
-    for indexElem = 1: size(areasVector,1);
-        if crossSecsParamsMat (indexElem,1)==3
-            areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-        elseif crossSecsParamsMat (indexElem,1)==2
-             areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-        elseif crossSecsParamsMat(indexElem,1)==1
-            areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
+    sigxs = modelNextSol.Stress(:,1) ;
+    areasVector       = zeros(nElems,1);
+        for indexElem = 1:nElems ;
+            typeSec = Conec(indexElem,4+4)                        ;
+            elemCrossSecParams = crossSecsParamsMat(typeSec,:)   ;
+            if elemCrossSecParams(1) == 1 %general section
+                areasVector(indexElem) = elemCrossSecParams( 2 ) ;
+            elseif elemCrossSecParams(1) == 2 %rectangular section
+                areasVector(indexElem) = elemCrossSecParams(2)*elemCrossSecParams(3)      ;
+            elseif elemCrossSecParams(1) == 3
+                diameter = elemCrossSecParams(2) ;
+                areasVector(indexElem) = pi*diameter^2/4           ;
+            else
+                error(' section type not implemented yet, please create an issue')
+            end
         end
-    end
   normalForces( indsNormal ) =  sigxs .* areasVector ;
 end
 
@@ -129,7 +131,7 @@ if plotParamsVector(1) == 3
     [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ...
       , vtkConec, elem2VTKCellMap ] ...
       = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelCurrSol.U, normalForcesIni, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
+      modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelCurrSol.U, normalForcesini, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, vtkStress, vtkDispMat ) ;
