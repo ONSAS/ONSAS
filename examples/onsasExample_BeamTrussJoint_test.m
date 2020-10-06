@@ -1,14 +1,13 @@
 % ======================================================================
-% Truss-beam mate example
+% Truss-beam Joint example
 
 close all, clear all %#ok
-problemName = 'static' ; %#ok
-
+problemName = 'TurssBeamJoint' ; 
 % ----------------------------------------------------------------------
 %Geometric properties truss:
-Et = 210e9 ; dt = 0.1; At = pi*dt^2/4 ;  Lt = 1 ; nut = 0.3 ;  rhot = 8000 ; 
+Et = 210e5 ; dt = 0.03; At = pi*dt^2/4 ;  Lt = 1 ; nut = 0.3 ;  rhot = 8000 ; 
 %Geometric properties beam
-Eb = 210e6 ; db = 1e-2; Ab = pi*db^2/4 ;  Lb = 10 ; nub = 0.3 ;  rhob = 1000 ; 
+Eb = 210e9 ; db = 0.1; Ab = pi*db^2/4 ;  Lb = 10 ; nub = 0.3 ;  rhob = 1000 ; 
 
 % ----------------------------------------------------------------------
 % MELCS parameters
@@ -32,15 +31,15 @@ springsParams   = { [ inf  inf  inf  inf  inf   inf ] ; ...
 %Nodes and Conec matrix:
 %-----------------------
 
-%Nelem Truss
+%Truss elements
 NelemT  = 1;
 NnodesT = NelemT+1;
 
-%Nelem Aisladora
+%Bem elements
 NelemB  = 1;
 NnodesB = NelemB+1;
 
-%Nelem Tottales
+%Total elements
 Nelem = NelemT+NelemB	;
 Nnodes = Nelem+1;
 
@@ -54,9 +53,9 @@ auxConecElem  = [ [(ones(NelemB,1)*2 )    (ones(NelemB,1)*3)      (ones(NelemB,1
                   [(ones(NelemT,1)*1 )    (ones(NelemT,1)*2)      (ones(NelemT,1))         (ones(NelemT,1)*1)      (zeros(NelemT,1)) ...  %ElemNodes...
                  (NelemB+1:NelemB+NelemT)'	 	(NelemB+2:NelemB+NelemT+1)'   zeros(NelemB,2)] ] ;  
                         %Material             %Element                   %Loads                 %CrossSection             %Springs 			%Nodes  
-auxConecNodes = [           0                   0                           0                           0                   1                   1   
-                            0                   0                           1                           0                   0                NnodesB 
-                            0                   0                           0                           0                   2                 Nnodes ];                                                                                                                                 
+auxConecNodes = [           0                   1                           0                           0                   1                   1   
+                            0                   1                           1                           0                   0                NnodesB 
+                            0                   1                           0                           0                   2                 Nnodes ];                                                                                                                                 
 
 
 %Build Conec Cell
@@ -75,7 +74,7 @@ reportBoolean    = 1     ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-8 ;    stopTolForces    = 1.0e-8 ;
-targetLoadFactr  = 2.0e8  ;    nLoadSteps       = 6      ;
+targetLoadFactr  = 2.0e10  ;    nLoadSteps       = 20      ;
 stopTolIts       = 30     ;
 
 
