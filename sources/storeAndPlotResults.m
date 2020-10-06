@@ -55,7 +55,7 @@ indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParam
 
 
 if timeIndex == 1
-    normalForcesini = zeros( nElems, 1 ) ;
+    normalForcesIni = zeros( nElems, 1 ) ;
     sigxs = modelCurrSol.Stress(:,1) ;
     if length(indsNormal) > 0
         areasVector       = zeros(nElems,1);
@@ -73,11 +73,11 @@ if timeIndex == 1
                 error(' section type not implemented yet, please create an issue')
             end
         end
-      normalForcesini( indsNormal ) =  sigxs .* areasVector ;    
+      normalForcesIni( indsNormal ) =  sigxs .* areasVector ;    
     end
 end
 % initiate normalForces with initial values
-normalForces = normalForcesini ;
+normalForces = normalForcesIni ;
 
 if length(indsNormal) > 0
     sigxs = modelNextSol.Stress(:,1) ;
@@ -131,7 +131,7 @@ if plotParamsVector(1) == 3
     [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ...
       , vtkConec, elem2VTKCellMap ] ...
       = vtkGeometry( ...
-      modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelCurrSol.U, normalForcesini, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
+      modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelCurrSol.U, normalForcesIni, Nodes, elementsParamsMat, modelCurrSol.Stress ) ;
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, 1, vtkNormalForces, vtkStress, vtkDispMat ) ;
