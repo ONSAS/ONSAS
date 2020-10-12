@@ -7,7 +7,7 @@ problemName = 'TurssBeamJoint_NR' ;
 %Geometric properties truss:
 Et = 210e5 ; dt = 0.03; At = pi*dt^2/4 ;  Lt = 1 ; nut = 0.3 ;  rhot = 8000 ; 
 %Geometric properties beam
-Eb = 210e9 ; db = 0.1; Ab = pi*db^2/4 ;  Lb = 10 ; nub = 0.3 ;  rhob = 1000 ; 
+Eb = 210e7 ; db = 0.1; Ab = pi*db^2/4 ;  Lb = 10 ; nub = 0.3 ;  rhob = 1000 ; 
 Ib = pi*db^4/64 ;
 % ----------------------------------------------------------------------
 % MELCS parameters
@@ -120,8 +120,8 @@ lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure
 plot( controlDispsNRAL, analyticFunc(controlDispsNRAL),'b-x' , 'linewidth', lw,'markersize',ms)
 hold on, grid on
-% plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms )
-% plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
 
 labx = xlabel('Displacement');   laby = ylabel('\lambda') ;
 % legend('analytic','NRAL-DXF','NR','location','North')
