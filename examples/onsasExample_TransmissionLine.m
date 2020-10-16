@@ -45,7 +45,9 @@ Ga	= Ea/(2*(1+nua));
 %1 cable 2 isolator chain
 materialsParams = {[rhoc 1 Ec nuc ] ;[rhoa 1 Ea nua ]} ;
 
-crossSecsParams = {[2 dc dc] ; [2 da da]} ;	
+%Conec Elem 2 type secs	
+
+crossSecsParams = {[3 dc]}% ; [2 da da]} ;	
 % crossSecsParams = {[3 dc] ; [3 da]} ;	
 elementsParams  = { 1; 3} ;
 
@@ -68,14 +70,23 @@ Nnodes = Nelem+1;
 Nodes = [ 	  zeros(NelemA,1) 		 zeros(NelemA,1)        ((NelemA):-1:1)'*la/NelemA ;
 			(0:(NelemC))'*lc/NelemC  zeros(NnodesC,1)          zeros(NnodesC,1) 	   ;	 
 			lc*ones(NelemA,1) 		 zeros(NelemA,1)         (1:(NelemA))'*la/NelemA ] ;
-													   
-				   %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
-auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
+%Conec Elem 2 type secs													   
+% 				   Material             %Element                   %Loads                 %CrossSection             %Springs 					 
+% auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
+%                 (1:(NelemA))'                               (2:(NnodesA))'                              zeros(NelemA,2)];  
+%                  [(ones(NelemC,1)*1 )    (ones(NelemC,1)*2)      (ones(NelemC,1))         (ones(NelemC,1)*1)      (zeros(NelemC,1)) ...  %ElemNodes...
+%                 (NelemA+1:(NelemA+NelemC))'                 (NelemA+2:NelemA+1+NelemC)'                  zeros(NelemC,2)];
+%                  [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
+%                 (NelemA+NelemC+1:NelemA+NelemC+NelemA)'	 	(NelemA+NelemC+2:NelemA+NelemC+NelemA+1)']   zeros(NelemA,2)  ] ;  
+
+                     %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
+auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
                 (1:(NelemA))'                               (2:(NnodesA))'                              zeros(NelemA,2)];  
                  [(ones(NelemC,1)*1 )    (ones(NelemC,1)*2)      (ones(NelemC,1))         (ones(NelemC,1)*1)      (zeros(NelemC,1)) ...  %ElemNodes...
                 (NelemA+1:(NelemA+NelemC))'                 (NelemA+2:NelemA+1+NelemC)'                  zeros(NelemC,2)];
-                 [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
+                 [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
                 (NelemA+NelemC+1:NelemA+NelemC+NelemA)'	 	(NelemA+NelemC+2:NelemA+NelemC+NelemA+1)']   zeros(NelemA,2)  ] ;  
+  
   
 auxConecNodes =[ (zeros(Nnodes,1)*1 )    (ones(Nnodes,1))         (ones(Nnodes,1))         (zeros(Nnodes,1))        (zeros(Nnodes,1))    (1:Nnodes)'] ;
 
@@ -126,8 +137,10 @@ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopT
 %Loads---------------------
 booleanSelfWeightZ = 1 ;
 loadsParams   = {[ 1 1   0 0 1 0 0 0 ]} ;
-
-loadFactorsFunc = @(t)0*t;
+Omega = 20 ;
+Famp= 150 ; 
+Fmed= 500 ;
+loadFactorsFunc = @(t)Fmed+Famp*sin(Omega*t);
 % Damping
 nodalDispDamping = 1;
 %Booleans control and plot:
