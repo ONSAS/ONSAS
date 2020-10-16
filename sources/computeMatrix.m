@@ -35,8 +35,7 @@ function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsEl
     massMat    = mats{3} ;
 
     global flagOutputMatrices
-    if exist('flagOutputMatrices') == 1 && flagOutputMatrices == 1
-    pwd
+    if not(isempty(flagOutputMatrices)) && flagOutputMatrices == 1
       save -mat auxiliar.mat KT dampingMat massMat
       flagOutputMatrices = 0 ;
     end 
