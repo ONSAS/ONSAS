@@ -5,7 +5,6 @@
 
 clear all, close all
 inputONSASversion = '0.1.10';
-%acdir = pwd ; 
 problemName = 'TransmissionLine_Selfweight' ;
 
 
@@ -47,8 +46,8 @@ materialsParams = {[rhoc 1 Ec nuc ] ;[rhoa 1 Ea nua ]} ;
 
 %Conec Elem 2 type secs	
 
-crossSecsParams = {[3 dc]}% ; [2 da da]} ;	
-% crossSecsParams = {[3 dc] ; [3 da]} ;	
+% crossSecsParams = {[3 dc]}% ; [2 da da]} ;	
+crossSecsParams = {[3 dc] ; [3 da]} ;	
 elementsParams  = { 1; 3} ;
 
 %Nodes and Conec matrix:
@@ -70,23 +69,23 @@ Nnodes = Nelem+1;
 Nodes = [ 	  zeros(NelemA,1) 		 zeros(NelemA,1)        ((NelemA):-1:1)'*la/NelemA ;
 			(0:(NelemC))'*lc/NelemC  zeros(NnodesC,1)          zeros(NnodesC,1) 	   ;	 
 			lc*ones(NelemA,1) 		 zeros(NelemA,1)         (1:(NelemA))'*la/NelemA ] ;
-%Conec Elem 2 type secs													   
-% 				   Material             %Element                   %Loads                 %CrossSection             %Springs 					 
-% auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
-%                 (1:(NelemA))'                               (2:(NnodesA))'                              zeros(NelemA,2)];  
-%                  [(ones(NelemC,1)*1 )    (ones(NelemC,1)*2)      (ones(NelemC,1))         (ones(NelemC,1)*1)      (zeros(NelemC,1)) ...  %ElemNodes...
-%                 (NelemA+1:(NelemA+NelemC))'                 (NelemA+2:NelemA+1+NelemC)'                  zeros(NelemC,2)];
-%                  [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
-%                 (NelemA+NelemC+1:NelemA+NelemC+NelemA)'	 	(NelemA+NelemC+2:NelemA+NelemC+NelemA+1)']   zeros(NelemA,2)  ] ;  
-
-                     %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
-auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
+%% Conec Elem 2 type secs													   
+				   %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
+auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
                 (1:(NelemA))'                               (2:(NnodesA))'                              zeros(NelemA,2)];  
                  [(ones(NelemC,1)*1 )    (ones(NelemC,1)*2)      (ones(NelemC,1))         (ones(NelemC,1)*1)      (zeros(NelemC,1)) ...  %ElemNodes...
                 (NelemA+1:(NelemA+NelemC))'                 (NelemA+2:NelemA+1+NelemC)'                  zeros(NelemC,2)];
-                 [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
+                 [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*2)      (zeros(NelemA,1)) ...  %ElemNodes...
                 (NelemA+NelemC+1:NelemA+NelemC+NelemA)'	 	(NelemA+NelemC+2:NelemA+NelemC+NelemA+1)']   zeros(NelemA,2)  ] ;  
-  
+%%
+%                      %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
+% auxConecElem  =[ [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
+%                 (1:(NelemA))'                               (2:(NnodesA))'                              zeros(NelemA,2)];  
+%                  [(ones(NelemC,1)*1 )    (ones(NelemC,1)*2)      (ones(NelemC,1))         (ones(NelemC,1)*1)      (zeros(NelemC,1)) ...  %ElemNodes...
+%                 (NelemA+1:(NelemA+NelemC))'                 (NelemA+2:NelemA+1+NelemC)'                  zeros(NelemC,2)];
+%                  [(ones(NelemA,1)*2 )    (ones(NelemA,1)*2)      (ones(NelemA,1))         (ones(NelemA,1)*1)      (zeros(NelemA,1)) ...  %ElemNodes...
+%                 (NelemA+NelemC+1:NelemA+NelemC+NelemA)'	 	(NelemA+NelemC+2:NelemA+NelemC+NelemA+1)']   zeros(NelemA,2)  ] ;  
+%%  
   
 auxConecNodes =[ (zeros(Nnodes,1)*1 )    (ones(Nnodes,1))         (ones(Nnodes,1))         (zeros(Nnodes,1))        (zeros(Nnodes,1))    (1:Nnodes)'] ;
 
@@ -112,14 +111,14 @@ springsParams    = {[ inf  0  inf  0  inf  0 ];[ inf  0  0  inf  0  0 ]} ;
 %Parameters and tolerances:
 %-----------------------
 % times
-finalTime  = 200    ;
-timeIncr   =  finalTime/400    ;
+finalTime  = 400    ;
+timeIncr   =  finalTime/100    ;
 
 nLoadSteps = finalTime/timeIncr ;
 
 % tolerances
 stopTolDeltau = 1e-3        ; 
-stopTolForces = 1e-7        ;
+stopTolForces = 1e-5        ;
 stopTolIts    = 30          ;
 
 %method params
@@ -137,12 +136,14 @@ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopT
 %Loads---------------------
 booleanSelfWeightZ = 1 ;
 loadsParams   = {[ 1 1   0 0 1 0 0 0 ]} ;
-Omega = 20 ;
-Famp= 150 ; 
-Fmed= 500 ;
-loadFactorsFunc = @(t)Fmed+Famp*sin(Omega*t);
+Ciclos= 3 ;
+Omega = 2*pi/(finalTime/Ciclos) ;
+Famp= 400*5 ; 
+Fmed= 60 ;
+tfinalforce = 2/4*finalTime;
+loadFactorsFunc = @(t)(Fmed+Famp*sin(Omega*t)).*(t<tfinalforce);
 % Damping
-nodalDispDamping = 1;
+nodalDispDamping = .1;
 %Booleans control and plot:
 %-----------------------
 %controlDof
