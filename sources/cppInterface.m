@@ -1,5 +1,4 @@
 
-
 nelems = size(Conec,1);
 
 % --------------------------------------------------------------------
@@ -17,10 +16,21 @@ save  'systemDeltauMatrix.dat' systemDeltauMatrix ;
 status = system('tail -n +7 systemDeltauMatrix.dat > aux.dat' ); 
 status = system('mv aux.dat systemDeltauMatrix.dat' ) ; 
 
+save  'KS.dat' KS ;
+status = system('tail -n +7 KS.dat > aux.dat' ); 
+status = system('mv aux.dat KS.dat' ) ; 
+
 save -ascii 'U.dat'                  U ;
 save -ascii 'materialsParamsMat.dat' materialsParamsMat;
 save -ascii 'coordsElemsMat.dat'     coordsElemsMat;
 save -ascii 'crossSecsParamsMat.dat' crossSecsParamsMat;
+
+save -ascii 'constantFext.dat' constantFext;
+save -ascii 'variableFext.dat' variableFext;
+
+scalarParams = [ currLoadFactor nextLoadFactor nodalDispDamping ] ;
+
+save -ascii 'scalarParams.dat' scalarParams;
 % --------------------------------------------------------------------
 % --------------------------------------------------------------------
 
