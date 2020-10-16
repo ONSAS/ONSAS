@@ -54,46 +54,69 @@ end
 indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParamsMat(Conec(:,4+2)) == 3 ) ]' ;
 
 
-
 if timeIndex == 1
-  normalForcesIni = zeros( nElems, 1 ) ;
-  sigxs = modelCurrSol.Stress(:,1) ;
-  if length(indsNormal) > 0
-    areasVector       = zeros(size(crossSecsParamsMat,1),1);
-    
-    for indexElem = 1: size(areasVector,1);
-      
-      if crossSecsParamsMat (indexElem,1) == 3 % circular section
-        areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-      
-      elseif crossSecsParamsMat (indexElem,1) == 2 % rectangular section
-        areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-      
-      elseif crossSecsParamsMat(indexElem,1)==1 % general section
-        areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
-      end
+    normalForcesIni = zeros( nElems, 1 ) ;
+    sigxs = modelCurrSol.Stress(:,1) ;
+    if ~isempty(indsNormal) == 1
+        for indexArea = 1:(size( crossSecsParamsMat,1))
+            typeSec          = crossSecsParamsMat(indexArea,1)                  ;
+            indexElemTypeSec = find(elementsParamsMat(Conec(:,4+4)) == typeSec) ;
+            typeSecParams    = crossSecsParamsMat(indexArea,:)                  ;
+            if typeSecParams(1) == 1 %general section
+                areaTypeSec  = typeSecParams( 2 )                                ;
+            elseif typeSecParams(1) == 2 %rectangular section
+                areaTypeSec  = typeSecParams(2)*typeSecParams(3)                 ;
+            elseif typeSecParams(1) == 3 %circular section
+                diameter     = typeSecParams(2)                                  ;
+                areaTypeSec  = pi*diameter^2/4                                   ;
+            else
+                error(' section type not implemented yet, please create an issue')
+            end
+            normalForcesIni( indexElemTypeSec ) =  sigxs(indexElemTypeSec) .* areaTypeSec ;
+        end
     end
-    normalForcesIni( indsNormal ) =  sigxs .* areasVector ;
-
-  end
-
 end
-
 % initiate normalForces with initial values
 normalForces = normalForcesIni ;
 
-if length(indsNormal) > 0
-  sigxs = modelNextSol.Stress(:,1) ;
-    areasVector       = zeros(size(crossSecsParamsMat,1),1);
-    for indexElem = 1: size(areasVector,1);
-        if crossSecsParamsMat (indexElem,1)==3
-            areasVector(indexElem) = pi*crossSecsParamsMat(indexElem,2)^2/4;
-        elseif crossSecsParamsMat (indexElem,1)==2
-             areasVector(indexElem)= crossSecsParamsMat(indexElem,2)*crossSecsParamsMat(indexElem,3);
-        elseif crossSecsParamsMat(indexElem,1)==1
-            areasVector(indexElem) = crossSecsParamsMat (indexElem,2);
+if ~isempty(indsNormal) == 1
+    for indexArea = 1:(size(crossSecsParamsMat,1))                    
+        typeSec          = crossSecsParamsMat(indexArea,1)                    ;
+        indexElemTypeSec = find(elementsParamsMat(Conec(:,4+4)) == typeSec)     ;
+        typeSecParams    = crossSecsParamsMat(indexArea,:)                      ;
+        if typeSecParams(1) == 1 %general section
+            areaTypeSec = typeSecParams( 2 ) ;
+        elseif typeSecParams(1) == 2 %rectangular section
+            areaTypeSec = typeSecParams(2)*typeSecParams(3)      ;
+        elseif typeSecParams(1) == 3 %circular section
+            diameter = typeSecParams(2) ;
+            areaTypeSec = pi*diameter^2/4           ;
+        else
+            error(' section type not implemented yet, please create an issue')
         end
+        normalForces( indexElemTypeSec ) =  sigxs(indexElemTypeSec) .* areaTypeSec ;
     end
+end
+
+
+
+if length(indsNormal) > 0
+    sigxs = modelNextSol.Stress(:,1) ;
+    areasVector       = zeros(nElems,1);
+        for indexElem = 1:nElems ;
+            typeSec = Conec(indexElem,4+4)                        ;
+            elemCrossSecParams = crossSecsParamsMat(typeSec,:)   ;
+            if elemCrossSecParams(1) == 1 %general section
+                areasVector(indexElem) = elemCrossSecParams( 2 ) ;
+            elseif elemCrossSecParams(1) == 2 %rectangular section
+                areasVector(indexElem) = elemCrossSecParams(2)*elemCrossSecParams(3)      ;
+            elseif elemCrossSecParams(1) == 3
+                diameter = elemCrossSecParams(2) ;
+                areasVector(indexElem) = pi*diameter^2/4           ;
+            else
+                error(' section type not implemented yet, please create an issue')
+            end
+        end
   normalForces( indsNormal ) =  sigxs .* areasVector ;
 end
 
