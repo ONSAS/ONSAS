@@ -56,7 +56,7 @@ elseif elemCrossSecParams(1) == 2
 elseif elemCrossSecParams(1) == 3
     diameter = elemCrossSecParams(2) ;
     Area = pi*diameter^2/4           ;
-    Iyy  = pi/diameter^4/64          ;
+    Iyy  = pi*diameter^4/64          ;
     Izz  = Iyy                       ;
     J    = Iyy + Izz ;
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
@@ -148,7 +148,7 @@ locDisp = [ u tl1' tl2' ] ;
 % -------------------------------------------------------
 
 
-q  = Rr' *  q ;
+q  = Rr' *  q ;  
 q1 = Rr' * q1 ;
 
 nu = q(1)/q(2);
@@ -303,10 +303,6 @@ rotData = {locDisp, Rr} ;
 
 
 
-
-
-
-
 if solutionMethod > 2
 
   % ------- interpolation functions ------
@@ -360,8 +356,6 @@ if solutionMethod > 2
   
   udot    = @(x) Rr*H1(x)*EE'*ddotg; %Ec 61
   udotdot = @(x) Rr*H1(x)*EE'*ddotdotg+Rr*C1(x)*EE'*ddotg; % Ec 67
-  
-  
   
   %Matrix to compute wdot y wdtotdot
   
