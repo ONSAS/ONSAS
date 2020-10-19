@@ -75,7 +75,7 @@ storeBoolean     = 1     ;
 
 % analysis parameters
 stopTolDeltau    = 1.0e-12 ;    stopTolForces    = 1.0e-12;
-targetLoadFactr  = 1e5 ;    nLoadSteps       = 10      ;
+targetLoadFactr  = 1e4 ;    nLoadSteps       = 10      ;
 stopTolIts       = 10     ;
 global flagOutputMatrices;
 flagOutputMatrices= 1 ;
@@ -85,7 +85,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 %Analytic Solution
 analyticSolFlag = 2 
-analyticCheckTolerance = 1e-4 ;
+analyticCheckTolerance = 1e-5 ;
 analyticFunc   = @(w)(Et*At/Lt+3*Eb*Ib/Lb^3)*w;
 beamTruss_Ratio= Et*At/Lt/(3*Eb*Ib/Lb^3)
                         
@@ -96,7 +96,7 @@ controlDispsNR = controlDisps ;
 loadFactorsNR  = loadFactors ;
 
 % ----------------------------------------------------------------------
-
+return
 problemName = 'TurssBeamJoint_AL' ; 
 
 %Build Conec Cell
