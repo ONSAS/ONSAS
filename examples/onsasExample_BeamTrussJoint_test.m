@@ -84,6 +84,8 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactr nLoadSteps ] ; 
 
 %Analytic Solution
+analyticSolFlag = 2 
+analyticCheckTolerance = 1e-4 ;
 analyticFunc   = @(w)(Et*At/Lt+3*Eb*Ib/Lb^3)*w;
 beamTruss_Ratio= Et*At/Lt/(3*Eb*Ib/Lb^3)
                         
