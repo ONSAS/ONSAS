@@ -6,15 +6,15 @@ problemName = 'cantileverPendulum' ;
 % ----------------------------------------------------------------------
 %% Geometric Properties
 %Geometric properties truss:
-Et = 1e9 ; dt = .05; At = pi*dt^2/4 ;  Lt = 1 ; nut = 0.3 ;  rhot = 1 ; 
+Et = 10e11 ; At = .1 ; dt = sqrt(4*At/pi);   Lt = 3.0443 ; nut = 0.3 ;  rhot = 65.6965 ; 
 %Geometric properties beam
-Eb = Et/3 ;db = 5*dt ; Ab = pi*db^2/4 ;  Lb = .5 ; nub = 0.3 ;  rhob = 1 ; 
+Eb = Et/300000*7 ;db = dt ; Ab = pi*db^2/4 ;  Lb = Lt ; nub = 0.3 ;  rhob = rhot ; 
 Ib = pi*db^4/64 ;
 % ----------------------------------------------------------------------
 %% MELCS parameters
 
 % Materials
-materialsParams = {[ rhot 1 Et nut ];[rhob 1 Eb nub ]} ;
+materialsParams = {[ rhot 3 Et nut ];[rhob 3 Eb nub ]} ;
 
 % Elements
 elementsParams  = {1;[2 1];3} ;
@@ -36,7 +36,7 @@ NelemT  = 1;
 NnodesT = NelemT+1;
 
 %Bem elements
-NelemB  = 1;
+NelemB  = 10;
 NnodesB = NelemB+1;
 
 %Total elements
@@ -69,10 +69,10 @@ end
 % ----------------------------------------------------------------------
 %% Loads parameters
 booleanSelfWeightZ = 1 ;
-loadsParams   = {[ 1 1   0 0 0 0 1 0 ]} ;
-massPendulum  = 10 ;
+loadsParams   = {[ 1 1   0 0 0 0 -1 0 ]} ;
+massPendulum  = 5 ;
 gravity       = 9.8;
-loadFactorsFunc = @(t) -massPendulum*gravity;
+loadFactorsFunc = @(t)0* massPendulum*gravity;
 % ----------------------------------------------------------------------
 %% analysis parameters
 % method
@@ -90,31 +90,26 @@ numericalMethodParams = [ 4 ...
   timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
 
 %Output params
-controlDofs      = [ NnodesB 5 1 ] ; % [ node nodaldof scalefactor ]
+controlDofs      = [ NnodesT 5 -1 ] ; % [ node nodaldof scalefactor ]
 plotParamsVector = [ 3 ] ;
 reportBoolean    = 1     ;
 storeBoolean     = 1     ;
 % ----------------------------------------------------------------------
 %% RunONSAS
-beamTruss_Ratio= Et*At/Lt/(3*Eb*Ib/Lb^3)
                         
 run( [ pwd '/../ONSAS.m' ] ) ;
 
-controlDispsNR = controlDisps ;
-loadFactorsNR  = loadFactors ;
-
-
 % ----------------------------------------------------------------------
+
 %% --- plots ---
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+lw = 2.0 ; ms = 15 ; plotfontsize = 15 ;
 
 figure
-plot( controlDispsNR, analyticFunc(controlDispsNR),'b-x' , 'linewidth', lw,'markersize',ms)
-hold on, grid on
-plot( controlDispsAL, loadFactorsAL,'r-s' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNR, loadFactorsNR,'k-o' , 'linewidth', lw,'markersize',ms )
+time = 0:timeIncr:finalTime+timeIncr;
+plot( time,controlDisps,'b-' , 'linewidth', lw,'markersize',ms)
 
-labx = xlabel('Displacement');   laby = ylabel('\lambda') ;
+
+labx = xlabel('time (s)');   laby = ylabel('Displacement (m)') ;
 % legend('analytic','NRAL-DXF','NR','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
