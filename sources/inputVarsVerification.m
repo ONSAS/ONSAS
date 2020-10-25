@@ -203,7 +203,7 @@ if exist( 'consMatFlag' ) == 0
 end
 
 if booleanScreenOutput
-  fprintf(' done.\n');
+  fprintf( ' done.      |\n' );
 end
 
 % --- creates outputdir ---
