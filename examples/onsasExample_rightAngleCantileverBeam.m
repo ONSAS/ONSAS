@@ -4,7 +4,8 @@
 % ------------------------------------------------------------------------------
 
 clear all, close all
-
+acdir    = [pwd];
+dirOnsas = [ pwd '/..' ] ;
 problemName = 'rightAngleCantileverBeam' ;
 
 % --- Scalar parameters --------------
@@ -64,7 +65,7 @@ end
 stopTolDeltau = 0     ;  stopTolForces = 1e-7 ;  stopTolIts = 30 ;
 
 %~ timeIncr      =  0.25 ;  finalTime     = 20   ;    
-timeIncr      =  0.25 ;  finalTime     = 2   ;    
+timeIncr      =  0.25 ;  finalTime     = 10   ;    
 
 %~ alphaHHT = 0 ; % Newmark case
 alphaHHT = -0.05 ; % HHT

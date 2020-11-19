@@ -60,7 +60,7 @@ if startPreviousVels == 1
   Udotdottp1k = Udotdott ;
 else
   [ Udottp1k, Udotdottp1k ] = updateTime( ...
-    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime,neumdofs ) ;
 end
 
 if solutionMethod == 2
@@ -88,7 +88,7 @@ while  booleanConverged == 0
 
   % --- updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-
+  
   % --- update next time magnitudes ---
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
@@ -177,26 +177,56 @@ modelCompress
 % ==============================================================================
 %
 % ==============================================================================
-function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, numericalMethodParams, currTime )
+function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, numericalMethodParams, currTime,neumdofs )
 
   [ solutionMethod, stopTolDeltau,   stopTolForces, ...
   stopTolIts,     targetLoadFactr, nLoadSteps,    ...
   incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
       = extractMethodParams( numericalMethodParams ) ;
 
-  nextTime   = currTime + deltaT                          ;
+ nextTime   = currTime + deltaT                          ;
+ nNodes     = length( Uk) / 6 ;
+ neumdofs   = [1:length( Uk)] ;
+ 
 
 if solutionMethod == 3 || solutionMethod == 4
-
+    %Linear Update
   if solutionMethod == 4
     deltaNW = (1-2*alphaHHT)/2 ;
     AlphaNW = (1-alphaHHT)^2/4 ;
   end
+  oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
+  evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
+
+  Udottp1    = zeros(length( Uk),1 ) ;
+  Udotdottp1 = zeros(length( Uk),1 ) ;
   
   Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
-
   Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
   
+  Udotdottp1(oddNeumDofsInds,1) = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk(oddNeumDofsInds) - Ut(oddNeumDofsInds) )- 1.0/( AlphaNW * deltaT ) * Udott(oddNeumDofsInds) - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott(oddNeumDofsInds) ;
+
+  Udottp1(oddNeumDofsInds,1)    = Udott(oddNeumDofsInds) +  deltaT * ( ( 1-deltaNW ) * Udotdott(oddNeumDofsInds) + deltaNW * Udotdottp1(oddNeumDofsInds) )  ;  
+  
+ 
+  %Angular Update
+  for i=1:nNodes
+      
+    nodeDofs    = nodes2dofs( i , 6 ) ;
+    nodeAngDofs = nodeDofs  ( 2:2:6 ) ; 
+
+% 
+%     Lamdag      = expon(  ( Uk ( nodeAngDofs ) ) );
+%     Udottp1( nodeAngDofs )   = Lamdag*[ deltaNW/(AlphaNW*deltaT)*Uk( nodeAngDofs )...
+%                              + (AlphaNW-deltaNW)/(AlphaNW)  *Udott( nodeAngDofs )...
+%                              + (AlphaNW-.5*deltaNW)*deltaT/AlphaNW*Udotdott(nodeAngDofs) ];
+%                         
+%     
+%     Udotdottp1( nodeAngDofs ) = Lamdag*[ 1/(AlphaNW*deltaT^2)*Uk( nodeAngDofs )...
+%                             - (1)/(AlphaNW*deltaT)  *Udott( nodeAngDofs )...
+%                             - (0.5-AlphaNW)/AlphaNW*Udotdott(nodeAngDofs) ]  ;
+  end
+
 else
   Udotdottp1 = Udotdott ;
   Udottp1    = Udott ;
