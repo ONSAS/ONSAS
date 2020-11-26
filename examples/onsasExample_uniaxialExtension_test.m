@@ -77,6 +77,8 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 controlDofs = [ 7 1 1 ] ;
 
+storeBoolean = 1 ;
+
 %% Output parameters
 plotParamsVector = [ 3 ] ;
 printflag = 2 ;
@@ -91,7 +93,31 @@ cppSolverBoolean = 1 ;
 %% run ONSAS
 addpath( dirOnsas );
 ONSAS
+
+Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
+         [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
+         [ 0 1 0 0 1   4 1 2   ]; ... % x=0 supp face
+         [ 0 1 0 0 1   4 2 3   ]; ... % x=0 supp face
+         [ 0 1 0 0 2   6 2 1   ]; ... % y=0 supp face
+         [ 0 1 0 0 2   6 1 5   ]; ... % y=0 supp face
+         [ 0 1 0 0 3   1 4 5   ]; ... % z=0 supp face
+         [ 0 1 0 0 3   4 8 5   ]; ... % z=0 supp face
+         [ 1 2 0 0 0   1 4 2 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   6 2 3 4 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 3 6 7 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 1 5 6 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 6 5 8 ]; ... % tetrahedron
+         [ 1 2 0 0 0   4 7 6 8 ]  ... % tetrahedron
+        } ;
+
+iniMatUs = matUs ;
+storeBoolean = 0 ;
+
+ONSAS
+
 % --------------------------------------------------------
+
+clear iniMatUs
 
 
 controlDispsValsCase1         = controlDisps  ;

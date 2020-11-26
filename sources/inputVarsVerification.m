@@ -77,6 +77,11 @@ if exist( 'booleanSelfWeightZ' ) == 0
   booleanSelfWeightZ = 0 ; 
 end
 
+if ~exist( 'iniMatUs' )
+  Utp10 = [] ; 
+else
+  Utp10 = iniMatUs(:,2) ;
+end
 
 % ===  Conversion conec cell to matrix format... to improve in the future.... ===
 if iscell( Conec )
@@ -198,7 +203,7 @@ if exist( 'consMatFlag' ) == 0
 end
 
 if booleanScreenOutput
-  fprintf(' done.\n');
+  fprintf( ' done.      |\n' );
 end
 
 % --- creates outputdir ---
