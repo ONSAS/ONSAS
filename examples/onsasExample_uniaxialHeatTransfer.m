@@ -1,46 +1,33 @@
 % ---------------------------
 % 1D Heat Transfer Problem
-% ---------------------------
 
-function onsasExample_1DHeatTransfer( onsasDir, scalarParams, plotBoolean )
-
-close all, problemName = '1DHeatTransfer' ;
+close all, clear all ;
+problemName = 'uniaxialHeatTransfer' ;
 
 % --- scalar parameters ---
+timeIncr  = 0.001 ;
+Tfinal    = .004 ;
+rho       = 1 ;
+cSpHe     = 1 ;
+kCond  = 2  ;
+L      = 3.4 ; % domain [0,L]
+Area   = 1   ;
+hConv  = 2  ;
+nelem  = 10   ;
 
-% heat transfer system 
-if nargin < 2
+anlyBoolean = 0 ;              wx = 1 ;
 
-  timeIncr  = 0.001 ;
-  Tfinal    = .004 ;
-  rho       = 1 ;
-  cSpHe     = 1 ;
-  kCond  = 2  ;
-  L      = 3.4 ; % domain [0,L]
-  Area   = 1   ;
-  hConv  = 2  ;
-  nelem  = 10   ;
+Tamb        = 8       ;
+T0val = 10 ;
+diriDofs    = [ ] ;  robiDofs    = [ 1 nelem+1 ] ;  
 
-  anlyBoolean = 0 ;              wx = 1 ;
 
-  Tamb        = 8       ;
-  T0val = 10 ;
-  diriDofs    = [ ] ;  robiDofs    = [ 1 nelem+1 ] ;  
 
-else
-  %~ k        = scalarParams(1) ;
-  %~ c        = scalarParams(2) ;
-  %~ m        = scalarParams(3) ;
-  %~ omegaBar = scalarParams(4) ;
-  %~ p0       = scalarParams(5) ;
-  %~ u0       = scalarParams(6) ;
-  %~ timeIncr = scalarParams(7) ;  
-end
+%run( [ pwd '/../ONSAS.m' ] ) ;
 
-if nargin < 3
-  plotBoolean = 1 ;
-  close all
-end
+
+
+return
 
 dt = timeIncr ;
 
