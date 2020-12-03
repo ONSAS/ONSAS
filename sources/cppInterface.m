@@ -22,9 +22,11 @@ status = system('tail -n +7 KS.dat > aux.dat' );
 status = system('mv aux.dat KS.dat' ) ;
 
 save -ascii 'U.dat'                  U ;
-save -ascii 'materialsParamsMat.dat' materialsParamsMat;
 save -ascii 'coordsElemsMat.dat'     coordsElemsMat;
-save -ascii 'crossSecsParamsMat.dat' crossSecsParamsMat;
+save -ascii 'materialsParamsMat.dat' materialsParamsMat ;
+save -ascii 'elementsParamsMat.dat'  elementsParamsMat  ;
+save -ascii 'crossSecsParamsMat.dat' crossSecsParamsMat ;
+save -ascii 'coordsElemsMat.dat' coordsElemsMat ;
 
 save -ascii 'constantFext.dat' constantFext;
 save -ascii 'variableFext.dat' variableFext;
