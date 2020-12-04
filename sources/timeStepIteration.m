@@ -148,34 +148,34 @@ else
     nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
   end
   
-  
-  
   % prints iteration info in file
   printSolverOutput( ...
     outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIters stopCritPar nKeigpos nKeigneg ] ) ;
   
-  
-  % --- stores next step values ---
-  U          = Utp1 ;
-  Udot       = Udottp1  ;
-  Udotdot    = Udotdottp1 ;
-  convDeltau = Utp1 - Ut ;
-  %
-  Stress     = Stresstp1 ;
-  
-  timeIndex  = timeIndex + 1 ;
-  
-  currTime   = nextTime ;
-  if solutionMethod == 2
-    currTime = nextLoadFactor ;
-  end
-  
-  timeStepStopCrit = stopCritPar ;
-  timeStepIters = dispIters ;
-
 end % if solver C++
 
+
+% --- stores next step values ---
+U          = Utp1 ;
+Udot       = Udottp1  ;
+Udotdot    = Udotdottp1 ;
+convDeltau = Utp1 - Ut ;
+%
+Stress     = Stresstp1 ;
+
+timeIndex  = timeIndex + 1 ;
+
+currTime   = nextTime ;
+if solutionMethod == 2
+  currTime = nextLoadFactor ;
+end
+
+timeStepStopCrit = stopCritPar ;
+timeStepIters = dispIters ;
+
+
 modelCompress
+
 % -------------------------------------
 
 

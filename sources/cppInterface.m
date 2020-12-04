@@ -46,23 +46,7 @@ save -ascii 'neumdofs.dat' neumdofs;
 
 [status] = system('../sources/timeStepIteration.lnx',0) ;
 
-stop
 % read file
-FintGt = load( '-ascii', 'FintGt.dat') ;
-
-if paramOut==2
-  
-  indsIKT = load( '-ascii', 'indsIKT.dat') ;
-  indsJKT = load( '-ascii', 'indsJKT.dat') ;
-  valsKT  = load( '-ascii', 'valsIKT.dat') ;
-  
-  KT = ...
-    sparse( indsIKT, indsJKT, valsKT, size(KS,1), size(KS,1) ) ...
-    + KS ;
-end
-
-StrainVec   = sparse( nelems, 6 ) ;
-StressVec   = sparse( nelems, 6 ) ;
-
+Utp1 = load( '-ascii', 'Utp1.dat') ;
 
 
