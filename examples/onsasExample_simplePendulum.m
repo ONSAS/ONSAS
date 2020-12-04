@@ -67,11 +67,13 @@ controlDispsA = controlDisps ;
 
 % ------------------------------------
 
-problemName = 'simplePendulumTrussHHTSelfWeight' ;
+problemName = 'simplePendulumTrussHHTSelfWeightDamp' ;
 
 Conec = { [ 0 1 0 0 1  1   ] ; ...
           [ 0 1 0 0 2  2   ] ; ...
           [ 1 2 0 1 0  1 2 ] } ;
+
+nodalDispDamping = .5 ;
 
 loadsParams  = {};
 booleanSelfWeightZ = 1 ;
