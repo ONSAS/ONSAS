@@ -138,8 +138,7 @@ else
         dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
         [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemrho, A, elemElementParams(2), paramOut, dotdotdispsElem ) ;
         %
-        %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
-        %~ Fmase = fs{3} ;   Ce    = ks{2} ;   Mmase = ks{3} ;
+        Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
       end
 
 
