@@ -1,41 +1,24 @@
+% --------------------------------------------------
+% solid analysis example for testing C++ solver
+% --------------------------------------------------
 
 clear all, close all
 
 %% General data
 dirOnsas = [ pwd '/..' ] ; addpath( dirOnsas );
-problemName = 'solidUsingCppSolver_oct' ;
-
+problemName = 'solidUsingCppSolver_case1' ;
 
 %% Structural properties
 
 % tension applied and x, y, z dimensions
-p = 3*.2 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
+p = 3 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
 
 % ======================================================================
 % --- MELCS parameters ---
 
-% --- Material parameters ---
-E = 1 ; nu = 0.3 ;
-materialsParams = {[ 0 2 E nu ]} ;
-
-% --- Element parameters ---
-elementsParams = { [ 5   ] ; ...
-                   [ 4 2 ] } ; % analytic constitutive tensor
-
-% --- Load parameters ---
-loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;  % global coords tension applied
-
-% --- CrossSection parameters ---
-crossSecsParams = cell(1,1) ; %
-
-% --- springsAndSupports parameters ---
-springsParams = {[ inf 0  0   0   0   0 ] ; ...
-                 [ 0   0  inf 0   0   0 ] ; ...
-                 [ 0   0  0   0   inf 0 ] } ;
-
-
-
+% tension applied and x, y, z dimensions
+p = 3 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
 
 % an 8-node mesh is considered with its connectivity matrix
 Nodes = [ 0    0    0 ; ...
@@ -64,6 +47,28 @@ Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
         } ;
 
           
+% ======================================================================
+% --- MELCS parameters ---
+
+% --- Material parameters ---
+E = 1 ; nu = 0.3 ;
+materialsParams = {[ 0 2 E nu ]} ;
+
+% --- Element parameters ---
+elementsParams = { [ 5   ] ; ...
+                   [ 4 2 ] } ; % analytic constitutive tensor
+
+% --- Load parameters ---
+loadsParams = {[ 1 1  p 0 0 0 0 0 ]} ;  % global coords tension applied
+
+% --- CrossSection parameters ---
+crossSecsParams = cell(1,1) ; %
+
+% --- springsAndSupports parameters ---
+springsParams = {[ inf 0  0   0   0   0 ] ; ...
+                 [ 0   0  inf 0   0   0 ] ; ...
+                 [ 0   0  0   0   inf 0 ] } ;
+
 % ----------------------------------------------------------------------
 
 %% --- Analysis parameters ---
@@ -78,14 +83,12 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts ...
 
 controlDofs = [ 7 1 1 ] ;
 
-storeBoolean = 1 ;
-
 %% Output parameters
 plotParamsVector = [ 3 ] ;
 printflag = 2 ;
 
 % --- Analytic sol ---
-analyticSolFlag        = 2 ;
+analyticSolFlag        = 0 ;
 analyticCheckTolerance = 1e-8 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 
@@ -93,10 +96,13 @@ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 ONSAS
 
 
+controlDispsValsCase1         = controlDisps  ;
+%~ loadFactorAnalyticalValsCase1 = analyticVals  ;
+%~ loadFactorNumericalValsCase1  = numericalVals ;
+
 % ==============================================================================
 
-problemName = 'solidUsingCppSolver_oct' ;
-cppSolverBoolean = 1 ;
+problemName = 'solidUsingCppSolver_case2' ;
 
 Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
          [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
@@ -114,5 +120,47 @@ Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
          [ 1 2 0 0 0   4 7 6 8 ]  ... % tetrahedron
         } ;
 
+cppSolverBoolean = 1 ;
 %% run ONSAS
 ONSAS
+
+% ==============================================================================
+
+
+problemName = 'solidUsingCppSolver_case3' ;
+
+[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
+
+cppSolverBoolean = 0 ;
+
+%% run ONSAS
+ONSAS
+% ==============================================================================
+
+
+problemName = 'solidUsingCppSolver_case4' ;
+
+[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
+cppSolverBoolean = 1 ;
+
+%% run ONSAS
+ONSAS
+
+% ==============================================================================
+
+
+problemName = 'solidUsingCppSolver_case5' ;
+
+[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension_dense.msh' ) ;
+
+%% run ONSAS
+ONSAS
+
+
+%~ problemName = 'solidUsingCppSolver_case6' ;
+
+%~ [ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension_dense.msh' ) ;
+%~ cppSolverBoolean = 0 ;
+
+%~ %% run ONSAS
+%~ ONSAS
