@@ -25,3 +25,4 @@ octave-workspace
 *.dat
 *.lnx
 /examples/output/*
+/examples/strings.txt

@@ -111,6 +111,8 @@ Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
 iniMatUs = matUs ;
 storeBoolean = 0 ;
 
+clear cppSolverBoolean
+
 ONSAS
 
 % --------------------------------------------------------

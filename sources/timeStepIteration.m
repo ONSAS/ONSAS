@@ -27,129 +27,132 @@ startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
 % ----   extracts variables  ----
 modelExtract
 
-% -----   pre-iteration definitions     ----------
-nElems     = size( Conec, 1 ) ; ndofpnode = 6;
+if cppSolverBoolean
+  cppInterface
 
-[ solutionMethod, stopTolDeltau,   stopTolForces, ...
-  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
-      = extractMethodParams( numericalMethodParams ) ;
-% --------------------------------------------------------------------
-
-
-% --------------------------------------------------------------------
-% ----       iteration in displacements or load-displacements     ----
-% --------------------------------------------------------------------
-
-KTtred = systemDeltauMatrix ;
-
-% assign time t
-Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
-
-%~ Fintt = Fint ; Fmast = Fmas ; Fvist = Fvis ;
-
-% --- start iteration with previous displacements ---
-if isempty( Utp10 )
-  Utp1k       = Ut       ;   % initial guess
 else
-  Utp1k       = Utp10    ;
-end
-
-if startPreviousVels == 1
-  Udottp1k    = Udott    ;
-  Udotdottp1k = Udotdott ;
-else
-  [ Udottp1k, Udotdottp1k ] = updateTime( ...
-    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
-end
-
-if solutionMethod == 2
-  nextLoadFactor = currLoadFactor ; % initial guess for next load factor
-end
-
-% --- compute RHS for initial guess ---
-[ systemDeltauRHS, FextG ]  = computeRHS( ...
-  Conec, crossSecsParamsMat, coordsElemsMat, ...
-  materialsParamsMat, KS, constantFext, variableFext, userLoadsFilename, ...
-  currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, nodalDispDamping, ...
-  Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
-% ---------------------------------------------------
-
-booleanConverged = 0                              ;
-dispIters        = 0                              ;
-currDeltau       = zeros( length( neumdofs ), 1 ) ;
-
-while  booleanConverged == 0
-  dispIters = dispIters + 1 ;
-
-  % --- solve system ---
-  [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
-  % ---------------------------------------------------
-
-  % --- updates: model variables and computes internal forces ---
-  [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
-
-  % --- update next time magnitudes ---
-  [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
-    Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
-  % ---------------------------------------------------
   
-  % --- system matrix ---
-  systemDeltauMatrix          = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
-    materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
-    nodalDispDamping, Udott, Udotdott, elementsParamsMat ) ;
-  % ---------------------------------------------------
-
-  % --- new rhs ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParamsMat, coordsElemsMat, ...
-    materialsParamsMat, KS, constantFext, variableFext, ...
-    userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
-    neumdofs, nodalDispDamping, ...
+  % -----   pre-iteration definitions     ----------
+  nElems     = size( Conec, 1 ) ; ndofpnode = 6;
+  
+  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
+    stopTolIts,     targetLoadFactr, nLoadSteps,    ...
+    incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
+        = extractMethodParams( numericalMethodParams ) ;
+  % --------------------------------------------------------------------
+  
+  
+  % --------------------------------------------------------------------
+  % ----       iteration in displacements or load-displacements     ----
+  % --------------------------------------------------------------------
+  
+  KTtred = systemDeltauMatrix ;
+  
+  % assign time t
+  Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
+  
+  % --- start iteration with previous displacements ---
+  if isempty( Utp10 )
+    Utp1k       = Ut       ;   % initial guess
+  else
+    Utp1k       = Utp10    ;
+  end
+  
+  if startPreviousVels == 1
+    Udottp1k    = Udott    ;
+    Udotdottp1k = Udotdott ;
+  else
+    [ Udottp1k, Udotdottp1k ] = updateTime( ...
+      Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+  end
+  
+  if solutionMethod == 2
+    nextLoadFactor = currLoadFactor ; % initial guess for next load factor
+  end
+  
+  % --- compute RHS for initial guess ---
+  [ systemDeltauRHS, FextG ]  = computeRHS( ...
+    Conec, crossSecsParamsMat, coordsElemsMat, ...
+    materialsParamsMat, KS, constantFext, variableFext, userLoadsFilename, ...
+    currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, nodalDispDamping, ...
     Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
   % ---------------------------------------------------
-
-  % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, [], FextG(neumdofs), deltaured, Utp1k(neumdofs), dispIters, [], systemDeltauRHS ) ;
-  % ---------------------------------------------------
-
-  % --- prints iteration info in file ---
-  printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
-
-end % iteration while
-% --------------------------------------------------------------------
-
-Utp1       = Utp1k ;
-Udottp1    = Udottp1k ;
-Udotdottp1 = Udotdottp1k ;
-
-% computes KTred at converged Uk
-KTtp1red = systemDeltauMatrix ;
-
-
-
-% --------------------------------------------------------------------
-
-Stresstp1 = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
-
-
-% %%%%%%%%%%%%%%%%
-stabilityAnalysisFlag = stabilityAnalysisBoolean ;
-% %%%%%%%%%%%%%%%%
-
-if stabilityAnalysisFlag == 2
-  [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-elseif stabilityAnalysisFlag == 1
-  [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-  factorCrit = 0;
-else
-  nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
-end
-
-
-
-% prints iteration info in file
-printSolverOutput( ...
-  outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIters stopCritPar nKeigpos nKeigneg ] ) ;
+  
+  booleanConverged = 0                              ;
+  dispIters        = 0                              ;
+  currDeltau       = zeros( length( neumdofs ), 1 ) ;
+  
+  while  booleanConverged == 0
+    dispIters = dispIters + 1 ;
+  
+    % --- solve system ---
+    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+    % ---------------------------------------------------
+  
+    % --- updates: model variables and computes internal forces ---
+    [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+  
+    % --- update next time magnitudes ---
+    [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
+      Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+    % ---------------------------------------------------
+    
+    % --- system matrix ---
+    systemDeltauMatrix          = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
+      materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
+      nodalDispDamping, Udott, Udotdott, elementsParamsMat ) ;
+    % ---------------------------------------------------
+  
+    % --- new rhs ---
+    [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParamsMat, coordsElemsMat, ...
+      materialsParamsMat, KS, constantFext, variableFext, ...
+      userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
+      neumdofs, nodalDispDamping, ...
+      Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
+    % ---------------------------------------------------
+  
+    % --- check convergence ---
+    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, [], FextG(neumdofs), deltaured, Utp1k(neumdofs), dispIters, [], systemDeltauRHS ) ;
+    % ---------------------------------------------------
+  
+    % --- prints iteration info in file ---
+    printSolverOutput( outputDir, problemName, timeIndex, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
+  
+  end % iteration while
+  % --------------------------------------------------------------------
+  
+  Utp1       = Utp1k ;
+  Udottp1    = Udottp1k ;
+  Udotdottp1 = Udotdottp1k ;
+  
+  % computes KTred at converged Uk
+  KTtp1red = systemDeltauMatrix ;
+  
+  
+  
+  % --------------------------------------------------------------------
+  
+  Stresstp1 = assembler ( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1, 3, Udottp1, Udotdottp1, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
+  
+  
+  % %%%%%%%%%%%%%%%%
+  stabilityAnalysisFlag = stabilityAnalysisBoolean ;
+  % %%%%%%%%%%%%%%%%
+  
+  if stabilityAnalysisFlag == 2
+    [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
+  elseif stabilityAnalysisFlag == 1
+    [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
+    factorCrit = 0;
+  else
+    nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
+  end
+  
+  % prints iteration info in file
+  printSolverOutput( ...
+    outputDir, problemName, timeIndex+1, [ 2 nextLoadFactor dispIters stopCritPar nKeigpos nKeigneg ] ) ;
+  
+end % if solver C++
 
 
 % --- stores next step values ---
@@ -170,7 +173,9 @@ end
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
+
 modelCompress
+
 % -------------------------------------
 
 
