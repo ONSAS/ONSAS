@@ -3,6 +3,9 @@
 % ------------------------------------------------------------------------------
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'emparrillado_Mitad_Lineal' ;
 
 % ------------------------------------------------------------------------------ 

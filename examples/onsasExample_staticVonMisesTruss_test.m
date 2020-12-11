@@ -2,6 +2,10 @@
 % Von Mises truss example
 
 close all, clear all %#ok
+
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
 % ----------------------------------------------------------------------

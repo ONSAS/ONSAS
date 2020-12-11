@@ -5,7 +5,8 @@
 clear all, close all
 
 %% General data
-dirOnsas = [ pwd '/..' ] ; addpath( dirOnsas );
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
 problemName = 'solidUsingCppSolver_case1' ;
 
 %% Structural properties

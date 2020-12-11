@@ -6,7 +6,8 @@
 clear all, close all
 
 %% General data
-dirOnsas = [ pwd '/..' ] ;
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
 problemName = 'uniaxialExtension_Manual' ;
 
 %% Structural properties

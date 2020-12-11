@@ -4,6 +4,9 @@
 
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 % --- scalar parameters ---
 E  = 200e3 ; nu = 0.3 ;  R = 120 ;  wy = .6 ;   wz = 6 ;  halfNElem = 10 ;
 

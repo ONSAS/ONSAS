@@ -4,6 +4,9 @@
 
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName       = 'chain' ;
 
 % -- scalar params -----
@@ -63,7 +66,7 @@ plotParamsVector = [ 3 150 ];
 printFlag = 0 ;
 storeBoolean = 1;
 
-run( [  pwd  '/../ONSAS.m' ] ) ;
+ONSAS
 
 disp('verificacion: ')
 sumaFuerzaPesoNum = -sum(BCsData.constantFext)

@@ -4,7 +4,10 @@
 % ------------------------------------------------------------------------------
 
 clear all, close all
-inputONSASversion = '0.1.10';
+
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'TransmissionLine_Selfweight' ;
 
 
