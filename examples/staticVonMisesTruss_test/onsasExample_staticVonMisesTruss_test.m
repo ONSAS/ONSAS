@@ -1,10 +1,9 @@
 % ======================================================================
 % Von Mises truss example
 
-close all, clear all %#ok
-
+close all, clear all        ;
 dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
-addpath( dirOnsas ); % add ONSAS directory to path
+addpath( dirOnsas )         ; % add ONSAS directory to path
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
@@ -54,7 +53,7 @@ reportBoolean    = 1     ;
 analyticSolFlag = 2    ;
 analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS
 % ----------------------------------------------------------------------
 
 
@@ -87,7 +86,7 @@ l0           = sqrt(auxx^2 + auxz^2) ;
 analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS
 
 controlDispsNR = controlDisps ;
 loadFactorsNR  = loadFactors ;
@@ -109,7 +108,7 @@ analyticFunc    = @(w) ...
   -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS
 
 controlDispsNRAL = controlDisps ;
 loadFactorsNRAL  = loadFactors  ;
