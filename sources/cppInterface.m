@@ -53,7 +53,7 @@ auxt = cputime() ;
 % run sts
 %~ [status, output] = system('../sources/timeStepIteration.lnx') ;
 %~ output
-[status] = system('../sources/timeStepIteration.lnx',0) ;
+[status] = system('../../sources/timeStepIteration.lnx',0) ;
 
 tiemposCppInterface(2) = cputime() - auxt ;
 auxt = cputime() ;
