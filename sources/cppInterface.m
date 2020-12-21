@@ -24,6 +24,7 @@ save  'KS.dat' KS ;
 status = system('tail -n +7 KS.dat > aux.dat' ); 
 status = system('mv aux.dat KS.dat' ) ;
 
+size(U)
 save -ascii 'U.dat'                  U ;
 save -ascii 'coordsElemsMat.dat'     coordsElemsMat;
 save -ascii 'materialsParamsMat.dat' materialsParamsMat ;
@@ -53,7 +54,9 @@ auxt = cputime() ;
 % run sts
 %~ [status, output] = system('../sources/timeStepIteration.lnx') ;
 %~ output
-[status] = system('../../sources/timeStepIteration.lnx',0) ;
+auxPathBin = file_in_loadpath('timeStepIteration.lnx')
+
+[status] = system( auxPathBin ,0) ;
 
 tiemposCppInterface(2) = cputime() - auxt ;
 auxt = cputime() ;
