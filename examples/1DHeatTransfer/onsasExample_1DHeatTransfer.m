@@ -3,17 +3,16 @@
 
 clear all, close all
 dirOnsas    = [ pwd '/..' ] ; addpath( dirOnsas );
-problemName = 'heatTransfer1D' ;
+problemName = '1DHeatTransfer' ;
 
 nelem = 10 ;
 
-aux_toyHeatTransferExample( 1, nelem, 1 ) ;
+%~ aux_toyHeatTransferExample( 1, nelem, 1 ) ;
 
-
-rho = 1 ; E = 1; nu = 0 ; A = 1 ;
+rho = 1 ; c = 1; k = 1;  E = 1; nu = 0 ; A = 1 ;
 
 % Materials
-materialsParams = {[ rho 1 E nu ]} ;
+materialsParams = {[ rho c k 1 E nu ]} ;
 
 % Elements
 elementsParams  = { 1; [2 1 1] } ;
@@ -25,18 +24,18 @@ loadsParams     = { [ 1 1   0 0 0 0 0 0    1] } ;
 crossSecsParams = { [ 2 sqrt(A) sqrt(A) ] } ;
 
 % Springs
-springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
+springsParams   = { [ inf  0  inf  0  inf   0   ]  ...
                     [ 0    0  inf  0    0   0 ] } ;
 
 % ----------------------------------------------------------------------
 % nodes coordinates matrix and connectivity cell
 
 % node coordinates matrix
-Nodes = [      0  0     0  ; ...
-            1  0  0    ] ;
+Nodes = [   0  0  0  ; ...
+            1  0  0  ] ;
 
 % connectivity cell
-Conec = { [ 0 1 0 0 1  1   ] ; ... %  node
+Conec = { [ 0 1 1   1   ] ; ... %  node
           [ 0 1 1 0 0  2   ] ; ... % node
           [ 1 2 0 1 0  1 2 ] } ;   % truss element
 
