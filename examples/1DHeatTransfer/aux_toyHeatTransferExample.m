@@ -2,9 +2,9 @@
 % Toy Heat Transfer Problem
 % ---------------------------
 
-function aux_toyHeatTransferExample(caseNum, nelem, plotBoolean )
+function Ts =  aux_toyHeatTransferExample(caseNum, nelem, plotBoolean )
 
-addpath('../sources/')
+addpath('../sources/');
 
 dt     = 0.001 ;
 rho    = 1 ;
@@ -191,13 +191,12 @@ for i=0:nt
 end
 % ------------------------
 
+
 if plotBoolean
   axis equal
-  print( sprintf('../../1DheatCase_%1i.png', caseNum ),'-dpng'), close all
+  print( sprintf('../../1DheatCase_%1i.png', caseNum ),'-dpng'),
+  
+  %~ close all
 
   %~ figure, plot( Ts(2,:) )
 end
-
-KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
-
-save -mat auxVars.mat KdiffGNN CNN Ts

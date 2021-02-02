@@ -141,6 +141,12 @@ else
         Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
       end
 
+      if (length( elemCrossSecParams) == 3) && (elemCrossSecParams(3) == 1)
+         disp('hola')
+         %~ stop
+                
+      end
+
 
     % -----------   frame element   ------------------------------------
     case 3
