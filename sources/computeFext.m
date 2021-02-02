@@ -21,7 +21,7 @@ function Fext = computeFext( constantFext, variableFext, loadFactor, userLoadsFi
   if strcmp( userLoadsFilename , '')
     FextUser = zeros(size(constantFext)) ;
   else
-    FextUser = feval( userLoadsFilename, nextLoadFactor)  ;
+    FextUser = feval( userLoadsFilename, loadFactor)  ;
   end
 
   Fext  = variableFext * loadFactor + constantFext  + FextUser  ;

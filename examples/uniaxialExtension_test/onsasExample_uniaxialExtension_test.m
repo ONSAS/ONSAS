@@ -6,7 +6,8 @@
 clear all, close all
 
 %% General data
-dirOnsas = [ pwd '/..' ] ;
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
 problemName = 'uniaxialExtension_Manual' ;
 
 %% Structural properties
@@ -112,6 +113,8 @@ Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
 
 iniMatUs = matUs ;
 storeBoolean = 0 ;
+
+clear cppSolverBoolean
 
 ONSAS
 

@@ -185,6 +185,11 @@ if exist( 'plotParamsVector' ) == 0
   plotParamsVector = [ 1 ] ;
 end
 
+if exist( 'cppSolverBoolean' ) == 0
+  cppSolverBoolean = 0 ;
+end
+
+
 if exist( 'storeBoolean' ) == 0
   storeBoolean = 0 ;
 end

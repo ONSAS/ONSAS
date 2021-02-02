@@ -3,6 +3,9 @@
 % ------------------------------------------------------------------------------
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'uniformCurvatureCantilever' ;
 
 l = 10   ;    ty = .1 ;  tz = .1 ;  Nelem = 20 ;
@@ -55,7 +58,6 @@ analyticSolFlag = 1 ; analyticCheckTolerance = 1e-4 ; analyticFunc = @(w) w * l 
 
 % --- ONSAS execution ---
 run( [ pwd '/../ONSAS.m' ] ) ;
-return
 
 lw = 3.5; ms = 11; plotfontsize = 22 ;
 
@@ -70,8 +72,7 @@ uz6=u(3:3:end);
 
 figure
 plot( xs, 0*xs ,'b-.' , 'linewidth', lw,'markersize',ms )
-hold on, grid on
-axis equal
+hold on, grid on, axis equal
 plot( xs+ux6, uz6 ,'k' , 'linewidth', lw,'markersize',ms )
 plot( xs+ux11, uz11 ,'r' , 'linewidth', lw,'markersize',ms )
 %~ plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms )
@@ -82,6 +83,4 @@ labx = xlabel('x (m)');   laby = ylabel('z (m)') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 
-cd(dirOnsas); cd(outputDir);
-print( [ 'unif' ] ,'-dpdflatex','-tight') ;
-cd(acdir);
+%~ print( [ 'unif' ] ,'-dpdflatex','-tight') ;

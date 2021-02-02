@@ -18,10 +18,10 @@
 % This script runs all the *test.m examples from the examples folder.
 
 close all, clear all %#ok
-keyword = 'test.m' ;
-
+keyword = '_test' ;
+pwd
 if isunix, dirSep = '/'; else dirSep = '\'; end
-addpath( ['..' dirSep 'sources' ] ); octaveBoolean = isThisOctave ;
+addpath( ['..' dirSep  'sources' ] ); octaveBoolean = isThisOctave ;
 
 if octaveBoolean
   fileslist = readdir('./');
@@ -47,10 +47,16 @@ current  = 1 ;   verifBoolean = 1 ;
 while current <= totalRuns && verifBoolean == 1
   % save key files data to avoid clear all commands
   save( '-mat', 'exData.mat', 'current', 'totalRuns', 'keyfiles' );
+
+  if isunix, dirSep = '/'; else dirSep = '\'; end
  
   % run current example
   fprintf([' === running script: ' keyfiles{current} '\n' ]);
-  run( keyfiles{current} ) ;
+  
+  keyfiles{current}
+  rutaTotalScript = [ keyfiles{current} dirSep 'onsasExample_' keyfiles{current} '.m' ] 
+  
+  run( rutaTotalScript ) ;
 
   if verifBoolean
     fprintf([' === test ' problemName ' problem:  PASSED === \n\n']);

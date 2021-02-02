@@ -4,6 +4,9 @@
 
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'simplePendulumTrussHHT' ;
 % ------------------------------------
 
@@ -67,11 +70,13 @@ controlDispsA = controlDisps ;
 
 % ------------------------------------
 
-problemName = 'simplePendulumTrussHHTSelfWeight' ;
+problemName = 'simplePendulumTrussHHTSelfWeightDamp' ;
 
 Conec = { [ 0 1 0 0 1  1   ] ; ...
           [ 0 1 0 0 2  2   ] ; ...
           [ 1 2 0 1 0  1 2 ] } ;
+
+nodalDispDamping = .5 ;
 
 loadsParams  = {};
 booleanSelfWeightZ = 1 ;

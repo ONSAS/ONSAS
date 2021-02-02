@@ -6,6 +6,9 @@
 
 clear all, close all
 
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 % Problem name in order to write LaTex report 
 problemName = 'dxfTransmissionTower' ; 
 

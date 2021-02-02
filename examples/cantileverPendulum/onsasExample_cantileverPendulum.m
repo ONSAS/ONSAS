@@ -2,6 +2,10 @@
 % Truss-beam Joint example
 
 close all, clear all %#ok
+
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
+
 problemName = 'cantileverPendulum' ; 
 % ----------------------------------------------------------------------
 %% Geometric Properties
@@ -14,13 +18,13 @@ Ib = pi*db^4/64 ;
 %% MELCS parameters
 
 % Materials
-materialsParams = {[ rhot 3 Et nut ];[rhob 3 Eb nub ]} ;
+materialsParams = {[ rhot 3 Et nut ]; [rhob 3 Eb nub ]} ;
 
 % Elements
-elementsParams  = {1;[2 1];3} ;
+elementsParams  = {1; [2 1]; 3} ;
 
 % Loads
-loadsParams     = { [ 1 1   0 0 0 0 +1 0] } ;
+loadsParams     = { [ 1 1   0 0 0 0 1 0] } ;
 
 % Cross-Sections
 crossSecsParams = {[3 dt] ; [3 db]} ;	
@@ -35,7 +39,7 @@ springsParams   = { [ inf  inf    inf  inf  inf   inf  ]} ;
 NelemT  = 1;
 NnodesT = NelemT+1;
 
-%Bem elements
+%Beam elements
 NelemB  = 10;
 NnodesB = NelemB+1;
 
@@ -43,21 +47,19 @@ NnodesB = NelemB+1;
 Nelem = NelemT+NelemB	;
 Nnodes = Nelem+1;
 
-
 Nodes = [ 	(0:(NelemB))'*Lb/NelemB        zeros(NelemB+1,1)     zeros(NelemB+1,1) ;	 
-			(Lb+(1:(NelemT))'*Lt/NelemT)  zeros(NelemT,1)       zeros(NelemT,1)] ;
+		(Lb+(1:(NelemT))'*Lt/NelemT)  zeros(NelemT,1)       zeros(NelemT,1)] ;
 													   
-				    %Material             %Element                   %Loads                 %CrossSection             %Springs 					 
-auxConecElem  = [ [(ones(NelemB,1)*2 )    (ones(NelemB,1)*3)      (zeros(NelemB,1))         (ones(NelemB,1)*2)      (zeros(NelemB,1)) ...  %ElemNodes...
+		    %Material             Element                   Loads                 CrossSection     Springs 					 
+auxConecElem  = [ [(ones(NelemB,1)*2 )    (ones(NelemB,1)*3)      (zeros(NelemB,1))         (ones(NelemB,1)*2)   (zeros(NelemB,1)) ...  %ElemNodes...
                  (1:(NelemB))'                 (2:NelemB+1)'                  zeros(NelemB,2)];
-                  [(ones(NelemT,1)*1 )    (ones(NelemT,1)*2)      (zeros(NelemT,1))         (ones(NelemT,1)*1)      (zeros(NelemT,1)) ...  %ElemNodes...
+                  [(ones(NelemT,1)*1 )    (ones(NelemT,1)*2)      (zeros(NelemT,1))         (ones(NelemT,1)*1)   (zeros(NelemT,1)) ...  %ElemNodes...
                  (NelemB+1:NelemB+NelemT)'	 	(NelemB+2:NelemB+NelemT+1)'   zeros(NelemT,2)] ] ;  
                         %Material             %Element               ma    %Loads                 %CrossSection             %Springs 			%Nodes  
 auxConecNodes = [           0                   1                           0                           0                   1                   1   
-                            0                   1                           1                           0                   0                 Nnodes ];                                                                                                                                 
+                            0                   1                           1                           0                   0                 Nnodes ];
 
-
-%Build Conec Cell
+% Conec Cell
 Conec = cell (Nelem+size(auxConecNodes,1),1);
 for i = 1:size(auxConecNodes,1)
     Conec{i,1}=auxConecNodes(i,:) ;
@@ -95,9 +97,9 @@ plotParamsVector = [ 3 ] ;
 reportBoolean    = 1     ;
 storeBoolean     = 1     ;
 % ----------------------------------------------------------------------
-%% RunONSAS
-                        
-run( [ pwd '/../ONSAS.m' ] ) ;
+
+% Run ONSAS
+ONSAS
 
 % ----------------------------------------------------------------------
 

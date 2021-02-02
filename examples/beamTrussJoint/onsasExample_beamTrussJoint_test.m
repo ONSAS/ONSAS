@@ -1,8 +1,13 @@
 % ======================================================================
 % Truss-beam Joint example
+% ======================================================================
 
-close all, clear all %#ok
+close all, clear all
+
+dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+addpath( dirOnsas ); % add ONSAS directory to path
 problemName = 'TurssBeamJoint_NR' ; 
+
 % ----------------------------------------------------------------------
 %Geometric properties truss:
 Et = 1e9 ; dt = .05; At = pi*dt^2/4 ;  Lt = 1 ; nut = 0.3 ;  rhot = 1 ; 
@@ -88,15 +93,16 @@ analyticSolFlag = 2
 analyticCheckTolerance = 1e-5 ;
 analyticFunc   = @(w)(Et*At/Lt+3*Eb*Ib/Lb^3)*w;
 beamTruss_Ratio= Et*At/Lt/(3*Eb*Ib/Lb^3)
-                        
-run( [ pwd '/../ONSAS.m' ] ) ;
+
+% run ONSAS                        
+ONSAS
 
 
 controlDispsNR = controlDisps ;
 loadFactorsNR  = loadFactors ;
 
 % ----------------------------------------------------------------------
-return
+
 problemName = 'TurssBeamJoint_AL' ; 
 
 %Build Conec Cell
@@ -114,7 +120,7 @@ incremArcLen          = controlDispsNR(end)- controlDispsNR(end-1) ;%Same DeltaU
 numericalMethodParams = [ 2 stopTolDeltau stopTolForces stopTolIts ...
                             targetLoadFactrNRAL nLoadSteps incremArcLen ] ; 
                         
- run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS
 controlDispsAL = controlDisps ;
 loadFactorsAL  = loadFactors ;
 
