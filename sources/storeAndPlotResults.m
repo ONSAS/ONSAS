@@ -79,7 +79,7 @@ if timeIndex == 1
 end
 % initiate normalForces with initial values
 normalForces = normalForcesIni ;
-
+sigxs = modelCurrSol.Stress(:,1) ;
 if ~isempty(indsNormal) == 1
     for indexArea = 1:(size(crossSecsParamsMat,1))                    
         typeSec          = crossSecsParamsMat(indexArea,1)   ;
