@@ -26,7 +26,7 @@ addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOcta
 if octaveBoolean
   fileslist = readdir('../examples/');
 else
-  auxMatlab = dir('*.*')                  ;
+  auxMatlab = dir('../examples')                  ;
   fileslist = cell(length( auxMatlab ),1) ;
   for k=1:length( auxMatlab )
     fileslist{k} = auxMatlab(k).name ;
@@ -73,7 +73,7 @@ while current <= totalRuns && verifBoolean == 1
 end
 
 if verifBoolean ==1
-  fprintf('test PASSED!')
+  fprintf('test PASSED!\n')
 else
   error('test examples not passed.')
   

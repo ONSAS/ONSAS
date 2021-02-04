@@ -138,21 +138,27 @@ else
   % --- (temporary) computation and storage of separated assembled matrices ---
   mats  = assembler(  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1,   2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
   ktout = mats{1}; 
-  save  'Ktp1.dat' ktout ;
-  status = system('tail -n +7 Ktp1.dat > aux.dat' );
-  status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
-
+  
+  if isunix
+    save  'Ktp1.dat' ktout ;
+    status = system('tail -n +7 Ktp1.dat > aux.dat' );
+    status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
+  end
+  
   if solutionMethod > 2
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
 
-    save  'dampingMattp1.dat' dampingMat ;
-    status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
-    status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
+    if isunix
+      save  'dampingMattp1.dat' dampingMat ;
+      status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
+      status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
   
-    save  'massMattp1.dat' massMat ;
-    status = system('tail -n +7 massMattp1.dat > aux.dat' );
-    status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ; 
+      save  'massMattp1.dat' massMat ;
+      status = system('tail -n +7 massMattp1.dat > aux.dat' );
+      status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ; 
+    end
+
   end
   % --------------------------------------------------------------------  
 
