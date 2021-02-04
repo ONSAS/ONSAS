@@ -3,7 +3,7 @@
 % ------------------------------------------------------------------------------
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 problemName = 'uniformCurvatureCantilever' ;
@@ -57,7 +57,7 @@ numericalMethodParams = [ 1 stopTolDeltau stopTolForces stopTolIts targetLoadFac
 analyticSolFlag = 1 ; analyticCheckTolerance = 1e-4 ; analyticFunc = @(w) w * l / ( E * Iy ) ;
 
 % --- ONSAS execution ---
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS
 
 lw = 3.5; ms = 11; plotfontsize = 22 ;
 

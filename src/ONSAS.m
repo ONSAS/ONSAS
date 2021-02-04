@@ -33,6 +33,7 @@ addpath( dirs );
 % verifies the definition of input variables and sets default values
 inputVarsVerification
 
+
 % ==============================================================================
 
 % ==============================================================================

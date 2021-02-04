@@ -1,16 +1,18 @@
 % ======================================================================
 % Von Mises truss example
 
+% ===========================
+% first case: linear analysis
+
 close all, clear all        ;
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
-addpath( dirOnsas )         ; % add ONSAS directory to path
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
+addpath( dirOnsas )             ; % add ONSAS directory to path
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
-
 
 % ----------------------------------------------------------------------
 % MELCS parameters
@@ -19,17 +21,19 @@ E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ;
 materialsParams = {[ rho 1 E nu ]} ;
 
 % Elements
-elementsParams  = { 1; 2} ;
+elementsParams  = { 1; [2 1] } ;
 
 % Loads
-loadsParams     = { [ 1 1   0 0 0 0 -1 0] } ;
+loadsParams   = { [ 1 1   0 0 0  0 -1 0] } ;
 
 % Cross-Sections
 crossSecsParams = { [ 2 sqrt(A) sqrt(A) ] } ;
 
-% Springs
-springsParams   = { [ inf  0  inf  0  inf   0 ] ; ...
-                    [ 0    0  inf  0    0   0 ] } ;
+% springs parameters
+springsParams = { [ inf 0 inf 0 inf 0  ] ; ...
+                  [ 0   0 inf 0 0   0  ] } ;
+% ----------------------------------------------------------------------
+% mesh parameters
 
 % nodes coordinates matrix and connectivity cell
 auxx = cos( ang1*pi/180 ) * L ;        auxz = sin( ang1*pi/180 ) * L ;
@@ -46,6 +50,7 @@ Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
           [ 1 2 0 1 0  1 2 ] ; ... % truss element
           [ 1 2 0 1 0  2 3 ] } ;   % truss element
 
+
 controlDofs      = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
 plotParamsVector = [ 3 ] ;
 reportBoolean    = 1     ;
@@ -57,8 +62,11 @@ ONSAS
 % ----------------------------------------------------------------------
 
 
+% ====================================
+% second case: newton raphson analysis
+
 % ----------------------------------------------------------------------
-% connectivity cell
+% redefine Connectivity cell
 Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
           [ 0 1 1 0 2  2   ] ; ... % loaded node
           [ 0 1 0 0 1  3   ] ; ... % fixed node
@@ -67,6 +75,7 @@ Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
 
 problemName = 'staticVonMisesTrussNR' ;
 
+% material change
 materialsParams = {[ rho 3 E nu ]} ;
 
 % Cross-Sections
@@ -93,6 +102,9 @@ loadFactorsNR  = loadFactors ;
 % ----------------------------------------------------------------------
 
 
+% ===============================================
+% third case: NRarc-length analysis with dxf mesh
+
 % ----------------------------------------------------------------------
 problemName = 'staticVonMisesTrussNRAL_DXF' ;
 [ Nodes, Conec ] = meshFileReader( 'geometry_vonMises.dxf' ) ;
@@ -115,6 +127,9 @@ loadFactorsNRAL  = loadFactors  ;
 analyticNRAL     = analyticVals ;
 % ----------------------------------------------------------------------
 
+
+% ===============================================
+% methods comparison
 
 % ----------------------------------------------------------------------
 % --- plots ---

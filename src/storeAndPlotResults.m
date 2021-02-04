@@ -99,8 +99,6 @@ if ~isempty(indsNormal) == 1
     end
 end
 
-size(modelNextSol.U)
-
 if (storeBoolean == 1)
   matUs      (:, timeIndex+1 )       = modelNextSol.U                  ;
   matUdots   (:, timeIndex+1 )       = modelNextSol.Udot               ;

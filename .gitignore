@@ -1,4 +1,4 @@
-/output/*
+/examples/*/output/*
 */html/*
 /html/*
 /*/*.aux
@@ -19,10 +19,9 @@
 octave-workspace
 /documentation/*.bbl
 /documentation/*.blg
-/sources/*.txt
-/sources/*.oct
+/src/*.txt
+/src/*.oct
 *.mat
 *.dat
 *.lnx
-/examples/*/output/*
 /examples/strings.txt
