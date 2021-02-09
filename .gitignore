@@ -22,6 +22,7 @@ octave-workspace
 /src/*.txt
 /src/*.oct
 *.mat
+*.vtk
 *.dat
 *.lnx
 /examples/strings.txt
