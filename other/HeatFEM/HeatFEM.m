@@ -7,7 +7,7 @@ function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   materialParams, ...
   geometryParams, ...
   meshParams, ...
-  boundaryCondParams,...
+  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
   nPlots, problemName, initialTempFunc )
 
 % ==============================================
@@ -46,14 +46,6 @@ elseif geometryType == 2
   [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz )
 end
 
-
-hConv = boundaryCondParams.hConv ;
-Tamb  = boundaryCondParams.Tamb ;
-Tdiri = boundaryCondParams.Tdiri ;
-diriDofs = boundaryCondParams.diriDofs ;
-robiDofs = boundaryCondParams.robiDofs ;
-qInpLeft = boundaryCondParams.qInpLeft ;
-qInpRight = boundaryCondParams.qInpRight ;
 
 
 % defino/renombro variables de entrada
@@ -220,6 +212,7 @@ end
 M = zeros( nnodes, nnodes ) ;
 K = KdiffGNN ;
 C = CNN ;
+xs = NodesCoord(:,1) ;
 
 us    = Ts ;
 udots = [] ;

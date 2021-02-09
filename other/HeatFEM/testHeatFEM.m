@@ -30,31 +30,26 @@ nPlots = 4 ;
 problemName = 'dirichlet' ;
 
 initialTempFunc = 'myInitialTemp' ;
-
-
 ndivs     = [ nelem  ];
 
-
-boundaryCondParams = struct ( 'hConv'        , [], ...
-                              'diriDofs'     , diriDofs, ...
-                              'robiDofs'     , [], ...
-                              'Tamb'         , [], ...
-                              'qInpLeft'     , [], ...
-                              'qInpRight'    , [], ...
-                              'Tdiri'        , 0 );
-
+hConv = [];
+Tamb = [];
+qInpLeft = [];
+qInpRight = [];
+Tdiri = 0 ;
+         
 [Ts, NodesCoord, times ] = HeatFEM( ...
   timeIncr, Tfinal, ...
   [rho, cSpHe, kCond], ...
   [ 1 L Area ], ...
   ndivs, ...
-  boundaryCondParams, ...
+  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
   nPlots, problemName, initialTempFunc );
 
 
-% plot history
+% evolution plot
 figure, grid on, hold on
-MS = 10 ; LW = 1.5 ;
+MS = 20 ; LW = 1.5 ;
 indplot = round(nelem/2) ;
 
 % numerical solution plot
@@ -63,13 +58,36 @@ plot( times, Ts(indplot,:), 'b',  'markersize', MS,'linewidth',LW )
 % analytic solution computation
 xsAnly = NodesCoord(indplot) ;
 alpha = kCond / ( rho * cSpHe ) ;
-
 tanali = exp(-(  pi)^2 * alpha * times ) * sin(pi * xsAnly) ...
                   + exp(-(3*pi)^2 * alpha * times ) * 0.5 * sin( 3 * pi * xsAnly ) ;
 
+% analytic solution plot
 plot( times, tanali, 'r',  'markersize', MS,'linewidth',LW )
+xlabel('t'), ylabel('Temp')
+% ----------------------------------
 
-  xlabel('t'), ylabel('Temp')
+
+
+% =========   caso de validacion 2 =========
+%  diri no homogeneo ( ver fundamentos en https://www.math.uzh.ch/li/index.php?file&key1=25297 )
+
+Tdiri     = 1  ;
+Tfinal = .5 ;
+
+
+boundaryCondParams = struct ( 'hConv'        , [], ...
+                              'diriDofs'     , diriDofs, ...
+                              'robiDofs'     , [], ...
+                              'Tamb'         , [], ...
+                              'qInpLeft'     , [], ...
+                              'qInpRight'    , [], ...
+                              'Tdiri'        , Tdiri );
+
+nCurves = 5 ;
+
+
+
+
 
 
 
@@ -77,29 +95,6 @@ plot( times, tanali, 'r',  'markersize', MS,'linewidth',LW )
 
 return
 
-
-
-Tdiri     = 1  ;
-anlyBoolean = 0 ;
-Tfinal = .5 ;
-
-onsasExample_1DHeatTransfer( ...
-  timeIncr, Tfinal, ...
-  rho, cSpHe, kCond, ...
-  L, Area, hConv, ...
-  nelem, Tamb, Tdiri, ...
-  initialTempFlag, ...
-  diriDofs, robiDofs, qInpLeft, qInpRight, ...
-  plotBoolean, nCurves, anlyBoolean, problemName );
-
-
-% =========   caso de validacion 2 =========
-%  diri no homogeneo ( ver fundamentos en https://www.math.uzh.ch/li/index.php?file&key1=25297 )
-
-nCurves = 5 ;
-
-qInpLeft  = 0  ;
-qInpRight = 4  ;
 
 Tdiri     = .5  ;
 diriDofs = [ 1 ];
