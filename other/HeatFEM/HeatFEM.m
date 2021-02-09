@@ -8,7 +8,8 @@ function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   geometryParams, ...
   meshParams, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
-  nPlots, problemName, initialTempFunc )
+  nPlots, problemName, initialTempFunc, ...
+  diriFaces, neumFaces, robiFaces  );
 
 % ==============================================
 % seteos previos
@@ -20,6 +21,7 @@ close all
 rho   = materialParams(1) ;  
 cSpHe = materialParams(2) ;
 kCond = materialParams(3) ;
+
 
 %
 geometryType = geometryParams(1) ;
@@ -43,8 +45,9 @@ if geometryType == 1
   NodesCoord = linspace(0, L, ndivs(1)+1 )' ;
   Conec = [ (1:(ndivs(1)))' (2:(ndivs(1)+1))' ] ;
 elseif geometryType == 2
-  [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz )
+  [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz );
 end
+
 
 
 
@@ -68,16 +71,28 @@ else
 end
 
 
-nnodes = size(NodesCoord,1);
+nnodes = size(NodesCoord,1)
 nelem  = size(Conec,1) ;
 
 
-% grados de libertad de neumann
+% dirichlet dofs for 3D
+if geometryType == 2
+  diriDofs = [];
+  if length(diriFaces) > 1
+    for i=1:(length(diriFaces)-1)
+      if diriFaces(i+1)== 1
+        diriDofs = [ diriDofs; (1:(ndivs(1)+1):nnodes)' ] ;
+      elseif diriFaces(i+1)== 2
+        diriDofs = [ diriDofs; ((ndivs(1)+1):(ndivs(1)+1):nnodes)' ] ;
+      end
+    end
+  end
+end
+
+% neuman dofs
 neumdofs = 1:nnodes ;
 neumdofs( diriDofs ) = [] ;
-
 % ==============================================
-
 
 
 % ==============================================
@@ -97,22 +112,39 @@ if geometryType == 1
 
   % initial temperature
   T0 = feval( initialTempFunc, NodesCoord ) ;
+elseif geometryType == 2
+
+  % initial temperature
+  T0 = feval( initialTempFunc, NodesCoord(:,1) ) ;
+  
 end
+
 
 % ------------------------
 % Ts matriz para almacenar temperatuas en cada tiempo
 Ts = T0 ;
 
 % matrices/vectors assembly
-KdiffG = zeros( nnodes, nnodes ) ;
-MintEG = zeros( nnodes, nnodes ) ;
-MrobiG = zeros( nnodes, nnodes ) ;
+if geometryType == 1
+  KdiffG = zeros( nnodes, nnodes ) ;
+  MintEG = zeros( nnodes, nnodes ) ;
+  MrobiG = zeros( nnodes, nnodes ) ;
+elseif geometryType == 2,
+  KdiffG = sparse( nnodes, nnodes ) ;
+  MintEG = sparse( nnodes, nnodes ) ;
+  MrobiG = sparse( nnodes, nnodes ) ;
+end
 QhG    = zeros( nnodes, 1      ) ;
 
 for i = 1 : nelem
-  nodeselem = [ i i+1 ] ;
 
-  elemDofs = nodes2dofs ( nodeselem, 1 ) ;
+  nodeselem = Conec(i,:) ;
+  elemDofs  = nodes2dofs ( nodeselem, 1 ) ;
+
+  if geometryType == 2
+    [ Kdiffe, MintEe] = elementHeatTetraSolid( NodesCoord( nodeselem,:) , materialParams ) ;
+    bQhe = zeros(4,1);
+  end  
 
   KdiffG( elemDofs , elemDofs ) = ...
   KdiffG( elemDofs , elemDofs ) + Kdiffe  ;
@@ -197,7 +229,7 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   % --- plots ---
   if plotBoolean
     if ind == 1 || mod( ind, indsPlotStep ) == 0
-      plotTemp( NodesCoord, Conec,0, Ts(:,ind), geometryType )
+      plotTemp( NodesCoord, Conec, ind, Ts(:,ind), geometryType )
     end
   end
   % ---------------
@@ -218,4 +250,6 @@ us    = Ts ;
 udots = [] ;
 
 save -mat 'outputMatrices.mat'  K C M fext timeIncr us udots xs
+
+
 
