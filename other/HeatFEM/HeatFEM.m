@@ -1,14 +1,14 @@
 % ---------------------------
-% Heat Transfer FEM solver
+% Heat Transfer FEM prototype solver
 % ---------------------------
 
-function Ts = HeatFEM( ...
+function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   timeIncr, Tfinal, ...
   materialParams, ...
   geometryParams, ...
   meshParams, ...
-  boundaryCondParams,
-  plotBoolean, nCurves, anlyBoolean, problemName )
+  boundaryCondParams,...
+  nPlots, problemName, initialTempFunc )
 
 % ==============================================
 % seteos previos
@@ -25,7 +25,7 @@ kCond = materialParams(3) ;
 geometryType = geometryParams(1) ;
 
 if geometryType == 1 % unidimensional
-  L = geometryParams(2); A = geometryParams(3);
+  L = geometryParams(2); Area = geometryParams(3);
 elseif geometryType == 2 % solid 
   Lx = geometryParams(2);
   Ly = geometryParams(3);
@@ -33,17 +33,27 @@ elseif geometryType == 2 % solid
 end
 
 % mesh creation
-if geometryType == 2
+if geometryType == 1
+  ndivs = meshParams (1) ;
+elseif geometryType == 2
   ndivs = meshParams (1:3) ;
 end
 
-[NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz )
+if geometryType == 1
+  NodesCoord = linspace(0, L, ndivs(1)+1 )' ;
+  Conec = [ (1:(ndivs(1)))' (2:(ndivs(1)+1))' ] ;
+elseif geometryType == 2
+  [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz )
+end
 
 
-plotTemp( NodesCoord, Conec,0,zeros(size(NodesCoord,1),1) )
-
-%~ hConv,Tamb, Tdiri diriDofs, robiDofs, qInpLeft, qInpRight
-
+hConv = boundaryCondParams.hConv ;
+Tamb  = boundaryCondParams.Tamb ;
+Tdiri = boundaryCondParams.Tdiri ;
+diriDofs = boundaryCondParams.diriDofs ;
+robiDofs = boundaryCondParams.robiDofs ;
+qInpLeft = boundaryCondParams.qInpLeft ;
+qInpRight = boundaryCondParams.qInpRight ;
 
 
 % defino/renombro variables de entrada
@@ -53,30 +63,27 @@ if exist('nt')==0, nTimes = Tfinal / dt + 1 ; end
 
 tiempos = linspace( 0, Tfinal, nTimes )' ;
 
-if isempty( nCurves ),
-  nCurves = 4 ;
-elseif nCurves == inf,
-  nCurves = nTimes ;
+if isempty( nPlots ),
+  nPlots = 4 ;
+  plotBoolean = 1,
+elseif nPlots == 0,
+  plotBoolean = 0,
+else
+  plotBoolean = 1,
+  if nPlots == inf,
+    nPlots = nTimes ;
+  end
 end
 
-alpha = kCond / ( rho * cSpHe ) ;
 
-return
+nnodes = size(NodesCoord,1);
+nelem  = size(Conec,1) ;
 
-
-nnodes = nelem +1 ;
-nnodesAnly = 100 ;
-
-% discretizacion puntos para ploteos
-xs     = linspace(0, L, nnodes     )' ;
-xsAnly = linspace(0, L, nnodesAnly )' ;
 
 % grados de libertad de neumann
 neumdofs = 1:nnodes ;
 neumdofs( diriDofs ) = [] ;
 
-% calculo largo de cada elemento
-lelem  = L/nelem ;
 % ==============================================
 
 
@@ -84,22 +91,21 @@ lelem  = L/nelem ;
 % ==============================================
 % construccion matrices FEM
 
+if geometryType == 1
+  % calculo largo de cada elemento
+  lelem  = L/nelem ;
+  
+  % local elemental diffussion equation
+  Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
+  
+  MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
+  
+  % volumetric external heat source
+  bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
 
-% local elemental diffussion equation
-Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
-
-MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
-
-% volumetric external heat source
-bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
-
-% initial temperature
-if initialTempFlag == 1
-  T0 = sin(pi*xs) + 0.5*sin(3*pi*xs) ;
+  % initial temperature
+  T0 = feval( initialTempFunc, NodesCoord ) ;
 end
-%~ T0 = 15.0 * ( 1 + .1* sin( pi * xs / L ) ) ;
-%T0 = 0.5*Tamb * ( 1 + .1* sin( pi * xs / L ) ) ;
-
 
 % ------------------------
 % Ts matriz para almacenar temperatuas en cada tiempo
@@ -170,15 +176,12 @@ if plotBoolean
   figure, hold on, grid on
 end
 
-% plot settings
-MS = 10 ; LW = 1.5 ;
-
 fext = zeros( size(Ts) ) ;
 
 % ------------------------
 % time loop
 
-indsPlotStep = round( nTimes / nCurves ) 
+indsPlotStep = round( nTimes / nPlots ) 
 
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
@@ -199,41 +202,19 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
 
   end % if i not zero
 
-  if anlyBoolean
-    TsAnly(:,ind) = exp(-(  pi)^2 * alpha * t ) * sin(pi * xsAnly) ...
-                  + exp(-(3*pi)^2 * alpha * t ) * 0.5 * sin( 3 * pi * xsAnly ) ;
-  end
-
   % --- plots ---
   if plotBoolean
     if ind == 1 || mod( ind, indsPlotStep ) == 0
-      plot( xs, Ts(:, ind), 'b-o', 'markersize', MS,'linewidth',LW );
-      if anlyBoolean
-        plot( xsAnly, TsAnly(:, ind), 'r--'  , 'markersize', MS,'linewidth',LW );
-      end
+      plotTemp( NodesCoord, Conec,0, Ts(:,ind), geometryType )
     end
   end
   % ---------------
-
 
 end % for times
 % ------------------------
 
 if plotBoolean
-  %~ axis equal
-  if anlyBoolean
-    legend('numerical','analytical')
-  end
-  print( ['pngs/' problemName '.png'],'-dpng')
-end
-
-% ploteos en puntos específicos
-if plotBoolean
-  figure, hold on, grid on
-  plot(tiempos, Ts(round(nnodes/2),:), 'b-o','linewidth',LW,'markersize',MS)
-  %~ plot(tiempos, Ts(end,:), 'r-x','linewidth',LW,'markersize',MS)
-  %~ legend('izq', 'der')
-  xlabel('t'), ylabel('Temp')
+  print( [ problemName '.png'],'-dpng')
 end
 
 M = zeros( nnodes, nnodes ) ;
@@ -243,10 +224,5 @@ C = CNN ;
 us    = Ts ;
 udots = [] ;
 
-save -mat 'mats/outputMatrices.mat'  K C M fext timeIncr us udots xs
-
-
-
-
-
+save -mat 'outputMatrices.mat'  K C M fext timeIncr us udots xs
 

@@ -1,46 +1,83 @@
+% =======================================
+% sript for Heat transfer code validation
+% =======================================
 
-% =========   caso de validacion 1 =========
-% condiciones de contorno dirichlet con perfil de temperaturas inicial de https://onsas.github.io/ONSAS_docs/dev/tutorials/HeatDiffusion/heat/
+
+% =========   case 1 =========
+% 1D problem
+% boundary conditions: dirichlet on both ends
+% initial temperature profile
+% https://onsas.github.io/ONSAS_docs/dev/tutorials/HeatDiffusion/heat/
 
 close all, clear all
-addpath( genpath( '../../src/'));
+addpath( genpath( '../../src/')); % add ONSAS src functions
 
 timeIncr  = 0.0001 ;
-Tfinal    = 0.02 ;
-rho       = 1. ;
-cSpHe     = 1. ;
-kCond     = 4 ;
-Lx         = 1  ;
-Ly         = .5  ;
-Lz         = .5  ;
-ndivs = [ 2 1 1  ];
+Tfinal    = 0.02   ;
+rho       = 1.     ;
+cSpHe     = 1.     ;
+kCond     = 4      ;
+L         = 1      ;
+Area      = 0.25   ; 
+nelem     = 10     ;
+Tdiri     = 0      ;
 
-hConv     = 10 ;
+diriDofs = [ 1 nelem+1 ];
+robiDofs = [] ;
 
-Tamb      = 20 ;
-Tdiri     = 0  ;
-
-%~ qInpLeft  = 0  ;
-%~ qInpRight = 0  ;
-
-initialTempFlag = 1 ;
-anlyBoolean = 1 ;
-
-%~ diriDofs = [ 1 nelem+1 ];
-%~ robiDofs = [] ;
-
-plotBoolean = true ;
-nCurves = 4 ;
+nPlots = 4 ;
 
 problemName = 'dirichlet' ;
-  
-HeatFEM( ...
+
+initialTempFunc = 'myInitialTemp' ;
+
+
+ndivs     = [ nelem  ];
+
+
+boundaryCondParams = struct ( 'hConv'        , [], ...
+                              'diriDofs'     , diriDofs, ...
+                              'robiDofs'     , [], ...
+                              'Tamb'         , [], ...
+                              'qInpLeft'     , [], ...
+                              'qInpRight'    , [], ...
+                              'Tdiri'        , 0 );
+
+[Ts, NodesCoord, times ] = HeatFEM( ...
   timeIncr, Tfinal, ...
   [rho, cSpHe, kCond], ...
-  [ 2 Lx Ly Lz], ...
+  [ 1 L Area ], ...
   ndivs, ...
-  plotBoolean, nCurves, anlyBoolean, problemName );
+  boundaryCondParams, ...
+  nPlots, problemName, initialTempFunc );
+
+
+% plot history
+figure, grid on, hold on
+MS = 10 ; LW = 1.5 ;
+indplot = round(nelem/2) ;
+
+% numerical solution plot
+plot( times, Ts(indplot,:), 'b',  'markersize', MS,'linewidth',LW )
+
+% analytic solution computation
+xsAnly = NodesCoord(indplot) ;
+alpha = kCond / ( rho * cSpHe ) ;
+
+tanali = exp(-(  pi)^2 * alpha * times ) * sin(pi * xsAnly) ...
+                  + exp(-(3*pi)^2 * alpha * times ) * 0.5 * sin( 3 * pi * xsAnly ) ;
+
+plot( times, tanali, 'r',  'markersize', MS,'linewidth',LW )
+
+  xlabel('t'), ylabel('Temp')
+
+
+
+
+
 return
+
+
 
 Tdiri     = 1  ;
 anlyBoolean = 0 ;
