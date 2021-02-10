@@ -7,10 +7,10 @@ function [ KTe, Me ] = elementHeatTetraSolid( elemCoords, materialParams )
   %~ tetVol = vol ;
   %~ BMat = BMats ( deriv ) ;
 
-% material params
-rho   = materialParams(1) ;  
-cSpHe = materialParams(2) ;
-kCond = materialParams(3) ;
+  % material params
+  rho   = materialParams(1) ;  
+  cSpHe = materialParams(2) ;
+  kCond = materialParams(3) ;
 
 
   eleCoordMat = tetCoordMat               ; 
@@ -30,4 +30,4 @@ kCond = materialParams(3) ;
   funder = inv(jacobianmat)' * deriv ;
   
   KTe = kCond * funder' * funder * vol ;
-  Me  = rho * cSpHe * vol/2 * eye(4) ;
+  Me  = rho * cSpHe * vol/4 * eye(4) ;

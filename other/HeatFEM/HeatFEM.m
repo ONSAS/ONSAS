@@ -105,7 +105,8 @@ if geometryType == 1
   % local elemental diffussion equation
   Kdiffe = kCond * Area / lelem * [ 1 -1 ; -1 1 ] ;
   
-  MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
+  %~ MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
+  MintEe = rho * cSpHe * Area * lelem / 2 * [ 1 0 ; 0 1 ] ;
   
   % volumetric external heat source
   bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
@@ -173,7 +174,7 @@ KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
 KdiffGND = KdiffG(neumdofs, diriDofs ) ;
 
 
-Matrix = ( KdiffGNN * dt + CNN ) ;
+Matrix = ( KdiffGNN * dt + CNN )  ;
 
 qext = zeros( nnodes, 1 ) ;
 
@@ -198,14 +199,13 @@ qext = qext + QhG ;
 
 if plotBoolean
   figure, hold on, grid on
+  indsPlotStep = round( nTimes / nPlots ) 
 end
 
 fext = zeros( size(Ts) ) ;
 
 % ------------------------
 % time loop
-
-indsPlotStep = round( nTimes / nPlots ) 
 
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
