@@ -1,4 +1,4 @@
-function [ KTe, Me ] = elementHeatTetraSolid( elemCoords, materialParams )
+function [ KTe, Me, Qhe ] = elementHeatTetraSolid( elemCoords, materialParams )
 
   tetCoordMat        = reshape( elemCoords', 3, 4 ) ;
 
@@ -31,3 +31,4 @@ function [ KTe, Me ] = elementHeatTetraSolid( elemCoords, materialParams )
   
   KTe = kCond * funder' * funder * vol ;
   Me  = rho * cSpHe * vol/4 * eye(4) ;
+  Qhe = vol / 4 * ones(4,1);

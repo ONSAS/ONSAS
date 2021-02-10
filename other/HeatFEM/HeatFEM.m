@@ -8,7 +8,7 @@ function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   geometryParams, ...
   meshParams, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
-  nPlots, problemName, initialTempFunc, ...
+  nPlots, problemName, initialTempFunc, internalHeatFunc, ...
   diriFaces, neumFaces, robiFaces  );
 
 % ==============================================
@@ -108,8 +108,8 @@ if geometryType == 1
   %~ MintEe = rho * cSpHe * Area * lelem / 6 * [ 2 1 ; 1 2 ] ;
   MintEe = rho * cSpHe * Area * lelem / 2 * [ 1 0 ; 0 1 ] ;
   
-  % volumetric external heat source
-  bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] * 0 ;
+  % unitary volumetric external heat source
+  bQhe = 0.5 * Area * lelem * [ 1 ; 1 ] ;
 
   % initial temperature
   T0 = feval( initialTempFunc, NodesCoord ) ;
@@ -143,8 +143,7 @@ for i = 1 : nelem
   elemDofs  = nodes2dofs ( nodeselem, 1 ) ;
 
   if geometryType == 2
-    [ Kdiffe, MintEe] = elementHeatTetraSolid( NodesCoord( nodeselem,:) , materialParams ) ;
-    bQhe = zeros(4,1);
+    [ Kdiffe, MintEe, bQhe ] = elementHeatTetraSolid( NodesCoord( nodeselem,:) , materialParams ) ;
   end  
 
   KdiffG( elemDofs , elemDofs ) = ...
@@ -190,7 +189,7 @@ if ~isempty( robiDofs )
   qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
 end
 
-qext = qext + QhG ;
+qext = qext ;
 % ==============================================
 
 
@@ -210,10 +209,10 @@ fext = zeros( size(Ts) ) ;
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
 
-  fext ( neumdofs, ind ) = qext ( neumdofs    ) ;
+  fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
   
   if ind > 1
-    f = (    fext( neumdofs, ind ) * dt  ...
+    f = (    fext( neumdofs, ind ) * dt   ...
          + MintEG( neumdofs, : ) * Ts( :, ind-1 )
         );
 
