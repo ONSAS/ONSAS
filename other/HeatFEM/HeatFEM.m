@@ -45,7 +45,7 @@ if geometryType == 1
   NodesCoord = linspace(0, L, ndivs(1)+1 )' ;
   Conec = [ (1:(ndivs(1)))' (2:(ndivs(1)+1))' ] ;
 elseif geometryType == 2
-  [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz );
+  [NodesCoord, Conec] = createSolidRegularMesh( ndivs, Lx, Ly, Lz ) ;
 end
 
 
@@ -75,15 +75,36 @@ nnodes = size(NodesCoord,1)
 nelem  = size(Conec,1) ;
 
 
+
+
 % dirichlet dofs for 3D
 if geometryType == 2
+
+  nodesFaceOne = (1:(ndivs(1)+1):nnodes)' ; % x=0
+  nodesFaceTwo = ((ndivs(1)+1):(ndivs(1)+1):nnodes)' ; % x=Lx
+  
+  nodesFaceFive = (1:1:((ndivs(1)+1)*(ndivs(2)+1)) )' ; % z=0
+  
+  nodesFaceSix  = (ndivs(1)+1)*(ndivs(2)+1)*(ndivs(3)) + nodesFaceFive ; % z=Lx
+  triangAreaFactorsFaceSix = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 1 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 
+  
   diriDofs = [];
   if length(diriFaces) > 1
     for i=1:(length(diriFaces)-1)
       if diriFaces(i+1)== 1
-        diriDofs = [ diriDofs; (1:(ndivs(1)+1):nnodes)' ] ;
+        diriDofs = [ diriDofs; nodesFaceOne ] ;
       elseif diriFaces(i+1)== 2
-        diriDofs = [ diriDofs; ((ndivs(1)+1):(ndivs(1)+1):nnodes)' ] ;
+        diriDofs = [ diriDofs; nodesFaceTwo ] ;
+      end
+    end
+  end
+  
+  robiDofs = [];
+  if length(robiFaces) > 1
+    hConv = robiFaces(1) ;
+    for i=1:(length(robiFaces)-1)
+      if robiFaces(i+1) == 6
+        robiDofs = [ robiDofs; nodesFaceSix ] ; 
       end
     end
   end
@@ -158,7 +179,11 @@ for i = 1 : nelem
 end
 
 if  ~isempty( robiDofs )
-  MrobiG ( robiDofs, robiDofs ) = hConv ;
+  if geometryType == 1
+    MrobiG ( robiDofs, robiDofs ) = hConv ;
+  elseif geometryType == 2
+    MrobiG ( robiDofs, robiDofs ) = diag( triangAreaFactorsFaceSix ) * hConv ;
+  end
   KdiffG = KdiffG + MrobiG ;
 end
 
@@ -186,7 +211,11 @@ if ~isempty( diriDofs )
 end
 
 if ~isempty( robiDofs )
-  qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
+  if geometryType == 1
+    qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
+  elseif geometryType == 2
+    qext( robiDofs ) = qext( robiDofs ) + hConv * triangAreaFactorsFaceSix * Tamb ;
+  end
 end
 
 qext = qext ;
@@ -252,3 +281,33 @@ save -mat 'outputMatrices.mat'  K C M fext timeIncr us udots xs
 
 
 
+
+
+function factors = patchTriangFactors( nnod1, nnod2, booleanSense12 );
+
+factors = zeros( nnod1* nnod2 ,1 );
+
+for j=1:nnod2
+  inds = (j-1)*(nnod1) + (1:(nnod1))' 
+  
+  if j == 1
+    factors( inds(2:(end-1)) ) = 1; 
+    if booleanSense12
+      factors( inds(1)   ) = 1/3 ; 
+      factors( inds(end) ) = 2/3 ; 
+    end
+
+  elseif j == nnod2
+    factors( inds(2:(end-1)) ) = 1; 
+    if booleanSense12
+      factors( inds(1)   ) = 2/3 ; 
+      factors( inds(end) ) = 1/3 ; 
+    end
+    
+  else
+    factors( inds(2:(end-1)) ) = 2; 
+    factors( inds(1)   ) = 1 ; 
+    factors( inds(end) ) = 1 ;   
+  end
+  
+end

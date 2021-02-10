@@ -14,7 +14,7 @@ coodrsz = linspace(0,Lz, nz+1)';
 
 for iz=1:(nz+1)
   for iy=1:(ny+1)
-    prevNodes = (iy-1)*(nx+1) + (iz-1)*(nx+1)*(ny+1)
+    prevNodes = (iy-1)*(nx+1) + (iz-1)*(nx+1)*(ny+1) ;
     NodesCoord( prevNodes + (1:(nx+1)),:) = [ coodrsx coodrsy(iy)*ones(nx+1,1) coodrsz(iz)*ones(nx+1,1) ] ;
   end
 end

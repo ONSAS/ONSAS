@@ -32,19 +32,19 @@ problemName = 'dirichlet3D' ;
 initialTempFunc = 'myInitialTemp' ;
 internalHeatFunc = 'myInternalHeat' ;
 
-ndivs     = [ 10 1 1 ];
+ndivs     = [ 20 10 10 ];
 
-hConv = [];
-Tamb = [];
+hConv = 10 ;
+Tamb = -5 ;
 qInpLeft = [];
 qInpRight = [];
 Tdiri = 0 ;
 
 qInp = 0;
 
-diriFaces = [ Tdiri 1 2 ];
-neumFaces = [ qInp  3 4 5 6 ] ;
-robiFaces = [  ] ;
+diriFaces = [ Tdiri 1 ];
+neumFaces = [ qInp 2 3 4 5 ] ;
+robiFaces = [ hConv 6 ] ;
   
 [Ts3D, NodesCoord, times ] = HeatFEM( ...
   timeIncr, Tfinal, ...
