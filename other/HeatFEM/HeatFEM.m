@@ -281,7 +281,7 @@ xs = NodesCoord(:,1) ;
 us    = Ts ;
 udots = [] ;
 
-save -mat 'outputMatrices.mat'  K C M fext timeIncr us udots xs
+save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'timeIncr', 'us', 'udots', 'xs')
 
 
 
