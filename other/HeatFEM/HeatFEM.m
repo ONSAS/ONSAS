@@ -238,7 +238,11 @@ fext = zeros( size(Ts) ) ;
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
 
-  fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+  if ~isempty(internalHeatFunc)
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+  else
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) ;
+  endif
   
   if ind > 1
     f = (    fext( neumdofs, ind ) * dt   ...
