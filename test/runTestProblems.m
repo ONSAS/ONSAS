@@ -15,7 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% This script runs all the *test.m examples from the examples folder.
+function test_suite=runTestProblems
+  assert(1,1);
+return
 
 close all, clear all %#ok
 keyword = '_test' ;
