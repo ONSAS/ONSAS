@@ -1,4 +1,0 @@
-language: matlab
-#script: matlab -batch 'disp("Hello World")'
-#script: ./runTests.sh
-script: matlab -batch 'cd test, runTestProblems, cd ..'
