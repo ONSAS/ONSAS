@@ -22,16 +22,16 @@ function test_suite=runTestProblems
   catch
   end
   
-  try
+%  try
     initTestSuite;
-  catch
-    staticVonMisesTruss
-  end
+ % catch
+  %  staticVonMisesTruss
+  %end
 
 function staticVonMisesTruss
   currDir = pwd ;
   cd( '../examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
   %~ cd( currDir )
-  assertEqual( verifBoolean, 1 ) ;
+  assertEqual( verifBoolean, 1 ) 
 
