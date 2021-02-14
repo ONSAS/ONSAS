@@ -22,16 +22,27 @@ function test_suite=runTestProblems
   catch
   end
   
-%  try
+  try
     initTestSuite;
- % catch
-  %  staticVonMisesTruss
-  %end
+  catch
+    currDir = pwd ;
+    cd( '../examples/staticVonMisesTruss_test/');
+    staticVonMisesTruss_test
+    cd(currDir)
+  end
 
-function staticVonMisesTruss
-  currDir = pwd ;
-  cd( '../examples/staticVonMisesTruss_test/');
+function staticVonMisesTruss_test
+  %~ currDir = pwd ;
+  %~ cd( './examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
   %~ cd( currDir )
-  assertEqual( verifBoolean, 1 ) 
+  try
+    assertEqual( verifBoolean, 1 );
+  catch
+    if verifBoolean == 1
+      fprintf('test passed.\n')
+    else
+      error('test failed.\n')
+    end
+  end
 
