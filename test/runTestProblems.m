@@ -23,9 +23,8 @@ function test_suite=runTestProblems
   end
   initTestSuite;
 
-function test_0
+function staticVonMisesTruss
+  addpath( gepath( '../examples/staticVonMisesTruss_test/'));
+  onsasExample_staticVonMisesTruss_test
   assertEqual(1,1);
-
-function test_fac_1
-  assertEqual(2,2);
 
