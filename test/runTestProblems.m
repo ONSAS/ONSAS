@@ -33,5 +33,5 @@ function staticVonMisesTruss
   cd( '../examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
   %~ cd( currDir )
-  assert( verifBoolean, 1 ) ;
+  assertEqual( verifBoolean, 1 ) ;
 
