@@ -18,7 +18,6 @@
 
 function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName ) 
 
-	
   [c_Line, c_Poly, c_Cir, c_Arc, c_Poi] = f_LectDxf( fileName ) ;
 	
   ndofpnode = 6 ;
@@ -120,6 +119,7 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
         end  
       end
     end
-  end
+    
+  end % for elements
 
-end
+end % function

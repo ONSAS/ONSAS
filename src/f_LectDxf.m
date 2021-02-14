@@ -31,27 +31,27 @@
 
 function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
  
-%% Read file
+  %% Read file
 		fileName = auxReadDXF( fileName );
 		%~ cd sources
     fId = fopen(fileName);    
     c_ValAsoc = textscan(fId,'%d%s','Delimiter', '\n');
     fclose(fId);
     delete(fileName);
+
     % Code Group Matrix
-    m_GrCode = c_ValAsoc{1};
+    m_GrCode = c_ValAsoc{1} ;
     % Associated value String Cell
-    c_ValAsoc = c_ValAsoc{2};
-    %[m_GrCode,c_ValAsoc] = c_ValAsoc{:};
+    c_ValAsoc = c_ValAsoc{2} ;
     
-%% Entities
+  %% Entities
     m_PosCero = find(m_GrCode==0);
     %Is searched by (0,SECTION),(2,ENTITIES)
-    indInSecEnt = strmatch('ENTITIES',c_ValAsoc(m_PosCero(1:end-1)+1),'exact');
+    indInSecEnt = find( strcmp('ENTITIES',c_ValAsoc(m_PosCero(1:end-1)+1) ) == 1 ) ;
     %(0,ENDSEC)
-    m_indFinSecEnt = strmatch('ENDSEC',c_ValAsoc(m_PosCero(indInSecEnt:end)),'exact');
+    m_indFinSecEnt = find( strcmp('ENDSEC',c_ValAsoc(m_PosCero(indInSecEnt:end) ) ) == 1 ) ;
     % Entities Position
-    m_PosCero = m_PosCero(indInSecEnt:indInSecEnt-1+m_indFinSecEnt(1));
+    m_PosCero = m_PosCero(indInSecEnt:indInSecEnt-1+m_indFinSecEnt(1) ) ;
     % Variable initiation
     %accelerate?
 %     c_Line = cell(sum(strcmp('LINE',c_ValAsoc(m_PosCero))),2);
@@ -158,7 +158,7 @@ end
 function c_XData = f_XData(grCode,XDatNom,m_GrCode,c_ValAsoc)
     m_PosXData = find(m_GrCode==1001);
     if ~isempty(m_PosXData)
-        indInXData = m_PosXData(strmatch(upper(XDatNom),c_ValAsoc(m_PosXData),'exact'));
+        indInXData = m_PosXData( strcmp( upper(XDatNom), c_ValAsoc(m_PosXData) ) );
         m_indFinXData = find(m_GrCode(indInXData+2:end)==1002)+indInXData+1;
         m_IndXData = indInXData+2:m_indFinXData(1)-1;
         c_XData = f_ValGrCode(grCode,m_GrCode(m_IndXData),c_ValAsoc(m_IndXData));
