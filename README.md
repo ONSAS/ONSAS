@@ -1,7 +1,7 @@
 
 # ONSAS: an Open Nonlinear Structural Analysis Solver
 
-[![Build Status](https://travis-ci.org/ONSAS/ONSAS.svg?branch=master)](https://travis-ci.org/ONSAS/ONSAS.m)
+![moxunitCI](https://github.com/ONSAS/ONSAS.m/workflows/moxunitCI/badge.svg?branch=master)
 [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS_docs/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
