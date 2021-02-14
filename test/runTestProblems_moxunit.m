@@ -17,6 +17,6 @@ function uniaxialExtension_test
   onsasExample_uniaxialExtension_test
   assertEqual( verifBoolean, 1 );
 
-function uniformeCurvature_test
-  onsasExample_uniformCurvature_test
+function uniformCurvatureCantilever_test
+  onsasExample_uniformCurvatureCantilever_test
   assertEqual( verifBoolean, 1 );
