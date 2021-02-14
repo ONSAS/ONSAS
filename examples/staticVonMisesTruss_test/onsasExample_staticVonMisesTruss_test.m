@@ -5,8 +5,11 @@
 % first case: linear analysis
 
 close all, clear all        ;
-dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-addpath( dirOnsas )             ; % add ONSAS directory to path
+
+if exist('ONSAS.m','file')~=2
+  dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
+  addpath( dirOnsas )             ; % add ONSAS directory to path
+end
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
