@@ -30,7 +30,7 @@ function test_suite=runTestProblems
 
 function staticVonMisesTruss_test
   currDir = pwd ;
-  cd( '../examples/staticVonMisesTruss_test/');
+  cd( './examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
   %~ cd( currDir )
   assertEqual( verifBoolean, 1 ) 
