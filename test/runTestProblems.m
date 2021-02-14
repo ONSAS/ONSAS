@@ -28,7 +28,7 @@ function test_suite=runTestProblems
   %  staticVonMisesTruss
   %end
 
-function staticVonMisesTruss
+function staticVonMisesTruss_test
   currDir = pwd ;
   cd( '../examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
