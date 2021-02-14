@@ -21,10 +21,17 @@ function test_suite=runTestProblems
     test_functions=localfunctions();
   catch
   end
-  initTestSuite;
+  
+  try
+    initTestSuite;
+  catch
+    staticVonMisesTruss
+  end
 
 function staticVonMisesTruss
-  addpath( gepath( '../examples/staticVonMisesTruss_test/'));
+  currDir = pwd ;
+  cd( '../examples/staticVonMisesTruss_test/');
   onsasExample_staticVonMisesTruss_test
-  assertEqual(1,1);
+  %~ cd( currDir )
+  assert( verifBoolean, 1 ) ;
 
