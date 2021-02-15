@@ -5,7 +5,7 @@
 
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 acdir    = pwd ;
@@ -80,7 +80,7 @@ numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopT
 controlDofs      = [ nElemsPerBeam+1 3  1 ] ;
 plotParamsVector = [ 3 ];
 
-run( [  pwd  '/../ONSAS.m' ] ) ;
+ONSAS ;
 
 lw  = 2   ; ms  = 5.5 ;
 lw2 = 3.2 ; ms2 = 23 ;
@@ -93,13 +93,6 @@ grid on
 labx = xlabel('Time (s)');   laby = ylabel(sprintf('Displacement node: %2i dof %1i', controlDofs(1), controlDofs(2) ) ) ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-
-cd(dirOnsas); cd(outputDir);
-%print('rightAngle','-dpdflatex','-tight')
-%~ print('rightAngle','-dpdflatex')
-%~ print('rightAngle.png','-dpng')
-cd(acdir);
-
 
 figure
 grid on

@@ -4,21 +4,23 @@
 
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
-problemName = 'windTurbine' ;
+problemName = 'windTurbineTower' ;
 
 % ------------------------------------
 E         = 200e9 ;
 nu        = 0.3   ;
-phiExt    = 1     ;
-thickness = 0.005  ; 
+phiExt    = 3     ;
+thickness = 0.01  ; 
 
 A   = pi * (phiExt^2/4 - (phiExt-thickness)^2/4 ) ;
 I   = pi * (phiExt^4   - (phiExt-thickness)^4)   / 64 ;  J = I ;
 L   =  30   ;
 rho =  8e3    ;
+
+deepn = 0.1;
 
 nElemsPerBeam = 8 ;
 
@@ -32,7 +34,13 @@ c2 = cos(2*pi*2/3) ; s2 = sin(2*pi*2/3) ;
 Nodes = [ 0                        0         0        ; ...
           zeros(nElemsPerBeam, 1)  auxRs*1   auxRs*0  ; ...
           zeros(nElemsPerBeam, 1)  auxRs*c1  auxRs*s1 ; ...
-          zeros(nElemsPerBeam, 1)  auxRs*c2  auxRs*s2 ] ;
+          zeros(nElemsPerBeam, 1)  auxRs*c2  auxRs*s2 ; ...
+	  -deepn*L 0 0   ; ...
+	  -deepn*L -L 0 ; ...
+	  -deepn*L -2*L 0 ; ...
+	  -deepn*L -2.5*L 0 ; ...
+	  -deepn*L -3*L 0 ...
+	  ] ;
 
 Conec = cell(nElemsPerBeam*3,1) ;
 
@@ -46,8 +54,19 @@ for j=1:3
   end
 end
 
-Conec{3*nElemsPerBeam+1,1} = [ 0 2 0 0 1  1               ] ;
+%~ Conec{3*nElemsPerBeam+1,1} = [ 0 2 0 0 1  1               ] ;
+Conec{3*nElemsPerBeam+1,1} = [ 0 2 0 0 1  nElemsPerBeam*3+1+1+4 ] ;
+
 Conec{3*nElemsPerBeam+2,1} = [ 0 2 1 0 0  nElemsPerBeam+1 ] ;
+
+Conec{ 3*nElemsPerBeam+3 , 1 } = [ 1 1 0 2 0   1 3*nElemsPerBeam+2 ] ;
+
+Conec{ 3*nElemsPerBeam+3+1 , 1 } = [ 1 1 0 1 0   3*nElemsPerBeam+2 3*nElemsPerBeam+3] ;
+Conec{ 3*nElemsPerBeam+3+2 , 1 } = [ 1 1 0 1 0   3*nElemsPerBeam+3 3*nElemsPerBeam+4] ;
+Conec{ 3*nElemsPerBeam+3+3 , 1 } = [ 1 1 0 1 0   3*nElemsPerBeam+4 3*nElemsPerBeam+5] ;
+Conec{ 3*nElemsPerBeam+3+4 , 1 } = [ 1 1 0 1 0   3*nElemsPerBeam+5 3*nElemsPerBeam+6] ;
+
+Conec{ 3*nElemsPerBeam+3+5 , 1 } = [ 0 2 2 0 2   1 ] ;
 % ----------------------------------------------------------------------
 
 % ======================================================================
@@ -68,18 +87,22 @@ elementsParams{2,1} = [ 1 ] ;
 
 % --- Load parameters ---
 loadsParams{1,1} = [ 1 1  0 0  0 0  1 0 ] ;
+loadsParams{2,1} = [ 1 0  -1e6 0  0 0  0 0 ] ;
 
 % --- CrossSection parameters ---
-crossSecsParams{1,1} =  [ A I I J ] ; 
+crossSecsParams{1,1} =  [ 2 phiExt*.4 phiExt*.4 ] ; 
+crossSecsParams{2,1} =  [ 1 A 0.01*J I I ] ; 
 % ----------------------------------------------------------------------
 % --- springsAndSupports parameters ---
-springsParams{1, 1} = [ inf 1e4  inf inf inf inf ] ;
+%~ springsParams{1, 1} = [ inf 1e4  inf inf inf inf ] ;
+springsParams{1, 1} = [ inf inf inf inf inf inf ] ;
+springsParams{2, 1} = [ 0 0 0 0 inf 0 ] ;
 
 
 % method
-timeIncr   =  0.1    ;
+timeIncr   =  0.08    ;
 %~ finalTime  = 30*timeIncr ;    
-finalTime  = 10 ;    
+finalTime  = 5 ;    
 %~ finalTime  = 15 ;    
 nLoadSteps = finalTime/timeIncr ;
 
@@ -91,22 +114,20 @@ stopTolIts    = 30          ;
 
 controlDofs = [ 1 2 1 ] ;
 
-loadFactorsFunc = @(t) 1e5*sin( 2*pi * t / ( finalTime ) ) ;
+loadFactorsFunc = @(t) 1e6*sin( 2*pi * t / ( finalTime ) ) ;
 
 alphahht    =  -0.05               ;
 numericalMethodParams = [ 4 timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphahht ] ;
 
 storeBoolean = 1;
 
-plotParamsVector = [ 3 ]; sectPar = [ 12 1 1 ] ;
-printFlag = 0 ;
+plotParamsVector = [ 3 ] ;
+printFlag        =   0   ;
 
 reportBoolean = 0 ;
 
-
-
 % --------------------------------------
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS ;
 % --------------------------------------
 
 lw  = 2   ; ms  = 5.5 ;

@@ -9,7 +9,7 @@
 clear all, close all
 
 %% General data
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 problemName = 'uniaxialCompression_Manual' ;
@@ -99,5 +99,5 @@ reportBoolean = 0;
 analyticSolFlag        = 0 ; % not available
 
 %% run ONSAS
-acdir = pwd ; cd(dirOnsas); ONSAS, cd(acdir) ;
+ONSAS
 % --------------------------------------------------------

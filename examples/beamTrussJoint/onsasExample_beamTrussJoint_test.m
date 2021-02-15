@@ -4,7 +4,7 @@
 
 close all, clear all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 problemName = 'TurssBeamJoint_NR' ; 
 

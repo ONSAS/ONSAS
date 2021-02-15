@@ -4,7 +4,7 @@
 
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 problemName = 'simplePendulumTrussHHT' ;
@@ -64,7 +64,7 @@ numericalMethodParams = [ 4 ...
 plotParamsVector = [ 3 ];
 
 % run ONSAS
-run( [  pwd  '/../ONSAS.m' ] ) ;
+ONSAS ;
 
 controlDispsA = controlDisps ;
 
@@ -82,7 +82,7 @@ loadsParams  = {};
 booleanSelfWeightZ = 1 ;
 
 % run ONSAS
-run( [  pwd  '/../ONSAS.m' ] ) ;
+ONSAS ;
 
 controlDispsB = controlDisps ;
 
@@ -95,4 +95,4 @@ plot(timesVec, controlDispsB, 'g-x','markersize',MS,'linewidth',LW)
 plot(timesVec, uNum(1,:)-l0 ,'r--','markersize',MS,'linewidth',LW)
 xlabel('time (s)'), ylabel('control displacement')
 legend('onsasA', 'onsasB', 'semi-analytic')
-print(['../../salida_dt_' sprintf('%05.3f',timeIncr) '.png'],'-dpng')
+print('output.png','-dpng')

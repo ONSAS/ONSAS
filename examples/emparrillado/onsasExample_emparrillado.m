@@ -3,7 +3,7 @@
 % ------------------------------------------------------------------------------
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../..src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 problemName = 'emparrillado_Mitad_Lineal' ;
@@ -101,4 +101,4 @@ Conec{6, 1} = [ 1 2 0 1 0   3 4 ] ; % beam
 Conec{7, 1} = [ 1 2 0 1 0   4 5 ] ; % beam
 
 % --- ONSAS execution ---
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS ;

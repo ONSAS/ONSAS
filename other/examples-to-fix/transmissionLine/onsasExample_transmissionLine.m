@@ -5,11 +5,10 @@
 
 clear all, close all
 
-dirOnsas = [ pwd '/../..' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas ); % add ONSAS directory to path
 
 problemName = 'TransmissionLine_Selfweight' ;
-
 
 
 %Geometric properties cable:
@@ -159,4 +158,4 @@ storeBoolean = 1  ;
 reportBoolean = 0 ;
 
 %RunONSAS
-run( [ pwd '/../ONSAS.m' ] ) ;
+ONSAS;
