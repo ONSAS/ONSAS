@@ -6,10 +6,8 @@
 
 close all, clear all        ;
 
-if exist('ONSAS.m','file')~=2
-  dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-  addpath( dirOnsas )             ; % add ONSAS directory to path
-end
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
+addpath( dirOnsas )             ; % add ONSAS directory to path
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
