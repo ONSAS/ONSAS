@@ -48,6 +48,8 @@ if exist( 'loadsParams','var' ) == 0
 end
 
 
+[ materialsParams, elementsParams, loadsParams, crossSecsParams, springsParams, loadFactorsFunc, Conec ] = structsToCellsConv( materials, elements, boundaryConds, initialConds, Conec ) ;
+
 % --- verification of relevant variables ---
 checkVarNamesList = { 'problemName', 'Nodes', 'Conec', ...
                       'materialsParams', ...

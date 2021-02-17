@@ -18,17 +18,16 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+
+function ONSAS( mesh, materials, elements, boundaryConds, initialConds, generalParams, solVerifData, numericalMethod )
+
 % ==============================================================================
 % ----------------------------     Input       ---------------------------------
 timeAux      = cputime() ; % starts measuring execution time
 ONSASversion = '0.1.10'  ; % sets the current version
 
 % --- adds onsas src dirs to path ---
-str  = which('ONSAS') ;
-
-%if isunix, dirSep = '/'; else dirSep = '\'; end
-dirs = genpath( str(1:end-8) ) ;
-addpath( dirs );
+str  = which('ONSAS') ; dirs = genpath( str(1:end-8) ) ; addpath( dirs );
 
 % verifies the definition of input variables and sets default values
 inputVarsVerification

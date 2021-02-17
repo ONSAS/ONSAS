@@ -6,10 +6,8 @@ close all, clear all        ;
 dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas )             ; % add ONSAS directory to path
 
-
 % ===========================
 % first case: linear analysis
-
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
@@ -27,20 +25,20 @@ materials.hyperElasParams  = {[ E nu ]} ;
 
 % Elements properties
 elements                   = struct()   ;
-elements.elemType          = { 'node'; 'truss'} ;
-elements.elemTypeParams    = {  ;  } ;
-elements.elemTypeGeometry  = {  ; [ 2 sqrt(A) sqrt(A) ] } ;
+elements.elemType          = { 'node', 'truss' } ;
+elements.elemTypeParams    = {   []  ,    []   } ;
+elements.elemTypeGeometry  = {   []  , [ 2 sqrt(A) sqrt(A) ] } ;
 
 % Boundary Conditions parameters
-boundaryCond               = struct()       ;
-boundaryCond.loadsCoordSys = {'global'}     ;
-boundaryCond.loadsTimeFact = { @(t) t }     ;
-boundaryCond.loadsBaseVals   = { [ 0 0 -1 ] } ;
-boundaryCond.imposDispDofs = { [ 1 2 3] ; 2 } ;
-boundaryCond.imposDispVals = { [ 0 0 0] ; 0 } ;
+boundaryConds               = struct()                  ;
+boundaryConds.loadCoordSys = {    []    , 'global'   } ;
+boundaryConds.loadTimeFact = {    []    , @(t) t     } ;
+boundaryConds.loadBaseVals = {    []    , [ 0 0  0 0 -1 0 ] } ;
+boundaryConds.impoDispDofs = { [ 1 3 5] ,   3        } ;
+boundaryConds.impoDispVals = { [ 0 0 0] ,   0        } ;
 
 % Initial Conditions parameters
-initialCond                = struct())
+initialConds                = struct() ;
 
 % ----------------------------------------------------------------------
 % mesh parameters
@@ -48,29 +46,37 @@ initialCond                = struct())
 % nodes coordinates matrix and connectivity cell
 auxx = cos( ang1*pi/180 ) * L ;        auxz = sin( ang1*pi/180 ) * L ;
 
+mesh = struct();
+
 % node coordinates matrix
-Nodes = [      0  0     0  ; ...
+mesh.Nodes = [      0  0     0  ; ...
             auxx  0  auxz  ; ...
           2*auxx  0     0  ] ;
 
-% connectivity cell
-Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
-          [ 0 1 1 0 2  2   ] ; ... % loaded node
-          [ 0 1 0 0 1  3   ] ; ... % fixed node
-          [ 1 2 0 1 0  1 2 ] ; ... % truss element
-          [ 1 2 0 1 0  2 3 ] } ;   % truss element
+% connectivity cell: MEBI + nodes
+mesh.Conec = { [ 0 1 1 0  1   ] ; ... % fixed node
+               [ 0 1 2 0  2   ] ; ... % loaded node
+               [ 0 1 1 0  3   ] ; ... % fixed node
+               [ 1 2 0 0  1 2 ] ; ... % truss element
+               [ 1 2 0 0  2 3 ] } ;   % truss element
 
+solVerifData = struct() ;
+solVerifData.controlDofs = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
+solVerifData.analyticSolFlag = 2    ;
+solVerifData.analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
 
-controlDofs      = [ 2 5 -1 ] ; % [ node nodaldof scalefactor ]
-plotParamsVector = [ 3 ] ;
-reportBoolean    = 1     ;
+generalParams = struct() ;
+generalParams.plotParamsVector = [3] ;
+generalParams.reportBoolean    = 1     ;
+generalParams.problemName      = problemName ;
 
-analyticSolFlag = 2    ;
-analyticFunc    = @(w) 2 * E * A * sin(ang1*pi/180)^2 * w / L ;
+numericalMethod = struct();
+numericalMethod.name = 'linearStep';
 
-ONSAS
+ONSAS( mesh, materials, elements, boundaryConds, initialConds, generalParams, solVerifData, numericalMethod )
 % ----------------------------------------------------------------------
 
+return
 
 % ====================================
 % second case: newton raphson analysis
