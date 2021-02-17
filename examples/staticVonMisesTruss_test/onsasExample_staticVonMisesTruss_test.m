@@ -1,15 +1,15 @@
 % ======================================================================
 % Von Mises truss example
 
+close all, clear all        ;
+
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
+addpath( dirOnsas )             ; % add ONSAS directory to path
+
+
 % ===========================
 % first case: linear analysis
 
-close all, clear all        ;
-
-if exist('ONSAS.m','file')~=2
-  dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-  addpath( dirOnsas )             ; % add ONSAS directory to path
-end
 
 problemName = 'staticVonMisesTrussLin' ; %#ok
 
@@ -18,23 +18,30 @@ problemName = 'staticVonMisesTrussLin' ; %#ok
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;  rho = 0 ; 
 
 % ----------------------------------------------------------------------
-% MELCS parameters
+% Material Elements Boundary-condtions Initial-conditions parameters
 
-% Materials
-materialsParams = {[ rho 1 E nu ]} ;
+% Materials properties
+materials                  = struct()   ;  
+materials.hyperElasModel   = {'SVK'}    ;
+materials.hyperElasParams  = {[ E nu ]} ;
 
-% Elements
-elementsParams  = { 1; [2 1] } ;
+% Elements properties
+elements                   = struct()   ;
+elements.elemType          = { 'node'; 'truss'} ;
+elements.elemTypeParams    = {  ;  } ;
+elements.elemTypeGeometry  = {  ; [ 2 sqrt(A) sqrt(A) ] } ;
 
-% Loads
-loadsParams   = { [ 1 1   0 0 0  0 -1 0] } ;
+% Boundary Conditions parameters
+boundaryCond               = struct()       ;
+boundaryCond.loadsCoordSys = {'global'}     ;
+boundaryCond.loadsTimeFact = { @(t) t }     ;
+boundaryCond.loadsBaseVals   = { [ 0 0 -1 ] } ;
+boundaryCond.imposDispDofs = { [ 1 2 3] ; 2 } ;
+boundaryCond.imposDispVals = { [ 0 0 0] ; 0 } ;
 
-% Cross-Sections
-crossSecsParams = { [ 2 sqrt(A) sqrt(A) ] } ;
+% Initial Conditions parameters
+initialCond                = struct())
 
-% springs parameters
-springsParams = { [ inf 0 inf 0 inf 0  ] ; ...
-                  [ 0   0 inf 0 0   0  ] } ;
 % ----------------------------------------------------------------------
 % mesh parameters
 
