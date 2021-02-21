@@ -18,6 +18,10 @@
 
 function Fext = computeFext( constantFext, variableFext, loadFactor, userLoadsFilename )
 
+% ---------------- load vectors assembly -----------------------
+variableFext = zeros( 6*nNodes , 1 );
+constantFext = zeros( 6*nNodes , 1 );
+
   if strcmp( userLoadsFilename , '')
     FextUser = zeros(size(constantFext)) ;
   else

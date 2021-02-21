@@ -19,21 +19,19 @@
 
 function [numNodes, dofsStep] = elementTypeInfo ( elemType )
 
-switch elemType
-case 1 % node
-  numNodes = 1 ;
-  dofsStep = 1 ;
+%~ if strcmp( elemType, 'node') %non physical real element
+  %~ numNodes = 1 ;
+  %~ dofsStep = 1 ;
 
-case 2 % truss
+if strcmp( elemType, 'truss')
   numNodes = 2 ;
   dofsStep = 2 ;
 
-case 3
+elseif strcmp( elemType, 'frame')
   numNodes = 2 ;
   dofsStep = 1 ;
 
-case 4
+elseif strcmp( elemType, 'tetra')
   numNodes = 4 ;
   dofsStep = 2 ;
-
 end

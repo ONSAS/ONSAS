@@ -16,8 +16,9 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+% Function that converts a vector of nodes indices to a vector of the 
+% corresponding degrees of freedom.
 
-% Octave function for nodes-to-dof conversion
 function [dofs] = nodes2dofs( nodes , degreespernode )
 nodes= nodes(:) ;
 n    = length(nodes);

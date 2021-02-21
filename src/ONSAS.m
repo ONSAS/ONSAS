@@ -19,33 +19,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function ONSAS( mesh, materials, elements, boundaryConds, initialConds, generalParams, solVerifData, numericalMethod )
+function ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-% ==============================================================================
-% ----------------------------     Input       ---------------------------------
-timeAux      = cputime() ; % starts measuring execution time
-ONSASversion = '0.1.10'  ; % sets the current version
-
-% --- adds onsas src dirs to path ---
-str  = which('ONSAS') ; dirs = genpath( str(1:end-8) ) ; addpath( dirs );
-
-% verifies the definition of input variables and sets default values
-inputVarsVerification
+% convert input data to model structures
+% --------------------------------------
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 
 % ==============================================================================
-
-% ==============================================================================
-% ----------------------------    Analysis     ---------------------------------
-
-% Initial computations: sets initial state.
-[ modelCurrSol, modelProperties, BCsData ] =  initialDefinitions( ...
-  Conec, nNodes, nodalSprings, nonHomogeneousInitialCondU0 ...
-  , nonHomogeneousInitialCondUdot0 ...
-  , crossSecsParamsMat, coordsElemsMat, materialsParamsMat, numericalMethodParams ...
-  , loadFactorsFunc, nodalDispDamping, booleanScreenOutput ...
-  , constantFext, variableFext, userLoadsFilename, stabilityAnalysisBoolean ...
-  , problemName, outputDir, finalTime, elementsParamsMat, cppSolverBoolean  ) ;
+function ONSAS_solve
 
 % --- increment step analysis ---
 stopTimeIncrBoolean = 0 ;
@@ -71,6 +53,10 @@ end
 
 fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
   modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
+
+
+% ==============================================================================
+function ONSAS_verif
  
 
 % if analytical solution is provided, numerical results are validated. 
