@@ -25,57 +25,46 @@ function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, 
 startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
 
 % ----   extracts variables  ----
-modelExtract
+%~ modelExtract
 
-if cppSolverBoolean
-  cppInterface
+if 1==0 %cppSolverBoolean
+  %~ cppInterface
 
 else
-  
-  % -----   pre-iteration definitions     ----------
-  nElems     = size( Conec, 1 ) ; ndofpnode = 6;
-  
-  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
-    stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-    incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
-        = extractMethodParams( numericalMethodParams ) ;
-  % --------------------------------------------------------------------
-  
-  
+    
   % --------------------------------------------------------------------
   % ----       iteration in displacements or load-displacements     ----
   % --------------------------------------------------------------------
   
-  KTtred = systemDeltauMatrix ;
+  KTtred = modelCurrSol.systemDeltauMatrix ;
   
   % assign time t
-  Ut = U ; Udott = Udot ; Udotdott = Udotdot ;
+  Ut = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
   
   % --- start iteration with previous displacements ---
-  if isempty( Utp10 )
+
+  if isempty( modelProperties.analysisSettings.Utp10 )
     Utp1k       = Ut       ;   % initial guess
   else
-    Utp1k       = Utp10    ;
+    error('add case for several times')
+    %~ Utp1k       = Utp10    ;
   end
-  
+    
   if startPreviousVels == 1
     Udottp1k    = Udott    ;
     Udotdottp1k = Udotdott ;
   else
     [ Udottp1k, Udotdottp1k ] = updateTime( ...
-      Ut, Udott, Udotdott, Utp1k, numericalMethodParams, currTime ) ;
+      Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
   end
   
-  if solutionMethod == 2
-    nextLoadFactor = currLoadFactor ; % initial guess for next load factor
+  if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
+    nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ; % initial guess for next load factor
   end
   
   % --- compute RHS for initial guess ---
   [ systemDeltauRHS, FextG ]  = computeRHS( ...
-    Conec, crossSecsParamsMat, coordsElemsMat, ...
-    materialsParamsMat, KS, constantFext, variableFext, userLoadsFilename, ...
-    currLoadFactor, nextLoadFactor, numericalMethodParams, neumdofs, nodalDispDamping, ...
-    Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
+    modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k ) ;
   % ---------------------------------------------------
   
   booleanConverged = 0                              ;
@@ -214,30 +203,25 @@ modelCompress
 % ==============================================================================
 %
 % ==============================================================================
-function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, numericalMethodParams, currTime )
+function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, analysisSettings, currTime )
 
-  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
-  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
-      = extractMethodParams( numericalMethodParams ) ;
+  nextTime   = currTime + analysisSettings.deltaT                     ;
 
-  nextTime   = currTime + deltaT                          ;
+  if strcmp( analysisSettings.methodName, 'newmark') || strcmp( analysisSettings.methodName, 'alphaHHT' )
 
-if solutionMethod == 3 || solutionMethod == 4
-
-  if solutionMethod == 4
-    deltaNW = (1-2*alphaHHT)/2 ;
-    AlphaNW = (1-alphaHHT)^2/4 ;
+    if strcmp( analysisSettings.methodName, 'alphaHHT' )
+      deltaNW = (1-2*alphaHHT)/2 ;
+      AlphaNW = (1-alphaHHT)^2/4 ;
+    end
+  
+    Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
+  
+    Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
+  
+  else
+    Udotdottp1 = Udotdott ;
+    Udottp1    = Udott ;
   end
-  
-  Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
-
-  Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
-  
-else
-  Udotdottp1 = Udotdott ;
-  Udottp1    = Udott ;
-end
 
 
 % ==============================================================================

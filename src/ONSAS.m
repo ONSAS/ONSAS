@@ -21,23 +21,12 @@
 
 function ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
+
 % convert input data to model structures
 % --------------------------------------
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-modelCurrSol
-modelProperties
-BCsData
 
-stop
-% performe the time analysis
-% --------------------------
+% perform the time analysis
+% -------------------------
 ONSAS_solve( modelCurrSol, modelProperties, BCsData )
-
-
-if otherParams.screenOutputBool
-  fprintf([ '|-------------------------------------------------|\n'])
-  fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
-  fprintf([ '|=================================================|\n\n\n'])
-end
-

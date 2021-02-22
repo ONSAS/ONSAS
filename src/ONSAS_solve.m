@@ -6,8 +6,7 @@ stopTimeIncrBoolean = 0 ;
 while ( stopTimeIncrBoolean == 0 )
 
   % -----   computes the model state at the next load/time step   -----
-  [ modelNextSol, BCsData ] = timeStepIteration ...
-  ( modelCurrSol, BCsData, modelProperties, Utp10 );
+  [ modelNextSol, BCsData ] = timeStepIteration ( modelCurrSol, BCsData, modelProperties );
 
   % --- checks stopping criteria and stores model state
 
