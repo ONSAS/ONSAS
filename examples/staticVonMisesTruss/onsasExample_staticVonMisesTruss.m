@@ -106,3 +106,10 @@ ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings,
 
 
 
+
+
+  %~ [verifBoolean, numericalVals, analyticVals] = analyticSolVerif ...
+    %~ ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
+    %~ analyticCheckTolerance, analyticSolFlag, problemName, printFlag, outputDir, plotParamsVector );
+
+

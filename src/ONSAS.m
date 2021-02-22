@@ -25,69 +25,12 @@ function ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysis
 % --------------------------------------
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-
-% ==============================================================================
-function ONSAS_solve
-
-% --- increment step analysis ---
-stopTimeIncrBoolean = 0 ;
-while ( stopTimeIncrBoolean == 0 )
-
-  % -----   computes the model state at the next load/time step   -----
-  [ modelNextSol, BCsData ] = timeStepIteration ...
-  ( modelCurrSol, BCsData, modelProperties, Utp10 );
-
-  % --- checks stopping criteria and stores model state
-  storeAndPlotResults
-
-  % --- update state data --- 
-  modelCurrSol           = modelNextSol ;
-  
-  BCsData.currLoadFactor = BCsData.nextLoadFactor                   ;
-  BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
-
-  % ----   evals stop time incr crit    --------
-  stopTimeIncrBoolean = modelCurrSol.currTime >= finalTime ;
-    
-end
-
-fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
-  modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
+% performe the time analysis
+% --------------------------
+ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
 
-% ==============================================================================
-function ONSAS_verif
- 
-
-% if analytical solution is provided, numerical results are validated. 
-if analyticSolFlag > 0
-  [verifBoolean, numericalVals, analyticVals] = analyticSolVerif ...
-    ( analytSol, analyticFunc, loadFactors, controlDisps, timesVec, ...
-    analyticCheckTolerance, analyticSolFlag, problemName, printFlag, outputDir, plotParamsVector );
-end
-% ==============================================================================
-
-
-% ==============================================================================
-% ----------------------------     Output      ---------------------------------
-
-% plots and/or visualization files are generated
-%~ if plotParamsVector(1) > 0
-  %~ outputPlots( matUs, coordsElemsMat, plotParamsVector, ...
-    %~ Conec, Nodes, constantFext, variableFext, controlDisps, ...
-    %~ deformedScaleFactor, printFlag, ...
-    %~ outputDir, problemName, loadFactors, sectPar, ...
-    %~ deltaT, cellStress, plotsViewAxis, booleanScreenOutput ) ;
-%~ end
-
-% report with results is generated
-if reportBoolean
-  outputReport
-end
-
-totalTime = cputime() - timeAux ;
-
-if booleanScreenOutput
+if otherParams.screenOutputBool
   fprintf([ '|-------------------------------------------------|\n'])
   fprintf(  '|  ONSAS finished in: %7.1e seconds /%5.2f mins |\n', totalTime, totalTime/60 )
   fprintf([ '|=================================================|\n\n\n'])
