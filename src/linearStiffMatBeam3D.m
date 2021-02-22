@@ -19,18 +19,31 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [KGelem] = linearStiffMatBeam3D(E, nu, A, Iy, Iz, J, l, elemReleases, R)
+function [ KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, elemConstitutiveParams)
 
   ndofpnode = 6 ;  
-  G  = E / ( 2*(1+nu) ) ;
+
+  % --- material constit params ---
+	E   = elemConstitutiveParams(2) ;
+	nu  = elemConstitutiveParams(3) ;
+	G   = E/(2*(1+nu)) ;
+	
+
+	
+	% --- elem lengths and rotation matrix
+	[ l, local2globalMats ] = beamParameters( elemCoords ) ;
+	R = RotationMatrix(ndofpnode, local2globalMats) ;
   
-  % set the locales degrees of freedom corresponding to each behavior
-  LocAxialdofs  = [ 1  1+ndofpnode                        ] ;
-  LocTorsndofs  = [ 2  2+ndofpnode                        ] ;
-  LocBendXYdofs = [ 3  6           3+ndofpnode 6+ndofpnode] ;
-  LocBendXZdofs = [ 5  4           5+ndofpnode 4+ndofpnode] ;
+  % Provisoriamente
+  elemReleases = [0 0 0 0] ;
   
-  KL = zeros ( ndofpnode*2, ndofpnode*2 ) ;
+  % --- set the local degrees of freedom corresponding to each behavior
+  LocAxialdofs  = [ 1 7 ] ;
+  LocTorsndofs  = [ 2 8 ] ;
+  LocBendXYdofs = [ 3 6 9 12 ] ;
+  LocBendXZdofs = [ 5 4 11 10 ] ;
+  
+  KL = zeros ( 2*ndofpnode, 2*ndofpnode ) ;
   
   Kaxial = E*A/l * [ 1 -1 ; ...
                     -1  1 ] ;

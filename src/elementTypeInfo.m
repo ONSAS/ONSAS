@@ -28,12 +28,16 @@ case 2 % truss
   numNodes = 2 ;
   dofsStep = 2 ;
 
-case 3
+case 3 % frame
   numNodes = 2 ;
   dofsStep = 1 ;
 
-case 4
+case 4 % tetrahedron
   numNodes = 4 ;
   dofsStep = 2 ;
+
+case 5 % linear beam
+  numNodes = 2 ;
+  dofsStep = 1 ;
 
 end
