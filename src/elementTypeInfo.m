@@ -34,4 +34,5 @@ elseif strcmp( elemType, 'frame')
 elseif strcmp( elemType, 'tetra')
   numNodes = 4 ;
   dofsStep = 2 ;
+
 end
