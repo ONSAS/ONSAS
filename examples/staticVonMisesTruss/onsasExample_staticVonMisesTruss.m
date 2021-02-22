@@ -22,7 +22,7 @@ auxx = cos( ang1*pi/180 ) * L ;  auxz = sin( ang1*pi/180 ) * L ;
 %#
 %#### materials
 %# Since both bars are formed by the same material all the fields of the `materials` struct will have only one entry. contains only one vector. The constitutive behavior is the SaintVenantKirchhoff:
-materials.hyperElasModel  = { 'SVK' } ;
+materials.hyperElasModel  = { 'SVK'} ;
 %# and the parameters of this model are the Lamé parameters
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E / (2*(1+nu));
 materials.hyperElasParams = { [ lambda  mu  ] } ;
@@ -38,11 +38,11 @@ elements.elemTypeGeometry = { [], [2 sqrt(A) sqrt(A) ] };
 %#
 %# The elements are submitted to two different BC settings. The nodes $1$ and $3$ are fixed without applied loads (first BC), and node $2$ has a constraint in displacement and an applied load (second BC).
 %#
-boundaryConds.loadCoordSys = { []        , 'global'   } ;
-boundaryConds.loadTimeFact = { []        , @(t) t     } ;
-boundaryConds.loadBaseVals = { []        , [ 0 0 0 0 -1 0 ] } ;
-boundaryConds.impoDispDofs = { [ 1 3 5 ] , 3          } ;
-boundaryConds.impoDispVals = { [ 0 0 0 ] , 0          } ;
+boundaryConds.loadCoordSys = { []        ; 'global'   } ;
+boundaryConds.loadTimeFact = { []        ; @(t) t     } ;
+boundaryConds.loadBaseVals = { []        ; [ 0 0 0 0 -1 0 ] } ;
+boundaryConds.impoDispDofs = { [ 1 3 5 ] ; 3          } ;
+boundaryConds.impoDispVals = { [ 0 0 0 ] ; 0          } ;
 %#
 %### initial Conditions
 %# homogeneous initial conditions are considered, then an empty struct is set:

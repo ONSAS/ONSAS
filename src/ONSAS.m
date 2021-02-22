@@ -25,6 +25,11 @@ function ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysis
 % --------------------------------------
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+modelCurrSol
+modelProperties
+BCsData
+
+stop
 % performe the time analysis
 % --------------------------
 ONSAS_solve( modelCurrSol, modelProperties, BCsData )

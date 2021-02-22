@@ -75,10 +75,10 @@ systemDeltauMatrix     = [] ;
 Stress = [];
 
 % ----------------------------
-
+                   
 % compress model structures
 % -------------------------
-[modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir );
+[modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir,[0 0] );
 
 
 %~ % --- prints headers and time0 values ---
