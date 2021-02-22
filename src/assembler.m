@@ -103,10 +103,12 @@ else
 
     elemCoords  = coordsElemsMat( elem, 1:dofsStep:( numNodes*6 ) ) ;
 
-    if typeElem == 2 || typeElem == 3
+    if typeElem == 2 || typeElem == 3 || typeElem == 5
       elemCrossSecParams     = crossSecsParamsMat ( Conec( elem, 4+4 ) , : ) ;
     end
-
+    
+    
+    
     stress = [] ;
 
     switch typeElem
@@ -166,6 +168,11 @@ else
       [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
                               elemConstitutiveParams, paramOut, elemElementParams(2)) ;
 
+    
+    case 5
+			
+			[ Ke ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, elemConstitutiveParams)
+    
     end   % case tipo elemento
     % -------------------------------------------
 
