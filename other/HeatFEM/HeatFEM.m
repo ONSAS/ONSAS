@@ -9,7 +9,7 @@ function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   meshParams, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
   nPlots, problemName, initialTempFunc, internalHeatFunc, ...
-  diriFaces, neumFaces, robiFaces  );
+  diriFacesAndVals, neumFacesAndVals, robiFacesAndVals  );
 
 % ==============================================
 % seteos previos
@@ -39,6 +39,10 @@ if geometryType == 1
   ndivs = meshParams (1) ;
 elseif geometryType == 2
   ndivs = meshParams (1:3) ;
+  
+  ndirifaces = size( diriFacesAndVals,1) ;
+  nrobifaces = size( robiFacesAndVals,1) ;
+  nneumfaces = size( neumFacesAndVals,1) ;
 end
 
 if geometryType == 1
@@ -61,13 +65,16 @@ tiempos = linspace( 0, Tfinal, nTimes )' ;
 if isempty( nPlots ),
   nPlots = 4 ;
   plotBoolean = 1,
+
 elseif nPlots == 0,
   plotBoolean = 0,
+
 else
   plotBoolean = 1,
   if nPlots == inf,
     nPlots = nTimes ;
   end
+
 end
 
 
@@ -76,38 +83,45 @@ nelem  = size(Conec,1) ;
 
 
 
-
-% dirichlet dofs for 3D
+% ================================================
+% dofs for 3D
 if geometryType == 2
 
   nodesFaceOne = (1:(ndivs(1)+1):nnodes)' ; % x=0
-  nodesFaceTwo = ((ndivs(1)+1):(ndivs(1)+1):nnodes)' ; % x=Lx
-  
+  nodesFaceTwo = ((ndivs(1)+1):(ndivs(1)+1):nnodes)' ;  % x=Lx
+
+  nodesFaceThree =  [ ] ; % y=0  
+  for i=1:(ndivs(3)+1)
+    nodesFaceThree = [ nodesFaceThree ; ...
+     ( (i-1)*((ndivs(1)+1)*(ndivs(2)+1)) + (1:(ndivs(1)+1))' ) ] ;
+  end  
+
+  nodesFaceFour =  nodesFaceThree + ((ndivs(1))*(ndivs(2)+1)) ; % y=0  
+
   nodesFaceFive = (1:1:((ndivs(1)+1)*(ndivs(2)+1)) )' ; % z=0
-  
   nodesFaceSix  = (ndivs(1)+1)*(ndivs(2)+1)*(ndivs(3)) + nodesFaceFive ; % z=Lx
-  triangAreaFactorsFaceSix = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 1 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 
+
+  facesCell = { nodesFaceOne, nodesFaceTwo, ...
+                nodesFaceThree, nodesFaceFour, ...
+                nodesFaceFive, nodesFaceSix} ;
   
-  diriDofs = [];
-  if length(diriFaces) > 1
-    for i=1:(length(diriFaces)-1)
-      if diriFaces(i+1)== 1
-        diriDofs = [ diriDofs; nodesFaceOne ] ;
-      elseif diriFaces(i+1)== 2
-        diriDofs = [ diriDofs; nodesFaceTwo ] ;
-      end
-    end
-  end
+  triangAreaFactorsFaceOne   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 1 ) * Lx/ndivs(2)*Ly/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceTwo   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 2 ) * Lx/ndivs(2)*Ly/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceThree = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 3 ) * Lx/ndivs(1)*Ly/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceFour  = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 4 ) * Lx/ndivs(1)*Ly/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceFive  = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 5 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 ;
+  triangAreaFactorsFaceSix   = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 6 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 ;
   
-  robiDofs = [];
-  if length(robiFaces) > 1
-    hConv = robiFaces(1) ;
-    for i=1:(length(robiFaces)-1)
-      if robiFaces(i+1) == 6
-        robiDofs = [ robiDofs; nodesFaceSix ] ; 
-      end
-    end
+  cellTriangFactors = { triangAreaFactorsFaceOne , triangAreaFactorsFaceTwo , triangAreaFactorsFaceThree , ...
+                        triangAreaFactorsFaceFour, triangAreaFactorsFaceFive, triangAreaFactorsFaceSix   };
+  
+  if ndirifaces > 0
+    diriDofs = unique( addFacesDofs( diriFacesAndVals(:,1), facesCell ) ) ;
   end
+  if nrobifaces >0
+    robiDofs = unique( addFacesDofs( robiFacesAndVals(:,1), facesCell ) ) ;
+  end
+
 end
 
 % neuman dofs
@@ -147,15 +161,10 @@ end
 Ts = T0 ;
 
 % matrices/vectors assembly
-if geometryType == 1
-  KdiffG = zeros( nnodes, nnodes ) ;
-  MintEG = zeros( nnodes, nnodes ) ;
-  MrobiG = zeros( nnodes, nnodes ) ;
-elseif geometryType == 2,
-  KdiffG = sparse( nnodes, nnodes ) ;
-  MintEG = sparse( nnodes, nnodes ) ;
-  MrobiG = sparse( nnodes, nnodes ) ;
-end
+KdiffG = sparse( nnodes, nnodes ) ;
+MintEG = sparse( nnodes, nnodes ) ;
+MrobiG = sparse( nnodes, nnodes ) ;
+
 QhG    = zeros( nnodes, 1      ) ;
 
 for i = 1 : nelem
@@ -182,7 +191,13 @@ if  ~isempty( robiDofs )
   if geometryType == 1
     MrobiG ( robiDofs, robiDofs ) = hConv ;
   elseif geometryType == 2
-    MrobiG ( robiDofs, robiDofs ) = diag( triangAreaFactorsFaceSix ) * hConv ;
+    if nrobifaces > 0
+      for k=1:nrobifaces
+        currFace = robiFacesAndVals (k,1) ;
+        MrobiG ( facesCell{currFace}, facesCell{currFace} ) = MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
+                                                            + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(k,2) ;
+      end
+    end
   end
   KdiffG = KdiffG + MrobiG ;
 end
@@ -196,7 +211,6 @@ CNN = MintEG( neumdofs, neumdofs ) ;
 
 KdiffGNN = KdiffG(neumdofs, neumdofs ) ;
 KdiffGND = KdiffG(neumdofs, diriDofs ) ;
-
 
 Matrix = ( KdiffGNN * dt + CNN )  ;
 
@@ -214,7 +228,13 @@ if ~isempty( robiDofs )
   if geometryType == 1
     qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
   elseif geometryType == 2
-    qext( robiDofs ) = qext( robiDofs ) + hConv * triangAreaFactorsFaceSix * Tamb ;
+  
+    if nrobifaces > 0
+      for k=1:nrobifaces
+        currFace = robiFacesAndVals(k,1) ;
+        qext ( facesCell{currFace} ) = qext ( facesCell{currFace} ) + cellTriangFactors{currFace} * robiFacesAndVals(k,2) * Tamb ;
+      end
+    end
   end
 end
 
@@ -223,11 +243,13 @@ qext = qext ;
 
 
 % =========================================
-% simulacion
+% simulation
 
 if plotBoolean
-  figure, hold on, grid on
-  indsPlotStep = round( nTimes / nPlots ) 
+  indsPlotStep = round( nTimes / nPlots ) ;
+  if length( ndivs)==1
+    figure, hold on, grid on
+  end
 end
 
 fext = zeros( size(Ts) ) ;
@@ -237,13 +259,15 @@ fext = zeros( size(Ts) ) ;
 
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
-
-  if ~isempty(internalHeatFunc)
+  fprintf('ind: %4i  time: %15.4e\n',ind, t);
+  
+  if ~isempty( internalHeatFunc )
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
   else
     fext ( neumdofs, ind ) = qext ( neumdofs    ) ;
-  endif
+  end
   
+
   if ind > 1
     f = (    fext( neumdofs, ind ) * dt   ...
          + MintEG( neumdofs, : ) * Ts( :, ind-1 )
@@ -255,7 +279,7 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
     if ~isempty( diriDofs ),
       Ts( diriDofs, ind ) = Tdiri   ;
     end
-
+    
   end % if i not zero
 
   % --- plots ---
@@ -269,14 +293,15 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
 end % for times
 % ------------------------
 
-if plotBoolean
-  print( [ problemName '.png'],'-dpng')
+if plotBoolean && length(ndivs)==1
+  print( [ 'pngs/' problemName '.png'],'-dpng')
 end
 
-M = zeros( nnodes, nnodes ) ;
+M = sparse( nnodes, nnodes ) ;
 K = KdiffGNN ;
 C = CNN ;
 xs = NodesCoord(:,1) ;
+
 
 us    = Ts ;
 udots = [] ;
@@ -287,12 +312,18 @@ save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'timeIncr', 'u
 
 
 
-function factors = patchTriangFactors( nnod1, nnod2, booleanSense12 );
+function factors = patchTriangFactors( nnod1, nnod2, face );
 
-factors = zeros( nnod1* nnod2 ,1 );
+if face == 1 || face == 2 || face == 5 || face == 6
+  booleanSense12 = true;
+else
+  booleanSense12 = false;
+end
+
+factors = zeros( nnod1* nnod2 ,1 ) ;
 
 for j=1:nnod2
-  inds = (j-1)*(nnod1) + (1:(nnod1))' 
+  inds = (j-1)*(nnod1) + (1:(nnod1))' ;
   
   if j == 1
     factors( inds(2:(end-1)) ) = 1; 
@@ -315,3 +346,15 @@ for j=1:nnod2
   end
   
 end
+
+
+
+function [dofsVec] = addFacesDofs( faces, facesCell )
+  
+  dofsVec = [];
+  if length(faces) > 0
+    for i=1:(length(faces))
+      dofsVec = [ dofsVec; facesCell{faces(i)} ] ;
+    end
+  end
+

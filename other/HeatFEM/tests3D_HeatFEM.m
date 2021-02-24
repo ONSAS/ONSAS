@@ -4,7 +4,7 @@
 
 
 % =========   case 1 =========
-% 1D problem
+% 3D problem
 % boundary conditions: dirichlet on both ends
 % initial temperature profile
 % https://onsas.github.io/ONSAS_docs/dev/tutorials/HeatDiffusion/heat/
@@ -51,9 +51,15 @@ robiFaces = [  ] ;
   [ 2 Lx Ly Lz ], ...
   ndivs, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
-  nPlots, problemName, initialTempFunc, ...
+  nPlots, problemName, initialTempFunc, [], ...
   diriFaces, neumFaces, robiFaces  );
 
+
+% =========   case 2 =========
+% 1D problem
+% boundary conditions: dirichlet on both ends
+% initial temperature profile
+% https://onsas.github.io/ONSAS_docs/dev/tutorials/HeatDiffusion/heat/
 
 problemName = 'dirichlet1D' ;
 diriDofs = [ 1 ndivs(1)+1 ] ;
@@ -65,7 +71,7 @@ nPlots = 0 ;
   [ 1 Lx Ly*Lz ], ...
   ndivs, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
-  nPlots, problemName, initialTempFunc, ...
+  nPlots, problemName, initialTempFunc, [], ...
   diriFaces, neumFaces, robiFaces  );
 
 
@@ -92,5 +98,5 @@ plot( times(1:5:end), Ts1D(indplot,1:5:end), 'g-x',  'markersize', MS,'linewidth
 
 legend('num3D','analytic','num1D','location','southeast')
 
-print('valid3D.png','-dpng')
+print('pngs/valid3D.png','-dpng')
 % ----------------------------------

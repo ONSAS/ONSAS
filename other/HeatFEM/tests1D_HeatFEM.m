@@ -72,7 +72,8 @@ xlabel('t'), ylabel('Temp')
 %  diri no homogeneo ( ver fundamentos en https://www.math.uzh.ch/li/index.php?file&key1=25297 )
 
 Tdiri     = 1  ;
-Tfinal = .2 ;
+%~ Tfinal = .2 ;
+Tfinal = .02 ;
 ndivs = [ 50 ] ;
 diriDofs = [ 1 ndivs+1 ]
 problemName = 'nonHomogDirichlet' ;
@@ -98,7 +99,8 @@ diriDofs = [ ];
 robiDofs = [1 ] ;
 qInpRight = 4 ;
 
-Tfinal = 4.5;
+ Tfinal = 4.5;
+Tfinal = 0.5;
 
 Tamb      = 5 ;
 
