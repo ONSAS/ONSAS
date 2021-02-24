@@ -20,66 +20,53 @@
 % the next time step using the numerical method and parameters provided by the
 % user.
 
-function  [ modelCurrSol, BCsData ] = timeStepIteration( modelCurrSol, BCsData, modelProperties, Utp10 ) ;
-
-startPreviousVels = 0 ; % (0 or 1) - 0 strongly recommended
-
-% ----   extracts variables  ----
-%~ modelExtract
+function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
 if 1==0 %cppSolverBoolean
-  %~ cppInterface
+  cppInterface
 
 else
-    
-  % --------------------------------------------------------------------
-  % ----       iteration in displacements or load-displacements     ----
-  % --------------------------------------------------------------------
-  
-  KTtred = modelCurrSol.systemDeltauMatrix ;
-  
-  % assign time t
+      
+  % assign time t variables
+  % -----------------------
   Ut = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
-  
-  % --- start iteration with previous displacements ---
+  KTtred = modelCurrSol.systemDeltauMatrix ;
+  convDeltau = modelCurrSol.convDeltau ;
 
+  % update time and set candidate displacements
+  % -------------------------------------------
   if isempty( modelProperties.analysisSettings.Utp10 )
-    Utp1k       = Ut       ;   % initial guess
+    Utp1k       = Ut       ;
   else
     error('add case for several times')
-    %~ Utp1k       = Utp10    ;
   end
-    
-  if startPreviousVels == 1
-    Udottp1k    = Udott    ;
-    Udotdottp1k = Udotdott ;
-  else
-    [ Udottp1k, Udotdottp1k ] = updateTime( ...
-      Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
-  end
+  [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
+    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
+
+  systemDeltauMatrix = KTtred ;
   
-  if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
-    nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ; % initial guess for next load factor
-  end
+  %~ if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
+    %~ nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ; % initial guess for next load factor
+  %~ end
+
+  % compute RHS for initial guess Utp1 and in next time step
+  % --------------------------------------------------------
+  [ systemDeltauRHS, FextG ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
   
-  % --- compute RHS for initial guess ---
-  [ systemDeltauRHS, FextG ]  = computeRHS( ...
-    modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k ) ;
-  % ---------------------------------------------------
   
   booleanConverged = 0                              ;
   dispIters        = 0                              ;
-  currDeltau       = zeros( length( neumdofs ), 1 ) ;
+  currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
   
   while  booleanConverged == 0
     dispIters = dispIters + 1 ;
   
     % --- solve system ---
-    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(neumdofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
+    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), numericalMethodParams, nextLoadFactor , currDeltau ) ;
     % ---------------------------------------------------
   
     % --- updates: model variables and computes internal forces ---
-    [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, neumdofs, solutionMethod, currDeltau ) ;
+    [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, solutionMethod, currDeltau ) ;
   
     % --- update next time magnitudes ---
     [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
@@ -88,7 +75,7 @@ else
     
     % --- system matrix ---
     systemDeltauMatrix          = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
-      materialsParamsMat, KS, Utp1k, neumdofs, numericalMethodParams, ...
+      materialsParamsMat, KS, Utp1k, BCsData.neumDofs, numericalMethodParams, ...
       nodalDispDamping, Udott, Udotdott, elementsParamsMat ) ;
     % ---------------------------------------------------
   
@@ -96,12 +83,12 @@ else
     [ systemDeltauRHS, FextG ]  = computeRHS( Conec, crossSecsParamsMat, coordsElemsMat, ...
       materialsParamsMat, KS, constantFext, variableFext, ...
       userLoadsFilename, currLoadFactor, nextLoadFactor, numericalMethodParams, ...
-      neumdofs, nodalDispDamping, ...
+      BCsData.neumDofs, nodalDispDamping, ...
       Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, elementsParamsMat ) ;
     % ---------------------------------------------------
   
     % --- check convergence ---
-    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, [], FextG(neumdofs), deltaured, Utp1k(neumdofs), dispIters, [], systemDeltauRHS ) ;
+    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( numericalMethodParams, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
     % ---------------------------------------------------
   
     % --- prints iteration info in file ---

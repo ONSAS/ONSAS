@@ -1,12 +1,46 @@
 
-function ONSAS_solve( modelCurrSol, modelProperties, BCsData)
+function [matUs] = ONSAS_solve( modelCurrSol, modelProperties, BCsData)
 
-% --- increment step analysis ---
-stopTimeIncrBoolean = 0 ;
-while ( stopTimeIncrBoolean == 0 )
+% init structures to store solutions
+% ----------------------------------
+matUs      = modelCurrSol.U          ;
+matUdots   = modelCurrSol.Udot       ;
+cellStress = { modelCurrSol.Stress } ;
 
-  % -----   computes the model state at the next load/time step   -----
-  [ modelNextSol, BCsData ] = timeStepIteration ( modelCurrSol, BCsData, modelProperties );
+% incremental time analysis
+% -------------------------
+continueTimeAnalysis = true ;
+
+while continueTimeAnalysis
+
+  % compute the model state at next time
+  % ------------------------------------
+  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+
+  % check final Time
+  % ----------------
+  if modelNextSol.currTime >= modelProperties.analysisSettings.finalTime
+    continueTimeAnalysis = false ;
+  end
+  
+  % store results
+  modelCurrSol = modelNextSol ;
+  matUs        = [ matUs modelCurrSol.U ] ;
+
+end
+
+return
+
+
+
+
+
+
+
+
+
+
+
 
   % --- checks stopping criteria and stores model state
 
@@ -14,9 +48,6 @@ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 timeIndex = modelCurrSol.timeIndex ; 
 
 if timeIndex == 1
-  matUs      = modelCurrSol.U          ;
-  matUdots   = modelCurrSol.Udot       ;
-  cellStress = { modelCurrSol.Stress } ;
 
   if length( controlDofsAndFactors ) > 0  
     controlDisps               = 0 ;

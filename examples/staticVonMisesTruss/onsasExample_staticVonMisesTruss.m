@@ -33,6 +33,7 @@ materials.hyperElasParams = { [ lambda  mu  ] } ;
 elements.elemType = { 'node','truss' } ;
 %# for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
 elements.elemTypeGeometry = { [], [2 sqrt(A) sqrt(A) ] };
+elements.elemTypeParams = { [], 1 };
 %#
 %### boundaryConds
 %#

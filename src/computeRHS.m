@@ -18,30 +18,31 @@
 
 % ======================================================================
 
-function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, elementsParamsMat ) 
+function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime )
 
   fs = assembler ( ...
     modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, 1, Udottp1, Udotdottp1, modelProperties.analysisSettings ) ;
   
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;  
 
-  if solutionMethod <= 1
+  if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
-    systemDeltauRHS = - ( Fint(neumdofs) - FextG(neumdofs) ) ;
+    FextG           = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
 
-  elseif solutionMethod == 2
-    
-    if norm(constantFext)>0 || ~(strcmp( userLoadsFilename , '')),
-      error('load case not implemented yet for Arc-Length method');
-    end
-    
-    FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
-    
-    % incremental displacement
-    systemDeltauRHS = [ -(Fint(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
+    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) 
 
-  elseif solutionMethod == 3
+  elseif strcmp( modelProperties.analysisSettings.methodName, 'archLength' )
+    
+    %~ if norm(constantFext)>0 || ~(strcmp( userLoadsFilename , '')),
+      %~ error('load case not implemented yet for Arc-Length method');
+    %~ end
+    
+    %~ FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
+    
+    %~ % incremental displacement
+    %~ systemDeltauRHS = [ -(Fint(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
+
+  elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 
     FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
@@ -52,7 +53,7 @@ function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( modelProperties, BCs
                 
     systemDeltauRHS = -rhat ;
 
-  elseif solutionMethod == 4
+  elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
       
     fs = assembler ( ...
       Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Ut, 1, Udott, ...

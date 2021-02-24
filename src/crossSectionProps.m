@@ -1,5 +1,5 @@
 
-function [Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams )
+function [Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams, rho )
 
 % --- cross section ---
 if elemCrossSecParams(1) == 1 %general section

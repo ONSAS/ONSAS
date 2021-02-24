@@ -23,7 +23,7 @@
 %  - matrix with stresses      (paramOut = 3).
 %
 
-function Assembled = assembler ( Conec, elements, Nodes, materials, KS, Ut, paramOut, Udott, Udotdott, anlysisSettings )
+function Assembled = assembler ( Conec, elements, Nodes, materials, KS, Ut, paramOut, Udott, Udotdott, analysisSettings )
 
 % -----------------------------------------------
 nElems  = size(Conec, 1) ;   nNodes  = length( Ut ) / 6 ;
@@ -61,6 +61,9 @@ end
 % ====================================================================
 
 
+dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
+
+
 % ====================================================================
 %  --- 2 loop assembly ---
 % ====================================================================
@@ -78,7 +81,8 @@ for elem = 1:nElems
   end
   
   elemType              = elements.elemType{ Conec( elem, 2) } ;
-  elemTypeGeometry      = elements.elemTypeGeometry{ Conec( elem, 1) } ;
+  elemTypeParams        = elements.elemTypeParams{ Conec( elem, 2) } ;
+  elemTypeGeometry      = elements.elemTypeGeometry{ Conec( elem, 2) } ;
 
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
@@ -94,34 +98,27 @@ for elem = 1:nElems
   stress = [] ;
 
   % -----------   truss element   ------------------------------
-  if sctcmp( elemType, 'truss')
+  if strcmp( elemType, 'truss')
 
-    Area  = crossSectionProps ( elemTypeGeometry ) 
+    A  = crossSectionProps ( elemTypeGeometry, density ) ;
     
-    [ fs, ks, stress ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, paramOut ) 
+    [ fs, ks, stress ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) 
 
-stop
     Finte = fs{1} ;
     Ke    = ks{1} ;
 
-    if solutionMethod > 2
-      booleanConsistentMassMat = elemElementParams(2) ;
+    if dynamicProblemBool
+      booleanConsistentMassMat = elemTypeParams(1) ;
 
       dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-      [ Fmase, Mmase ] = elementTrussMassForce( elemCoords, elemrho, A, elemElementParams(2), paramOut, dotdotdispsElem ) ;
+      [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, booleanConsistentMassMat, paramOut, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
 
-    if (length( elemCrossSecParams) == 3) && (elemCrossSecParams(3) == 1)
-       disp('hola')
-       %~ stop
-              
-    end
-
 
   % -----------   frame element   ------------------------------------
-  elseif sctcmp( elemType, 'frame')
+  elseif strcmp( elemType, 'frame')
 
     [ fs, ks, stress ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                              u2ElemDisps( Udott    , dofselem ) , ...
@@ -138,7 +135,7 @@ stop
 %==============================================  
 
   % ---------  tetrahedron solid element -----------------------------
-  elseif sctcmp( elemType, 'tetra')
+  elseif strcmp( elemType, 'tetra')
 
     [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
                             elemConstitutiveParams, paramOut, elemElementParams(2)) ;
@@ -154,7 +151,7 @@ stop
   case 1
     % internal loads vector assembly
     Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
-    if solutionMethod > 2
+    if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
 
@@ -168,7 +165,7 @@ stop
       indsJK ( entriesSparseStorVecs )  = dofselemRed       ;
       valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
 
-      if solutionMethod > 2
+      if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
         if exist('Ce')~=0
           valsC( entriesSparseStorVecs ) = Ce   ( indRow, : )' ;
@@ -194,9 +191,9 @@ end % for elements ----
 %  --- 3 global additions and output ---
 % ============================================================================
 
-Assembled = cell( 1 + ( ( solutionMethod > 2) && ( paramOut <= 2 ) ), 1 ) ;
+Assembled = cell( 1 + ( dynamicProblemBool && ( paramOut <= 2 ) ), 1 ) ;
 
-if solutionMethod > 2
+if dynamicProblemBool
   dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
   dampingMat(1:2:end) = nodalDispDamping             ;
   dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
@@ -210,7 +207,7 @@ case 1,
 
   Assembled{1} = Fint ;
 
-  if solutionMethod > 2,
+  if dynamicProblemBool,
     Fvis = dampingMat * Udott ;
   end
 
@@ -226,7 +223,7 @@ case 2,
 
   Assembled{1} = K ;
 
-  if solutionMethod > 2
+  if dynamicProblemBool
     valsM = valsM (1:counterInds) ;
     valsC = valsC (1:counterInds) ;
     M     = sparse( indsIK, indsJK, valsM , size(KS,1), size(KS,1) )  ;

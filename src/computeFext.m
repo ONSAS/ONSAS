@@ -16,16 +16,21 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function Fext = computeFext( constantFext, variableFext, loadFactor, userLoadsFilename )
+function Fext = computeFext( BCsData, analysisSettings, evalTime, lengthFext )
 
-% ---------------- load vectors assembly -----------------------
-variableFext = zeros( 6*nNodes , 1 );
-constantFext = zeros( 6*nNodes , 1 );
+factorLoadsFextCell = BCsData.factorLoadsFextCell 
+loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
 
-  if strcmp( userLoadsFilename , '')
-    FextUser = zeros(size(constantFext)) ;
-  else
-    FextUser = feval( userLoadsFilename, loadFactor)  ;
+Fext = zeros( lengthFext, 1 ) ;
+  
+for i=1:length( factorLoadsFextCell )
+
+  if ~isempty( factorLoadsFextCell{i} )
+
+    Fext  = Fext + loadFactorsFuncCell{i}(evalTime) * factorLoadsFextCell{i}  ;
   end
+end
 
-  Fext  = variableFext * loadFactor + constantFext  + FextUser  ;
+if ~isempty( BCsData.userLoadsFilename )
+  Fext = Fext + feval( userLoadsFilename, evalTime )  ;
+end
