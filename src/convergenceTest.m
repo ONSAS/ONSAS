@@ -18,18 +18,16 @@
 
 
 function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
-  numericalMethodParams, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS ) 
+  analysisSettings, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS ) 
 
-  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
-    stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-    incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
-        = extractMethodParams( numericalMethodParams ) ;
-
+  stopTolDeltau = analysisSettings.stopTolDeltau ;
+  stopTolForces = analysisSettings.stopTolForces ;
+  stopTolIts    = analysisSettings.stopTolIts    ;
+  
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
-  %~ deltaErrLoad  = norm( redFint - redFext - redFinet )   ;
 
-  if solutionMethod==2
+  if strcmp( analysisSettings.methodName, 'arcLength')
     systemDeltauRHS = systemDeltauRHS(:,1);
   end
 

@@ -16,35 +16,27 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%
-% function for assembly of:
-%  - residual force vectors    (paramOut = 1 )
-%  - residual tangent matrices (paramOut = 2)
-%  - matrix with stresses      (paramOut = 3).
-%
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans )
 
-function Assembled = assembler ( Conec, elements, Nodes, materials, KS, Ut, paramOut, Udott, Udotdott, analysisSettings )
+fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
-% -----------------------------------------------
-nElems  = size(Conec, 1) ;   nNodes  = length( Ut ) / 6 ;
+nElems     = size(Conec, 1) ;
+nNodes     = length( Ut ) / 6 ;
 
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
 
-switch paramOut
 % -------  residual forces vector ------------------------------------
-case 1
+if fsBool
   % --- creates Fint vector ---
   Fint = zeros( nNodes*6 , 1 ) ;
   Fmas = zeros( nNodes*6 , 1 ) ;
   Fvis = zeros( nNodes*6 , 1 ) ;
+end
 
 % -------  tangent matrix        -------------------------------------
-case 2
-  %~ if octaveBoolean
-    %~ indsIK = uint32( zeros( nElems*24*24, 1 ) ) ;
-    %~ indsJK = uint32( zeros( nElems*24*24, 1 ) ) ;
+if tangBool
   indsIK =         zeros( nElems*24*24, 1 )   ;
   indsJK =         zeros( nElems*24*24, 1 )   ;
   valsK  =         zeros( nElems*24*24, 1 )   ;
@@ -53,16 +45,16 @@ case 2
   valsM  =         zeros( nElems*24*24, 1 )   ;
 
   counterInds = 0 ; % counter non-zero indexes
+end
 
 % -------  matrix with stress per element ----------------------------
-case 3
+if stressBool
   stressMat = zeros( nElems, 6 ) ;
 end
 % ====================================================================
 
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
-
 
 % ====================================================================
 %  --- 2 loop assembly ---
@@ -80,14 +72,14 @@ for elem = 1:nElems
     density = 0;
   end
   
-  elemType              = elements.elemType{ Conec( elem, 2) } ;
-  elemTypeParams        = elements.elemTypeParams{ Conec( elem, 2) } ;
-  elemTypeGeometry      = elements.elemTypeGeometry{ Conec( elem, 2) } ;
+  elemType            = elements.elemType{ Conec( elem, 2) } ;
+  elemTypeParams      = elements.elemTypeParams{ Conec( elem, 2) } ;
+  elemTypeGeometry    = elements.elemTypeGeometry{ Conec( elem, 2) } ;
 
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   % obtains nodes and dofs of element
-  nodeselem   = Conec( elem, 1:numNodes )'      ;
+  nodeselem   = Conec( elem, (4+1):(4+numNodes) )'      ;
   dofselem    = nodes2dofs( nodeselem , 6 )  ;
   dofselemRed = dofselem ( 1 : dofsStep : end ) ;
 
@@ -95,17 +87,16 @@ for elem = 1:nElems
   
   elemNodesxyzRefCoords  = reshape( Nodes(   Conec( elem, (4+1):(4+numNodes) )' , : )',1,6) ;
   
-  stress = [] ;
+  stressElem = [] ;
 
   % -----------   truss element   ------------------------------
   if strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemTypeGeometry, density ) ;
     
-    [ fs, ks, stress ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) 
+    [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
 
-    Finte = fs{1} ;
-    Ke    = ks{1} ;
+    Finte = fs{1} ;    Ke    = ks{1} ;
 
     if dynamicProblemBool
       booleanConsistentMassMat = elemTypeParams(1) ;
@@ -120,7 +111,7 @@ for elem = 1:nElems
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-    [ fs, ks, stress ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
+    [ fs, ks, stressElem ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
                                              u2ElemDisps( Udott    , dofselem ) , ...
                                              u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
     Finte = fs{1} ;  Ke    = ks{1} ;
@@ -145,18 +136,17 @@ for elem = 1:nElems
 
 
   % -------------------------------------------
-  % ---   assemble   ----
+  % ---   assembly   ----
   % -------------------------------------------
-  switch paramOut
-  case 1
+  if fsBool
     % internal loads vector assembly
     Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
-
-  case 2
-
+  end
+  
+  if tangBool
     for indRow = 1:length( dofselemRed )
 
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
@@ -174,11 +164,11 @@ for elem = 1:nElems
 
       counterInds = counterInds + length( dofselemRed ) ;
     end
+  end
 
-  case 3
-    StressVec( elem, (1:length(stress) ) ) = stress ;
-
-  end % case paramOut ---
+  if stressBool
+    stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
+  end % if stress
 
 end % for elements ----
 
@@ -191,7 +181,8 @@ end % for elements ----
 %  --- 3 global additions and output ---
 % ============================================================================
 
-Assembled = cell( 1 + ( dynamicProblemBool && ( paramOut <= 2 ) ), 1 ) ;
+fsCell       = cell( 3, 1 ) ;
+tangMatsCell = cell( 3, 1 ) ;
 
 if dynamicProblemBool
   dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
@@ -199,29 +190,27 @@ if dynamicProblemBool
   dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
 end
 
-switch paramOut
-
-case 1,
-
+if fsBool
   Fint = Fint + KS * Ut ;
 
-  Assembled{1} = Fint ;
+  fsCell{1} = Fint ;
 
   if dynamicProblemBool,
     Fvis = dampingMat * Udott ;
   end
 
-  Assembled{2} = Fvis ;
-  Assembled{3} = Fmas ;
+  fsCell{2} = Fvis ;
+  fsCell{3} = Fmas ;
+end
 
-case 2,
+if tangBool
 
   indsIK = indsIK(1:counterInds) ;
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
 
-  Assembled{1} = K ;
+  tangMatsCell{1} = K ;
 
   if dynamicProblemBool
     valsM = valsM (1:counterInds) ;
@@ -233,12 +222,8 @@ case 2,
     C = sparse(size( K ) ) ;
   end
 
-  Assembled{2} = C ;
-  Assembled{3} = M ;
-
-case 3
-  Assembled{1} = StressVec ;
-
+  tangMatsCell{2} = C ;
+  tangMatsCell{3} = M ;
 end
 
 % ----------------------------------------

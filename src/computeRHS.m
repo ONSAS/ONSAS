@@ -15,21 +15,24 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
+%## Compute RHS
+%# this functions computes the right-hand-side of the linear system defined by the numerical method in use.
+%#
+%#
 
-% ======================================================================
-
-function [systemDeltauRHS, FextG, fs, Stress] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime )
+function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime )
 
   fs = assembler ( ...
-    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, 1, Udottp1, Udotdottp1, modelProperties.analysisSettings ) ;
+    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0] ) ;
   
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;  
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    FextG           = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
 
-    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) 
+    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'archLength' )
     

@@ -17,42 +17,35 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, crossSecsParamsMat, coordsElemsMat, ...
-  materialsParamsMat, KS, Uk, neumdofs, numericalMethodParams, nodalDispDamping, ...
-  Udott, Udotdott, elementsParamsMat )
-
-  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
-  stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-  incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
-      = extractMethodParams( numericalMethodParams ) ;
-
+function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs ) ;
+  
   % computes static tangent matrix
-  [ mats ] = assembler( Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Uk, 2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
+  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1] ) ;
 
   KT      = mats{1} ;
-  if solutionMethod > 2
+  if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
+
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
-
-    global flagOutputMatrices
-    if not(isempty(flagOutputMatrices)) && flagOutputMatrices == 1
-      save -mat auxiliar.mat KT dampingMat massMat
-      flagOutputMatrices = 0 ;
-    end 
+    
+    %~ global flagOutputMatrices
+    %~ if ~isempty( flagOutputMatrices ) && flagOutputMatrices == 1
+      %~ save -mat auxiliar.mat KT dampingMat massMat
+      %~ flagOutputMatrices = 0 ;
+    %~ end 
       
   end
 
-  % extracts matrix entries
-  if solutionMethod <= 2
+  if strcmp( analysisSettings.methodName, 'newtonRaphson' ) || strcmp( analysisSettings.methodName, 'arcLength' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 
-  elseif solutionMethod == 3
+  elseif strcmp( analysisSettings.methodName, 'newmark' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
       + deltaNW / ( AlphaNW*deltaT) * dampingMat( neumdofs, neumdofs )  ;
 
-  elseif solutionMethod == 4
+  elseif strcmp( analysisSettings.methodName, 'alphaHHT' )
 
     deltaNW = (1 - 2 * alphaHHT ) / 2 ;
     AlphaNW = (1 - alphaHHT ^ 2 ) / 4 ;

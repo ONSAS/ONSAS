@@ -19,14 +19,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
-
+function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 % convert input data to model structures
 % --------------------------------------
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-
 % perform the time analysis
 % -------------------------
-ONSAS_solve( modelCurrSol, modelProperties, BCsData )
+[ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) 

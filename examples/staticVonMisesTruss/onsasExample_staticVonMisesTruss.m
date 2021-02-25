@@ -40,7 +40,7 @@ elements.elemTypeParams = { [], 1 };
 %# The elements are submitted to two different BC settings. The nodes $1$ and $3$ are fixed without applied loads (first BC), and node $2$ has a constraint in displacement and an applied load (second BC).
 %#
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
-boundaryConds.loadTimeFact = { []        ; @(t) t     } ;
+boundaryConds.loadTimeFact = { []        ; @(t) 1.5e8*t     } ;
 boundaryConds.loadBaseVals = { []        ; [ 0 0 0 0 -1 0 ] } ;
 boundaryConds.impoDispDofs = { [ 1 3 5 ] ; 3          } ;
 boundaryConds.impoDispVals = { [ 0 0 0 ] ; 0          } ;
@@ -65,19 +65,40 @@ mesh.conecCell = { [ 0 1 1 0  1   ] ; ... % fixed node
 %#
 %#
 %### analysisSettings
-analysisSettings.methodName = 'newtonRaphson' ;
-analysisSettings.deltaT     = 0.1 ;
-analysisSettings.finalTime  =   1 ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        = 0.1 ;
+analysisSettings.finalTime     =   1 ;
+analysisSettings.stopTolDeltau =   1e-6 ;
+analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.stopTolIts    =   10 ;
+analysisSettings.finalTime     =   1 ;
 %#
 %### otherParams
-otherParams.problemName = 'staticVonMisesTruss';
+otherParams.problemName = 'staticVonMisesTruss_NR';
 otherParams.plotParamsVector = [3];
 otherParams.controlDofs = [2 5 ];
 %#
 %### ONSAS execution
 %#
-ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %#
+
+analyticFunc    = @(w) 2 * E * A * sin(ang1 * pi / 180 )^2 * w / L ;
+
+numDisp =  -matUs(11,:) ;
+
+figure
+plot( numDisp , loadFactorsMat(:,2) ,'b' )
+hold on, grid on
+plot( numDisp , analyticFunc( numDisp),'r' )
+
+l0           = sqrt(auxx^2 + auxz^2) ;
+analyticFunc = @(w) -2 * E*A* ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
+            .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
+hold on, grid on
+plot( numDisp , analyticFunc( numDisp), 'g' )
+
+
 % ===============================================
 % methods comparison
 % ====================================

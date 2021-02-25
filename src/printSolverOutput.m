@@ -16,49 +16,30 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
 % Prints analysis output 
 
 function printSolverOutput( outputdir, problemName, timeIndex, lineData )
 
-incrementsResultsFilename = [ outputdir  problemName '_incrementsOutput.tex' ] ;
-incrementsNormalForce 		= [ outputdir  problemName '_incrementsNormalForceOutput.tex' ] ;
-%~ incrementsTimePerformance = [ outputdir  problemName '_timePerformanceOutput.tex' ] ;
+iterationResultsFile = [ outputdir  problemName '_iterations.tex' ] ;
 
-headerIncrements  = [ '$\\#t$ & $ \\lambda(t)$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ & flagExit ' ...
-                      ' & npos & nneg  \\\\ \\hline \n \\endhead \n'] ;
+headerIncrements  = [ '$\\#t$ & $t$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ & flagExit \\\\ \\hline \n \\endhead \n'] ;
 %
-headerNormalForce = [ 'timeInd & t & $ \\lambda(t)$ & $N_{max}$ & $N_{min}$ \\\\ \\toprule \n'] ;
-
+timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &      \\\\ \n' ] ;
+%
 timeStepEndLine   = [ '\\hdashline\n' ...
-                      '%4i & %9.2e & %4i &           &           & %2i & %3i & %3i \\\\ \n' ] ;
-%
-timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &    &     &     \\\\ \n' ] ;
+                      '%4i & %9.2e & %4i &           &           & %s  \\\\ \n' ] ;
 
 if timeIndex == 1 && lineData(1)~=1
 
   % opens and rewrites files
-  fileIncrements = fopen( incrementsResultsFilename ,'w');
-  fileNormalForce = fopen( incrementsNormalForce, 'w' ) ;
+  fileIncrements = fopen( iterationResultsFile ,'w');
 
   % write headers
-  fprintf( fileIncrements, headerIncrements );
-  fprintf(fileNormalForce, headerNormalForce  );
-  
+  fprintf( fileIncrements, headerIncrements ) ;
 else
   fileIncrements 			= fopen( incrementsResultsFilename ,'a' ) ;
-  fileNormalForce 		= fopen( incrementsNormalForce, 'a' ) 		;
-  %~ fileTimePerformance = fopen( incrementsTimePerformance, 'a' ) ;
 end
 
-  %~ fileTimePerformance = fopen( incrementsTimePerformance, 'w' ) ;
-  %~ fprintf(fileTimePerformance, [ 'timeInd & t & Solver time (s) & Stores time (s)  \\\\ \\toprule \n'] );
-  
-
-%~ timeIndex, currTime, currLoadFactor,  auxIO.itersPerTime, max( max( abs( modelCurrState.Strainst) )*100 ) , ...
-  %~ factor_crit , nKeigpos, nKeigneg
-
-%~ stop  
 % latex table output
 if lineData(1) == 1
   fprintf( fileIncrements, timeStepIterLine, lineData(2), lineData(3), lineData(4) ) ;
@@ -80,16 +61,9 @@ if lineData(1) == 1
   
 elseif lineData(1) == 2
 
-%~ printSolverOutput( outputDir, problemName, timeIndex, [ 2 nextLoadFactor dispIter deltaErrLoad norm(deltaured) stopCritPar nKeigpos nKeigneg ] ) ;
-  fprintf( fileIncrements, timeStepEndLine, timeIndex,  lineData(2), lineData(3), lineData(4), lineData(5), lineData(6) );
+  fprintf( fileIncrements, timeStepEndLine, timeIndex,  lineData(2), lineData(3), lineData(4) );
   
 end
 
-% close files
+% close file
 fclose(fileIncrements);
-fclose(fileNormalForce);
-%~ fclose(fileTimePerformance);
-
-%~ if ( stopTimeIncrBoolean == 1 )
-  %~ fprintf('----------------------------------------------- \n');
-%~ end

@@ -1,11 +1,29 @@
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [matUs] = ONSAS_solve( modelCurrSol, modelProperties, BCsData)
+function [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
 % init structures to store solutions
 % ----------------------------------
-matUs      = modelCurrSol.U          ;
-matUdots   = modelCurrSol.Udot       ;
-cellStress = { modelCurrSol.Stress } ;
+matUs          = modelCurrSol.U              ;
+loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
+matUdots       = modelCurrSol.Udot           ;
+cellStress     = { modelCurrSol.Stress }     ;
 
 % incremental time analysis
 % -------------------------
@@ -24,14 +42,13 @@ while continueTimeAnalysis
   end
   
   % store results
-  modelCurrSol = modelNextSol ;
-  matUs        = [ matUs modelCurrSol.U ] ;
+  modelCurrSol   =   modelNextSol ;
+  matUs          = [ matUs          modelCurrSol.U                   ] ;
+  loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
 
 end
 
 return
-
-
 
 
 

@@ -20,75 +20,53 @@ function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, ele
 
 ONSASversion = '0.1.10'  ; % sets the current version
 
-% sets defaults
+% set defaults
 % -------------
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
+
 
 % welcome message
 % ---------------
 welcomeMessage(ONSASversion, otherParams );
 
+
 % creates outputdir in current location
 % -------------------------------------
 outputDir = [ './output/' otherParams.problemName '/' ] ;
 createOutputDir( outputDir, otherParams ) ;
+otherParams.outputDir = outputDir ;
+
 
 % process boundary conds
 % ----------------------
-[ Conec, Nodes, factorLoadsFextCell, ...
-  loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
+[ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
+  diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
+
                            
 % process initial conditions
 % --------------------------
-[ U, Udot, Udotdot] = initialCondsProcessing( size(Nodes,1) ) ;
+[ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
 
-currTime        = 0 ; timeIndex       = 1 ; convDeltau      = zeros( size(U) ) ;
+currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) ) ;
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
-%~ dispsElemsMat = zeros( nElems, 4*6) ;
-%~ for i=1:nElems
-  %~ % obtains nodes and dofs of element
-  %~ nodeselem = Conec(i,1:2)' ;
-  %~ dofselem  = nodes2dofs( nodeselem , 6 ) ;
-  %~ dispsElemsMat( i, : ) = U(dofselem)' ;
-%~ end
+% call assembler
+% --------------
+[~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ] ) ;
 
-% ----------------------------------------------
+systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
 
-
-%~ fs = assembler ( ...
-  %~ Conec, crossSecsParams, coordsElemsMat, materialsParamsMat, KS, U, 1, Udot, ...
-  %~ Udotdot, nodalDispDamping, solutionMethod, booleanConsistentMassMat, booleanCSTangs ) ;
-
-%~ Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;
-
-%~ systemDeltauMatrix     = computeMatrix( ...
-  %~ Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, U, ...
-  %~ neumdofs, numericalMethodParams, nodalDispDamping, Udot, Udotdot, ...
-  %~ elementsParamsMat ) ;
-%~ Stress = assembler ( ...
-  %~ Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, U, 3, Udot, ...
-  %~ Udotdot, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
-systemDeltauMatrix     = [] ;
-Stress = [];
-
-% ----------------------------
-                   
 % compress model structures
 % -------------------------
-[modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir,[0 0] );
+[modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0] );
 
+% prints headers for solver output file
+% -------------------------------------
+printSolverOutput( outputDir, otherParams.problemName, timeIndex, 0                  ) ;
+printSolverOutput( outputDir, otherParams.problemName, timeIndex, [ 2 currTime 0 0 ] ) ;
 
-%~ % --- prints headers and time0 values ---
-%~ printSolverOutput( outputDir, problemName, timeIndex, 0 ) ;
-
-%~ fprintf( '|-------------------------------------------------|\n' ) ;
-%~ fprintf( '| TimeSteps progress: 1|                   |%4i  |\n                        ', nLoadSteps)
-
-%~ printSolverOutput( ...
-  %~ outputDir, problemName, timeIndex, [ 2 currLoadFactor 0 0 nKeigpos nKeigneg ] ) ;
 
 nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT );
 if length( otherParams.plotParamsVector ) > 1
@@ -97,11 +75,7 @@ else
   % default value: all
   nplots = nTimes ;
 end
-
 timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
-
-
-
 
 if exist( 'controlDofs') ==0 
   controlDofs = [] ;
@@ -117,6 +91,7 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ; 
   end
 end
+
 
 
 
@@ -158,7 +133,6 @@ elseif exist( ['./' otherParams.problemName '/' ] ) ~= 7 % problemName is not a 
   if otherParams.screenOutputBool
     fprintf( ['|  - Creating output directory ...'] ) ;
   end
-  outputDir
   mkdir( outputDir );
 end
 if otherParams.screenOutputBool
