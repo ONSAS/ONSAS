@@ -34,16 +34,24 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
     systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) ;
 
-  elseif strcmp( modelProperties.analysisSettings.methodName, 'archLength' )
+  elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
     
-    %~ if norm(constantFext)>0 || ~(strcmp( userLoadsFilename , '')),
-      %~ error('load case not implemented yet for Arc-Length method');
-    %~ end
-    
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
     %~ FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
-    %~ % incremental displacement
-    %~ systemDeltauRHS = [ -(Fint(neumdofs)-FextG(neumdofs))  variableFext(neumdofs) ] ;
+    foundLoadCase = false ;
+    loadCase = 1 ;
+    while ~foundLoadCase
+      if isempty( BCsData.factorLoadsFextCell{loadCase} )
+        loadCase = loadCase + 1
+      else
+        foundLoadCase = true ;
+      end
+    end
+      
+    % incremental displacement
+    systemDeltauRHS = [ -(Fint(BCsData.neumDofs)-FextG(BCsData.neumDofs)) ...
+                        BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 

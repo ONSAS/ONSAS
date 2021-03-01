@@ -32,7 +32,6 @@ else
   KTtred = modelCurrSol.systemDeltauMatrix ;
   convDeltau = modelCurrSol.convDeltau ;
 
-
   % update time and set candidate displacements and derivatives
   % -----------------------------------------------------------
   if isempty( modelProperties.analysisSettings.Utp10 )
@@ -46,10 +45,9 @@ else
   % current tangent matrix
   % ----------------------
   systemDeltauMatrix = KTtred ;
-  
-  %~ if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
-    %~ nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ; % initial guess for next load factor
-  %~ end
+  if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
+    nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ;  % initial guess for next load factor
+  end
 
   % compute RHS for initial guess Utp1 and in next time step
   % --------------------------------------------------------
@@ -62,8 +60,8 @@ else
   while  booleanConverged == 0
     dispIters = dispIters + 1 ;
 
-    % solve system ---
-    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, [] , currDeltau ) 
+    % solve system
+    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, [] , currDeltau ) ; 
   
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;

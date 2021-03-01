@@ -44,7 +44,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   % --- strain ---
   if strcmp( hyperElasModel, 'linearElastic')
     strain = b1 * Ue ; % small displacements eng. strain
- error('to be fixed after formats change')
+  error('to be fixed after formats change')
 
     Finte =  A * stress * lini * b1' ;
 
@@ -52,14 +52,13 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
 
   elseif strcmp( hyperElasModel, 'SVK')
-    ldef
-    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 )  % green-lagrange
+    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;  % green-lagrange
     
     lambda = hyperElasParams(1) ;
-    mu = hyperElasParams(2)     ;
+    mu     = hyperElasParams(2)     ;
 
-    E = mu*(3*lambda+2*mu)/(lambda+mu) ;
-    stress = E * strain ;
+    E           = mu*(3*lambda+2*mu)/(lambda+mu) ;
+    stress      = E * strain ;
     dstressdeps = E ;
 
     b2    = 1/(lini^2) * Ue' * Ge ;
@@ -70,13 +69,16 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
   
   elseif strcmp( hyperElasModel, '1DrotEngStrain')
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
-error('to be fixed after formats change')
+
+    E           = hyperElasParams(1) ;
+    stress      = E * strain ;
+    dstressdeps = E ;
 
     Finte = stress * A * TTcl ;
 
-     KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
-      Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
-      KTe   = KMe + Ksige ;
+    KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
+    Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
+    KTe   = KMe + Ksige ;
  
   end
   
