@@ -21,7 +21,7 @@
 
 
 function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperelasparams, A , paramout )
+  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A )
 
   Xe    = Xe'     ;
   Xedef = Xe + Ue ;
@@ -39,58 +39,51 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   b1 = 1/(lini^2) * Xe' * Ge ;
 
-  % --- strain ---
-  if hyperelasparams(1) == 1
-    strain = b1 * Ue ; % small displacements eng. strain
-
-  elseif hyperelasparams(1) == 2
-    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ; % green-lagrange
-  
-  elseif hyperelasparams(1) == 3
-    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
-  end
-  
-  % --- stress and constitutive tensor ---
-  [ stress, dstressdeps  ] = hyperElasModels ( strain, hyperelasparams ) ;
-  
   TTcl              = Bdif' * e1def ;
 
-
-  % --- internal forces computation ---
-  if hyperelasparams(1) == 1,
+  % --- strain ---
+  if strcmp( hyperElasModel, 'linearElastic')
+    strain = b1 * Ue ; % small displacements eng. strain
+  error('to be fixed after formats change')
 
     Finte =  A * stress * lini * b1' ;
 
-  elseif hyperelasparams(1) == 2
+     KTe   = dstressdeps * A * lini * b1' * b1 ;
+
+
+  elseif strcmp( hyperElasModel, 'SVK')
+    strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;  % green-lagrange
     
+    lambda = hyperElasParams(1) ;
+    mu     = hyperElasParams(2)     ;
+
+    E           = mu*(3*lambda+2*mu)/(lambda+mu) ;
+    stress      = E * strain ;
+    dstressdeps = E ;
+
     b2    = 1/(lini^2) * Ue' * Ge ;
     Finte =  A*stress*lini * (b1+b2)' ;
+
+    KTe   =   stress      * A / lini * Ge  ...
+            + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
   
-  elseif hyperelasparams(1) == 3
+  elseif strcmp( hyperElasModel, '1DrotEngStrain')
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
+
+    E           = hyperElasParams(1) ;
+    stress      = E * strain ;
+    dstressdeps = E ;
+
     Finte = stress * A * TTcl ;
 
-  end
-  % ----------------------------------
-    
-  % --- tangent matrix computation ---
-  if paramout == 2
-    
-    if hyperelasparams(1) == 1
-      KTe   = dstressdeps * A * lini * b1' * b1 ;
+    KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
+    Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
+    KTe   = KMe + Ksige ;
  
-    elseif hyperelasparams(1) == 2
-      KTe   =   stress      * A / lini * Ge  ...
-              + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
-
-    elseif hyperelasparams(1) == 3
-      KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
-      Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
-      KTe   = KMe + Ksige ;
-    
-    end
-  else
-    KTe = [] ;
   end
+  
+  
+  % ----------------------------------
   
   Finte = {Finte};
   KTe   = {KTe};

@@ -16,16 +16,11 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, numericalMethodParams, nextLoadFactor, currDeltau  )
+function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactor, currDeltau  )
 
-  [ solutionMethod, stopTolDeltau,   stopTolForces, ...
-    stopTolIts,     targetLoadFactr, nLoadSteps,    ...
-    incremArcLen, deltaT, deltaNW, AlphaNW, finalTime ] ...
-        = extractMethodParams( numericalMethodParams ) ;
-  
   convDeltau = redConvDeltau ;  
 
-  if solutionMethod == 2
+  if strcmp( analysisSettings.methodName, 'arcLength' )
   
     aux = systemDeltauMatrix \ systemDeltauRHS ;
     
@@ -61,9 +56,4 @@ function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, syst
   
   else   % incremental displacement
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
-  
-  
   end
-% ======================================================================
-
-
