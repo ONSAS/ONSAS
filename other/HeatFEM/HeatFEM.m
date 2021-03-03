@@ -7,7 +7,7 @@ function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   materialParams, ...
   geometryParams, ...
   meshParams, ...
-  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
+  hConv, diriDofs, robiDofs, TambFunc, qInpLeft, qInpRight, Tdiri, ...
   nPlots, problemName, initialTempFunc, internalHeatFunc, ...
   diriFacesAndVals, neumFacesAndVals, robiFacesAndVals  );
 
@@ -214,7 +214,8 @@ KdiffGND = KdiffG(neumdofs, diriDofs ) ;
 
 Matrix = ( KdiffGNN * dt + CNN )  ;
 
-qext = zeros( nnodes, 1 ) ;
+qext     = zeros( nnodes, 1 ) ;
+qextTamb = zeros( nnodes, 1 ) ;
 
 % input fluxes
 if ~isempty( qInpLeft  ), qext(   1) = qInpLeft ; end
@@ -226,19 +227,19 @@ end
 
 if ~isempty( robiDofs )
   if geometryType == 1
-    qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
+    qextTamb( robiDofs ) = qextTamb( robiDofs ) + hConv ;
+
   elseif geometryType == 2
   
     if nrobifaces > 0
       for k=1:nrobifaces
         currFace = robiFacesAndVals(k,1) ;
-        qext ( facesCell{currFace} ) = qext ( facesCell{currFace} ) + cellTriangFactors{currFace} * robiFacesAndVals(k,2) * Tamb ;
+        qextTamb ( facesCell{currFace} ) = qextTamb ( facesCell{ currFace } ) + cellTriangFactors{ currFace } * robiFacesAndVals( k, 2 ) ;
       end
     end
   end
 end
 
-qext = qext ;
 % ==============================================
 
 
@@ -261,10 +262,12 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
   fprintf('ind: %4i  time: %15.4e\n',ind, t);
   
+  Tamb = TambFunc(t) ;
+  
   if ~isempty( internalHeatFunc )
-    fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
   else
-    fext ( neumdofs, ind ) = qext ( neumdofs    ) ;
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs )  ;
   end
   
 
@@ -306,7 +309,7 @@ xs = NodesCoord(:,1) ;
 us    = Ts ;
 udots = [] ;
 
-save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'timeIncr', 'us', 'udots', 'xs')
+save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'qextTamb', 'QhG', 'timeIncr', 'us', 'udots', 'xs')
 
 
 
