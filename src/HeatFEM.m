@@ -40,8 +40,8 @@ elseif geometryType == 2
   ndivs = meshParams (1:3) ;
   
   ndirifaces = length( diriFacesAndVals) -1 ;
-  nrobifaces = length( robiFacesAndVals) -1 ;
-  nneumfaces = size(neumFacesAndVals, 1) ;
+  nrobifaces = size( robiFacesAndVals, 1) ;
+  nneumfaces = size( neumFacesAndVals, 1) ;
 end
 
 if geometryType == 1
@@ -94,7 +94,7 @@ if geometryType == 2
      ( (i-1)*((ndivs(1)+1)*(ndivs(2)+1)) + (1:(ndivs(1)+1))' ) ] ;
   end  
 
-  nodesFaceFour =  nodesFaceThree + ((ndivs(1))*(ndivs(2)+1)) ; % y=0  
+  nodesFaceFour =  nodesFaceThree + ((ndivs(1)+1)*(ndivs(2))) ; % y=Ly  
 
   nodesFaceFive = (1:1:((ndivs(1)+1)*(ndivs(2)+1)) )' ; % z=0
   nodesFaceSix  = (ndivs(1)+1)*(ndivs(2)+1)*(ndivs(3)) + nodesFaceFive ; % z=Lx
@@ -103,10 +103,10 @@ if geometryType == 2
                 nodesFaceThree, nodesFaceFour, ...
                 nodesFaceFive, nodesFaceSix} ;
   
-  triangAreaFactorsFaceOne   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 1 ) * Lx/ndivs(2)*Ly/ndivs(3) * 0.5 ;
-  triangAreaFactorsFaceTwo   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 2 ) * Lx/ndivs(2)*Ly/ndivs(3) * 0.5 ;
-  triangAreaFactorsFaceThree = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 3 ) * Lx/ndivs(1)*Ly/ndivs(3) * 0.5 ;
-  triangAreaFactorsFaceFour  = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 4 ) * Lx/ndivs(1)*Ly/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceOne   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 1 ) * Ly/ndivs(2)*Lz/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceTwo   = patchTriangFactors( ndivs(2)+1, ndivs(3)+1, 2 ) * Ly/ndivs(2)*Lz/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceThree = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 3 ) * Lx/ndivs(1)*Lz/ndivs(3) * 0.5 ;
+  triangAreaFactorsFaceFour  = patchTriangFactors( ndivs(1)+1, ndivs(3)+1, 4 ) * Lx/ndivs(1)*Lz/ndivs(3) * 0.5 ;
   triangAreaFactorsFaceFive  = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 5 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 ;
   triangAreaFactorsFaceSix   = patchTriangFactors( ndivs(1)+1, ndivs(2)+1, 6 ) * Lx/ndivs(1)*Ly/ndivs(2) * 0.5 ;
   
@@ -114,13 +114,10 @@ if geometryType == 2
                         triangAreaFactorsFaceFour, triangAreaFactorsFaceFive, triangAreaFactorsFaceSix   };
   
   if ndirifaces > 0
-  diriFacesAndVals
-  diriFacesAndVals(2:end)
     diriDofs = unique( addFacesDofs( diriFacesAndVals(2:end), facesCell ) ) ;
   end
   if nrobifaces >0
-  robiFacesAndVals
-    robiDofs = unique( addFacesDofs( robiFacesAndVals(2:end), facesCell ) ) ;
+    robiDofs = unique( addFacesDofs( robiFacesAndVals(:,1), facesCell ) ) ;
   end
 
 end
@@ -188,23 +185,23 @@ for i = 1 : nelem
 
 end
 
+
 if  ~isempty( robiDofs )
   if geometryType == 1
-    MrobiG ( robiDofs, robiDofs ) = hConv ;
+    MrobiG ( robiDofs, robiDofs ) = hConv * Area ;
   elseif geometryType == 2
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals (1+k) ;
+        currFace = robiFacesAndVals(k, 1 ) ;
+        currConv = robiFacesAndVals(k, 2 ) ;
         MrobiG ( facesCell{currFace}, facesCell{currFace} ) = ...
         MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
-        + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(1+k) ;
+        + diag( cellTriangFactors{currFace} ) * currConv ;
       end
     end
   end
   KdiffG = KdiffG + MrobiG ;
 end
-
-
 % ------------------------
 
 CDD = MintEG( diriDofs, diriDofs ) ;
@@ -220,8 +217,23 @@ qext     = zeros( nnodes, 1 ) ;
 qextTamb = zeros( nnodes, 1 ) ;
 
 % input fluxes
-if ~isempty( qInpLeft  ), qext(   1) = qInpLeft ; end
-if ~isempty( qInpRight ), qext( end) = qInpRight; end
+if geometryType == 1
+
+  if ~isempty( qInpLeft  ), qext(   1) = qInpLeft  * Area; end
+  if ~isempty( qInpRight ), qext( end) = qInpRight * Area; end
+
+elseif geometryType == 2
+  if nneumfaces > 0
+    nneumfaces
+    for k=1:nneumfaces
+      currFace = neumFacesAndVals(k,1) ;
+      currInpF = neumFacesAndVals(k,2) ;
+      qext ( facesCell{ currFace } ) = ...
+      qext ( facesCell{ currFace } ) ...
+      + cellTriangFactors{ currFace } * currInpF ;
+    end
+  end
+end
 
 if ~isempty( diriDofs )
   qext( neumdofs ) = qext( neumdofs ) - KdiffGND * ones( length( diriDofs ), 1 ) * Tdiri ;
@@ -229,16 +241,17 @@ end
 
 if ~isempty( robiDofs )
   if geometryType == 1
-    qextTamb( robiDofs ) = qextTamb( robiDofs ) + hConv ;
+    qextTamb( robiDofs ) = qextTamb( robiDofs ) + hConv * Area ;
 
   elseif geometryType == 2
   
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals(k+1) ;
-        qextTamb ( facesCell{currFace} ) = ...
+        currFace = robiFacesAndVals(k,1) ;
+        currConv = robiFacesAndVals(k,2) ;
+        qextTamb ( facesCell{ currFace } ) = ...
         qextTamb ( facesCell{ currFace } ) ...
-        + cellTriangFactors{ currFace } * robiFacesAndVals( k+1) ;
+        + cellTriangFactors{ currFace } * currConv ;
       end
     end
   end
@@ -278,7 +291,6 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs )  ;
   end
   
-
   if ind > 1
     f = (    fext( neumdofs, ind ) * dt   ...
          + MintEG( neumdofs, : ) * Ts( :, ind-1 )
@@ -311,7 +323,6 @@ M = sparse( nnodes, nnodes ) ;
 K = KdiffGNN ;
 C = CNN ;
 xs = NodesCoord(:,1) ;
-
 
 us    = Ts ;
 udots = [] ;
