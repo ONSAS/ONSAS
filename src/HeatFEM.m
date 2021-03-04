@@ -39,9 +39,9 @@ if geometryType == 1
 elseif geometryType == 2
   ndivs = meshParams (1:3) ;
   
-  ndirifaces = size( diriFacesAndVals,1) ;
-  nrobifaces = size( robiFacesAndVals,1) ;
-  nneumfaces = size( neumFacesAndVals,1) ;
+  ndirifaces = length( diriFacesAndVals) -1 ;
+  nrobifaces = length( robiFacesAndVals) -1 ;
+  nneumfaces = size(neumFacesAndVals, 1) ;
 end
 
 if geometryType == 1
@@ -194,9 +194,10 @@ if  ~isempty( robiDofs )
   elseif geometryType == 2
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals (k,1) ;
-        MrobiG ( facesCell{currFace}, facesCell{currFace} ) = MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
-                                                            + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(k,2) ;
+        currFace = robiFacesAndVals (1+k) ;
+        MrobiG ( facesCell{currFace}, facesCell{currFace} ) = ...
+        MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
+        + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(1+k) ;
       end
     end
   end
@@ -234,8 +235,10 @@ if ~isempty( robiDofs )
   
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals(k,1) ;
-        qextTamb ( facesCell{currFace} ) = qextTamb ( facesCell{ currFace } ) + cellTriangFactors{ currFace } * robiFacesAndVals( k, 2 ) ;
+        currFace = robiFacesAndVals(k+1) ;
+        qextTamb ( facesCell{currFace} ) = ...
+        qextTamb ( facesCell{ currFace } ) ...
+        + cellTriangFactors{ currFace } * robiFacesAndVals( k+1) ;
       end
     end
   end
@@ -263,9 +266,12 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
   fprintf('ind: %4i  time: %15.4e\n',ind, t);
   
+  if ~isempty(TambFunc)
+    Tamb = feval( TambFunc, t ) ;
+  else
+    Tamb = 0 ;
+  end
 
-  Tamb = feval( TambFunc, t ) ;
-  
   if ~isempty( internalHeatFunc )
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
   else
@@ -280,7 +286,6 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
 
     Tip1 = Matrix \ f ;
     Ts( neumdofs, ind ) = Tip1 ;
-
     if ~isempty( diriDofs ),
       Ts( diriDofs, ind ) = Tdiri   ;
     end
