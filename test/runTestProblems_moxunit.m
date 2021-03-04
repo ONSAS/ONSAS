@@ -4,19 +4,16 @@
 function test_suite=runTestProblems_moxunit
   % initialize tests
   try
-    test_functions=localfunctions();
+    test_functions=localfunctions()
   catch
   end
   initTestSuite;
   
-function staticVonMisesTruss
+function test_1
   onsasExample_staticVonMisesTruss
-  assertEqual( verifBoolean, 1 );
+  verifBoolean  
+  assertEqual( verifBoolean, true );
 
-%~ function uniaxialExtension_test
-  %~ onsasExample_uniaxialExtension_test
-  %~ assertEqual( verifBoolean, 1 );
-
-%~ function uniformCurvatureCantilever_test
-  %~ onsasExample_uniformCurvatureCantilever_test
-  %~ assertEqual( verifBoolean, 1 );
+function test_2
+  example_HeatAnalytic
+  assertEqual( verifBoolean, true );

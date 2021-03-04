@@ -1,13 +1,12 @@
 % ---------------------------
-% Heat Transfer FEM prototype solver
-% ---------------------------
+% Heat Transfer FEM solver prototype 
 
 function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   timeIncr, Tfinal, ...
   materialParams, ...
   geometryParams, ...
   meshParams, ...
-  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
+  hConv, diriDofs, robiDofs, TambFunc, qInpLeft, qInpRight, Tdiri, ...
   nPlots, problemName, initialTempFunc, internalHeatFunc, ...
   diriFacesAndVals, neumFacesAndVals, robiFacesAndVals  );
 
@@ -40,9 +39,9 @@ if geometryType == 1
 elseif geometryType == 2
   ndivs = meshParams (1:3) ;
   
-  ndirifaces = size( diriFacesAndVals,1) ;
-  nrobifaces = size( robiFacesAndVals,1) ;
-  nneumfaces = size( neumFacesAndVals,1) ;
+  ndirifaces = length( diriFacesAndVals) -1 ;
+  nrobifaces = length( robiFacesAndVals) -1 ;
+  nneumfaces = size(neumFacesAndVals, 1) ;
 end
 
 if geometryType == 1
@@ -78,9 +77,8 @@ else
 end
 
 
-nnodes = size(NodesCoord,1)
+nnodes = size(NodesCoord,1) ;
 nelem  = size(Conec,1) ;
-
 
 
 % ================================================
@@ -116,10 +114,13 @@ if geometryType == 2
                         triangAreaFactorsFaceFour, triangAreaFactorsFaceFive, triangAreaFactorsFaceSix   };
   
   if ndirifaces > 0
-    diriDofs = unique( addFacesDofs( diriFacesAndVals(:,1), facesCell ) ) ;
+  diriFacesAndVals
+  diriFacesAndVals(2:end)
+    diriDofs = unique( addFacesDofs( diriFacesAndVals(2:end), facesCell ) ) ;
   end
   if nrobifaces >0
-    robiDofs = unique( addFacesDofs( robiFacesAndVals(:,1), facesCell ) ) ;
+  robiFacesAndVals
+    robiDofs = unique( addFacesDofs( robiFacesAndVals(2:end), facesCell ) ) ;
   end
 
 end
@@ -193,9 +194,10 @@ if  ~isempty( robiDofs )
   elseif geometryType == 2
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals (k,1) ;
-        MrobiG ( facesCell{currFace}, facesCell{currFace} ) = MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
-                                                            + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(k,2) ;
+        currFace = robiFacesAndVals (1+k) ;
+        MrobiG ( facesCell{currFace}, facesCell{currFace} ) = ...
+        MrobiG ( facesCell{currFace}, facesCell{currFace} ) ...
+        + diag( cellTriangFactors{currFace} ) * robiFacesAndVals(1+k) ;
       end
     end
   end
@@ -214,7 +216,8 @@ KdiffGND = KdiffG(neumdofs, diriDofs ) ;
 
 Matrix = ( KdiffGNN * dt + CNN )  ;
 
-qext = zeros( nnodes, 1 ) ;
+qext     = zeros( nnodes, 1 ) ;
+qextTamb = zeros( nnodes, 1 ) ;
 
 % input fluxes
 if ~isempty( qInpLeft  ), qext(   1) = qInpLeft ; end
@@ -226,19 +229,21 @@ end
 
 if ~isempty( robiDofs )
   if geometryType == 1
-    qext( robiDofs ) = qext( robiDofs ) + hConv * Tamb ;
+    qextTamb( robiDofs ) = qextTamb( robiDofs ) + hConv ;
+
   elseif geometryType == 2
   
     if nrobifaces > 0
       for k=1:nrobifaces
-        currFace = robiFacesAndVals(k,1) ;
-        qext ( facesCell{currFace} ) = qext ( facesCell{currFace} ) + cellTriangFactors{currFace} * robiFacesAndVals(k,2) * Tamb ;
+        currFace = robiFacesAndVals(k+1) ;
+        qextTamb ( facesCell{currFace} ) = ...
+        qextTamb ( facesCell{ currFace } ) ...
+        + cellTriangFactors{ currFace } * robiFacesAndVals( k+1) ;
       end
     end
   end
 end
 
-qext = qext ;
 % ==============================================
 
 
@@ -261,10 +266,16 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
   fprintf('ind: %4i  time: %15.4e\n',ind, t);
   
-  if ~isempty( internalHeatFunc )
-    fext ( neumdofs, ind ) = qext ( neumdofs    ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+  if ~isempty(TambFunc)
+    Tamb = feval( TambFunc, t ) ;
   else
-    fext ( neumdofs, ind ) = qext ( neumdofs    ) ;
+    Tamb = 0 ;
+  end
+
+  if ~isempty( internalHeatFunc )
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+  else
+    fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs )  ;
   end
   
 
@@ -275,7 +286,6 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
 
     Tip1 = Matrix \ f ;
     Ts( neumdofs, ind ) = Tip1 ;
-
     if ~isempty( diriDofs ),
       Ts( diriDofs, ind ) = Tdiri   ;
     end
@@ -306,7 +316,7 @@ xs = NodesCoord(:,1) ;
 us    = Ts ;
 udots = [] ;
 
-save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'timeIncr', 'us', 'udots', 'xs')
+save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'qextTamb', 'QhG', 'timeIncr', 'us', 'udots', 'xs')
 
 
 
