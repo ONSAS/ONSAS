@@ -1,6 +1,5 @@
 % ---------------------------
-% Heat Transfer FEM prototype solver
-% ---------------------------
+% Heat Transfer FEM solver prototype 
 
 function [Ts, NodesCoord, tiempos] = HeatFEM( ...
   timeIncr, Tfinal, ...
@@ -78,9 +77,8 @@ else
 end
 
 
-nnodes = size(NodesCoord,1)
+nnodes = size(NodesCoord,1) ;
 nelem  = size(Conec,1) ;
-
 
 
 % ================================================
@@ -116,10 +114,13 @@ if geometryType == 2
                         triangAreaFactorsFaceFour, triangAreaFactorsFaceFive, triangAreaFactorsFaceSix   };
   
   if ndirifaces > 0
-    diriDofs = unique( addFacesDofs( diriFacesAndVals(:,1), facesCell ) ) ;
+  diriFacesAndVals
+  diriFacesAndVals(2:end)
+    diriDofs = unique( addFacesDofs( diriFacesAndVals(2:end), facesCell ) ) ;
   end
   if nrobifaces >0
-    robiDofs = unique( addFacesDofs( robiFacesAndVals(:,1), facesCell ) ) ;
+  robiFacesAndVals
+    robiDofs = unique( addFacesDofs( robiFacesAndVals(2:end), facesCell ) ) ;
   end
 
 end
@@ -262,7 +263,8 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
   fprintf('ind: %4i  time: %15.4e\n',ind, t);
   
-  Tamb = TambFunc(t) ;
+
+  Tamb = feval( TambFunc, t ) ;
   
   if ~isempty( internalHeatFunc )
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;

@@ -1,58 +1,55 @@
-% =======================================
-% sript for Heat transfer code validation
-% =======================================
+% =========   caso de validacion 2 =========
+%  diri no homogeneo ( ver fundamentos en https://www.math.uzh.ch/li/index.php?file&key1=25297 )
 
+Tdiri     = 1  ;
+%~ Tfinal = .2 ;
+Tfinal = .02 ;
+ndivs = [ 50 ] ;
+diriDofs = [ 1 ndivs+1 ]
+problemName = 'nonHomogDirichlet' ;
 
-% =========   case 1 =========
-% 3D problem
-% boundary conditions: dirichlet on both ends
-% initial temperature profile
-% https://onsas.github.io/ONSAS_docs/dev/tutorials/HeatDiffusion/heat/
-
-close all, clear all
-addpath( genpath( '../../src/')); % add ONSAS src functions
-
-timeIncr  = 0.0001 ;
-Tfinal    = 0.01   ;
-rho       = 1.     ;
-cSpHe     = 1.     ;
-kCond     = 4      ;
-Lx        = 1      ;
-Ly        = .5     ;
-Lz        = .5     ;
-Tdiri     = 0      ;
-
-diriDofs = [];
-robiDofs = [] ;
-
-nPlots = inf ;
-
-problemName = 'dirichlet3D' ;
-
-initialTempFunc = 'myInitialTemp' ;
-
-ndivs     = [ 20 2 2 ];
-
-hConv = [];
-Tamb = [];
-qInpLeft = [];
-qInpRight = [];
-Tdiri = 0 ;
-
-qInp = 0;
-
-diriFaces = [ Tdiri 1 2 ];
-neumFaces = [ qInp  3 4 5 6 ] ;
-robiFaces = [  ] ;
-  
-[Ts3D, NodesCoord, times ] = HeatFEM( ...
+[Ts, NodesCoord, times ] = HeatFEM( ...
   timeIncr, Tfinal, ...
   [rho, cSpHe, kCond], ...
-  [ 2 Lx Ly Lz ], ...
+  [ 1 L Area ], ...
   ndivs, ...
   hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
-  nPlots, problemName, initialTempFunc, [], ...
-  diriFaces, neumFaces, robiFaces  );
+  nPlots, problemName, initialTempFunc, [], [], [], [] );
+
+
+% numerical solution plot
+figure
+plot( times, Ts(indplot,:), 'b',  'markersize', MS,'linewidth',LW )
+
+
+
+% =========   caso de validacion 3 =========
+%  conv and neum
+
+diriDofs = [ ];
+robiDofs = [1 ] ;
+qInpRight = 4 ;
+
+ Tfinal = 4.5;
+Tfinal = 0.5;
+
+Tamb      = 5 ;
+
+hConv = 2;
+
+problemName = 'robinAndNeumann' ;
+
+[Ts, NodesCoord, times ] = HeatFEM( ...
+  timeIncr, Tfinal, ...
+  [rho, cSpHe, kCond], ...
+  [ 1 L Area ], ...
+  ndivs, ...
+  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
+  nPlots, problemName, initialTempFunc, [], [], [], [] );
+
+
+
+
 
 
 % =========   case 2 =========
