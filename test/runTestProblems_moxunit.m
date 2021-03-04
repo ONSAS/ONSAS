@@ -4,16 +4,16 @@
 function test_suite=runTestProblems_moxunit
   % initialize tests
   try
-    test_functions=localfunctions();
+    test_functions=localfunctions()
   catch
   end
   initTestSuite;
   
-function staticVonMisesTruss
+function test_1
   onsasExample_staticVonMisesTruss
   verifBoolean  
   assertEqual( verifBoolean, 1 );
 
-function heatAnalytic
+function test_2
   example_HeatAnalytic
   assertEqual( verifBoolean, 1 );
