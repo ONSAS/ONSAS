@@ -69,7 +69,7 @@ Tdiri = 0 ;
 
 %#### 3D numerical solution
 %#
-
+%#
 Lx        = 1      ; Ly        = .5     ;
 Lz        = .5     ;
 assert( Area == (Ly*Lz) ) ;
@@ -88,7 +88,10 @@ qInpLeft = []; qInpRight = [];
 qInp = 0;
 
 diriFaces = [ Tdiri 1 2 ];
-neumFaces = [ qInp  3 4 5 6 ] ;
+neumFaces = [ 3 qInp ;
+              4 qInp ;
+              5 qInp ;
+              6 qInp ] ;
 robiFaces = [  ] ;
   
 [Ts3D, NodesCoord, times3D ] = HeatFEM( ...
@@ -141,5 +144,7 @@ xlabel('t'), ylabel('Temp')
 legend('FEM1D','FEM3D','analytic')
 
 print( [ './pngs/' problemName '.png'],'-dpng' )
+
+verifBoolean = (norm( Ts3D(indplot,:) - Ts(indplot,:) ) / norm( Ts(indplot,:)) ) < 1e-4 
 % ----------------------------------
 
