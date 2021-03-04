@@ -11,6 +11,7 @@ function test_suite=runTestProblems_moxunit
   
 function staticVonMisesTruss
   onsasExample_staticVonMisesTruss
+  verifBoolean  
   assertEqual( verifBoolean, 1 );
 
 function heatAnalytic
