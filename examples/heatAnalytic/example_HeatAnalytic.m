@@ -143,6 +143,7 @@ xlabel('t'), ylabel('Temp')
 
 legend('FEM1D','FEM3D','analytic')
 
+mkdir('pngs')
 print( [ './pngs/' problemName '.png'],'-dpng' )
 
 verifBoolean = (norm( Ts3D(indplot,:) - Ts(indplot,:) ) / norm( Ts(indplot,:)) ) < 1e-4 
