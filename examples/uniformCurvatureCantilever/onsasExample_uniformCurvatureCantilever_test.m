@@ -1,34 +1,36 @@
-%## Uniform curvature cantielever
+%## Uniform curvature cantilever beam
 %#---
 %#
-%#In this tutorial, the Uniform curvature cantielver example and its resolutions using ONSAS are described. The aim of this example is to validate the static corrotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.
+%#In this tutorial, the Uniform curvature cantilever example and its resolution using ONSAS are described. The aim of this example is to validate the static co-rotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.
 %#
-%#The structural model is formed by one beam element member as it is shown in the figure, with the node $2$ submitted to a nodal moment $M$ and the node $1$ is restrained to linear and angular displacements in the $x-y-z$.
+%#The problem consists in a beam, with one free end submitted to a nodal moment $M$, and the other end constrained (welded), as it is shown in the figure.
 %#
 %#![structure diagram](uniformCurvatureCantilever.svg)
 %#
-%#The Octave script is available at: [https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever](turaaaaaaaaa)
-%#
 %#Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 close all, clear all ;
+% add path
 addpath( [ pwd '/../../src'] );
-E = 200e9 ;  nu = 0.3 ;  rho = 0 ;  l = 10 ;  ty = .1 ;  tz = .1 ; Iy = ty*tz^3/12 ;    Iz = tz*ty^3/12 ; finalTime = 1;
+% material scalar parameters
+E = 200e9 ;  nu = 0.3 ;
+% geometrical scalar parameters
+l = 10 ; ty = .1 ;  tz = .1 ;
 %#
 %### MEBI parameters
 %#------------------
 %#
 %#The modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
 %#### materials
-%# Since the example contains only one rod the  fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
+%# Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials.hyperElasModel  = { '1DrotEngStrain'} ;
 materials.hyperElasParams = { [ E nu ] } ;
-%# and the parameters of this model are the Lamé parameters
 %#
 %### elements
 %#
 %#Two different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
 elements.elemType = { 'node','beam' } ;
 %# for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section by ty and tz the dimensions on y and z direction, then the elemTypeGeometry field is:
+Iy = ty*tz^3/12 ; Iz = tz*ty^3/12 ;
 elements.elemTypeGeometry = { [], [2 ty tz ] };
 elements.elemTypeParams = { [], 1 };
 %#
@@ -36,6 +38,7 @@ elements.elemTypeParams = { [], 1 };
 %#
 %# The elements are submitted to two different BC settings. The nodes $A$ is completely fixed and the node $B$ is submitted by a nodal moment load. According to this, the $A$ has a constraint in displacement besides the node $B$ has an applied load. The load factor function of the moment is set so that the target load make the beam into a circle. The density is set to zero, then no inertial effects are considered.
 %#
+finalTime = 1;
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
 boundaryConds.loadTimeFact = { []        ; @(t) E * Iy * 2 * pi / l /finalTime *t   } ;
 boundaryConds.loadBaseVals = { []        ; [ 0 0 0 -1 0 0 ] } ;
