@@ -45,15 +45,10 @@ else
   % current tangent matrix
   % ----------------------
   systemDeltauMatrix = KTtred ;
-  if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
-    nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ;  % initial guess for next load factor
-    if isempty( find( nextLoadFactorsVals) )
-      nextLoadFactorsVals = 
-  end
-
+  
   % compute RHS for initial guess Utp1 and in next time step
   % --------------------------------------------------------
-  [ systemDeltauRHS, FextG, ~,~,nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) 
+  [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) 
   
   booleanConverged = 0                              ;
   dispIters        = 0                              ;
@@ -63,7 +58,7 @@ else
     dispIters = dispIters + 1 ;
 
     % solve system
-    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ; 
+    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ; 
   
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;

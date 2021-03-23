@@ -81,8 +81,8 @@ otherParams.controlDofs = [2 5 ];
 
 
 
-analysisSettings.methodName  = 'arcLength' ;
-analysisSettings.increm      =   1e-6 ;
+%~ analysisSettings.methodName  = 'arcLength' ;
+%~ analysisSettings.increm      =   1e-6 ;
 
 
 
@@ -96,11 +96,13 @@ analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
   .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 %#
+
+
 %### Analysis case 2: NR-AL with SVK
 %# The settings are changed:
 otherParams.problemName = 'staticVonMisesTruss_NRAL';
-analysisSettings.methodName  = 'arcLength' ;
-analysisSettings.increm      =   1e-6 ;
+%~ analysisSettings.methodName  = 'arcLength' ;
+%~ analysisSettings.increm      =   1e-6 ;
 %# and the analysis is performed:
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRALEngRot =  -matUs(11,:) ;
