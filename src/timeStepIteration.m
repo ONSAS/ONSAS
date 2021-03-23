@@ -47,6 +47,8 @@ else
   systemDeltauMatrix = KTtred ;
   if  strcmp( modelProperties.analysisSettings.methodName,'arcLength')
     nextLoadFactorsVals =  modelCurrSol.currLoadFactorsVals ;  % initial guess for next load factor
+    if isempty( find( nextLoadFactorsVals) )
+      nextLoadFactorsVals = 
   end
 
   % compute RHS for initial guess Utp1 and in next time step
@@ -61,7 +63,7 @@ else
     dispIters = dispIters + 1 ;
 
     % solve system
-    [ deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, [] , currDeltau ) ; 
+    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ; 
   
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;

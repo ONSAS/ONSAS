@@ -277,7 +277,7 @@ fext = zeros( size(Ts) ) ;
 
 for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
   t = dt*(ind-1) ;
-  fprintf('ind: %4i  time: %15.4e\n',ind, t);
+  fprintf('ind: %4i  time: %15.4e    timeIncr: %010.2e \n',ind, t,timeIncr);
   
   if ~isempty(TambFunc)
     Tamb = feval( TambFunc, t ) ;
@@ -287,6 +287,9 @@ for ind = 1:nTimes %ind es el indice de tiempo que se esta hallando
 
   if ~isempty( internalHeatFunc )
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs ) + QhG(neumdofs) * feval( internalHeatFunc, t ) ;
+    
+    
+        
   else
     fext ( neumdofs, ind ) = qext ( neumdofs    ) + Tamb * qextTamb( neumdofs )  ;
   end
@@ -327,10 +330,7 @@ xs = NodesCoord(:,1) ;
 us    = Ts ;
 udots = [] ;
 
-save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'qextTamb', 'QhG', 'timeIncr', 'us', 'udots', 'xs')
-
-
-
+save('-mat', ['mats/' problemName '.mat'], 'K', 'C', 'M', 'fext', 'qextTamb', 'QhG', 'timeIncr', 'udots', 'xs')
 
 
 function factors = patchTriangFactors( nnod1, nnod2, face );
