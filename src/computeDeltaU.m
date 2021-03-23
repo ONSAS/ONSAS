@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactor, currDeltau  )
+function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau  )
 
   convDeltau = redConvDeltau ;  
 
@@ -28,7 +28,10 @@ function [deltaured, nextLoadFactor ] = computeDeltaU ( systemDeltauMatrix, syst
     
     if dispIter == 1
       if norm(convDeltau)==0
-        deltalambda = targetLoadFactr / nLoadSteps ;
+        nextLoadFactorVals
+        
+        [pos, deltalambda ] = find( nextLoadFactorVals )
+        stop
       else
         deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
       end

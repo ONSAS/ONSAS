@@ -78,6 +78,14 @@ otherParams.problemName = 'staticVonMisesTruss_NR';
 otherParams.plotParamsVector = [3];
 otherParams.controlDofs = [2 5 ];
 %#
+
+
+
+%~ analysisSettings.methodName  = 'arcLength' ;
+%~ analysisSettings.increm      =   1e-6 ;
+
+
+
 %### Analysis case 1: NR with Rotated Eng Strain
 %# In the first case ONSAS is run and the solution at the dof of interest is stored .
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -88,18 +96,17 @@ analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      ( (  (auxz+(-w)).^2 + auxx^2 - l0^2 ) ./ (l0 * ( l0 + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
   .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ; 
 %#
-%~ %### Analysis case 2: NR-AL with SVK
-%~ %# The settings are changed:
-%~ materials.hyperElasModel  = { 'SVK'} ;
-%~ lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E / (2*(1+nu));
-%~ materials.hyperElasParams = { [ lambda  mu  ] } ;
-%~ analysisSettings.methodName    = 'arcLength' ;
-%~ analysisSettings.increm =   1e-6 ;
-%~ %# and the analysis is performed:
-%~ [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%~ %#
-%~ controlDispsNRALSVK =  -matUs(11,:) ;
-%~ loadFactorsNRALSVK =  loadFactorsMat(:,2) ;
+
+
+%### Analysis case 2: NR-AL with SVK
+%# The settings are changed:
+otherParams.problemName = 'staticVonMisesTruss_NRAL';
+%~ analysisSettings.methodName  = 'arcLength' ;
+%~ analysisSettings.increm      =   1e-6 ;
+%# and the analysis is performed:
+[matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+controlDispsNRALEngRot =  -matUs(11,:) ;
+loadFactorsNRALEngRot =  loadFactorsMat(:,2) ;
 %#
 %## Results verification
 %#
@@ -109,8 +116,9 @@ plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,
 hold on, grid on
 %~ plot( controlDispsNRAL, loadFactorsNRAL,'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRALEngRot, loadFactorsNRALEngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic','NR-RotEng','location','North')
+legend( 'analytic', 'NR-RotEng', 'NRAL-RotEng', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %#
@@ -122,3 +130,4 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 difLoad = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
 
 verifBoolean = ( norm( difLoad ) / norm( loadFactorsNREngRot ) ) <  1e-4 
+
