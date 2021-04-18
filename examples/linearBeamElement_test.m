@@ -9,49 +9,76 @@ close all, clear all        ;
 dirOnsas = [ pwd '/../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas )             ; % add ONSAS directory to path
 
-problemName = 'linearBeamElement_test' ; %
-
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
-E = 210e6 ; L = 5 ; nu = 0.3 ;  rho = 0 ; b = 0.3 ;
+E = 210e6 ; L = 5 ; nu = 0.3 ;  rho = 0 ; b = 0.3 ; P = -5 ;
 
 % ----------------------------------------------------------------------
-% MELCS parameters
+% MEBI parameters: Material-Element-BoundaryConditions-InitialConditions
 
 % Materials
-materialsParams = {[ rho 1 E nu ]} ;
+materials.hyperElasModel = {'linearElastic'} ;
+materials.hyperElasParams = { [E, nu] } ;
 
 % Elements
-elementsParams  = { 1; 5 } ;
+elements.elemType  = { 'node', 'frame' } ;
+elements.elemTypeGeometry  = { [], [2, b, b] } ;
+elements.elemTypeParams = { [], 1 };
 
+% BoundaryConditions
 % Loads
-loadsParams   = { [ 1 1   0 0 0  0 -5 0] } ;
+boundaryConds.loadCoordSys = { [] ; 'global' } ;
+boundaryConds.loadTimeFact = { [] ; @(t) t } ;
+boundaryConds.loadBaseVals = { [] ; [ 0 0 0 0 P 0] } ;
+% Supports
+boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; [] } ;
+boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; 0 } ;
 
-% Cross-Sections
-crossSecsParams = { [ 2 b b ] } ;
+% InitialConditions
+initialConds = struct() ;
 
-% springs parameters
-springsParams = { [ inf 0 inf 0 inf 0  ] ; ...
-                  [ 0   0 inf 0 inf 0  ] } ;
+
+% Mesh nodes
+
+mesh.nodesCoords = ...
+					[ 0		0	0		; ...
+						L 	0 0 	; ...
+						2*L 0 0 	] ;
+
+% Conec Cell
+
+mesh.conecCell = { } ;
+% Node elements
+mesh.conecCell{1,1} = [ 0 1 1 0 1 ] ;
+mesh.conecCell{2,1} = [ 0 1 1 0 3 ] ;
+mesh.conecCell{3,1} = [ 0 1 2 0 2 ] ;
+% Frame elements
+mesh.conecCell{4,1} = [ 1 2 0 0 1 2 ] ;
+mesh.conecCell{5,1} = [ 1 2 0 0 2 3 ] ;
+
+% Analysis settings
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        = 1 ;
+analysisSettings.finalTime     = 1 ;
+analysisSettings.stopTolDeltau = 1e-6 ;
+analysisSettings.stopTolForces = 1e-6 ;
+analysisSettings.stopTolIts    = 1 ;
+
+otherParams.problemName = 'linearBeamElement_test' ;
+otherParams.plotParamsVector = [ 3 ] ;
+
+A = b^2;
+I = b^4/12 ;
+
+axial = E*A/L *2;
+bending = E*I/L^3 *4*L^2*2 ;
+
+flecha = P*(2*L)^3/(192*E*I)
+
+          
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 % ----------------------------------------------------------------------
-% mesh parameters
 
-% node coordinates matrix
-Nodes = [ 0		0	0		; ...
-					L 	0 0 	; ...
-          2*L 0 0 	] ;
 
-% connectivity cell
-%						M	E	L	C	S
-Conec = { [ 0 1 0 0 1  1   ] ; ... % fixed node
-          [ 0 1 1 0 0  2   ] ; ... % loaded node
-          [ 0 1 0 0 2  3   ] ; ... % fixed node
-          [ 1 2 0 1 0  1 2 ] ; ... % beam element
-          [ 1 2 0 1 0  2 3 ] } ;   % beam element
 
-plotParamsVector = [ 3 ] ;
-reportBoolean    = 1     ;
-
-ONSAS
-% ----------------------------------------------------------------------
 

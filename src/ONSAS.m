@@ -27,4 +27,4 @@ function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, 
 
 % perform the time analysis
 % -------------------------
-[ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) 
+[ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;

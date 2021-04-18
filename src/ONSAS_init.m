@@ -62,6 +62,12 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
 % -------------------------
 [modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0] );
 
+%~ modelCurrSol.U
+%~ modelCurrSol.convDeltau
+%~ modelCurrSol.timeIndex
+%~ modelCurrSol.currTime
+%~ modelCurrSol.currLoadFactorsVals
+%~ stop
 % prints headers for solver output file
 % -------------------------------------
 printSolverOutput( outputDir, otherParams.problemName, timeIndex, 0                  ) ;
@@ -91,9 +97,6 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ; 
   end
 end
-
-
-
 
 % =========================================
 % function for creation of output directory

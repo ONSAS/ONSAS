@@ -20,25 +20,15 @@
 
 function [ElemLengths, Local2GlobalMats] = beamParameters(elemCoords)
 	
-
-  %ElemLengths = sqrt ( sum( ( Nodes(2,:) - Nodes(1,:) ).^2, 2 ) ) ;
-	
-	ElemLengths = sqrt ( sum( ( elemCoords(7:2:end) - elemCoords(1:2:6) ).^2 ) )
+	ElemLengths = sqrt ( sum( ( elemCoords(4:6) - elemCoords(1:3) ).^2 ) ) ;
 	
   % ----- local coordinate system setting -------------
-%  dxLdls       = ( Nodes(2,1) - Nodes(1,1) ) ...
-%                 ./ ElemLengths ; 
-
-%  dyLdls       = ( Nodes(2,2) - Nodes(1,2) ) ...
- %                ./ ElemLengths ; 
-  %dzLdls       = ( Nodes(2,3) - Nodes(1,3) ) ...
-   %              ./ ElemLengths ;
                  
-  dxLdls       = ( elemCoords(7) - elemCoords(1) ) ...
+  dxLdls       = ( elemCoords(4) - elemCoords(1) ) ...
                  ./ ElemLengths ; 
-  dyLdls       = ( elemCoords(9) - elemCoords(3) ) ...
+  dyLdls       = ( elemCoords(5) - elemCoords(2) ) ...
                  ./ ElemLengths ; 
-  dzLdls       = ( elemCoords(11) - elemCoords(5) ) ...
+  dzLdls       = ( elemCoords(6) - elemCoords(3) ) ...
                  ./ ElemLengths ;
  
   exL = [  dxLdls  dyLdls dzLdls ]' ;

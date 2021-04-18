@@ -110,20 +110,24 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
+		
+		%~ outputBooleans
+		if strcmp(hyperElasModel, 'linearElastic')
+				
+			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemTypeGeometry, density, hyperElasParams, elemDisps ) ;
+		
+		else
+			
+			[ fs, ks, stressElem ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
+																							 u2ElemDisps( Udott    , dofselem ) , ...
+																							 u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
+			Finte = fs{1} ;  Ke    = ks{1} ;
 
-    [ fs, ks, stressElem ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
-                                             u2ElemDisps( Udott    , dofselem ) , ...
-                                             u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
-    Finte = fs{1} ;  Ke    = ks{1} ;
-
-    if solutionMethod > 2
-      Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
-    end
-
-%==============================================  
-% agregar linearl como caso aca! , tambien agregar fint!
-  %~ [ Ke ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, elemConstitutiveParams)
-%==============================================  
+			if solutionMethod > 2
+				Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
+			end
+		
+		end
 
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetra')
@@ -133,7 +137,6 @@ for elem = 1:nElems
 
   end   % case tipo elemento
   % -------------------------------------------
-
 
   % -------------------------------------------
   % ---   assembly   ----
@@ -173,7 +176,6 @@ for elem = 1:nElems
 end % for elements ----
 
 % ============================================================================
-
 
 
 

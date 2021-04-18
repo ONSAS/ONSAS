@@ -39,7 +39,7 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
   if strcmp( analysisSettings.methodName, 'newtonRaphson' ) || strcmp( analysisSettings.methodName, 'arcLength' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
-
+		
   elseif strcmp( analysisSettings.methodName, 'newmark' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
