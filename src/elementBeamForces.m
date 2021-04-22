@@ -17,10 +17,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
-  elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod, Ue, Udote, Udotdote, elemrho ) ;
+  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
 
-elemCoords = elemCoords(:)       ;
-xs         = elemCoords(1:2:end) ;
+%~ elemCoords = elemCoords(:)       ;
+xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
 
@@ -32,7 +32,7 @@ G   = E/(2*(1+nu)) ;
 % -------------------------------
 
 % -------------------------------
-[Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams ) ;
+[Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams, elemrho ) ;
 
 % auxiliar matrices
 I3 = eye(3)     ;
@@ -42,7 +42,7 @@ O1 = zeros(1,3) ;
 permutIndxs = [1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ] ;
 
 dg       = Ue      ( permutIndxs ) ;
-if solutionMethod > 2
+if elemrho > 0
   ddotg    = Udote   ( permutIndxs ) ;
   ddotdotg = Udotdote( permutIndxs ) ;
 end
@@ -272,7 +272,7 @@ rotData = {locDisp, Rr} ;
 
 
 
-if solutionMethod > 2
+if elemrho > 0
 
   % ------- interpolation functions ------
   % linear
