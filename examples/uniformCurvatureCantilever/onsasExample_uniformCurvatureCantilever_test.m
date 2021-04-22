@@ -29,7 +29,7 @@ materials.hyperElasParams = { [ E nu ] } ;
 %#### elements
 %#
 %#Two different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
-elements.elemType = { 'node','beam' } ;
+elements.elemType = { 'node','frame' } ;
 %# for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
 elements.elemTypeGeometry = { [], [2 ty tz ] };
 elements.elemTypeParams = { [], 1 };
@@ -38,9 +38,8 @@ elements.elemTypeParams = { [], 1 };
 %# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
 %# The scalar values of inertia $I_z$ is computed
 Iy = ty*tz^3/12 ;
-finalTime = 1;
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
-boundaryConds.loadTimeFact = { []        ; @(t) E*Iy * 2*pi/l *t/finalTime } ;
+boundaryConds.loadTimeFact = { []        ; @(t) E*Iy*2*pi/l *t } ;
 boundaryConds.loadBaseVals = { []        ; [ 0 0 0 -1 0 0 ] } ;
 boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; []         } ;
 boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
@@ -68,12 +67,11 @@ end
 %#
 %### analysisSettings
 analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        = 0.1 ;
-analysisSettings.finalTime     =   finalTime ;
+analysisSettings.deltaT        =   0.1  ;
+analysisSettings.finalTime     =   1.0  ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   10 ;
-analysisSettings.finalTime     =   1 ;
+analysisSettings.stopTolIts    =   10   ;
 %#
 %### otherParams
 otherParams.problemName = 'uniformCurvatureCantilever';
@@ -83,13 +81,16 @@ otherParams.controlDofs = [ numElements+1  4 ] ;
 %# In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+figure
+plot(matUs(5:6:end,11))
+
 return
 %# the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
-angleControlDof = (Nelem+1)*6 - 2;
+angleControlDof = (numElements+1)*6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %# and the analytical value of the load factors is computed
-analyticLoadFactorsNREngRot = @(w) w * l / ( E * Iy ) ;
+analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;
 
 %## Results verification
 %#
