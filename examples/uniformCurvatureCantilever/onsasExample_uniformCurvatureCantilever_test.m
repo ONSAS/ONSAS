@@ -24,26 +24,26 @@ l = 10 ; ty = .1 ;  tz = .1 ;
 %# Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials.hyperElasModel  = { '1DrotEngStrain'} ;
 materials.hyperElasParams = { [ E nu ] } ;
+%# The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 %#
-%### elements
+%#### elements
 %#
 %#Two different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
 elements.elemType = { 'node','beam' } ;
-%# for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section by ty and tz the dimensions on y and z direction, then the elemTypeGeometry field is:
-Iy = ty*tz^3/12 ; Iz = tz*ty^3/12 ;
+%# for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
 elements.elemTypeGeometry = { [], [2 ty tz ] };
 elements.elemTypeParams = { [], 1 };
-%#
 %### boundaryConds
 %#
-%# The elements are submitted to two different BC settings. The nodes $A$ is completely fixed and the node $B$ is submitted by a nodal moment load. According to this, the $A$ has a constraint in displacement besides the node $B$ has an applied load. The load factor function of the moment is set so that the target load make the beam into a circle. The density is set to zero, then no inertial effects are considered.
-%#
+%# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
+%# The scalar values of inertia $I_z$ is computed
+Iy = ty*tz^3/12 ;
 finalTime = 1;
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
-boundaryConds.loadTimeFact = { []        ; @(t) E * Iy * 2 * pi / l /finalTime *t   } ;
+boundaryConds.loadTimeFact = { []        ; @(t) E*Iy * 2*pi/l *t/finalTime } ;
 boundaryConds.loadBaseVals = { []        ; [ 0 0 0 -1 0 0 ] } ;
-boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; 1          } ;
-boundaryConds.impoDispVals = { [ 0 0 0 ] ; 0          } ;
+boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; []         } ;
+boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
 %#
 %#
 %### initial Conditions
@@ -51,21 +51,19 @@ boundaryConds.impoDispVals = { [ 0 0 0 ] ; 0          } ;
 initialConds                = struct() ;
 %#
 %### mesh parameters
-%# The mesh is parmetric according to the number of elements selected with ths variable:
+%# An auxiliar variable is created with the number of elements.
 numElements = 10 ;
 %#The coordinates of the nodes of the mesh are given by the matrix:
-mesh.nodesCoords = [ (0:(Nelem))' * l/numElements'* zeros(Nelem+1,2) ] ;
+mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %#The connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %# then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node is included.
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-%# the following case only differs in the boundary condition
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
-%# the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element. Becouse of the parametric implmetetion depending on numElements variable an auxiliar matrix is defined:
-auxiliarMatrixConec = [ (ones(numElements,1)*[ 1 2 0 0]) (1:(numElements))' (2:(numElements+1))' ] ;
-%# then the conection vectors are  added to the conCell array as follows:
-for i:numElements
-  mesh.conecCell{ end+1,1 } = auxiliarMatrixConec (i,:) ;
+%# the following case only differs in the boundary condition and the node number
+mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
+%# the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
+for i=1:numElements,
+  mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 %#
 %### analysisSettings
@@ -79,11 +77,13 @@ analysisSettings.finalTime     =   1 ;
 %#
 %### otherParams
 otherParams.problemName = 'uniformCurvatureCantilever';
-otherParams.plotParamsVector = [3] ;
-otherParams.controlDofs = [Nelem+1  4 ] ;
+otherParams.plotParamsVector = [ 3 ] ;
+otherParams.controlDofs = [ numElements+1  4 ] ;
 %### Analysis case 1: NR with Rotated Eng Strain
 %# In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+return
 %# the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
 angleControlDof = (Nelem+1)*6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof,:) ;
