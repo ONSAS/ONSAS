@@ -5,11 +5,16 @@ fidOut = fopen( fileOut,'w' );
 
 currentLine = fgetl( fidIn ) ;
 isInCodeBlock = ~( length( currentLine )>=2 && strcmp( currentLine(1:2), '%#' ) ) ;
+lineCount = 0 ;
 
 while ~feof( fidIn )
-  currentLine = fgetl( fidIn ) ;
-
-  if length( currentLine )>=2 && strcmp( currentLine(1:2), '%#' )
+  
+  lineCount = lineCount + 1;
+  if lineCount != 1
+    currentLine = fgetl( fidIn ) ;
+  end
+  
+  if length( currentLine )>=2 && strcmp( currentLine(1:2), '%#' ) % not code
 
     if isInCodeBlock % closes code block before writing comment
       if includeCodeBoolean
