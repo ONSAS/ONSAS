@@ -26,8 +26,7 @@ headerIncrements  = [ '$\\#t$ & $t$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ 
 %
 timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &      \\\\ \n' ] ;
 %
-timeStepEndLine   = [ '\\hdashline\n' ...
-                      '%4i & %9.2e & %4i &           &           & %3i  \\\\ \n' ] ;
+timeStepEndLine   = [ '%4i & %9.2e & %4i &           &           & %3i  \\\\ \n \\hdashline \n' ] ;
 
 if lineData(1)==0 % print header
 
