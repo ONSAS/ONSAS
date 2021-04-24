@@ -18,7 +18,7 @@
 
 % Prints analysis output 
 
-function printSolverOutput( outputdir, problemName, timeIndex, lineData )
+function printSolverOutput( outputdir, problemName, lineData )
 
 iterationResultsFile = [ outputdir  problemName '_iterations.tex' ] ;
 
@@ -26,22 +26,21 @@ headerIncrements  = [ '$\\#t$ & $t$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ 
 %
 timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &      \\\\ \n' ] ;
 %
-timeStepEndLine   = [ '\\hdashline\n' ...
-                      '%4i & %9.2e & %4i &           &           & %s  \\\\ \n' ] ;
+timeStepEndLine   = [ '%4i & %9.2e & %4i &           &           & %3i  \\\\ \n \\hdashline \n' ] ;
 
-if timeIndex == 1 && lineData(1)~=1
+if lineData(1)==0 % print header
 
   % opens and rewrites files
   fileIncrements = fopen( iterationResultsFile ,'w');
 
   % write headers
   fprintf( fileIncrements, headerIncrements ) ;
+
 else
-  fileIncrements 			= fopen( incrementsResultsFilename ,'a' ) ;
+  fileIncrements 			= fopen( iterationResultsFile ,'a' ) ;
 end
 
-% latex table output
-if lineData(1) == 1
+if lineData(1) == 1 % iteration information
   fprintf( fileIncrements, timeStepIterLine, lineData(2), lineData(3), lineData(4) ) ;
   %~ fileIncrements
   %~ lineData
@@ -59,9 +58,9 @@ if lineData(1) == 1
 %~ if max( abs( Strainst) ) > 0.05,
   %~ fprintf('WARNING: at timeStep %5i, elements with strain level %4.1f%%!\n', timeIndex, max( abs( Strainst) )*100 ),
   
-elseif lineData(1) == 2
 
-  fprintf( fileIncrements, timeStepEndLine, timeIndex,  lineData(2), lineData(3), lineData(4) );
+elseif lineData(1) == 2 %end of iteration information
+  fprintf( fileIncrements, timeStepEndLine, lineData(2), lineData(3), lineData(4), lineData(5) );
   
 end
 

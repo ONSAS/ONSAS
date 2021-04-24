@@ -37,32 +37,26 @@ while continueTimeAnalysis
 
   % check final Time
   % ----------------
-  if modelNextSol.currTime >= modelProperties.analysisSettings.finalTime
+  finalTimeReachedBoolean = ...
+    ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
+    >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
+  if finalTimeReachedBoolean
     continueTimeAnalysis = false ;
   end
   
   % store results
+  % -------------
   modelCurrSol   =   modelNextSol ;
   matUs          = [ matUs          modelCurrSol.U                   ] ;
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
+
+  %~ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 
 end
 
 return
 
 
-
-
-
-
-
-
-
-
-  % --- checks stopping criteria and stores model state
-
-deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
-timeIndex = modelCurrSol.timeIndex ; 
 
 if timeIndex == 1
 

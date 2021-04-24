@@ -15,6 +15,8 @@ addpath( [ pwd '/../../src'] );
 E = 200e9 ;  nu = 0.3 ;
 % geometrical scalar parameters
 l = 10 ; ty = .1 ;  tz = .1 ;
+% the number of elements of the mesh
+numElements = 10 ;
 %#
 %### MEBI parameters
 %#------------------
@@ -36,7 +38,7 @@ elements.elemTypeParams = { [], 1 };
 %### boundaryConds
 %#
 %# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
-%# The scalar values of inertia $I_z$ is computed
+%# The scalar values of inertia $I_z$ is computed.
 Iy = ty*tz^3/12 ;
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
 boundaryConds.loadTimeFact = { []        ; @(t) E*Iy*2*pi/l *t } ;
@@ -50,8 +52,6 @@ boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
 initialConds                = struct() ;
 %#
 %### mesh parameters
-%# An auxiliar variable is created with the number of elements.
-numElements = 10 ;
 %#The coordinates of the nodes of the mesh are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %#The connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
@@ -59,7 +59,7 @@ mesh.conecCell = { } ;
 %# then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node is included.
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 %# the following case only differs in the boundary condition and the node number
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1 ] ;
 %# the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
 for i=1:numElements,
   mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
@@ -81,12 +81,8 @@ otherParams.controlDofs = [ numElements+1  4 ] ;
 %# In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-figure
-plot(matUs(5:6:end,11))
-
-return
 %# the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
-angleControlDof = (numElements+1)*6 - 2;
+angleControlDof      = (numElements+1)*6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %# and the analytical value of the load factors is computed
@@ -103,3 +99,5 @@ labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('analytic','NR-RotEng','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+
+verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) 
