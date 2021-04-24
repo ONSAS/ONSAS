@@ -1,7 +1,7 @@
 
 addpath(genpath('../src/'));
 
-cantileverBeamONSASFile = './uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever_test.m' ;
+cantileverBeamONSASFile = './uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m' ;
 
 cantileverBeamMDFile = '~/.julia/dev/ONSAS_docs/docs/src/tutorials/CantileverBeam/cantileverBeam.md' ;
 
