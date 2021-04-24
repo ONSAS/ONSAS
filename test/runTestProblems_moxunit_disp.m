@@ -11,5 +11,8 @@ function test_suite=runTestProblems_moxunit_disp
   
 function test_1
   onsasExample_staticVonMisesTruss
-  verifBoolean  
+  assertEqual( verifBoolean, true );
+
+function test_2
+  onsasExample_uniformCurvatureCantilever
   assertEqual( verifBoolean, true );
