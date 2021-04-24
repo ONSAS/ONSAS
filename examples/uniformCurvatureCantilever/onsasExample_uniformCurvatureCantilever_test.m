@@ -15,6 +15,8 @@ addpath( [ pwd '/../../src'] );
 E = 200e9 ;  nu = 0.3 ;
 % geometrical scalar parameters
 l = 10 ; ty = .1 ;  tz = .1 ;
+% the number of elements of the mesh
+numElements = 10 ;
 %#
 %### MEBI parameters
 %#------------------
@@ -36,7 +38,7 @@ elements.elemTypeParams = { [], 1 };
 %### boundaryConds
 %#
 %# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
-%# The scalar values of inertia $I_z$ is computed
+%# The scalar values of inertia $I_z$ is computed.
 Iy = ty*tz^3/12 ;
 boundaryConds.loadCoordSys = { []        ; 'global'   } ;
 boundaryConds.loadTimeFact = { []        ; @(t) E*Iy*2*pi/l *t } ;
@@ -50,8 +52,6 @@ boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
 initialConds                = struct() ;
 %#
 %### mesh parameters
-%# An auxiliar variable is created with the number of elements.
-numElements = 10 ;
 %#The coordinates of the nodes of the mesh are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %#The connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:

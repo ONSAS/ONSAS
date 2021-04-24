@@ -42,27 +42,18 @@ while continueTimeAnalysis
   end
   
   % store results
+  % -------------
   modelCurrSol   =   modelNextSol ;
   matUs          = [ matUs          modelCurrSol.U                   ] ;
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
+
+  %~ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
 
 end
 
 return
 
 
-
-
-
-
-
-
-
-
-  % --- checks stopping criteria and stores model state
-
-deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
-timeIndex = modelCurrSol.timeIndex ; 
 
 if timeIndex == 1
 
