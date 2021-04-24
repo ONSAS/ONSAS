@@ -37,7 +37,10 @@ while continueTimeAnalysis
 
   % check final Time
   % ----------------
-  if modelNextSol.currTime >= modelProperties.analysisSettings.finalTime
+  finalTimeReachedBoolean = ...
+    ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
+    >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
+  if finalTimeReachedBoolean
     continueTimeAnalysis = false ;
   end
   
