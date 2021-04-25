@@ -6,7 +6,7 @@
 
 close all, clear all        ;
 
-dirOnsas = [ pwd '/../src' ] ; % set ONSAS.m directory
+dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
 addpath( dirOnsas )             ; % add ONSAS directory to path
 
 % ----------------------------------------------------------------------
@@ -77,6 +77,8 @@ flecha = P*(2*L)^3/(192*E*I)
 
           
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+verifBoolean = abs( flecha - matUs(11,2) ) < 1e-4 
 % ----------------------------------------------------------------------
 
 
