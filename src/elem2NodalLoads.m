@@ -11,7 +11,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
   for elemInd = 1:length( elemsWithBC );
     elem            = elemsWithBC( elemInd ) ;
     elemType        = elements.elemType{ Conec(elem,2 )} ;
-    loadCoordSys    = boundaryConds.loadCoordSys{ indBC } ;
+    loadCoordSys    = boundaryConds.loadsCoordSys{ indBC } ;
 
     % nodal loads
     % -----------
@@ -30,14 +30,21 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
       end
 
     
+
+    elseif strcmp( elemType , 'truss') ; %
+      error(' not yet.');
+
+    elseif strcmp( elemType , 'frame') ; %
+      error(' not yet.');
+  
+
     % triangle tension
     % ----------------
     elseif strcmp( elemType , 'triangle') ; %
   
-      error(' not yet.');
     
-    %~ nodestrng = Conec( i, 1:3 ) ; 
-  
+    nodestrng = Conec( 1, 1:3 ) ; 
+stop  
     %~ area = 0.5 * norm( cross( ...
       %~ Nodes( nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
       %~ Nodes( nodestrng(3),:) - Nodes( nodestrng(1),:) ...

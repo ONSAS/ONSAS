@@ -31,9 +31,13 @@ nnodes = size( Nodes,1);
 elementTypes   = unique( Conec( :, 2) ) ;
 boundaryTypes  = unique( Conec( :, 3) ) ;
 
-% remove zero 
-if boundaryTypes(1) == 0, boundaryTypes(1)=[]; end
-if elementTypes(1)  == 0, error('all elements must be defined'); end
+if boundaryTypes(1) == 0, % removes elements without BCs
+  boundaryTypes(1)=[];
+end
+
+if elementTypes(1)  == 0, % checks if all elements have a type
+  error('all elements must be defined');
+end
 
 factorLoadsFextCell = {};
 loadFactorsFuncCell = {};
@@ -41,11 +45,12 @@ diriDofs            = [];
 
 for indBC = 1:length( boundaryTypes )
   
-  
   % loads verification
   % ------------------
-  if ~isempty( boundaryConds.loadCoordSys{ boundaryTypes(indBC) } )
+  if ~isempty( boundaryConds.loadsCoordSys{ boundaryTypes(indBC) } ) % if load applied
+    
     factorLoadsFextCell{ boundaryTypes(indBC) }  = elem2NodalLoads ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ;
+    
     loadFactorsFuncCell{ boundaryTypes(indBC) }  = boundaryConds.loadTimeFact{ boundaryTypes(indBC) } ;
   end % if load
   
