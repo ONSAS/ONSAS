@@ -38,11 +38,11 @@ elements.elemTypeParams = { [], 1 };
 %#
 %# The elements are submitted to two different BC settings. The nodes $1$ and $3$ are fixed without applied loads (first BC), and node $2$ has a constraint in displacement and an applied load (second BC). The load factor function of the second BC is set so that the target load 1.5e8 is reached at 1 second. The density is set to zero, then no inertial effects are considered.
 %#
-boundaryConds.loadCoordSys = { []        ; 'global'   } ;
-boundaryConds.loadTimeFact = { []        ; @(t) 1.5e8*t     } ;
-boundaryConds.loadBaseVals = { []        ; [ 0 0 0 0 -1 0 ] } ;
-boundaryConds.impoDispDofs = { [ 1 3 5 ] ; 3          } ;
-boundaryConds.impoDispVals = { [ 0 0 0 ] ; 0          } ;
+boundaryConds.loadsCoordSys = { []        ; 'global'   } ;
+boundaryConds.loadsTimeFact = { []        ; @(t) 1.5e8*t     } ;
+boundaryConds.loadsBaseVals = { []        ; [ 0 0 0 0 -1 0 ] } ;
+boundaryConds.imposDispDofs = { [ 1 3 5 ] ; 3          } ;
+boundaryConds.imposDispVals = { [ 0 0 0 ] ; 0          } ;
 %#
 %### initial Conditions
 %# homogeneous initial conditions are considered, then an empty struct is set:

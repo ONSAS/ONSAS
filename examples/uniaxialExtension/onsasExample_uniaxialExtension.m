@@ -19,11 +19,13 @@ materials.hyperElasModel = {'SVK'} ;
 materials.hyperElasParams = { [ lambda mu ] } ;
 
 
-elements.elemType = { 'triangle', 'tetrahedron' }
+elements.elemType = { 'triangle', 'tetrahedron' } ;
+elements.elemTypeParams = { [];[] } ;
+elements.elemTypeGeometry = { [];[] } ;
 
 boundaryConds.loadsCoordSys = {'global'; [] ; [] ; [] } ;
 boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
-boundaryConds.loadsTimeFact = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
+boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
 boundaryConds.imposDispDofs = { [] ; [1] ; [3] ; [5] } ;
 boundaryConds.imposDispVals = { [] ; [0] ; [0] ; [0] } ;
 
@@ -73,7 +75,7 @@ analysisSettings.deltaT           = .1      ;
 %~ storeBoolean = 1 ;
 
 %% Output parameters
-%~ plotParamsVector = [ 3 ] ;
+otherParams.plotParamsVector = [ 3 ] ;
 %~ printflag = 2 ;
 
 %~ % --- Analytic sol ---

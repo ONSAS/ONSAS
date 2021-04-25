@@ -51,17 +51,18 @@ for indBC = 1:length( boundaryTypes )
     
     factorLoadsFextCell{ boundaryTypes(indBC) }  = elem2NodalLoads ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ;
     
-    loadFactorsFuncCell{ boundaryTypes(indBC) }  = boundaryConds.loadTimeFact{ boundaryTypes(indBC) } ;
+    loadFactorsFuncCell{ boundaryTypes(indBC) }  = boundaryConds.loadsTimeFact{ boundaryTypes(indBC) } ;
   end % if load
   
   % displacement verification
   % -------------------------
-  if ~isempty( boundaryConds.impoDispDofs{ boundaryTypes(indBC) } ),
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ]  = elem2NodalDisps ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ; 
+  if ~isempty( boundaryConds.imposDispDofs{ boundaryTypes(indBC) } ),
+    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ]  = elem2NodalDisps ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) 
+
+    diriDofs = [ diriDofs; bcDiriDofs ] ;
     
   end % if: disp dofs
   
-  diriDofs = [ diriDofs; bcDiriDofs ] ;
   
 end % for: elements with boundary condition assigned
 
@@ -80,7 +81,7 @@ for elemNum = 1:length( elementTypes )
   
   elemType = elements.elemType{elemNum} ;
    
-  if strcmp( elemType, 'node') 
+  if strcmp( elemType, 'node') || strcmp( elemType, 'triangle')
     elemsToRemove = [ elemsToRemove ; elementsNums ] ;
   
   elseif length( elementsNums ) > 0

@@ -31,8 +31,12 @@ elseif strcmp( elemType, 'frame')
   numNodes = 2 ;
   dofsStep = 1 ;
 
-elseif strcmp( elemType, 'tetra')
+elseif strcmp( elemType, 'tetrahedron')
   numNodes = 4 ;
+  dofsStep = 2 ;
+
+elseif strcmp( elemType, 'triangle')
+  numNodes = 3 ;
   dofsStep = 2 ;
 
 end

@@ -44,6 +44,8 @@ while continueTimeAnalysis
     continueTimeAnalysis = false ;
   end
   
+  modelCurrSol.currLoadFactorsVals
+  
   % store results
   % -------------
   modelCurrSol   =   modelNextSol ;

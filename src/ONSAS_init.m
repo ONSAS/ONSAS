@@ -62,6 +62,10 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0], otherParams.problemName );
 
+modelCurrSol.currLoadFactorsVals
+factorLoadsFextCell
+  
+  stop
 %~ modelCurrSol.U
 %~ modelCurrSol.convDeltau
 %~ modelCurrSol.timeIndex

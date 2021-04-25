@@ -85,7 +85,7 @@ for elem = 1:nElems
 
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
   
-  elemNodesxyzRefCoords  = reshape( Nodes(   Conec( elem, (4+1):(4+numNodes) )' , : )',1,6) ;
+  elemNodesxyzRefCoords  = reshape( Nodes(   Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
   
   stressElem = [] ;
 
@@ -129,10 +129,10 @@ for elem = 1:nElems
 		end
 
   % ---------  tetrahedron solid element -----------------------------
-  elseif strcmp( elemType, 'tetra')
+  elseif strcmp( elemType, 'tetrahedron')
 
-    [ Finte, Ke, stress ] = elementTetraSolid( elemCoords, elemDisps, ...
-                            elemConstitutiveParams, paramOut, elemElementParams(2)) ;
+    [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
+                            [2 hyperElasParams], 2, 1 ) ;
 
   end   % case tipo elemento
   % -------------------------------------------
