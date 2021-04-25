@@ -16,3 +16,7 @@ function test_1
 function test_2
   onsasExample_uniformCurvatureCantilever
   assertEqual( verifBoolean, true );
+
+function test_3
+  onsasExample_frameLinearAnalysis
+  assertEqual( verifBoolean, true );
