@@ -111,21 +111,20 @@ for elem = 1:nElems
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 		
-		%~ outputBooleans
 		if strcmp(hyperElasModel, 'linearElastic')
 				
 			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemTypeGeometry, density, hyperElasParams, elemDisps ) ;
 		
 		else
 			
-			[ fs, ks, stressElem ] = elementBeamForces( elemCoords, elemCrossSecParams, elemConstitutiveParams, solutionMethod,  u2ElemDisps( Ut       , dofselem ) , ...
-																							 u2ElemDisps( Udott    , dofselem ) , ...
-																							 u2ElemDisps( Udotdott , dofselem ), elemrho ) ;
-			Finte = fs{1} ;  Ke    = ks{1} ;
-
-			if solutionMethod > 2
-				Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
-			end
+      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
+                                               u2ElemDisps( Udott    , dofselem ) , ...
+                                               u2ElemDisps( Udotdott , dofselem ), density ) ;
+      Finte = fs{1} ;  Ke    = ks{1} ;
+  
+      if density > 0
+        Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
+      end
 		
 		end
 

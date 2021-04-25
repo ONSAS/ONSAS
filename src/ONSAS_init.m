@@ -25,18 +25,15 @@ ONSASversion = '0.1.10'  ; % sets the current version
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
 
-
 % welcome message
 % ---------------
 welcomeMessage(ONSASversion, otherParams );
-
 
 % creates outputdir in current location
 % -------------------------------------
 outputDir = [ './output/' otherParams.problemName '/' ] ;
 createOutputDir( outputDir, otherParams ) ;
 otherParams.outputDir = outputDir ;
-
 
 % process boundary conds
 % ----------------------
@@ -58,9 +55,12 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
 
-% compress model structures
-% -------------------------
-[modelCurrSol, modelProperties, BCsData ] = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0] );
+% compress model structs
+% ----------------------
+[ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
+  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
+  timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
+  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0], otherParams.problemName );
 
 %~ modelCurrSol.U
 %~ modelCurrSol.convDeltau
@@ -70,9 +70,8 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
 %~ stop
 % prints headers for solver output file
 % -------------------------------------
-printSolverOutput( outputDir, otherParams.problemName, timeIndex, 0                  ) ;
-printSolverOutput( outputDir, otherParams.problemName, timeIndex, [ 2 currTime 0 0 ] ) ;
-
+printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
+printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
 nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT );
 if length( otherParams.plotParamsVector ) > 1

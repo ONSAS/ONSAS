@@ -8,14 +8,14 @@ jobs:
       - uses: actions/checkout@v2
       - uses: joergbrech/moxunit-action@v1.1
         with:
-          src: examples/staticVonMisesTruss src
+          src: examples/staticVonMisesTruss examples/uniformCurvatureCantilever src
           tests: ./test/runTestProblems_moxunit_disp.m
-  tests-heat:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: joergbrech/moxunit-action@v1.1
-        with:
-          src: examples/heatRobiAndNeum examples/heatAnalytic src
-          tests: ./test/runTestProblems_moxunit_heat.m
+  #tests-heat:
+  #  runs-on: [ubuntu-latest]
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - uses: joergbrech/moxunit-action@v1.1
+  #      with:
+  #        src: examples/heatRobiAndNeum examples/heatAnalytic src
+  #        tests: ./test/runTestProblems_moxunit_heat.m
 

@@ -22,7 +22,11 @@ elseif elemCrossSecParams(1) == 2
     if elemCrossSecParams(2)==elemCrossSecParams(3)
         J    = 1/3*0.40147*elemCrossSecParams(2)^4 ;
     else
-        error('rectangular section type not implemented yet, please create an issue')
+        h = max(elemCrossSecParams(2:3)) ;
+        b = min(elemCrossSecParams(2:3)) ;
+        r = h/b ;
+        beta = -1e-5*r^6 + 4e-4*r^5 - 5.8e-3*r^4 + 4.1e-2*r^3 - 0.1625*r^2 + 0.3628*r - 0.0949 ;
+        J = beta * b^3*h ;
     end
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
 

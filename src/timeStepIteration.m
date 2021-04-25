@@ -26,22 +26,21 @@ if 1==0 %cppSolverBoolean
   cppInterface
 else
       
-  % assign time t variables
-  % -----------------------
-  Ut = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
-  KTtred = modelCurrSol.systemDeltauMatrix ;
+  % assign current time (t) variables
+  % ---------------------------------
+  Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
+  KTtred     = modelCurrSol.systemDeltauMatrix ;
   convDeltau = modelCurrSol.convDeltau ;
 
   % update time and set candidate displacements and derivatives
   % -----------------------------------------------------------
   if isempty( modelProperties.analysisSettings.Utp10 )
     Utp1k       = Ut       ;
-  else
-    error('add case for several times')
-  end
+  else, error('add case for several times') end
+  
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
-  
+
   % current tangent matrix
   % ----------------------
   systemDeltauMatrix = KTtred ;
@@ -49,7 +48,7 @@ else
   % compute RHS for initial guess Utp1 and in next time step
   % --------------------------------------------------------
   [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
-  
+
   booleanConverged = 0                              ;
   dispIters        = 0                              ;
   currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
@@ -72,13 +71,13 @@ else
     
     % --- new rhs ---
     [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
-		
+  
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
     % ---------------------------------------------------
-		
+
     % --- prints iteration info in file ---
-    %~ printSolverOutput( otherParams.outputDir, problemName, timeIndex, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
+    printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
   
   end % iteration while
   % --------------------------------------------------------------------
@@ -92,6 +91,8 @@ else
   
   % compute stress at converged state
   [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ] ) ;
+  
+  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
     
 
   % --- (temporary) computation and storage of separated assembled matrices ---
@@ -155,7 +156,7 @@ timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
 
-modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors );
+modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName );
 % -------------------------------------
 
 

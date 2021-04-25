@@ -16,17 +16,20 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+% Function for creation of report file with analysis results.
 
-% Script for creation of report file with analysis' results.
+function outputReport( outputDir, problemName )
 
 % replace underscores in problemName
 problemNameWithoutUnderscores                                      = problemName ;
 problemNameWithoutUnderscores( find( problemNameWithoutUnderscores == '_') ) = [] ;
 
+
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
 fprintf(  '  - writing report file ... ')
 fileReport = fopen( [ outputDir  problemName '_Report.tex' ] ,'w') ;
+
 fprintf(fileReport, [ '\\documentclass[a4paper,10pt]{article} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage[a4paper,margin=20mm]{geometry} \n'] ) ;
 fprintf(fileReport, [ '\\usepackage{longtable} \n'] ) ;
@@ -42,7 +45,7 @@ fprintf(fileReport, [ '\\newcolumntype{?}{!{\\vrule width 1pt}}\n' ] ) ;
 fprintf(fileReport, [ '\\usepackage{fancyhdr} \n'] ) ;
 fprintf(fileReport, [ '\\pagestyle{fancy} \n' ] ) ;
 fprintf(fileReport, [ '\\fancyhf{} \n' ] ) ;
-fprintf(fileReport, [ '\\lhead{Report ONSAS version %s} \n'], ONSASversion );
+%~ fprintf(fileReport, [ '\\lhead{Report ONSAS version %s} \n'], ONSASversion );
 fprintf(fileReport, [ '\\rhead{Problem: %s } \n'], problemNameWithoutUnderscores );
 fprintf(fileReport, [ '\\lfoot{Date: \\today} \n'] );
 fprintf(fileReport, [ '\\rfoot{Page \\thepage} \n'] );
@@ -59,9 +62,10 @@ fprintf(fileReport, [ '\\titleformat{\\section}{\\normalfont\\Large\\color{miblu
 
 fprintf(fileReport, [ '\\begin{document} \n'] );
 
-fprintf(fileReport, [ '\\begin{center} \n'] );
-fprintf(fileReport, [ '\\textbf{ONSAS v.' ONSASversion  ' analysis report \\\\ Problem: ' problemNameWithoutUnderscores '} \n'] );
-fprintf(fileReport, [ '\\end{center} \n\n'] );
+
+%~ fprintf(fileReport, [ '\\begin{center} \n'] );
+%~ fprintf(fileReport, [ '\\textbf{ONSAS v.' ONSASversion  ' analysis report \\\\ Problem: ' problemNameWithoutUnderscores '} \n'] );
+%~ fprintf(fileReport, [ '\\end{center} \n\n'] );
 
 fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part of the results obtained after the analysis. The user can access other magnitudes and results through the GNU-Octave/MATLAB console. The code is provided AS IS \\textbf{WITHOUT WARRANTY of any kind}, express or implied.\n\n'] );
 
@@ -213,42 +217,42 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
 % Prints numerical methods and analysis parameters
 
-if length(numericalMethodParams) > 0
-  %
-  if numericalMethodParams(1) == 0 
-    vecMethod = { 'Numerical method' ; '$\delta_t$' ; '$t_f$'} ;
-    vecParams = [ {'Linear variable force'} ; num2cell(numericalMethodParams(2:end-1)') ] ; 
-  %
-  elseif numericalMethodParams(1) == 1
-    vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' } ;
-    vecParams = [ {'Newton Raphson'} ; num2cell(numericalMethodParams(2:end)') ] ; 
-  %
-  elseif numericalMethodParams(1) == 2  
-    vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' ; 'Arc Length increment'} ;
-    vecParams = [ {'Newton Raphson - Arc Length'} ; num2cell(numericalMethodParams(2:end)') ] ;
-  %
-  elseif numericalMethodParams(1) == 3
-    vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\delta_{NW}$' ; '$\alpha_{NW}$' } ;
-    vecParams = [ {'Newmark'} ; num2cell(numericalMethodParams(2:end)') ] ;
-  %
-  elseif numericalMethodParams(1) == 4 
-    vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\alpha_{NW}$' } ;
-    vecParams = [ {'HHT'} ; num2cell(numericalMethodParams(2:end)') ] ;
-  end 
-end
+%~ if length(numericalMethodParams) > 0
+  %~ %
+  %~ if numericalMethodParams(1) == 0 
+    %~ vecMethod = { 'Numerical method' ; '$\delta_t$' ; '$t_f$'} ;
+    %~ vecParams = [ {'Linear variable force'} ; num2cell(numericalMethodParams(2:end-1)') ] ; 
+  %~ %
+  %~ elseif numericalMethodParams(1) == 1
+    %~ vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' } ;
+    %~ vecParams = [ {'Newton Raphson'} ; num2cell(numericalMethodParams(2:end)') ] ; 
+  %~ %
+  %~ elseif numericalMethodParams(1) == 2  
+    %~ vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' ; 'Arc Length increment'} ;
+    %~ vecParams = [ {'Newton Raphson - Arc Length'} ; num2cell(numericalMethodParams(2:end)') ] ;
+  %~ %
+  %~ elseif numericalMethodParams(1) == 3
+    %~ vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\delta_{NW}$' ; '$\alpha_{NW}$' } ;
+    %~ vecParams = [ {'Newmark'} ; num2cell(numericalMethodParams(2:end)') ] ;
+  %~ %
+  %~ elseif numericalMethodParams(1) == 4 
+    %~ vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\alpha_{NW}$' } ;
+    %~ vecParams = [ {'HHT'} ; num2cell(numericalMethodParams(2:end)') ] ;
+  %~ end 
+%~ end
 
 
-if exist('nonHomogeneousInitialCondU0') ~= 0
-  initialCondU0 = 'yes' ;
-else 
-  initialCondU0 = 'no' ;
-end
+%~ if exist('nonHomogeneousInitialCondU0') ~= 0
+  %~ initialCondU0 = 'yes' ;
+%~ else 
+  %~ initialCondU0 = 'no' ;
+%~ end
 
-if exist('nonHomogeneousInitialCondUdot0') ~= 0
-  initialCondUdot0 = 'yes' ;
-else
-  initialCondUdot0 = 'no' ;
-end
+%~ if exist('nonHomogeneousInitialCondUdot0') ~= 0
+  %~ initialCondUdot0 = 'yes' ;
+%~ else
+  %~ initialCondUdot0 = 'no' ;
+%~ end
 
 %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
   %~ eigValuesM = eig(Kliblib) ;
@@ -404,9 +408,9 @@ end
   %~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
   
   fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] );
-  fprintf(fileReport, [ '\\input{' problemName '_incrementsOutput.tex' '} \n'] ) ;  
+  fprintf(fileReport, [ '\\input{' problemName '_iterations.tex' '} \n'] ) ;  
   fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n\n'] ) ;
-  fprintf(fileReport, [ '\\newpage \n\n' ] ) ;
+  %~ fprintf(fileReport, [ '\\newpage \n\n' ] ) ;
 %~ end
 
 

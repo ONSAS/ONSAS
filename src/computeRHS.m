@@ -37,7 +37,6 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
     
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
-    %~ FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     
     foundLoadCase = false ;
     loadCase = 1 ;
