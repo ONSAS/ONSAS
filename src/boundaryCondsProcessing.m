@@ -20,7 +20,7 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         materials, ...     % M
                         elements, ...      % E
                         boundaryConds, ... % B
-                        initialConds )
+                        initialConds ) 		 % I
 
 Conec = myCell2Mat( mesh.conecCell ) ;
 Nodes = mesh.nodesCoords ;
@@ -63,7 +63,6 @@ end % for: elements with boundary condition assigned
 diriDofs = unique( diriDofs) ;
 
 
-
 % construction of neumandofs
 % --------------------------
 
@@ -82,7 +81,6 @@ for elemNum = 1:length( elementTypes )
   elseif length( elementsNums ) > 0
     
     [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
-    
     nodes    = Conec( elementsNums, (4+1):(4+numNodes) ) ; 
     dofs     = nodes2dofs( nodes, 6)'       ;
     dofs     = dofs(1:dofsStep:end)         ;

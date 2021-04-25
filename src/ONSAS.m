@@ -29,5 +29,4 @@ function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, 
 % -------------------------
 [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-
 outputReport( modelProperties.outputDir, modelProperties.problemName )
