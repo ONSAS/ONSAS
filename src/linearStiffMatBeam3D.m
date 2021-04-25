@@ -19,23 +19,25 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, elemConstitutiveParams)
+function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density, hyperElasParams, Ut)
 
   ndofpnode = 6 ;  
 
   % --- material constit params ---
-	E   = elemConstitutiveParams(2) ;
-	nu  = elemConstitutiveParams(3) ;
+	E   = hyperElasParams(1) ;
+	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
 	
-
+	[A, J, Iy, Iz] = crossSectionProps ( elemTypeGeometry, density ) ;
 	
 	% --- elem lengths and rotation matrix
 	[ l, local2globalMats ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
   
   % Provisoriamente
+  %~ ------------------------
   elemReleases = [0 0 0 0] ;
+  %~ ------------------------
   
   % --- set the local degrees of freedom corresponding to each behavior
   LocAxialdofs  = [ 1 7 ] ;
@@ -98,6 +100,7 @@ function [ KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, elemC
       
     
   KGelem = R * KL * R' ;
+  Finte = KGelem * Ut ;
     
 end
 % ==============================================================================
