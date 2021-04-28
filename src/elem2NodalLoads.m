@@ -21,11 +21,15 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
       if strcmp( loadCoordSys, 'global' )
     
         loadvals = boundaryConds.loadsBaseVals{ indBC } ;
-        nodes     = Conec( elem, 4+1 ) ; 
+        nodes     = Conec( elem, 4+1 ) ;
 
       else
         error(' only global flag in load by now.');
       end
+
+      % add loads to matrix of loaded nodes
+      loadedNodes = [ loadedNodes ; ...
+                      nodes loadvals ] ;
 
 
     elseif strcmp( elemType , 'truss') ; %
@@ -75,13 +79,17 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
     
         %~ else
         %~ error(' local/global load param must be 1 or 0')
-      end
+
+      end % if global/local system
+
+      % add loads to matrix of loaded nodes
+      loadedNodes = [ loadedNodes ; ...
+                      nodes' ones(length(nodes),1)*[Fx 0 Fy 0 Fz 0] ] ;
+
     
   
     end %if elemTypes
     
-    loadedNodes = [ loadedNodes ; ...
-                    nodes' ones(length(nodes),1)*[Fx 0 Fy 0 Fz 0] ] ;
 
 
   end % for elements
