@@ -57,7 +57,7 @@ for indBC = 1:length( boundaryTypes )
   % displacement verification
   % -------------------------
   if ~isempty( boundaryConds.imposDispDofs{ boundaryTypes(indBC) } ),
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ]  = elem2NodalDisps ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) 
+    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ]  = elem2NodalDisps ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ;
 
     diriDofs = [ diriDofs; bcDiriDofs ] ;
     
@@ -71,6 +71,7 @@ diriDofs = unique( diriDofs) ;
 
 % construction of neumandofs
 % --------------------------
+
 
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 elemsToRemove = [] ;

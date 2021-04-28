@@ -16,7 +16,7 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
     
     elemType        = elements.elemType{ Conec(elem,2 )}  ;
 
-    auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:)
+    auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:);
 
     impoDofs = boundaryConds.imposDispDofs{ indBC } ;
     impoVals = boundaryConds.imposDispVals{ indBC } ;

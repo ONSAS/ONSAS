@@ -86,6 +86,8 @@ otherParams.plotParamsVector = [ 3 ] ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 
+%~ figure
+%~ plot(matU)
 return
 Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
          [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
