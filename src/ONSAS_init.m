@@ -55,15 +55,18 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
 
+
+factorLoadsFextCell
+stop
+[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename )
+
+
 % compress model structs
 % ----------------------
 [ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
   timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
-  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0], otherParams.problemName );
-
-modelCurrSol.currLoadFactorsVals
-factorLoadsFextCell
+  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, vecLoadFactors, otherParams.problemName );
   
   stop
 %~ modelCurrSol.U

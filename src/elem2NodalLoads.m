@@ -38,14 +38,14 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
     % ----------------
     elseif strcmp( elemType , 'triangle') ; %
   
-      nodes = Conec( 1, 4+(1:3) ) ;
+      nodes = Conec( elem, 4+(1:3) ) ;
 
       area = 0.5 * norm( cross( ...
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
         ) ) ;
 
-      loadvals = boundaryConds.loadsBaseVals{ indBC } 
+      loadvals = boundaryConds.loadsBaseVals{ indBC } ;
 
       if strcmp( loadCoordSys, 'global' )
   
@@ -81,7 +81,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
     end %if elemTypes
     
     loadedNodes = [ loadedNodes ; ...
-                    nodes loadvals ] ;
+                    nodes' ones(length(nodes),1)*[Fx 0 Fy 0 Fz 0] ] ;
 
 
   end % for elements
@@ -95,4 +95,3 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
       fext( aux ) = fext( aux ) + loadedNodes(i,2:7)' ;
     end
   end
-  

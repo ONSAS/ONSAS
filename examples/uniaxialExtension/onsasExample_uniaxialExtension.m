@@ -24,8 +24,8 @@ elements.elemTypeParams = { [];[] } ;
 elements.elemTypeGeometry = { [];[] } ;
 
 boundaryConds.loadsCoordSys = {'global'; [] ; [] ; [] } ;
-boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
-boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
+boundaryConds.loadsTimeFact = { @(t) p*t ; [] ; [] ; []} ;
+boundaryConds.loadsBaseVals = { [1 0 0 0 0 0 ] ; [] ; [] ; [] } ;
 boundaryConds.imposDispDofs = { [] ; [1] ; [3] ; [5] } ;
 boundaryConds.imposDispVals = { [] ; [0] ; [0] ; [0] } ;
 
