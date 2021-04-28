@@ -41,7 +41,6 @@ otherParams.outputDir = outputDir ;
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
 
-                           
 % process initial conditions
 % --------------------------
 [ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
@@ -55,13 +54,16 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
 
+[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
+
+
 % compress model structs
 % ----------------------
 [ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
   timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
-  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, [0 0], otherParams.problemName );
-
+  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, vecLoadFactors, otherParams.problemName );
+  
 %~ modelCurrSol.U
 %~ modelCurrSol.convDeltau
 %~ modelCurrSol.timeIndex

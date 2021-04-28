@@ -40,11 +40,11 @@ elements.elemTypeParams = { [], 1 };
 %# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
 %# The scalar values of inertia $I_z$ is computed.
 Iy = ty*tz^3/12 ;
-boundaryConds.loadCoordSys = { []        ; 'global'   } ;
-boundaryConds.loadTimeFact = { []        ; @(t) E*Iy*2*pi/l *t } ;
-boundaryConds.loadBaseVals = { []        ; [ 0 0 0 -1 0 0 ] } ;
-boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; []         } ;
-boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
+boundaryConds.loadsCoordSys = { []        ; 'global'   } ;
+boundaryConds.loadsTimeFact = { []        ; @(t) E*Iy*2*pi/l *t } ;
+boundaryConds.loadsBaseVals = { []        ; [ 0 0 0 -1 0 0 ] } ;
+boundaryConds.imposDispDofs = { [ 1 2 3 4 5 6 ] ; []         } ;
+boundaryConds.imposDispVals = { [ 0 0 0 0 0 0 ] ; []         } ;
 %#
 %#
 %### initial Conditions

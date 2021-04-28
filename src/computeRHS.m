@@ -30,7 +30,7 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
 
     systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) ;
 

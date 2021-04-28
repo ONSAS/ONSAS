@@ -27,12 +27,12 @@ elements.elemTypeParams = { [], 1 };
 
 % BoundaryConditions
 % Loads
-boundaryConds.loadCoordSys = { [] ; 'global' } ;
-boundaryConds.loadTimeFact = { [] ; @(t) t } ;
-boundaryConds.loadBaseVals = { [] ; [ 0 0 0 0 P 0] } ;
+boundaryConds.loadsCoordSys = { [] ; 'global' } ;
+boundaryConds.loadsTimeFact = { [] ; @(t) t } ;
+boundaryConds.loadsBaseVals = { [] ; [ 0 0 0 0 P 0] } ;
 % Supports
-boundaryConds.impoDispDofs = { [ 1 2 3 4 5 6 ] ; [] } ;
-boundaryConds.impoDispVals = { [ 0 0 0 0 0 0 ] ; 0 } ;
+boundaryConds.imposDispDofs = { [ 1 2 3 4 5 6 ] ; [] } ;
+boundaryConds.imposDispVals = { [ 0 0 0 0 0 0 ] ; 0 } ;
 
 % InitialConditions
 initialConds = struct() ;

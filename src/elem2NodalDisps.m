@@ -17,14 +17,14 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
     elemType        = elements.elemType{ Conec(elem,2 )}  ;
 
     auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:);
+
+    impoDofs = boundaryConds.imposDispDofs{ indBC } ;
+    impoVals = boundaryConds.imposDispVals{ indBC } ;
+    locNonHomDofs = find( impoVals ) ;
     
     % nodal loads
     % -----------
     if strcmp( elemType, 'node') ; % node
-    
-      impoDofs = boundaryConds.impoDispDofs{ indBC } ;
-      impoVals = boundaryConds.impoDispVals{ indBC } ;
-      locNonHomDofs = find( impoVals ) ;
 
       if ~isempty( locNonHomDofs)
         nonHomDiriDofs = [ nonHomDiriDofs; auxDofs(  locNonHomDofs) ];
@@ -32,8 +32,13 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
       end
 
       diriDofs = [ diriDofs ; auxDofs(impoDofs) ] ;
+
+    elseif strcmp( elemType, 'triangle') ; % triangle
       
+      for j=1:length(impoDofs)
+        diriDofs = [ diriDofs ; auxDofs( impoDofs(j):6:end) ] ;
+      end
+
     end %if elemTypes
     
   end % for elements
-  
