@@ -1,11 +1,13 @@
 %## Uniform curvature cantilever beam
 %#---
 %#
-%#In this tutorial, the Uniform curvature cantilever example and its resolution using ONSAS are described. The aim of this example is to validate the static co-rotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.
+%#In this tutorial, the Uniform curvature cantilever example and its resolution using ONSAS are described. The aim of this example is to validate the static co-rotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.  The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m).
 %#
-%#The problem consists in a beam, with one free end submitted to a nodal moment $M$, and the other end constrained (welded), as it is shown in the figure.
+%#The problem consists in a beam, with one free end (right) submitted to a nodal moment $M$, and the other end (left) constrained (welded), as it is shown in the figure.
 %#
-%#![structure diagram](uniformCurvatureCantilever.svg)
+%#```@raw html
+%#<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/tutorials/StaticVonMisesTruss/vonMisesTruss.svg" alt="structure diagram" width="500"/>
+%#```
 %#
 %#Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 close all, clear all ;
@@ -88,7 +90,10 @@ loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %# and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;
 
-%## Results verification
+%### Results verification
+%#---
+%#
+verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) 
 %#
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure
@@ -99,5 +104,4 @@ labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('analytic','NR-RotEng','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-
-verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) 
+print('verifCantileverBeam.png','-dpng')
