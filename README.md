@@ -26,7 +26,7 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 
 * **Elements** 2-node truss, 2-node Bernoulli frame, 4-node tetrahedron.
 * **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method.
-* **Dynamic analysis methods** Newmark Method and $\alpha$-HHT method.
+* **Dynamic analysis methods** Newmark Method and α-HHT method.
 * **Loads** nodal loads, time-history user-defined loading program.
 
 ## Some examples
