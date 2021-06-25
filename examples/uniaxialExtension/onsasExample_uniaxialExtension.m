@@ -1,10 +1,8 @@
 %## Example uniaxialSolid
 %#---
-%# Elastic solid submitted to uniaxial loading. 
-%# Geometry given by $Lx$, $Ly$ and $Lz$, tension $p$ applied on 
-%# face $x=L_x$.
 %#
-%#The problem consists in a beam, with one free end (right) submitted to a nodal moment $M$, and the other end (left) constrained (welded), as it is shown in the figure.
+%# In this example an elastic solid is submitted to a uniaxial extension deformation.
+%# The geometry and tension applied are shown in the figure where the $Lx=Ly=Lz=1$ and the tension $p$ is applied on the face $x=Lx$.
 %#
 %#```@raw html
 %#<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/tutorials/uniaxialExtension/diagramSolidUniaxial.svg" alt="structure diagram" width="500"/>
@@ -74,7 +72,7 @@ mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
                   [ 1 2 0 0    4 6 5 8 ]; ... % tetrahedron
                   [ 1 2 0 0    4 7 6 8 ]  ... % tetrahedron
                 } ;
-       
+
 % ----------------------------------------------------------------------
 
 %% --- Analysis parameters ---
@@ -106,7 +104,7 @@ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 disps = matUs(6*6+1,:) ;
 analyticVals = analyticFunc(disps) ;
 %
-verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance 
+verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance
 analyticVals - loadFactorsMat'
 %#
 %#### plot
@@ -137,7 +135,7 @@ loadFactorNumericalValsCase1  = numericalVals ;
 close all
 
 % --------------------------------------------------------
-% solid model using gmsh mesh, local tension load and complex step 
+% solid model using gmsh mesh, local tension load and complex step
 % --------------------------------------------------------
 
 problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
