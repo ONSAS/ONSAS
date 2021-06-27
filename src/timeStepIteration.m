@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -25,7 +25,7 @@ function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsDa
 if 1==0 %cppSolverBoolean
   cppInterface
 else
-      
+
   % assign current time (t) variables
   % ---------------------------------
   Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
@@ -36,15 +36,17 @@ else
   % -----------------------------------------------------------
   if isempty( modelProperties.analysisSettings.Utp10 )
     Utp1k       = Ut       ;
-  else, error('add case for several times') end
-  
+  else
+    error('add case for several times')
+  end
+
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % current tangent matrix
   % ----------------------
   systemDeltauMatrix = KTtred ;
-  
+
   % compute RHS for initial guess Utp1 and in next time step
   % --------------------------------------------------------
   [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
@@ -52,59 +54,59 @@ else
   booleanConverged = 0                              ;
   dispIters        = 0                              ;
   currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
-  
+
   while  booleanConverged == 0
     dispIters = dispIters + 1 ;
 
     % solve system
-    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ; 
-		
+    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ;
+
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
 
     % --- update next time magnitudes ---
     [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
       Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
-    
+
     % --- system matrix ---
     systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs ) ;
-    
+
     % --- new rhs ---
     [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
-  
+
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
     % ---------------------------------------------------
 
     % --- prints iteration info in file ---
     printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
-  
+
   end % iteration while
   % --------------------------------------------------------------------
-  
+
   Utp1       = Utp1k ;
   Udottp1    = Udottp1k ;
   Udotdottp1 = Udotdottp1k ;
-  
+
   % computes KTred at converged Uk
   KTtp1red = systemDeltauMatrix ;
-  
+
   % compute stress at converged state
   [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ] ) ;
-  
+
   printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
-    
+
 
   % --- (temporary) computation and storage of separated assembled matrices ---
   %~ mats  = assembler(  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1,   2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
-  %~ ktout = mats{1}; 
-  
+  %~ ktout = mats{1};
+
   %~ if isunix
     %~ save  'Ktp1.dat' ktout ;
     %~ status = system('tail -n +7 Ktp1.dat > aux.dat' );
-    %~ status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
+    %~ status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
   %~ end
-  
+
   %~ if solutionMethod > 2
     %~ dampingMat = mats{2} ;
     %~ massMat    = mats{3} ;
@@ -112,22 +114,22 @@ else
     %~ if isunix
       %~ save  'dampingMattp1.dat' dampingMat ;
       %~ status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
-      %~ status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ; 
-  
+      %~ status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
+
       %~ save  'massMattp1.dat' massMat ;
       %~ status = system('tail -n +7 massMattp1.dat > aux.dat' );
-      %~ status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ; 
+      %~ status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ;
     %~ end
 
   %~ end
-  % --------------------------------------------------------------------  
+  % --------------------------------------------------------------------
 
-  
+
   % %%%%%%%%%%%%%%%%
   %~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
   stabilityAnalysisFlag = 0 ;
   % %%%%%%%%%%%%%%%%
-  
+
   if stabilityAnalysisFlag == 2
     [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
   elseif stabilityAnalysisFlag == 1
@@ -136,7 +138,7 @@ else
   else
     nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
   end
-    
+
 end
 
 
@@ -173,11 +175,11 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
       deltaNW = (1-2*alphaHHT)/2 ;
       AlphaNW = (1-alphaHHT)^2/4 ;
     end
-  
+
     Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
-  
+
     Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
-  
+
   else
     Udotdottp1 = Udotdott ;
     Udottp1    = Udott ;
@@ -187,7 +189,7 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
 % ==============================================================================
 %
 % ==============================================================================
-function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau ) 
+function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
 
   oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
   evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
@@ -195,15 +197,15 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
   Uk ( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured (oddNeumDofsInds ) ;
 
   nNodes = length( Uk) / 6 ;
-  
+
   deltauComplete = zeros( size( Uk)) ;
   deltauComplete( neumdofs ) = deltaured ;
-  
+
   for i=1:nNodes
     nodeDofs = nodes2dofs( i , 6 ) ;
     nodeAngDofs = nodeDofs(2:2:6)  ;
-    
-    
+
+
     %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
                                          %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
                                        %~ ) ) ;
@@ -211,18 +213,12 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
 
     %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
                                 %~ expon( Uk             ( nodeAngDofs ) ) ) ;
-                                
+
     Uk ( nodeAngDofs ) = updateB ;
-    
+
   end
-  
+
   currDeltau      = currDeltau    + deltaured ;
 
-function vec = antiSkew( mat ) 
+function vec = antiSkew( mat )
   vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
-
-
-
-
-
-
