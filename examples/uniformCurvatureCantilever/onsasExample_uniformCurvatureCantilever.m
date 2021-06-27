@@ -24,6 +24,7 @@ numElements = 10 ;
 %#------------------
 %#
 %#The modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
+
 %#### materials
 %# Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials.hyperElasModel  = { '1DrotEngStrain'} ;
@@ -39,7 +40,7 @@ elements.elemTypeGeometry = { [], [2 ty tz ] };
 elements.elemTypeParams = { [], 1 };
 %### boundaryConds
 %#
-%# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam. 
+%# The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero), and the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam.
 %# The scalar values of inertia $I_z$ is computed.
 Iy = ty*tz^3/12 ;
 boundaryConds.loadsCoordSys = { []        ; 'global'   } ;
@@ -108,9 +109,10 @@ legend('analytic','NR-RotEng','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('verifCantileverBeam.png','-dpng')
-%#
-%#```@raw html
-%#<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/tutorials/CantileverBeam/verifCantileverBeam.png" alt="plot check" width="500"/>
-%#```
-%#
-%#
+%md
+%md```@raw html
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/tutorials/CantileverBeam/verifCantileverBeam.png" alt="plot check" width="500"/>
+%md```
+%md
+%md
+verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 )
