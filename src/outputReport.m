@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -129,7 +129,7 @@ fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part
 %~ fprintf(fileReport, [ 'The mechanical properties and the constitutive model of the defined materials are listed in the corresponding tables below. The number of defined materials is: %i. \\\\ \n\n'], nMats ) ;
 
 %~ [enc, fin] = tablesFunc( 'Parameter & Value', 2, 'c|c', 'Constitutive parameters of the material.') ;
-%~ vecMat = { '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' } ; 
+%~ vecMat = { '$E_t$'; '$E_c$'; '$\nu$'; '$G$'; '$\rho$' ; '$Prestrain$' } ;
 %~ vecVal = [] ;
 %~ for i = 1:nMats
 	%~ Et 	= materialsParams{i}(2) ;
@@ -140,7 +140,7 @@ fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part
   %~ else
     %~ Ec = 0 ; nu = 0 ; G = 0 ; Prestrain = 0 ;
   %~ end
-  
+
   %~ vecVal = [ Et, Ec, nu, G, rho, Prestrain ] ;
   %~ fprintf(fileReport, [ '\\textbf{Material %i}: material parameters are presented in the table.\n'], i ) ;
   %~ fprintf(fileReport, '%s', enc ) ;
@@ -167,26 +167,26 @@ fprintf(fileReport, [ 'This is an ONSAS automatically-generated report with part
     %~ fprintf(fileReport, ['%s & ' formatSections ], vecSec{j}, crossSecsParams(i,j) );
   %~ fprintf(fileReport, '\\\\ \n' ) ;
   %~ end
-  %~ fprintf(fileReport, '%s', fin ) ;  
+  %~ fprintf(fileReport, '%s', fin ) ;
 %~ end
 
 %~ % Load Cases
 %~ fprintf(fileReport, [ '\\subsection{Load Cases}\n\n'] ) ;
 %~ fprintf(fileReport, [ 'The load cases considered in the problem are listed in the table below. \n\n'] ) ;
 
-%~ if norm(constantFext) > 0 
+%~ if norm(constantFext) > 0
 	%~ constant = 'yes' ;
 %~ else
-	%~ constant = 'no' ;	
+	%~ constant = 'no' ;
 %~ end
 
-%~ selfWeightText = 'no' ;  
+%~ selfWeightText = 'no' ;
 
 %~ if norm(variableFext) > 0
 	%~ variable = 'yes' ;
 		%~ timesVec = 0:deltaT:finalTime ;
-		%~ lambdamax = max(loadFactorsFunc(timesVec)) ; lambdamin = min(loadFactorsFunc(timesVec)) ; lambda0 = loadFactorsFunc(0) ; 
-%~ else 
+		%~ lambdamax = max(loadFactorsFunc(timesVec)) ; lambdamin = min(loadFactorsFunc(timesVec)) ; lambda0 = loadFactorsFunc(0) ;
+%~ else
 	%~ variable = 'no' ; lambdamax = 0 ; lambdamin = 0 ; lambda0 = 0 ;
 %~ end
 
@@ -219,15 +219,15 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
 %~ if length(numericalMethodParams) > 0
   %~ %
-  %~ if numericalMethodParams(1) == 0 
+  %~ if numericalMethodParams(1) == 0
     %~ vecMethod = { 'Numerical method' ; '$\delta_t$' ; '$t_f$'} ;
-    %~ vecParams = [ {'Linear variable force'} ; num2cell(numericalMethodParams(2:end-1)') ] ; 
+    %~ vecParams = [ {'Linear variable force'} ; num2cell(numericalMethodParams(2:end-1)') ] ;
   %~ %
   %~ elseif numericalMethodParams(1) == 1
     %~ vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' } ;
-    %~ vecParams = [ {'Newton Raphson'} ; num2cell(numericalMethodParams(2:end)') ] ; 
+    %~ vecParams = [ {'Newton Raphson'} ; num2cell(numericalMethodParams(2:end)') ] ;
   %~ %
-  %~ elseif numericalMethodParams(1) == 2  
+  %~ elseif numericalMethodParams(1) == 2
     %~ vecMethod = { 'Numerical method' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; 'Target $\lambda(t)$' ; 'Load steps' ; 'Arc Length increment'} ;
     %~ vecParams = [ {'Newton Raphson - Arc Length'} ; num2cell(numericalMethodParams(2:end)') ] ;
   %~ %
@@ -235,16 +235,16 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
     %~ vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\delta_{NW}$' ; '$\alpha_{NW}$' } ;
     %~ vecParams = [ {'Newmark'} ; num2cell(numericalMethodParams(2:end)') ] ;
   %~ %
-  %~ elseif numericalMethodParams(1) == 4 
+  %~ elseif numericalMethodParams(1) == 4
     %~ vecMethod = { 'Numerical method' ; '$\Delta_t$' ; '$t_f$' ; 'Tol $\Delta_u$' ; 'Tol forces' ; 'Tol iterations' ; '$\alpha_{NW}$' } ;
     %~ vecParams = [ {'HHT'} ; num2cell(numericalMethodParams(2:end)') ] ;
-  %~ end 
+  %~ end
 %~ end
 
 
 %~ if exist('nonHomogeneousInitialCondU0') ~= 0
   %~ initialCondU0 = 'yes' ;
-%~ else 
+%~ else
   %~ initialCondU0 = 'no' ;
 %~ end
 
@@ -260,12 +260,12 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
   %~ for i = 1:size(Kliblib,1)
     %~ if Kliblib(i,i) <= 0
       %~ valProp = valProp + 1 ;
-    %~ end  
+    %~ end
   %~ end
 %~ end
 %~ if nonLinearAnalysisBoolean == 1 && dynamicAnalysisBoolean == 0
   %~ fprintf(fileReport, [ 'Non Linear Analysis is performed.\n' ] ) ;
-%~ elseif nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 1 
+%~ elseif nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 1
   %~ fprintf(fileReport, [ 'Dynamic Analysis is performed.\n' ] ) ;
 %~ elseif nonLinearAnalysisBoolean == 1 && dynamicAnalysisBoolean == 1
   %~ fprintf(fileReport, [ 'Non Linear and Dynamic Analysis is performed.\n' ] ) ;
@@ -275,7 +275,7 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
     %~ fprintf(fileReport, [ 'Linear buckling analysis is performed.\n' ]) ;
   %~ end
   %~ fprintf(fileReport, [ 'Number of negative eigenvalues: %3i'], valProp ) ;
-%~ end 
+%~ end
 
 %~ [enc1,fin1] = tablesFunc( 'Optional parameters & Status', 2, 'c|c', 'Analysis optional parameters status.' ) ;
 %~ [enc2,~] = tablesFunc( 'Node & Dof & Value', 3, 'c|c|c', 'Optional parameters values.' ) ;
@@ -291,7 +291,7 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 		%~ fprintf(fileReport, '%s', enc2 ) ;
 		%~ for i = 1:size(nonHomogeneousInitialCondU0,1)
 			%~ fprintf(fileReport, [ '%i & %i & %i' ], [nonHomogeneousInitialCondU0(i,1) nonHomogeneousInitialCondU0(i,2) nonHomogeneousInitialCondU0(i,3)] ) ;
-			%~ fprintf(fileReport, [ '\\\\ \n' ] ) ;    
+			%~ fprintf(fileReport, [ '\\\\ \n' ] ) ;
 		%~ end
 		%~ fprintf(fileReport, '\n\\end{tabular}\n\\end{adjustbox}\n\\caption{Non homogeneous initial condition $u_0$ values.}\n\\end{table} \n\n' ) ;
   %~ end
@@ -299,10 +299,10 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 		%~ fprintf(fileReport, '%s', enc2 ) ;
 		%~ for i = 1:size(nonHomogeneousInitialCondUdot0,1)
 			%~ fprintf(fileReport, [ '%i & %i & %i' ], [nonHomogeneousInitialCondUdot0(i,1) nonHomogeneousInitialCondUdot0(i,2) nonHomogeneousInitialCondUdot0(i,3)] ) ;
-			%~ fprintf(fileReport, [ '\\\\ \n' ] ) ;    
+			%~ fprintf(fileReport, [ '\\\\ \n' ] ) ;
 		%~ end
-		%~ fprintf(fileReport, '\n\\end{tabular}\n\\end{adjustbox}\n\\caption{Non homogeneous initial condition $\\dot{u_0}$ values.}\n\\end{table} \n\n' ) ; 
-  %~ end 
+		%~ fprintf(fileReport, '\n\\end{tabular}\n\\end{adjustbox}\n\\caption{Non homogeneous initial condition $\\dot{u_0}$ values.}\n\\end{table} \n\n' ) ;
+  %~ end
 %~ end
 
 %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
@@ -361,9 +361,9 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 %~ else
 	%~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
   %~ fprintf(fileReport, [ '\\begin{longtable}{cccc} \n'] );
-  %~ fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;  
+  %~ fprintf(fileReport, [ '\\input{' problemName '_timePerformanceOutput.tex' '} \n'] ) ;
   %~ fprintf(fileReport, [ '\\caption{Incremental analysis time performance.}\n\\end{longtable}\n'] ) ;
-%~ end	
+%~ end
 
 
 
@@ -384,7 +384,7 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 		%~ fprintf(fileReport, [ 'VTK ConecNodes function: & %5.3f \\\\ \n'], tVtkConecNodes) ;
 		%~ fprintf(fileReport, [ 'VTK writer: & %5.3f \\\\ \n'], tVtkWriter) ;
 	%~ end
-	%~ if length(loadFactors)>1	
+	%~ if length(loadFactors)>1
 		%~ fprintf(fileReport, [ 'Load vs Disps.: & %5.3f \\\\ \n'], tLoadDisps) ;
 	%~ end
 	%~ fprintf(fileReport, [ '\\midrule\n'])
@@ -406,10 +406,11 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
   %~ end
 %~ else
   %~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
-  
-  fprintf(fileReport, [ '\\begin{longtable}{cccccccc} \n'] );
-  fprintf(fileReport, [ '\\input{' problemName '_iterations.tex' '} \n'] ) ;  
-  fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n\n'] ) ;
+
+  fprintf(fileReport, [ '\\begin{longtable}{cccccc} \n'] );
+  fprintf(fileReport, [ '\\input{' problemName '_iterations.tex' '} \n'] ) ;
+%  fprintf(fileReport, [ '\\caption{Output of incremental analysis.}\n\\end{longtable}\n\n'] ) ;
+  fprintf(fileReport, [ '\\end{longtable}\n\n'] ) ;
   %~ fprintf(fileReport, [ '\\newpage \n\n' ] ) ;
 %~ end
 
@@ -421,13 +422,13 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 %fprintf(fileReport, [ '\\section{Plots and Tables}\n\n'] ) ;
 
 %~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
-	%~ auxv = max ( abs( matUs((3:6:end),:) ) ) ;  auxw = max ( abs( matUs((5:6:end), :) ) ) ;  auxf = max ( abs( matFs(:,:) ) ) ; auxstrain = max ( abs( trussStrain(:,:) ) ) ; 
+	%~ auxv = max ( abs( matUs((3:6:end),:) ) ) ;  auxw = max ( abs( matUs((5:6:end), :) ) ) ;  auxf = max ( abs( matFs(:,:) ) ) ; auxstrain = max ( abs( trussStrain(:,:) ) ) ;
   %~ auxTruss = max ( abs( trussStrain(:,:,:) ) ) ;
 %~ end
 
 %-------------------------------- Deformed Shape -------------------------------
 
-%~ if size(matUs,2) == 1 && size(matNts,2) == 1 
+%~ if size(matUs,2) == 1 && size(matNts,2) == 1
 	%~ matUs = [zeros(size(matUs,1),1) matUs] ;
 	%~ matNts = [zeros(size(matNts,1),1) matNts] ;
 %~ end
@@ -447,17 +448,17 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
   %~ fprintf(fileReport, [ '\\subsubsection{Deformed Shape}\n\n'] ) ;
 
 	%~ if printFlag > 0
-		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-		%~ if printFlag == 1  
+		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;
+		%~ if printFlag == 1
 			%~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-		%~ elseif printFlag == 2  
+		%~ elseif printFlag == 2
 			%~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_deform_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
 		%~ end
-    
-    
-    
-    
-    
+
+
+
+
+
 		%~ if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 			%~ if norm(variableFext) == 0
 				%~ fprintf(fileReport, [ '\\caption{Deformed structure. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'] )
@@ -465,38 +466,38 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 				%~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e. Scale factor: ' sprintf('%8.2e', linearDeformedScaleFactor) '.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
 			%~ end
 		%~ else
-    
-    
-    	
+
+
+
 			%~ fprintf(fileReport, [ '\\caption{Deformed structure at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
 		%end
 		%~ fprintf(fileReport,  '\\end{figure} \n\n' )
 	%~ end
-	
+
   %~ fprintf(fileReport, [ '\\subsubsection{Normal Force}\n\n'] ) ;
-  
+
   %~ if printFlag > 0
-		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;    
-		%~ if printFlag == 1  
+		%~ fprintf(fileReport, [ '\\begin{figure}[!htb] \n  \\centering \n ' ] ) ;
+		%~ if printFlag == 1
 			%~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '.tex}} \n'  ] ) ;
-		%~ elseif printFlag == 2  
+		%~ elseif printFlag == 2
 			%~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_normalForce_' sprintf('%04i', length( timesPlotsVec )) '}\n']) ;
 		%~ end
-		
-    
+
+
    % if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 			%if norm(variableFext) == 0
 			%	fprintf(fileReport, [ '\\caption{Normal Force.}\n'] )
 			%else
 				%fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
 			%end
-		%else	
-		
-    
+		%else
+
+
     	%~ fprintf(fileReport, [ '\\caption{Normal Force at time index %i, time %12.3e and load factor %12.3e.}\n'], timesPlotsVec(end), currTime, currLoadFactor )
-		
+
     %end
-		
+
     %~ fprintf(fileReport,  '\\end{figure} \n\n' )
 	%~ end
 %~ end
@@ -509,7 +510,7 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 %~ if nonLinearAnalysisBoolean == 1 || dynamicAnalysisBoolean == 1
   %~ if length(loadFactors) > 1
     %~ fprintf(fileReport, [ '\\subsection{Control Dof}\n\n' ] ) ;
-    %~ fprintf(fileReport, [ 'The control node information and displacement are shown below. \n' ] ) ; 
+    %~ fprintf(fileReport, [ 'The control node information and displacement are shown below. \n' ] ) ;
     %~ [enc,fin] = tablesFunc( 'Node & Dof & Scale factor', 3, 'c|c|c', 'Control node information for incremental analysis.') ;
     %~ fprintf(fileReport, '%s', enc) ;
     %%%fprintf(fileReport, '%i & %i & %i \n', controlDofInfo(1), controlDofInfo(2), controlDofInfo(3)) ;
@@ -519,10 +520,10 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
       %~ fprintf(fileReport, [ '\\resizebox{.65\\textwidth}{!}{\\input{' problemName '_loadDisp.tex}} \n ' ] ) ;
     %~ elseif printFlag == 2
       %~ fprintf(fileReport, [ '\\includegraphics[width =0.65\\textwidth]{' problemName '_loadDisp}\n']) ;
-    %~ end  
+    %~ end
     %~ fprintf(fileReport, [ '\\caption{Load vs Displacement of control node.}\n' ] );
     %~ fprintf(fileReport,  '\\end{figure} \n\n' );
-  %~ end   
+  %~ end
 %~ end
 
 
@@ -533,12 +534,12 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
   %~ if nplate == 0 && ntet == 0
     %~ fprintf(fileReport, [ '\\subsection{Solicitations}\n\n'] ) ;
-    %~ fprintf(fileReport, [ 'The solicitations of the elements are presented below. If exists the load case \\textbf{Variable Loads}, the results shown correspond to the final load factor.\n'] ) ; 
+    %~ fprintf(fileReport, [ 'The solicitations of the elements are presented below. If exists the load case \\textbf{Variable Loads}, the results shown correspond to the final load factor.\n'] ) ;
   %~ end
 
-  %~ if ntruss > 0 																																																												
-    %~ fprintf(fileReport, [ '\\subsubsection{Truss elements}' ] ) ; 																																					
-    %~ fprintf(fileReport, [ 'The solicitations for truss elements are presented below. Compression force is considered negative.' ] ) ; 		
+  %~ if ntruss > 0
+    %~ fprintf(fileReport, [ '\\subsubsection{Truss elements}' ] ) ;
+    %~ fprintf(fileReport, [ 'The solicitations for truss elements are presented below. Compression force is considered negative.' ] ) ;
     %~ [enc,fin] = tablesFunc('Elem. & $A$ & $\varepsilon$ & $N$', 4, 'c?ccc', 'Table of normal forces for truss elements.' ) ;
     %~ fprintf(fileReport, '%s', enc ) ;
     %~ for m = 1:nElems
@@ -560,16 +561,16 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
       %~ fprintf(fileReport, ['%3i & %12.3e & ' formatStrain ' & ' formatForce ' \\\\ \n ' ], [i crossSecsParams(Conec(m,6), 1) auxStr auxFor ] ) ;
     %~ end
     %~ fprintf(fileReport, '%s', fin) ;
-  %~ elseif nbeam > 0																																																 											
-    %~ fprintf(fileReport, [ '\\subsubsection{Beam elements}' ] ) ; 																																						
-    %~ fprintf(fileReport, [ 'The solicitations for beam elements are presented below. ' ] ) ; 
+  %~ elseif nbeam > 0
+    %~ fprintf(fileReport, [ '\\subsubsection{Beam elements}' ] ) ;
+    %~ fprintf(fileReport, [ 'The solicitations for beam elements are presented below. ' ] ) ;
 
     %~ [~,fin] = tablesFunc('','','', 'Table of solicitations for each element in local coordinates. Node 1 and Node 2 correspond to the first and second node in the connectivity of each element, respectively.') ;
-    %~ fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c?cccccc?cccccc} \n'] ) 
-      %~ fprintf(fileReport, [ ' & \\multicolumn{6}{c?}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] ) 
+    %~ fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c?cccccc?cccccc} \n'] )
+      %~ fprintf(fileReport, [ ' & \\multicolumn{6}{c?}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] )
       %~ fprintf(fileReport, [ 'Element & ' ...
-        %~ ' $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$ & ' ... 
-        %~ ' $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$ \\\\ \\toprule \n'] ) 																														
+        %~ ' $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$ & ' ...
+        %~ ' $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$ \\\\ \\toprule \n'] )
       %~ for i=1:nElems
         %~ if Conec(i,7) == 2
           %~ fprintf(fileReport, '%3i', i );
@@ -580,7 +581,7 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
               %~ formatSolic='%2i' ;
             %~ else
               %~ formatSolic='%10.2e' ;
-            %~ end  
+            %~ end
             %~ fprintf( fileReport, [ ' & ' formatSolic ] , aux ) ;
           %~ end
           %~ fprintf(fileReport, '\\\\ \n' ) ;
@@ -591,11 +592,11 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
 %~ %---------------------------------- Reactions ----------------------------------
 
-  %~ fprintf(fileReport, [ '\\subsection{Reactions}\n\n'] ) ;																										
-  %~ fprintf(fileReport, [ 'The reactions on the supports are presented below.\n'] ) ;															
+  %~ fprintf(fileReport, [ '\\subsection{Reactions}\n\n'] ) ;
+  %~ fprintf(fileReport, [ 'The reactions on the supports are presented below.\n'] ) ;
 
 
-  %~ [enc,fin] = tablesFunc( 'Node & $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$', 7, 'c?cccccc', 'Table of joint reactions in global coordinates.') ; 
+  %~ [enc,fin] = tablesFunc( 'Node & $F_x$ & $M_x$ & $F_y$ & $M_y$ & $F_z$ & $M_z$', 7, 'c?cccccc', 'Table of joint reactions in global coordinates.') ;
   %~ fprintf(fileReport, '%s ', enc ) ;
   %~ for i = 1:size(nodalSprings,1)
     %~ fprintf(fileReport, '%3i', i );
@@ -605,29 +606,29 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
       %~ if abs(aux)<= 1e-10*auxf
         %~ aux = 0 ;
         %~ formatReaction = '%2i' ;
-      %~ else 
-        %~ formatReaction = '%10.2e' ;																																																	
+      %~ else
+        %~ formatReaction = '%10.2e' ;
       %~ end
       %~ fprintf( fileReport, [ ' & ' formatReaction ] , aux ) ;
     %~ end
-    %~ fprintf(fileReport, '\\\\ \n' );  
+    %~ fprintf(fileReport, '\\\\ \n' );
   %~ end
   %~ fprintf(fileReport, '%s ', fin ) ;
 
 %~ %------------------------------ Nodal displacements ----------------------------
 
   %~ if nplate == 0 && ntet == 0
-    %~ fprintf(fileReport, [ '\\subsection{Displacements}\n\n'] ) ;																										
+    %~ fprintf(fileReport, [ '\\subsection{Displacements}\n\n'] ) ;
     %~ fprintf(fileReport, [ 'The nodal displacements of the elements are presented below. If exists the load case \\textbf{Variable Loads}, the results shown correspond to the final load factor.\n'] ) ;
-  %~ end  															
-  %~ if nbeam > 0 
-    %~ fprintf(fileReport, [ '\\subsubsection{Beam elements} \n' ] ) ;																				
+  %~ end
+  %~ if nbeam > 0
+    %~ fprintf(fileReport, [ '\\subsubsection{Beam elements} \n' ] ) ;
 
-    %~ fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c|cccccc|cccccc} \n'] ) 
-    %~ fprintf(fileReport, [ ' & \\multicolumn{6}{c|}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] ) 
+    %~ fprintf(fileReport, [ '\\begin{table}[!htb]\n \\centering\n \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}{c|cccccc|cccccc} \n'] )
+    %~ fprintf(fileReport, [ ' & \\multicolumn{6}{c|}{Node 1} & \\multicolumn{6}{c}{Node 2} \\\\ \\cmidrule{2-13} \n'] )
     %~ fprintf(fileReport, [ 'Elem. & ' ...
-        %~ ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ & ' ... 
-        %~ ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ \\\\ \\toprule \n'] )														
+        %~ ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ & ' ...
+        %~ ' $u_x$ & $\\theta_x$ & $u_y$ & $\\theta_y$ & $u_z$ & $\\theta_z$ \\\\ \\toprule \n'] )
     %~ for i=1:nElems
       %~ if Conec(i,7) == 2
         %~ fprintf(fileReport, '%3i', i );
@@ -635,24 +636,24 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
           %~ aux = sum( dispsElemsMat(i,j,:) ) ;
           %~ if abs(aux) <= 1e-10*(norm(matUs(:,end),1)/length(matUs(:,end)))
             %~ aux = 0 ;
-            %~ formatDisps='%2i' ;																																														
+            %~ formatDisps='%2i' ;
           %~ else
-            %~ formatDisps='%8.2e' ;																																													
-          %~ end  
+            %~ formatDisps='%8.2e' ;
+          %~ end
           %~ fprintf( fileReport, [ ' & ' formatDisps ] , aux ) ;
         %~ end
         %~ fprintf(fileReport, '\\\\ \n' );
       %~ end
     %~ end
     %~ fprintf(fileReport, [ '\\end{tabular} \\end{adjustbox} \\caption{Table of displacements of both nodes of each element in global coordinates. Node 1 and Node 2 correspond to the first and second node in the connectivity of each element, respectively.} \\end{table} \n\n'] )
-    
+
   %~ elseif ntruss > 0
     %~ fprintf(fileReport, [ '\\subsubsection{Truss elements} \n' ] ) ;
     %~ [enc,fin] = tablesFunc( 'Elem. & $u_{x,1}$ & $u_{x,2} $', 3, 'c?cc', 'Table of nodal displacements in local coordinates.') ;
     %~ fprintf(fileReport, '%s', enc ) ;
     %~ for i = 1:nElems
       %~ m = indexesElems(i) ;
-      %~ auxDis1 = sum(trussDisps(m,1,:)) ; 
+      %~ auxDis1 = sum(trussDisps(m,1,:)) ;
       %~ if abs(auxDis1) <= 1e-10*auxTruss
         %~ auxDis1 = 0 ;
         %~ formatD1 = '%2i' ;
@@ -674,20 +675,20 @@ fprintf(fileReport, [ '\\section{Analysis results}\n\n'] ) ;
 
   %~ if nbeam > 0
     %~ fprintf(fileReport, [ '\\subsubsection{Interpolated beam elements displacements}' ] ) ;
-    %~ fprintf(fileReport, [ '\\input{' problemName '_tables.tex' '} \n'] ) ; 
-  %~ end	
+    %~ fprintf(fileReport, [ '\\input{' problemName '_tables.tex' '} \n'] ) ;
+  %~ end
 
 %~ else
 	%~ if nplate == 0 && ntet == 0
     %~ fprintf(fileReport, [ '\\subsection{Solicitations}\n\n'] ) ;
-    %~ fprintf(fileReport, [ 'The solicitations of the elements are presented below. \n'] ) ; 
+    %~ fprintf(fileReport, [ 'The solicitations of the elements are presented below. \n'] ) ;
   %~ end
 
 	%~ fprintf(fileReport, [ '\\clearpage\n\n' ] ) ;
   %~ fprintf(fileReport, [ '\\begin{longtable}{ccccc} \n'] )
-  %~ fprintf(fileReport, [ '\\input{' problemName '_incrementsNormalForceOutput.tex' '} \n'] ) ;  
+  %~ fprintf(fileReport, [ '\\input{' problemName '_incrementsNormalForceOutput.tex' '} \n'] ) ;
   %~ fprintf(fileReport, [ '\\caption{Output of incremental Normal Forces analysis.}\n\\end{longtable}\n'] ) ;
-%~ end % endif 
+%~ end % endif
 
 %~ fprintf(fileReport, [ '\\newpage\n\n' ] ) ;
 %~ % ==============================================================================
@@ -743,13 +744,13 @@ fclose(fileReport);
 
   %~ auxv = max ( abs( matUs((3:6:end),:) ) ) ;  auxw = max ( abs( matUs((5:6:end), :) ) ) ;  auxf = max ( abs( matFs(:,:) ) ) ;
 
-  %~ npartelem = 9 ; 
+  %~ npartelem = 9 ;
   %~ v = zeros(npartelem,1) ;
   %~ w = zeros(npartelem,1) ;
   %~ Rb = eye(4) ;
   %~ Rb(2,2) = -1 ;
   %~ Rb(4,4) = -1 ;
-  
+
   %~ LocBendXYdofs = [ 3  6           3+ndofpnode 6+ndofpnode] ;
   %~ LocBendXZdofs = [ 5  4           5+ndofpnode 4+ndofpnode] ;
 
@@ -759,23 +760,23 @@ fclose(fileReport);
   %~ xaux  = '' ;
   %~ stab = '' ;
   %~ stabaux = '' ;
-  
+
   %~ for i = 1:npartelem
     %~ if i == npartelem
       %~ vi = sprintf('$v_{%i,L}$ \\\\ \\toprule \n', i) ;
       %~ wi = sprintf('$w_{%i,L}$ \\\\ \\toprule \n', i) ;
       %~ xi = sprintf('$x_{%i,L}$ \\\\ \\toprule \n', i) ;
-    %~ else 
+    %~ else
       %~ vi = sprintf('$v_{%i,L}$ &', i) ;
       %~ wi = sprintf('$w_{%i,L}$ &', i) ;
       %~ xi = sprintf('$x_{%i,L}$ &', i) ;
-    %~ end   
+    %~ end
     %~ sauxv = [ sauxv, vi, espacio ] ;
     %~ sauxw = [ sauxw, wi, espacio ] ;
     %~ xaux  = [ xaux , xi, espacio ] ;
-    
+
     %~ tab   = sprintf('%s', 'c') ;
-    %~ stab  = [ stab, tab ] ; 
+    %~ stab  = [ stab, tab ] ;
   %~ end
   %~ stab2 = [ '{c?',stab,'}' ] ;
 
@@ -786,56 +787,56 @@ fclose(fileReport);
 		%~ if Conec(i,7) == 2
 			%~ m = indexesElems(i) ;
 			%~ fprintf(fileTables, '%3i', i) ;
-		
+
 			%~ x = linspace( 0, ElemLengths(m), npartelem ) ;
-		
+
 			%~ for j=1:npartelem
 				%~ formatDisps='%8.1e' ;
 				%~ fprintf(fileTables, [ ' & ' formatDisps ] , x(j) ) ;
 			%~ end
 			%~ fprintf(fileTables, ' \\\\ \n' );
     %~ end
-  %~ end  
+  %~ end
   %~ fprintf(fileTables,  '\\end{tabular} \\end{adjustbox} \\caption{Local coordinates of data points.} \\end{table} \n\n' )
-  
+
   %~ % -----------------------------------
-  
+
   %~ % ---  v ----
   %~ % prints table environment beginning
   %~ fprintf(fileTables,  '\\begin{table}[!htb] \n \\centering \n \\begin{adjustbox}{max width=\\textwidth} \n \\begin{tabular}%s \n', stab2) ;
   %~ % prints headers
   %~ fprintf(fileTables,['Elem. &  %s'], sauxv) ;
-  
+
   %~ for i = 1:nElems
 		%~ if Conec(i,7) == 2
 			%~ m = indexesElems(i) ;
 			%~ fprintf(fileTables, '%3i', i) ;
-		
+
 			%~ R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
-		
+
 			%~ localUelem = R' * dispsElemsMat(m,:,end)' ;
-		
+
 			%~ x = linspace( 0, ElemLengths(m), npartelem ) ;
-		
+
 			%~ for j=1:npartelem
 				%~ N = bendingInterFuns( x(j), ElemLengths(m), 0) ;
-				
+
 				%~ v(j) = N * localUelem(LocBendXYdofs) ;
-				
+
 				%~ if abs(v(j)) <= 1e-10*auxv
 					%~ v(j) = 0 ;
 					%~ formatDisps='%2i' ;
 				%~ else
 					%~ formatDisps='%10.2e' ;
-				%~ end 
+				%~ end
 				%~ fprintf(fileTables, [ ' & ' formatDisps ] , v(j) ) ;
 			%~ end
 			%~ fprintf(fileTables, ' \\\\ \n' );
     %~ end
-  %~ end  
+  %~ end
   %~ fprintf(fileTables,  '\\end{tabular} \\end{adjustbox} \\caption{Table of $v$ local displacements.} \\end{table} \n\n' )
   %~ % -----------------------------------
-  
+
   %~ % w
   %~ fprintf(fileTables,  '\\begin{table}[!htb] \\centering \\begin{adjustbox}{max width=\\textwidth} \\begin{tabular}%s \n', stab2) ;
   %~ fprintf(fileTables,['Elem. &  %s'], sauxw) ;
@@ -843,32 +844,32 @@ fclose(fileReport);
 		%~ if Conec(i,7) == 2
 			%~ m = indexesElems(i) ;
 			%~ fprintf(fileTables, '%3i', i) ;
-		
+
 			%~ R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
-		
+
 			%~ localUelem = R' * dispsElemsMat(m,:,end)' ;
-			
+
 			%~ x = linspace( 0, ElemLengths(m), npartelem ) ;
-		
+
 			%~ for j=1:npartelem
 				%~ N = bendingInterFuns( x(j), ElemLengths(m), 0) ;
-		
+
 				%~ w(j) = N * Rb' * localUelem(LocBendXZdofs) ;
-		
+
 				%~ if abs(w(j)) <= 1e-10*auxw
 					%~ w(j) = 0 ;
 					%~ formatDisps='%2i' ;
 				%~ else
 					%~ formatDisps='%10.2e' ;
-				%~ end 
+				%~ end
 				%~ fprintf(fileTables, [ ' & ' formatDisps ] , w(j) ) ;
 			%~ end
 			%~ fprintf(fileTables, ' \\\\ \n' );
     %~ end
-  %~ end  
+  %~ end
   %~ fprintf(fileTables,  '\\end{tabular} \\end{adjustbox} \\caption{Table of $w$ local displacements.} \\end{table} \n\n' )
-  
-  %~ fclose(fileTables) ; 
+
+  %~ fclose(fileTables) ;
   %~ % -----------------------------------
 	%~ end % endif nbeam
 %~ end

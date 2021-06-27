@@ -57,10 +57,10 @@
 %mdp_1 \alpha \frac{1-2\nu}{2} \left(\alpha^2 -1 \right) + p_2 \alpha \left(\alpha^2 -1 \right) =
 %md \left( \frac{E \nu}{(1+\nu)2}  + \frac{E}{(1+\nu)2} \right)  \alpha \left(\alpha^2 -1 \right)
 %md```
-%md thus, considering the axial displacement $u$ and using the stretch definition $\alpha = u/Lx$, we obtain
+%md thus, considering the axial displacement $u$ and using the stretch definition $\alpha = (1+u/Lx)$, we obtain
 %md```math
 %mdP_{xx}( u ) =
-%md \frac{E}{2}  \left( \left( \frac{u}{Lx} \right)^3 - \left( \frac{u}{Lx} \right) \right)
+%md \frac{E}{2}  \left( \left( 1+\frac{u}{Lx} \right)^3 - \left( 1+ \frac{u}{Lx} \right) \right)
 %md```
 %md
 %md### Numerical solution
@@ -141,12 +141,12 @@ mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
 %md
 %md### Analysis parameters
 %md
-analysisSettings.methodName     = 'newtonRaphson' ;
-analysisSettings.stopTolIts     = 30      ;
-analysisSettings.stopTolDeltau  = 1.0e-12 ;
-analysisSettings.stopTolForces  = 1.0e-12 ;
-analysisSettings.finalTime       = 1       ;
-analysisSettings.deltaT         = .1      ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.stopTolIts    = 30      ;
+analysisSettings.stopTolDeltau = 1.0e-12 ;
+analysisSettings.stopTolForces = 1.0e-12 ;
+analysisSettings.finalTime      = 1       ;
+analysisSettings.deltaT        = .1      ;
 %md
 %md
 %md### Output parameters
@@ -159,6 +159,9 @@ otherParams.problemName = 'uniaxialExtension_Manual' ;
 %md
 %md### Results
 %md
+%md```math
+%md\lambda(t) = \frac{1}{p} \frac{E}{2}  \left( \left( 1+\frac{u}{Lx} \right)^3 - \left( 1+ \frac{u}{Lx} \right) \right)
+%md```
 
 analyticCheckTolerance = 1e-6 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
@@ -173,9 +176,9 @@ analyticVals - loadFactorsMat'
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure, hold on, grid on
 plot( disps, loadFactorsMat, 'k-o' , 'linewidth', lw,'markersize',ms )
-plot(disps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
+plot( disps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic','NR-RotEng','location','North')
+legend('Numeric','Analytic','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('verifUniaxial.png','-dpng')
