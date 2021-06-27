@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -27,6 +27,4 @@ for k=1:2
     aux2 = [(2+(k-1)*6) : 2 : (2+(k-1)*6+4)] ; % rotation     dofs
     R ( aux1, aux1 ) = locglomat ;
     R ( aux2, aux2 ) = locglomat ;
-  end
-  
-endfunction
+end
