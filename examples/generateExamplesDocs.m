@@ -1,5 +1,5 @@
 
-% llamada jorge generateExamplesDocs('~/.julia/dev/ONSAS_docs/docs/src/')
+% llamada jorge:    generateExamplesDocs('~/.julia/dev/ONSAS_docs/docs/src/')
 
 function generateExamplesDocs( dirONSAS_docs )
 
@@ -19,5 +19,5 @@ MDFiles    = {  'staticVonMisesTruss.md' ...
 
 for i=1:length(ONSASFiles)
   fprintf([ '  - ' ONSASFiles{i} '\n' ])
-  m2md( ONSASFiles{i} , [ [ dirONSAS_docs MDFiles{i} ] ,1)
+  m2md( ONSASFiles{i} , [ dirONSAS_docs MDFiles{i} ] , 1 )
 end
