@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -50,6 +50,8 @@ end
 % -------  matrix with stress per element ----------------------------
 if stressBool
   stressMat = zeros( nElems, 6 ) ;
+else
+  stressMat = [] ;
 end
 % ====================================================================
 
@@ -65,13 +67,13 @@ for elem = 1:nElems
   % extract element properties
   hyperElasModel      = materials.hyperElasModel{  Conec( elem, 1) } ;
   hyperElasParams     = materials.hyperElasParams{ Conec( elem, 1) } ;
-  
+
   if isfield(materials,'density')
     density             = materials.density{ Conec(elem, 1) }  ;
   else
     density = 0;
   end
-  
+
   elemType            = elements.elemType{ Conec( elem, 2) } ;
   elemTypeParams      = elements.elemTypeParams{ Conec( elem, 2) } ;
   elemTypeGeometry    = elements.elemTypeGeometry{ Conec( elem, 2) } ;
@@ -84,16 +86,16 @@ for elem = 1:nElems
   dofselemRed = dofselem ( 1 : dofsStep : end ) ;
 
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
-  
+
   elemNodesxyzRefCoords  = reshape( Nodes(   Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
-  
+
   stressElem = [] ;
 
   % -----------   truss element   ------------------------------
   if strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemTypeGeometry, density ) ;
-    
+
     [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
 
     Finte = fs{1} ;    Ke    = ks{1} ;
@@ -110,22 +112,22 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
-		
+
 		if strcmp(hyperElasModel, 'linearElastic')
-				
+
 			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemTypeGeometry, density, hyperElasParams, elemDisps ) ;
-		
+
 		else
-			
+
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
       Finte = fs{1} ;  Ke    = ks{1} ;
-  
+
       if density > 0
         Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
       end
-		
+
 		end
 
   % ---------  tetrahedron solid element -----------------------------
@@ -147,7 +149,7 @@ for elem = 1:nElems
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
   end
-  
+
   if tangBool
     for indRow = 1:length( dofselemRed )
 
