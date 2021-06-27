@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -43,9 +43,7 @@ while continueTimeAnalysis
   if finalTimeReachedBoolean
     continueTimeAnalysis = false ;
   end
-  
-  modelCurrSol.currLoadFactorsVals
-  
+
   % store results
   % -------------
   modelCurrSol   =   modelNextSol ;
@@ -53,6 +51,19 @@ while continueTimeAnalysis
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
 
   %~ deltaT    = modelNextSol.currTime - modelCurrSol.currTime ;
+
+  %
+  % % generates deformed nodes coords
+  % [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ] = vtkGeometry( ...
+  %   modelProperties.coordsElemsMat , Conec, crossSecsParamsMat, modelNextSol.U, normalForces, Nodes, elementsParamsMat, modelNextSol.Stress  ) ;
+  %
+  % % data
+  % [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, vtkStress, vtkDispMat ) ;
+  %
+  % % writes file
+  % vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
+
+
 
 end
 
@@ -62,19 +73,19 @@ return
 
 if timeIndex == 1
 
-  if length( controlDofsAndFactors ) > 0  
+  if length( controlDofsAndFactors ) > 0
     controlDisps               = 0 ;
     controlDisps(timeIndex, :) = modelCurrSol.U( controlDofsAndFactors(:,1) ) ...
                                               .* controlDofsAndFactors(:,2) ;
   end
-  
+
   loadFactors                = BCsData.currLoadFactor  ;
 end
 
 % ----------------   updates data structures and time --------------------------
 
 loadFactors  ( timeIndex+1 )       = BCsData.nextLoadFactor  ;
-if length( controlDofsAndFactors ) > 0  
+if length( controlDofsAndFactors ) > 0
   controlDisps ( timeIndex+1 )       = modelNextSol.U ( controlDofsAndFactors(:,1) ) ...
                                                    .* controlDofsAndFactors(:,2) ;
 end
@@ -95,7 +106,7 @@ indsNormal = [ find(elementsParamsMat(Conec(:,4+2)) == 2 ) ; find( elementsParam
 if timeIndex == 1
     normalForcesIni = zeros( nElems, 1 ) ;
     sigxs = modelCurrSol.Stress(:,1) ;
-    
+
     if ~isempty(indsNormal) == 1
         for indexArea = 1:(size( crossSecsParamsMat,1))
             typeSec          = crossSecsParamsMat(indexArea,1)   ;
@@ -119,7 +130,7 @@ end
 normalForces = normalForcesIni ;
 sigxs = modelCurrSol.Stress(:,1) ;
 if ~isempty(indsNormal) == 1
-    for indexArea = 1:(size(crossSecsParamsMat,1))                    
+    for indexArea = 1:(size(crossSecsParamsMat,1))
         typeSec          = crossSecsParamsMat(indexArea,1)   ;
         indexElemTypeSec = find((Conec(:,4+4)) == indexArea) ;
         typeSecParams    = crossSecsParamsMat(indexArea,:)   ;
@@ -128,8 +139,8 @@ if ~isempty(indsNormal) == 1
         elseif typeSecParams(1) == 2 %rectangular section
             areaTypeSec = typeSecParams(2)*typeSecParams(3)   ;
         elseif typeSecParams(1) == 3 %circular section
-            diameter = typeSecParams(2)                       ;   
-            areaTypeSec = pi*diameter^2/4                     ;   
+            diameter = typeSecParams(2)                       ;
+            areaTypeSec = pi*diameter^2/4                     ;
         else
             error(' section type not implemented yet, please create an issue')
         end
@@ -164,7 +175,7 @@ end
 if plotParamsVector(1) == 3
 
   if modelCurrSol.timeIndex == 1,
-    
+
     % generate connectivity
     [ vtkNodes, vtkDispMat, vtkNormalForces, vtkStress ...
       , vtkConec, elem2VTKCellMap ] ...
@@ -179,7 +190,7 @@ if plotParamsVector(1) == 3
   end
 
   aux = timesPlotsVec == modelNextSol.timeIndex ;
-  
+
   if sum( aux ) > 0
 
     indplot = find( aux ) ;
@@ -190,29 +201,25 @@ if plotParamsVector(1) == 3
 
     % data
     [ cellPointData, cellCellData, filename ] = vtkData( outputDir, problemName, indplot, vtkNormalForces, vtkStress, vtkDispMat ) ;
-    
+
     % writes file
     vtkWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;
-      
+
   end
 end
 
 
 
-  % --- update state data --- 
+  % --- update state data ---
   modelCurrSol           = modelNextSol ;
-  
+
   BCsData.currLoadFactor = BCsData.nextLoadFactor                   ;
   BCsData.nextLoadFactor = loadFactorsFunc( modelCurrSol.currTime + deltaT ) ;
 
   % ----   evals stop time incr crit    --------
   stopTimeIncrBoolean = modelCurrSol.currTime >= finalTime ;
-    
+
 end
 
 fprintf( '\n| end time-step%4i - (max,avg) iters: (%3i,%5.2f) | \n ',...
   modelCurrSol.timeIndex, max( itersPerTimeVec ) , mean( itersPerTimeVec(2:end) ) );
-
-
-
-

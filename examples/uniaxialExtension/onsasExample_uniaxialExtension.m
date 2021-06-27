@@ -169,7 +169,7 @@ disps = matUs(6*6+1,:) ;
 analyticVals = analyticFunc(disps) ;
 %
 verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance
-analyticVals - loadFactorsMat'
+
 %md
 %md### plot
 %md
@@ -183,7 +183,6 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('verifUniaxial.png','-dpng')
 %md
-
 
 return
 
