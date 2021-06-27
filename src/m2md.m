@@ -4,17 +4,17 @@ fidIn  = fopen( fileIn, 'r' );
 fidOut = fopen( fileOut,'w' );
 
 currentLine = fgetl( fidIn ) ;
-isInCodeBlock = ~( length( currentLine )>=2 && strcmp( currentLine(1:2), '%#' ) ) ;
+isInCodeBlock = ~( length( currentLine )>=3 && strcmp( currentLine(1:3), '%md' ) ) ;
 lineCount = 0 ;
 
 while ~feof( fidIn )
-  
+
   lineCount = lineCount + 1;
   if lineCount != 1
     currentLine = fgetl( fidIn ) ;
   end
-  
-  if length( currentLine )>=2 && strcmp( currentLine(1:2), '%#' ) % not code
+
+  if length( currentLine )>=3 && strcmp( currentLine(1:3), '%md' ) % not code
 
     if isInCodeBlock % closes code block before writing comment
       if includeCodeBoolean
@@ -22,7 +22,7 @@ while ~feof( fidIn )
       end
       isInCodeBlock = false ;
     end
-    fprintf( fidOut,'%s\n', currentLine(3:end) );
+    fprintf( fidOut,'%s\n', currentLine(4:end) );
 
   else
     if ~isInCodeBlock % open code block
@@ -34,7 +34,7 @@ while ~feof( fidIn )
     if includeCodeBoolean
       fprintf( fidOut,'%s\n', currentLine );
     end
-  end  
+  end
 end
 
 fclose(fidIn);

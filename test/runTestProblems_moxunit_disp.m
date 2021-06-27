@@ -8,7 +8,7 @@ function test_suite=runTestProblems_moxunit_disp
   catch
   end
   initTestSuite;
-  
+
 function test_1
   onsasExample_staticVonMisesTruss
   assertEqual( verifBoolean, true );
@@ -19,4 +19,8 @@ function test_2
 
 function test_3
   onsasExample_frameLinearAnalysis
+  assertEqual( verifBoolean, true );
+
+function test_4
+  onsasExample_uniaxialExtension
   assertEqual( verifBoolean, true );

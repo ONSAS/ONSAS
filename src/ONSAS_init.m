@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) 
+function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 ONSASversion = '0.1.10'  ; % sets the current version
 
@@ -40,7 +40,6 @@ otherParams.outputDir = outputDir ;
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
-
 % process initial conditions
 % --------------------------
 [ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
@@ -56,14 +55,13 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
 
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
-
 % compress model structs
 % ----------------------
 [ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
   timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, vecLoadFactors, otherParams.problemName );
-  
+
 %~ modelCurrSol.U
 %~ modelCurrSol.convDeltau
 %~ modelCurrSol.timeIndex
@@ -84,18 +82,18 @@ else
 end
 timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
 
-if exist( 'controlDofs') ==0 
+if exist( 'controlDofs') ==0
   controlDofs = [] ;
   controlDofsAndFactors = [] ;
 end
 
 if length( controlDofs ) > 0
   controlDofsAndFactors = zeros( size( controlDofs,1 ) , 2 ) ;
-  
+
   % control dof info
   for i=1:size(controlDofs,1)
     aux                = nodes2dofs( controlDofs(i,1), 6 ) ;
-    controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ; 
+    controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ;
   end
 end
 
@@ -125,10 +123,10 @@ if exist( outputDir ) == 7 % problemName is a directory
   if isThisOctave
     confirm_recursive_rmdir(0)
   end
-  
+
   % delete
   [aux, msg] = rmdir( outputDir ,'s') ;
-  
+
   % create empty
   mkdir( outputDir );
 
@@ -157,7 +155,7 @@ if otherParams.screenOutputBool
             '|      /    /  / |  /  /_ _    /_ _ /  /_ _       |\n' ...
             '|     /    /  /  | /       /  /    /       /      |\n' ...
             '|    /_ _ /  /   |/   _ _ /  /    /   _ _ /       |\n' ...
-            '|                                                 |\n' ... 
+            '|                                                 |\n' ...
             '|-------------------------------------------------|\n' ] );
   fprintf([ '| Welcome to ONSAS v' ONSASversion '.                       |\n' ...
             '| This program comes with ABSOLUTELY NO WARRANTY. |\n' ...
@@ -165,4 +163,3 @@ if otherParams.screenOutputBool
             '|-------------------------------------------------|\n'] ) ;
   fprintf( ['| Solving problem:  ' otherParams.problemName '\n' ] ) ;
 end
-

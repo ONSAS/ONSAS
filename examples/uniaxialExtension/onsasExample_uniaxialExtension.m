@@ -1,40 +1,118 @@
-%% Example uniaxialSolid
-% Elastic solid submitted to uniaxial loading. 
-% Geometry given by $L_x$, $L_y$ and $L_z$, tension $p$ applied on 
-% face $x=L_x$.
-
+%md## Example uniaxialSolid
+%md
+%mdIn this example an elastic solid is submitted to a uniaxial extension test. The problem is inspired by Exercise 4 from section 6.5 in (Holzapfel,2000). The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions and the tension $p$ is applied on the face $x=Lx$, as nominal traction (see (Holzapfel,2000)).
+%md
+%md```@raw html
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/diagramSolidUniaxialHTML.svg" alt="structure diagram" width="500"/>
+%md```
+%md
+%md```@raw latex
+%md\begin{center}
+%md\def\svgwidth{0.7\textwidth}
+%md\input{diagramSolidUniaxialPDF.pdf_tex}
+%md\end{center}
+%md```
+%md
+%md### Analytic solution
+%md
+%mdLet us consider a uniform deformation with parametric deformation gradient and corresponding Green-Lagrange strain tensor given by
+%md```math
+%md\textbf{F} = \left[ \begin{matrix} \alpha & 0 & 0 \\ 0 & \beta & 0 \\ 0 & 0 & \beta \end{matrix} \right]
+%md\qquad
+%md\textbf{E} = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix} \right]
+%md```
+%mdThe second Piola-Kirchhoff tensor $\textbf{S}$ is given by
+%md```math
+%md\textbf{S}( \textbf{E} ) = p_1 tr(\textbf{E}) \textbf{I} + 2 p_2 \textbf{E}
+%md```
+%md then, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{yy}$ component is computed and set zero (by the boundary conditions)
+%md```math
+%mdP_{yy}( \textbf{E} ) =
+%mdp_1 \beta \left(
+%md             \frac{1}{2} \left(\alpha^2 -1 \right) + \left( \beta^2 -1\right)
+%md \right) + 2 p_2 \beta (\frac{1}{2} \left(\beta^2 -1 \right)) = 0
+%md```
+%mdthen, using that $\beta\neq0$ (since $\text{det}( \textbf{F} ) \neq0$), we obtain
+%md```math
+%md p_1 \frac{1}{2} \left(\alpha^2 -1 \right)
+%md = - (p_1+p_2) \left(\beta^2 -1 \right)
+%md```
+%md then using $p_2$ and $p_1$ expressions we obtain
+%md
+%md```math
+%md \left(\beta^2 -1 \right) = -\nu \left(\alpha^2 -1 \right).
+%md```
+%md
+%md The axial component of the nominal stress is
+%md```math
+%mdP_{xx}( \textbf{E} ) =
+%mdp_1 \alpha \left(
+%md             \frac{1}{2} \left(\alpha^2 -1 \right) + \left( \beta^2 -1\right)
+%md \right) + 2 p_2 \alpha (\frac{1}{2} \left(\alpha^2 -1 \right)) = 0
+%md```
+%md and substituting we obtain
+%md
+%md```math
+%mdP_{xx}( \alpha ) =
+%mdp_1 \alpha \frac{1-2\nu}{2} \left(\alpha^2 -1 \right) + p_2 \alpha \left(\alpha^2 -1 \right) =
+%md \left( \frac{E \nu}{(1+\nu)2}  + \frac{E}{(1+\nu)2} \right)  \alpha \left(\alpha^2 -1 \right)
+%md```
+%md thus, considering the axial displacement $u$ and using the stretch definition $\alpha = (1+u/Lx)$, we obtain
+%md```math
+%mdP_{xx}( u ) =
+%md \frac{E}{2}  \left( \left( 1+\frac{u}{Lx} \right)^3 - \left( 1+ \frac{u}{Lx} \right) \right)
+%md```
+%md
+%md### Numerical solution
+%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 clear all, close all
-
-%% set ONSAS.m directory
-dirOnsas = [ pwd '/../../src' ] ; addpath( dirOnsas );
-otherParams.problemName = 'uniaxialExtension_Manual' ;
-
-%% Structural properties
-E = 1 ; nu = 0.3 ;
-p = 3 ; Lx = 1 ; Ly = 1 ; Lz = 1 ;
-
-
+% add path
+addpath( [ pwd '/../../src'] );
+% scalar parameters
+E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+%md
+%md
+%md### MEBI parameters
+%md
+%md#### materials
+%md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+%md since only one material is considered, the structs defined for the materials contain only one entr
 materials.hyperElasModel = {'SVK'} ;
 materials.hyperElasParams = { [ lambda mu ] } ;
-
-
+%md
+%md#### elements
+%md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
 elements.elemType = { 'triangle', 'tetrahedron' } ;
+%md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
 elements.elemTypeParams = { [];[] } ;
 elements.elemTypeGeometry = { [];[] } ;
-
+%md
+%md#### boundaryConds
+%md in this case four BCs are considered, one corresponding to a load and three to displacements.
 boundaryConds.loadsCoordSys = {'global'; [] ; [] ; [] } ;
-boundaryConds.loadsTimeFact = { @(t) p*t ; [] ; [] ; []} ;
-boundaryConds.loadsBaseVals = { [1 0 0 0 0 0 ] ; [] ; [] ; [] } ;
+boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
+boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
 boundaryConds.imposDispDofs = { [] ; [1] ; [3] ; [5] } ;
 boundaryConds.imposDispVals = { [] ; [0] ; [0] ; [0] } ;
-
-
+%md
+%md#### initialConds
+%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
 initialConds = struct();
-
-% tension applied and x, y, z dimensions
-
-% an 8-node mesh is considered with its connectivity matrix
+%md
+%md### Mesh
+%md An 8-node mesh is considered with its connectivity matrix
+%md
+%md```@raw html
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/solidCubeMeshHTML.svg" alt="structure diagram" width="500"/>
+%md```
+%md```@raw latex
+%md\begin{center}
+%md\def\svgwidth{0.6\textwidth}
+%md\input{solidCubeMeshPDF.pdf_tex}
+%md\end{center}
+%md```
+%md The connectivity matrix is given by the following matrix
 mesh.nodesCoords = [ 0    0    0 ; ...
                      0    0   Lz ; ...
                      0   Ly   Lz ; ...
@@ -43,7 +121,8 @@ mesh.nodesCoords = [ 0    0    0 ; ...
                      Lx   0   Lz ; ...
                      Lx  Ly   Lz ; ...
                      Lx  Ly    0 ] ;
-
+%md and the connectivity cell is defined as follows with the MEBI integer parameters for each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
+%md
 mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
                   [ 0 1 1 0    6 8 7   ]; ... % loaded face
                   [ 0 1 2 0    4 1 2   ]; ... % x=0 supp face
@@ -59,56 +138,53 @@ mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
                   [ 1 2 0 0    4 6 5 8 ]; ... % tetrahedron
                   [ 1 2 0 0    4 7 6 8 ]  ... % tetrahedron
                 } ;
-       
-% ----------------------------------------------------------------------
-
-%% --- Analysis parameters ---
-analysisSettings.methodName = 'newtonRaphson' ;
-analysisSettings.stopTolIts       = 30      ;
-analysisSettings.stopTolDeltau    = 1.0e-12 ;
-analysisSettings.stopTolForces    = 1.0e-12 ;
-analysisSettings.finalTime        = 1       ;
-analysisSettings.deltaT           = .1      ;
-
-%~ controlDofs = [ 7 1 1 ] ;
-
-%~ storeBoolean = 1 ;
-
-%% Output parameters
+%md
+%md### Analysis parameters
+%md
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.stopTolIts    = 30      ;
+analysisSettings.stopTolDeltau = 1.0e-12 ;
+analysisSettings.stopTolForces = 1.0e-12 ;
+analysisSettings.finalTime      = 1       ;
+analysisSettings.deltaT        = .1      ;
+%md
+%md
+%md### Output parameters
 otherParams.plotParamsVector = [ 3 ] ;
+otherParams.problemName = 'uniaxialExtension_Manual' ;
 %~ printflag = 2 ;
-
-%~ % --- Analytic sol ---
-%~ analyticSolFlag        = 2 ;
-%~ analyticCheckTolerance = 1e-8 ;
-%~ analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
-
+%md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%md
+%md### Results
+%md
+%md```math
+%md\lambda(t) = \frac{1}{p} \frac{E}{2}  \left( \left( 1+\frac{u}{Lx} \right)^3 - \left( 1+ \frac{u}{Lx} \right) \right)
+%md```
 
+analyticCheckTolerance = 1e-6 ;
+analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
+disps = matUs(6*6+1,:) ;
+analyticVals = analyticFunc(disps) ;
+%
+verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance
 
-%~ figure
-%~ plot(matU)
+%md
+%md### plot
+%md
+lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+figure, hold on, grid on
+plot( disps, loadFactorsMat, 'k-o' , 'linewidth', lw,'markersize',ms )
+plot( disps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
+labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
+legend('Numeric','Analytic','location','North')
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+print('verifUniaxial.png','-dpng')
+%md
+
 return
-Conec = {[ 0 1 1 0 0   5 8 6   ]; ... % loaded face
-         [ 0 1 1 0 0   6 8 7   ]; ... % loaded face
-         [ 0 1 0 0 1   4 1 2   ]; ... % x=0 supp face
-         [ 0 1 0 0 1   4 2 3   ]; ... % x=0 supp face
-         [ 0 1 0 0 2   6 2 1   ]; ... % y=0 supp face
-         [ 0 1 0 0 2   6 1 5   ]; ... % y=0 supp face
-         [ 0 1 0 0 3   1 4 5   ]; ... % z=0 supp face
-         [ 0 1 0 0 3   4 8 5   ]; ... % z=0 supp face
-         [ 1 2 0 0 0   1 4 2 6 ]; ... % tetrahedron
-         [ 1 2 0 0 0   6 2 3 4 ]; ... % tetrahedron
-         [ 1 2 0 0 0   4 3 6 7 ]; ... % tetrahedron
-         [ 1 2 0 0 0   4 1 5 6 ]; ... % tetrahedron
-         [ 1 2 0 0 0   4 6 5 8 ]; ... % tetrahedron
-         [ 1 2 0 0 0   4 7 6 8 ]  ... % tetrahedron
-        } ;
-
-iniMatUs = matUs ;
-storeBoolean = 0 ;
-
-ONSAS
 
 % --------------------------------------------------------
 
@@ -122,7 +198,7 @@ loadFactorNumericalValsCase1  = numericalVals ;
 close all
 
 % --------------------------------------------------------
-% solid model using gmsh mesh, local tension load and complex step 
+% solid model using gmsh mesh, local tension load and complex step
 % --------------------------------------------------------
 
 problemName = 'uniaxialExtension_GMSH_ComplexStep' ;

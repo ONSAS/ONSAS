@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -19,17 +19,14 @@
 
 function [S, ConsMat] = cosseratSVK( consParams, Egreen, consMatFlag )
 
-young   = consParams(1) ;
-nu      = consParams(2) ;
-
-lambda  = young * nu / ( (1 + nu) * (1 - 2*nu) ) ;
-shear   = young      / ( 2 * (1 + nu) )          ;
+lambda   = consParams(1) ;
+shear    = consParams(2) ;
 
 S       = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
 
 if consMatFlag == 0 % only stress computed
   ConsMat = [] ;
-  
+
 elseif consMatFlag == 1 % complex-step computation expression
 
   ConsMat = zeros(6,6);
@@ -38,7 +35,7 @@ elseif consMatFlag == 1 % complex-step computation expression
 elseif consMatFlag == 2  % analytical expression
 
   ConsMat = zeros(6,6);
-  ConsMat (1,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ 1-nu , nu   , nu   ] ; 
+  ConsMat (1,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ 1-nu , nu   , nu   ] ;
   ConsMat (2,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ nu   , 1-nu , nu   ] ;
   ConsMat (3,1:3) = ( shear / (1 - 2 * nu) ) * 2 * [ nu   , nu   , 1-nu ] ;
   ConsMat (4,4  ) = shear ;
