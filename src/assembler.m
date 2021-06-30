@@ -16,12 +16,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+%mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
 nElems     = size(Conec, 1) ;
-nNodes     = length( Ut ) / 6 ;
+nNodes     = size(Nodes, 1) ;
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -80,14 +81,15 @@ for elem = 1:nElems
 
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
-  % obtains nodes and dofs of element
+  %md obtains nodes and dofs of element
   nodeselem   = Conec( elem, (4+1):(4+numNodes) )'      ;
   dofselem    = nodes2dofs( nodeselem , 6 )  ;
   dofselemRed = dofselem ( 1 : dofsStep : end ) ;
 
+  %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
 
-  elemNodesxyzRefCoords  = reshape( Nodes(   Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
+  elemNodesxyzRefCoords  = reshape( Nodes( Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
 
   stressElem = [] ;
 
@@ -130,6 +132,14 @@ for elem = 1:nElems
 
 		end
 
+  % ---------  triangle solid element -----------------------------
+  elseif strcmp( elemType, 'triangle')
+
+    thickness = elemTypeGeometry ;
+
+    [ Finte, Ke, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
+                          [1 hyperElasParams], 2, thickness ) ;
+
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 
@@ -139,9 +149,11 @@ for elem = 1:nElems
   end   % case tipo elemento
   % -------------------------------------------
 
-  % -------------------------------------------
-  % ---   assembly   ----
-  % -------------------------------------------
+
+
+
+  %md### Assembly
+  %md
   if fsBool
     % internal loads vector assembly
     Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;

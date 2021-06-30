@@ -51,8 +51,6 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
 
-stop
-
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
 % compress model structs

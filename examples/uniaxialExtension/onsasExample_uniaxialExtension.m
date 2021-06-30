@@ -67,7 +67,7 @@
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 clear all, close all
 % add path
-addpath( [ pwd '/../../src'] );
+addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
