@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -23,7 +23,7 @@ function [numNodes, dofsStep] = elementTypeInfo ( elemType )
   %~ numNodes = 1 ;
   %~ dofsStep = 1 ;
 
-if strcmp( elemType, 'truss')
+if strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
   numNodes = 2 ;
   dofsStep = 2 ;
 

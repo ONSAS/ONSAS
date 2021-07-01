@@ -11,7 +11,7 @@
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
 close all, clear all ;
-addpath( [ pwd '/../../src'] );
+addpath( genpath( [ pwd '/../../src'] ) );
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;
 % x and z coordinates
 auxx = cos( ang1*pi/180 ) * L ;  auxz = sin( ang1*pi/180 ) * L ;

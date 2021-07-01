@@ -1,7 +1,7 @@
 % ==============================================================================
 % --------     ONSAS: an Open Non-linear Structural Analysis System     --------
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -18,15 +18,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
 function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-% convert input data to model structures
-% --------------------------------------
+%mdFirst the input structs are converted to structs with the model information
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-% perform the time analysis
-% -------------------------
+%mdAfter that the structs are used to perform the numerical time analysis
 [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
+%md Finally the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )

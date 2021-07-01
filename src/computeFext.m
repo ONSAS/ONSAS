@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -25,10 +25,9 @@ vecLoadFactors = [] ;
 for i=1:length( factorLoadsFextCell )
 
   if ~isempty( factorLoadsFextCell{i} )
-    
-    vecLoadFactors(i) = loadFactorsFuncCell{i}(evalTime) ;
 
-    Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i}  ;
+    vecLoadFactors(i) = loadFactorsFuncCell{i}(evalTime) ;
+    Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i} ;
   end
 end
 

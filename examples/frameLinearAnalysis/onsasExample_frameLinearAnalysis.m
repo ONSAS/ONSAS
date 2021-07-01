@@ -1,13 +1,8 @@
-% ======================================================================
-% Linear Beam Element example
-
-% ===========================
-% first case: linear analysis
-
+%md Linear Beam Element example
+%md
+%md linear analysis
 close all, clear all        ;
-
-dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-addpath( dirOnsas )             ; % add ONSAS directory to path
+addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % ----------------------------------------------------------------------
 % scalar auxiliar parameters
@@ -75,12 +70,8 @@ bending = E*I/L^3 *4*L^2*2 ;
 
 flecha = P*(2*L)^3/(192*E*I)
 
-          
+
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-verifBoolean = abs( flecha - matUs(11,2) ) < 1e-4 
+verifBoolean = abs( flecha - matUs(11,2) ) < 1e-4
 % ----------------------------------------------------------------------
-
-
-
-

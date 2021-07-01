@@ -18,15 +18,14 @@
 
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-ONSASversion = '0.1.10'  ; % sets the current version
+%md sets the current version
+ONSASversion = '0.1.10'  ;
 
-% set defaults
-% -------------
+%md set defaults
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
 
-% welcome message
-% ---------------
+%md welcome message function
 welcomeMessage(ONSASversion, otherParams );
 
 % creates outputdir in current location
@@ -35,11 +34,11 @@ outputDir = [ './output/' otherParams.problemName '/' ] ;
 createOutputDir( outputDir, otherParams ) ;
 otherParams.outputDir = outputDir ;
 
-% process boundary conds
-% ----------------------
+%md process boundary conds information and elements
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
+
 % process initial conditions
 % --------------------------
 [ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
@@ -47,8 +46,7 @@ otherParams.outputDir = outputDir ;
 currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) ) ;
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
-% call assembler
-% --------------
+%md call assembler
 [~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ] ) ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
