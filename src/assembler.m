@@ -137,9 +137,10 @@ for elem = 1:nElems
 
     thickness = elemTypeGeometry ;
 
-    [ Finte, Ke, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-                          [1 hyperElasParams], 2, thickness ) ;
-
+    if strcmp( hyperElasModel, 'linearElastic' )
+      [ Finte, Ke, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
+                            [1 hyperElasParams], 2, thickness, elemTypeParams ) ;
+    end
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 

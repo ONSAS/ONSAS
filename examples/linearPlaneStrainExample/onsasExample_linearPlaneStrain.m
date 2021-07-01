@@ -96,7 +96,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 3 ; thickness = 0.5 ;
+E = 1 ; nu = 0.25 ; p = .5 ; Lx = 2 ; Ly = 3 ; thickness = 0.5 ;
 
 %md
 %md
@@ -106,21 +106,21 @@ E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 3 ; thickness = 0.5 ;
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
 
 %md since only one material is considered, the structs defined for the materials contain only one entr
-materials.hyperElasModel = {'linearElastic'} ;
-materials.hyperElasParams = { [ E nu ] } ;
+materials.hyperElasModel  = {'linearElastic'} ;
+materials.hyperElasParams = { [ E nu ] }      ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
 elements.elemType = { 'edge', 'triangle' } ;
 %md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
-elements.elemTypeParams = { [];[] } ;
+elements.elemTypeParams = { [] ; 2  } ;
 elements.elemTypeGeometry = { thickness ; thickness } ;
 %md
 %md#### boundaryConds
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
-boundaryConds.loadsCoordSys = {'global'        ; [ ] ; [ ]  } ;
+boundaryConds.loadsCoordSys = {'local'        ; [ ] ; [ ]  } ;
 boundaryConds.loadsTimeFact = { @(t) t         ; [ ] ; [ ]  } ;
-boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [ ] ; [ ]  } ;
+boundaryConds.loadsBaseVals = { [ p 0  0 0  0 0 ] ; [ ] ; [ ]  } ;
 boundaryConds.imposDispDofs = { []             ; [1] ; [3]  } ;
 boundaryConds.imposDispVals = { []             ; [0] ; [0]  } ;
 %md
@@ -150,9 +150,9 @@ mesh.nodesCoords = [ 0    0    0 ; ...
 %md
 mesh.conecCell = {[ 0 1 3 0    1 2   ]; ... % constrained edge
                   [ 0 1 2 0    1 3   ]; ... % constrained edge
-                  [ 0 1 1 0    2 4   ]; ... % loaded edge
-                  [ 1 2 0 0    2 3 1 ]; ... % triangle
-                  [ 1 2 0 0    2 4 3 ]  ... % triangle
+                  [ 0 1 1 0    3 4   ]; ... % loaded edge
+                  [ 1 2 0 0    3 1 4 ]; ... % triangle
+                  [ 1 2 0 0    4 1 2 ]  ... % triangle
                 } ;
 %md
 %md### Analysis parameters
@@ -167,7 +167,7 @@ analysisSettings.deltaT        = 1      ;
 %md
 %md### Output parameters
 otherParams.plotParamsVector = [ 3 ] ;
-otherParams.problemName = 'uniaxialExtension_Manual' ;
+otherParams.problemName = 'linearPlaneStrain' ;
 %~ printflag = 2 ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

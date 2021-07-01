@@ -59,11 +59,18 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
       thickness  = elements.elemTypeGeometry{ Conec( elem, 2 ) } ;
       loadvals   = boundaryConds.loadsBaseVals{ indBC } ;
 
-      if strcmp( loadCoordSys, 'global' )
-        Fx = loadvals( 1 ) * lengthElem * thickness * 0.5 ;
-        Fy = loadvals( 3 ) * lengthElem * thickness * 0.5 ;
-        Fz = loadvals( 5 ) * lengthElem * thickness * 0.5 ;
+      factor = lengthElem * thickness * 0.5 ;
 
+      assert( sum( loadvals( [ 2 4 5 6 ] )==0)==4,'error loads added to edge' )
+
+      if strcmp( loadCoordSys, 'global' )
+        Fx =   loadvals( 1 ) * factor ;
+        Fy =   loadvals( 3 ) * factor ;
+        Fz = 0 ;
+      elseif strcmp( loadCoordSys, 'local' )
+        Fx = - loadvals( 3 ) * factor ;
+        Fy =   loadvals( 1 ) * factor ;
+        Fz = 0 ;
       end % if global/local system
 
       elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0] ;
