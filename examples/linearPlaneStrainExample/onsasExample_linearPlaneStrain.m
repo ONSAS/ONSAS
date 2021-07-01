@@ -156,7 +156,7 @@ analysisSettings.deltaT        = 1      ;
 %md
 %md
 %md### Output parameters
-otherParams.plotParamsVector = [ 3 ] ;
+otherParams.plotParamsVector = [ 0 ] ;
 otherParams.problemName = 'linearPlaneStrain' ;
 %~ printflag = 2 ;
 %md

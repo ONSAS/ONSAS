@@ -174,6 +174,9 @@ elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
   end
 
 
+elseif nElemsTetraOrPlate == nelems  % all are tetraedra or plates
+
+
 else
   error(' mixed elements plot not implemented yet. Please create an issue.')
 
