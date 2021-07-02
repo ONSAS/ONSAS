@@ -6,6 +6,7 @@
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS_docs/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
+[![codecov](https://codecov.io/gh/ONSAS/ONSAS.m/branch/master/graph/badge.svg?token=AV741RD0T3)](https://codecov.io/gh/ONSAS/ONSAS.m)
 
 ## Table of Contents
 1. [About ONSAS](#aboutonsas)
