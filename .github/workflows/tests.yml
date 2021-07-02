@@ -10,6 +10,7 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements
           tests: ./test/runTestProblems_moxunit_disp.m
+          with_coverage: true
   #tests-heat:
   #  runs-on: [ubuntu-latest]
   #  steps:
