@@ -78,7 +78,6 @@ analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
 otherParams.problemName = 'uniformCurvatureCantilever';
-otherParams.plotParamsVector = [ 3 ] ;
 otherParams.controlDofs = [ numElements+1  4 ] ;
 %md## Analysis case 1: NR with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
