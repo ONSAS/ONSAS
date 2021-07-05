@@ -60,7 +60,6 @@ analysisSettings.stopTolForces = 1e-6 ;
 analysisSettings.stopTolIts    = 1 ;
 
 otherParams.problemName = 'linearBeamElement_test' ;
-otherParams.plotParamsVector = [ 3 ] ;
 
 A = b^2;
 I = b^4/12 ;

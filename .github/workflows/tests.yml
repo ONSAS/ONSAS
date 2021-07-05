@@ -6,9 +6,10 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
-      - uses: joergbrech/moxunit-action@v1.1
+      - name: run mechanical-work tests
+        uses: joergbrech/moxunit-action@v1.1
         with:
-          src: examples/staticVonMisesTruss examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements
+          src: examples/staticVonMisesTruss examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk
           tests: ./test/runTestProblems_moxunit_disp.m
           cover_xml_file: coverage.xml
       - uses: actions/upload-artifact@v1

@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -17,19 +17,19 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-% function for writing vtk files of deformed configurations of structures.
-% Creates the file filename with the nodes coordinates given in nodes,
-% the conectivity given in conect and with the point and element data
-% given in cellPointData and cellCellData, respectively.
+%md function for writing vtk files of deformed configurations of structures.
+%md Creates the file filename with the nodes coordinates given in nodes,
+%md the conectivity given in conect and with the point and element data
+%md given in cellPointData and cellCellData, respectively.
 
-function vtkWriter( filename, nodes, conect, cellPointData, cellCellData )
+function vtkFileWriter( filename, nodes, conect, cellPointData, cellCellData )
 
 format_A = '%18.6e' ;
 format_B = '%20.8e' ;
 
 % sizes
-Nnodes = size(nodes,1) ;
-nelem = size(conect,1) ;
+Nnodes = size( nodes , 1 ) ;
+nelem  = size( conect, 1 ) ;
 
 fid = fopen( filename ,'w+') ;
 
@@ -58,57 +58,50 @@ end
 %
 fprintf(fid,'\n') ;
 
+% count the number of numbers to print in the CELLS block
 nTotNumbers = 0;
-for i=1:nelem
-  if (conect(i,1) == 1) || (conect(i,1) == 2)
-    nTotNumbers = nTotNumbers + 3 ;
-  elseif (conect(i,1) == 3) || (conect(i,1) == 4)
-    nTotNumbers = nTotNumbers + 5 ;
-  elseif (conect(i,1) == 12)
-    nTotNumbers = nTotNumbers + 8+1 ;
-  elseif (conect(i,1) == 25) 
-    nTotNumbers = nTotNumbers + 20+1 ;
+cellTypes = unique( conect(:,1) ) ;
+
+for i = 1:length(cellTypes)
+  % count elements with the current cell type
+  nelemCurrType = sum( conect( :, 1 )== cellTypes(i) ) ;
+  if ( cellTypes(i) == 10 ) % if it is tetrahedron add (4+1)*nelemCurrType
+    nTotNumbers = nTotNumbers + (4+1)*nelemCurrType ;
   end
 end
+
 
 fprintf(fid,'CELLS %g %g', nelem, nTotNumbers ) ;
 fprintf(fid,'\n') ;
 for i=1:nelem,
-  if (conect(i,1) == 1) || (conect(i,1) == 2)
-    fprintf(fid,'2 %g %g \n', conect(i,1+(1:2))-1 ) ;
-  
-  elseif (conect(i,1) == 3) || (conect(i,1) == 4)
-    fprintf(fid,'4 %g %g %g %g \n', conect(i,1+(1:4))-1 ) ;
-  
-  elseif (conect(i,1) == 12)
-    fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8))-1 ) ;
-  
-  elseif (conect(i,1) == 25)
-    fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;
+  % if (conect(i,1) == 1) || (conect(i,1) == 2)
+  %   fprintf(fid,'2 %g %g \n', conect(i,1+(1:2))-1 ) ;
+
+  if (conect(i,1) == 10)
+    fprintf(fid,'4 %g %g %g %g \n', conect(i,1+(1:4)) ) ;
+
+  % elseif (conect(i,1) == 12)
+  %   fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8))-1 ) ;
+  %
+  % elseif (conect(i,1) == 25)
+  %   fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;
   end
 end
 %
 fprintf(fid,'\n') ;
 
 
+%
+% Cell type numbers
+%
 fprintf(fid,'CELL_TYPES %g\n', nelem ) ;
 for i=1:nelem,
-  if (conect(i,1) == 2) || (conect(i,1) == 3)
-    fprintf(fid,'3\n') ;
-  elseif (conect(i,1) == 4) 
-    fprintf(fid,'10\n') ;
-  elseif (conect(i,1) == 5) 
-    fprintf(fid,'9\n') ;
-  elseif (conect(i,1) == 12) 
-    fprintf(fid,'12\n') ;
-  elseif (conect(i,1) == 25)
-    fprintf(fid,'25\n') ;
-  end
-end  
+  fprintf(fid,'%3i\n',conect(i,1) ) ;
+end
 fprintf(fid,'\n') ;
 
 %
-% Cell PointData 
+% Cell PointData
 %
 fprintf(fid, 'POINT_DATA  %8i \n' , Nnodes ) ;
 for k = 1:size(cellPointData,1)
@@ -131,14 +124,14 @@ for k = 1:size(cellPointData,1)
       fprintf(fid,[' ' format_B '\n'], auxdata(i,:) ) ;
     end
 
-  end  
+  end
 end
 
 %
 % Cell CellData
 %
 
-if size( cellCellData, 1 ) > 0 
+if size( cellCellData, 1 ) > 0
   fprintf(fid, 'CELL_DATA  %8i \n' , nelem ) ;
   for k = 1:size(cellCellData,1)
     auxtype = cellCellData(k,1) ;
@@ -159,8 +152,8 @@ if size( cellCellData, 1 ) > 0
       end
       fprintf(fid,'\n') ;
     end
-  end 
-end  
+  end
+end
 
 
   %~ fprintf(fid,['VECTORS test float\n']) ;
@@ -168,11 +161,10 @@ end
       %~ tensor = [ sxx(i) txy(i) txz(i) ; txy(i) syy(i) tyz(i) ; txz(i) tyz(i) szz(i) ] ;
       %~ [vec,val] = eig(tensor);
       %~ [mval,ind] = max(abs(diag(val))) ;
-      
+
     %~ fprintf(fid,[' ' format_B ' ' format_B ' ' format_B ' \n'], (vec(:,ind)/norm(vec(:,ind))*mval )' ) ;
   %~ end
   %~ fprintf(fid,'\n') ;
 
 
 fclose(fid);
-

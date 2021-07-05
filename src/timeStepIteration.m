@@ -158,7 +158,7 @@ timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
 
-modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName );
+modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec );
 % -------------------------------------
 
 

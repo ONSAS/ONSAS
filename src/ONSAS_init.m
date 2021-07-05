@@ -24,6 +24,7 @@ ONSASversion = '0.1.10'  ;
 %md set defaults
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
+otherParams.plotsFormat      = checkOrSetDefault ( otherParams     , 'plotsFormat', []  ) ;
 
 %md welcome message function
 welcomeMessage(ONSASversion, otherParams );
@@ -53,32 +54,40 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
 
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
-% compress model structs
-% ----------------------
-[ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
-  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
-  timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
-  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, outputDir, vecLoadFactors, otherParams.problemName );
-
-%~ modelCurrSol.U
-%~ modelCurrSol.convDeltau
-%~ modelCurrSol.timeIndex
-%~ modelCurrSol.currTime
-%~ modelCurrSol.currLoadFactorsVals
-%~ stop
-% prints headers for solver output file
-% -------------------------------------
+%md prints headers for solver output file
 printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
 printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
-nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT );
-if length( otherParams.plotParamsVector ) > 1
-  nplots = min( [ nTimes otherParams.plotParamsVector(2) ] ) ;
-else
-  % default value: all
-  nplots = nTimes ;
+
+nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT )
+
+% if length( otherParams.plotParamsVector ) > 1
+%   nplots = min( [ nTimes otherParams.plotParamsVector(2) ] ) ;
+% else
+%   % default value: all
+   nplots = nTimes ;
+% end
+
+timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
+
+%md compress model structs
+[ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
+  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
+  timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
+  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
+  outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
+  timesPlotsVec );
+
+
+
+
+
+
+%md writes vtk file
+if strcmp( modelProperties.plotsFormat, 'vtk' )
+  vtkMainWriter ( modelCurrSol, modelProperties )
 end
-timesPlotsVec = round( linspace(1, nTimes, nplots ) ) ;
+
 
 if exist( 'controlDofs') ==0
   controlDofs = [] ;
@@ -94,6 +103,8 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ;
   end
 end
+
+
 
 % =========================================
 % function for creation of output directory
