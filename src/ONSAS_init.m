@@ -77,11 +77,8 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec );
 
+%md writes vtk file
 vtkMainWriter ( modelCurrSol, modelProperties )
-
-stop
-
-
 
 if exist( 'controlDofs') ==0
   controlDofs = [] ;
@@ -97,8 +94,6 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ;
   end
 end
-
-
 
 
 

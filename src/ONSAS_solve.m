@@ -46,11 +46,7 @@ while finalTimeReachedBoolean == false
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
 
   % generate vtk file for the new state
-  if ( modelProperties.plotParamsVector(1) == 3  ) && ...
-     ( sum( find( modelCurrSol.timeIndex == timesPlotsVec ) ) == 1
-
-    vtkMainWriter( modelCurrSol, )
-  end
+  vtkMainWriter( modelCurrSol, modelProperties )
 
 end %while time
 %md
