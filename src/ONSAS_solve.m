@@ -28,27 +28,29 @@ matUdots       = modelCurrSol.Udot           ;
 cellStress     = { modelCurrSol.Stress }     ;
 %md
 %md#### Incremental time analysis
-%md set stopping boolean to false and start the iteration
+%md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
+%mdand starts the iteration
 while finalTimeReachedBoolean == false
-%md
-%md compute the model state at next time
+
+  % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
-%md
-%md check if final time was reached
+
+  % check if final time was reached
   finalTimeReachedBoolean = ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
-%md
-%md store results and update structs
+
+  % store results and update structs
   modelCurrSol   =   modelNextSol ;
   matUs          = [ matUs          modelCurrSol.U                   ] ;
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
-%md
-%md generate vtk file for next state
-  if modelProperties.plotParamsVector(1)==3
-    vtkMainWriter
+
+  % generate vtk file for the new state
+  if ( modelProperties.plotParamsVector(1) == 3  ) && ...
+     ( sum( find( modelCurrSol.timeIndex == timesPlotsVec ) ) == 1
+
+    vtkMainWriter( modelCurrSol, )
   end
 
-%md ends time loop
 end %while time
 %md

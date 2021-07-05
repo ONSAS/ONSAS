@@ -150,7 +150,7 @@ analysisSettings.deltaT        = .1      ;
 %md
 %md
 %md### Output parameters
-otherParams.plotParamsVector = [ 3 ] ;
+otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialExtension_Manual' ;
 %~ printflag = 2 ;
 %md
