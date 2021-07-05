@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -30,7 +30,7 @@
 %
 % Assumptions:
 %  - physical names are saved as strings
-%  - maximum of one physical tag per entity 
+%  - maximum of one physical tag per entity
 %  - maximum number of nodes per element: 4 (linear tetrahedron)
 %
 
@@ -56,12 +56,12 @@ end
 if strncmp( X, '$Physic',5)
   nPhysicalNames = fscanf(fid,'%g',[1 ])      ;
   numsPhysProp   = zeros( nPhysicalNames, 1 ) ;
-  physicalNames  = cell ( nPhysicalNames, 1 ) ; 
+  physicalNames  = cell ( nPhysicalNames, 1 ) ;
 
   for i=1:nPhysicalNames
     aux              = fscanf(fid,'%g %g',[2 1]) ;
-    numsPhysProp(i)  = aux(2) ;  
-    physicalNames{i} = fscanf(fid,'%s ',[1 1])     ;   
+    numsPhysProp(i)  = aux(2) ;
+    physicalNames{i} = fscanf(fid,'%s ',[1 1])     ;
   end
   X = fgets(fid) ; % read end physical
   X = fgets(fid) ; % read next header
@@ -81,7 +81,7 @@ if strncmp( X, '$Entiti',5)
 
   for i=1:4
     vecsPhysicalPropsPerEntity{i} = zeros( entNumsPerDim(i) , 2 ) ;
-  end      
+  end
 
   %~ vecsPhysicalPropsPerEntity
 %~ entNumsPerDim
@@ -91,7 +91,7 @@ if strncmp( X, '$Entiti',5)
     colTags     = 1+3+3*(indDim>1)+2 ;
     if entNumsPerDim(indDim) > 0
       for i=1:entNumsPerDim(indDim)
-        aux = str2num( fgets(fid, maxLengthLine ) ) ; 
+        aux = str2num( fgets(fid, maxLengthLine ) ) ;
         if aux(colNumTags) > 0
           vecsPhysicalPropsPerEntity{indDim}(i,:) = [ aux(1) aux( colTags ) ] ;
         else
@@ -110,12 +110,12 @@ end
 % --- reads entities if they are defined -------
 if strncmp( X, '$Nodes',5)
   aux = fscanf(fid,'%g %g %g %g',[4  1]) ; fgetl(fid);
-  
+
   numEntBlocks = aux(1) ;
   numNodes     = aux(2) ;
 
   nodesMat = zeros( numNodes, 4 ) ;
-  
+
   for block = 1: numEntBlocks
     aux = fscanf(fid,'%g %g %g %g',[4  1]) ;
     fgetl(fid);
@@ -123,12 +123,12 @@ if strncmp( X, '$Nodes',5)
       nodesTags = fscanf(fid,'%g \n',[aux(4) 1]) ;
       matCoords = fscanf(fid,'%g \n',[3, aux(4)])' ;
 
- % backup      
+ % backup
       %~ % only saves physical tags for nodes defined as nodes (no inheritance)
       %~ auxphy = ( aux(1) == 0 ) * vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2))  ;
       %~ nodesMat( nodesTags,:) = [ matCoords ones(aux(4),1)*auxphy ] ;
   % backup
-  
+
   %~ block
   %~ aux
   %~ vecsPhysicalPropsPerEntity
@@ -156,15 +156,15 @@ end
 % --- reads elements if they are defined -------
 if strncmp( X, '$Elements',5)
   aux = fscanf(fid,'%g %g %g %g',[4  1]) ; fgetl(fid);
-  
+
   numEntBlocks = aux(1) ;
   numElems     = aux(2) ;
 
   conecMat = zeros( numNodes, 5 ) ;
-  
+
   for block = 1: numEntBlocks
     aux = fscanf(fid,'%g %g %g %g\n',[4  1]) ; %fgetl(fid);
-    
+
     if aux(4) > 0 % if there are elements in the block
       if     aux(1) == 0
         auxMatCon = fscanf(fid,'%g %g \n'       ,[ 1+aux(1)+1 aux(4)] )' ;
@@ -178,9 +178,9 @@ if strncmp( X, '$Elements',5)
         aux
         error('dimension not implemented yet. Please create an issue.')
       end
-      
+
       elemInds = auxMatCon(:,1)     ;
-      nodes    = auxMatCon(:,2:end) ; 
+      nodes    = auxMatCon(:,2:end) ;
       indEnt = find( vecsPhysicalPropsPerEntity{aux(1)+1}(:,1) == aux(2) ) ;
       auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}( indEnt ,2 ) ;
       %~ auxphy = vecsPhysicalPropsPerEntity{aux(1)+1}(aux(2)) ;
@@ -188,11 +188,11 @@ if strncmp( X, '$Elements',5)
       conecMat( elemInds,1:(aux(1)+1)) = nodes ;
       conecMat( elemInds,5           ) = auxphy ;
     end
-    
+
   end
 
   X = fgets(fid) ; % read end elements header
-  
+
 end
 
 fclose(fid);

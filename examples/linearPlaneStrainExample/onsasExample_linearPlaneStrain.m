@@ -96,7 +96,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.25 ; p = .5 ; Lx = 2 ; Ly = 3 ; thickness = 0.5 ;
+E = 1 ; nu = 0.25 ; p = .5 ; thickness = 1 ;
 
 %md
 %md
@@ -111,18 +111,18 @@ materials.hyperElasParams = { [ E nu ] }      ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
-elements.elemType = { 'edge', 'triangle' } ;
+elements.elemType = { 'node', 'edge', 'triangle' } ;
 %md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
-elements.elemTypeParams = { [] ; 2  } ;
-elements.elemTypeGeometry = { thickness ; thickness } ;
+elements.elemTypeParams = { []; [] ; 2  } ;
+elements.elemTypeGeometry = { []; thickness ; thickness } ;
 %md
 %md#### boundaryConds
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
-boundaryConds.loadsCoordSys = {'local'        ; [ ] ; [ ]  } ;
-boundaryConds.loadsTimeFact = { @(t) t         ; [ ] ; [ ]  } ;
-boundaryConds.loadsBaseVals = { [ p 0  0 0  0 0 ] ; [ ] ; [ ]  } ;
-boundaryConds.imposDispDofs = { []             ; [1] ; [3]  } ;
-boundaryConds.imposDispVals = { []             ; [0] ; [0]  } ;
+boundaryConds.loadsCoordSys = {[]; []; 'local'  } ;
+boundaryConds.loadsTimeFact = { []; []; @(t) t  } ;
+boundaryConds.loadsBaseVals = { []; []; [ p 0  0 0  0 0 ]  } ;
+boundaryConds.imposDispDofs = { [1] ; [3] ; []  } ;
+boundaryConds.imposDispVals = { [0] ; [0] ; []  } ;
 %md
 %md#### initialConds
 %md since no initial non-homogeneous initial conditions are used, an empty struct is used .
@@ -141,19 +141,9 @@ initialConds = struct();
 %md\input{solidCubeMeshPDF.pdf_tex}
 %md\end{center}
 %md```
-%md The connectivity matrix is given by the following matrix
-mesh.nodesCoords = [ 0    0    0 ; ...
-                     Lx   0    0 ; ...
-                     0   Ly    0 ; ...
-                     Lx  Ly    0 ] ;
-%md and the connectivity cell is defined as follows with the MEBI integer parameters for each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
-%md
-mesh.conecCell = {[ 0 1 3 0    1 2   ]; ... % constrained edge
-                  [ 0 1 2 0    1 3   ]; ... % constrained edge
-                  [ 0 1 1 0    3 4   ]; ... % loaded edge
-                  [ 1 2 0 0    3 1 4 ]; ... % triangle
-                  [ 1 2 0 0    4 1 2 ]  ... % triangle
-                } ;
+
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' )
+
 %md
 %md### Analysis parameters
 %md
@@ -166,7 +156,7 @@ analysisSettings.deltaT        = 1      ;
 %md
 %md
 %md### Output parameters
-otherParams.plotParamsVector = [ 3 ] ;
+otherParams.plotParamsVector = [ 0 ] ;
 otherParams.problemName = 'linearPlaneStrain' ;
 %~ printflag = 2 ;
 %md
