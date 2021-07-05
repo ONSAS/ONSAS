@@ -54,9 +54,11 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
 
     %md edge
     elseif strcmp( elemType , 'edge') ; %
-      nodes = Conec( elem, 4+(1:2) ) ;
+      nodes          = Conec( elem, 4+(1:2) )
+      % vector from node 1 to node 2
+      orientedVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
 
-      lengthElem = norm( Nodes( nodes(2),:) - Nodes( nodes(1),:) ) ;
+      lengthElem = norm( orientedVector ) ;
       thickness  = elements.elemTypeGeometry{ Conec( elem, 2 ) } ;
       loadvals   = boundaryConds.loadsBaseVals{ indBC } ;
 
@@ -69,12 +71,14 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
         Fy =   loadvals( 3 ) * factor ;
         Fz = 0 ;
       elseif strcmp( loadCoordSys, 'local' )
-        Fx = - loadvals( 3 ) * factor ;
-        Fy =   loadvals( 1 ) * factor ;
+        % consider a 90 degrees rotation of the oriented vector of the line element
+        Fx = - orientedVector( 2 ) / lengthElem * factor ;
+        Fy =   orientedVector( 1 ) / lengthElem * factor ;
         Fz = 0 ;
       end % if global/local system
 
-      elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0] ;
+      elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0]
+
       assert( size( elemNodeLoadsMatrix, 2)==6,"error, maybe missing thickness")
 
     %md triangle tension

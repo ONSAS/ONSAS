@@ -65,7 +65,9 @@ cellTypes = unique( conect(:,1) ) ;
 for i = 1:length(cellTypes)
   % count elements with the current cell type
   nelemCurrType = sum( conect( :, 1 )== cellTypes(i) ) ;
-  if ( cellTypes(i) == 10 ) % if it is tetrahedron add (4+1)*nelemCurrType
+  if ( cellTypes(i) == 5 ) % if it is triangle add (3+1)*nelemCurrType
+    nTotNumbers = nTotNumbers + (3+1)*nelemCurrType ;
+  elseif ( cellTypes(i) == 10 ) % if it is tetrahedron add (4+1)*nelemCurrType
     nTotNumbers = nTotNumbers + (4+1)*nelemCurrType ;
   end
 end
@@ -77,7 +79,10 @@ for i=1:nelem,
   % if (conect(i,1) == 1) || (conect(i,1) == 2)
   %   fprintf(fid,'2 %g %g \n', conect(i,1+(1:2))-1 ) ;
 
-  if (conect(i,1) == 10)
+  if (conect(i,1) == 5) %triangle
+    fprintf(fid,'3 %g %g %g \n', conect(i,1+(1:3)) ) ;
+
+  elseif (conect(i,1) == 10) % tetrahedron
     fprintf(fid,'4 %g %g %g %g \n', conect(i,1+(1:4)) ) ;
 
   % elseif (conect(i,1) == 12)

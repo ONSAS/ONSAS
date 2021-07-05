@@ -4,8 +4,9 @@ close all, clear all %#ok
 if isunix, dirSep = '/'; else dirSep = '\'; end
 addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
 
-keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'; 
+keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m';
             'uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m' ;
+            'linearPlaneStrainExample/onsasExample_linearPlaneStrain.m' ;
             'uniaxialExtension/onsasExample_uniaxialExtension.m' ;
             'frameLinearAnalysis/onsasExample_frameLinearAnalysis.m' } ;
 

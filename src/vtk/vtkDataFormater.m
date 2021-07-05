@@ -54,7 +54,26 @@ for indType = 1:length( elemTypeInds )
       vtkConec = [ 10*ones( nelems, 1 )     Conec(:, 5:8 )-1 ] ;
       elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
     % end
-  end %if tetrahedron
+
+  elseif strcmp( elemTypeString, 'triangle' )
+
+    vtkNormalForces = [] ;
+    % reshape the displacements vector
+    vtkDispMat = reshape( U(1:2:end)', [3, size(Nodes,1) ])' ;
+    % and add it to the nodes matrix
+    vtkNodes = Nodes + vtkDispMat ;
+
+    vtkStress = {} ;
+    % vtkStress{3,1} = stressMat ;
+
+    % if nargout > numminout
+      % add the tetrahedron vtk cell type to the first column
+      vtkConec = [ 5*ones( nelems, 1 )     Conec(:, 5:7 )-1 ] ;
+      elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
+    % end
+
+
+  end %if type of element
 
   % if strcmp( elemTypeString,'truss')
   %

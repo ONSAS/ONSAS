@@ -1,22 +1,22 @@
 
-r1 = 0.007 ;
-r2 = 0.01 ;
 
-espesor = r2-r1 ;
+// sizes for another case: rInt = 0.05 ; rExt = 0.15 ;
+rInt = 0.10 ; rExt = 0.15 ;
 
-ms = 0.2*espesor ;  //
+msExt = 0.012*(rExt*2.0*3.14) ;  //
+msInt = 0.012*(rInt*2.0*3.14) ;  //
 
-Point(1)  = {0   , 0, 0, ms};
+Point(1)  = {0   , 0, 0};
 
-Point(2) = { r1,  0, 0, ms};
-Point(3) = {  0, -r1, 0, ms};
-Point(4) = {-r1, 0 , 0, ms};
-Point(5) = {0  , r1, 0, ms};
+Point(2) = { rInt,     0, 0, msInt};
+Point(3) = {    0, -rInt, 0, msInt};
+Point(4) = {-rInt,     0, 0, msInt};
+Point(5) = {    0,  rInt, 0, msInt};
 
-Point(7) = { r2,  0, 0, ms};
-Point(8) = {  0, -r2, 0, ms};
-Point(9) = {-r2, 0 , 0, ms};
-Point(10) = {0  , r2, 0, ms};
+Point(7) = { rExt,     0, 0, msExt};
+Point(8) = {    0, -rExt, 0, msExt};
+Point(9) = {-rExt,     0, 0, msExt};
+Point(10) = {   0,  rExt, 0, msExt};
 
 Circle(1) = {2, 1, 3}; //
 Circle(2) = {3, 1, 4}; //

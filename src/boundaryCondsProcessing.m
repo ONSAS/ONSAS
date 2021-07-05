@@ -71,17 +71,9 @@ end % for: elements with boundary condition assigned
 diriDofs = unique( diriDofs) ;
 
 
-
-
-
-
-
-
 %md remove element if no material is assigned
 elemsToRemove = find( Conec( :, 1 ) == 0 ) ;
 Conec( elemsToRemove, :  ) = [] ;
-
-
 
 
 

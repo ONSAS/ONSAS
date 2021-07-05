@@ -81,14 +81,6 @@
 
 
 
-% Analytic solution
-% analyticSolFlag = 3 ; p = abs(p) ; r = Rext ;
-% a = ( (1+nu)*(1-2*nu)*Rint^2*p ) / ( E*(Rext^2-Rint^2) ) ;
-% b = ( (1+nu)*Rint^2*Rext^2*p )   / ( E*(Rext^2-Rint^2) ) ;
-% analytSol = a*r + b/r ; analyticSolDofs = [ 6*(6-1)+1 ] ;
-% analyticCheckTolerance = 1e-3 ;
-
-
 
 %md### Numerical solution
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
@@ -96,7 +88,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.25 ; p = .5 ; thickness = 1 ;
+E = 1e2 ; nu = 0.25 ; p = .5e-4 ; thickness = 1 ;
 
 %md
 %md
@@ -157,10 +149,24 @@ analysisSettings.deltaT        = 1      ;
 %md
 %md### Output parameters
 otherParams.problemName = 'linearPlaneStrain' ;
-%~ printflag = 2 ;
+otherParams.plotsFormat = 'vtk' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
+
+
+
+
+% Analytic solution
+p = abs(p) ; Rext = 0.15 ; Rint = 0.1 ;
+a = ( (1+nu)*(1-2*nu)*Rint^2 ) / ( E*(Rext^2-Rint^2) ) ;
+b = ( (1+nu)*Rint^2*Rext^2 )   / ( E*(Rext^2-Rint^2) ) ;
+analyticCheckTolerance = 1e-3 ;
+analyticValRInt = a*Rint + b/Rint ;
+analyticValRExt = a*Rext + b/Rext ;
+verifBoolean = ( ( matUs(         1, 2) - analyticValRInt ) < analyticCheckTolerance ) && ...
+               ( ( matUs( (8-1)*6+3, 2) - analyticValRExt ) < analyticCheckTolerance )
+
 %md
 return
 %md### Results
