@@ -46,7 +46,9 @@ while finalTimeReachedBoolean == false
   loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
 
   % generate vtk file for the new state
-  vtkMainWriter( modelCurrSol, modelProperties )
-
+  if strcmp( modelProperties.plotsFormat, 'vtk' )
+    vtkMainWriter( modelCurrSol, modelProperties )
+  end % if vtk output format
+  
 end %while time
 %md

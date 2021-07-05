@@ -24,6 +24,7 @@ ONSASversion = '0.1.10'  ;
 %md set defaults
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
+otherParams.plotsFormat      = checkOrSetDefault ( otherParams     , 'plotsFormat', []  ) ;
 
 %md welcome message function
 welcomeMessage(ONSASversion, otherParams );
@@ -77,8 +78,16 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec );
 
+
+
+
+
+
 %md writes vtk file
-vtkMainWriter ( modelCurrSol, modelProperties )
+if strcmp( modelProperties.plotsFormat, 'vtk' )
+  vtkMainWriter ( modelCurrSol, modelProperties )
+end
+
 
 if exist( 'controlDofs') ==0
   controlDofs = [] ;

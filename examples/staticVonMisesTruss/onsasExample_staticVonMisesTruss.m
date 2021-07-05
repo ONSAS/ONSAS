@@ -79,7 +79,6 @@ analysisSettings.finalTime     =   1 ;
 %md## otherParams
 %md------------------
 otherParams.problemName = 'staticVonMisesTruss_NR';
-otherParams.plotParamsVector = [3];
 otherParams.controlDofs = [2 5 ];
 %md
 %md## Analysis case 1: NR with Rotated Eng Strain

@@ -22,7 +22,7 @@
 %md the conectivity given in conect and with the point and element data
 %md given in cellPointData and cellCellData, respectively.
 
-function vtkMainWriter( modelCurrSol, modelProperties  )
+function vtkMainWriter( modelCurrSol, modelProperties )
 
 modelProperties.timesPlotsVec
 plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
