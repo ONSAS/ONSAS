@@ -53,6 +53,13 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
 
+if isfield(otherParams,'spitMatrices') && otherParams.spitMatrices == true
+  cd output
+  save('matrices.mat', 'systemDeltauMatrix' );
+  cd ..
+  stop
+end
+
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
 %md prints headers for solver output file
