@@ -20,7 +20,7 @@
 ### What is ONSAS?
 
 ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/) code for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and was published in a [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf) of the course _Análisis no lineal de Estructuras_ taught at [Facultad de Ingeniería](https://www.fing.edu.uy/), Universidad de la República.
-  
+
 ### What can ONSAS be used for?
 
 The current version allows to perform dynamic/static nonlinear analyses of beam/truss/solid 3D structures. A reduced list of features is listed at next:
@@ -39,7 +39,7 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
 
 # A chain model
-![chain](https://user-images.githubusercontent.com/42485529/92779625-9afb3180-f378-11ea-8114-854f2c751fed.gif?raw=true)
+![chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
 ### License
 

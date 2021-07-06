@@ -11,14 +11,20 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
-          cover_xml_file: coverage.xml
+          cover_json_file: coverage.json
       - uses: actions/upload-artifact@v1
         with:
-          name: coverage_file
-          path: coverage.xml
-      - uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
+          name: coverage_json
+          path: coverage.json
+
+      #     cover_xml_file: coverage.xml
+      # - uses: actions/upload-artifact@v1
+      #   with:
+      #     name: coverage_file
+      #     path: coverage.xml
+      # - uses: codecov/codecov-action@v1
+      #   with:
+      #     file: ./coverage.xml
   #tests-heat:
   #  runs-on: [ubuntu-latest]
   #  steps:
