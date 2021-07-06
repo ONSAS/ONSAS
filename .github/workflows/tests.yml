@@ -20,7 +20,6 @@ jobs:
         uses: joergbrech/moxunit-action@v1.1
         with:
           src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk src/mesh
-          tests: ./test/runTestProblems_moxunit_disp.m
           cover_xml_file: coverage.xml
       - uses: actions/upload-artifact@v1
         with:
