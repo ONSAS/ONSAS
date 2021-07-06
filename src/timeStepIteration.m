@@ -49,7 +49,7 @@ else
 
   % compute RHS for initial guess Utp1 and in next time step
   % --------------------------------------------------------
-  [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
+  [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, modelProperties.nodalDispDamping ) ;
 
   booleanConverged = 0                              ;
   dispIters        = 0                              ;
@@ -69,10 +69,10 @@ else
       Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
     % --- system matrix ---
-    systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs ) ;
+    systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
 
     % --- new rhs ---
-    [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
+    [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, modelProperties.nodalDispDamping ) ;
 
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
@@ -92,7 +92,7 @@ else
   KTtp1red = systemDeltauMatrix ;
 
   % compute stress at converged state
-  [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ] ) ;
+  [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping ) ;
 
   printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
@@ -158,7 +158,7 @@ timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
 
-modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec );
+modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec, modelProperties.nodalDispDamping );
 % -------------------------------------
 
 
@@ -171,14 +171,20 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
 
   if strcmp( analysisSettings.methodName, 'newmark') || strcmp( analysisSettings.methodName, 'alphaHHT' )
 
+    deltaT = analysisSettings.deltaT ;
+
     if strcmp( analysisSettings.methodName, 'alphaHHT' )
-      deltaNW = (1-2*alphaHHT)/2 ;
-      AlphaNW = (1-alphaHHT)^2/4 ;
+      alphaHHT = analysisSettings.alphaHHT ;
+      deltaNM  = (1-2*alphaHHT)/2 ;
+      alphaNM  = (1-alphaHHT)^2/4 ;
+    else
+      deltaNM  = analysisSettings.deltaNM ;
+      alphaNM  = analysisSettings.alphaNM ;
     end
 
-    Udotdottp1 = 1.0/( AlphaNW * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( AlphaNW * deltaT ) * Udott - ( 1.0/ ( AlphaNW * 2 ) - 1 ) * Udotdott ;
+    Udotdottp1 = 1.0/( alphaNM * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( alphaNM * deltaT ) * Udott - ( 1.0/ ( alphaNM * 2 ) - 1 ) * Udotdott ;
 
-    Udottp1    = Udott + ( ( 1-deltaNW ) * Udotdott + deltaNW * Udotdottp1 ) * deltaT    ;
+    Udottp1    = Udott + ( ( 1 - deltaNM ) * Udotdott + deltaNM * Udotdottp1 ) * deltaT    ;
 
   else
     Udotdottp1 = Udotdott ;

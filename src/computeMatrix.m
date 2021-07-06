@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -17,33 +17,38 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs ) ;
-  
+function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
+
   % computes static tangent matrix
-  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1] ) ;
+  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping ) ;
 
   KT      = mats{1} ;
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
 
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
-    
+
     %~ global flagOutputMatrices
     %~ if ~isempty( flagOutputMatrices ) && flagOutputMatrices == 1
       %~ save -mat auxiliar.mat KT dampingMat massMat
       %~ flagOutputMatrices = 0 ;
-    %~ end 
-      
+    %~ end
+
   end
 
   if strcmp( analysisSettings.methodName, 'newtonRaphson' ) || strcmp( analysisSettings.methodName, 'arcLength' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
-		
+
   elseif strcmp( analysisSettings.methodName, 'newmark' )
 
-    systemDeltauMatrix = KT ( neumdofs, neumdofs ) + 1/( AlphaNW*deltaT^2) * massMat(neumdofs, neumdofs) ...
-      + deltaNW / ( AlphaNW*deltaT) * dampingMat( neumdofs, neumdofs )  ;
+    alphaNM = analysisSettings.alphaNM ;
+    deltaNM = analysisSettings.deltaNM ;
+    deltaT  = analysisSettings.deltaT  ;
+
+    systemDeltauMatrix =                                   KT(         neumdofs, neumdofs ) ...
+                         + 1/( alphaNM * deltaT^2)       * massMat(    neumdofs, neumdofs ) ...
+                         + deltaNM / ( alphaNM * deltaT) * dampingMat( neumdofs, neumdofs )  ;
 
   elseif strcmp( analysisSettings.methodName, 'alphaHHT' )
 
