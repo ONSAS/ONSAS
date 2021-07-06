@@ -181,7 +181,7 @@ labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('Numeric','Analytic','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('verifUniaxial.png','-dpng')
+print('output/verifUniaxial.png','-dpng')
 %md
 
 return
