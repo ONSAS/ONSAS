@@ -25,6 +25,7 @@ ONSASversion = '0.1.10'  ;
 analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
 otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
 otherParams.plotsFormat      = checkOrSetDefault ( otherParams     , 'plotsFormat', []  ) ;
+otherParams.nodalDispDamping = checkOrSetDefault ( otherParams     , 'nodalDispDamping', 0 ) ;
 
 %md welcome message function
 welcomeMessage(ONSASversion, otherParams );
@@ -48,9 +49,9 @@ currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) )
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 %md call assembler
-[~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ] ) ;
+[~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ], otherParams.nodalDispDamping ) ;
 
-systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs ) ;
+systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
 
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
@@ -76,10 +77,7 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
-  timesPlotsVec );
-
-
-
+  timesPlotsVec, otherParams.nodalDispDamping );
 
 
 

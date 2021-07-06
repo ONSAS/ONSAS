@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -18,7 +18,7 @@
 
 
 function [ Fmasse, Me ] = elementTrussMassForce ( Xe, rho, A, booleanConsistentMassMat, ...
-paramOut, Udotdotte )
+Udotdotte )
 
   Xe = Xe(:) ;
   localAxisRef = Xe(4:6) - Xe(1:3) ;
@@ -29,23 +29,19 @@ paramOut, Udotdotte )
 
   if booleanConsistentMassMat == 1
     Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
-    
+
     Me (      1,       7) = rho * A * lini * 1 / 6            ;
     Me (      7,       1) = rho * A * lini * 1 / 6            ;
-    
+
     Me (      3,       9) = rho * A * lini * 1 / 6            ;
     Me (      9,       3) = rho * A * lini * 1 / 6            ;
-    
+
     Me (      5,      11) = rho * A * lini * 1 / 6            ;
     Me (     11,       5) = rho * A * lini * 1 / 6            ;
   else
     Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6) ;
   end
-  
-  Me = Me( 1:2:end, 1:2:end) ;
-   
-  Fmasse = Me * Udotdotte(1:2:end) ;
-  
-  
-  
 
+  Me = Me( 1:2:end, 1:2:end) ;
+
+  Fmasse = Me * Udotdotte(1:2:end) ;
