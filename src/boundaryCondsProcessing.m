@@ -71,11 +71,12 @@ end % for: elements with boundary condition assigned
 diriDofs = unique( diriDofs) ;
 
 
+Conec
 %md remove element if no material is assigned
 elemsToRemove = find( Conec( :, 1 ) == 0 ) ;
 Conec( elemsToRemove, :  ) = [] ;
 
-
+elementTypes
 
 %md construction of a vector with the neumann degrees of freedom
 
@@ -85,11 +86,12 @@ neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 %md loop for construction of vector of dofs
 for elemNum = 1:length( elementTypes )
 
+
   %md find the numbers of the elements with the current element type
-  elementsNums = find( Conec( :, 2 ) == elemNum ) ;
+  elementsNums = find( Conec( :, 2 ) == elementTypes(elemNum) )
 
   %md get current element type
-  elemType = elements.elemType{elemNum} ;
+  elemType = elements.elemType{ elementTypes(elemNum) }
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0
