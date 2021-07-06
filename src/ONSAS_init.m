@@ -55,7 +55,7 @@ systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analy
 
 if isfield(otherParams,'spitMatrices') && otherParams.spitMatrices == true
   cd output
-  save('matrices.mat', 'systemDeltauMatrix' );
+  save('-mat', 'matrices.mat', 'systemDeltauMatrix' );
   cd ..
   stop
 end
