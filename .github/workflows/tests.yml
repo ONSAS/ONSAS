@@ -11,12 +11,11 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
-          cover_json_file: coverage.json
-      - uses: actions/upload-artifact@v1
+          code-coverage-cobertura: coverage.xml
+      - uses: codecov/codecov-action@v1
         with:
-          name: coverage_json
-          path: coverage.json
-
+          file: coverage.xml
+          
       #     cover_xml_file: coverage.xml
       # - uses: actions/upload-artifact@v1
       #   with:
