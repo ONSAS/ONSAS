@@ -134,7 +134,7 @@ initialConds = struct();
 %md\end{center}
 %md```
 
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' )
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' ) ;
 
 %md
 %md### Analysis parameters

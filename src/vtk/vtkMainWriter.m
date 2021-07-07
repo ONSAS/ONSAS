@@ -24,14 +24,10 @@
 
 function vtkMainWriter( modelCurrSol, modelProperties )
 
-modelProperties.timesPlotsVec
 plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
 
 %md if the current time index is not in the plts indexes vector then ends execution
 if length( plotInd ) == 0, return, end
-
-modelCurrSol.timeIndex
-plotInd
 
 %md filname counter starts in zero
 filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk']

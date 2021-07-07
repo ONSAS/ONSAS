@@ -54,7 +54,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
 
     %md edge
     elseif strcmp( elemType , 'edge') ; %
-      nodes          = Conec( elem, 4+(1:2) )
+      nodes          = Conec( elem, 4+(1:2) ) ;
       % vector from node 1 to node 2
       orientedVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
 
@@ -77,7 +77,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
         Fz = 0 ;
       end % if global/local system
 
-      elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0]
+      elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0] ;
 
       assert( size( elemNodeLoadsMatrix, 2)==6,"error, maybe missing thickness")
 
