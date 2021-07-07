@@ -17,7 +17,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
+function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, otherParams ) ;
+
+  nodalDispDamping = otherParams.nodalDispDamping ;
 
   % computes static tangent matrix
   [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping ) ;
@@ -28,11 +30,17 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
 
-    %~ global flagOutputMatrices
-    %~ if ~isempty( flagOutputMatrices ) && flagOutputMatrices == 1
-      %~ save -mat auxiliar.mat KT dampingMat massMat
-      %~ flagOutputMatrices = 0 ;
-    %~ end
+    if isfield(otherParams,'spitMatrices') && otherParams.spitMatrices == true
+
+      KTred = KT(neumdofs,neumdofs);
+      massMatred = massMat(neumdofs,neumdofs);
+      save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
+      figure
+      spy(full(KTred))
+      figure
+      spy(full(massMatred))
+      stop
+    end
 
   end
 
@@ -52,11 +60,14 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
 
   elseif strcmp( analysisSettings.methodName, 'alphaHHT' )
 
-    deltaNW = (1 - 2 * alphaHHT ) / 2 ;
-    AlphaNW = (1 - alphaHHT ^ 2 ) / 4 ;
+    alphaHHT = analysisSettings.alphaHHT ;
+    deltaT   = analysisSettings.deltaT  ;
+
+    deltaNM = (1 - 2 * alphaHHT ) / 2 ;
+    alphaNM = (1 - alphaHHT ^ 2 ) / 4 ;
 
     systemDeltauMatrix = (1 + alphaHHT )                                 * KT         ( neumdofs, neumdofs ) ...
-                       + (1 + alphaHHT ) * deltaNW / ( AlphaNW*deltaT  ) * dampingMat ( neumdofs, neumdofs )  ...
-                       +                         1 / ( AlphaNW*deltaT^2) * massMat    ( neumdofs, neumdofs ) ;
+                       + (1 + alphaHHT ) * deltaNM / ( alphaNM*deltaT  ) * dampingMat ( neumdofs, neumdofs )  ...
+                       +                         1 / ( alphaNM*deltaT^2) * massMat    ( neumdofs, neumdofs ) ;
 
   end
