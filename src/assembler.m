@@ -150,6 +150,7 @@ for elem = 1:nElems
         Fmase = fs{3};
         Mmase = ks{3};
         Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
+
     end
 
   % ---------  tetrahedron solid element -----------------------------
@@ -194,11 +195,13 @@ for elem = 1:nElems
     end
   end
 
+
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
   end % if stress
 
 end % for elements ----
+
 
 % ============================================================================
 
@@ -230,6 +233,7 @@ if fsBool
   fsCell{3} = Fmas ;
 end
 
+
 if tangBool
 
   indsIK = indsIK(1:counterInds) ;
@@ -252,6 +256,7 @@ if tangBool
   tangMatsCell{2} = C ;
   tangMatsCell{3} = M ;
 end
+
 
 % ----------------------------------------
 

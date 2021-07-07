@@ -21,7 +21,7 @@
 function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elements, boundaryConds, Nodes )
 
   %md find the elements with the current boundary condition
-  elemsWithBC = find( Conec(:,3) == indBC )
+  elemsWithBC = find( Conec(:,3) == indBC ) ;
 
   diriDofs = [] ;
   nonHomDiriVals = [] ;
@@ -30,16 +30,14 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
   %md loop in the elements to convert to nodal constraints
   for elemInd = 1:length( elemsWithBC );
 
-    elem            = elemsWithBC( elemInd ) ;
-
-    nodesElem       = nonzeros( Conec (elem, 5:end ) ) ;
-
+    elem            = elemsWithBC( elemInd )              ;
+    nodesElem       = nonzeros( Conec (elem, 5:end ) )    ;
     elemType        = elements.elemType{ Conec(elem,2 )}  ;
 
     %md compute an auxiliar vector with the global degrees of freedom of the nodes of the current element
     auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:);
 
-    impoDofs = boundaryConds.imposDispDofs{ indBC }
+    impoDofs = boundaryConds.imposDispDofs{ indBC } ;
     impoVals = boundaryConds.imposDispVals{ indBC } ;
     locNonHomDofs = find( impoVals ) ;
 
