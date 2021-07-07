@@ -28,8 +28,8 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
 
-    if isfield(otherParams,'spitMatrices') && otherParams.spitMatrices == true
-
+    global spitMatrices
+    if spitMatrices == true
       KTred = KT(neumdofs,neumdofs);
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
