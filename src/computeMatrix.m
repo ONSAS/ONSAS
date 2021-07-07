@@ -32,7 +32,7 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
     if spitMatrices == true
       KTred = KT(neumdofs,neumdofs);
       massMatred = massMat(neumdofs,neumdofs);
-      save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
+      save('-mat', 'output/matrices.mat', 'KTred','massMatred' );
       figure
       spy(full(KTred))
       figure
