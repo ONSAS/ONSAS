@@ -138,9 +138,20 @@ for elem = 1:nElems
     thickness = elemTypeGeometry ;
 
     if strcmp( hyperElasModel, 'linearElastic' )
-      [ Finte, Ke, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [1 hyperElasParams], 2, thickness, elemTypeParams ) ;
+
+      planeStateFlag = elemTypeParams ;
+      dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
+
+      [ fs, ks, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
+                            [1 hyperElasParams], 2, thickness, planeStateFlag, dotdotdispsElem, density ) ;
+        %
+        Finte = fs{1};
+        Ke    = ks{1};
+        Fmase = fs{3};
+        Mmase = ks{3};
+        Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
+
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 
