@@ -41,6 +41,11 @@ otherParams.outputDir = outputDir ;
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
 
+global spitMatrices
+if spitMatrices == true
+  save('-mat', 'output/loads.mat', 'factorLoadsFextCell' );
+end
+
 % process initial conditions
 % --------------------------
 [ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
