@@ -32,12 +32,13 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
     if spitMatrices == true
       KTred = KT(neumdofs,neumdofs);
       massMatred = massMat(neumdofs,neumdofs);
-      save('-mat', 'output/matrices.mat', 'KTred','massMatred' );
+      save('-mat', 'output/matrices.mat', 'KTred','massMatred','neumdofs' );
       figure
       spy(full(KTred))
       figure
       spy(full(massMatred))
-      stop
+      fprintf('matrices spitted.')
+      spitMatrices = false;
     end
 
   end
