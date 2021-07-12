@@ -36,10 +36,14 @@ outputDir = [ './output/' otherParams.problemName '/' ] ;
 createOutputDir( outputDir, otherParams ) ;
 otherParams.outputDir = outputDir ;
 
+Conec
+Nodes
 %md process boundary conds information and elements
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
+
+diriDofs
 
 global spitMatrices
 if spitMatrices == true
