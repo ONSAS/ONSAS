@@ -48,19 +48,26 @@ initialConds = struct();
 %md\end{center}
 %md```
 
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'lambsProblemDomain.msh' )
-
-stop
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'lambsProblemDomain.msh' ) ;
 
 %md
 %md### Analysis parameters
 %md
-analysisSettings.methodName    = 'newtonRaphson' ;
+nAproxElem = length( mesh.conecCell )
+
+CFL = 0.125 ;
+cP  = 3200  ;
+h   = sqrt( 2*3200^2 / nAproxElem ) * .5
+dt  = CFL * h / cP
+
+analysisSettings.methodName    = 'newmark' ;
 analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
 analysisSettings.stopTolForces = 1.0e-12 ;
-analysisSettings.finalTime      = 2       ;
-analysisSettings.deltaT        = 1      ;
+analysisSettings.finalTime      = 1e-1    ;
+analysisSettings.alphaNM       = 0.25    ;
+analysisSettings.deltaNM       = 0.5     ;
+analysisSettings.deltaT        = dt      ;
 %md
 %md
 %md### Output parameters
