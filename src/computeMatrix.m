@@ -37,7 +37,7 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
       spy(full(KTred))
       figure
       spy(full(massMatred))
-      fprintf('matrices spitted.')
+      fprintf('matrices spitted.\n--------\n')
       spitMatrices = false;
     end
 

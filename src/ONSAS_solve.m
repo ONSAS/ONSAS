@@ -36,8 +36,6 @@ while finalTimeReachedBoolean == false
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
-modelNextSol.currTime
-modelProperties.analysisSettings.finalTime
   % check if final time was reached
   finalTimeReachedBoolean = ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;

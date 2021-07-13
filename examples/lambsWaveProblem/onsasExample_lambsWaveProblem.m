@@ -7,6 +7,10 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 E = 1.8773e10 ; nu = 0.25 ; thickness = 1 ; rho = 2200 ;
 
+global spitMatrices
+spitMatrices = true
+
+
 %md### MEBI parameters
 
 %md#### materials
@@ -14,6 +18,7 @@ E = 1.8773e10 ; nu = 0.25 ; thickness = 1 ; rho = 2200 ;
 %md since only one material is considered, the structs defined for the materials contain only one entr
 materials.hyperElasModel  = {'linearElastic'} ;
 materials.hyperElasParams = { [ E nu ] }      ;
+materials.density         = { rho }      ;
 
 %md#### elements
 %md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
@@ -64,7 +69,7 @@ analysisSettings.methodName    = 'newmark' ;
 analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
 analysisSettings.stopTolForces = 1.0e-12 ;
-analysisSettings.finalTime      = 1e-1    ;
+analysisSettings.finalTime      = 1    ;
 analysisSettings.alphaNM       = 0.25    ;
 analysisSettings.deltaNM       = 0.5     ;
 analysisSettings.deltaT        = dt      ;
