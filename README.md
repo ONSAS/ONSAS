@@ -2,7 +2,7 @@
 # ONSAS: an Open Nonlinear Structural Analysis Solver
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS_docs/dev/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.docs/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
 
