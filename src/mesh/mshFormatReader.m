@@ -16,52 +16,47 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% msh4Reader: function for reading gmsh's msh version 4.1 files.
-% http://gmsh.info/doc/texinfo/gmsh.html#MSH-file-format
-%
-% Input:
-%   - mshFilename: the name of the msh file
-%
-% Output:
-%  - nodesMat: matrix with 4 columns: [x y z physicalTag]
-%  - conecMat: matrix with 5 columns: [ n1 n2 n3 n4 physicalTag ]
-%              for elements with less than four nodes 0 is used as node.
-%  - physicalNames: cell with strings of physical names.
-%
-% Assumptions:
-%  - physical names are saved as strings
-%  - maximum of one physical tag per entity
-%  - maximum number of nodes per element: 4 (linear tetrahedron)
-%
-
+%md## mshFormatReader
+%md function for reading gmsh's msh version 4.1 files.
+%md http://gmsh.info/doc/texinfo/gmsh.html#MSH-file-format
+%md
+%md Input:
+%md   - mshFilename: the name of the msh file
+%md Output:
+%md  - nodesMat: matrix with 4 columns: [x y z physicalTag]
+%md  - conecMat: matrix with 5 columns: [ n1 n2 n3 n4 physicalTag ]
+%md              for elements with less than four nodes 0 is used as node.
+%md  - physicalNames: cell with strings of physical names.
+%md
+%md Assumptions:
+%md  - physical names are saved as strings
+%md  - maximum of one physical tag per entity
+%md  - maximum number of nodes per element: 4 (linear tetrahedron)
+%md
 function [ nodesMat, conecMat, physicalNames ] = mshFormatReader( mshFilename )
 
+%md
 fid = fopen( mshFilename ,'r') ;
-
 maxLengthLine = 200 ;
-
-% ---- header reading --------------------------
-X = fgets(fid);
-X = fgets(fid);
-if strncmp( X, '4.1',3)
-   X = fgets(fid);
-   X = fgets(fid);  % read next header
-else
-  error('wrong format of msh mesh! Gmsh legacy 2 format expected. \n');
-end
+%md### header reading
+%md verifies if the msh version is 4.1
+X = fgets( fid ) ;% read start header
+assert( strncmp( fgets(fid), '4.1', 3 ), 'wrong format of msh mesh! Gmsh legacy 2 format expected. \n' )
+X = fgets(fid);  % read end header
 % ----------------------------------------------
 
-
-% --- reads physical names if they are defined -------
+%md### reads physical names
+%md if they are defined
+X = fgets( fid ); % read start next header
 if strncmp( X, '$Physic',5)
   nPhysicalNames = fscanf(fid,'%g',[1 ])      ;
   numsPhysProp   = zeros( nPhysicalNames, 1 ) ;
   physicalNames  = cell ( nPhysicalNames, 1 ) ;
 
   for i=1:nPhysicalNames
-    aux              = fscanf(fid,'%g %g',[2 1]) ;
-    numsPhysProp(i)  = aux(2) ;
-    physicalNames{i} = fscanf(fid,'%s ',[1 1])     ;
+    aux                              = fscanf(fid,'%g %g',[2 1]) ;
+    numsPhysProp(i)                  = aux(2) ;
+    physicalNames{ numsPhysProp(i) } = fscanf(fid,'%s ',[1 1])     ;
   end
   X = fgets(fid) ; % read end physical
   X = fgets(fid) ; % read next header

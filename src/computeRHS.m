@@ -21,10 +21,10 @@
 %#
 %#
 
-function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nodalDispDamping )
+function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime )
 
   [fs, ~, ~ ] = assembler ( ...
-    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0], nodalDispDamping ) ;
+    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
 
   % TO BE REMOVEd!!!
   Stress = [] ;
@@ -57,22 +57,25 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 
-    FextG = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
 
-    rhat      =   Fint ( neumdofs ) ...
-                + Fvis ( neumdofs ) ...
-                + Fmas ( neumdofs ) ...
-                - FextG( neumdofs ) ;
+    rhat      =   Fint ( BCsData.neumDofs ) ...
+                + Fvis ( BCsData.neumDofs ) ...
+                + Fmas ( BCsData.neumDofs ) ...
+                - FextG( BCsData.neumDofs ) ;
 
     systemDeltauRHS = -rhat ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
     fs = assembler ( ...
-      Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Ut, 1, Udott, ...
-      Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
+      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ;
+
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
+
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
 
     FextG  = computeFext( constantFext, variableFext, nextLoadFactor, userLoadsFilename ) ;
     FextGt = computeFext( constantFext, variableFext, currLoadFactor, userLoadsFilename ) ;

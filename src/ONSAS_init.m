@@ -41,6 +41,11 @@ otherParams.outputDir = outputDir ;
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
 
+global spitMatrices
+if spitMatrices == true
+  save('-mat', 'output/loads.mat', 'factorLoadsFextCell' );
+end
+
 % process initial conditions
 % --------------------------
 [ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
@@ -51,7 +56,7 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 %md call assembler
 [~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ], otherParams.nodalDispDamping ) ;
 
-systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams ) ;
+systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
 
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename ) ;
 
