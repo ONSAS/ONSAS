@@ -129,8 +129,8 @@ difLoadGreen = analyticLoadFactorsNRGreen( controlDispsNRGreen )' - loadFactorsN
 %md
 %md## Verification
 %md the numerical resolution is validated for both strain measures.
-verifBoolean = ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-4 ) ...
-             * ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
+verifBoolean =  ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
 %md### Plots
 %md and solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
