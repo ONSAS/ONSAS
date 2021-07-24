@@ -24,7 +24,8 @@ close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;
 % x and z coordinates of node 2
-x2 = cos( ang1*pi/180 ) * L ;  z2 = sin( ang1*pi/180 ) * L ;
+x2 = cos( ang1*pi/180 ) * L ;
+z2 = sin( ang1*pi/180 ) * L ;
 %md
 %md### MEBI parameters
 %md
@@ -92,40 +93,61 @@ analysisSettings.stopTolIts    =   10   ;
 analysisSettings.finalTime      =   1    ;
 %md
 %md### otherParams
-otherParams.problemName = 'staticVonMisesTruss_NR';
+otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
 otherParams.controlDofs = [2 5 ];
 %md
 %md### Analysis case 1: NR with Rotated Eng Strain
 %md------------------
 %md In the first case ONSAS is run and the solution at the dof of interest is stored .
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+fprintf('   - case 1 finished. -\n')
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
-     ( (  (auxz+(-w)).^2 + auxx^2 - L^2 ) ./ (L * ( L + sqrt((auxz+(-w)).^2 + auxx^2) )) ) ...
-  .* (auxz+(-w)) ./ ( sqrt((auxz+(-w)).^2 + auxx^2) )  ;
+     ( (  (z2+(-w)).^2 + x2^2 - L^2 ) ./ (L * ( L + sqrt((z2+(-w)).^2 + x2^2) )) ) ...
+     .*  (z2+(-w))                    ./ ( sqrt((z2+(-w)).^2 + x2^2) )  ;
 %md
 %md
 %md### Results verification
 %md------------------
 %md
-analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
-      ( (  ( z2 + (-w) ).^2 + x2^2 - L^2 ) ./ (L * ( L + sqrt((z2 + (-w)).^2 + x2^2) ) ) ) ...
-   .*      ( z2 + (-w) )                   ./ ( sqrt( ( z2 + (-w) ).^2 + x2^2 ) )  ;
 
 %md### numerical verification
-[ analyticLoadFactorsNREngRot( controlDispsNREngRot)' loadFactorsNREngRot ]
-difLoad = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
-verifBoolean = ( norm( difLoad ) / norm( loadFactorsNREngRot ) ) <  1e-4
+difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
+
+
+%md### Analysis case 2: NR with Green Strain
+
+otherParams.problemName = 'staticVonMisesTruss_NR_Green';
+materials.hyperElasModel  = { 'SVK'} ;
+lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+materials.hyperElasParams = { [ lambda mu ] } ;
+
+boundaryConds.loadsTimeFact = { []        ; @(t) 1.5e8*t     } ;
+
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+fprintf('   - case 2 finished. -\n')
+controlDispsNRGreen =  -matUs(11,:) ;
+loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
+
+analyticLoadFactorsNRGreen = @(w) - 2 * E*A * ( ( z2 + (-w) ) .* ( 2*z2*(-w) + w.^2 ) ) ./ ( 2.0 * L^3 )  ;
+
+difLoadGreen = analyticLoadFactorsNRGreen( controlDispsNRGreen )' - loadFactorsNRGreen ;
+
+verifBoolean = ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-4 ) ...
+             * ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
+
 %md### Plots
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure
 plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
 hold on, grid on
 plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRGreen, analyticLoadFactorsNRGreen( controlDispsNRGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic', 'NR-RotEng', 'location','North')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','SouthEast')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
