@@ -147,6 +147,6 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/tutorials/StaticVonMisesTruss/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
 %md
