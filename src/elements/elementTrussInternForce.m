@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% function for computation of the normal force and tanget matrix 
+% function for computation of the normal force and tanget matrix
 % of 3D truss elements using engineering strain.
 
 
@@ -28,11 +28,11 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   Bdif = [ -eye(3) eye(3) ] ;
   Ge   = Bdif' * Bdif       ;
-    
+
   % initial/deformed lengths
   lini = sqrt( sum( ( Bdif * Xe    ).^2 ) ) ;
   ldef = sqrt( sum( ( Bdif * Xedef ).^2 ) ) ;
-  
+
   % normalized reference and deformed co-rotational vector
   e1ref = Bdif * Xe    / lini ;
   e1def = Bdif * Xedef / ldef ;
@@ -53,7 +53,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   elseif strcmp( hyperElasModel, 'SVK')
     strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;  % green-lagrange
-    
+
     lambda = hyperElasParams(1) ;
     mu     = hyperElasParams(2)     ;
 
@@ -66,7 +66,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
     KTe   =   stress      * A / lini * Ge  ...
             + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
-  
+
   elseif strcmp( hyperElasModel, '1DrotEngStrain')
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
@@ -79,11 +79,11 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
     KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
     Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
     KTe   = KMe + Ksige ;
- 
+
   end
-  
-  
+
+
   % ----------------------------------
-  
+
   Finte = {Finte};
   KTe   = {KTe};
