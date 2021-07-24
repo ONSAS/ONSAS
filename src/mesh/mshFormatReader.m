@@ -34,7 +34,7 @@
 %  - maximum number of nodes per element: 4 (linear tetrahedron)
 %
 
-function [ nodesMat, conecMat, physicalNames ] = msh4Reader( mshFilename )
+function [ nodesMat, conecMat, physicalNames ] = mshFormatReader( mshFilename )
 
 fid = fopen( mshFilename ,'r') ;
 
