@@ -141,12 +141,12 @@ plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'marker
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRGreen, analyticLoadFactorsNRGreen( controlDispsNRGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','SouthEast')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','EastOutside')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/tutorials/StaticVonMisesTruss/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
 %md
