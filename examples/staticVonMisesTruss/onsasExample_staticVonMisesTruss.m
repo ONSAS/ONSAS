@@ -70,7 +70,9 @@ initialConds                = struct() ;
 mesh.nodesCoords = [   0  0   0 ; ...
                       x2  0  z2 ; ...
                     2*x2  0   0 ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
+%md
+%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
@@ -84,7 +86,9 @@ mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
 mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
 %md
 %md### analysisSettings
+%md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
 analysisSettings.methodName    = 'newtonRaphson' ;
+%md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        = 0.1    ;
 analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
@@ -97,48 +101,38 @@ otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
 otherParams.controlDofs = [2 5 ];
 %md
 %md### Analysis case 1: NR with Rotated Eng Strain
-%md------------------
-%md In the first case ONSAS is run and the solution at the dof of interest is stored .
+%md In the first case ONSAS is run and the solution at the dof of interest is stored.
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-fprintf('   - case 1 finished. -\n')
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
-%md and the analytical value of the load factors is computed
+%md and the analytical value of the load factors is computed, as well as its difference with the numerical solution
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      ( (  (z2+(-w)).^2 + x2^2 - L^2 ) ./ (L * ( L + sqrt((z2+(-w)).^2 + x2^2) )) ) ...
      .*  (z2+(-w))                    ./ ( sqrt((z2+(-w)).^2 + x2^2) )  ;
-%md
-%md
-%md### Results verification
-%md------------------
-%md
-
-%md### numerical verification
 difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
 
-
 %md### Analysis case 2: NR with Green Strain
-
+%md In order to perform a SVK case, the material is changed and the problemName is also updated
 otherParams.problemName = 'staticVonMisesTruss_NR_Green';
 materials.hyperElasModel  = { 'SVK'} ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 materials.hyperElasParams = { [ lambda mu ] } ;
-
+%md the load history is also changed
 boundaryConds.loadsTimeFact = { []        ; @(t) 1.5e8*t     } ;
-
+%md and the analysis is run
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-fprintf('   - case 2 finished. -\n')
 controlDispsNRGreen =  -matUs(11,:) ;
 loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
-
+%md the analytic solution is computed
 analyticLoadFactorsNRGreen = @(w) - 2 * E*A * ( ( z2 + (-w) ) .* ( 2*z2*(-w) + w.^2 ) ) ./ ( 2.0 * L^3 )  ;
-
 difLoadGreen = analyticLoadFactorsNRGreen( controlDispsNRGreen )' - loadFactorsNRGreen ;
-
+%md
+%md## Verification
+%md the numerical resolution is validated for both strain measures.
 verifBoolean = ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-4 ) ...
              * ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
-
 %md### Plots
+%md and solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure
 plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
