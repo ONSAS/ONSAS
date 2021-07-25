@@ -93,35 +93,32 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
 
       loadvals = boundaryConds.loadsBaseVals{ indBC } ;
 
+      assert( sum( loadvals( [ 2 4 6 ] ) == 0 ) == 3, 'error only pressure loads, not moments, create an issue!' );
+
       if strcmp( loadCoordSys, 'global' )
 
         Fx = loadvals( 1 ) * areaElem / 3 ;
         Fy = loadvals( 3 ) * areaElem / 3 ;
         Fz = loadvals( 5 ) * areaElem / 3 ;
 
-        %~ elseif loadvals(1) == 0 % local coordinates load
+      elseif strcmp( loadCoordSys, 'local' ) % local coordinates load
 
-        %~ dofsaux = nodes2dofs( nodestrng , 6 ) ;
-        %~ dofs    = dofsaux(1:2:length(dofsaux)) ;
-        %~ nmod    = norm( cross( ...
-        %~ Nodes( nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
-        %~ Nodes( nodestrng(3),:) - Nodes( nodestrng(1),: ) ) ) ;
+        dofsaux = nodes2dofs( nodes , 6 ) ;
+        dofs    = dofsaux(1:2:length(dofsaux)) ;
+        % compute the normal vector of the element
+        normal  = cross( ...
+          Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
+          Nodes( nodes(3),:) - Nodes( nodes(1),: ) ) ;
+        % and normalize it
+        n = normal / norm( normal ) ;
 
-        %~ n = cross( ...
-        %~ Nodes(nodestrng(2),:) - Nodes( nodestrng(1),:) , ...
-        %~ Nodes( nodestrng(3),:) - Nodes( nodestrng(1),: ) ) / nmod ;
+        Fx = n(1) * loadvals( 1 ) * areaElem / 3 ;
+        Fy = n(2) * loadvals( 3 ) * areaElem / 3 ;
+        Fz = n(3) * loadvals( 5 ) * areaElem / 3 ;
 
-        %~ Fx = n(1) * loadvals(loadNum, 2+5 ) * area/3 ;
-        %~ Fy = n(2) * loadvals(loadNum, 2+5 ) * area/3 ;
-        %~ Fz = n(3) * loadvals(loadNum, 2+5 ) * area/3 ;
-
-        %~ if loadvals(2+1) ~= 0 || loadvals(2+3) ~= 0
-        %~ error('only local pressure implemented. create an issue!')
-        %~ end
-
-        %~ else
-        %~ error(' local/global load param must be 1 or 0')
-
+      else
+        loadCoordSys
+        error(' loadsCoordSys field must be local or global.');
       end % if global/local system
 
       elemNodeLoadsMatrix = ones( length(nodes), 1 )*[ Fx 0 Fy 0 Fz 0 ] ;
@@ -130,10 +127,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
     %mdadd loads to matrix of loaded nodes
     loadedNodes = [ loadedNodes ; ...
                     nodes'  elemNodeLoadsMatrix ] ;
-
   end % for elements
-
-%loadedNodes
 
   %md convert to assembled fext vetor
   if exist( 'loadedNodes' ) ~= 0

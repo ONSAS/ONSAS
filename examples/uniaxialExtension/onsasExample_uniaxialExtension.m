@@ -157,47 +157,37 @@ otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md## Verification
-%md
-%md```math
-%md\lambda(t) = \frac{1}{p} \frac{E}{2}  \left( \left( 1+\frac{u}{Lx} \right)^3 - \left( 1+ \frac{u}{Lx} \right) \right)
-%md```
+analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) )
 %md
 analyticCheckTolerance = 1e-6 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
-disps = matUs(6*6+1,:) ;
-analyticVals = analyticFunc(disps) ;
-
+controlDisps = matUs(6*6+1,:) ;
+analyticVals = analyticFunc( controlDisps ) ;
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
-loadFactorNumericalValsCase1  = numericalVals ;
-
+loadFactorNumericalValsCase1  = loadFactorsMat ;
 
 verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance
 %md
 
+%md## Analysis case 2:
+%md the mesh information is read from a gmsh-generated mesh file.
+otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
-problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
-
-[ Nodes, Conec ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
-
-
-
-
-
-
+boundaryConds.loadsCoordSys = {'local'; [] ; [] ; [] } ;
+boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
+boundaryConds.loadsBaseVals = { [0 0 0 0 p 0 ] ; [] ; [] ; [] } ;
 
 
-
-
-
-
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 %md## Plot
 %md
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure, hold on, grid on
-plot( disps, loadFactorsMat, 'k-o' , 'linewidth', lw,'markersize',ms )
-plot( disps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
+plot( controlDisps, loadFactorsMat, 'k-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDisps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 legend('Numeric','Analytic','location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
