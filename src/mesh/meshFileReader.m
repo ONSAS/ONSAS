@@ -23,7 +23,7 @@ fileExtension = fileName( (end-2):end ) ;
 if strcmp( fileExtension , 'msh' )
   %md reads data from msh file
   [ nodesMatinp, conecMatinp, physicalNames ] = mshFormatReader( fileName ) ;
-  
+
   %md converts strings to integers indexes matrix
   matInds = zeros( length( physicalNames), 4 ) ;
   for i=1:size( matInds, 1)
