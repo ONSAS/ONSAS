@@ -144,11 +144,11 @@ mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
 %md### Analysis parameters
 %md
 analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.stopTolIts    = 30      ;
-analysisSettings.stopTolDeltau = 1.0e-12 ;
-analysisSettings.stopTolForces = 1.0e-12 ;
-analysisSettings.finalTime      = 1       ;
-analysisSettings.deltaT        = .1      ;
+analysisSettings.stopTolIts    = 30     ;
+analysisSettings.stopTolDeltau = 1.0e-8 ;
+analysisSettings.stopTolForces = 1.0e-8 ;
+analysisSettings.finalTime      = 1      ;
+analysisSettings.deltaT        = .125   ;
 %md
 %md### Output parameters
 otherParams.plotsFormat = 'vtk' ;
@@ -176,6 +176,8 @@ boundaryConds.loadsCoordSys = {'local'; [] ; [] ; [] } ;
 boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
 boundaryConds.loadsBaseVals = { [0 0 0 0 p 0 ] ; [] ; [] ; [] } ;
 
+elements.elemTypeParams = { []; [ 2 ] } ;
+
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 controlDisps = matUs(6*6+1,:) ;
@@ -184,133 +186,25 @@ controlDispsValsCase2         = controlDisps  ;
 loadFactorAnalyticalValsCase2 = analyticVals  ;
 loadFactorNumericalValsCase2  = loadFactorsMat ;
 
-aux1 = loadFactorNumericalValsCase1 - loadFactorAnalyticalValsCase1 ;
-aux2 = loadFactorNumericalValsCase2 - loadFactorAnalyticalValsCase1 ;
+aux1 = loadFactorNumericalValsCase1' - loadFactorAnalyticalValsCase1 ;
+aux2 = loadFactorNumericalValsCase2' - loadFactorAnalyticalValsCase1 ;
 
 verifBoolean = ...
      ( norm( aux1 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ...
-  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) 
+  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance )
 %md
-
 
 %md## Plot
 %md
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure, hold on, grid on
-plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r--' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
 %
-plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/verifUniaxial.png','-dpng')
 %md
-
-
-return
-
-
-
-
-
-% solid model using gmsh mesh, local tension load and complex step
-
-
-loadsParams{1,1}    = [ 0 1  0 0 0 0 p 0 ] ; % local coords appliend tension
-
-elementsParams{2,1} = [ 4 1 ] ; % complex step constitutive tensor
-
-plotParamsVector = [ 0 ] ;
-analyticSolFlag        = 0 ;
-
-% run ONSAS
-ONSAS
-
-controlDispsValsCase2         = controlDisps  ;
-loadFactorNumericalValsCase2  = numericalVals ;
-
-% --------------------------------------------------------
-% truss element model
-% --------------------------------------------------------
-
-problemName = 'uniaxialExtension_truss' ;
-
-Nodes = [ 0    0    0 ; ...
-          Lx   0    0   ...
-        ] ;
-
-Conec = {[ 0 1 0 0 1   1   ] ; ... % fixed node
-         [ 0 1 1 0 2   2   ] ; ... % loaded node
-         [ 1 2 0 1 0   1 2 ]   ... % truss element
-        } ;
-
-% ======================================================================
-% --- MELCS parameters ---
-
-materialsParams = cell(1,1) ; % M
-elementsParams  = cell(1,1) ; % E
-loadsParams     = cell(1,1) ; % L
-crossSecsParams = cell(1,1) ; % C
-springsParams   = cell(1,1) ; % S
-
-% --- Material parameters ---
-E = 1 ; nu = 0.3 ;
-materialsParams{1} = [ 0 2 E nu ] ;
-
-% --- Element parameters ---
-elementsParams = { 1  ; [ 2 0 ]} ;
-
-% --- Load parameters ---
-loadsParams{1,1} = [ 1 1  p 0 0 0 0 0 ] ;
-
-% --- CrossSection parameters ---
-crossSecsParams = { [ 2 Ly Lz] } ; %
-
-% ----------------------------------------------------------------------
-% --- springsAndSupports parameters ---
-springsParams{1, 1} = [ inf 0  inf 0   inf 0 ] ;
-springsParams{2, 1} = [ 0   0  inf 0   inf 0 ] ;
-
-% ======================================================================
-
-plotParamsVector       = [ 0 ] ;
-
-
-controlDofs = [ 2 1 1 ] ;
-
-%% run ONSAS
-ONSAS
-
-controlDispsValsCase3         = controlDisps  ;
-%~ loadFactorNumericalValsCase3  = numericalVals .* (1+controlDisps) / Lx ;
-loadFactorNumericalValsCase3  = numericalVals ;
-
-
-% ----------------------------------------------------------------------
-% --- plots ---
-lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
-
-figure, grid on, hold on
-
-plot( controlDispsValsCase1, ...
-      loadFactorAnalyticalValsCase1 ,'b-o' , 'linewidth', lw,'markersize',ms )
-
-plot( controlDispsValsCase1, ...
-      loadFactorNumericalValsCase1  ,'k-s' , 'linewidth', lw,'markersize',ms)
-
-plot( controlDispsValsCase2, ...
-      loadFactorNumericalValsCase2  ,'r-x' , 'linewidth', lw,'markersize',ms)
-
-plot( controlDispsValsCase3, ...
-      loadFactorNumericalValsCase3  ,'g--' , 'linewidth', lw,'markersize',ms)
-
-labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic Sol','numerical Sol 1','numerical Sol 2','numerical Sol 3','location','North')
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-%~ print( [ 'plotsExtensionSVK' ] ,'-dpdflatex','-tight') ;
-print( [ 'plotsExtensionSVK.png' ] ,'-dpng') ;
-
-% ----------------------------------------------------------------------

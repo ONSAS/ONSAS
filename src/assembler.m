@@ -156,8 +156,21 @@ for elem = 1:nElems
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 
-    [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [2 hyperElasParams], 2, 1 ) ;
+    if strcmp( hyperElasModel, 'SVK' )
+      auxMatNum = 2 ;
+    else
+      hyperElasModel
+      error('material not implemented yet! open an issue.')
+    end
+
+   if isempty(elemTypeParams)
+     % (1 analytic 2 complex step)
+     consMatFlag = 1 ; % default: 1
+   else
+     consMatFlag = elemTypeParams(1) ;
+   end
+   [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
+                            [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
   end   % case tipo elemento
   % -------------------------------------------
