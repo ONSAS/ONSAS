@@ -157,7 +157,7 @@ otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md## Verification
-analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) )
+analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
 %md
 analyticCheckTolerance = 1e-6 ;
 analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
@@ -166,9 +166,6 @@ analyticVals = analyticFunc( controlDisps ) ;
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = loadFactorsMat ;
-
-verifBoolean = ( norm( analyticVals - loadFactorsMat') / norm( analyticVals) ) < analyticCheckTolerance
-%md
 
 %md## Analysis case 2:
 %md the mesh information is read from a gmsh-generated mesh file.
@@ -179,17 +176,33 @@ boundaryConds.loadsCoordSys = {'local'; [] ; [] ; [] } ;
 boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
 boundaryConds.loadsBaseVals = { [0 0 0 0 p 0 ] ; [] ; [] ; [] } ;
 
-
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+controlDisps = matUs(6*6+1,:) ;
+analyticVals = analyticFunc( controlDisps ) ;
+controlDispsValsCase2         = controlDisps  ;
+loadFactorAnalyticalValsCase2 = analyticVals  ;
+loadFactorNumericalValsCase2  = loadFactorsMat ;
+
+aux1 = loadFactorNumericalValsCase1 - loadFactorAnalyticalValsCase1 ;
+aux2 = loadFactorNumericalValsCase2 - loadFactorAnalyticalValsCase1 ;
+
+verifBoolean = ...
+     ( norm( aux1 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ...
+  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) 
+%md
+
 
 %md## Plot
 %md
 lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure, hold on, grid on
-plot( controlDisps, loadFactorsMat, 'k-o' , 'linewidth', lw,'markersize',ms )
-plot( controlDisps, analyticVals, 'b-x' , 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('Numeric','Analytic','location','North')
+plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r--' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
+%
+plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-o' , 'linewidth', lw,'markersize',ms )
+labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
+legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/verifUniaxial.png','-dpng')

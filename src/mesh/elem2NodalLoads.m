@@ -93,13 +93,14 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
 
       loadvals = boundaryConds.loadsBaseVals{ indBC } ;
 
-      assert( sum( loadvals( [ 2 4 6 ] ) == 0 ) == 3, 'error only pressure loads, not moments, create an issue!' );
-
       if strcmp( loadCoordSys, 'global' )
 
         Fx = loadvals( 1 ) * areaElem / 3 ;
         Fy = loadvals( 3 ) * areaElem / 3 ;
         Fz = loadvals( 5 ) * areaElem / 3 ;
+
+        assert( sum( loadvals( [ 2 4 6 ] ) == 0 ) == 3, ...
+          'error only pressure loads, not moments, create an issue!' );
 
       elseif strcmp( loadCoordSys, 'local' ) % local coordinates load
 
@@ -112,16 +113,19 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
         % and normalize it
         n = normal / norm( normal ) ;
 
-        Fx = n(1) * loadvals( 1 ) * areaElem / 3 ;
-        Fy = n(2) * loadvals( 3 ) * areaElem / 3 ;
+        Fx = n(1) * loadvals( 5 ) * areaElem / 3 ;
+        Fy = n(2) * loadvals( 5 ) * areaElem / 3 ;
         Fz = n(3) * loadvals( 5 ) * areaElem / 3 ;
+
+        assert( sum( loadvals( [ 1 2 3 4 6 ] ) == 0 ) == 5, ...
+          'error only normal pressure loads in local coords, create an issue!' );
 
       else
         loadCoordSys
         error(' loadsCoordSys field must be local or global.');
       end % if global/local system
 
-      elemNodeLoadsMatrix = ones( length(nodes), 1 )*[ Fx 0 Fy 0 Fz 0 ] ;
+      elemNodeLoadsMatrix = ones( length(nodes), 1 ) * [ Fx 0 Fy 0 Fz 0 ] ;
 
     end %if elemTypes
     %mdadd loads to matrix of loaded nodes
