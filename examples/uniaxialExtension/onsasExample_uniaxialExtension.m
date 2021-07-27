@@ -20,7 +20,8 @@
 %md```math
 %md\textbf{F} = \left[ \begin{matrix} \alpha & 0 & 0 \\ 0 & \beta & 0 \\ 0 & 0 & \beta \end{matrix} \right]
 %md\qquad
-%md\textbf{E} = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix} \right]
+%md\textbf{E} = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix}
+%md\right]
 %md```
 %mdThe second Piola-Kirchhoff tensor $\textbf{S}$ is given by
 %md```math
@@ -65,7 +66,7 @@
 %md```
 %md where $u$ is the $x$ displacement of the points located on face $x=Lx$.
 %md
-%md### Numerical solution
+%md## Numerical solution: case 1
 %md---
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 clear all, close all
@@ -156,7 +157,7 @@ otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md## Verification
+%md### Analytic solution computation
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
 %md
 analyticCheckTolerance = 1e-6 ;
@@ -167,8 +168,11 @@ controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = loadFactorsMat ;
 
-%md## Analysis case 2:
-%md the mesh information is read from a gmsh-generated mesh file.
+%md## Numerical solution: case 2
+%mdIn this analysis case, the mesh information is read from a gmsh-generated
+%mdmesh file, the pressure is applied using local coordinates and the stiffness
+%md matrix is computed using the complex-step method.
+%md
 otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 
@@ -193,18 +197,20 @@ verifBoolean = ...
      ( norm( aux1 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ...
   && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance )
 %md
-
-%md## Plot
 %md
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+%md## Plot
+%mdThe numerical and analytic solutions are plotted.
+lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
-%
 plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/verifUniaxial.png','-dpng')
 %md
+%md```@raw html
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifUniaxial.png" alt="plot check" width="500"/>
+%md```

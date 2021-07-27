@@ -133,7 +133,7 @@ verifBoolean =  ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-
              && ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
 %md### Plots
 %md and solutions are plotted.
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure
 plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
 hold on, grid on
@@ -141,8 +141,8 @@ plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'marker
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRGreen, analyticLoadFactorsNRGreen( controlDispsNRGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','EastOutside')
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','SouthEast')
+set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
 %md
