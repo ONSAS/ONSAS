@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -36,12 +36,12 @@ function ...
   nelems = size(Conec,1) ;
 
   FintGt = internalForce( Conec, secGeomProps, coordsElemsMat, dispsElemsMat, hyperElasParams, KS, Ut );
-  
+
   FextGt  = variableFext * currLoadFactor + constantFext ;
 
   Fhat  = FextGt - FintGt + a2CD * massMat * Ut - ( a0CD * massMat - a1CD * dampingMat )* Utm1 ;
   Mhat  = a0CD * massMat + a1CD * dampingMat ;
-  
+
   Mhatred = Mhat(neumdofs,neumdofs) ;
   Fhatred = Fhat(neumdofs) ;
 
@@ -49,7 +49,6 @@ function ...
 
   Utp1 = zeros(size(Ut));
   Utp1(neumdofs) = Utp1red ;
-  
+
   Udotdott = a0CD * ( Utp1 -2*Ut + Utm1 ) ;
   Udott    = a1CD * ( Utp1       - Utm1 ) ;
-  

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,45 +18,45 @@
 
 function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau  )
 
-  convDeltau = redConvDeltau ;  
+  convDeltau = redConvDeltau ;
 
   if strcmp( analysisSettings.methodName, 'arcLength' )
-  
+
     aux = systemDeltauMatrix \ systemDeltauRHS ;
-    
+
     deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
-    
+
     if dispIter == 1
       if norm(convDeltau)==0
         nextLoadFactorVals
-        
+
         [pos, deltalambda ] = find( nextLoadFactorVals )
         stop
       else
         deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
       end
-      
+
     else
       ca =    deltaubar' * deltaubar ;
       cb = 2*(currDeltau + deltauast)' * deltaubar ;
-      cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ; 
+      cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ;
       disc = cb^2 - 4 * ca * cc ;
       if disc < 0
-        disc, error( 'negative discriminant'); 
+        disc, error( 'negative discriminant');
       end
       sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
-      
+
       vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
                ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
-     
+
       deltalambda = sols( find( vals == max(vals) ) ) ;
     end
-    
+
     nextLoadFactor  = nextLoadFactor  + deltalambda(1) ;
-    
+
     deltaured = deltauast + deltalambda(1) * deltaubar ;
-  
-  
+
+
   else   % incremental displacement
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
 

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -23,17 +23,17 @@
 function [ U, Udot, Udotdot ] = initialCondsProcessing( nNodes )
 
 % create velocity and displacements vectors
-U       = zeros( 6*nNodes,   1 ) ;  
-Udot    = zeros( 6*nNodes,   1 ) ;  
+U       = zeros( 6*nNodes,   1 ) ;
+Udot    = zeros( 6*nNodes,   1 ) ;
 Udotdot = zeros( 6*nNodes,   1 ) ;
 
-% adds non homogeneous initial conditions 
+% adds non homogeneous initial conditions
 %~ if length( nonHomogeneousInitialCondU0 ) > 0
   %~ for i = 1 : size( nonHomogeneousInitialCondU0, 1 ) % loop over rows of matrix
     %~ dofs = nodes2dofs(nonHomogeneousInitialCondU0(i, 1 ), 6 ) ;
     %~ U( dofs ( nonHomogeneousInitialCondU0 (i, 2 ) ) ) = ...
       %~ nonHomogeneousInitialCondU0 ( i, 3 ) ;
-  %~ end 
+  %~ end
 %~ end % if nonHomIniCond
 
 %~ if length( nonHomogeneousInitialCondUdot0 ) > 0
@@ -44,18 +44,18 @@ Udotdot = zeros( 6*nNodes,   1 ) ;
         %~ nonHomogeneousInitialCondUdot0(i, 3 );
     %~ end
   %~ else
-    %~ warning(' velocity initial conditions set for a static analysis method' ) ;  
+    %~ warning(' velocity initial conditions set for a static analysis method' ) ;
   %~ end
 %~ end
 
 
 % computation of initial acceleration for some cases
-% --------------------------------------------------- 
+% ---------------------------------------------------
 
 % --- initial tangent matrices ---
 %~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, booleanConsistentMassMat ) ;
 
-%~ systemDeltauMatrix = mats{1} 
+%~ systemDeltauMatrix = mats{1}
 
 %~ stop
 %~ if dynamicAnalysisBoolean == 1,
@@ -65,5 +65,4 @@ Udotdot = zeros( 6*nNodes,   1 ) ;
   %~ % --- computation of initial Udotdott for truss elements only!!!
   %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
 
-  %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;  
-
+  %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;

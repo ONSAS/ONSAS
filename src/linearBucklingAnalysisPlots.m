@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -95,16 +95,16 @@ if length(lambdas)>1
   modeaux = 2;
   displacmat = reshape(UsModesLinBuck(:,modeaux),2,nnodes)' * ( 0.1*strucsize);
   Nodesdefaux = Nodes + displacmat  ;
-  
+
   for i=1:nelems
     plot(xelems(i,:),yelems(i,:),'b-o','linewidth',lw,'markersize',ms)
   end
-  
+
   for i=1:nelems
     xelemsaux(i,:) = Nodesdefaux( Conec(i,1:2) , 1);
     yelemsaux(i,:) = Nodesdefaux( Conec(i,1:2) , 2);
   end
-  
+
   for i=1:nelems
     plot(xelemsaux(i,:),yelemsaux(i,:),'r-s','linewidth',lw,'markersize',ms)
   end

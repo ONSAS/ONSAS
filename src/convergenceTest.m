@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,12 +18,12 @@
 
 
 function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
-  analysisSettings, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS ) 
+  analysisSettings, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS )
 
   stopTolDeltau = analysisSettings.stopTolDeltau ;
   stopTolForces = analysisSettings.stopTolForces ;
   stopTolIts    = analysisSettings.stopTolIts    ;
-  
+
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
 
@@ -33,7 +33,7 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
 
   deltaErrLoad  = norm( systemDeltauRHS )     ;
   normFext      = norm( redFext         )     ;
-  
+
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
   logicForcStop = ( deltaErrLoad < ( (normFext+(normFext < stopTolForces)) * stopTolForces ) )  * ( deltaErrLoad > 0 ) ;
 
@@ -44,6 +44,5 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   elseif ( dispIter >= stopTolIts )
     stopCritPar = 3 ;      booleanConverged = 1 ;
   else
-    stopCritPar = [];      booleanConverged = 0 ; 
+    stopCritPar = [];      booleanConverged = 0 ;
   end
-  

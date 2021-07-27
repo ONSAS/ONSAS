@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,7 +18,7 @@
 
 % function for Nonlinear buckling analysis as in section 6.8.2 from Bathe, FEM Procedures 2nd edition. ---
 
-function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor, nextLoadFactor );  
+function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTtred, currLoadFactor, nextLoadFactor );
 
   if isThisOctave
     [a,b] = eig( KTtred ) ;
@@ -26,7 +26,7 @@ function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTt
     nEigValMatlab = min(10, size(KTtred,1) ) ;
     [a,b] = eigs( KTtred, nEigValMatlab ) ;
   end
-      
+
   Keigvals = diag(b) ;
   nKeigpos = length( find(Keigvals >  0 ) ) ;
   nKeigneg = length( find(Keigvals <= 0 ) ) ;
@@ -38,14 +38,14 @@ function [ nKeigpos, nKeigneg, factor_crit ] = stabilityAnalysis ( KTtm1red, KTt
     else
       [vecgamma, gammas ] = eigs( KTtred, KTtm1red, nEigValMatlab ) ;
     end
-      
+
     gammas = diag( gammas);
-   
+
     if length( find( gammas >  0 ) ) > 0,
-    
+
       gamma_crit  = min ( gammas ( find( gammas >  0 ) ) ) ;
-      if gamma_crit ~= 1 
-        lambda_crit = 1 / ( 1 - gamma_crit )  ;               
+      if gamma_crit ~= 1
+        lambda_crit = 1 / ( 1 - gamma_crit )  ;
         factor_crit = currLoadFactor + lambda_crit * (nextLoadFactor - currLoadFactor) ;
       else
         factor_crit = 0 ;

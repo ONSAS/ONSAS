@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,23 +18,23 @@
 
 
 %% Read entities information of dxf file
-    %author = SebaTM 
+    %author = SebaTM
     %Jul 27 2009
-    %Based in dxf2coord 1.1 matrix of lukas wischounig, but is not dependent of the Code 
-    %Group relative position. That is better way to read dxf format. Don't fail if the 
-    %polyline has arcs (budges), but yet don't read them. Don't read arcs as circles. Read 
-    %properties (see case 'LINE' by examples of modifications). Group Codes and Associated 
+    %Based in dxf2coord 1.1 matrix of lukas wischounig, but is not dependent of the Code
+    %Group relative position. That is better way to read dxf format. Don't fail if the
+    %polyline has arcs (budges), but yet don't read them. Don't read arcs as circles. Read
+    %properties (see case 'LINE' by examples of modifications). Group Codes and Associated
     %Values is read in accurately way (accept associated values with space).
     %
-    %Use cell2mat(cell(:,1)) to acquire geometry data in matrix, 
+    %Use cell2mat(cell(:,1)) to acquire geometry data in matrix,
     %by example cell2mat(c_Cir(:,1))
 
 function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
- 
+
   %% Read file
 		fileName = auxReadDXF( fileName );
 		%~ cd sources
-    fId = fopen(fileName);    
+    fId = fopen(fileName);
     c_ValAsoc = textscan(fId,'%d%s','Delimiter', '\n');
     fclose(fId);
     delete(fileName);
@@ -43,7 +43,7 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
     m_GrCode = c_ValAsoc{1} ;
     % Associated value String Cell
     c_ValAsoc = c_ValAsoc{2} ;
-    
+
   %% Entities
     m_PosCero = find(m_GrCode==0);
     %Is searched by (0,SECTION),(2,ENTITIES)
@@ -64,10 +64,10 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
     c_Cir = cell(1,2);
     c_Arc = cell(1,2);
     c_Poi = cell(1,2);
-    % 
+    %
     iLine = 1;
     iPoly = 1;
-    iCir = 1;  
+    iCir = 1;
     iArc = 1;
     iPoi = 1;
     % Loop on the Entities
@@ -76,7 +76,7 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
         c_ValAsocEnt = c_ValAsoc(m_PosCero(iEnt+1):m_PosCero(iEnt+2)-1);
         nomEnt = c_ValAsocEnt{1};  %c_ValAsocEnt{m_PosCero(iEnt+1)}
         %In the entitie's name is assumed uppercase
-        switch nomEnt            
+        switch nomEnt
             case 'LINE'
                 % (Xi,Yi,Zi,Xj,Yj,Zj) start and end points
                 c_Line{iLine,1} = [str2double(f_ValGrCode(10,m_GrCodeEnt,c_ValAsocEnt)),...
@@ -94,7 +94,7 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
                 %c_Line(iLine,4) = f_XData(GroupCode,'XDataName',m_GrCodeEnt,c_ValAsocEnt);
                 % Add properties
                 %
-                iLine = iLine+1;  
+                iLine = iLine+1;
             case 'LWPOLYLINE'
                 % (X,Y) vertexs
                 %Is not take into account the budge (group code 42, arc in the polyline).
@@ -111,7 +111,7 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
                 c_Poly(iPoly,2) = f_ValGrCode(8,m_GrCodeEnt,c_ValAsocEnt);
                 % Add properties
                 %
-                iPoly = iPoly+1;   
+                iPoly = iPoly+1;
             case 'CIRCLE'
                 % (X Center,Y Center,Radius)
                 c_Cir{iCir,1} = [str2double(f_ValGrCode(10,m_GrCodeEnt,c_ValAsocEnt)),...
@@ -145,10 +145,10 @@ function [c_Line,c_Poly,c_Cir,c_Arc,c_Poi] = f_LectDxf( fileName )
                 %
                 iPoi = iPoi+1;
             %case Add Entities
-        end        
-    end 
+        end
+    end
 		%~ cd ..
-%%   
+%%
 end
 %%
 function c_Val = f_ValGrCode(grCode,m_GrCode,c_ValAsoc)

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -20,5 +20,5 @@ function normal = computeNormalForces(Conec, Stresses, crossSecsParams )
 
 nElems = size(Conec,1) ;
 
-normal = Stresses(:,1) .* crossSecsParams( Conec(:, 6 ) , 1) ... 
+normal = Stresses(:,1) .* crossSecsParams( Conec(:, 6 ) , 1) ...
   .* (( Conec(:,6)==1) + (Conec(:,6)==2) ) ;

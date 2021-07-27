@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -51,22 +51,22 @@ case 7
   else
     sigma    = EC * epsilon ;
     dsigdeps = EC ;
-  end    
+  end
 
 case 8
-  % Bi-modulus material model with pre-strain: param1: Tension young modulus, 
+  % Bi-modulus material model with pre-strain: param1: Tension young modulus,
   % param2: Compression modulus, param3: epszero (pre-strain)
   ET = paramsmodel(1) ;
   EC = paramsmodel(2) ;
   epszero = paramsmodel(3) ;
-  
+
   if ( epsilon - epszero ) >=(-1e-15)
     sigma    = ET * ( epsilon - epszero ) ;
     dsigdeps = ET ;
   else
     sigma    = EC * ( epsilon - epszero ) ;
     dsigdeps = EC ;
-  end    
+  end
 
 case 9
   % Example 5.11 from Reddy nonlinear sqrt stress-strain constitutive relation
@@ -79,5 +79,3 @@ case 9
   end
 
 end
-
-

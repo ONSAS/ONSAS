@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -16,28 +16,28 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName ) 
+function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
 
   [c_Line, c_Poly, c_Cir, c_Arc, c_Poi] = f_LectDxf( fileName ) ;
-	
+
   ndofpnode = 6 ;
   nelems = size(c_Line,1) ;
-  
+
   Nodes = [] ;
   conecMat = cell(nelems,1) ;
   pos = 1 ;
-  
+
   nnodesEntity = size(c_Poi,1) ;
 	auxLength = length(c_Poi{1}) ;
   typesElem = [] ;
-  
+
   for i = 1:nelems
     aux1 = [] ;
-    aux2 = [] ;  
+    aux2 = [] ;
     nod1 = c_Line{i}(1:3) ;
     nod2 = c_Line{i}(4:6) ;
     nnodes = size(Nodes,1) ;
-    
+
     % MELCS
     % M: Material
     % E: Element type
@@ -50,26 +50,26 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
     loadEntity = str2num(c_Line{i,2}(7:8)) ;
     secEntity = str2num(c_Line{i,2}(10:11)) ;
     suppEntity = str2num(c_Line{i,2}(13:14)) ;
-    
+
     entityVec = [ elemEntity loadEntity secEntity suppEntity ] ;
-    
+
     typesElem = [ typesElem ; elemEntity ] ;
-    
+
     if i == 1
 			Nodes = [ Nodes ; nod1 ; nod2 ] ;
       conecMat{i,1} = [ matEntity entityVec pos pos+1 ] ;
       pos = pos+2 ;
     else
       for j = 1:nnodes
-        if norm(Nodes(j,:)-nod1) < 1e-10 
+        if norm(Nodes(j,:)-nod1) < 1e-10
           aux1 = [ j ] ;
         elseif norm(Nodes(j,:)-nod2) < 1e-10
           aux2 = [ j ] ;
         end
       end
-    
-      
-      if length(aux1) == 0 && length(aux2) == 0 
+
+
+      if length(aux1) == 0 && length(aux2) == 0
           Nodes = [ Nodes ; nod1 ; nod2 ] ;
           conecMat{i,1} = [ matEntity entityVec pos pos+1 ] ;
           pos = pos+2 ;
@@ -86,17 +86,17 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
           conecMat{i,1} = [ matEntity entityVec aux1 aux2 ] ;
 
       end
-         
+
     end
-    
-  end  
-  
+
+  end
+
   typesElem = unique(typesElem);
-  
+
 	nodesMat = Nodes ;
-	
+
 	lastElemType = typesElem(end) ;
-	
+
   nnodes = size(Nodes,1) ;
   nnodesEntity = size(c_Poi,1) ;
   auxLength = length(c_Poi{1}) ;
@@ -106,20 +106,20 @@ function [ nodesMat, conecMat, physicalNames ] = dxfReader( fileName )
       aux = [] ;
       elemEntity = str2num(c_Poi{i,2}(4:5)) ;
       for j = 1:nnodes
-        if norm(Nodes(j,:)-nod) < 1e-10  
+        if norm(Nodes(j,:)-nod) < 1e-10
           nod = j ;
 
           suppEntity = str2num(c_Poi{i,2}(13:14)) ;
 					loadEntity = str2num(c_Poi{i,2}(7:8)) ;
 					entityVec = [ 0 elemEntity loadEntity 0 suppEntity  ] ;
-					
+
           conecMat{nelems+1,1} = [ entityVec nod ] ;
           nelems=nelems+1 ;
 
-        end  
+        end
       end
     end
-    
+
   end % for elements
 
 end % function

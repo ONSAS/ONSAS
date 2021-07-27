@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,8 +18,8 @@
 
 % --------------------------------------------------------------------------------------------------
 
-function unifDisNodal = linearElementEquivalentLoads( unifDisLoadG, ElemLengths, Conec,ndofpnode, Local2GlobalMats, 
-  
+function unifDisNodal = linearElementEquivalentLoads( unifDisLoadG, ElemLengths, Conec,ndofpnode, Local2GlobalMats,
+
   for i = 1:size(unifDisLoadG,1)
 
     nelem = unifDisLoadG(i,1) ;
@@ -39,35 +39,35 @@ function unifDisNodal = linearElementEquivalentLoads( unifDisLoadG, ElemLengths,
       if unifDisLoadG(i,2)
         qUnifDisxG = unifDisLoadG(i,5) ;
         ezL = Local2GlobalMats{m}(:,3) ;
-        cosAlpha = ezL' * [1 0 0]' / norm(ezL) ; alpha = acos(cosAlpha) ; 
+        cosAlpha = ezL' * [1 0 0]' / norm(ezL) ; alpha = acos(cosAlpha) ;
         senAlpha = cos(pi/2-alpha) ;
         q_perp = qUnifDisxG * cosAlpha * l * [ 0 0 0 -l/12 1/2 0 0 0 0 l/12 1/2 0 ]' ;
         q_long = qUnifDisxG * senAlpha * l * [ 1/2  0 0   0    0  0 1/2 0 0   0   0  0 ]' ;
         elemUnifDis{nelem,1} = R * q_perp + R * q_long ;
         unifDisNodal( aux ) = elemUnifDis{nelem,1} + unifDisNodal( aux ) ;
-      end 
-       
+      end
+
       if unifDisLoadG(i,3)
         qUnifDisyG = unifDisLoadG(i,6) ;
         eyL = Local2GlobalMats{m}(:,2) ;
-        cosAlpha = eyL' * [0 1 0]' / norm(eyL) ; alpha = acos(cosAlpha) ; 
+        cosAlpha = eyL' * [0 1 0]' / norm(eyL) ; alpha = acos(cosAlpha) ;
         senAlpha = cos(pi/2-alpha) ;
         q_perp = qUnifDisyG * cosAlpha * l * [ 0 0 1/2 0 0 l/12 0 0 1/2 0 0 -l/12 ]' ;
         q_long = qUnifDisyG * senAlpha * l * [ 1/2  0 0   0    0  0 1/2 0 0   0   0  0 ]' ;
         elemUnifDis{nelem,2} = R * q_perp + R * q_long ;
         unifDisNodal( aux ) = elemUnifDis{nelem,2} + unifDisNodal( aux ) ;
       end
-      
-      if unifDisLoadG(i,4) 
+
+      if unifDisLoadG(i,4)
         qUnifDiszG = unifDisLoadG(i,7) ;
         ezL = Local2GlobalMats{m}(:,3) ;
-        cosAlpha = ezL' * [0 0 1]' / norm(ezL) ; alpha = acos(cosAlpha) ; 
+        cosAlpha = ezL' * [0 0 1]' / norm(ezL) ; alpha = acos(cosAlpha) ;
         senAlpha = cos(pi/2-alpha) ;
         q_perp = qUnifDiszG * cosAlpha * l * [ 0 0 0 -l/12 1/2 0 0 0 0 l/12 1/2 0 ]' ;
         q_long = qUnifDiszG * senAlpha * l * [ 1/2  0 0   0    0  0 1/2 0 0   0   0  0 ]' ;
         elemUnifDis{nelem,3} = R * q_perp + R * q_long ;
-        unifDisNodal( aux ) = elemUnifDis{nelem,3} + unifDisNodal( aux ) ;  
-      end 
-   
+        unifDisNodal( aux ) = elemUnifDis{nelem,3} + unifDisNodal( aux ) ;
+      end
+
     end
   end

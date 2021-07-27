@@ -1,3 +1,5 @@
+% Copyright (C) 2021
+
 function [ KTe, Me, Qhe ] = elementHeatTetraSolid( elemCoords, materialParams )
 
   tetCoordMat        = reshape( elemCoords', 3, 4 ) ;
@@ -8,12 +10,12 @@ function [ KTe, Me, Qhe ] = elementHeatTetraSolid( elemCoords, materialParams )
   %~ BMat = BMats ( deriv ) ;
 
   % material params
-  rho   = materialParams(1) ;  
+  rho   = materialParams(1) ;
   cSpHe = materialParams(2) ;
   kCond = materialParams(3) ;
 
 
-  eleCoordMat = tetCoordMat               ; 
+  eleCoordMat = tetCoordMat               ;
 
   xi = 0.25 ;  wi = 1/6  ;
 
@@ -28,7 +30,7 @@ function [ KTe, Me, Qhe ] = elementHeatTetraSolid( elemCoords, materialParams )
   if vol<0,  vol, error('Element with negative volume, check connectivity.'), end
 
   funder = inv(jacobianmat)' * deriv ;
-  
+
   KTe = kCond * funder' * funder * vol ;
   Me  = rho * cSpHe * vol/4 * eye(4) ;
   Qhe = vol / 4 * ones(4,1);

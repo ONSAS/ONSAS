@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -17,15 +17,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-%script for ploting load factor versus control displacement 
+%script for ploting load factor versus control displacement
 
 lw = 1.5; ms = 3;
 
 flagMarkersLoadDisp = 1;
 
-loadFactors 
+loadFactors
 
-timeVals 
+timeVals
 stop
 figure , hold on, grid on
 plot( timeVals, loadFactors        , 'b-x', 'linewidth', lw,'markersize',ms)
@@ -64,8 +64,8 @@ plot( controlDisps, loadFactors , 'b-x', 'linewidth', lw,'markersize',ms)
 
 if flagMarkersLoadDisp == 1
   for indplot = 1 : length( timesPlotsVec ) ;
-    text( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), sprintf('%6.2f', timesPlotsVec(indplot)/nTimesTotal) ) 
-    plot( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), 'ro','markersize',ms*3 ) 
+    text( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), sprintf('%6.2f', timesPlotsVec(indplot)/nTimesTotal) )
+    plot( controlDisps( timesPlotsVec( indplot)), loadFactors( timesPlotsVec( indplot) ), 'ro','markersize',ms*3 )
   end
 end
 

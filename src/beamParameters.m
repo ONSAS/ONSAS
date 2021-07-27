@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -19,18 +19,18 @@
 % --------------------------------------------------------------------------------------------------
 
 function [ElemLengths, Local2GlobalMats] = beamParameters(elemCoords)
-	
+
 	ElemLengths = sqrt ( sum( ( elemCoords(4:6) - elemCoords(1:3) ).^2 ) ) ;
-	
+
   % ----- local coordinate system setting -------------
-                 
+
   dxLdls       = ( elemCoords(4) - elemCoords(1) ) ...
-                 ./ ElemLengths ; 
+                 ./ ElemLengths ;
   dyLdls       = ( elemCoords(5) - elemCoords(2) ) ...
-                 ./ ElemLengths ; 
+                 ./ ElemLengths ;
   dzLdls       = ( elemCoords(6) - elemCoords(3) ) ...
                  ./ ElemLengths ;
- 
+
   exL = [  dxLdls  dyLdls dzLdls ]' ;
   if ( norm( [ dyLdls dxLdls ] ) > (1e-5*ElemLengths) )
     eyL = [ -dyLdls  dxLdls         0 ]' / sqrt( dyLdls^2 + dxLdls^2 ) ;

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,11 +18,11 @@
 
 
 function v = mat2voigt( Tensor, factor )
-  
+
   %~ if norm( Tensor - Tensor' ) > 1e-10
     %~ Tensor
     %~ norm( Tensor - Tensor' )
     %~ error('tensor not symmetric')
   %~ end
-  
+
   v = [ Tensor(1,1)  Tensor(2,2)  Tensor(3,3)  factor*Tensor(2,3) factor*Tensor(1,3) factor*Tensor(1,2) ]' ;
