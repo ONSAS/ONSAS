@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -17,13 +17,13 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function ConsMat = complexStepConsMat( stressFun, consParams, Egreen )
-  
+
   compStep = 1e-8 ;
 
   for i=1:6
 
     direction = zeros( 3,3) ;
-    
+
     if i<4
       direction(i,i) = 1 ;
     elseif i==4
@@ -38,11 +38,11 @@ function ConsMat = complexStepConsMat( stressFun, consParams, Egreen )
     end
 
     EgreenComp = Egreen  + compStep * direction * j ;
-  
+
     Scomp = feval( stressFun, consParams, EgreenComp, 0 ) ;
-    
+
     dsde = mat2voigt( ( imag( Scomp ) / compStep ) , 1 ) ;
-  
+
     ConsMat(1:3,i) = dsde(1:3) ;
     ConsMat(4:6,i) = dsde(4:6)*0.5 ;
     %~ ConsMat(:,i) = dsde ;

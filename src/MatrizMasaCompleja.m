@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -22,14 +22,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [MassMatrixComp,GyroMatrixComp] = MatrizMasaCompleja (xelem, Ue, Udote, Udotdote, params,Jrho )
-	
+
 	%-------------- Increment ----------------------%
 	h  = 1e-10 ;
-	
+
 	%-------------- Mass Matrix Comp --------------%
 	MassMatrixComp = zeros (12,12);
 	VecIncrement = zeros (12,1)   ;
-	
+
 	for aux = 1:12
 		VecIncrement(aux) = i*h;
 		[FineMatrix] = elementFuerzaInercial (xelem, Ue, Udote, Udotdote+VecIncrement, params,Jrho);
@@ -51,4 +51,3 @@ function [MassMatrixComp,GyroMatrixComp] = MatrizMasaCompleja (xelem, Ue, Udote,
 	end
 
 end
-

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% Prints analysis output 
+% Prints analysis output
 
 function printSolverOutput( outputdir, problemName, lineData )
 
@@ -52,16 +52,16 @@ if lineData(1) == 1 % iteration information
   %~ timeIndex, currTime, currLoadFactor, max(currentNormalForces), min(currentNormalForces)  )
 
 %~ fprintf(fileTimePerformance, [' %4i & %12.3e & %5.3e & %5.3e \\\\\n' ], ...
-	%~ timeIndex, currTime, tCallSolver, tStores)     
+	%~ timeIndex, currTime, tCallSolver, tStores)
 %~ % -----------------------------------
 
 %~ if max( abs( Strainst) ) > 0.05,
   %~ fprintf('WARNING: at timeStep %5i, elements with strain level %4.1f%%!\n', timeIndex, max( abs( Strainst) )*100 ),
-  
+
 
 elseif lineData(1) == 2 %end of iteration information
   fprintf( fileIncrements, timeStepEndLine, lineData(2), lineData(3), lineData(4), lineData(5) );
-  
+
 end
 
 % close file

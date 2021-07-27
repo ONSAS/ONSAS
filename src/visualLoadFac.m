@@ -1,5 +1,5 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -19,7 +19,7 @@
 % function that calculate the visual size for forces
 
 function [maxNorm2F, visualloadfactor] =visualLoadFac(strucsize, variableFext, constantFext, nnodes)
-	
+
 	ndofpnode = 6 ;
 	if ( norm( variableFext ) + norm( constantFext ) ) == 0
 		visualloadfactor = 0 ;

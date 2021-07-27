@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -20,11 +20,11 @@
 
 % ==============================================================================
 function [Kelem] = linearStiffMatPlate3D(E, nu, t, Lx, Ly)
-  
+
   D  = E * t^3 / ( 12 * (1-nu^2) ) ;
   a  = Lx /  2  ;
   b  = Ly /  2  ;
-  
+
   Ke1 = b / ( 6 * a^3 )  * ...
     [ 6         6*a     0    -6      6*a       0    -3       3*a     0     3      3*a       0  ;
       6*a       8*a^2   0   -6*a     4*a^2     0   -3*a     2*a^2    0    3*a     4*a^2     0  ;
@@ -38,7 +38,7 @@ function [Kelem] = linearStiffMatPlate3D(E, nu, t, Lx, Ly)
       3        3*a      0    -3      3*a       0    -6       6*a     0     6      6*a       0  ;
       3*a     4*a^2     0   -3*a     2*a^2     0   -6*a      4*a^2   0    6*a     8*a^2     0  ;
       0         0       0     0       0        0     0        0      0     0       0        0  ] ;
-  
+
   Ke2 = a / (6*b^3) * ...
     [ 6       0      6*b       3    0    3*b       -3       0      3*b     -6      0     6*b   ;
       0       0       0        0    0     0         0       0       0       0      0      0    ;
@@ -52,7 +52,7 @@ function [Kelem] = linearStiffMatPlate3D(E, nu, t, Lx, Ly)
       -6      0     -6*b      -3    0   -3*b        3       0     -3*b      6      0    -6*b   ;
       0       0       0        0    0     0         0       0       0       0      0      0    ;
       6*b     0      4*b^2    3*b   0    2*b^2    -3*b      0      4*b^2  -6*b     0     8*b^2 ] ;
-  
+
   Ke3 = nu / (2*a*b) * ...
     [  1         a          b        -1      0         -b        1     0       0        -1      -a        0    ;
        a         0         2*a*b      0      0          0        0     0       0        -a       0        0    ;
@@ -64,10 +64,10 @@ function [Kelem] = linearStiffMatPlate3D(E, nu, t, Lx, Ly)
        0         0         0          a      0          0       -a     0      2*a*b      0       0        0    ;
        0         0         0          0      0          0       -b    2*a*b    0         b       0        0    ;
       -1        -a         0          1      0          0       -1     0       b         1       a       -b    ;
-      -a         0         0          0      0          0       0      0       0         a       0      -2*a*b ; 
+      -a         0         0          0      0          0       0      0       0         a       0      -2*a*b ;
        0         0         0          0      0          0       b      0       0        -b     -2*a*b     0    ] ;
-  
-  
+
+
   Ke4 = (1-nu)/ (30*a*b) * ...
     [ 21       3*a        3*b      -21        3*a        -3*b         21       -3*a         -3*b        -21       -3*a        3*b   ;
       3*a      8*a^2       0       -3*a      -2*a^2        0          3*a       2*a^2         0         -3*a      -8*a^2       0    ;
@@ -81,8 +81,8 @@ function [Kelem] = linearStiffMatPlate3D(E, nu, t, Lx, Ly)
       -21     -3*a       -3*b       21       -3*a         3*b        -21        3*a          3*b         21        3*a       -3*b   ;
       -3*a    -8*a^2       0        3*a       2*a^2        0         -3*a      -2*a^2         0          3*a       8*a^2       0    ;
       3*b       0        -2*b^2    -3*b        0          2*b^2       3*b        0          -8*b^2      -3*b        0         8*b^2 ] ;
-  
-  
+
+
   Kelem = D * (Ke1 + Ke2 + Ke3 + Ke4 ) ;
 
 end

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -34,38 +34,38 @@ function [ verifBoolean, numericalVecy, analyticalVecy ] = analyticSolVerif ...
     xmagnitude      = 'Load Factors' ;
 
   elseif analyticSolFlag == 2
-  
+
     analyticalVecy  = analyticFunc( controlDisps ) ;
     numericalVecy   = loadFactors  ;
     numericalVecx   = controlDisps ;
     analitMagnitude = 'Load Factors' ;
     xmagnitude      = 'Control displacement' ;
-    
+
   elseif analyticSolFlag == 3
     absError    = ( controlDisps-analytSol ) ;
     normRelativeError = norm( absError ) / norm( analytSol ) ;
-    
+
   end
 
 
-  if analyticSolFlag == 1 || analyticSolFlag == 2 
+  if analyticSolFlag == 1 || analyticSolFlag == 2
     nonZeroEntries    = find( analyticalVecy ~= 0 ) ;
     absError          = abs( numericalVecy - analyticalVecy ) ;
-    normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ; 
+    normRelativeError = sum( absError) / sum ( abs(analyticalVecy) ) ;
   end
-  
+
   % ----------------------------------------
   if ( analyticSolFlag == 1 || analyticSolFlag == 2 ) &&  plotParamsVector(1) > 0
 
     nvals = length( numericalVecx); nmaxvistos = 10 ;
     indsMs = (1:nvals)';
-    
+
     if nvals > nmaxvistos
       indsMs = round( linspace(1, nvals, nmaxvistos) ) ;
     end
-    
+
     lw = 2.0 ; ms = 10 ; plotfontsize = 22 ;
-    
+
     figaux = figure ; hold on, grid on
     plot( numericalVecx(indsMs(1)), numericalVecy(indsMs(1))  , 'b-x', 'linewidth', lw,'markersize',ms)
     plot( numericalVecx(indsMs(1)), analyticalVecy(indsMs(1)) , 'r-s', 'linewidth', lw,'markersize',ms)
@@ -75,7 +75,7 @@ function [ verifBoolean, numericalVecy, analyticalVecy ] = analyticSolVerif ...
 
     plot( numericalVecx, numericalVecy  , 'b', 'linewidth', lw,'markersize',ms)
     plot( numericalVecx, analyticalVecy , 'r', 'linewidth', lw,'markersize',ms)
-    
+
     % labels
     labx = xlabel(xmagnitude);   laby = ylabel(analitMagnitude) ;
     legend('numeric', 'analytic','location','North')
@@ -90,8 +90,8 @@ function [ verifBoolean, numericalVecy, analyticalVecy ] = analyticSolVerif ...
       print( [ problemName '_analyticVerif.png' ] ,'-dpng') ;
     end
     cd(currdir)
-  
-    if printflag > 0  
+
+    if printflag > 0
       close(figaux);
     end
   end

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -22,6 +22,6 @@ function strucsize = strucSize(Nodes)
 
   strucsize = max( [ max(Nodes(:,1))-min(Nodes(:,1)) , ...
                      max(Nodes(:,2))-min(Nodes(:,2)) , ...
-                     max(Nodes(:,3))-min(Nodes(:,3)) ] ) ; 
+                     max(Nodes(:,3))-min(Nodes(:,3)) ] ) ;
 
 end

@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -46,54 +46,54 @@ Lx = zeros(nplate,1) ;
 Ly = zeros(nplate,1) ;
 
 for i = 1:nelems
-  m =  indexesElems(i) ;    
-  
-  if Conec(i,7) == 1 || Conec(i,7) == 2                                              
-		
-    [ ElemLengths(m) Local2GlobalMats{m} ] = beamParameters(Nodes(Conec(i,1:2),:)) ; 
-  
+  m =  indexesElems(i) ;
+
+  if Conec(i,7) == 1 || Conec(i,7) == 2
+
+    [ ElemLengths(m) Local2GlobalMats{m} ] = beamParameters(Nodes(Conec(i,1:2),:)) ;
+
   elseif Conec(i,7) == 3
-    
+
     nodeselem = Conec(i,1:4) ;
     dofselem  =  nodes2dofs ( nodeselem , ndofpnode   ) ;
-    
+
     dofstet = dofselem(1:2:length(dofselem)) ;
-    
+
     tetcoordmat        = zeros(3,4) ;
     tetcoordmat(1,1:4) = Nodes( nodeselem , 1 ) ;
     tetcoordmat(2,1:4) = Nodes( nodeselem , 2 ) ;
     tetcoordmat(3,1:4) = Nodes( nodeselem , 3 ) ;
-    
+
     [ deriv , vol ] =  DerivFun( tetcoordmat ) ;
-    
+
     if vol<0, i, error('Element with negative volume, check connectivity.'), end
-    
+
     tetVol(m) = vol ;
-    
+
     BMat{m} = BMats ( deriv ) ;
-    
-    E  = hyperElasParams{ Conec(i,5)}(1+1) ;  
-    nu = hyperElasParams{ Conec(i,5)}(1+2) ; 
-    
+
+    E  = hyperElasParams{ Conec(i,5)}(1+1) ;
+    nu = hyperElasParams{ Conec(i,5)}(1+2) ;
+
     mu    = E / (2.0 * ( 1.0 + nu ) ) ;
     Bulk  = E / (3.0 * ( 1.0 - 2.0 * nu ) ) ;
-    
+
     ConsMataux = zeros(6,6) ;
     ConsMataux (1:3,1:3) = Bulk  + 2* mu * ( eyetres - 1.0/3.0 ) ;
     ConsMataux (4:6,4:6) =            mu *   eyetres ;
-    
+
     ConsMat{m} = ConsMataux ;
-  
-  elseif Conec(i,7) == 4 
-    
+
+  elseif Conec(i,7) == 4
+
     nodeselem = Conec(i,1:4) ;
     nod1  = nodeselem(1) ;
     nod2  = nodeselem(2) ;
     nod4  = nodeselem(4) ;
     Lx(m) = abs(Nodes(nod1,1) - Nodes(nod2,1)) ;
     Ly(m) = abs(Nodes(nod1,2) - Nodes(nod4,2)) ;
-  
-  end  
+
+  end
 end
 tGeomReading = toc ;
 % ==============================================================================
@@ -107,15 +107,15 @@ if plotParamsVector(1)>0
 end
 tic ;
 KG      = sparse( ndofpnode*nnodes, ndofpnode*nnodes ) ;
-ElemKGs = cell(nbeam+ntruss,1) ;                                        
+ElemKGs = cell(nbeam+ntruss,1) ;
 
 elemReleases = zeros(nbeam+ntruss,4) ;
-gdlReleases = [] ;  
-                    
+gdlReleases = [] ;
+
 if exist('Releases') ~= 0
   if size(Releases,1)>0
     for i=1:size(Releases,1)
-      elemReleases( Releases(i,1), : ) = Releases(i, 2:5 ) ; 
+      elemReleases( Releases(i,1), : ) = Releases(i, 2:5 ) ;
     end
   end
 end
@@ -127,52 +127,52 @@ for i = 1:nelems
     if plotParamsVector(1)>0, fprintf('=') ; end
   end
 
-  if Conec(i,7) == 1 || Conec(i,7) == 2                                 
- 
+  if Conec(i,7) == 1 || Conec(i,7) == 2
+
     % material properties
-    E  = hyperElasParams{ Conec(i,5)}(1+1) ;  
-    nu = hyperElasParams{ Conec(i,5)}(1+2) ;  
+    E  = hyperElasParams{ Conec(i,5)}(1+1) ;
+    nu = hyperElasParams{ Conec(i,5)}(1+2) ;
     % ------------------------
-  
+
     % section properties
-    A  = secGeomProps ( Conec(i,6), 1 ) ;  
-    Iy = secGeomProps ( Conec(i,6), 2 ) ;  
-    Iz = secGeomProps ( Conec(i,6), 3 ) ;  
-    J  = secGeomProps ( Conec(i,6), 4 ) ;  
+    A  = secGeomProps ( Conec(i,6), 1 ) ;
+    Iy = secGeomProps ( Conec(i,6), 2 ) ;
+    Iz = secGeomProps ( Conec(i,6), 3 ) ;
+    J  = secGeomProps ( Conec(i,6), 4 ) ;
     l  = ElemLengths(m) ;
-    
+
     % -------------------------
     % sets the nodes of the element and the corresponding dofs
-    nodi = Conec(i,1) ;    nodj = Conec(i,2) ;  
+    nodi = Conec(i,1) ;    nodj = Conec(i,2) ;
     elemdofs = nodes2dofs ( [ nodi nodj ]' , ndofpnode ) ;
     % --------------------------------
-		
+
     R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
-		
+
     KGelem = linearStiffMatBeam3D(E, nu, A, Iy, Iz, J, l, elemReleases(m,:), R) ;
     ElemKGs{i} = KGelem;
 
   elseif Conec(i,7) == 3
-     
+
     nodeselem = Conec(i,1:4) ;
     elemdofs  =  nodes2dofs ( nodeselem , ndofpnode ) ;
-   
+
     Kml    = BMat{m}' * ConsMat{m} * BMat{m} * tetVol(m) ;
-    KGelem = zeros(24,24) ;  
+    KGelem = zeros(24,24) ;
     KGelem([1:2:end], [1:2:end])  =  Kml ;
 
   elseif Conec(i,7) == 4 % plates
-  
+
     nodeselem = Conec(i,1:4) ;
     elemdofs = nodes2dofs( nodeselem, ndofpnode ) ;
     lx = Lx(m) ;
     ly = Ly(m) ;
-    
-    Kelem = linearStiffMatPlate3D(E, nu, t, lx, ly) ;  
+
+    Kelem = linearStiffMatPlate3D(E, nu, t, lx, ly) ;
     KGelem = zeros(24,24) ;
     dofs = [5,2,4,5+ndofpnode,2+ndofpnode,4+ndofpnode,5+2*ndofpnode,2+2*ndofpnode,4+2*ndofpnode,5+3*ndofpnode,2+3*ndofpnode,4+3*ndofpnode] ;
     KGelem(dofs,dofs) = Kelem ;
-   
+
   end
 
   KG( elemdofs     , elemdofs     ) = KG( elemdofs , elemdofs )  +  KGelem ;
@@ -180,7 +180,7 @@ for i = 1:nelems
 end % endfor elems
 
 
-% Fixed displacements and Springs 
+% Fixed displacements and Springs
 
 KS = sparse( ndofpnode*nnodes, ndofpnode*nnodes ) ;
 
@@ -194,13 +194,13 @@ for i = 1:size(nodalSprings,1)
 
   for k = 1:ndofpnode
     %
-    if nodalSprings(i,k+1) == inf 
+    if nodalSprings(i,k+1) == inf
 			fixeddofsR = [ fixeddofsR; aux(k) ] ;
     elseif nodalSprings(i,k+1) ~= 0
       fixeddofsSprings = [ fixeddofsSprings ; aux(k)] ;
       KS(aux(k), aux(k) ) = nodalSprings(i,k+1) ;
     end
-    
+
   end
 end
 
@@ -213,7 +213,7 @@ tStiffMatrix = toc ;
 % ==============================================================================
 % ------------------------    Load Vector Assembly    --------------------------
 tic ;
-% Parameters 
+% Parameters
 if length(userLoadsFilename) > 0 || norm(variableFext) > 0
 	deltaT = numericalMethodParams(2) ;
 	tf = numericalMethodParams(3) ;
@@ -244,7 +244,7 @@ elemSelfWLoc = zeros(nelems, ndofpnode*2) ;
 constantFext = constantFext + nodalConstUnif + nodalPlate ; % Computes constant fext as the sum of the constant fext plus distributed loads
 
 if length(userLoadsFilename) > 0
-  matUG = zeros( ndofpnode*nnodes, nTimeSteps ) ; 
+  matUG = zeros( ndofpnode*nnodes, nTimeSteps ) ;
   Reactions = zeros( nnodes*ndofpnode, nTimeSteps ) ;
   matFs = [] ;
   for currTime = 1:nTimeSteps
@@ -252,10 +252,10 @@ if length(userLoadsFilename) > 0
     matFs = [ matFs (selfWeight + constantFext + currLoadFactor*variableFext + feval(userLoadsFilename , currTime-1 )) ] ;
   end
 
-else 
+else
 % Variable forces
   if norm(variableFext) > 0
-    if norm(selfWeight) > 0 && norm(constantFext) > 0 
+    if norm(selfWeight) > 0 && norm(constantFext) > 0
       matFs = [ selfWeight constantFext variableFext ] ;
       matUG = zeros( ndofpnode*nnodes, 3 ) ;
       Reactions = zeros(nnodes*ndofpnode, 3) ;
@@ -270,13 +270,13 @@ else
     else
       matFs = [ variableFext ] ;
       matUG = zeros( ndofpnode*nnodes, 1 ) ;
-      Reactions = zeros(nnodes*ndofpnode, 1) ;  
-    end  
+      Reactions = zeros(nnodes*ndofpnode, 1) ;
+    end
     loadFactors = [] ;
     for currTime = 1:nTimeSteps
       loadFactors = [loadFactors loadFactorsFunc(currTime)] ;
     end
-% Constant forces    
+% Constant forces
   else
     if norm(selfWeight) > 0 && norm(constantFext) > 0
       matFs = [ selfWeight constantFext ] ;
@@ -291,7 +291,7 @@ else
     else
       matFs = [ selfWeight ] ;
       matUG = zeros( ndofpnode*nnodes, 1 ) ;
-      Reactions = zeros(nnodes*ndofpnode, 1) ;  
+      Reactions = zeros(nnodes*ndofpnode, 1) ;
 			nTimeSteps = 1 ;
     end
   end
@@ -301,13 +301,13 @@ tLoadsAssembly = toc ;
 % ==============================================================================
 % --------------------------    System Resolution   ----------------------------
 
-% Non-zero prescribed displacements 
+% Non-zero prescribed displacements
 tic
 fixeddofsD = [ ] ;
 for i = 1:size(prescribedDisps,1)
   aux = nodes2dofs ( prescribedDisps (i,1), ndofpnode ) ;
   fixeddofsD = [ fixeddofsD ; aux(prescribedDisps(i,2) , 1 ) ] ;
-  matUG ( aux(prescribedDisps(i,2) , : ) ) = prescribedDisps ( i, 3 ) ;   
+  matUG ( aux(prescribedDisps(i,2) , : ) ) = prescribedDisps ( i, 3 ) ;
 end
 
 
@@ -325,15 +325,15 @@ for i = 1:nelems
 		elseif dim == 2
 			trussdofs = unique([ trussdofs ; elemdofs([2 3 4 6]) ; elemdofs([ 8 9 10 12]) ]) ;
 		elseif dim == 3
-			if ~ismember(nodeselem(1), beamNodes) && ~ismember(nodeselem(2), beamNodes)				
+			if ~ismember(nodeselem(1), beamNodes) && ~ismember(nodeselem(2), beamNodes)
 				trussdofs = unique([ trussdofs ; elemdofs([2 4 6]) ; elemdofs([ 8 10 12]) ]) ;
-			elseif ~ismember(nodeselem(1), beamNodes) 
+			elseif ~ismember(nodeselem(1), beamNodes)
 				trussdofs = unique([ trussdofs ; elemdofs([2 4 6]) ]) ;
 			elseif ~ismember(nodeselem(2), beamNodes)
 				trussdofs = unique([ trussdofs ; elemdofs([8 10 12]) ]) ;
 			end
 		end
-		
+
   elseif Conec(i,7) == 3
     nodeselem = Conec(i,1:4) ;
     elemdofs = nodes2dofs(nodeselem,ndofpnode) ;
@@ -358,13 +358,13 @@ notfixeddofs ( fixeddofs ) = [ ] ;
 % Stiffness dofs
 
 Kliblib = KG ( notfixeddofs , notfixeddofs ) ;
-Klibcon = KG ( notfixeddofs , fixeddofs ) ; 
+Klibcon = KG ( notfixeddofs , fixeddofs ) ;
 Kconlib = KG ( fixeddofs , notfixeddofs ) ;
-Kconcon = KG ( fixeddofs , fixeddofs ) ; 
+Kconcon = KG ( fixeddofs , fixeddofs ) ;
 
 
 
-Flib = matFs ( notfixeddofs, : ) ; 
+Flib = matFs ( notfixeddofs, : ) ;
 
 if length(fixeddofsSprings) == 0 % Check if there is any spring support (not rigid)
   Ucon = matUG ( fixeddofs, : ) ; % If there is any spring support with k<inf Ucon consider that node
@@ -376,8 +376,8 @@ if length(Ucon) == 0
   Ulib = Kliblib \ Flib ;
   Fcon = matFs (fixeddofs, :) ;
 else
-  Ulib = Kliblib \ ( Flib - Klibcon*Ucon ) ; 
-  Fcon = Kconlib*Ulib + Kconcon*Ucon ; 
+  Ulib = Kliblib \ ( Flib - Klibcon*Ucon ) ;
+  Fcon = Kconlib*Ulib + Kconcon*Ucon ;
 end
 
 
@@ -387,7 +387,7 @@ fixednodes = nodalSprings(:,1) ;
 gdlfixed = sort( nodes2dofs(fixednodes, ndofpnode) ) ;
 Reactions = ((KG-KS)*matUG - matFs)(gdlfixed,:) ;
 
-matFs ( fixeddofs, : ) = Fcon ; 
+matFs ( fixeddofs, : ) = Fcon ;
 matFs ( notfixeddofs, : ) = Flib ;
 
 tSystemResolution = toc ;
@@ -428,7 +428,7 @@ cellDisp   = cell ;
 
 % Definition of matUts
 if length(userLoadsFilename) > 0
-  matUts = matUG ; 
+  matUts = matUG ;
 else
   if norm(variableFext) > 0
     for currTime = 1:nTimeSteps
@@ -437,7 +437,7 @@ else
         matUts = [ matUts (matUG(:,1)*currLoadFactor) ] ;
       else
         matUts = [ matUts (matUG(:,1) + matUG(:,2)*currLoadFactor) ] ;
-      end  
+      end
       %~ timeIndex = timeIndex +1 ;
     end
   else
@@ -462,45 +462,45 @@ for currTime = 1:nTimeSteps
   end
   for i = 1:nelems
     m = indexesElems(i) ;
-    
+
     if Conec(i,7) == 1
-    
+
       nodeselem  = Conec(i,1:2)' ;
       dofselem   = nodes2dofs( nodeselem , ndofpnode ) ;
       globalUelem = matUts(dofselem, currTime) ;
       l = ElemLengths(m) ;
       A = secGeomProps ( Conec(i,6), 1 ) ;
-      E  = hyperElasParams{ Conec(i,5)}(1+1) ; 
-      
+      E  = hyperElasParams{ Conec(i,5)}(1+1) ;
+
       R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
       localUelem = R' * globalUelem ;
-      
-      trussDisps(m,:,currTime) = [localUelem(1) localUelem(1+6)] ; 
+
+      trussDisps(m,:,currTime) = [localUelem(1) localUelem(1+6)] ;
       trussStrain(m,currTime) = [ (trussDisps(m,2,currTime)-trussDisps(m,1,currTime))/l ] ;
       normalForce(m,currTime) = trussStrain(m,currTime) * E * A ;
-      
+
     elseif Conec(i,7) == 2
     % obtains nodes and dofs of element
       nodeselem  = Conec(i,1:2)' ;
       dofselem   = nodes2dofs( nodeselem , ndofpnode ) ;
-      globalUelem = matUts(dofselem, currTime) ; 
+      globalUelem = matUts(dofselem, currTime) ;
       l = ElemLengths(m) ;
       R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
 
       localUelem = R' * globalUelem ;
 
 
-      RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;   
+      RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
       % Bending My - plane XZ
       if     elemReleases(m,1) == 1 && elemReleases(m,2) == 0
         if currTime == 1
           localUelem( 4) = -1* [  -3/(2*l)   0     3/(2*l) -0.5 ] * RXYXZ * localUelem(LocBendXZdofs) + elemSelfWAux(m,4)/((E*Iy/l^3)*4*l^2) ;
         else
           localUelem( 4) = -1* [  -3/(2*l)   0     3/(2*l) -0.5 ] * RXYXZ * localUelem(LocBendXZdofs) + elemUnifAux(m,4)/((E*Iy/l^3)*4*l^2) ;
-        end   
+        end
       elseif elemReleases(m,1) == 0 && elemReleases(m,2) == 1
         if currTime == 1
-          localUelem(10) = -1* [  -3/(2*l)  -0.5   3/(2*l)  0   ] * RXYXZ * localUelem(LocBendXZdofs) + elemSelfWAux(m,10)/((E*Iy/l^3)*4*l^2) ; 
+          localUelem(10) = -1* [  -3/(2*l)  -0.5   3/(2*l)  0   ] * RXYXZ * localUelem(LocBendXZdofs) + elemSelfWAux(m,10)/((E*Iy/l^3)*4*l^2) ;
         else
           localUelem(10) = -1* [  -3/(2*l)  -0.5   3/(2*l)  0   ] * RXYXZ * localUelem(LocBendXZdofs) + elemUnifAux(m,10)/((E*Iy/l^3)*4*l^2) ;
         end
@@ -508,50 +508,50 @@ for currTime = 1:nTimeSteps
       % Bending Mz - plane XY
       if     elemReleases(m,3) == 1 && elemReleases(m,4) == 0
         if currTime == 1
-          localUelem( 6) = +1 * [  -3/(2*l)   0     3/(2*l) -0.5 ] * localUelem(LocBendXYdofs) + elemSelfWAux(m,6)/((E*Iz/l^3)*4*l^2) ; 
+          localUelem( 6) = +1 * [  -3/(2*l)   0     3/(2*l) -0.5 ] * localUelem(LocBendXYdofs) + elemSelfWAux(m,6)/((E*Iz/l^3)*4*l^2) ;
         else
           localUelem( 6) = +1 * [  -3/(2*l)   0     3/(2*l) -0.5 ] * localUelem(LocBendXYdofs) + elemUnifAux(m,6)/((E*Iz/l^3)*4*l^2) ;
-        end  
+        end
       elseif elemReleases(m,3) == 0 && elemReleases(m,4) == 1
         if currTime == 1
-          localUelem(12) = +1 * [  -3/(2*l)  -0.5   3/(2*l)  0   ] * localUelem(LocBendXYdofs) + elemSelfWAux(m,12)/((E*Iz/l^3)*4*l^2) ; 
+          localUelem(12) = +1 * [  -3/(2*l)  -0.5   3/(2*l)  0   ] * localUelem(LocBendXYdofs) + elemSelfWAux(m,12)/((E*Iz/l^3)*4*l^2) ;
         else
-          localUelem(12) = +1 * [  -3/(2*l)  -0.5   3/(2*l)  0   ] * localUelem(LocBendXYdofs) + elemUnifAux(m,12)/((E*Iz/l^3)*4*l^2) ; 
+          localUelem(12) = +1 * [  -3/(2*l)  -0.5   3/(2*l)  0   ] * localUelem(LocBendXYdofs) + elemUnifAux(m,12)/((E*Iz/l^3)*4*l^2) ;
         end
       end
       dispsElemsMat( i, :, currTime ) = R * localUelem ;
-      
-      
+
+
 
     % -------------------------
     % Solicitations calculations
       KGelem = ElemKGs{m} ;
-            
+
       if currTime == 1
 				if selfWeightBoolean
 					FGelem = KGelem * dispsElemsMat(i,:,currTime)' - elemSelfWLoc(i,:)' ;
-				else 
+				else
 					FGelem = KGelem * dispsElemsMat(i,:,currTime)' - elemUnifLoc(i,:)' ;
 				end
 			else
 				FGelem = KGelem * dispsElemsMat(i,:,currTime)' - elemUnifLoc(i,:)' ;
       end
-      
+
       %~ FGelem = KGelem * dispsElemsMat( i, :, currTime )'   ;
       FLelem = R' * FGelem ;
-      
+
       ElemsSolic(i, :, currTime) = FLelem' ;
-      
+
       epsxstrain = ( localUelem(1+6)-localUelem(1) ) / l ;
-      normalForce(m,currTime) = epsxstrain * E * A ; 
+      normalForce(m,currTime) = epsxstrain * E * A ;
     % -------------------------
-    
+
     elseif Conec(i,7) == 3
-    
+
       nodeselem =  Conec( i ,1:4) ;
       dofselem = nodes2dofs( nodeselem , ndofpnode ) ;
       dofstet = dofselem(1:2:end) ;
-    
+
       strains ( m , : ) =            ( BMat{m} * matUts( dofstet, currTime ) )' ;
       stresses( m , : ) =  ( ConsMat{m} * strains(m,:)' )' ;
 
@@ -563,7 +563,7 @@ for currTime = 1:nTimeSteps
       cellStress{2} = 'Stress';
       cellStress{3} = stresses ;
     elseif Conec(i,7) == 4 % plate element
-      
+
       nodeselem = Conec ( i, 1:4 ) ;
       elemdofs = nodes2dofs( nodeselem, ndofpnode ) ;
 			platedofs1 = [] ; % displacements dofs
@@ -574,11 +574,11 @@ for currTime = 1:nTimeSteps
         else
           nodedofs = nodes2dofs(nodeselem(j), ndofpnode) ;
           platedofs1 = [ platedofs1 ; nodedofs([2 4 5]) ] ;
-        end  
+        end
       end
-       
+
       dispsPlateMat(i, :, currTime) = matUts(platedofs1, currTime) ;
-      
+
     end
   end %endfor elements
   matNts = [ matNts normalForce(:,currTime) ] ;
@@ -595,9 +595,9 @@ if analyticSolFlag ~= 0
     timesVec = 0:deltaT:tf ;
   elseif analyticSolFlag == 3
     controlDisps = matUts( analyticSolDofs, indexTimeSol ) ;
-  elseif analyticSolFlag == 4   
+  elseif analyticSolFlag == 4
     controlDisps = dispsElemsMat ;
-  elseif analyticSolFlag == 5 
+  elseif analyticSolFlag == 5
     controlDisps = Reactions ( analyticSolDofs, indexTimeSol ) ;
   end
 else
@@ -608,7 +608,7 @@ end
 %~ lw  = 2   ; ms  = 5.5 ;
 %~ lw2 = 3.2 ; ms2 = 23 ;
 %~ plotfontsize = 22 ;
-%~ % Plot moment 
+%~ % Plot moment
 %~ hold on
 %~ for i=1:nelems
     %~ plot3( coordsElemsMat(i,[1 7]), coordsElemsMat(i,[3 9]), coordsElemsMat(i,[5 11]),'b--o','linewidth',lw*0.8,'markersize',ms*0.8);
@@ -628,11 +628,11 @@ end
 	%~ R = RotationMatrix ( ndofpnode, Local2GlobalMats{i} ) ;
 	%~ localUelem = R' * dispsElemsMat(i,:,:)' ;
 
-	%~ E  = hyperElasParams{ Conec(i,5)}(1+1) ; 
-	%~ Iy = secGeomProps ( Conec(i,6), 2 ) ;  
+	%~ E  = hyperElasParams{ Conec(i,5)}(1+1) ;
+	%~ Iy = secGeomProps ( Conec(i,6), 2 ) ;
 
 	%~ xsloc  = linspace( 0 , l, nPlotPoints )' ;
-	
+
 	%~ M     = zeros( size(xsloc) ) ;
 	%~ for j = 1:nPlotPoints
 		%~ Rb = eye(4);
@@ -641,16 +641,16 @@ end
 		%~ N = bendingInterFuns( xsloc(j), l, 2 );
 		%~ M(j) = -N  * Rb' * (localUelem([ 5  4           5+ndofpnode 4+ndofpnode]) * 1* 1 ) + elemUnifLoc(i,[ 4])' + elemSelfWLoc(i, [4])';
 	%~ end
-	
+
 		%~ exL = Local2GlobalMats{i}(:,1) ;
 	%~ xsRef = ( xsref(1) + xsloc )' ;
 	%~ if zsref(2) < zsref(1)
 		%~ zsRef = ( zsref(1) - xsloc )' ;
-	%~ else 
+	%~ else
 		%~ zsRef = ( zsref(1) + xsloc )' ;
 	%~ end
 	%~ MRef 	= (	zsref(1) + M ) ;
-	%~ if isequal(abs(exL), [0 0 1]') 
+	%~ if isequal(abs(exL), [0 0 1]')
 		%~ i
 		%~ plot3( xsref(1)+M, zeros(size(xsloc)), zsRef, 'b-', 'linewidth', lw, 'markersize', ms );
 	%~ else

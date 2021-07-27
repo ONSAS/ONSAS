@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -22,7 +22,7 @@
 function  [ materialsParams, elementsParams, loadsParams, crossSecsParams, springsParams, loadFactorsFunc, Conec ] = structsToCellsConv( materials, elements, boundaryConds, initialConds, Conec )
 
 % materials
-nMats = length( materials.hyperElasModel ) 
+nMats = length( materials.hyperElasModel )
 materialsParams = {} ;
 for i=1:nMats
   if strcmp( materials.hyperElasModel, 'SVK' )
@@ -31,7 +31,7 @@ for i=1:nMats
 end
 
 % elements and cross
-nElem = length( elements.elemType ) 
+nElem = length( elements.elemType )
 elementsParams = {} ;
 crossSecsParams = {};
 vecOldCross = [];
@@ -71,12 +71,12 @@ for i=1:nBConds
   elseif ~isempty(boundaryConds.loadCoordSys{i})
     error('load coord case error')
   end
-  
+
   if is_function_handle( boundaryConds.loadTimeFact{i} )
     loadFactorsFunc = boundaryConds.loadTimeFact{i}
     auxLoad(2) = 1 ;
     aux = boundaryConds.loadBaseVals{i} ;
-    auxLoad( [3:8] ) = aux ; 
+    auxLoad( [3:8] ) = aux ;
     loadsParams{ nloads,1} = auxLoad ;
     vecOldLoads(i)= nloads ;
   end
@@ -95,13 +95,13 @@ for j=1:size(Conec,1)
 j
 oldConec = Conec{j,1};
   newconec(1) = oldConec(1);
-  
+
   newconec(2) = oldConec(2);
   newconec(4) = oldConec(2);
-  
+
   if oldConec(3)>0
     newconec(3) = vecOldLoads(   oldConec(3) ) ;
     newconec(5) = vecOldSprings( oldConec(3) ) ;
   end
-  newconec(6:(6+length(oldConec)-5)) = oldConec(5:end) 
+  newconec(6:(6+length(oldConec)-5)) = oldConec(5:end)
 end

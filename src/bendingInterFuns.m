@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -27,7 +27,7 @@ case 0
   N2 =  (x^3 -2 * l * x^2 + l^2*x  )/ l^2 ;
   N3 = -( 2*x^3 - 3*l*x^2 )/l^3 ;
   N4 =  (x^3 - l*x^2 )/l^2 ;
-  
+
 case 1
   N1 =  (6*x^2 - 6*x*l )  / l^3 ;
   N2 =  (3*x^2 -4*l*x +l^2)   / l^2 ;

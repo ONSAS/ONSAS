@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -53,9 +53,9 @@ for indplot = 1 : length( timesPlotsVec ) ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
 			subplot(3,2,1:4)
-		end	
+		end
   end
-  
+
   hold on, grid on
 
   for i=1:nelems
@@ -72,27 +72,27 @@ for indplot = 1 : length( timesPlotsVec ) ;
     dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
     dispsElemsMat( i, : ) = Utplot(dofselem)' ;
   end
-	
+
   %~ NodesDef = Nodes + reshape()
-  
+
 	aux = zeros( nelems,2*ndofpnode ) ;
 	for i = 1:nelems
 		for j = 1:12
-			aux(i,j) = sum ( dispsElemsMat(i,j,:) )'; 
+			aux(i,j) = sum ( dispsElemsMat(i,j,:) )';
 		end
 	end
-	
-	
+
+
   for i=1:nelems
-		if Conec(i,end) == 1 || Conec(i,end) == 2 
+		if Conec(i,end) == 1 || Conec(i,end) == 2
 
   		[~, locglomat] = beamParameters(Nodes(Conec(i,1:2),:)) ;
-	
+
   		if (nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0)
 				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
 
 			else
-				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
+				[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;
 
 			end
 			plot3( xselemdef, yselemdef, zselemdef, 'b-', 'linewidth', lw, 'markersize', ms );
@@ -119,7 +119,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
       FG(3:6:end)*visualloadfactor , ...
       FG(5:6:end)*visualloadfactor , ...
       0,'m',"filled",'linewidth',lw2)
-	
+
 	if nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0
 		tit = title(['Deformed shape' ] );
 	else
@@ -141,7 +141,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
   %~ axis( [ minxdef maxxdef   minydef maxydef   minzdef maxzdef ]  );
   %~ axis equal
 
- 
+
   if length( plotsViewAxis ) == 0
     view(3);
   elseif sum( plotsViewAxis ~= [0 0 1] ) == 0
@@ -152,7 +152,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
   % time
 	auxtDefShape = toc ;
 	tDefShape = tDefShape + auxtDefShape ;
-	
+
 	tic ;
   if size(matUts,2) > 1
 		if nonLinearAnalysisBoolean && dynamicAnalysisBoolean ~= 0
@@ -160,7 +160,7 @@ for indplot = 1 : length( timesPlotsVec ) ;
 			plot( controlDisps(1:timesPlotsVec(indplot)) , loadFactors(1:timesPlotsVec(indplot))  , 'b-x', 'linewidth', lw*0.4,'markersize',ms*0.4)
 			axis( [ min( controlDisps) max(controlDisps) min( loadFactors) max( loadFactors) ] ); grid on
 			labx = xlabel('control displacement'); laby = ylabel('load factor');
-			
+
 			subplot(3,2,6)
 			plot( loadFactors(1:timesPlotsVec(indplot))        , 'b-x', 'linewidth', lw*0.4,'markersize',ms*0.4)
 			axis( [ 0 length(loadFactors) min(loadFactors) max(loadFactors) ] ); grid on
@@ -197,17 +197,17 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	normalForce    = matNts(:,timesPlotsVec( indplot)) ;
 	minNormalForce = min( normalForce);
 	maxNormalForce = max( normalForce);
-	
+
 	for i = 1:nelems
 
 		if Conec(i,end) == 1 || Conec(i,end) == 2
 			nodeselem = Conec(i,1:2) ;
 			[lengths, ~] = beamParameters(Nodes(nodeselem,:)) ;
 			offsetText = min(lengths) / 15 ;
-			
+
 			%~ posText = ( Nodes(nodeselem(2),:) + Nodes(nodeselem(1),:) ) / 2 ;
 			posText = ( Nodes(nodeselem(2),:) + dispsElemsMat(i,1:2:5) + Nodes(nodeselem(1),:) + dispsElemsMat(i,7:2:11) ) / 2 ;
-			
+
 			if abs(maxNormalForce - minNormalForce) < 1e-10
 				cmapi = cmap( 1 ,: );
 			else
@@ -215,31 +215,31 @@ for indplot = 1 : length( timesPlotsVec ) ;
 			end
 
 			% --- plot of each element
-			if Conec(i,end) == 1 || Conec(i,end) == 2 
-	
+			if Conec(i,end) == 1 || Conec(i,end) == 2
+
 				[~, locglomat] = beamParameters(Nodes(Conec(i,1:2),:)) ;
-		
+
 				if (nonLinearAnalysisBoolean == 0 && dynamicAnalysisBoolean == 0)
 					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlotLin ( coordsElemsMat(i,:)', aux(i,:)', Conec(i,end), locglomat ) ;
-	
+
 				else
-					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;  
-	
+					[ xselemdef, yselemdef, zselemdef ] = outputFrameElementPlot ( coordsElemsMat(i,1:12)', dispsElemsMat(i,:)', Conec(i,end) ) ;
+
 				end
 				plot3( xselemdef, yselemdef, zselemdef, 'color',cmapi,'linewidth',lw*0.7 );
-	
+
 			else
 				% Deformed shape of plate
 			end
 			% ----------
 
 			text( posText(1)+offsetText, posText(2)+offsetText, posText(3)+offsetText, sprintf( '%5.1e', normalForce(i)), 'color', cmapi, 'fontsize', 9 )
-			
+
 		else
 			fprintf('Missing: normal forces plot in octave for beam elements.\n')
-		
+
 		end
-	
+
 	end
 
 	colorbar('title','Normal Force')
@@ -251,12 +251,12 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	else
 		tit = title(['Step/increment: ' sprintf('%04i', timesPlotsVec( indplot)) '/' sprintf('%04i', nTimesTotal) ] );
 	end
-	
+
 	labx=xlabel('x'); laby=ylabel('y'); labz=zlabel('z') ;
 	set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize*0.5 ) ;
 	set(tit, "FontSize", plotfontsize) ;
 	set(labx, "FontSize", plotfontsize); set(laby, "FontSize", plotfontsize) ; set(labz, "FontSize", plotfontsize) ;
-	
+
 	cd(outputdir )
 	if printflag == 1
 		print( figAxial	, [ problemName '_normalForce_' sprintf('%04i', indplot)  ] ,'-dpdflatex','-tight') ;
@@ -269,11 +269,11 @@ for indplot = 1 : length( timesPlotsVec ) ;
 	% time
 	auxtNormalForce = toc ;
 	tNormalForce = tNormalForce + auxtNormalForce ;
-	
-	if printflag > 0  
+
+	if printflag > 0
 		close(figdef)		;
 		close(figAxial)	;
 	end
-    
+
 
 end %endfor indplot

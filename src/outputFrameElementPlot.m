@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -18,13 +18,13 @@
 
 
 % ---------------------------------------------------
-% Function for computation of (approximate) deformed configuration of one 
+% Function for computation of (approximate) deformed configuration of one
 % beam or truss element using interpolations.
-% 
+%
 % Inputs:
 %  - coordsElem: column vector with the coordinates of the nodes of the element at the reference configuration
 %  - dispsElem: colum vector with the displacements of the nodes of the element (rotations are measured with respect to the initial configuration)
-%  - elemType: type of element 
+%  - elemType: type of element
 %  - locglomat: matrix for transformation from local to global systems
 % the element is assumed to be straigt in the reference configuration
 %
@@ -53,11 +53,11 @@ if elemType == 2
 
   [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 0], 0, dispsElem, [], [], 0  ) ;
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
-  
-  % global rotation matrix 
+
+  % global rotation matrix
   Rr     = rotData{2} ;
   %~ Rr     = eye(3);
-  
+
   locDisp = rotData{1} ;
   ul  = locDisp(1)   ;   tl1 = locDisp(2:4);  tl2 = locDisp(5:7) ;
 
@@ -74,34 +74,34 @@ elseif elemType == 3
   ysdefA = coordsElem( [ 1+2 7+2] ) + dispsElem( [ 1+2 7+2] ) ;
   zsdefA = coordsElem( [ 1+4 7+4] ) + dispsElem( [ 1+4 7+4] ) ;
 
-  nPlotPoints    = 10 ; 
+  nPlotPoints    = 10 ;
 
   [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 1], 0, dispsElem, [], [] ,0 ) ;
-  
-  % 
+
+  %
   locDisp = rotData{1} ;
   ul  = locDisp(1)   ;   tl1 = locDisp(2:4) ;  tl2 = locDisp(5:7) ;
 
-  % global rotation matrix 
+  % global rotation matrix
   Rr     = rotData{2} ;
 
   l      = sqrt( sum( (xsref(2)-xsref(1))^2 + (ysref(2)-ysref(1))^2  + (zsref(2)-zsref(1))^2 ) ) ;
-  
+
   xsglo  = linspace( xsdefA(1) , xsdefA(2), nPlotPoints ) ;
   ysglo  = linspace( ysdefA(1) , ysdefA(2), nPlotPoints ) ;
   zsglo  = linspace( zsdefA(1) , zsdefA(2), nPlotPoints ) ;
-  
-  % loc axial coords to evaluate magnitudes 
+
+  % loc axial coords to evaluate magnitudes
   xsloc  = linspace( 0 , l, nPlotPoints )' ;
-  
-  ux     = zeros( size(xsloc) ) ; 
-  uy     = zeros( size(xsloc) ) ; 
+
+  ux     = zeros( size(xsloc) ) ;
+  uy     = zeros( size(xsloc) ) ;
   uz     = zeros( size(xsloc) ) ;
-  
+
   titax	 = zeros( size(xsloc) ) ;
   titay	 = zeros( size(xsloc) ) ;
   titaz	 = zeros( size(xsloc) ) ;
-  
+
   LocAxialdofs  = [ 1  1+ndofpnode                        ] ;
   LocTorsidofs  = [ 2  2+ndofpnode                        ] ;
   LocBendXYdofs = [ 3  6           3+ndofpnode 6+ndofpnode] ;
@@ -114,7 +114,7 @@ elseif elemType == 3
   localUelem( LocBendXYdofs ) = [ 0; tl1(3); 0; tl2(3) ] ;
 
   for i=1:nPlotPoints,
-  
+
     N = bendingInterFuns( xsloc(i), l, 0 );
 
     Nlin1 = (l - xsloc(i))/l ;
@@ -127,32 +127,32 @@ elseif elemType == 3
 
     uy(i)  = N       * localUelem( LocBendXYdofs ) ;
     uz(i)  = N * Rb' * localUelem( LocBendXZdofs ) ;
-    
+
     % stretching
     ux(i) = Nlin1 * localUelem(LocAxialdofs(1)) + Nlin2 * localUelem(LocAxialdofs(2)) ;
-		
+
     % torsion
 		titax(i) = Nlin1 * localUelem(LocTorsidofs(1)) + Nlin2 * localUelem(LocTorsidofs(2)) ;
-		
+
     % rots
     Nrots    = bendingInterFuns( xsloc(i), l, 1 ) ;
-    titaz(i) = Nrots       * localUelem( LocBendXYdofs ) ; 
+    titaz(i) = Nrots       * localUelem( LocBendXYdofs ) ;
     %~ titay(i) = Nrots * Rb' * localUelem( LocBendXZdofs ) ;
     titay(i) = - (Nrots * Rb' * localUelem( LocBendXZdofs ) ) ;
-    
+
 		if i < nPlotPoints
 			conecElem = [ conecElem ; (i-1)+1 (i-1)+2 ] ;
 		end
-		
+
   end
-  
+
   XsLoc = [ xsloc+ux uy uz];
   XsGlo = Rr * XsLoc' ;
-  
+
   xsdef = ( xsdefA(1) + XsGlo(1,:) )' ;
   ysdef = ( ysdefA(1) + XsGlo(2,:) )' ;
   zsdef = ( zsdefA(1) + XsGlo(3,:) )' ;
-  
+
   %~ for k=1:length( titax)
     %~ auxtitaGlo = logar( expon( [ titax(k) titay(k) titaz(k) ]' ) * Rr ) ;
     %~ auxtitaGlo = logar( Rr * expon( [ titax(k) titay(k) titaz(k) ]' ) ) ;

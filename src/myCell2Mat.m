@@ -1,3 +1,4 @@
+% Copyright (C) 2021
 % auxiliar function to convert a cell with vectors to a zeros-filled-matrix
 
 function Mat = myCell2Mat( Cell )

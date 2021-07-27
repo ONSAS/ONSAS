@@ -1,4 +1,4 @@
-% Copyright (C) 2020, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
 %
 % This file is part of ONSAS.
@@ -21,10 +21,10 @@
 function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
            stopTolIts,     targetLoadFactr, nLoadSteps,    ...
            incremArcLen, deltaT, deltaNW, AlphaNW, alphaHHT, finalTime ] ...
-           = extractMethodParams( numericalMethodParams ) 
+           = extractMethodParams( numericalMethodParams )
 
   solutionMethod   = numericalMethodParams(1) ;
-  
+
   if solutionMethod == 0
 
     % ----- resolution method params -----
@@ -32,7 +32,7 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     stopTolForces    = 1e-10 ;
     stopTolIts       = 2     ;
     targetLoadFactr  = 1     ;
-    nLoadSteps       = 1     ; 
+    nLoadSteps       = 1     ;
 
     deltaT = targetLoadFactr/nLoadSteps ; finalTime = targetLoadFactr ;
 
@@ -46,18 +46,18 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     stopTolIts       = numericalMethodParams(4) ;
     targetLoadFactr  = numericalMethodParams(5) ;
     nLoadSteps       = numericalMethodParams(6) ;
-  
+
 
     if solutionMethod ==2
       incremArcLen     = numericalMethodParams(7) ;
     else
       incremArcLen = [] ;
     end
-    
+
     deltaT = targetLoadFactr/nLoadSteps ; finalTime = targetLoadFactr ;
-    
+
     deltaNW = []; AlphaNW = [] ; alphaHHT = [] ;
-  
+
   elseif solutionMethod == 3
     deltaT         = numericalMethodParams(2)        ;
     finalTime      = numericalMethodParams(3)        ;
@@ -68,20 +68,20 @@ function [ solutionMethod, stopTolDeltau,   stopTolForces, ...
     AlphaNW        = numericalMethodParams(8)        ;
 
     alphaHHT = [] ;
-    targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;    
+    targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;
 
   elseif solutionMethod == 4
-  
+
     deltaT         = numericalMethodParams(2)        ;
     finalTime      = numericalMethodParams(3)        ;
     stopTolDeltau  = numericalMethodParams(4)        ;
     stopTolForces  = numericalMethodParams(5)        ;
     stopTolIts     = numericalMethodParams(6)        ;
     alphaHHT       = numericalMethodParams(7)        ;
-    
+
     deltaNW = []; AlphaNW = [] ;
-    targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;    
-    
+    targetLoadFactr = [] ; nLoadSteps = []; incremArcLen = [] ;
+
   end
-  
+
 % ======================================================================
