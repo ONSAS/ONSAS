@@ -22,9 +22,12 @@
 
 function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
-if 1==0 %cppSolverBoolean
+solverLang = modelProperties.analysisSettings.solverLang ;
+
+if strcmp( solverLang, 'C++' )
   cppInterface
-else
+
+elseif strcmp( solverLang, 'Octave' )
 
   % assign current time (t) variables
   % ---------------------------------
