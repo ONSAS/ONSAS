@@ -10,7 +10,7 @@ lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 materials.hyperElasModel = {'SVK'} ;
 materials.hyperElasParams = { [ lambda mu ] } ;
 
-elements.elemType = { 'triangle', 'tetrahedron' } ;
+elements.elemType = { 'triangle'; 'tetrahedron' } ;
 elements.elemTypeParams = { [];[] } ;
 elements.elemTypeGeometry = { [];[] } ;
 %md

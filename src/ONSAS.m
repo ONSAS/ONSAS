@@ -22,8 +22,7 @@ function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, 
 
 if isfield( analysisSettings, 'solverLang' ) && strcmp( analysisSettings.solverLang, 'C++' )
 
-  [ Utp1, Udottp1, Udotdottp1, Ut, Stresstp1, nextTime, stopCritPar, dispIters ] ...
-    = cppInterface( modelCurrSol, modelProperties, BCsData ) ;
+  [ matUs, loadFactorsMat ] = cppInterface( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 else
 
