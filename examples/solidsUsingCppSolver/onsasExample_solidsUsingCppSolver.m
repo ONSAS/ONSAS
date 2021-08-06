@@ -55,7 +55,8 @@ analysisSettings.stopTolDeltau = 1.0e-8 ;
 analysisSettings.stopTolForces = 1.0e-8 ;
 analysisSettings.finalTime      = 1      ;
 analysisSettings.deltaT        = .125   ;
-%md
+analysisSettings.solverLang    = 'C++'  ;
+
 %md### Output parameters
 otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
