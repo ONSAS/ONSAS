@@ -1,8 +1,15 @@
-nelems = size(Conec,1);
+
+
+function [ Utp1, Udottp1, Udotdottp1, Ut, Stresstp1, nextTime, stopCritPar, dispIters ] ...
+  = cppInterface( modelCurrSol, modelProperties, BCsData ) ;
+
+Conec = modelProperties.Conec
+
+nelems = size(Conec,1) ;
 
 % --------------------------------------------------------------------
 % --------------------------------------------------------------------
-% write to file the following variables  
+% write to file the following variables
 
 % write files
 %~ varsInps = [ Ut; paramOut] ;
@@ -11,17 +18,22 @@ tiemposCppInterface = [];
 
 auxt = cputime();
 
+analy = modelProperties.analysisSettings 
+save -ascii 'testAnalysis.dat' analy
+
+stop
+
 %~ save -ascii 'varsInps.dat' varsInps;
 save -ascii 'Conec.dat' Conec ;
 numericalMethodParamsT = numericalMethodParams' ;
 save -ascii  'numericalMethodParams.dat' numericalMethodParamsT ;
 
 save  'systemDeltauMatrix.dat' systemDeltauMatrix ;
-status = system('tail -n +7 systemDeltauMatrix.dat > aux.dat' ); 
-status = system('mv aux.dat systemDeltauMatrix.dat' ) ; 
+status = system('tail -n +7 systemDeltauMatrix.dat > aux.dat' );
+status = system('mv aux.dat systemDeltauMatrix.dat' ) ;
 
 save  'KS.dat' KS ;
-status = system('tail -n +7 KS.dat > aux.dat' ); 
+status = system('tail -n +7 KS.dat > aux.dat' );
 status = system('mv aux.dat KS.dat' ) ;
 
 size(U)
@@ -80,6 +92,4 @@ auxspmat = load('systemDeltauMatrixCpp.dat');
 systemDeltauMatrix = sparse( auxspmat(:,1)+1, auxspmat(:,2)+1, auxspmat(:,3) ) ;
 
 
-tiemposCppInterface(3) = cputime() - auxt 
-
-
+tiemposCppInterface(3) = cputime() - auxt

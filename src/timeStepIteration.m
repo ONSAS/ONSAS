@@ -22,128 +22,118 @@
 
 function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
-solverLang = modelProperties.analysisSettings.solverLang ;
+% assign current time (t) variables
+% ---------------------------------
+Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
+KTtred     = modelCurrSol.systemDeltauMatrix ;
+convDeltau = modelCurrSol.convDeltau ;
 
-if strcmp( solverLang, 'C++' )
-  cppInterface
+% update time and set candidate displacements and derivatives
+% -----------------------------------------------------------
+if isempty( modelProperties.analysisSettings.Utp10 )
+  Utp1k       = Ut       ;
+else
+  error('add case for several times')
+end
 
-elseif strcmp( solverLang, 'Octave' )
+[ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
+  Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
-  % assign current time (t) variables
-  % ---------------------------------
-  Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
-  KTtred     = modelCurrSol.systemDeltauMatrix ;
-  convDeltau = modelCurrSol.convDeltau ;
+% current tangent matrix
+% ----------------------
+systemDeltauMatrix = KTtred ;
 
-  % update time and set candidate displacements and derivatives
-  % -----------------------------------------------------------
-  if isempty( modelProperties.analysisSettings.Utp10 )
-    Utp1k       = Ut       ;
-  else
-    error('add case for several times')
-  end
+% compute RHS for initial guess Utp1 and in next time step
+% --------------------------------------------------------
+[ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
 
+booleanConverged = 0                              ;
+dispIters        = 0                              ;
+currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
+
+while  booleanConverged == 0
+  dispIters = dispIters + 1 ;
+
+  % solve system
+  [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ;
+
+  % updates: model variables and computes internal forces ---
+  [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
+
+  % --- update next time magnitudes ---
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
-  % current tangent matrix
-  % ----------------------
-  systemDeltauMatrix = KTtred ;
+  % --- system matrix ---
+  systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
 
-  % compute RHS for initial guess Utp1 and in next time step
-  % --------------------------------------------------------
-  [ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
+  % --- new rhs ---
+  [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
 
-  booleanConverged = 0                              ;
-  dispIters        = 0                              ;
-  currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
+  % --- check convergence ---
+  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
+  % ---------------------------------------------------
 
-  while  booleanConverged == 0
-    dispIters = dispIters + 1 ;
+  % --- prints iteration info in file ---
+  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
 
-    % solve system
-    [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ;
+end % iteration while
+% --------------------------------------------------------------------
 
-    % updates: model variables and computes internal forces ---
-    [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
+Utp1       = Utp1k ;
+Udottp1    = Udottp1k ;
+Udotdottp1 = Udotdottp1k ;
 
-    % --- update next time magnitudes ---
-    [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
-      Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
+% computes KTred at converged Uk
+KTtp1red = systemDeltauMatrix ;
 
-    % --- system matrix ---
-    systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
+% compute stress at converged state
+[~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping ) ;
 
-    % --- new rhs ---
-    [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
-
-    % --- check convergence ---
-    [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
-    % ---------------------------------------------------
-
-    % --- prints iteration info in file ---
-    printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
-
-  end % iteration while
-  % --------------------------------------------------------------------
-
-  Utp1       = Utp1k ;
-  Udottp1    = Udottp1k ;
-  Udotdottp1 = Udotdottp1k ;
-
-  % computes KTred at converged Uk
-  KTtp1red = systemDeltauMatrix ;
-
-  % compute stress at converged state
-  [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping ) ;
-
-  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
+printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
 
-  % --- (temporary) computation and storage of separated assembled matrices ---
-  %~ mats  = assembler(  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1,   2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
-  %~ ktout = mats{1};
+% --- (temporary) computation and storage of separated assembled matrices ---
+%~ mats  = assembler(  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1,   2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
+%~ ktout = mats{1};
+
+%~ if isunix
+  %~ save  'Ktp1.dat' ktout ;
+  %~ status = system('tail -n +7 Ktp1.dat > aux.dat' );
+  %~ status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
+%~ end
+
+%~ if solutionMethod > 2
+  %~ dampingMat = mats{2} ;
+  %~ massMat    = mats{3} ;
 
   %~ if isunix
-    %~ save  'Ktp1.dat' ktout ;
-    %~ status = system('tail -n +7 Ktp1.dat > aux.dat' );
-    %~ status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
+    %~ save  'dampingMattp1.dat' dampingMat ;
+    %~ status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
+    %~ status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
+
+    %~ save  'massMattp1.dat' massMat ;
+    %~ status = system('tail -n +7 massMattp1.dat > aux.dat' );
+    %~ status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ;
   %~ end
 
-  %~ if solutionMethod > 2
-    %~ dampingMat = mats{2} ;
-    %~ massMat    = mats{3} ;
-
-    %~ if isunix
-      %~ save  'dampingMattp1.dat' dampingMat ;
-      %~ status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
-      %~ status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
-
-      %~ save  'massMattp1.dat' massMat ;
-      %~ status = system('tail -n +7 massMattp1.dat > aux.dat' );
-      %~ status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ;
-    %~ end
-
-  %~ end
-  % --------------------------------------------------------------------
+%~ end
+% --------------------------------------------------------------------
 
 
-  % %%%%%%%%%%%%%%%%
-  %~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
-  stabilityAnalysisFlag = 0 ;
-  % %%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%
+%~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
+stabilityAnalysisFlag = 0 ;
+% %%%%%%%%%%%%%%%%
 
-  if stabilityAnalysisFlag == 2
-    [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-  elseif stabilityAnalysisFlag == 1
-    [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-    factorCrit = 0;
-  else
-    nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
-  end
-
+if stabilityAnalysisFlag == 2
+  [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
+elseif stabilityAnalysisFlag == 1
+  [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
+  factorCrit = 0;
+else
+  nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
 end
-
 
 % --- stores next step values ---
 U          = Utp1 ;
