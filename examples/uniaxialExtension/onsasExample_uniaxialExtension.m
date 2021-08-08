@@ -81,24 +81,31 @@ E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md#### materials
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
-%md since only one material is considered, the structs defined for the materials contain only one entry
-materials.hyperElasModel = {'SVK'} ;
-materials.hyperElasParams = { [ lambda mu ] } ;
+%md since only one material is considered, a scalar struct is defined as follows
+materials.hyperElasModel = 'SVK' ;
+materials.hyperElasParams = [ lambda mu ] ;
 %md
 %md#### elements
-%md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
-elements.elemType = { 'triangle', 'tetrahedron' } ;
-%md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
-elements.elemTypeParams = { [];[] } ;
-elements.elemTypeGeometry = { [];[] } ;
+%md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:
+elements(1).elemType = 'triangle' ;
+elements(2).elemType = 'tetrahedron' ;
 %md
 %md#### boundaryConds
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
-boundaryConds.loadsCoordSys = {'global'; [] ; [] ; [] } ;
-boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
-boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
-boundaryConds.imposDispDofs = { [] ; [1] ; [3] ; [5] } ;
-boundaryConds.imposDispVals = { [] ; [0] ; [0] ; [0] } ;
+%md the first BC introduced is a load, then the coordinate system, loadfactor time function and base load vector are defined
+boundaryConds(1).loadsCoordSys = 'global';
+boundaryConds(1).loadsTimeFact = @(t) t ;
+boundaryConds(1).loadsBaseVals = [ p 0 0 0 0 0 ] ;
+%md the other BCs have imposed displacements
+boundaryConds(2).imposDispDofs = [1] ;
+boundaryConds(2).imposDispVals =  0  ;
+%
+boundaryConds(3).imposDispDofs = [3] ;
+boundaryConds(3).imposDispVals =  0  ;
+%
+boundaryConds(4).imposDispDofs = [5] ;
+boundaryConds(4).imposDispVals =  0  ;
+%
 %md
 %md#### initialConds
 %md since no initial non-homogeneous initial conditions are used, an empty struct is used .
@@ -156,6 +163,9 @@ otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+return
+
 %md
 %md### Analytic solution computation
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;

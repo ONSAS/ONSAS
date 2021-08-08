@@ -50,8 +50,8 @@ fclose( fidTextInputFile ) ;
 %~ [status, output] = system('../sources/timeStepIteration.lnx') ;
 %~ output
 auxPathBin = file_in_loadpath('ONSAS.lnx');
-[ auxPathBin ' ' onsInputFile ]
-[ status ] = system( [ auxPathBin ' ' onsInputFile ] , 0 ) ;
+commandStr = [ auxPathBin ' ' onsInputFile ]
+[ status ] = system( commandStr , 0 );
 
 
 % delete( [ otherParams.problemName '.ons' ] ) ;

@@ -22,14 +22,10 @@ function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, ele
 ONSASversion = '0.2.0'  ;
 
 %md set defaults
-analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
-analysisSettings.solverLang  = checkOrSetDefault ( analysisSettings, 'solverLang'      , 'Octave' ) ;
-otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
-otherParams.plotsFormat      = checkOrSetDefault ( otherParams     , 'plotsFormat', []  ) ;
-otherParams.nodalDispDamping = checkOrSetDefault ( otherParams     , 'nodalDispDamping', 0 ) ;
+[ materials, elements, analysisSettings, otherParams ] = setDefaults( materials, elements, analysisSettings, otherParams ) ;
 
 %md welcome message function
-welcomeMessage(ONSASversion, otherParams );
+welcomeMessage( ONSASversion, otherParams );
 
 % creates outputdir in current location
 % -------------------------------------
@@ -41,6 +37,13 @@ otherParams.outputDir = outputDir ;
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
+
+
+Conec
+Nodes
+diriDofs
+neumDofs
+loadFactorsFuncCell
 
 global spitMatrices
 if spitMatrices == true
@@ -84,7 +87,6 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec, otherParams.nodalDispDamping );
-
 
 
 %md writes vtk file

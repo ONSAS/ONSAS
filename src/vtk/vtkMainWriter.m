@@ -33,7 +33,7 @@ if length( plotInd ) == 0, return, end
 filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk']
 
 %md data conversion
-[ vtkNodes, vtkConec, cellPointData, cellCellData ] = vtkDataFormater( modelCurrSol, modelProperties) ;
+[ vtkNodes, vtkConec, cellPointData, cellCellData ] = vtkDataFormater( modelCurrSol, modelProperties ) ;
 
 %md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
 vtkFileWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;

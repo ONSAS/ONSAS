@@ -64,20 +64,15 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 % ====================================================================
 
 for elem = 1:nElems
+  mebiVec = Conec( elem, 1:4) ;
 
   % extract element properties
-  hyperElasModel      = materials.hyperElasModel{  Conec( elem, 1) } ;
-  hyperElasParams     = materials.hyperElasParams{ Conec( elem, 1) } ;
+  hyperElasModel      = materials(mebiVec(1)).hyperElasModel ;
+  hyperElasParams     = materials(mebiVec(1)).hyperElasParams ;
 
-  if isfield(materials,'density')
-    density             = materials.density{ Conec(elem, 1) }  ;
-  else
-    density = 0;
-  end
-
-  elemType            = elements.elemType{ Conec( elem, 2) } ;
-  elemTypeParams      = elements.elemTypeParams{ Conec( elem, 2) } ;
-  elemTypeGeometry    = elements.elemTypeGeometry{ Conec( elem, 2) } ;
+  elemType         = elements(mebiVec(2)).elemType         ;
+  elemTypeParams   = elements(mebiVec(2)).elemTypeParams   ;
+  elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry ;
 
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 

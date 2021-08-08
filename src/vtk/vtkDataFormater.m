@@ -36,7 +36,7 @@ vtkDispMat = [] ;
 for indType = 1:length( elemTypeInds )
 
   % get the string of the current type of element
-  elemTypeString = modelProperties.elements.elemType{ elemTypeInds( indType ) } ;
+  elemTypeString = modelProperties.elements( elemTypeInds(indType) ).elemType ;
 
   if strcmp( elemTypeString, 'tetrahedron' )
 
