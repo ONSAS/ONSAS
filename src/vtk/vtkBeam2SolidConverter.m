@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% function that creates the hexahedron element to visualize results with vtk file
+%md function that creates the hexahedron element to visualize results with vtk file
 
 function [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( nodesCoords, sectPar, Ue, Rr ) ;
 
@@ -55,6 +55,7 @@ if typeSolid == 12 % vtkHexa
 
   Nodesvtk = [ candsini ; candsfin ] ;
   Conecvtk = [ 12 1:8 ] ;
+
 
 elseif typeSolid == 25 % vtkQuadHexa
 

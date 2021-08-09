@@ -22,7 +22,7 @@ function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, ele
 ONSASversion = '0.2.0'  ;
 
 %md set defaults
-[ materials, elements, analysisSettings, otherParams ] = setDefaults( materials, elements, analysisSettings, otherParams ) ;
+[ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
 %md welcome message function
 welcomeMessage( ONSASversion, otherParams );
@@ -37,13 +37,6 @@ otherParams.outputDir = outputDir ;
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
                            materials, elements, boundaryConds, initialConds ) ;
-
-
-Conec
-Nodes
-diriDofs
-neumDofs
-loadFactorsFuncCell
 
 global spitMatrices
 if spitMatrices == true
@@ -87,7 +80,6 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec, otherParams.nodalDispDamping );
-
 
 %md writes vtk file
 if strcmp( modelProperties.plotsFormat, 'vtk' )

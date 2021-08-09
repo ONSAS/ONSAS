@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -16,24 +16,21 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
-% ---------------------------------------------------
-% Function for computation of (approximate) deformed configuration of one
-% beam or truss element using interpolations.
-%
-% Inputs:
-%  - coordsElem: column vector with the coordinates of the nodes of the element at the reference configuration
-%  - dispsElem: colum vector with the displacements of the nodes of the element (rotations are measured with respect to the initial configuration)
-%  - elemType: type of element
-%  - locglomat: matrix for transformation from local to global systems
-% the element is assumed to be straigt in the reference configuration
-%
-% Outputs:
-%  - vector with xs, ys and zs coordinates for plot.
-% ---------------------------------------------------
+%md Function for computation of (approximate) deformed configuration of one
+%md beam or truss element using interpolations.
+%md
+%md Inputs:
+%md  - coordsElem: column vector with the coordinates of the nodes of the element at the reference configuration
+%md  - dispsElem: colum vector with the displacements of the nodes of the element (rotations are measured with respect to the initial configuration)
+%md  - elemType: type of element
+%md  - locglomat: matrix for transformation from local to global systems
+%md the element is assumed to be straigt in the reference configuration
+%md
+%md Outputs:
+%md  - vector with xs, ys and zs coordinates for plot.
 
 function [ xsdef, ysdef, zsdef, conecElem, titax, titay, titaz, Rr ] = ...
-  outputFrameElementPlot( coordsElem, dispsElem, elemType )
+  outputFrameElementPlot( coordsElem, dispsElem, elemTypeString )
 
 % reads input
 xsref = coordsElem( [ 1   7  ] ) ;
@@ -44,7 +41,7 @@ ndofpnode =  6 ;
 conecElem = [] ;
 
 % converts global coord displacements to local
-if elemType == 2
+if strcmp( elemTypeString,'truss')
 
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
@@ -68,7 +65,7 @@ if elemType == 2
   %~ titay = [tl1(2) tl2(2)]' ;
   %~ titaz = [tl1(3) tl2(3)]' ;
 
-elseif elemType == 3
+elseif strcmp( elemTypeString, 'frame')
 
   xsdefA = coordsElem( [ 1   7  ] ) + dispsElem( [ 1   7  ] ) ;
   ysdefA = coordsElem( [ 1+2 7+2] ) + dispsElem( [ 1+2 7+2] ) ;
@@ -76,8 +73,10 @@ elseif elemType == 3
 
   nPlotPoints    = 10 ;
 
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 1], 0, dispsElem, [], [] ,0 ) ;
-
+  coordsElem
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 1], dispsElem, [], [] ,0 ) ;
+stop
+rotData
   %
   locDisp = rotData{1} ;
   ul  = locDisp(1)   ;   tl1 = locDisp(2:4) ;  tl2 = locDisp(5:7) ;

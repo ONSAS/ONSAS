@@ -163,9 +163,6 @@ otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-return
-
 %md
 %md### Analytic solution computation
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
@@ -177,20 +174,18 @@ analyticVals = analyticFunc( controlDisps ) ;
 controlDispsValsCase1         = controlDisps  ;
 loadFactorAnalyticalValsCase1 = analyticVals  ;
 loadFactorNumericalValsCase1  = loadFactorsMat ;
-
+%md
 %md## Numerical solution: case 2
 %mdIn this analysis case, the mesh information is read from a gmsh-generated
 %mdmesh file, the pressure is applied using local coordinates and the stiffness
 %md matrix is computed using the complex-step method.
 %md
 otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
+
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
-
-boundaryConds.loadsCoordSys = {'local'; [] ; [] ; [] } ;
-boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
-boundaryConds.loadsBaseVals = { [0 0 0 0 p 0 ] ; [] ; [] ; [] } ;
-
-elements.elemTypeParams = { []; [ 2 ] } ;
+boundaryConds(1).loadsCoordSys = 'local';
+boundaryConds(1).loadsBaseVals = [0 0 0 0 p 0 ] ;
+elements(2).elemTypeParams = [ 2 ] ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %md set optional fields defaults
-function [ materials, elements, analysisSettings, otherParams ] = setDefaults( materials, elements, analysisSettings, otherParams )
+function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
 % materials
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
@@ -26,14 +26,26 @@ materials         = checkOrSetDefault ( materials        , 'density'       , 0  
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams', []  ) ;
 elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry', []  ) ;
 
+% boundaryConds
+boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
+
 % analysis
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'        , [] ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'      , 'Octave' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'         , [] ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'    , 'Octave' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'    , 'newtonRaphson' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'        , 1    ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'      , 1    ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau' , 1e-6 ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces' , 1e-6 ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'    , 10   ) ;
+
 
 % otherParams
 otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1  ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []  ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
+
+
 
 
 %md function that checks if a field is defined in a (scalar or array) struct
@@ -43,7 +55,7 @@ function structName = checkOrSetDefault( structName, fieldName, default )
 
 if ~isfield( structName, fieldName )
   for i=1:length( structName )
-    aux(i)  = setfield( structName(i), fieldName, default )
+    aux(i)  = setfield( structName(i), fieldName, default ) ;
   end
   structName = aux ;
 end

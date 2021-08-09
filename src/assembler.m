@@ -63,6 +63,8 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 %  --- 2 loop assembly ---
 % ====================================================================
 
+density = materials.density ;
+
 for elem = 1:nElems
   mebiVec = Conec( elem, 1:4) ;
 

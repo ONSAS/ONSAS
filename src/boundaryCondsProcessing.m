@@ -24,8 +24,6 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         boundaryConds, ... % B
                         initialConds ) 		 % I
 
-elements
-
 Conec = myCell2Mat( mesh.conecCell ) ;
 Nodes = mesh.nodesCoords ;
 
