@@ -19,11 +19,6 @@
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
 
-Ue
-size(Ue)
-
-elemCoords
-%~ elemCoords = elemCoords(:)       ;
 xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
@@ -82,8 +77,6 @@ Ro = beamRefConfRotMat( x21 ) ;
 % --- rigid rotation ---
 
 % deformed x axis
-x21
-d21
 e1 = ( x21 + d21 ) / l   ;
 
 q1 = Rg1 * Ro * [0 1 0]' ;
@@ -274,9 +267,6 @@ end
 fs = {Finte} ;
 ks = {KTe};
 
-locDisp
-Rr
-stop
 rotData = {locDisp, Rr} ;
 
 

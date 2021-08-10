@@ -89,32 +89,33 @@ clear all, close all
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 E = 1e2 ; nu = 0.25 ; p = .5e-4 ; thickness = 1 ;
-
 %md
 %md
 %md### MEBI parameters
 %md
 %md#### materials
-%md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
-
+%md The constitutive behavior of the material considered for the solid is an isotropic linear elastic model.
 %md since only one material is considered, the structs defined for the materials contain only one entr
-materials.hyperElasModel  = {'linearElastic'} ;
-materials.hyperElasParams = { [ E nu ] }      ;
+materials.hyperElasModel  = 'linearElastic' ;
+materials.hyperElasParams =  [ E nu ]       ;
 %md
 %md#### elements
-%md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
-elements.elemType = { 'node', 'edge', 'triangle' } ;
-%md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
-elements.elemTypeParams = { []; [] ; 2  } ;
-elements.elemTypeGeometry = { []; thickness ; thickness } ;
+elements(1).elemType = 'node';
+elements(2).elemType = 'edge';
+elements(2).elemTypeGeometry = thickness ;
+elements(3).elemType = 'triangle';
+elements(3).elemTypeParams = 2 ;
+elements(3).elemTypeGeometry = thickness ;
 %md
 %md#### boundaryConds
-%md in this case four BCs are considered, one corresponding to a load and three to displacements.
-boundaryConds.loadsCoordSys = {[]; []; 'local'  } ;
-boundaryConds.loadsTimeFact = { []; []; @(t) t  } ;
-boundaryConds.loadsBaseVals = { []; []; [ p 0  0 0  0 0 ]  } ;
-boundaryConds.imposDispDofs = { [1] ; [3] ; []  } ;
-boundaryConds.imposDispVals = { [0] ; [0] ; []  } ;
+boundaryConds(1).imposDispDofs = [1] ;
+boundaryConds(1).imposDispVals = [0] ;
+boundaryConds(2).imposDispDofs = [3] ;
+boundaryConds(2).imposDispVals = [0] ;
+%
+boundaryConds(3).loadsCoordSys = 'local' ;
+boundaryConds(3).loadsTimeFact = @(t) t  ;
+boundaryConds(3).loadsBaseVals = [ p 0  0 0  0 0 ]  ;
 %md
 %md#### initialConds
 %md since no initial non-homogeneous initial conditions are used, an empty struct is used .

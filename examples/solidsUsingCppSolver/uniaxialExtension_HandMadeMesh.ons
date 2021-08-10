@@ -1,18 +1,3 @@
 materials
-numMaterials 001
+numMaterials 003
 materials.hyperElasModel
-SVK
-materials.hyperElasParams
-5.7692307692e-01 3.8461538462e-01 
-----------------
-elements
-numElements 002
-elements.elemType
-triangle
-tetrahedron
-elements.elemTypeParams
-
-
-elements.elemTypeGeometry
-
-

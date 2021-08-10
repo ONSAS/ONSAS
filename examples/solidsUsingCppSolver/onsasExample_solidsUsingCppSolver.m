@@ -7,18 +7,24 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
-materials.hyperElasModel = {'SVK'} ;
-materials.hyperElasParams = { [ lambda mu ] } ;
+materials.hyperElasModel = 'SVK' ;
+materials.hyperElasParams = [ lambda mu ] ;
 
-elements.elemType = { 'triangle'; 'tetrahedron' } ;
-elements.elemTypeParams = { [];[] } ;
-elements.elemTypeGeometry = { [];[] } ;
+elements(1).elemType = 'triangle';
+elements(2).elemType = 'tetrahedron' ;
 %md
-boundaryConds.loadsCoordSys = {'global'; [] ; [] ; [] } ;
-boundaryConds.loadsTimeFact = { @(t) t ; [] ; [] ; []} ;
-boundaryConds.loadsBaseVals = { [p 0 0 0 0 0 ] ; [] ; [] ; [] } ;
-boundaryConds.imposDispDofs = { [] ; [1] ; [3] ; [5] } ;
-boundaryConds.imposDispVals = { [] ; [0] ; [0] ; [0] } ;
+boundaryConds(1).loadsCoordSys = 'global';
+boundaryConds(1).loadsTimeFact = @(t) t ;
+boundaryConds(1).loadsBaseVals = [p 0 0 0 0 0 ] ;
+%
+boundaryConds(2).imposDispDofs = [1] ;
+boundaryConds(2).imposDispVals = [0] ;
+%
+boundaryConds(3).imposDispDofs = [3] ;
+boundaryConds(3).imposDispVals = [0] ;
+%
+boundaryConds(4).imposDispDofs = [5] ;
+boundaryConds(4).imposDispVals = [0] ;
 %md
 initialConds = struct();
 
