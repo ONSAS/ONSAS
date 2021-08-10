@@ -16,7 +16,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-
 %md function for writing vtk files of deformed configurations of structures.
 %md Creates the file filename with the nodes coordinates given in nodes,
 %md the conectivity given in conect and with the point and element data
@@ -24,16 +23,20 @@
 
 function vtkMainWriter( modelCurrSol, modelProperties )
 
+%md if the current time index is not in the plot index vector, if so, ends the execution
 plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
-
-%md if the current time index is not in the plts indexes vector then ends execution
 if length( plotInd ) == 0, return, end
 
 %md filname counter starts in zero
-filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk']
+filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
+
+fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
+
+%md nodes conversion
+[ vtkNodes, vtkConec, vtkDispMat ] = vtkNodesFormater( modelCurrSol, modelProperties ) ;
 
 %md data conversion
-[ vtkNodes, vtkConec, cellPointData, cellCellData ] = vtkDataFormater( modelCurrSol, modelProperties) ;
+[ cellPointData, cellCellData ] = vtkDataFormater( modelProperties.outputDir, modelProperties.problemName, vtkDispMat ) ;
 
 %md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
 vtkFileWriter( filename, vtkNodes, vtkConec , cellPointData, cellCellData ) ;

@@ -11,33 +11,34 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
-  tests-disp-coverage:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: run mechanical-work tests
-        uses: joergbrech/moxunit-action@v1.1
-        with:
-          src: test
-          with_coverage: true
-  tests-disp-coverage-xml:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: run mechanical-work tests
-        uses: joergbrech/moxunit-action@v1.1
-        with:
-          src: test
-          cover_xml_file: coverage.xml
-      - uses: actions/upload-artifact@v1
-        with:
-          name: coverage_file
-          path: coverage.xml
-      - uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
-        
-                  
+  # tests-disp-coverage:
+  #   runs-on: [ubuntu-latest]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: run mechanical-work tests
+  #       uses: joergbrech/moxunit-action@v1.1
+  #       with:
+  #         src: test
+  #         with_coverage: true
+
+  # tests-disp-coverage-xml:
+  #   runs-on: [ubuntu-latest]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: run mechanical-work tests
+  #       uses: joergbrech/moxunit-action@v1.1
+  #       with:
+  #         src: test
+  #         cover_xml_file: coverage.xml
+  #     - uses: actions/upload-artifact@v1
+  #       with:
+  #         name: coverage_file
+  #         path: coverage.xml
+  #     - uses: codecov/codecov-action@v1
+  #       with:
+  #         file: ./coverage.xml
+  #
+
       #     cover_xml_file: coverage.xml
       # - uses: actions/upload-artifact@v1
       #   with:

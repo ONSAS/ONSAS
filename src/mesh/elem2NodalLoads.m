@@ -16,27 +16,34 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%md function that constructs the assembled Fext vector for one given BCtype
+%md function that constructs the assembled Fext vector for one given BC
 
-function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
+function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
-  elemsWithBC = find( Conec(:,3) == indBC ) ;
-
-  loadedNodes = []                   ;
+  % declare output fext
   nnodes      = size( Nodes, 1)      ;
   fext        = zeros( 6*nnodes, 1 ) ;
 
+  % get element indexes with current BC
+  elemsWithBC = find( Conec(:,3) == indBC ) ;
+
+  % extract BC load base vals and coord system
+  loadCoordSys = boundaryCond.loadsCoordSys ;
+  loadvals     = boundaryCond.loadsBaseVals ;
+
+  loadedNodes = []                   ;
+
+  % loop in elements with current BC
   for elemInd = 1:length( elemsWithBC )
 
-    elem            = elemsWithBC( elemInd )               ;
-    elemType        = elements.elemType{ Conec( elem, 2 )} ;
-    loadCoordSys    = boundaryConds.loadsCoordSys{ indBC } ;
+    elem      = elemsWithBC( elemInd )       ;
+    elemInd   = Conec( elem, 2 )             ;
+    elemType  = elements( elemInd ).elemType ;
 
     %md nodal loads
     if strcmp( elemType, 'node') % node
 
       if strcmp( loadCoordSys, 'global' )
-        loadvals = boundaryConds.loadsBaseVals{ indBC } ;
         nodes     = Conec( elem, 4+1 ) ;
       else
         error(' only global flag in load by now.');
@@ -59,12 +66,12 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
       orientedVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
 
       lengthElem = norm( orientedVector ) ;
-      thickness  = elements.elemTypeGeometry{ Conec( elem, 2 ) } ;
-      loadvals   = boundaryConds.loadsBaseVals{ indBC } ;
+      thickness  = elements( elemInd ).elemTypeGeometry ;
 
       factor = lengthElem * thickness * 0.5 ;
 
-      assert( sum( loadvals( [ 2 4 5 6 ] )==0)==4,'error loads added to edge' )
+      % check for plane state loads
+      assert( sum( loadvals( [ 2 4 5 6 ] )==0 )==4,'error in loads of edge' )
 
       if strcmp( loadCoordSys, 'global' )
         Fx =   loadvals( 1 ) * factor ;
@@ -81,6 +88,8 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
 
       assert( size( elemNodeLoadsMatrix, 2)==6,"error, maybe missing thickness")
 
+
+
     %md triangle tension
     elseif strcmp( elemType , 'triangle') ; %
 
@@ -90,8 +99,6 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryConds, Nodes )
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
         ) ) ;
-
-      loadvals = boundaryConds.loadsBaseVals{ indBC } ;
 
       if strcmp( loadCoordSys, 'global' )
 

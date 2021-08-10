@@ -17,6 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %md This function converts the mesh MEBI information to the data structures used in the numerical simulation
+
 function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing ( mesh, ...
                         materials, ...     % M
                         elements, ...      % E
@@ -44,23 +45,27 @@ factorLoadsFextCell = {} ;
 loadFactorsFuncCell = {} ;
 diriDofs            = [] ;
 
-%md loop over boundary conditions
+%md loop over the boundary conditions used in the mesh
 for indBC = 1:length( boundaryTypes )
 
+  % number of current BC processed
   BCnum = boundaryTypes(indBC) ;
 
   %md loads verification
   %md is loadsCoordSys is not empty, then some load is applied in this BC
-  if ~isempty( boundaryConds.loadsCoordSys{ BCnum } )
-
+  if ~isempty( boundaryConds( indBC ).loadsCoordSys )
     %md The nodal loads vector is computed and assiged to the corresponding BC entry.
-    factorLoadsFextCell{ BCnum }  = elem2NodalLoads ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ;
-    loadFactorsFuncCell{ boundaryTypes(indBC) }  = boundaryConds.loadsTimeFact{ boundaryTypes(indBC) } ;
+    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ), Nodes ) ;
+    % defaul load factor function
+    if isempty( boundaryConds(BCnum).loadsTimeFact ),
+      boundaryConds(BCnum).loadsTimeFact = @(t) t ;
+    end
+    loadFactorsFuncCell{ BCnum } = boundaryConds(BCnum).loadsTimeFact ;
   end % if load
 
   %md displacement verification
-  if ~isempty( boundaryConds.imposDispDofs{ boundaryTypes(indBC) } ),
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ]  = elem2NodalDisps ( Conec, boundaryTypes(indBC), elements, boundaryConds, Nodes ) ;
+  if ~isempty( boundaryConds(BCnum).imposDispDofs ),
+    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, BCnum, elements, boundaryConds(BCnum), Nodes ) ;
     diriDofs = [ diriDofs; bcDiriDofs ] ;
 
   end % if: disp dofs
@@ -83,10 +88,10 @@ neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 for elemNum = 1:length( elementTypes )
 
   %md find the numbers of the elements with the current element type
-  elementsNums = find( Conec( :, 2 ) == elementTypes(elemNum) ) ;
+  elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
 
   %md get current element type
-  elemType = elements.elemType{ elementTypes(elemNum) } ;
+  elemType = elements( elementTypes(elemNum) ).elemType
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0

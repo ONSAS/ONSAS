@@ -1,4 +1,4 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
+% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
@@ -19,16 +19,13 @@
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 %md sets the current version
-ONSASversion = '0.2.0'  ;
+ONSASversion = '0.2.1'  ;
 
 %md set defaults
-analysisSettings.Utp10       = checkOrSetDefault ( analysisSettings, 'iniMatUs'        , [] ) ;
-otherParams.screenOutputBool = checkOrSetDefault ( otherParams     , 'screenOutputBool', 1  ) ;
-otherParams.plotsFormat      = checkOrSetDefault ( otherParams     , 'plotsFormat', []  ) ;
-otherParams.nodalDispDamping = checkOrSetDefault ( otherParams     , 'nodalDispDamping', 0 ) ;
+[ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
 %md welcome message function
-welcomeMessage(ONSASversion, otherParams );
+welcomeMessage( ONSASversion, otherParams );
 
 % creates outputdir in current location
 % -------------------------------------
@@ -83,8 +80,6 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec, otherParams.nodalDispDamping );
-
-
 
 %md writes vtk file
 if strcmp( modelProperties.plotsFormat, 'vtk' )

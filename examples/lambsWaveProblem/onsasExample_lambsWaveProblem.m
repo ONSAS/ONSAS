@@ -3,41 +3,43 @@
 %md In this case the ONSAS.m directory is loaded from an environment variable.
 % add path
 clear all, close all
-addpath( genpath( getenv( 'ONSAS_PATH' ) ) )
+addpath( genpath( [ getenv( 'ONSAS_PATH' ) 'src/'] ) )
 % scalar parameters
 E = 1.8773e10 ; nu = 0.25 ; thickness = 1 ; rho = 2200 ;
 %md
-global spitMatrices
-spitMatrices = true
+global spitMatrices, spitMatrices = true ;
 %md
 %md## MEBI parameters
 %md
 %md### materials
-%md since only one material is considered, the structs defined for the materials contain only one entr
-materials.hyperElasModel  = {'linearElastic'} ;
-materials.hyperElasParams = { [ E nu ] }      ;
-materials.density         = { rho }           ;
+materials.hyperElasModel  = 'linearElastic' ;
+materials.hyperElasParams =  [ E nu ]       ;
+materials.density         =  rho            ;
 %md
 %md### elements
-%md In this model two kinds of elements are used: tetrahedrons for the solid and triangles for introducing the external loads. Since two kinds of elements are used, the structs have length 2:
-elements.elemType = { 'node', 'edge', 'triangle' } ;
-%md since triangle and tetrahedron elements dont have specific parameters the struct entries contain empty vectors
-elements.elemTypeParams = { []; [] ; 2  } ;
-elements.elemTypeGeometry = { []; thickness ; thickness } ;
+elements(1).elemType = 'node';
+%
+elements(2).elemType = 'edge';
+elements(2).elemTypeGeometry = thickness ;
+%
+elements(3).elemType = 'triangle';
+elements(3).elemTypeParams = 2 ;
+elements(3).elemTypeGeometry = thickness ;
 %md
 %md#### boundaryConds
-%md in this case four BCs are considered, one corresponding to a load and three to displacements.
-boundaryConds.loadsCoordSys = {[]     ; []  ; 'global'  } ;
-boundaryConds.loadsTimeFact = { []    ; []  ; @(t) 1e6*( 1*( t <= .15 ) - 3*( t <= .1 ) + 3*( t <= .05 ) ) } ;
-boundaryConds.loadsBaseVals = { []    ; []  ; [ 0 0  1 0  0 0 ]  } ;
-boundaryConds.imposDispDofs = { [1 3] ; [1] ; []  } ;
-boundaryConds.imposDispVals = { [0 0] ; [0] ; []  } ;
+boundaryConds(1).imposDispDofs = [1 3] ;
+boundaryConds(1).imposDispVals = [0 0] ;
+%
+boundaryConds(2).imposDispDofs = [1] ;
+boundaryConds(2).imposDispVals = [0] ;
+%
+boundaryConds(3).loadsCoordSys = 'global' ;
+boundaryConds(3).loadsTimeFact = @(t) 1e6*( 1*( t <= .15 ) - 3*( t <= .1 ) + 3*( t <= .05 ) ) ;
+boundaryConds(3).loadsBaseVals = [ 0 0  1 0  0 0 ]  ;
 %md
 %md#### initialConds
-%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
 initialConds = struct();
 %md
-
 %md### Mesh
 %md An 8-node mesh is considered with its connectivity matrix
 %md
@@ -56,7 +58,6 @@ initialConds = struct();
 %md### Analysis parameters
 %md
 nAproxElem = length( mesh.conecCell )
-
 CFL = 0.125 ;
 cP  = 3200  ;
 h   = sqrt( 2*3200^2 / nAproxElem ) * .5 ;

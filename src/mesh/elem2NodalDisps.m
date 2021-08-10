@@ -18,32 +18,32 @@
 
 %md function that constructs the vectors of constrained degrees of freedom
 
-function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elements, boundaryConds, Nodes )
+function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elements, boundaryCond, Nodes )
+
+  % declare outputs
+  nonHomDiriVals = [] ;
+  diriDofs = [] ;
+  nonHomDiriDofs = [] ;
 
   %md find the elements with the current boundary condition
   elemsWithBC = find( Conec(:,3) == indBC ) ;
 
-  diriDofs = [] ;
-  nonHomDiriVals = [] ;
-  nonHomDiriDofs = [] ;
+  impoDofs = boundaryCond.imposDispDofs ;
+  impoVals = boundaryCond.imposDispVals ;
+  locNonHomDofs = find( impoVals )       ;
 
   %md loop in the elements to convert to nodal constraints
   for elemInd = 1:length( elemsWithBC );
 
-    elem            = elemsWithBC( elemInd )              ;
-    nodesElem       = nonzeros( Conec (elem, 5:end ) )    ;
-    elemType        = elements.elemType{ Conec(elem,2 )}  ;
+    elem        = elemsWithBC( elemInd )             ;
+    nodesElem   = nonzeros( Conec(elem, 5:end ) )    ;
+    elemType    = elements( Conec(elem,2) ).elemType ;
 
-    %md compute an auxiliar vector with the global degrees of freedom of the nodes of the current element
+    %md compute an auxiliar column vector with the global degrees of freedom of the nodes of the current element
     auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:);
-
-    impoDofs = boundaryConds.imposDispDofs{ indBC } ;
-    impoVals = boundaryConds.imposDispVals{ indBC } ;
-    locNonHomDofs = find( impoVals ) ;
 
     %md nodal constraints
     if strcmp( elemType, 'node') ; % node
-
       if ~isempty( locNonHomDofs)
         nonHomDiriDofs = [ nonHomDiriDofs; auxDofs(  locNonHomDofs) ];
         nonHomDiriVals = [ nonHomDiriVals; impoVals( locNonHomDofs) ];

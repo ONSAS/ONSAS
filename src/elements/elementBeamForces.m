@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -19,7 +19,6 @@
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
 
-%~ elemCoords = elemCoords(:)       ;
 xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
@@ -48,8 +47,8 @@ if elemrho > 0
 end
 
 % global thetas
-tg1 = dg (4:6);
-tg2 = dg (10:12);
+tg1 = dg(  4:6  ) ;
+tg2 = dg( 10:12 ) ;
 
 % rotation matrices
 Rg1 = expon( tg1 ) ;
