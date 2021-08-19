@@ -32,8 +32,10 @@
 function [ xsdef, ysdef, zsdef, conecElem, titax, titay, titaz, Rr ] = ...
   outputFrameElementPlot( coordsElem, dispsElem, elemTypeString )
 
+assert( iscolumn(coordsElem), ' coordsElem is not column!') ;
+
 % reads input
-xsref = coordsElem( [ 1   7  ] ) ;
+xsref = coordsElem( [ 1   7  ] )
 ysref = coordsElem( [ 1+2 7+2] ) ;
 zsref = coordsElem( [ 1+4 7+4] ) ;
 
@@ -46,13 +48,15 @@ if strcmp( elemTypeString,'truss')
   xsdef = xsref + dispsElem( [ 1   1+ndofpnode   ] ) ;
   ysdef = ysref + dispsElem( [ 1+2 1+ndofpnode+2 ] ) ;
   zsdef = zsref + dispsElem( [ 1+4 1+ndofpnode+4 ] ) ;
+
 	conecElem = [1 2] ;
 
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 0], 0, dispsElem, [], [], 0  ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(5, 1)', [1 1 0], dispsElem, [], [], 0  ) ;
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
 
   % global rotation matrix
   Rr     = rotData{2} ;
+
   %~ Rr     = eye(3);
 
   locDisp = rotData{1} ;
@@ -74,7 +78,7 @@ elseif strcmp( elemTypeString, 'frame')
   nPlotPoints    = 10 ;
 
   coordsElem
-  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:end), ones(5, 1)', [1 1 1], dispsElem, [], [] ,0 ) ;
+  [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(5, 1)', [1 1 1], dispsElem, [], [] ,0 ) ;
 stop
 rotData
   %

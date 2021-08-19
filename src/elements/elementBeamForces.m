@@ -19,7 +19,7 @@
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
 
-xs         = elemCoords(:) ;
+xs         = elemCoords ;
 
 booleanCSTangs = 0 ;
 
@@ -54,8 +54,8 @@ tg2 = dg( 10:12 ) ;
 Rg1 = expon( tg1 ) ;
 Rg2 = expon( tg2 ) ;
 
-x21 = xs(4:6) - xs(1:3) ;
-d21 = dg(7:9) - dg(1:3) ;
+x21 = xs(4:6) - xs(1:3)
+d21 = dg(7:9) - dg(1:3) 
 
 lo = sqrt( ( x21       )' * ( x21       ) ) ; %
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
