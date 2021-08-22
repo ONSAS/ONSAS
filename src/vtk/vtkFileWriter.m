@@ -85,8 +85,8 @@ for i=1:nelem,
   elseif (conect(i,1) == 10) % tetrahedron
     fprintf(fid,'4 %g %g %g %g \n', conect(i,1+(1:4)) ) ;
 
-  % elseif (conect(i,1) == 12)
-  %   fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8))-1 ) ;
+  elseif (conect(i,1) == 12)
+    fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8)) ) ;
   %
   % elseif (conect(i,1) == 25)
   %   fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;

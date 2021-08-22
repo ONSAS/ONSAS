@@ -92,6 +92,9 @@ function [ vtkNodes, vtkConec] ...%, vtkDisps, vtkNormalForces ]
 
     [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, sectPar, U(dofsElem), eye(3) )
 
+    lastNode = size( vtkNodes, 1 ) ;
+    ConecCell(:,2:end) = ConecCell(:,2:end) + lastNode ;
+
     vtkNodes = [ vtkNodes ; NodesCell ] ;
     vtkConec = [ vtkConec ; ConecCell ] ;
   end

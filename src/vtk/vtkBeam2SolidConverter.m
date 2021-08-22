@@ -54,7 +54,7 @@ if typeSolid == 12 % vtkHexa
   candsfin = ones(4,1) * (nodesCoords( 2, : )+Ue(7:2:11)') + matsecR      ;
 
   Nodesvtk = [ candsini ; candsfin ] ;
-  Conecvtk = [ 12 1:8 ] ;
+  Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
 
 
 elseif typeSolid == 25 % vtkQuadHexa
