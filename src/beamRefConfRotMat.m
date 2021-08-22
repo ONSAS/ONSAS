@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -16,18 +16,21 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function Ro = beamRefConfRotMat( x ) ;
+function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
 
-  exL = x / norm(x) ;
+  assert(size(x,2)==1, 'x must be column.')
+
+  lengthElem = norm(x) ;
+
+  exL = x / lengthElem ;
 
   eyG = [0 1 0]' ;
   ezG = [0 0 1]' ;
 
   % Vector normal to beam in reference configuration
-  aux = cross ( ezG, exL ) ;
-
-  if norm( aux ) > 1e-15
-    eyL = aux / norm( aux );
+  if ( exL(1) > 1e-8*lengthElem ) || ( exL(2) > 1e-8*lengthElem ) ; % if it is not ezG
+    aux = cross( ezG, exL ) ;
+    eyL = aux / norm( aux ) ;
   else
     eyL = eyG ;
   end
