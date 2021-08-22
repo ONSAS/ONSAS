@@ -21,11 +21,10 @@
 
 function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modS, modP )
 
-fprintf('\n\n00000000000\n\n\n')
+  fprintf('\n\n00000000000\n\n\n')
 
-  elemTypeInds = unique( modP.Conec( :, 2 ) )
-
-  nelems = size( modP.Conec, 1 )
+  elemTypeInds = unique( modP.Conec( :, 2 ) ) ;
+  nelems = size( modP.Conec, 1 ) ;
 
   %md create empty matrices for node coordinates and cell connectivities
   vtkConec = [] ;
@@ -38,7 +37,6 @@ fprintf('\n\n00000000000\n\n\n')
   %md loop in element types and add nodes and cells considering the specific
   %md structure and connectivity for each type of element/cell
   %md
-
   for indType = 1:length( elemTypeInds )
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType
     elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemTypeGeometry
@@ -49,6 +47,7 @@ fprintf('\n\n00000000000\n\n\n')
 
        [ trussVtkNodes, trussVtkConec] ...%, trussVtkNodalDisps, trussVtkNormalForces ] ...
          = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), elemTypeGeom, modS.U );
+
     end
   end % for: elemTypeInds
 
@@ -57,11 +56,8 @@ fprintf('\n\n00000000000\n\n\n')
   vtkConec = trussVtkConec ;
 
 
-
-vtkPointDataCell = {};
-vtkCellDataCell = {} ;
-
-
+  vtkPointDataCell = {};
+  vtkCellDataCell = {} ;
 
 
 % cell data : usar normalForces
@@ -80,15 +76,14 @@ function [ vtkNodes, vtkConec] ...%, vtkDisps, vtkNormalForces ]
   vtkNodes = [] ;
   vtkConec = [] ;
 
-  nelem = size(Conec,1)
+  nelem = size(Conec,1) ;
 
   for i=1:nelem
-    i
-    nodesElem = Conec(i,1:2)
-    dofsElem  = nodes2dofs( nodesElem, 6 )
-    coordSubElem = Nodes(nodesElem(:),:)
+    nodesElem = Conec(i,1:2) ;
+    dofsElem  = nodes2dofs( nodesElem, 6 ) ;
+    coordSubElem = Nodes(nodesElem(:),:) ;
 
-    [ iniNodes, midNodes, endNodes, sectPar ] = getVtkConnecForCrossSec( elemTypeGeom )
+    [ iniNodes, midNodes, endNodes, sectPar ] = getVtkConnecForCrossSec( elemTypeGeom ) ;
 
     [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, sectPar, U(dofsElem), eye(3) )
 

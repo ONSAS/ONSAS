@@ -65,12 +65,18 @@ cellTypes = unique( conect(:,1) ) ;
 for i = 1:length(cellTypes)
   % count elements with the current cell type
   nelemCurrType = sum( conect( :, 1 )== cellTypes(i) ) ;
+
   if ( cellTypes(i) == 5 ) % if it is triangle add (3+1)*nelemCurrType
     nTotNumbers = nTotNumbers + (3+1)*nelemCurrType ;
+
   elseif ( cellTypes(i) == 10 ) % if it is tetrahedron add (4+1)*nelemCurrType
     nTotNumbers = nTotNumbers + (4+1)*nelemCurrType ;
-  end
-end
+
+  elseif ( cellTypes(i) == 12 ) % if it is tetrahedron add (4+1)*nelemCurrType
+    nTotNumbers = nTotNumbers + (8+1)*nelemCurrType ;
+
+  end % if celltype
+end % for celltypes
 
 
 fprintf(fid,'CELLS %g %g', nelem, nTotNumbers ) ;
@@ -108,27 +114,28 @@ fprintf(fid,'\n') ;
 %
 % Cell PointData
 %
-fprintf(fid, 'POINT_DATA  %8i \n' , Nnodes ) ;
-for k = 1:size(cellPointData,1)
-  auxtype = cellPointData(k,1) ;
-  auxstr  = cellPointData(k,2) ;
-  auxdata = cell2mat(cellPointData(k,3)) ;
+if size( cellPointData, 1 ) > 0
+  fprintf(fid, 'POINT_DATA  %8i \n' , Nnodes ) ;
+  for k = 1:size(cellPointData,1)
+    auxtype = cellPointData(k,1) ;
+    auxstr  = cellPointData(k,2) ;
+    auxdata = cell2mat(cellPointData(k,3)) ;
 
-  if strcmp(auxtype, 'VECTORS')
-    fprintf(fid, ['VECTORS ' '%s' ' float\n'], [auxstr{:}] ) ;
-    for i = 1 :Nnodes
-      fprintf(fid,[' ' format_B ' ' format_B ' ' format_B ' \n'], auxdata(i,:) ) ;
+    if strcmp(auxtype, 'VECTORS')
+      fprintf(fid, ['VECTORS ' '%s' ' float\n'], [auxstr{:}] ) ;
+      for i = 1 :Nnodes
+        fprintf(fid,[' ' format_B ' ' format_B ' ' format_B ' \n'], auxdata(i,:) ) ;
+      end
+      fprintf(fid,'\n') ;
+
+    elseif strcmp(auxtype, 'SCALARS')
+      % Data
+      fprintf(fid, ['SCALARS ' '%s' ' float 1\n'], [auxstr{:}] ) ;
+      fprintf(fid,['LOOKUP_TABLE default\n']) ;
+      for i = 1 :Nnodes
+        fprintf(fid,[' ' format_B '\n'], auxdata(i,:) ) ;
+      end
     end
-    fprintf(fid,'\n') ;
-
-  elseif strcmp(auxtype, 'SCALARS')
-    % Data
-    fprintf(fid, ['SCALARS ' '%s' ' float 1\n'], [auxstr{:}] ) ;
-    fprintf(fid,['LOOKUP_TABLE default\n']) ;
-    for i = 1 :Nnodes
-      fprintf(fid,[' ' format_B '\n'], auxdata(i,:) ) ;
-    end
-
   end
 end
 

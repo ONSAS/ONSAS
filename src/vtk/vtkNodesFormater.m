@@ -41,11 +41,6 @@ function [ vtkNodes, vtkConec, vtkDispMat ] = vtkNodesFormater( modelCurrSol, mo
     % end
 
 
-
-
-
-
-
   elseif strcmp( elemTypeString,'truss') || strcmp( elemTypeString, 'frame')
 
   % Nodesvtk = [] ;
@@ -64,24 +59,19 @@ function [ vtkNodes, vtkConec, vtkDispMat ] = vtkNodesFormater( modelCurrSol, mo
   %
   % % loop in elements
     for i = 1:nelems
-      i
-  %
 %     elemMat  = Conec(i, 4+1 ) ;
   %   elemType = elementsParamsMat( Conec(i, 4+2 ), 1 ) ;
   %   elemCrossSecParams = crossSecsParamsMat( Conec(i, 4+4 ) , : ) ;
   %
-     nodeselem  = Conec( i, 1:2 )'
+     nodeselem  = Conec( i, 1:2 )'            ;
      dofselem   = nodes2dofs( nodeselem , 6 ) ;
-     dispsElem  = U( dofselem ) ;
+     dispsElem  = U( dofselem )               ;
 
      elemNodesRefCoords(1:2:6 ) = Nodes( nodeselem(1), : ) ;
      elemNodesRefCoords(7:2:12) = Nodes( nodeselem(2), : ) ;
-     elemNodesRefCoords = elemNodesRefCoords(:) ;
+     elemNodesRefCoords = elemNodesRefCoords(:)            ;
 
      [ xdef, ydef, zdef, conecElem, titax, titay, titaz, Rr ] = outputFrameElementPlot( elemNodesRefCoords, dispsElem, elemTypeString ) ;
-
-xdef
-conecElem
 
      % nodes sub-division
      ndivNodes = conecElem( end, 2 ) ; % last node in the sub-division
@@ -99,13 +89,8 @@ conecElem
   %
        coordSubElem             = [ xloc(j:(j+1))  yloc(j:(j+1))  zloc(j:(j+1)) ]
 
-       stop
-  %
 
-
-
-
- [ iniNodes, midNodes, endNodes ] = getVtkConnecForCrossSec( elemCrossSecParams)
+       [ iniNodes, midNodes, endNodes ] = getVtkConnecForCrossSec( elemCrossSecParams)
 
 
   %

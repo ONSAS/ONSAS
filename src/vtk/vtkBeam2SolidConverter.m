@@ -31,21 +31,21 @@ if typeSolid == 12 % vtkHexa
 
   Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
 
-  [~, locglos] = beamParameters( nodesCoords ) ;
+  [locglosB] = beamRefConfRotMat( [ nodesCoords(2,:)-nodesCoords(1,:)]' ) ;
 
   ex = locglos(:,1)' ;
   ey = locglos(:,2)' ;
   ez = locglos(:,3)' ;
 
-  % matrix with coords of four vertices of cross section to be plotted
+  %md matrix with coords of four vertices of cross section to be plotted
   matsec = [ -ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5+ez*bz*.5 ; ...
-             -ey*by*.5+ez*bz*.5 ] ;
-
+             -ey*by*.5+ez*bz*.5 ]
   % rotated section
-
-  matsecR = ( Rr * locglos' * expon( vecrotNode1 ) * matsec' )' ;
+%stop
+  matsecR = matsec ;
+%  matsecR = ( Rr * locglos' * expon( vecrotNode1 ) * matsec' )' ;
 
   candsini = ones(4,1) * (nodesCoords( 1, : )+Ue(1:2:5)') + matsecR      ;
 
