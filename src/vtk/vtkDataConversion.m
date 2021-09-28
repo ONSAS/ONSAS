@@ -16,15 +16,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%md this function creates the point and cell data matrices for writing
+%md This function creates the point and cell data matrices for writing
 %md vtk files of the solids or structures.
 
 function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modS, modP )
 
-  fprintf('\n\n00000000000\n\n\n')
+  nelems       = size( modP.Conec, 1 )
 
-  elemTypeInds = unique( modP.Conec( :, 2 ) ) ;
-  nelems = size( modP.Conec, 1 ) ;
+  % get the indexes of elements used in the model
+  elemTypeInds = unique( modP.Conec( :, 2 ) )
 
   %md create empty matrices for node coordinates and cell connectivities
   vtkConec = [] ;
@@ -41,24 +41,26 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType
     elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemTypeGeometry
 
+    % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) )
 
-    if strcmp( elemTypeString, 'truss' )
-
-       [ trussVtkNodes, trussVtkConec] ...%, trussVtkNodalDisps, trussVtkNormalForces ] ...
-         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), elemTypeGeom, modS.U );
-
-    end
+    if strcmp( elemTypeString, 'truss' ) || strcmp( elemTypeString, 'frame' )
+      [ currVtkNodes, currVtkConec, vtkNodalDisps, vtkNormalForces ] ...
+        = trussFrameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
+        elemTypeGeom, elemTypeString, modS.U ) ;
+    end % if: type
   end % for: elemTypeInds
 
-
-  vtkNodes = trussVtkNodes ;
-  vtkConec = trussVtkConec ;
-
+  vtkNodes = [ vtkNodes ;  currVtkNodes ] ;
+  vtkConec = [ vtkConec ;  currVtkConec ] ;
 
   vtkPointDataCell = {};
-  vtkCellDataCell = {} ;
 
+  vtkPointDataCell{1,1} = 'VECTORS' ;
+  vtkPointDataCell{1,2} = 'Displacements' ;
+  vtkPointDataCell{1,3} = vtkNodalDisps ;
+
+  vtkCellDataCell = {} ;
 
 % cell data : usar normalForces
 
@@ -70,28 +72,57 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 % convierte las vigas en sólidos para mostrar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [ vtkNodes, vtkConec] ...%, vtkDisps, vtkNormalForces ]
-   = trussVtkData( Nodes, Conec, elemTypeGeom, U )
+function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
+   = trussFrameVtkData( Nodes, Conec, elemTypeGeom, elemTypeString, U )
 
   vtkNodes = [] ;
   vtkConec = [] ;
+  vtkNodalDisps = [] ;
+  vtkNormalForces = [] ;
 
   nelem = size(Conec,1) ;
 
   for i=1:nelem
-    nodesElem = Conec(i,1:2) ;
-    dofsElem  = nodes2dofs( nodesElem, 6 ) ;
-    coordSubElem = Nodes(nodesElem(:),:) ;
+    nodesElem    = Conec(i,1:2) ;
+    dofsElem     = nodes2dofs( nodesElem, 6 )
+    coordSubElem = reshape( Nodes( nodesElem(:), : )', 6,1)
 
+    % q section tengo
     [ iniNodes, midNodes, endNodes, sectPar ] = getVtkConnecForCrossSec( elemTypeGeom ) ;
+    %
+    elemTypeGeom
+    if  strcmp( elemTypeString, 'truss' )
+      nsub =  1 ;
+    % elseif frame
+    %   nsub = 20
+    end
+    %
+    for j=1:nsub
+    %
+      % calculo angulos
+      if  strcmp( elemTypeString, 'truss' )
+        nodalDisp = U( dofsElem(1:2:end) )
+        nodalRot  = zeros(6,1) ;
+    %   elseif frame
+    %     uso interpolacion
+    %     nodalRot1
+    %     nodalRot2
+       end
+    %
+    %   %
+      [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, nodalDisp, nodalRot, sectPar )
 
-    [ NodesCell, ConecCell ] = vtkBeam2SolidConverter ( coordSubElem, sectPar, U(dofsElem), eye(3) )
+      % add number of previous nodes to the new nodes
+      lastNode = size( vtkNodes, 1 ) ;
+      ConecCell(:,2:end) = ConecCell(:,2:end) + lastNode ;
 
-    lastNode = size( vtkNodes, 1 ) ;
-    ConecCell(:,2:end) = ConecCell(:,2:end) + lastNode ;
+      vtkNodes = [ vtkNodes ; NodesCell ] ;
+      vtkConec = [ vtkConec ; ConecCell ] ;
+      vtkNodalDisps = [ vtkNodalDisps ; [ ones(4,1)*nodalDisp(1:3)'; ones(4,1)*nodalDisp(4:6)' ] ] ;
 
-    vtkNodes = [ vtkNodes ; NodesCell ] ;
-    vtkConec = [ vtkConec ; ConecCell ] ;
+    end % for plot element subdivision
+
+
   end
 
 

@@ -55,8 +55,8 @@ if strcmp( elemTypeString,'truss')
   %~ [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(7, 1), 0, 0, dispsElem, [], []  ) ;
 
   % global rotation matrix
-  Rr     = rotData{2} ;
-
+  Rr     = rotData{2}
+  stop
   %~ Rr     = eye(3);
 
   locDisp = rotData{1} ;
