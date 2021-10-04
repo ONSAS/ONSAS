@@ -25,6 +25,7 @@ function vtkMainWriter( modelCurrSol, modelProperties )
 
 %md if the current time index is not in the plot index vector, if so, ends the execution
 plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
+
 if length( plotInd ) == 0, return, end
 
 %md filname counter starts in zero

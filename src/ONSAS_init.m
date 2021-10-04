@@ -62,7 +62,7 @@ printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
 printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
 
-nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) ;
+nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % number of times (including t=0)
 
 % if length( otherParams.plotParamsVector ) > 1
 %   nplots = min( [ nTimes otherParams.plotParamsVector(2) ] ) ;

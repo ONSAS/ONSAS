@@ -35,9 +35,9 @@ function [ xsdef, ysdef, zsdef, conecElem, titax, titay, titaz, Rr ] = ...
 assert( iscolumn(coordsElem), ' coordsElem is not column!') ;
 
 % reads input
-xsref = coordsElem( [ 1   7  ] )
-ysref = coordsElem( [ 1+2 7+2] ) ;
-zsref = coordsElem( [ 1+4 7+4] ) ;
+xsref = coordsElem( [ 1  4 ] ) ;
+ysref = coordsElem( [ 2  5 ] ) ;
+zsref = coordsElem( [ 3  6 ] ) ;
 
 ndofpnode =  6 ;
 conecElem = [] ;
@@ -71,17 +71,15 @@ if strcmp( elemTypeString,'truss')
 
 elseif strcmp( elemTypeString, 'frame')
 
-  xsdefA = coordsElem( [ 1   7  ] ) + dispsElem( [ 1   7  ] ) ;
-  ysdefA = coordsElem( [ 1+2 7+2] ) + dispsElem( [ 1+2 7+2] ) ;
-  zsdefA = coordsElem( [ 1+4 7+4] ) + dispsElem( [ 1+4 7+4] ) ;
+  xsdefA = xsref + dispsElem( [ 1   7  ] ) ;
+  ysdefA = ysref + dispsElem( [ 1+2 7+2] ) ;
+  zsdefA = zsref + dispsElem( [ 1+4 7+4] ) ;
 
   nPlotPoints    = 10 ;
 
   coordsElem
   [ ~, ~, ~, rotData ] = elementBeamForces( coordsElem(1:2:end), ones(5, 1)', [1 1 1], dispsElem, [], [] ,0 ) ;
-stop
-rotData
-  %
+
   locDisp = rotData{1} ;
   ul  = locDisp(1)   ;   tl1 = locDisp(2:4) ;  tl2 = locDisp(5:7) ;
 

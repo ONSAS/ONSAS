@@ -17,8 +17,8 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %md function that creates the hexahedron element to visualize results with vtk file
-
 function [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( nodesCoords, nodalDisp, nodalRot, sectPar ) ;
+
 
 typeSolid = sectPar(1) ;
 
@@ -42,9 +42,7 @@ if typeSolid == 12 % vtkHexa
    node1Def = nodesCoords(1:3) + nodalDisp(1:3) ;
    node2Def = nodesCoords(4:6) + nodalDisp(4:6) ;
 
-   locglos = beamRefConfRotMat( (node2Def - node1Def ) )
-
-   % stop
+   locglos = beamRefConfRotMat( (node2Def - node1Def ) ) ;
 
    ex = locglos(:,1)' ;
    ey = locglos(:,2)' ;
@@ -54,10 +52,7 @@ if typeSolid == 12 % vtkHexa
   matsec = [ -ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5+ez*bz*.5 ; ...
-             -ey*by*.5+ez*bz*.5 ]
-  % rotated section
-
-  %matsecR = ( Rg1 * matsec' )' ;
+             -ey*by*.5+ez*bz*.5 ] ;
 
   %md and add displacements
   candsini = ones(4,1) * node1Def' + matsec      ;
