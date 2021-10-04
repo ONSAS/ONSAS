@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -30,8 +30,8 @@ function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, 
 
 	[A, J, Iy, Iz] = crossSectionProps ( elemTypeGeometry, density ) ;
 
-	% --- elem lengths and rotation matrix
-	[ l, local2globalMats ] = beamParameters( elemCoords ) ;
+  % --- elem lengths and rotation matrix
+	[ local2globalMats, l ] = beamParameters( (elemCoords(4:6)-elemCoords(1:3))' ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
 
   % Provisoriamente

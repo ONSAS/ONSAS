@@ -17,44 +17,52 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %md function that creates the hexahedron element to visualize results with vtk file
+function [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( nodesCoords, nodalDisp, nodalRot, sectPar ) ;
 
-function [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( nodesCoords, sectPar, Ue, Rr ) ;
 
 typeSolid = sectPar(1) ;
 
-vecrotNode1 = Ue( 2:2:6  ) ;
-vecrotNode2 = Ue( 8:2:12 ) ;
+% computes rotations if provided
+if isempty(nodalDisp)
+  Rg1 = eye(1) ;
+  Rg2 = eye(1) ;
+else
+  Rg1 = expon( nodalRot( 1:3 ) ) ;
+  Rg2 = expon( nodalRot( 4:6 ) ) ;
+end
+
 
 if typeSolid == 12 % vtkHexa
 
-  by = sectPar(2) ;  bz = sectPar(3) ;
+   by = sectPar(2) ;  bz = sectPar(3) ;
 
-  Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
+   Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
 
-  [~, locglos] = beamParameters( nodesCoords ) ;
+   % coordinates of nodes 1 and 2 in deformed configuration
+   node1Def = nodesCoords(1:3) + nodalDisp(1:3) ;
+   node2Def = nodesCoords(4:6) + nodalDisp(4:6) ;
 
-  ex = locglos(:,1)' ;
-  ey = locglos(:,2)' ;
-  ez = locglos(:,3)' ;
+   locglos = beamRefConfRotMat( (node2Def - node1Def ) ) ;
 
-  % matrix with coords of four vertices of cross section to be plotted
+   ex = locglos(:,1)' ;
+   ey = locglos(:,2)' ;
+   ez = locglos(:,3)' ;
+
+  %md matrix with coords of four vertices of cross section to be plotted
   matsec = [ -ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5-ez*bz*.5 ; ...
              +ey*by*.5+ez*bz*.5 ; ...
              -ey*by*.5+ez*bz*.5 ] ;
 
-  % rotated section
+  %md and add displacements
+  candsini = ones(4,1) * node1Def' + matsec      ;
 
-  matsecR = ( Rr * locglos' * expon( vecrotNode1 ) * matsec' )' ;
+  %  matsecR = ( expon( vecrotNode2) * matsec' )'  ;
 
-  candsini = ones(4,1) * (nodesCoords( 1, : )+Ue(1:2:5)') + matsecR      ;
-
-  matsecR = ( Rr * locglos' * expon( vecrotNode2) * matsec' )'  ;
-
-  candsfin = ones(4,1) * (nodesCoords( 2, : )+Ue(7:2:11)') + matsecR      ;
+  candsfin = ones(4,1) * node2Def' + matsec      ;
 
   Nodesvtk = [ candsini ; candsfin ] ;
-  Conecvtk = [ 12 1:8 ] ;
+  Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
 
 
 elseif typeSolid == 25 % vtkQuadHexa
@@ -62,6 +70,7 @@ elseif typeSolid == 25 % vtkQuadHexa
 	R = sectPar(2) / 2 ;
   Nodesvtk = [] ; Conecvtk = [] ;
 
+error('not corrected yet')
   NodesDef  = nodesCoords + [ Ue(1:6:end) Ue(3:6:end) Ue(5:6:end) ] ;
   rotsMat   = 			        [ Ue(2:6:end) Ue(4:6:end) Ue(6:6:end) ] ;
 

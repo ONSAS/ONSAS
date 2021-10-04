@@ -18,13 +18,9 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
-  onsasExample_frameLinearAnalysis
-  assertEqual( verifBoolean, true );
-
-function test_4
   onsasExample_uniaxialExtension
   assertEqual( verifBoolean, true );
 
-function test_5
+function test_4
   onsasExample_linearPlaneStrain
   assertEqual( verifBoolean, true );

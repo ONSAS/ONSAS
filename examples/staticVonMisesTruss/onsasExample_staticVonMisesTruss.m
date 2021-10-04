@@ -42,7 +42,7 @@ materials.hyperElasParams = [ E nu ] ;
 %md#### elements
 %md
 %mdTwo different types of elements are required to create the model: `node` and `truss`, thus, the `elements` struct will have two entries. The type of the first entry is
-elements(1).elemType = 'node';
+elements(1).elemType = 'node' ;
 %md and the second entry is
 elements(2).elemType = 'truss';
 %md for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
@@ -53,7 +53,7 @@ elements(2).elemTypeParams = 1 ;
 %md
 %md The elements are submitted to two different BoundaryConditions, then the struct `boundaryConds` will have length two.
 %md The nodes $1$ and $3$ are fixed, without loads applied (this is the first BC), and node $2$ has a constraint in displacement and an applied load (second BC).
-%md For the displacements, the first BC corresponds with the all displacement degrees of freedom set to zero,
+%md For the displacements, the first BC corresponds to a xyz-fixed displacement,
 %md
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
@@ -104,6 +104,7 @@ analysisSettings.finalTime      =   1    ;
 %md
 %md### otherParams
 otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
+otherParams.plotsFormat = 'vtk' ;
 otherParams.controlDofs = [2 5 ];
 %md
 %md### Analysis case 1: NR with Rotated Eng Strain

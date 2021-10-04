@@ -9,7 +9,7 @@ jobs:
       - name: run mechanical-work tests
         uses: joergbrech/moxunit-action@v1.1
         with:
-          src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/frameLinearAnalysis examples/uniaxialExtension src src/elements src/vtk src/mesh
+          src: examples/staticVonMisesTruss examples/linearPlaneStrainExample examples/uniformCurvatureCantilever examples/uniaxialExtension src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
   # tests-disp-coverage:
   #   runs-on: [ubuntu-latest]

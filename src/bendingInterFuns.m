@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -20,31 +20,34 @@
 
 function N = bendingInterFuns (x , l, derivdeg )
 
+assert( iscolumn(x)   ,'x must be scalar or column' )
+assert( length(l)==1                                )
+
 switch derivdeg
 
 case 0
-  N1 =  (2*x^3 - 3*l*x^2 + l^3 )/ l^3 ;
-  N2 =  (x^3 -2 * l * x^2 + l^2*x  )/ l^2 ;
-  N3 = -( 2*x^3 - 3*l*x^2 )/l^3 ;
-  N4 =  (x^3 - l*x^2 )/l^2 ;
+  N1 =  (2*x.^3 - 3*l*x.^2 + l.^3 )     / l^3 ;
+  N2 =  (x.^3 -2 * l * x.^2 + l.^2*x  ) / l^2 ;
+  N3 = -( 2*x.^3 - 3*l*x.^2 )           / l^3 ;
+  N4 =  (x.^3 - l*x.^2 )                / l^2 ;
 
 case 1
-  N1 =  (6*x^2 - 6*x*l )  / l^3 ;
-  N2 =  (3*x^2 -4*l*x +l^2)   / l^2 ;
-  N3 = -(6*x^2 - 6*x*l) /l^3 ;
-  N4 =  (3*x^2 - 2*l*x ) /l^2 ;
+  N1 =  (6*x.^2 - 6*x*l )     / l^3 ;
+  N2 =  (3*x.^2 -4*l*x +l.^2) / l^2 ;
+  N3 = -(6*x.^2 - 6*x*l)      / l^3 ;
+  N4 =  (3*x.^2 - 2*l*x )     / l^2 ;
 
 case 2
   N1 =  (12*x-6*l )  / l^3 ;
   N2 =  (6*x-4*l )   / l^2 ;
-  N3 = -(12*x - 6*l) /l^3 ;
-  N4 =  (6*x - 2*l ) /l^2 ;
+  N3 = -(12*x - 6*l) / l^3 ;
+  N4 =  (6*x - 2*l ) / l^2 ;
 
 case 3
   N1 =  (12)  / l^3 ;
-  N2 =  (6 )   / l^2 ;
-  N3 = -(12) /l^3 ;
-  N4 =  (6 ) /l^2 ;
+  N2 =  (6 )  / l^2 ;
+  N3 = -(12)  / l^3 ;
+  N4 =  (6 )  / l^2 ;
 
 end
 

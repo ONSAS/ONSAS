@@ -16,6 +16,25 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% --------------------------------------------------------------------------------------------------
+function [ iniNodes, midNodes, endNodes, secc ] = crossSectionVtkSolidConnec( elemCrossSecParams )
 
-function [ElemLengths, Local2GlobalMats] = beamParameters(elemCoords)
+  if elemCrossSecParams(1) == 1  || elemCrossSecParams(1) == 2 % general or rectangular section
+    if elemCrossSecParams(1) == 1
+      % equivalent square section using A = wy * wz
+      auxh = sqrt( elemCrossSecParams(2) ) ;   auxb = auxh ;
+      secc = [ 12 auxb auxh ] ;
+    else
+      secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
+    end
+
+		iniNodes = [ 1 2 3 4  ] ;
+		midNodes = [          ] ;
+    endNodes = [ 5 6 7 8  ] ;
+
+  elseif elemCrossSecParams(1) == 3 % circular section
+
+    secc = [ 25 elemCrossSecParams(2) ] ;
+		iniNodes = [ 1 2 3 4 9 10 11 12  ] ;
+		midNodes = [ 17 18 19 20         ] ;
+    endNodes = [ 5 6 7 8 13 14 15 16 ] ;
+  end

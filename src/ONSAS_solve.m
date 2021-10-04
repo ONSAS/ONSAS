@@ -47,7 +47,7 @@ while finalTimeReachedBoolean == false
 
   % generate vtk file for the new state
   if strcmp( modelProperties.plotsFormat, 'vtk' )
-    vtkMainWriter( modelCurrSol, modelProperties )
+    vtkMainWriter( modelCurrSol, modelProperties );
   end % if vtk output format
 
 end %while time
