@@ -21,7 +21,7 @@
 %#
 %#
 
-function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime )
+function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
 
   [fs, ~, ~ ] = assembler ( ...
     modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
@@ -33,25 +33,24 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
     systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData, modelProperties.analysisSettings, nextTime, length(Fint) ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, nexTimeLoadFactors ) ;
 
     foundLoadCase = false ;
     loadCase = 1 ;
     while ~foundLoadCase
       if isempty( BCsData.factorLoadsFextCell{loadCase} )
-        loadCase = loadCase + 1
+        loadCase = loadCase + 1 ;
       else
         foundLoadCase = true ;
       end
     end
 
-    % incremental displacement
     systemDeltauRHS = [ -(Fint(BCsData.neumDofs)-FextG(BCsData.neumDofs)) ...
                         BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 

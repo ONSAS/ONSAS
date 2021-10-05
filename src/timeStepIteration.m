@@ -27,6 +27,7 @@ function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsDa
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
 KTtred     = modelCurrSol.systemDeltauMatrix ;
 convDeltau = modelCurrSol.convDeltau ;
+currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 
 % update time and set candidate displacements and derivatives
 % -----------------------------------------------------------
@@ -45,17 +46,26 @@ systemDeltauMatrix = KTtred ;
 
 % compute RHS for initial guess Utp1 and in next time step
 % --------------------------------------------------------
-[ systemDeltauRHS, FextG, ~, ~, nextTimeLoadFactors ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
+if strcmp( modelProperties.analysisSettings.methodName, 'arcLength')==1
+  nextLoadFactorsVals = currLoadFactorsVals ;
+else
+  nextLoadFactorsVals = [] ;
+end
+
+[ systemDeltauRHS, FextG, ~, ~, nextLoadFactorsVals ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals  ) ;
 
 booleanConverged = 0                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
 while  booleanConverged == 0
+
+  %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
 
+
   % solve system
-  [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextTimeLoadFactors , currDeltau ) ;
+  [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ;
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
@@ -68,14 +78,14 @@ while  booleanConverged == 0
   systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
 
   % --- new rhs ---
-  [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime ) ;
+  [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
 
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
 
   % --- prints iteration info in file ---
-  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 dispIters deltaErrLoad norm(deltaured) ] ) ;
+  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ] ) ;
 
 end % iteration while
 % --------------------------------------------------------------------
@@ -151,7 +161,7 @@ timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
 
-modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextTimeLoadFactors, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec, modelProperties.nodalDispDamping );
+modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextLoadFactorsVals, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec, modelProperties.nodalDispDamping );
 % -------------------------------------
 
 
@@ -204,12 +214,10 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
     nodeDofs = nodes2dofs( i , 6 ) ;
     nodeAngDofs = nodeDofs(2:2:6)  ;
 
-
     %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
                                          %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
                                        %~ ) ) ;
     updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
-
     %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
                                 %~ expon( Uk             ( nodeAngDofs ) ) ) ;
 

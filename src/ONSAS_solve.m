@@ -31,7 +31,12 @@ cellStress     = { modelCurrSol.Stress }     ;
 %md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
 %mdand starts the iteration
+fprintf('Starting time analysis. Time index: ')
 while finalTimeReachedBoolean == false
+
+  %if mod(modelCurrSol.timeIndex,10)==0,
+    fprintf(' %3i,', modelCurrSol.timeIndex),
+  %end
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
