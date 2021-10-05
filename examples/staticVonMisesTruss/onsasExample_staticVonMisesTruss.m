@@ -95,12 +95,11 @@ mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
 %md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
-analysisSettings.deltaT        = 0.1    ;
+analysisSettings.deltaT        =   0.1  ;
 analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
-analysisSettings.finalTime      =   1    ;
 %md
 %md### otherParams
 otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
@@ -112,12 +111,13 @@ otherParams.controlDofs = [2 5 ];
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
+%md
 %md and the analytical value of the load factors is computed, as well as its difference with the numerical solution
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      ( (  (z2+(-w)).^2 + x2^2 - L^2 ) ./ (L * ( L + sqrt((z2+(-w)).^2 + x2^2) )) ) ...
      .*  (z2+(-w))                    ./ ( sqrt((z2+(-w)).^2 + x2^2) )  ;
 difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
-
+%md
 %md### Analysis case 2: NR with Green Strain
 %md In order to perform a SVK case, the material is changed and the problemName is also updated
 otherParams.problemName = 'staticVonMisesTruss_NR_Green';
@@ -130,14 +130,31 @@ boundaryConds(2).loadsTimeFact = @(t) 1.5e8*t ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRGreen =  -matUs(11,:) ;
 loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
-%md the analytic solution is computed
-analyticLoadFactorsNRGreen = @(w) - 2 * E*A * ( ( z2 + (-w) ) .* ( 2*z2*(-w) + w.^2 ) ) ./ ( 2.0 * L^3 )  ;
-difLoadGreen = analyticLoadFactorsNRGreen( controlDispsNRGreen )' - loadFactorsNRGreen ;
+% %md the analytic solution is computed
+analyticLoadFactorsGreen = @(w) - 2 * E*A * ( ( z2 + (-w) ) .* ( 2*z2*(-w) + w.^2 ) ) ./ ( 2.0 * L^3 )  ;
+difLoadGreen = analyticLoadFactorsGreen( controlDispsNRGreen )' - loadFactorsNRGreen ;
 %md
+%md### Analysis case 3: NR-AL with Green Strain
+%md In this case, the numerical method is changed for newtonRaphson arc length.
+otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
+analysisSettings.methodName   = 'arcLength'                      ;
+analysisSettings.finalTime     = 4.5                             ;
+analysisSettings.incremArcLen = 0.1                             ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100
+analysisSettings.posVariableLoadBC = 2 ;
+%md
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+controlDispsNRALGreen =  -matUs(11,:) ;
+loadFactorsNRALGreen  =  loadFactorsMat(:,2) ;
+analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
+difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md## Verification
 %md the numerical resolution is validated for both strain measures.
-verifBoolean =  ( ( norm( difLoadEngRot ) / norm( loadFactorsNREngRot ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreen  ) / norm( loadFactorsNRGreen  ) ) <  1e-4 )
+
+verifBoolean =  ( ( norm( difLoadEngRot    ) / norm( loadFactorsNREngRot  ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreen     ) / norm( loadFactorsNRGreen   ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 )
+
 %md### Plots
 %md and solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -145,10 +162,11 @@ figure
 plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
 hold on, grid on
 plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRGreen, analyticLoadFactorsNRGreen( controlDispsNRGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green', 'location','SouthEast')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'location','SouthEast')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')

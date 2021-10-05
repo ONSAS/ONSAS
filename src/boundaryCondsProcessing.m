@@ -91,7 +91,7 @@ for elemNum = 1:length( elementTypes )
   elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
 
   %md get current element type
-  elemType = elements( elementTypes(elemNum) ).elemType
+  elemType = elements( elementTypes(elemNum) ).elemType ;
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0

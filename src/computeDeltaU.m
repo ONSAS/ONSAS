@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -24,19 +24,20 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, 
 
     aux = systemDeltauMatrix \ systemDeltauRHS ;
 
+    incremArcLen = analysisSettings.incremArcLen ;
+
     deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
 
-    if dispIter == 1
-      if norm(convDeltau)==0
-        nextLoadFactorVals
+    posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 
-        [pos, deltalambda ] = find( nextLoadFactorVals )
-        stop
+    if dispIter == 1 % predictor solution
+      if norm(convDeltau)==0
+        deltalambda = analysisSettings.iniDeltaLamb ;
       else
         deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
       end
 
-    else
+    else % cylindrical constraint equation
       ca =    deltaubar' * deltaubar ;
       cb = 2*(currDeltau + deltauast)' * deltaubar ;
       cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ;
@@ -46,16 +47,16 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, 
       end
       sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
 
+      % compute the scalar product
       vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
                ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
-
+      % choose lambda that maximices that scalar product
       deltalambda = sols( find( vals == max(vals) ) ) ;
     end
 
-    nextLoadFactor  = nextLoadFactor  + deltalambda(1) ;
+    nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
 
     deltaured = deltauast + deltalambda(1) * deltaubar ;
-
 
   else   % incremental displacement
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;

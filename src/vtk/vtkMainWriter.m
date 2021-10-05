@@ -30,7 +30,7 @@ if length( plotInd ) == 0, return, end
 
 %md filname counter starts in zero
 filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
-fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
+%fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
 
 %md nodes and data conversion
 [ vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modelCurrSol, modelProperties ) ;
