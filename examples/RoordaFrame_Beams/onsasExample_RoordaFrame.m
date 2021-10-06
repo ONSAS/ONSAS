@@ -1,4 +1,5 @@
 % Static Arclength Analysis of Roorda Frame
+% 2021.10.06
 
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % structural parameters
