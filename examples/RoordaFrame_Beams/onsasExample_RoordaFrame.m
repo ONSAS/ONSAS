@@ -2,6 +2,7 @@
 % 2021.10.06
 
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+
 % structural parameters
 E = 210e3 ;		% Young's modulus (MPa)
 nu = 0.3 ;		% Poisson ratio
@@ -13,7 +14,7 @@ ecc = 1; 		% Point Load eccentricity (mm)
 m = 4; 			% number of finite elements per member
 
 %Material Definitions
-materials(1).hyperElasModel  = 'hiperelastic' ;
+materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E nu ] ;
 
 %Element Definitions
@@ -43,7 +44,7 @@ for i=m+2:2*m+1
 	mesh.nodesCoords(i,:) = [   (i-m-1)*dl 0  L  ] ;  	% Coords of Nodes in horizontal member, excl corner node #(m+1)
 end
 
-%Conectivity Definitions										   
+%Conectivity Definitions
 mesh.conecCell = cell(5,1) ;
 					   %M E B I / Node
 mesh.conecCell{ 1 } = [ 0 1 1 0  1   ] ; 	% Node at coord (0,0,0)

@@ -116,7 +116,7 @@ for elem = 1:nElems
 
 			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemTypeGeometry, density, hyperElasParams, elemDisps ) ;
 
-		else
+		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
@@ -126,7 +126,8 @@ for elem = 1:nElems
       if density > 0
         Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
       end
-
+    else
+      error('wrong hyperElasModel for frame element.')
 		end
 
   % ---------  triangle solid element -----------------------------
