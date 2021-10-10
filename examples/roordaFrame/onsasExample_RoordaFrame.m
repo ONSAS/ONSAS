@@ -1,19 +1,26 @@
 % Static Arclength Analysis of Roorda Frame
 % 2021.10.06
-
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+
 % structural parameters
-E = 210e3 ;		% Young's modulus (MPa)
-nu = 0.3 ;		% Poisson ratio
-a = 50; 		% Rectangular section width (mm)
-b = 10; 		% Rectangular section height (mm)
+E = 210e3 ;	% Young's modulus (MPa)
+nu = 0.3  ;	% Poisson ratio
+a = 50 ; 		% Rectangular section width (mm)
+b = 10 ; 		% Rectangular section height (mm)
 A = a*b; 		% Rectangular section Area (mm2)
-L = 1000 ; 		% Frame members length (mm)
-ecc = 1; 		% Point Load eccentricity (mm)
+L = 1000 ;	% Frame members length (mm)
 m = 4; 			% number of finite elements per member
 
+vececc = [ 1 .25 ] ;
+vecpAL = [ 2 .5 ] ;
+
+figure, grid on, hold on
+
+for indecc = 1:length(vececc)
+  ecc = vececc(indecc);
+
 %Material Definitions
-materials(1).hyperElasModel  = 'hiperelastic' ;
+materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E nu ] ;
 
 %Element Definitions
@@ -29,7 +36,7 @@ boundaryConds(2).imposDispVals =  0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
-boundaryConds(2).loadsBaseVals = 12.8e3*[ 0 0 0 ecc -1 0 ] ;	% Fx = -12.8e3 (N), My = 12.8e3*ecc (Nmm)
+boundaryConds(2).loadsBaseVals = 12.8e3*[ 0 0 0 ecc*1 -1 0 ] ;	% Fx = -12.8e3 (N), My = 12.8e3*ecc (Nmm)
 																% Note that LBA Load is: Pcr = 12.8e3 (N)
 
 %Nodal Coordinates Definitions. X(mm)	Y(mm)	Z(mm)
@@ -43,7 +50,7 @@ for i=m+2:2*m+1
 	mesh.nodesCoords(i,:) = [   (i-m-1)*dl 0  L  ] ;  	% Coords of Nodes in horizontal member, excl corner node #(m+1)
 end
 
-%Conectivity Definitions										   
+%Conectivity Definitions
 mesh.conecCell = cell(5,1) ;
 					   %M E B I / Node
 mesh.conecCell{ 1 } = [ 0 1 1 0  1   ] ; 	% Node at coord (0,0,0)
@@ -65,7 +72,7 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   30   ;
 
 analysisSettings.finalTime     = 1.1 ;
-analysisSettings.incremArcLen = 2 ;
+analysisSettings.incremArcLen = vecpAL(indecc) ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
@@ -89,11 +96,9 @@ loadFactorsALunstab  =  loadFactorsMat(:,2) ;
 
 %Plot Load Displacement Curves
 lw = 1.0 ; ms = 5 ; plotfontsize = 12 ;
-figure
-plot( controlDispsALstab, loadFactorsALstab, 'k-' , 'linewidth', lw,'markersize',ms )
-hold on
-plot( controlDispsALunstab, loadFactorsALunstab, 'r-' , 'linewidth', lw,'markersize',ms )
-hold off
+
+plot( controlDispsALstab, loadFactorsALstab, 'k-x' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsALunstab, loadFactorsALunstab, 'r-o' , 'linewidth', lw,'markersize',ms )
 
 labx = xlabel('rotation @Corner node (rad)');   laby = ylabel('\lambda(t)') ;
 legend( 'stable branch', 'unstable branch','location','southeast') ;
@@ -101,4 +106,7 @@ set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Roorda Frame / Load-Displacement curves / With imperfectons') ;
 grid on ;
+
+end
+
 print('output/RoordaFrame.png','-dpng')
