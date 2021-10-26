@@ -1,95 +1,71 @@
 
-clear all, close all
+close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 
-dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-addpath( dirOnsas ); % add ONSAS directory to path
+E   = 210e9  ; nu  = 0      ;
+A   = .7854/100^2 ; %fi 1cm
+l0  = 2 ;
+m   = 214     ; g   = 9.81   ;
 
-problemName = 'nonlinearPendulum' ;
-% ------------------------------------
-
-% -- scalar params -----
-Es  = 10e11  ; nu  = 0      ;
-A   = 0.1    ; l0  = 3.0443 ;
-m   = 10     ; g   = 9.81   ;
-
-nodalDispDamping = 0 ;
 rho = 2*m / ( A * l0 ) ;
 
-% ----- geometry -----------------
-Nodes = [     0 0  l0   ; ...
-             l0 0  l0 ] ;
+materials.hyperElasModel  = 'SVK' ;
+lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+materials.hyperElasParams = [ lambda mu ] ;
+materials.density = rho ;
 
-Conec = { [ 0 1 0 0 1  1   ] ; ...
-          [ 0 1 1 0 2  2   ] ; ...
-          [ 1 2 0 1 0  1 2 ] } ;
+elements(1).elemType = 'node' ;
+elements(2).elemType = 'truss';
+elements(2).elemTypeGeometry = [2 sqrt(A) sqrt(A) ] ;
+elements(2).elemTypeParams = 1 ;
+
+boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).imposDispDofs =  3 ;
+boundaryConds(2).imposDispVals =  0 ;
+boundaryConds(2).loadsCoordSys = 'global'         ;
+boundaryConds(2).loadsTimeFact = @(t) 1.0     ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
+
+initialConds                = struct() ;
 
 
-%  --- MELCS params ---
 
-materialsParams = { [ rho 3 Es nu ] } ;
+analysisSettings.deltaT        =    0.01  ;
+analysisSettings.finalTime      =   3 ;
+analysisSettings.stopTolDeltau =   1e-6 ;
+analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.stopTolIts    =   30   ;
 
-elementsParams = { 1 ; [ 2 0 ] } ;
+analysisSettings.methodName    = 'newmark' ;
+analysisSettings.alphaNM      =   0.25   ;
+analysisSettings.deltaNM      =   0.5   ;
 
-loadsParams  = {[ 1 0  0  0  0  0  -rho*A*l0*0.5*g  0 ]};
+%analysisSettings.methodName    = 'alphaHHT' ;
+%analysisSettings.alphaHHT      =   0   ;
+%alphaHHT = -0.05 ;
 
-crossSecsParams = { [2 sqrt(A) sqrt(A) ] } ;
 
-springsParams = {[  inf  0  inf  0  inf 0 ] ; ...
-                 [  0    0  inf  0  0   0 ] };
+otherParams.problemName = 'nonlinearPendulum';
+otherParams.plotsFormat = 'vtk' ;
+otherParams.nodalDispDamping = 20 ;
 
-% -------------------
 
-% method
-timeIncr   =  0.05    ;
-finalTime  =  4.13*8 ;
-
-alphaHHT = -0.05 ;
-%~ alphaHHT = 0 ;
-
-% tolerances
-stopTolDeltau = 0    ;
-stopTolForces = 1e-6 ;
-stopTolIts    = 30   ;
-% ------------------------------------
-
-controlDofs = [ 2 1 1 ] ;
-
-% analysis parameters
-numericalMethodParams = [ 4 ...
-  timeIncr finalTime stopTolDeltau stopTolForces stopTolIts alphaHHT ] ;
-
-plotParamsVector = [ 3 ];
-
-% run ONSAS
-ONSAS ;
-
-controlDispsA = controlDisps ;
-
-% ------------------------------------
-
-problemName = 'simplePendulumTrussHHTSelfWeightDamp' ;
-
-Conec = { [ 0 1 0 0 1  1   ] ; ...
-          [ 0 1 0 0 2  2   ] ; ...
-          [ 1 2 0 1 0  1 2 ] } ;
-
-nodalDispDamping = .5 ;
-
-loadsParams  = {};
-booleanSelfWeightZ = 1 ;
-
-% run ONSAS
-ONSAS ;
-
-controlDispsB = controlDisps ;
+mesh.nodesCoords = [   0  0   l0 ; ...
+                      l0  0  l0  ] ;
+mesh.conecCell = { } ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
 
 % ------------------------------------
-%uNum = PenduloNL_HHT( l0, A, Es, m, nodalDispDamping, g, timeIncr, -alphaHHT, finalTime, stopTolForces, stopTolIts, 1, 0 ) ;
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+controlDof = 6 + 5 ;
+controlDispsA = matUs( controlDof , : ) ;
+timesVec = (0:length(controlDispsA)-1)*analysisSettings.deltaT ;
 
 figure, hold on, grid on, MS = 10; LW = 1.5 ;
-plot(timesVec, controlDispsA, 'b-o','markersize',MS,'linewidth',LW)
-plot(timesVec, controlDispsB, 'g-x','markersize',MS,'linewidth',LW)
-plot(timesVec, uNum(1,:)-l0 ,'r--','markersize',MS,'linewidth',LW)
+plot( timesVec, controlDispsA, 'b-o','markersize',MS,'linewidth',LW)
 xlabel('time (s)'), ylabel('control displacement')
-legend('onsasA', 'onsasB', 'semi-analytic')
+%legend('onsasA', 'onsasB', 'semi-analytic')
 print('output.png','-dpng')
