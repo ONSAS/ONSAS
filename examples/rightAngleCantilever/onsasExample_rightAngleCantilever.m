@@ -1,9 +1,9 @@
 %md# Right angle cantilever beam problem
 %md---
 %md
-%mdIn this tutorial, the right angle cantilever beam problem example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic co-rotational 3D beam implementation by comparing the results provided by ONSAS with a solution provided by (T.L Lee & J.M Battini, 2014) and originally solved in (Simo & Vu-Quoc, 1998). The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/rightAngleCantilever/onsasExample_rightAngleCantilever.m).
+%mdIn this tutorial, the right angle cantilever beam problem example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic co-rotational 3D beam implementation by comparing the results provided by ONSAS with a solution provided by [(T.L Lee & J.M Battini, 2014)](https://www.sciencedirect.com/science/article/abs/pii/S0045782513003022) and originally solved in (Simo & Vu-Quoc, 1998). The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/rightAngleCantilever/onsasExample_rightAngleCantilever.m). This is a validation classical example, in corrotational literature and all units discribed in this problem are meaningless in real terms. 
 %md
-%mdThe example is conformed by two identical right-angled bars, where each member has a length of $L = 10$ m. The structure is embedded at the base and a force in z direction is applied at the elbow. This force bends nd troses the system into the $x-y$ plane, producing free vibrations of wide amplitude. This force acts during two initial seconds, increases linearly until the first second of simulation and then decreases to zero. 
+%mdThe example is conformed by two identical right-angled bars, where each member has a length of $L = 10$. The structure is embedded at the base and a force in z direction is applied at the elbow. This force bends nd troses the system into the $x-y$ plane, producing free vibrations of wide amplitude. This force acts during two initial seconds, increases linearly until the first second of simulation and then decreases to zero. 
 %md
 %md```@raw html
 %md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/cantileverBeam_HTML.svg" alt="structure diagram" width="500"/>
@@ -59,7 +59,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %mdand the second BC corresponds to an impact nodal force at the L-joint, where the target load produces a triangular force in $z$ direction, reaching $50$ N in $t=1$ s and then decrease to zero in $t=2$ s. So `boundaryConds(2)` is:
 boundaryConds(2).loadsCoordSys = 'global' ;
 constF = 50 ;
-boundaryConds(2).loadsTimeFact = @(t) constF*t*(t<1) + (constF*t)*(t>=1)*(t<2) + 0;
+boundaryConds(2).loadsTimeFact = @(t) constF*t*(t<1) + (2*constF - constF*(t))*(t>=1)*(t<2);
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
 %md
 %md### initial Conditions
@@ -85,18 +85,21 @@ end
 %md
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
-analysisSettings.deltaT        =   0.1 ;
-analysisSettings.finalTime     =   0.5    ;
+analysisSettings.deltaT        =   0.25 ;
+analysisSettings.finalTime     =   5   ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   30   ;
 
-analysisSettings.methodName    = 'newmark' ;
-analysisSettings.alphaNM      =   0.25   ;
-analysisSettings.deltaNM      =   0.5   ;
+
+% analysisSettings.methodName    = 'newmark' ;
+% analysisSettings.alphaNM      =   0.25   ;
+% antalysisSettings.deltaNM      =   0.5   ;
+analysisSettings.methodName    = 'alphaHHT' ;
+analysisSettings.alphaHHT      =   -0.05   ;
 %md
-%md## The
-%mdA name problem and vtk output is set
+### otherParams
+%mdA name problem and vtk output is set:
 otherParams.problemName = 'rightAngleCantilever'; 
 otherParams.plotsFormat = 'vtk' ;
 %mdONSAS code is run for the input structs stated above

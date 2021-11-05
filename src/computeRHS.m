@@ -78,16 +78,12 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
 %currTime
 %nextTime
+    %Compute external forces at t + deltaT
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
-    % fix me
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-    FextGt = FextG ;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-
+    %Compute external forces at t
+    deltaT = modelProperties.analysisSettings.deltaT ; 
+    currTime = nextTime - deltaT ;
+    [FextGt, ~ ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
