@@ -26,7 +26,7 @@ headerIncrements  = [ '$\\#t$ & $t$ & its & $\\| RHS \\|$ & $\\| \\Delta u \\|$ 
 %
 timeStepIterLine  = [ '     &           & %4i & %9.2e & %9.2e &      \\\\ \n' ] ;
 %
-timeStepEndLine   = [ '%4i & %9.2e & %4i &           &           & %3i  \\\\ \n \\hdashline \n' ] ;
+timeStepEndLine   = [ '%4i & %9.2e & %4i &           &           & %s  \\\\ \n \\hdashline \n' ] ;
 
 if lineData(1)==0 % print header
 
@@ -41,7 +41,7 @@ else
 end
 
 if lineData(1) == 1 % iteration information
-  fprintf( fileIncrements, timeStepIterLine, lineData(2), lineData(3), lineData(4) ) ;
+  fprintf( fileIncrements, timeStepIterLine, lineData(3), lineData(4), lineData(5) ) ;
   %~ fileIncrements
   %~ lineData
   %~ fclose( fileIncrements )
@@ -58,10 +58,22 @@ if lineData(1) == 1 % iteration information
 %~ if max( abs( Strainst) ) > 0.05,
   %~ fprintf('WARNING: at timeStep %5i, elements with strain level %4.1f%%!\n', timeIndex, max( abs( Strainst) )*100 ),
 
-
 elseif lineData(1) == 2 %end of iteration information
-  fprintf( fileIncrements, timeStepEndLine, lineData(2), lineData(3), lineData(4), lineData(5) );
 
+  if lineData(5)==1
+    stoptCritString = 'forces';
+  elseif lineData(5)==2
+      stoptCritString = 'displac';
+  elseif lineData(5)==3
+    stoptCritString = 'iters';
+  elseif lineData(5)==0
+    stoptCritString = '';
+  else
+    lineData(5)
+    error('check stop crit');
+  end
+
+  fprintf( fileIncrements, timeStepEndLine, lineData(2), lineData(3), lineData(4), stoptCritString );
 end
 
 % close file
