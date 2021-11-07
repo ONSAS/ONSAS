@@ -44,10 +44,10 @@ mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
 mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
 %md
 %md### common analysis settings
-analysisSettings.deltaT        = 0.025 ;
-analysisSettings.finalTime     = 3 *T  ;
-analysisSettings.stopTolDeltau = 1e-10 ;
-analysisSettings.stopTolForces = 1e-10 ;
+analysisSettings.deltaT        = 0.05 ;
+analysisSettings.finalTime     = 1* T ;
+analysisSettings.stopTolDeltau = 1e-12 ;
+analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
 otherParams.plotsFormat = 'vtk' ;
 
@@ -90,7 +90,8 @@ verifBooleanNew =  ( ( abs( controlDispsMassNewmarkZ(end)  ) / abs( l0 ) ) <  to
 verifBooleanHHT =  ( ( abs( controlDispsMassHHTZ    (end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
 verifBoolean    = verifBooleanNew && verifBooleanHHT ;
 
-
+disNew = abs( controlDispsMassNewmarkZ(end))
+dispHHT = abs( controlDispsMassHHTZ    (end)  )
 %md### Plots
 %md
 %mdPlot parameters
