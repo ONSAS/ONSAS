@@ -85,8 +85,8 @@ end
 %md
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
-analysisSettings.deltaT        =   0.25 ;
-analysisSettings.finalTime     =   5   ;
+analysisSettings.deltaT        =   0.05 ;
+analysisSettings.finalTime     =   10   ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   30   ;
@@ -106,8 +106,8 @@ otherParams.plotsFormat = 'vtk' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md the control dof to validate the solution is $u_z$ and $u_y$ at the loaded node:
-dofDispY = (nElemsPerBeam + 1)*6 - 3 ;
-dofDispZ = (nElemsPerBeam + 1)*6 - 1 ;
+dofDispY = (2*nElemsPerBeam + 1)*6 - 3 ;
+dofDispZ = (2*nElemsPerBeam + 1)*6 - 1 ;
 constrolDispUy =  matUs(dofDispY,:)  ;
 constrolDispUz =  matUs(dofDispZ,:)  ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
@@ -127,11 +127,11 @@ plot( timeVec, constrolDispUy ,'r-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('time (t)');   laby = ylabel('uA_y ') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/rightAngleCantilever_uA_y.png','-dpng')
+% print('output/rightAngleCantilever_uA_y.png','-dpng')
 
 figure
 plot( timeVec, constrolDispUz ,'k-x' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('time (t)');   laby = ylabel('uA_z ') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/rightAngleCantilever_uA_z.png','-dpng')
+% print('output/rightAngleCantilever_uA_z.png','-dpng')
