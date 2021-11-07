@@ -90,8 +90,6 @@ verifBooleanNew =  ( ( abs( controlDispsMassNewmarkZ(end)  ) / abs( l0 ) ) <  to
 verifBooleanHHT =  ( ( abs( controlDispsMassHHTZ    (end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
 verifBoolean    = verifBooleanNew && verifBooleanHHT ;
 
-disNew = abs( controlDispsMassNewmarkZ(end))
-dispHHT = abs( controlDispsMassHHTZ    (end)  )
 %md### Plots
 %md
 %mdPlot parameters
