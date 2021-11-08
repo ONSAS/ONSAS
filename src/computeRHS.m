@@ -66,11 +66,13 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
     systemDeltauRHS = -rhat ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
-
+  printf('Inside the computeRHS')
     fs = assembler ( ...
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
 
-    Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ;
+    Fintt = fs{1} ;
+    Fvist = fs{2} ;
+    Fmast = fs{3} ; 
 
     %[FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
 
@@ -79,11 +81,11 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 %currTime
 %nextTime
     %Compute external forces at t + deltaT
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) 
     %Compute external forces at t
     deltaT = modelProperties.analysisSettings.deltaT ; 
     currTime = nextTime - deltaT ;
-    [FextGt, ~ ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
+    [FextGt, ~ ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) 
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
@@ -102,5 +104,9 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
               + Fmas    ( BCsData.neumDofs ) ;
 
     systemDeltauRHS = -rhat ;
+    printf('SystemDeltaURHS \n')
+    % Fint=Fint  ( BCsData.neumDofs )
+    % Fvis= Fvis  ( BCsData.neumDofs )
+    % Fext = FextG ( BCsData.neumDofs )     
 
   end

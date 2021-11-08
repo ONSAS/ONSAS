@@ -63,26 +63,50 @@ while  booleanConverged == 0
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
 
-
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ;
+  if dispIters == 6
+  deltaured
+  printf('AfterdeltaUred\n')
+  end
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
+
+  if dispIters == 6
+  Utp1k
+  currDeltau
+  printf('BeforeUpdateUtir\n')
+  end
 
   % --- update next time magnitudes ---
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
+  if dispIters == 6
+  Udottp1k
+  Udotdottp1k
+  printf('AfterUpdateUtir\n')
+  end
   % --- system matrix ---
   systemDeltauMatrix          = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
-
   % --- new rhs ---
   [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
 
+  if dispIters == 6
+  systemDeltauMatrix
+  systemDeltauRHS
+  printf('BeforeUpdateUtir\n')
+  stop
+  end
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
+  if dispIters == 6
+  booleanConverged
+  printf('BeforeBooleanConverged\n')
+  stop
+  end
 
   % --- prints iteration info in file ---
   printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ] ) ;
@@ -99,6 +123,12 @@ KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
 [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping ) ;
+
+if dispIters == 1
+full(systemDeltauMatrix)
+stop
+end
+
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 

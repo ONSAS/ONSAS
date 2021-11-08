@@ -23,13 +23,13 @@ addpath( genpath( [ pwd '/../../src'] ) );
 %md```
 %mdtherefore these magnitudes are synthetically set by solving an indeterminate compatible system. For this work the input properties are:
 % material parameters:
-E = 1e7 ;  nu = -0.5 ; rho = 1 ;
+E = 1e6 ;  nu = -0.5 ; rho = 1 ;
 % geometrical scalar parameters:
-I = 1e-4 ; J = I ; A = .1 ; L = 10;
+I = 1e-3 ; J = I ; A = 1 ; L = 10;
 %mdIn addition the dyadic tensor if inertia is 
 Irho = diag([20 10 10],3,3);
 %and the number of elements of each meber are:
-nElemsPerBeam = 10 ;
+nElemsPerBeam = 1 ;
 %md
 %md##Numerical solution
 %md### MEBI parameters
@@ -49,7 +49,6 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %mdIn order to add the struct of geometry the assign to the node is an empty input (because it has not geometrical properties), and the truss elements will be set as with synthetical cross section with properties stated above, subsequently the `elemTypeGeometry` field is the:
 elements(2).elemTypeGeometry = [1 A J I I Irho(1,1) Irho(2,2) Irho(3,3)] ;
-elements(2).elemTypeParams   = 1;
 %md
 %md### boundaryConds
 %md
@@ -60,6 +59,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 constF = 50 ;
 boundaryConds(2).loadsTimeFact = @(t) constF*t*(t<1) + (2*constF - constF*(t))*(t>=1)*(t<2);
+boundaryConds(2).loadsTimeFact = @(t) 50;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
 %md
 %md### initial Conditions
@@ -85,10 +85,10 @@ end
 %md
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
-analysisSettings.deltaT        =   0.05 ;
-analysisSettings.finalTime     =   10   ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.deltaT        =   0.25 ;
+analysisSettings.finalTime     =   2    ;
+analysisSettings.stopTolDeltau =   0    ;
+analysisSettings.stopTolForces =   1e-7 ;
 analysisSettings.stopTolIts    =   30   ;
 
 
@@ -106,10 +106,10 @@ otherParams.plotsFormat = 'vtk' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md the control dof to validate the solution is $u_z$ and $u_y$ at the loaded node:
-dofDispY = (2*nElemsPerBeam + 1)*6 - 3 ;
-dofDispZ = (2*nElemsPerBeam + 1)*6 - 1 ;
-constrolDispUy =  matUs(dofDispY,:)  ;
-constrolDispUz =  matUs(dofDispZ,:)  ;
+dofDispY = (nElemsPerBeam + 1)*6 - 3 ;
+dofDispZ = (nElemsPerBeam + 1)*6 - 1 ;
+controlDispUy =  matUs(dofDispY,:)  ;
+controlDispUz =  matUs(dofDispZ,:)  ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 timeVec = linspace(0, analysisSettings.finalTime, analysisSettings.finalTime / analysisSettings.deltaT + 1 )' ;
 %md### Plots

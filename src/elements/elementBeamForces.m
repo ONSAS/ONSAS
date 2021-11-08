@@ -22,7 +22,7 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
 xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
-
+% printf('Im at the begining of the elementBeamForces\n')
 % --- material constit params ---
 rho = elemrho ;
 E   = elemConstitutiveParams(2) ;
@@ -419,17 +419,20 @@ if elemrho > 0
 
   %Add Bt Matrix
 
-  Bt=[I3   O3       O3      O3
-      O3 inv(Dg1)'    O3      O3
-      O3     O3      I3      O3
-      O3     O3      O3      inv(Dg2)' ];
-  MassMatrix =MassMatrix*Bt ;
-  GyroMatrix =GyroMatrix*Bt ;
+  % Bt=[I3   O3       O3      O3
+  %     O3 inv(Dg1)'    O3      O3
+  %     O3     O3      I3      O3
+  %     O3     O3      O3      inv(Dg2)' ];
+  % printf('Im inside befor massMatrixBt\n')
+  % MassMatrix
+  % MassMatrix =MassMatrix * Bt ;
+  % GyroMatrix =GyroMatrix * Bt ;
   %~ MassMatrix
   Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
   GyroMatrix = Cambio_Base(GyroMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
+  % printf('Im inside befor massMatrix\n')
   MassMatrix = Cambio_Base(MassMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
-
+  % printf('Im inside after massMatrix\n')
 %~ GyroMatrix
   %~ MassCambiada = MassMatrix
   %~ stop
@@ -448,7 +451,6 @@ if elemrho > 0
   %~ function quadSum = integr( hola )
 
 %~ Fine
-
   fs{3} = Fine ;
 
   ks{2} = GyroMatrix ;
