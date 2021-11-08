@@ -29,6 +29,8 @@ KTtred     = modelCurrSol.systemDeltauMatrix ;
 convDeltau = modelCurrSol.convDeltau ;
 currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 
+actualTime = modelCurrSol.currTime
+
 % update time and set candidate displacements and derivatives
 % -----------------------------------------------------------
 if isempty( modelProperties.analysisSettings.Utp10 )
@@ -58,6 +60,7 @@ booleanConverged = 0                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
+sprintf("\n-----Starting itaration %f \n-----",actualTime)
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
@@ -65,15 +68,21 @@ while  booleanConverged == 0
 
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ;
-  if dispIters == 6
+  if dispIters == 2 && actualTime == 0.25
+  dispIters
+  modelProperties.analysisSettings
+  full(systemDeltauMatrix)
+  systemDeltauRHS
+  convDeltau
   deltaured
   printf('AfterdeltaUred\n')
+  stop
   end
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
 
-  if dispIters == 6
+  if dispIters == 2 && actualTime == 0.25
   Utp1k
   currDeltau
   printf('BeforeUpdateUtir\n')
@@ -83,7 +92,7 @@ while  booleanConverged == 0
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
-  if dispIters == 6
+  if dispIters == 2 && actualTime == 0.25
   Udottp1k
   Udotdottp1k
   printf('AfterUpdateUtir\n')
@@ -93,7 +102,7 @@ while  booleanConverged == 0
   % --- new rhs ---
   [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
 
-  if dispIters == 6
+  if dispIters == 2 && actualTime == 0.25
   systemDeltauMatrix
   systemDeltauRHS
   printf('BeforeUpdateUtir\n')
@@ -102,7 +111,7 @@ while  booleanConverged == 0
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
-  if dispIters == 6
+  if dispIters == 2 && actualTime == 0.25
   booleanConverged
   printf('BeforeBooleanConverged\n')
   stop
@@ -113,21 +122,24 @@ while  booleanConverged == 0
 
 end % iteration while
 % --------------------------------------------------------------------
+printf('------Displacements iteration finished-------\n')
 
-Utp1       = Utp1k ;
-Udottp1    = Udottp1k ;
-Udotdottp1 = Udotdottp1k ;
-
+dispIters
+Utp1       = Utp1k 
+Udottp1    = Udottp1k 
+Udotdottp1 = Udotdottp1k 
 % computes KTred at converged Uk
 KTtp1red = systemDeltauMatrix ;
-
+if actualTime == 0.25
+stop
+end 
 % compute stress at converged state
 [~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping ) ;
 
-if dispIters == 1
-full(systemDeltauMatrix)
-stop
-end
+% if dispIters == 2
+% full(systemDeltauMatrix)
+% stop
+% end
 
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;

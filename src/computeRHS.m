@@ -81,11 +81,11 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 %currTime
 %nextTime
     %Compute external forces at t + deltaT
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) 
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
     %Compute external forces at t
     deltaT = modelProperties.analysisSettings.deltaT ; 
     currTime = nextTime - deltaT ;
-    [FextGt, ~ ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) 
+    [FextGt, ~ ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
@@ -104,7 +104,7 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
               + Fmas    ( BCsData.neumDofs ) ;
 
     systemDeltauRHS = -rhat ;
-    printf('SystemDeltaURHS \n')
+    % printf('SystemDeltaURHS \n')
     % Fint=Fint  ( BCsData.neumDofs )
     % Fvis= Fvis  ( BCsData.neumDofs )
     % Fext = FextG ( BCsData.neumDofs )     
