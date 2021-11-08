@@ -11,7 +11,7 @@ Fint = @(u) E*Ac*L0*(u(1)^2+u(2)^2-2*Lx*u(1)+2*Lz*u(2))/2/L0^4*[-Lx+u(1);Lz+u(2)
 ft = @(t) [0;-(m+mb)/2*g]; %N
 
 %% Defino Matriz de Masa Concentrada
-M = [mb 0 ; 0 (mb+m)/2];
+M = [mb 0 ; 0 (mb+m)/2] ;
 
 %% Defino Matriz de Amortiguamiento
 C = [c/10 0 ; 0 c];

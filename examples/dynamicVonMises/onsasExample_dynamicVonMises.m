@@ -25,7 +25,9 @@ dt  = .000025; % sec
 mb = L0*Ac*rho; %kg
 Lz = sqrt( L0^2 - Lx^2 ); %m
 
-rhoBarraMasa = mConc*.5 / (Lz*Ac) ;
+rhoBarraMasa = mConc*.5 / (Lz*Ac);
+
+M = [mb 0 ; 0 (mb+mConc)/2]
 
 
 nu = .3 ;
@@ -120,31 +122,3 @@ subplot(3,1,3)
 plot(times(1:10:end),normalForce(1:10:end))
 xlabel('t [s]'); ylabel('Directa [N]')
 axis([0 2 min(normalForce)*1.1 max(normalForce)*1.1]);
-
-
-
-stop
-verifBoolean =  ( ( norm( difLoadEngRot    ) / norm( loadFactorsNREngRot  ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreen     ) / norm( loadFactorsNRGreen   ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 )
-
-%md### Plots
-%md and solutions are plotted.
-lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
-figure
-plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
-hold on, grid on
-plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'location','SouthEast')
-set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/vonMisesTrussCheck.png','-dpng')
-%md
-%md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/vonMisesTrussCheck.png" alt="plot check" width="500"/>
-%md```
-%md
