@@ -63,14 +63,13 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 %  --- 2 loop assembly ---
 % ====================================================================
 
-density = materials.density ;
-
 for elem = 1:nElems
   mebiVec = Conec( elem, 1:4) ;
 
   % extract element properties
-  hyperElasModel      = materials(mebiVec(1)).hyperElasModel ;
-  hyperElasParams     = materials(mebiVec(1)).hyperElasParams ;
+  hyperElasModel   = materials(mebiVec(1)).hyperElasModel  ;
+  hyperElasParams  = materials(mebiVec(1)).hyperElasParams ;
+  density          = materials(mebiVec(1)).density         ;
 
   elemType         = elements(mebiVec(2)).elemType         ;
   elemTypeParams   = elements(mebiVec(2)).elemTypeParams   ;
