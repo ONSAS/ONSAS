@@ -12,9 +12,8 @@ m   = 10 ;      g = 9.80 ;
 rho = 2*m / ( A * l0 ) ;
 %md
 %md#### materials
-materials.hyperElasModel  = 'SVK' ;
-lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
-materials.hyperElasParams = [ lambda mu ] ;
+materials.hyperElasModel  = '1DrotEngStrain' ;
+materials.hyperElasParams = [ E nu ] ;
 materials.density = rho ;
 %md
 %md#### elements
@@ -51,63 +50,121 @@ analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
 otherParams.plotsFormat = 'vtk' ;
 
-%md### Analysis case 1: Solution using Newmark
-analysisSettings.methodName    = 'newmark' ;
-analysisSettings.alphaNM      =   0.25   ;
-analysisSettings.deltaNM      =   0.5   ;
-otherParams.problemName = 'nonlinearPendulumNewmark';
+
+%md### Analysis case 1: Solution using Newmark with truss element and mass lumped according to Bathe problem
+analysisSettings.methodName = 'newmark' ;
+analysisSettings.alphaNM    =   0.25   ;
+analysisSettings.deltaNM    =   0.5   ;
+otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 % ------------------------------------
-[matUsNew, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-%md### Analysis case 2: Solution using HHT
-analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   -0.05   ;
-otherParams.problemName = 'nonlinearPendulumHHT';
+
+%md### Analysis case 2: Solution using HHT with truss element and mass lumped according to Bathe problem
+analysisSettings.methodName = 'alphaHHT' ;
+analysisSettings.alphaHHT   =   0 ;        
+otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 % ------------------------------------
-[matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUsCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-#md## verification
+runFrameValidation = 0;
+    if runFrameValidation
+    %md### Analysis case 3: Solution using HHT with truss element and mass conssitent
+    analysisSettings.finalTime  = 3* T ;
+    otherParams.plotsFormat = '' ;
 
+    elements(2).elemTypeParams  = 1 ;
+    otherParams.problemName     = 'nonlinearPendulumHHTTrussConssitent';
+    % ------------------------------------
+    [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+
+    %md### Analysis case 4: Solution using HHT with truss element and mass conssitent
+    elements(2).elemType        = 'frame';
+    analysisSettings.methodName = 'alphaHHT' ;
+    otherParams.problemName     = 'nonlinearPendulumHHTFrameConssitent';
+    % ------------------------------------
+    [matUsCase4, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) 
+end
+
+#md### extract control displacements of SVK solution
 %mdMass displacement in z:
 controlDofDispUz = 6 + 5 ;
-controlDispsMassNewmarkZ = matUsNew( controlDofDispUz , : ) ;
-controlDispsMassHHTZ     = matUsHHT( controlDofDispUz , : ) ;
-
+controlDispZCase1 = matUsCase1( controlDofDispUz , : ) ;
+controlDispZCase2 = matUsCase2( controlDofDispUz , : ) ;
+if runFrameValidation
+    controlDispZCase3 = matUsCase3( controlDofDispUz , : ) ;
+    controlDispZCase4 = matUsCase4( controlDofDispUz , : ) ;
+end
 %mdMass displacement in x:
 controlDofDispUx = 6 + 1 ;
-controlDispsMassNewmarkX = matUsNew( controlDofDispUx , : ) ;
-controlDispsMassHHTX     = matUsHHT( controlDofDispUx , : ) ;
+controlDispXCase1 = matUsCase1( controlDofDispUx , : ) ;
+controlDispXCase2 = matUsCase2( controlDofDispUx , : ) ;
+if runFrameValidation
+    controlDispXCase3 = matUsCase3( controlDofDispUx , : ) ;
+    controlDispXCase4 = matUsCase4( controlDofDispUx , : ) ;
+end
+%mdAngle measured from the vertical:
+angleThetaCase1 = rad2deg( atan2( ( l0 + controlDispXCase1 ), -controlDispZCase1 ) ) ;
+angleThetaCase2 = rad2deg( atan2( ( l0 + controlDispXCase2 ), -controlDispZCase2 ) ) ;
+if runFrameValidation
+    angleThetaCase3 = rad2deg( atan2( ( l0 + controlDispXCase3 ), -controlDispZCase3 ) ) ;
+    angleThetaCase4 = rad2deg( atan2( ( l0 + controlDispXCase4 ), -controlDispZCase4 ) ) ;
+end
 
-%mdAngle measured the vertical:
-angleThetaNew = rad2deg( atan2( ( l0 + controlDispsMassNewmarkX ), -controlDispsMassNewmarkZ ) ) ;
-angleThetaHHT = rad2deg( atan2( ( l0 + controlDispsMassHHTX ), -controlDispsMassHHTZ ) )         ;       
-
-timesVec             = (0:length(controlDispsMassNewmarkZ)-1) * analysisSettings.deltaT ;
+timesVec  = (0:length(controlDispZCase1)-1) * analysisSettings.deltaT ;
 
 
+#md## verification with lumped mass matrix solution according to bath example
 tolVerifDisp = 1e-2 ;
-verifBooleanNew =  ( ( abs( controlDispsMassNewmarkZ(end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
-verifBooleanHHT =  ( ( abs( controlDispsMassHHTZ    (end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
-verifBoolean    = verifBooleanNew && verifBooleanHHT ;
+verifBooleanCase1 =  ( ( abs( controlDispZCase1(end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
+verifBooleanCase2 =  ( ( abs( controlDispZCase2(end)  ) / abs( l0 ) ) <  tolVerifDisp ) ;
+verifBoolean    = verifBooleanCase1 && verifBooleanCase2 ;
+
 
 %md### Plots
 %md
 %mdPlot parameters
 MS = 10; LW = 1.5 ;
-legendNew = [' Newmark with \delta =' num2str(analysisSettings.deltaNM) ' and \alpha = ' num2str(analysisSettings.alphaNM)];
-legendHHT = [' HHT with \alpha =' num2str(analysisSettings.alphaHHT) ];
-
+legendCase1 = [' Truss lumped Bathe Newmark \delta =' num2str(analysisSettings.deltaNM) ' and \alpha = ' num2str(analysisSettings.alphaNM)];
+legendCase2 = [' Truss lumped Bathe HHT with \alpha =' num2str(analysisSettings.alphaHHT)];
+if runFrameValidation
+    legendCase3 = [' Truss conssitent HHT with \alpha =' num2str(analysisSettings.alphaHHT)];
+    legendCase4 = [' Frame HHT with \alpha =' num2str(analysisSettings.alphaHHT)];
+end
+%mdPlot displacement solution of bathe problem
 figure, hold on, grid on
-plot( timesVec, -controlDispsMassNewmarkZ, 'b-o','markersize',MS,'linewidth',LW)
-plot( timesVec, -controlDispsMassNewmarkZ, 'r-x','markersize',MS,'linewidth',LW)
+plot( timesVec, -controlDispZCase1, 'k-s' ,'markersize', MS,'linewidth', LW)
+plot( timesVec, -controlDispZCase2, 'bo','markersize', MS,'linewidth', LW)
+% plot( timesVec, -controlDispZCase3, 'r-x','markersize', MS,'linewidth', LW)
 xlabel('time (s)'), ylabel('mass displacement u_z (m)')
-legend( legendNew, legendHHT, 'location','NorthEast')
+legend( legendCase1, legendCase2, 'location','NorthEast')
+title("U_z solution bathe")
+print('./output/dispPlot.png','-dpng')
 
-
+%mdPlot a ngle solution
 figure, hold on, grid on
-plot( timesVec, angleThetaNew, 'k-o','markersize',MS,'linewidth',LW)
-plot( timesVec, angleThetaHHT, 'c-x','markersize',MS,'linewidth',LW)
-xlabel('time (s)'), ylabel('mass angle \theta (º)')
-legend( legendNew, legendHHT, 'location','NorthEast')
+plot( timesVec, -angleThetaCase1, 'k-s' ,'markersize', MS,'linewidth', LW)
+plot( timesVec, -angleThetaCase2, 'bo','markersize', MS,'linewidth', LW)
+% plot( timesVec, -angleThetaCase3, 'r-x','markersize', MS,'linewidth', LW)
+xlabel('time (s)'), ylabel('\theta displacement (º)')
+legend( legendCase1, legendCase2, 'location','NorthEast')
+title("Θ solution bathe")
+print('./output/thetaPlot.png','-dpng')
 
-print('./output/output.png','-dpng')
+if runFrameValidation
+    % mdPlot displacement solution of validation frame
+    figure, hold on, grid on
+    plot( timesVec, -controlDispZCase3, 'c-s' ,'markersize', MS,'linewidth', LW)
+    plot( timesVec, -controlDispZCase4, 'ro','markersize', MS,'linewidth', LW)
+    xlabel('time (s)'), ylabel('mass displacement u_z (m)')
+    legend( legendCase3, legendCase4, 'location','NorthEast')
+    title("U_z solution validation frame")
+    %mdPlot a ngle solution
+    figure, hold on, grid on
+    plot( timesVec, -angleThetaCase3, 'c-s' ,'markersize', MS,'linewidth', LW)
+    plot( timesVec, -angleThetaCase4, 'ro','markersize', MS,'linewidth', LW)
+    xlabel('time (s)'), ylabel('\theta displacement (º)')
+    legend( legendCase3, legendCase4, 'location','NorthEast')
+    title("Θ solution frame")
+end
