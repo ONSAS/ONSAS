@@ -37,16 +37,16 @@ k = 2 ; % index at which equilibrium is done. in this case t=0
 
 epsg = @(u) (u(1)^2+2*Lz*u(2)-2*Lx*u(1)+u(2)^2)/2/L0^2;
 
-u      = zeros(2, nTimes+3) ;
-acc    = zeros(2, nTimes+3) ;
-vel    = zeros(2, nTimes+3) ;
-normalForce = zeros(1, nTimes+3) ;
+u      = zeros(2, nTimes+2) ;
+acc    = zeros(2, nTimes+2) ;
+vel    = zeros(2, nTimes+2) ;
+normalForce = zeros(1, nTimes+2) ;
 t      = -dt:dt:tf ;
 
 u(:,k-1) = u0 - dt*v0 + a3*ac0; % solution u(-dt) at time -dt
 u(:,k  ) = u0; % u(0) %
 
-while t(k)<tf
+while k<=(nTimes+1)
     feff      = ft(t(k)) - Fint(u(:,k)) +a2*M*u(:,k) - M2*u(:,k-1) ;
     u(:,k+1) = Meff\feff ; % sets solution at t+dt
     acc(:,k) = a0*(u(:,k+1)-2*u(:,k)+u(:,k-1)); % computers acc and vel at t

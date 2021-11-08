@@ -13,19 +13,19 @@ Ic  = .0254*.0032^3/12; %m4
 Ac  = .0254*.0032; %m2
 E   = 200000e6 %Pa (acero)
 kc  = 3*E*Ic/Lc^3; %N/m
-m   = 1.4; %kg Pandeo incipiente en 1.4
-c   = 2; %kg/s (amortiguamiento por friccion juntas y arrastre pesa)
+mConc   = 1.4; %kg Pandeo incipiente en 1.4
+c   = 0; %kg/s (amortiguamiento por friccion juntas y arrastre pesa)
 g   = 9.81; %m/s2
 
-tf  = 2.0;
+tf  = 1.0;
 dt  = .000025; % sec
 
-[u, normalForce, times ] = centralDiffDynVonMises(rho, Lx, L0, Lc, Ic, Ac, E, kc, m, c, g, tf, dt);
+[u, normalForce, times ] = centralDiffDynVonMises(rho, Lx, L0, Lc, Ic, Ac, E, kc, mConc, c, g, tf, dt);
 
 mb = L0*Ac*rho; %kg
 Lz = sqrt( L0^2 - Lx^2 ); %m
 
-rhoBarraMasa = m / (Lz*Ac) ;
+rhoBarraMasa = mConc*.5 / (Lz*Ac) ;
 
 
 nu = .3 ;
@@ -55,7 +55,7 @@ boundaryConds(2).imposDispDofs =  [ 1 3 ] ;
 boundaryConds(2).imposDispVals =  [ 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'                  ;
 boundaryConds(2).loadsTimeFact = @(t) 1                    ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -(m+mb)/2*g 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -(mConc+mb)/2*g 0 ] ;
 
 boundaryConds(3).imposDispDofs =  [ 1 3 ] ;
 boundaryConds(3).imposDispVals =  [ 0 0 ] ;
@@ -82,10 +82,10 @@ mesh.conecCell{ 4+3, 1 } = [ 3 2 0 0   1 4 ] ;
 
 analysisSettings.methodName    = 'newmark' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
-analysisSettings.deltaT        =   0.002  ;
-analysisSettings.finalTime      =   2    ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.deltaT        =   0.0005  ;
+analysisSettings.finalTime      =   1    ;
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 analysisSettings.alphaNM      =   0.25   ;
 analysisSettings.deltaNM      =   0.5   ;
