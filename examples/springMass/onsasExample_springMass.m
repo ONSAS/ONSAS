@@ -118,6 +118,7 @@ valsHHT = matUsHHT(6+1,:) ;
 
 verifBooleanNewmark =  ( ( norm( valsAnaly - valsNewmark    ) / norm( valsAnaly   ) ) <  analyticCheckTolerance )
 verifBooleanHHT     =  ( ( norm( valsAnaly - valsNewmark     ) / norm( valsAnaly  ) ) <  analyticCheckTolerance )
+verifBoolean = verifBooleanHHT && verifBooleanNewmark ;
 
 figure
 hold on, grid on

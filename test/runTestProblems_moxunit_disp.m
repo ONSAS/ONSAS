@@ -28,3 +28,7 @@ function test_4
 function test_5
   onsasExample_nonlinearPendulum
   assertEqual( verifBoolean, true );
+
+function test_6
+    onsasExample_springMass
+    assertEqual( verifBoolean, true );
