@@ -24,3 +24,7 @@ function test_3
 function test_4
   onsasExample_linearPlaneStrain
   assertEqual( verifBoolean, true );
+
+function test_5
+  onsasExample_nonlinearPendulum
+  assertEqual( verifBoolean, true );
