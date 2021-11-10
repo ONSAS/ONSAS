@@ -66,7 +66,7 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 % ------------------------------------
 [matUsCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-runFrameValidation = 1;
+runFrameValidation = 0;
     if runFrameValidation
     %md### Analysis case 3: Solution using HHT with truss element and mass conssitent
     analysisSettings.finalTime  = 3.4124;
@@ -110,8 +110,9 @@ end
 
 %mdCompute time of vectors
 timesVec12  = (0:length(controlDispZCase1)-1) * analysisSettings.deltaT ;
+if runFrameValidation
 timesVec34  = (0:length(controlDispZCase3)-1) * analysisSettings.deltaT ;
-
+end
 
 %md## verification
 %md### verif newmark and HHT method using uz(N*T)= 0 with lumped mass matrix
