@@ -1,4 +1,3 @@
-
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 %md## Numerical solution
 %mdExample of nolinear equaitons in dynamic analyisis section of Bathe pag 827
@@ -111,7 +110,7 @@ end
 %mdCompute time of vectors
 timesVec12  = (0:length(controlDispZCase1)-1) * analysisSettings.deltaT ;
 if runFrameValidation
-timesVec34  = (0:length(controlDispZCase3)-1) * analysisSettings.deltaT ;
+    timesVec34  = (0:length(controlDispZCase3)-1) * analysisSettings.deltaT ;
 end
 
 %md## verification
@@ -126,7 +125,6 @@ if runFrameValidation
 else
     verifBoolean    = verifBooleanCase1 && verifBooleanCase2 ;
 end
-
 
 %md### Plots
 %md
