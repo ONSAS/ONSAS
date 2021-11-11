@@ -85,7 +85,7 @@ end
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
 analysisSettings.deltaT        =   0.25 ;
-analysisSettings.finalTime     =   10   ;
+analysisSettings.finalTime     =   2    ;
 analysisSettings.stopTolDeltau =   0    ;
 analysisSettings.stopTolForces =   1e-7 ;
 analysisSettings.stopTolIts    =   30   ;
@@ -95,14 +95,16 @@ analysisSettings.stopTolIts    =   30   ;
 % analysisSettings.alphaNM      =   0.25   ;
 % antalysisSettings.deltaNM      =   0.5   ;
 analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   -0.0   ;
+analysisSettings.alphaHHT      =   -0.05   ;
 %md
 ### otherParams
 %mdA name problem and vtk output is set:
 otherParams.problemName = 'rightAngleCantilever'; 
 otherParams.plotsFormat = '' ;
+tic 
 %mdONSAS code is run for the input structs stated above
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+LAERONAVE = toc
 %md
 %md the control dof to validate the solution is $u_z$ and $u_y$ at the loaded node:
 dofDispY = (nElemsPerBeam + 1)*6 - 3 ;
