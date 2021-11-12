@@ -65,19 +65,19 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 % ------------------------------------
 [matUsCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-runFrameValidation = 0;
-    if runFrameValidation
+runFrameValidation = false ;
+if runFrameValidation
     %md### Analysis case 3: Solution using HHT with truss element and mass conssitent
     analysisSettings.finalTime  = 3.4124;
     analysisSettings.alphaHHT   = -0.05 ;        
     elements(2).elemTypeParams  = 1     ;
-    otherParams.problemName     = 'nonlinearPendulumHHTTrussConssitent';
+    otherParams.problemName     = 'nonlinearPendulumHHTTrussConsistent';
     % ------------------------------------
     [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
     %md### Analysis case 4: Solution using HHT with truss element and mass conssitent
     elements(2).elemType        = 'frame';
-    otherParams.problemName     = 'nonlinearPendulumHHTFrameConssitent';
+    otherParams.problemName     = 'nonlinearPendulumHHTFrameConsistent';
     % ------------------------------------
     [matUsCase4, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 end
