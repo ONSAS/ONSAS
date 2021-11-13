@@ -1,17 +1,14 @@
 %md# Beam truss joint example
 close all, clear all
-
-dirOnsas = [ pwd '/../../src' ] ; % set ONSAS.m directory
-addpath( dirOnsas ) ; % add ONSAS directory to path
-problemName = 'TurssBeamJoint_NR' ;
+problemName = 'beamTrussJoint' ;
+addpath( genpath( [ pwd '/../../src'] ) );
 
 %mdThe example is conformed by two element types (Truss (t) and beam (b)) and aims to validate the integration between them considering small displacments.
 
 %md Truss geometrical and material properties are:
 Et = 1e9 ; nu = 3; dt = .05; At = pi*dt^2/4 ;  lt = 1 ; nut = 0.3 ;  
 %md and frame geometrical and material properties are:
-Eb = Et/3 ;db = 5*dt ; Ab = pi*db^2/4 ;  lb = .5 ; nub = 0.3 ; 
-Ib = pi*db^4/64 ;
+Eb = Et/3 ;db = 5*dt ; Ab = pi*db^2/4 ;  lb = .5 ; nub = 0.3 ; Ib = pi*db^4/64 ;
 
 %md##Numerical solution
 %md### MEBI parameters
@@ -34,10 +31,11 @@ elements(2).elemTypeGeometry = [3 dt] ;
 elements(3).elemTypeGeometry = [3 db] ;
 
 %mdTruss number of elements
+#mdmore than one truss element produce singular matrix in first step iteration
 numElemT  = 1            ;
 numNodesT = numElemT + 1 ;
 %md and beam:
-numElemB  = 1            ;
+numElemB  = 10           ;
 numNodesB = numElemB + 1 ;
 
 %md
@@ -47,7 +45,7 @@ numNodesB = numElemB + 1 ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %mdloaded BC:
-boundaryConds(2).imposDispDofs = [ 2 3 5 ] ;
+boundaryConds(2).imposDispDofs = [ 2 3 6 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) 1e4 * t ;
@@ -70,9 +68,9 @@ mesh.nodesCoords = [(0:(numElemB))'*lb/numElemB zeros(numElemB+1,1) zeros(numEle
 
 %md The conectivity struct using MEBI nomenclature is defined by using the following auxiliar Element and Nodes matrix:
 %mdAuxliar conecNodes:
-auxConecNodes = [0 1 0 1  1                     ;
-                 0 1 0 2  numNodesB             ;
-                 0 1 0 3  numNodesB + numElemT  ] ;  
+auxConecNodes = [0 1 1 0  1                     ;
+                 0 1 2 0  numNodesB             ;
+                 0 1 3 0  numNodesB + numElemT  ] ;  
 
 %mdand the auxiliar conecNodes is:
 auxConecElem  = [   %MEBI frame elements
@@ -99,14 +97,38 @@ end
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        =   0.1  ;
-analysisSettings.finalTime      =   1    ;
+analysisSettings.finalTime     =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
 
 %md### otherParams
-otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
-otherParams.plotsFormat = 'vtk' ;
-otherParams.controlDofs = [2 5 ];
+otherParams.problemName = problemName   ;
+otherParams.plotsFormat = ''            ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+
+%md the analytic solution is computed at the joint where uz is given by:
+analyticFunc            = @(w)( Et*At/lt + 3*Eb*Ib/lb^3 )*w ;
+beamTruss_stiffRatio    = Et*At/lt/(3*Eb*Ib/lb^3)           ;
+%mdand the numerical: 
+%md 
+controlDof  = (numNodesB)*6 - 1     ;
+dispZnum    = matUs(controlDof,:)   ;
+#mdverification boolean is computed as follows:
+%md
+difLoadEngRot   = loadFactorsMat(:,2)' - analyticFunc(dispZnum) ;
+verifBoolean    = ( ( norm( difLoadEngRot    ) / norm( loadFactorsMat(:,2)  ) ) <  1e-4 ) ;
+%md
+%md### Plots
+%mdOutput diplacments and load factor function are plotted:
+figure
+hold on, grid on
+lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
+plot( dispZnum, analyticFunc(dispZnum), 'b-x' , 'linewidth', lw,'markersize',ms)    ;
+plot( dispZnum, loadFactorsMat(:,2),    'r-s' , 'linewidth', lw,'markersize',ms )   ;
+labx = xlabel('Displacement u_z(t)');   laby = ylabel('\lambda(t)')                 ;
+set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )                               ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize)            ;
+
