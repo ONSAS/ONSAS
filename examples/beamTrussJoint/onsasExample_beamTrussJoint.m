@@ -3,7 +3,7 @@ close all, clear all
 problemName = 'beamTrussJoint' ;
 addpath( genpath( [ pwd '/../../src'] ) );
 
-%mdThe example is conformed by two element types (Truss (t) and beam (b)) and aims to validate the integration between them considering small displacments.
+%mdThe goal of this example is to provide a minimal validation of the integration between truss and frame elements in the same model. The structure considered is formed by two elements (one truss (t) and one beam (b)) and small displacements are considered.
 
 %md Truss geometrical and material properties are:
 Et = 1e9 ; nu = 3; dt = .05; At = pi*dt^2/4 ;  lt = 1 ; nut = 0.3 ;  
