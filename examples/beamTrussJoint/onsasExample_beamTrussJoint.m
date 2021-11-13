@@ -31,7 +31,7 @@ elements(2).elemTypeGeometry = [3 dt] ;
 elements(3).elemTypeGeometry = [3 db] ;
 
 %mdTruss number of elements
-#mdmore than one truss element produce singular matrix in first step iteration
+%
 numElemT  = 1            ;
 numNodesT = numElemT + 1 ;
 %md and beam:
