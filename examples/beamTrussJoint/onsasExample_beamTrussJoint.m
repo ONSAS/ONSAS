@@ -67,12 +67,15 @@ mesh.nodesCoords = [(0:(numElemB))'*lb/numElemB zeros(numElemB+1,1) zeros(numEle
 %md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 
 %md The conectivity struct using MEBI nomenclature is defined by using the following auxiliar Element and Nodes matrix:
-%mdAuxliar conecNodes:
-auxConecNodes = [0 1 1 0  1                     ;
-                 0 1 2 0  numNodesB             ;
-                 0 1 3 0  numNodesB + numElemT  ] ;  
+%md Then the entry of node $1$ is introduced:
+mesh.conecCell{1,1} = [ 0 1 1 0  1 ];
+%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
+%md A similar approach is used for node where the beam ends $numNodesB$,
+mesh.conecCell{2,1} = [ 0 1 2 0  numNodesB ];
+%md analogosly for node $numNodesB + numElemT$ only the boundary condition is changed:
+mesh.conecCell{3,1} = [ 0 1 3 0  numNodesB + numElemT ];
 
-%mdand the auxiliar conecNodes is:
+%mdTo define the conecCell of elements a auxiliar auxConecElem matrix is defined using MEBI nomenclature:
 auxConecElem  = [   %MEBI frame elements
                     [ (ones(numElemB,1)*2 )  (ones(numElemB,1)*3)   (zeros(numElemB,1))  (zeros(numElemB,1)) ...
                     %ElemNodes..
@@ -83,14 +86,8 @@ auxConecElem  = [   %MEBI frame elements
                     (numElemB + 1: numElemB + numElemT)'    (numElemB + 2:numElemB + numElemT + 1)'   ] ... 
                 ] ;  
 
-
-%Build conectivity cell:
-mesh.conecCell = cell( size(auxConecElem,1) + size(auxConecNodes,1) ) ;
-for i = 1:size(auxConecNodes,1)
-    mesh.conecCell{i,1}= auxConecNodes(i,:) ;
-end
 for i =  1:numElemB + numElemT
-    mesh.conecCell{size(auxConecNodes,1) + i,1} = auxConecElem(i,:);
+    mesh.conecCell{3 + i,1} = auxConecElem(i,:);
 end                                          
 %md### analysisSettings
 %md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
@@ -106,18 +103,17 @@ analysisSettings.stopTolIts    =   10   ;
 otherParams.problemName = problemName   ;
 otherParams.plotsFormat = ''            ;
 
+%md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint. 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 
-%md the analytic solution is computed at the joint where uz is given by:
+%md Its important to oultine analytical solution considering large dispalcements is not aviable. Thus the load applied is sleceted to produce amplitude displacements ($<0.05lt$). Consequently the small displacment solution of $uz$ is given by:
 analyticFunc            = @(w)( Et*At/lt + 3*Eb*Ib/lb^3 )*w ;
 beamTruss_stiffRatio    = Et*At/lt/(3*Eb*Ib/lb^3)           ;
-%mdand the numerical: 
-%md 
+%mdThe numerical result is: 
 controlDof  = (numNodesB)*6 - 1     ;
 dispZnum    = matUs(controlDof,:)   ;
-#mdverification boolean is computed as follows:
-%md
+#md and the verification boolean is computed as follows:
 difLoadEngRot   = loadFactorsMat(:,2)' - analyticFunc(dispZnum) ;
 verifBoolean    = ( ( norm( difLoadEngRot    ) / norm( loadFactorsMat(:,2)  ) ) <  1e-4 ) ;
 %md
