@@ -26,7 +26,7 @@ materials(2).hyperElasParams = [ Eb nu ] ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'truss' ;
 elements(3).elemType = 'frame' ;
-%mdIn order to add the struct of geometry the assign to the node is an empty input (because it has not geometrical properties), and truss and beam elements will be set as:
+%mdgeometrical properties are only assigned to the truss and beam elements:
 elements(2).elemTypeGeometry = [3 dt] ;
 elements(3).elemTypeGeometry = [3 db] ;
 
