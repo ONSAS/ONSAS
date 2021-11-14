@@ -22,7 +22,7 @@ materials(2).hyperElasParams = [ Eb nu ] ;
 
 %md### elements
 %md
-%mdThree different types of elements are considered, node, frame and truss. The nodes, truss and frames are  assigned in consecutive (index $i$) then
+%mdThree different types of elements are considered: node, frame and truss, defined as follows:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'truss' ;
 elements(3).elemType = 'frame' ;
