@@ -50,7 +50,7 @@ boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) 1e4 * t ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
-%mdbase truss suppor BC:
+%mdsupport BC for node at the base of the truss:
 boundaryConds(3).imposDispDofs = [ 1 2 3 4 5 ] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 0 0 ] ;
 
