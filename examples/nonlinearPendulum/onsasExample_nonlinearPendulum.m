@@ -27,7 +27,8 @@ boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).imposDispDofs =  3 ;
 boundaryConds(2).imposDispVals =  0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
+% boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
+boundaryConds(2).loadsTimeFact = @(t) 0.0 ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
 %md
 %md#### initialsConds
@@ -53,6 +54,7 @@ otherParams.plotsFormat        = 'vtk' ;
 analysisSettings.methodName = 'newmark' ;
 analysisSettings.alphaNM    =   0.25    ;
 analysisSettings.deltaNM    =   0.5     ;
+analysisSettings.booleanSelfWeightZ = 1 ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 % ------------------------------------
 [matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

@@ -36,7 +36,7 @@ otherParams.outputDir = outputDir ;
 %md process boundary conds information and elements
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
   diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
-                           materials, elements, boundaryConds, initialConds ) ;
+                           materials, elements, boundaryConds, initialConds, analysisSettings ) ;
 
 global spitMatrices
 if spitMatrices == true

@@ -22,11 +22,11 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         materials, ...     % M
                         elements, ...      % E
                         boundaryConds, ... % B
-                        initialConds ) 		 % I
+                        initialConds,...   % I
+                        analysisSettings  ) 		 
 
 Conec = myCell2Mat( mesh.conecCell ) ;
 Nodes = mesh.nodesCoords ;
-
 nnodes = size( Nodes,1);
 
 %md Since we want to process the BCs, we keep only the nonzero BCs
@@ -72,7 +72,6 @@ for indBC = 1:length( boundaryTypes )
 
 
 end % for: elements with boundary condition assigned
-
 diriDofs = unique( diriDofs) ;
 
 %md remove element if no material is assigned
@@ -140,3 +139,74 @@ KS        = sparse( 6*nnodes, 6*nnodes );
     %~ end
   %~ end
 %~ end
+% ----------------------------------------------------------------------
+%md Loop for computing of gravity external force vector 
+if analysisSettings.booleanSelfWeightZ == 1
+  %initilize the gravity load factors
+  gravityFactorLoads = zeros( 6*nnodes, 1 ) ; % maximum possible vector
+  g = 9.8 ;
+  %md loop in type of element indexes
+  for elemNum = 1:length( elementTypes )
+    %md find the numbers of the elements with the current element type
+    elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
+    %md if there is any element
+    if length( elementsNums ) > 0
+      %md get current element type
+      elemType = elements( elementTypes(elemNum) ).elemType ;
+
+      %md get current element elemTypeGeometry
+      elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
+
+      %md get the number of material of the corruent element type
+      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
+
+      if materialElemTypes(1)  == 0, % checks if all elements have a type
+       error('all elements must have material defined');
+      end
+      
+      %md  loop in different materials of current element
+      
+      for matElem = 1: length(materialElemTypes)
+        %md  find the elements with elements = elemNum and material = matElem
+        isElemBool      =  Conec( :, 2 ) == elementTypes( elemNum ) ;
+        isMatBool       =  Conec( :, 1 ) == materialElemTypes(matElem) ;
+        currMatElement  = find( isElemBool.*isMatBool) ;
+
+        %md  extract the material of the current element type
+        rhoElemTypeMaterial = materials( materialElemTypes(matElem) ).density ;
+      
+        if elemType == 'truss' || elemType == 'frame' ; 
+          %md compute gravity force
+          nodesElem = Conec( currMatElement, 5:6 )    ;        
+          xElem     = Nodes(nodesElem,:)              ;
+          lElem     = norm( xElem(1,:) - xElem(2,:) ) ;
+          elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
+          [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
+          %md compute nodal gracitiy
+          Fz = rhoElemTypeMaterial * lElem * areaElem * g/2 ;
+          %md compute the dofs where gravitiy is applied:
+          [numNodes, ~] = elementTypeInfo ( elemType )                ; 
+          nodes         = Conec( currMatElement, (4+1):(4+numNodes) ) ;
+          dofs          = nodes2dofs( nodes, 6)'                      ;                    
+          dofs          = dofs(5:6:end)                               ;
+          %md add fill gravity Factor loads:
+          for dofGravitiy = 1:length(dofs) 
+            currDofGravity = dofs(dofGravitiy) ;
+            gravityFactorLoads(currDofGravity,1) += -1 ; 
+          end
+
+          %md the number of BC that represent the slef weight condition is
+          numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
+          factorLoadsFextCell{numberOfBCSelfWeight} = Fz*gravityFactorLoads ;
+          loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;
+
+          %md reset the gravity factorLoads
+          gravityFactorLoads = zeros( 6*nnodes, 1 ) ;
+          
+          else 
+          error("this elemType is not implemented using self weight boolean yet") 
+        end
+      end 
+    end
+  end
+end
