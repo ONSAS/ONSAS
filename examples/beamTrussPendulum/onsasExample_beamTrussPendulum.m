@@ -1,7 +1,7 @@
 %md# Beam truss pendulum problem
 close all, clear all
 %mdProblem name:
-otherParams.problemName = 'beamTrussPendulum_newmark' ;
+otherParams.problemName = 'beamTrussPendulum' ;
 addpath( genpath( [ pwd '/../../src'] ) );
 %mdTuss element geometrical properties :
 Et = 10e11 ; nut = 0.3 ;  rhot = 65.6965 ;
@@ -28,12 +28,12 @@ elements(1).elemType = 'node'           ;
 %md
 %mdTruss:
 elements(2).elemType = 'truss'          ;
-elements(2).elemTypeGeometry = [ 3 dt ] ;
+elements(2).elemTypeGeometry = [ 3 dt dt ] ;
 elements(2).elemTypeParams = 1          ;
 %md
 %mdFrame:
 elements(3).elemType = 'frame'          ;
-elements(3).elemTypeGeometry = [ 3 df ] ;
+elements(3).elemTypeGeometry = [ 2 df df ] ;
 %md
 %md### boundaryConds
 %md
