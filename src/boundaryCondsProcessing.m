@@ -141,7 +141,7 @@ KS        = sparse( 6*nnodes, 6*nnodes );
 %~ end
 % ----------------------------------------------------------------------
 %md Loop for computing of gravity external force vector 
-if analysisSettings.booleanSelfWeight == 1
+if analysisSettings.booleanSelfWeight == true
   %initilize the gravity load factors
   gravityFactorLoads = zeros( 6*nnodes, 1 ) ; % maximum possible vector
   g = 9.8 ;
