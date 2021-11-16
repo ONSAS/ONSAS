@@ -139,6 +139,7 @@ KS        = sparse( 6*nnodes, 6*nnodes );
     %~ end
   %~ end
 %~ end
+Conec
 % ----------------------------------------------------------------------
 %md Loop for computing of gravity external force vector 
 if analysisSettings.booleanSelfWeight == 1
@@ -158,7 +159,7 @@ if analysisSettings.booleanSelfWeight == 1
       elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
 
       %md get the number of material of the corruent element type
-      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
+      materialElemTypes   = unique( Conec( elementsNums, 1) ) 
 
       if materialElemTypes(1)  == 0, % checks if all elements have a type
        error('all elements must have material defined');
@@ -168,22 +169,22 @@ if analysisSettings.booleanSelfWeight == 1
       
       for matElem = 1: length(materialElemTypes)
         %md  find the elements with elements = elemNum and material = matElem
-        isElemBool      =  Conec( :, 2 ) == elementTypes( elemNum ) ;
-        isMatBool       =  Conec( :, 1 ) == materialElemTypes(matElem) ;
-        currMatElement  = find( isElemBool.*isMatBool) ;
+        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) )
 
         %md  extract the material of the current element type
         rhoElemTypeMaterial = materials( materialElemTypes(matElem) ).density ;
       
         if elemType == 'truss' || elemType == 'frame' ; 
           %md compute gravity force
-          nodesElem = Conec( currMatElement, 5:6 )    ;        
-          xElem     = Nodes(nodesElem,:)              ;
-          lElem     = norm( xElem(1,:) - xElem(2,:) ) ;
+          nodesElem = Conec( elemntsSameMat, 5:6 )            
+          xElem     = Nodes(nodesElem,:)            
+          lElem     = norm( xElem(1,:) - xElem(2,:) ) 
           elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
           [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
           %md compute nodal gracitiy
-          Fz = rhoElemTypeMaterial * lElem * areaElem * g/2 ;
+          Fz = rhoElemTypeMaterial * lElem * areaElem * g/2 
+          stop
+          stop
           %md compute the dofs where gravitiy is applied:
           [numNodes, ~] = elementTypeInfo ( elemType )                ; 
           nodes         = Conec( currMatElement, (4+1):(4+numNodes) ) ;
