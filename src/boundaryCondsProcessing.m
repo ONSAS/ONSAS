@@ -176,9 +176,12 @@ if analysisSettings.booleanSelfWeight == true
       
         if elemType == 'truss' || elemType == 'frame' ; 
           %md compute gravity force
-          nodesElem = Conec( elemntsSameMat, 5:6 )            
+          conecElemsThisMat = Conec( elemntsSameMat, 5:6 )            
           xElem     = Nodes(nodesElem,:)            
-          lElem     = norm( xElem(1,:) - xElem(2,:) ) 
+          % final minus initial nodes coords matrices
+          matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : )
+          vecSquareDiff = sum( (matrixDiffs.^2)' )'
+          lengthElems     = sqrt( vecSquareDiff ) ;
           elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
           [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
           %md compute nodal gracitiy
