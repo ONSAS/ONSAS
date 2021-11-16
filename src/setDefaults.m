@@ -30,7 +30,7 @@ elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry', [
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 
 % analysis
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeightZ' , 0  )  ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight' , false  )  ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'              , [] )  ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'         , 'Octave' ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'         , 'newtonRaphson' ) ;

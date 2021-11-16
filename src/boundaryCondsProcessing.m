@@ -141,7 +141,7 @@ KS        = sparse( 6*nnodes, 6*nnodes );
 %~ end
 % ----------------------------------------------------------------------
 %md Loop for computing of gravity external force vector 
-if analysisSettings.booleanSelfWeightZ == 1
+if analysisSettings.booleanSelfWeight == 1
   %initilize the gravity load factors
   gravityFactorLoads = zeros( 6*nnodes, 1 ) ; % maximum possible vector
   g = 9.8 ;
@@ -195,7 +195,7 @@ if analysisSettings.booleanSelfWeightZ == 1
             gravityFactorLoads(currDofGravity,1) += -1 ; 
           end
 
-          %md the number of BC that represent the slef weight condition is
+          %md the number of BC that represent the self weight condition is
           numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
           factorLoadsFextCell{numberOfBCSelfWeight} = Fz*gravityFactorLoads ;
           loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;

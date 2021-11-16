@@ -28,7 +28,6 @@ boundaryConds(2).imposDispDofs =  3 ;
 boundaryConds(2).imposDispVals =  0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 % boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
-boundaryConds(2).loadsTimeFact = @(t) 0.0 ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
 %md
 %md#### initialsConds
@@ -51,15 +50,15 @@ analysisSettings.stopTolIts    = 30    ;
 otherParams.plotsFormat        = 'vtk' ;
 
 %md### Analysis case 1: Solution using Newmark with truss element and mass lumped according to Bathe problem
-analysisSettings.methodName = 'newmark' ;
-analysisSettings.alphaNM    =   0.25    ;
-analysisSettings.deltaNM    =   0.5     ;
-analysisSettings.booleanSelfWeightZ = 1 ;
+analysisSettings.methodName = 'newmark'     ;
+analysisSettings.alphaNM    =   0.25        ;
+analysisSettings.deltaNM    =   0.5         ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 % ------------------------------------
 [matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-%md### Analysis case 2: Solution using HHT with truss element and mass lumped according to Bathe problem
+%md### Analysis case 2: Solution using HHT with truss element, mass lumped according to Bathe problem and self boolean activated
+analysisSettings.booleanSelfWeight = true  ;
 otherParams.plotsFormat     = ''        ;
 analysisSettings.methodName = 'alphaHHT';
 analysisSettings.alphaHHT   =  0        ;        
@@ -69,7 +68,7 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 
 runFrameValidation = false ;
 if runFrameValidation
-    %md### Analysis case 3: Solution using HHT with truss element and mass conssitent
+    %md### Analysis case 3: Solution using HHT with truss element, mass conssitent and self boolean activated
     analysisSettings.finalTime  = 3.4124;
     analysisSettings.alphaHHT   = -0.05 ;        
     elements(2).elemTypeParams  = 1     ;
@@ -77,7 +76,7 @@ if runFrameValidation
     % ------------------------------------
     [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-    %md### Analysis case 4: Solution using HHT with truss element and mass conssitent
+    %md### Analysis case 4: Solution using HHT with truss element, mass conssitent and self boolean activated
     elements(2).elemType        = 'frame';
     otherParams.problemName     = 'nonlinearPendulumHHTFrameConsistent';
     % ------------------------------------
