@@ -27,7 +27,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).imposDispDofs =  3 ;
 boundaryConds(2).imposDispVals =  0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
-% boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
+boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
 %md
 %md#### initialsConds
@@ -58,6 +58,7 @@ otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 [matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 %md### Analysis case 2: Solution using HHT with truss element, mass lumped according to Bathe problem and self boolean activated
+boundaryConds(2).loadsTimeFact = @(t) 0.0 ;
 analysisSettings.booleanSelfWeight = true  ;
 otherParams.plotsFormat     = ''        ;
 analysisSettings.methodName = 'alphaHHT';
