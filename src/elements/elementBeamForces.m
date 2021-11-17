@@ -18,7 +18,6 @@
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
-
 xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
@@ -278,8 +277,14 @@ if elemrho > 0
 
   ks{2} = GyroMatrix ;
   ks{3} = MassMatrix ;
-  end
+elseif elemrho == 0
+  fs{3} = zeros(12,1) ;
+  ks{2} = zeros(12) ;
+  ks{3} = zeros(12) ;
+else 
+  error("Negative density \n")
 end
+end%endFunction
 
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interElementBeamForces ( x, lo, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, G )
 

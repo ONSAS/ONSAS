@@ -122,7 +122,7 @@ for elem = 1:nElems
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
       Finte = fs{1} ;  Ke    = ks{1} ;
 
-      if density > 0
+      if dynamicProblemBool
         Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
       end
     else

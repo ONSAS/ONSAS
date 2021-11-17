@@ -139,7 +139,6 @@ KS        = sparse( 6*nnodes, 6*nnodes );
     %~ end
   %~ end
 %~ end
-Conec
 % ----------------------------------------------------------------------
 %md Loop for computing of gravity external force vector 
 if analysisSettings.booleanSelfWeight == true
@@ -159,7 +158,7 @@ if analysisSettings.booleanSelfWeight == true
       elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
 
       %md get the number of material of the corruent element type
-      materialElemTypes   = unique( Conec( elementsNums, 1) ) 
+      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
 
       if materialElemTypes(1)  == 0, % checks if all elements have a type
        error('all elements must have material defined');
@@ -169,39 +168,32 @@ if analysisSettings.booleanSelfWeight == true
       
       for matElem = 1: length(materialElemTypes)
         %md  find the elements with elements = elemNum and material = matElem
-        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) )
+        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) ) ;
 
         %md  extract the material of the current element type
         rhoElemTypeMaterial = materials( materialElemTypes(matElem) ).density ;
       
         if elemType == 'truss' || elemType == 'frame' ; 
           %md compute gravity force
-          conecElemsThisMat = Conec( elemntsSameMat, 5:6 )            
-          xElem     = Nodes(nodesElem,:)            
+          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );            
           % final minus initial nodes coords matrices
-          matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : )
-          vecSquareDiff = sum( (matrixDiffs.^2)' )'
-          lengthElems     = sqrt( vecSquareDiff ) ;
+          matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : );
+          vecSquareDiff = sum( (matrixDiffs.^2)' )';
+          lengthElems = sqrt( vecSquareDiff ) ; 
           elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
           [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
           %md compute nodal gracitiy
-          Fz = rhoElemTypeMaterial * lElem * areaElem * g/2 
-          stop
-          stop
+          Fz = - rhoElemTypeMaterial * lengthElems * areaElem * g/2; 
           %md compute the dofs where gravitiy is applied:
-          [numNodes, ~] = elementTypeInfo ( elemType )                ; 
-          nodes         = Conec( currMatElement, (4+1):(4+numNodes) ) ;
-          dofs          = nodes2dofs( nodes, 6)'                      ;                    
-          dofs          = dofs(5:6:end)                               ;
-          %md add fill gravity Factor loads:
-          for dofGravitiy = 1:length(dofs) 
-            currDofGravity = dofs(dofGravitiy) ;
-            gravityFactorLoads(currDofGravity,1) += -1 ; 
+          for elem = 1: size(conecElemsThisMat, 1)
+            dofs  = nodes2dofs(conecElemsThisMat(elem,:), 6)';                                          
+            dofs  = dofs(5:6:end);                               
+            gravityFactorLoads(dofs,1) =gravityFactorLoads(dofs,1) + Fz(elem);
           end
 
           %md the number of BC that represent the self weight condition is
           numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
-          factorLoadsFextCell{numberOfBCSelfWeight} = Fz*gravityFactorLoads ;
+          factorLoadsFextCell{numberOfBCSelfWeight} = gravityFactorLoads    ;
           loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;
 
           %md reset the gravity factorLoads
