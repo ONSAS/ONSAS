@@ -23,21 +23,22 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams', []  ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry', []  ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeParams', []     ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry', []   ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 
 % analysis
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'         , [] ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'    , 'Octave' ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'    , 'newtonRaphson' ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'        , 1    ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'      , 1    ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau' , 1e-6 ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces' , 1e-6 ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'    , 10   ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight' , false  )  ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'              , [] )  ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'         , 'Octave' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'         , 'newtonRaphson' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'             , 1    ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'          , 1    ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'      , 1e-6 ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'      , 1e-6 ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'         , 10   ) ;
 
 
 % otherParams

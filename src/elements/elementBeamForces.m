@@ -18,7 +18,6 @@
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
-
 xs         = elemCoords(:) ;
 
 booleanCSTangs = 0 ;
@@ -83,7 +82,6 @@ Rr = [ e1 e2 e3 ] ;
 % -------------------
 
 % --- local displacements ---
-
 % axial displacement
 u  = l - lo;
 
@@ -110,7 +108,6 @@ nu11 = q1(1)/q(2);
 nu12 = q1(2)/q(2);
 nu21 = 2*nu-nu11;
 nu22 = 2-nu12;
-
 
 % transformation to the new local coordinates
 
@@ -204,12 +201,11 @@ Kt = H' * Kg * H ;
 Kt( 4:6 , 4:6 ) = Kt( 4:6 , 4:6 ) + Dk1 ;
 Kt(10:12,10:12) = Kt(10:12,10:12) + Dk2 ;
 
-%~ Kt = (Kt+Kt')/2;
+% Kt = (Kt+Kt')/2;
 
 Finte   = zeros(size(q)) ;
-dofscomb = [ 1:2:5 2:2:6 7:2:11 8:2:12 ] ;
 
-Finte( dofscomb ) = q ;
+Finte( permutIndxs ) = q ;
 KTe = zeros( size(Kt));
 
 if booleanCSTangs == 1
@@ -225,7 +221,7 @@ if booleanCSTangs == 1
   end
 
 else
-  KTe( dofscomb, dofscomb ) = Kt ;
+  KTe( permutIndxs, permutIndxs ) = Kt ;
 end
 
 fs = {Finte} ;
@@ -281,8 +277,14 @@ if elemrho > 0
 
   ks{2} = GyroMatrix ;
   ks{3} = MassMatrix ;
-  end
+elseif elemrho == 0
+  fs{3} = zeros(12,1) ;
+  ks{2} = zeros(12) ;
+  ks{3} = zeros(12) ;
+else 
+  error("Negative density \n")
 end
+end%endFunction
 
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interElementBeamForces ( x, lo, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, G )
 
@@ -324,12 +326,14 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     % Auxiliar matrix to veclocites
     H1dot   = N7 / (l^2) * A1 * (r' * ddotg) - skew( udotl ) * G' ; %Ec A.8
 
-    ET      = [ skew(wdoter)       O3         		O3 		O3	;
-                O3		       skew(wdoter)  	O3   		O3	;
-                O3			O3 			skew(wdoter)  O3	;
-                O3			O3  			O3            skew(wdoter)   ];
+    % compute skew only one time
+    skewWdoter = skew(wdoter);
+    ET      = [ skewWdoter   O3         O3 		      O3	          ;
+                O3		       skewWdoter O3   		    O3	          ;
+                O3			     O3 			  skewWdoter  O3	          ;
+                O3			     O3  			  O3          skewWdoter   ];
 
-    C1      = skew(wdoter)*H1 + H1dot - H1*ET; % Ec  66
+    C1      = skewWdoter*H1 + H1dot - H1*ET; % Ec  66
 
     % Linear and angular veclocites and acelerations
     udot    = Rr * H1 * EE' * ddotg; %Ec 61
@@ -338,18 +342,18 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     H2      = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
     wdot  = Rr * H2 * EE' * ddotg;%Ec74
 
-    A2    = [  O1               O1         O1            O1;
-              0      0      1  O1         0 0 -1        O1;
-              0      -1     0  O1         0 1  0        O1] ;%Ec A.12
+    A2    = [  O1                 O1         O1            O1;
+                0      0      1   O1         0 0 -1        O1;
+                0      -1     0   O1         0 1  0        O1] ;%Ec A.12
     H2dot  = N8 / l^2 * A2 * (r'*ddotg) ;%Ec A.14
 
-    C2     = skew(wdoter)*H2 + H2dot - H2*ET ;%Ec 76
+    C2     = skewWdoter*H2 + H2dot - H2*ET ;%Ec 76
 
     wdotdot= Rr*H2*EE'*ddotdotg  + Rr*C2*EE'*ddotg ;%Ec 77
     % Compute global rotation Rg(x)
     thethaRoof  = P2*[tl1;tl2];% Ec 39
     Rex         = expon(thethaRoof); %Ec 19 elevado en ambos lados
-    Rgx  	  = Rr*Rex*Ro';
+    Rgx  	      = Rr*Rex*Ro';
 
     % Compute dyadic tensor
     Irho	  = Rgx * Ro * Jrho * (Rgx*Ro)'; %Ec 45
@@ -374,11 +378,11 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     F1    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']'; %Chequear con los nodales
     
     C3    = -skew(h1) * G'  + (N7 / l^2) * A1 *(ddotg * rElem)...
-                  +skew(wdoter) * P1 * P + H1 * F1 * G'; % B13
+                  +skewWdoter * P1 * P + H1 * F1 * G'; % B13
     
     C4  = -skew(h2)*G' + ( N8 / l^2 )*A2*ddotg*rElem + H2 * F1 * G'; %B14
     
     % Compute Gyroscopic Matrix
-    IntegrandoGyroMatrix  =    H2' * ( ( skew(wdoter) * Irhoe ) - skew( Irhoe * wdoter) ) * H2 ...
+    IntegrandoGyroMatrix  =    H2' * ( ( skewWdoter * Irhoe ) - skew( Irhoe * wdoter) ) * H2 ...
                                 + H1' * Area*rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88                            
 end
