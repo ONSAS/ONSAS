@@ -46,13 +46,9 @@ elements(3).elemTypeParams   = 1          ;
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 % Roller support
-boundaryConds(2).imposDispDofs = [ 1 3 5 6 ] ;
-boundaryConds(2).imposDispVals = [ 0 0 0 0 ] ;
-P = -1 ;
-% Load
-imp = P/100 ;
 boundaryConds(2).loadsCoordSys = 'global'        ;
-boundaryConds(2).loadsBaseVals = [ 0 imp 0 0 P 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 200 0 0 0 0 0 ] ;
+boundaryConds(2).loadsTimeFact = @(t) t     ;
 
 % Initial conditions
 % ----------------------------------------------------------------------
@@ -70,21 +66,20 @@ mesh.nodesCoords = [ 0  0  0 ; ...
 
 % Conec cell
 % ----------------------------------------------------------------------
-mesh.conecCell = {  } ;
-
 % First BC
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0 4 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1 ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1 0   4 ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 1 0   5 ] ;
 
 % Second BC
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0 5 ] ;
+mesh.conecCell{ 4, 1 } = [ 0 1 2 0   3 ] ;
 
-% Column elements
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0 4 2 ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0 2 5 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 2 0 0 4 2 ] ;
+mesh.conecCell{ 6, 1 } = [ 1 2 0 0 2 5 ] ;
 
 % Row elements
-mesh.conecCell{ 5, 1 } = [ 1 2 0 0 1 2 ] ;
-mesh.conecCell{ 6, 1 } = [ 1 2 0 0 2 3 ] ;
+mesh.conecCell{ 7, 1 } = [ 1 3 0 0 1 2 ] ;
+mesh.conecCell{ 8, 1 } = [ 1 3 0 0 2 3 ] ;
 
 
 
@@ -93,25 +88,18 @@ mesh.conecCell{ 6, 1 } = [ 1 2 0 0 2 3 ] ;
 % Parameters
 % ----------------------------------------------------------------------
 analysisSettings.methodName    = 'newtonRaphson' ;
-boundaryConds(2).loadsTimeFact = @(t) 10*t     ;
-
-analysisSettings.deltaT        =   .1  ;
-analysisSettings.finalTime     =   0.1   ;
-analysisSettings.incremArcLen  =   0.005   ;
+analysisSettings.deltaT        =   .2  ;
+analysisSettings.finalTime      =   1   ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
-analysisSettings.posVariableLoadBC = 2 ;
-analysisSettings.iniDeltaLamb = 0.1 ;
 
-
-otherParams.problemName = 'prueba';
-%~ otherParams.controlDofs = [ numElements+1  5 ] ;
+otherParams.problemName = 'cross_vtk_test';
 otherParams.plotsFormat = 'vtk' ;
-
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+stop
 
 centralNode = ceil((ncolumns/2+1))*(nrows/2+1) ;
 Dof      		 = centralNode*6 - 3 	;
