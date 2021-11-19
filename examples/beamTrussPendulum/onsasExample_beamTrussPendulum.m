@@ -28,12 +28,12 @@ elements(1).elemType = 'node'           ;
 %md
 %mdTruss:
 elements(2).elemType = 'truss'          ;
-elements(2).elemTypeGeometry = [ 3 dt dt ] ;
+elements(2).elemTypeGeometry = [ 3 dt ] ;
 elements(2).elemTypeParams = 1          ;
 %md
 %mdFrame:
 elements(3).elemType = 'frame'          ;
-elements(3).elemTypeGeometry = [ 2 df df ] ;
+elements(3).elemTypeGeometry = [ 3 df ] ;
 %md
 %md### boundaryConds
 %md
