@@ -2,20 +2,14 @@
 
 close all, clear all, close all
 % add path
-addpath( genpath( [ pwd '/../../../../repos/ONSAS.m/src'] ) );
+addpath( genpath( [ pwd '/../../src'] ) );
 
 % material scalar parameters
 E = 30e6 ; % kN/m2
 nu = 0.2 ;
 % mesh
-l = 7 ; %m
-width = 1 ;
-thk = 0.5 ;
-nrows = 2 ;
-ncolumns = 2 ;
-
-ty = width ;
-tz = thk ; 
+ty = .2 ;
+tz = .1 ;
 
 
 
@@ -49,15 +43,14 @@ elements(3).elemTypeParams   = 1          ;
 % Boundary conditions
 % ----------------------------------------------------------------------
 % Pinned support
-boundaryConds(1).imposDispDofs = [ 1 3 5 6 ] ;
-boundaryConds(1).imposDispVals = [ 0 0 0 0 ] ;
+boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 % Roller support
 boundaryConds(2).imposDispDofs = [ 1 3 5 6 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 0 ] ;
-% Load
 P = -1 ;
+% Load
 imp = P/100 ;
-
 boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsBaseVals = [ 0 imp 0 0 P 0 ] ;
 
@@ -69,10 +62,11 @@ initialConds                = struct() ;
 
 % Nodes coords
 % ----------------------------------------------------------------------
-mesh.nodesCoords = [ ] ;
-
-
-mesh.nodesCoords = [ 0 0 0 ; 0 1 0 ; 0 2 0 ; 0 1 1 ; 0 1 -1 ] ; 
+mesh.nodesCoords = [ 0  0  0 ; ...
+                     0  1  0 ; ...
+                     0  2  0 ; ...
+                     0  1  1 ; ...
+                     0  1 -1 ] ;
 
 % Conec cell
 % ----------------------------------------------------------------------
