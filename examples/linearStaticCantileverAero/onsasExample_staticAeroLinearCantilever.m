@@ -38,6 +38,8 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) 0 *t ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
+%md the name of the wind velocity function is: 
+boundaryConds(3).userWindVel = 'windVel'
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
