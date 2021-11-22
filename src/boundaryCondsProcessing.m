@@ -18,7 +18,7 @@
 
 %md This function converts the mesh MEBI information to the data structures used in the numerical simulation
 
-function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing ( mesh, ...
+function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel ] = boundaryCondsProcessing ( mesh, ...
                         materials, ...     % M
                         elements, ...      % E
                         boundaryConds, ... % B
