@@ -23,20 +23,19 @@
 
 function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
 
+
   [fs, ~, ~ ] = assembler ( ...
     modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
 
   % TO BE REMOVEd!!!
   Stress = [] ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ;
-
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ;
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
-    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) ) ;
-
+    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) - Faero( BCsData.neumDofs ) ) ;
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, nexTimeLoadFactors ) ;
@@ -61,7 +60,8 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 + Fvis ( BCsData.neumDofs ) ...
                 + Fmas ( BCsData.neumDofs ) ...
-                - FextG( BCsData.neumDofs ) ;
+                - FextG( BCsData.neumDofs ) ...
+                - Faero(BCsData.neumDofs  );
 
     systemDeltauRHS = -rhat ;
 
@@ -70,7 +70,7 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
     fs = assembler ( ...
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping ) ;
 
-    Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ;
+    Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faero = fs{4} ;
 
     %[FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
 
@@ -100,7 +100,8 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
               - alphaHHT * ( ...
                 + Fintt ( BCsData.neumDofs ) ...
                 + Fvist ( BCsData.neumDofs ) ...
-                - FextGt( BCsData.neumDofs ) ...
+                - FextGt( BCsData.neumDofs ) ... 
+                - Faero(BCsData.neumDofs   ) ...
                 ) ...
               ...
               + Fmas    ( BCsData.neumDofs ) ;
