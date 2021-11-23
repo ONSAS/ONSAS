@@ -31,10 +31,10 @@ function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, 
 	[A, J, Iy, Iz] = crossSectionProps ( elemTypeGeometry, density ) ;
 
   % --- elem lengths and rotation matrix
-	[ local2globalMats, l ] = beamParameters( (elemCoords(4:6)-elemCoords(1:3))' ) ;
+	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
 
-  % Provisoriamente
+  % temporary
   %~ ------------------------
   elemReleases = [0 0 0 0] ;
   %~ ------------------------
