@@ -136,26 +136,25 @@ for elem = 1:nElems
     else
       error('wrong hyperElasModel for frame element.')
 		end
-    
+    % -----------   aerodynmamic force   ------------------------------------
     if aeroBool
-    userWindVel = "windVel";
-    numGaussPoints = 2;
+      userWindVel = "windVel";
+      numGaussPoints = 2;
 
-    elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
-    userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
-    userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
-    userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
-    elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
-    
-    FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry,
-                           u2ElemDisps( Ut       , dofselem ),
-                           u2ElemDisps( Udott    , dofselem ),
-                           u2ElemDisps( Udotdott , dofselem ) ,...
-                           userDragCoef, userLiftCoef, userMomentCoef,
-                           elemTypeAero, userWindVel, numGaussPoints);
-    
+      elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
+      userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
+      userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
+      userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
+      elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
+
+      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry,
+                             u2ElemDisps( Ut       , dofselem ),
+                             u2ElemDisps( Udott    , dofselem ),
+                             u2ElemDisps( Udotdott , dofselem ) ,...
+                             userDragCoef, userLiftCoef, userMomentCoef,
+                             elemTypeAero, userWindVel, numGaussPoints);
+
     end 
-
 
 
   % ---------  triangle solid element -----------------------------
@@ -184,9 +183,9 @@ for elem = 1:nElems
 
     if strcmp( hyperElasModel, 'SVK' )
       auxMatNum = 2 ;
+      error('material not implemented yet! open an issue.')
     else
       hyperElasModel
-      error('material not implemented yet! open an issue.')
     end
 
    if isempty(elemTypeParams)
@@ -198,9 +197,8 @@ for elem = 1:nElems
    [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
-  end   % case tipo elemento
+  end   % case in tye of element ----
   % -------------------------------------------
-
 
   %md### Assembly
   %md
@@ -241,10 +239,6 @@ for elem = 1:nElems
   end % if stress
 
 end % for elements ----
-
-
-% ============================================================================
-
 
 
 % ============================================================================
@@ -296,13 +290,6 @@ if tangBool
   tangMatsCell{2} = C ;
   tangMatsCell{3} = M ;
 end
-
-
-% ----------------------------------------
-
-
-
-
 
 % ==============================================================================
 %

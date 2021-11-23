@@ -5,5 +5,4 @@ function C_m = momentCoefFunction (betaRel)
         betaRel = rad2deg(betaRel);
         C_m = betaRel / 25  .*(betaRel<25) +  (-(betaRel-25)/100 + 1 ).*(betaRel>25) + 0.15;
     end
-    % C_m=0;
 end

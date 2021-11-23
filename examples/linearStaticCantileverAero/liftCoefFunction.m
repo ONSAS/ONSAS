@@ -5,5 +5,4 @@ function C_l = liftCoefFunction (betaRel)
         omega_drag = 2*pi / deg2rad(180);
         C_l = 0.5 + 1.5 * sin( omega_drag * betaRel);
     end
-    % C_l = 0;
 end
