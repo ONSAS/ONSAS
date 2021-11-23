@@ -156,8 +156,7 @@ for elem = 1:nElems
 
     end 
 
-
-  % ---------  triangle solid element -----------------------------
+   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemTypeGeometry ;
@@ -183,9 +182,9 @@ for elem = 1:nElems
 
     if strcmp( hyperElasModel, 'SVK' )
       auxMatNum = 2 ;
-      error('material not implemented yet! open an issue.')
     else
       hyperElasModel
+      error('material not implemented yet! open an issue.')
     end
 
    if isempty(elemTypeParams)
@@ -197,7 +196,7 @@ for elem = 1:nElems
    [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
-  end   % case in tye of element ----
+  end   % case in typee of element ----
   % -------------------------------------------
 
   %md### Assembly
