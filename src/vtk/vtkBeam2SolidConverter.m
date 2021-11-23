@@ -17,60 +17,79 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %md function that creates the hexahedron element to visualize results with vtk file
-function [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( nodesCoords, nodalDisp, nodalRot, sectPar ) ;
+function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
+  coordsElemNodes, dispsElem, coordLocSubElem, dispLocIni, dispLocEnd, ...
+  locRotIni, locRotEnd, sectPar, Rr, R0 ) ;
+
+  typeSolid = sectPar(1) ;
+
+  dispIniSection = dispsElem(1:2:5)  ;
+  dispEndSection = dispsElem(7:2:11) ;
+
+  if typeSolid == 12 % vtkHexa
+
+     by = sectPar(2) ;  bz = sectPar(3) ;
+
+     Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
+
+     % coordinates of nodes 1 and 2 in deformed configuration
+%5     node1Def = nodesCoords(1:3) + nodalDisp(1:3) ;
+%     node2Def = nodesCoords(4:6) + nodalDisp(4:6) ;
+
+%     locglos = beamRefConfRotMat( (node2Def - node1Def ) ) ;
+
+%     ex = locglos(:,1)' ;
+%     ey = locglos(:,2)' ;%
+%     ez = locglos(:,3)' ;
+     ex = [1 0 0] ;
+     ey = [0 1 0] ;
+     ez = [0 0 1] ;
+
+    % 1- compute the vectors of the section in Rr coords
+    % matrix with coords of four vertices of cross section to be plotted
+    matrixSectionIni = [ -ey*by*.5-ez*bz*.5 ; ...
+                         +ey*by*.5-ez*bz*.5 ; ...
+                         +ey*by*.5+ez*bz*.5 ; ...
+                         -ey*by*.5+ez*bz*.5 ] ;
+    matrixSectionEnd = matrixSectionIni ;
+    matrixSectionMed = [] ;
+  end
 
 
-typeSolid = sectPar(1) ;
+locRotIni
+locRotEnd
+  % 2- apply the local rotation for the initial and final sections
+  matrixRotatedSectionIni = ( expon( locRotIni ) * matrixSectionIni' )' ;
+  matrixRotatedSectionEnd = ( expon( locRotEnd ) * matrixSectionEnd' )' ;
 
-% computes rotations if provided
-if isempty(nodalDisp)
-  Rg1 = eye(1) ;
-  Rg2 = eye(1) ;
-else
-  Rg1 = expon( nodalRot( 1:3 ) ) ;
-  Rg2 = expon( nodalRot( 4:6 ) ) ;
-end
+dispLocEnd
+  % 3- add local displacement and position
+  matrixDisplacedSectionIni = matrixRotatedSectionIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
+  matrixDisplacedSectionEnd = matrixRotatedSectionEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
 
+  % 4- apply Rr' change basis matrix
+  matrixRotatedSectionIni = ( Rr * matrixDisplacedSectionIni' )' ;
+  matrixRotatedSectionEnd = ( Rr * matrixDisplacedSectionEnd' )' ;
 
-if typeSolid == 12 % vtkHexa
+  defPosIniSec = coordsElemNodes(1:3) + dispIniSection ;
 
-   by = sectPar(2) ;  bz = sectPar(3) ;
+  % 5- add nodal displacements in e1,e2,e3 system
+  nodesVtkSectionIni = matrixRotatedSectionIni + defPosIniSec' ;
+  nodesVtkSectionEnd = matrixRotatedSectionEnd + defPosIniSec' ;
 
-   Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
-
-   % coordinates of nodes 1 and 2 in deformed configuration
-   node1Def = nodesCoords(1:3) + nodalDisp(1:3) ;
-   node2Def = nodesCoords(4:6) + nodalDisp(4:6) ;
-
-   locglos = beamRefConfRotMat( (node2Def - node1Def ) ) ;
-
-   ex = locglos(:,1)' ;
-   ey = locglos(:,2)' ;
-   ez = locglos(:,3)' ;
-
-  %md matrix with coords of four vertices of cross section to be plotted
-  matsec = [ -ey*by*.5-ez*bz*.5 ; ...
-             +ey*by*.5-ez*bz*.5 ; ...
-             +ey*by*.5+ez*bz*.5 ; ...
-             -ey*by*.5+ez*bz*.5 ] ;
-
-  %md and add displacements
-  candsini = ones(4,1) * node1Def' + matsec      ;
-
-  %  matsecR = ( expon( vecrotNode2) * matsec' )'  ;
-
-  candsfin = ones(4,1) * node2Def' + matsec      ;
-
-  Nodesvtk = [ candsini ; candsfin ] ;
+  Nodesvtk = [ nodesVtkSectionIni ; nodesVtkSectionEnd ] ;
   Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
 
+  matrixRefIni = ( R0 * (matrixSectionIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefEnd = ( R0 * (matrixSectionEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
 
-elseif typeSolid == 25 % vtkQuadHexa
+  NodesRefvtk = [ matrixRefIni ; matrixRefEnd ] ;
 
+  Dispsvtk = Nodesvtk - NodesRefvtk ;
+
+
+return
 	R = sectPar(2) / 2 ;
-  Nodesvtk = [] ; Conecvtk = [] ;
-
-error('not corrected yet')
   NodesDef  = nodesCoords + [ Ue(1:6:end) Ue(3:6:end) Ue(5:6:end) ] ;
   rotsMat   = 			        [ Ue(2:6:end) Ue(4:6:end) Ue(6:6:end) ] ;
 
@@ -125,4 +144,4 @@ error('not corrected yet')
 	% Connectivity
 	Conecvtk = [ Conecvtk ; 25 1:20 ] ;
 
-end
+%end

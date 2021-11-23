@@ -36,9 +36,9 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   %md structure and connectivity for each type of element/cell
   %md
 	totalNodes = 0 ;
-	
+
   for indType = 1:length( elemTypeInds )
-		
+
 		elemTypeInds(indType) ;
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType       ;
     elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemTypeGeometry ;
@@ -53,11 +53,11 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
         elemTypeGeom, modS.U ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
-		
+
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
         elemTypeGeom, modS.U ) ;
-			
+
     elseif strcmp( elemTypeString, 'triangle' )
 
       vtkNormalForces = [] ;
@@ -91,17 +91,15 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
             elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
             % end
 
-		
-		
     end % if: type
-		
+
     % add entries from current element type
     vtkNodes      = [ vtkNodes ;  currVtkNodes ]           ;
     vtkConec      = [ vtkConec ;  [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes]]           ;
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
-		
-		totalNodes = totalNodes + size(currVtkNodes,1) ;
-		
+
+		totalNodes = totalNodes + size(currVtkNodes,1) 
+
   end % for: elemTypeInds
 
   if length( vtkNodalDisps ) > 0

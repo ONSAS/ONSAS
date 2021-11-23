@@ -18,24 +18,23 @@
 
 function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
 
-  assert(size(x,2)==1, 'x must be column.')
+  assert( iscolumn(x), 'coordinates must be in a column vector.')
 
   lengthElem = norm(x) ;
 
   exL = x / lengthElem ;
 
-  eyG = [0 1 0]' ;
-  ezG = [0 0 1]' ;
+  eyG = [0 1 0]' ;    ezG = [0 0 1]' ;
 
   % Vector normal to beam in reference configuration
-  if ( exL(1) > 1e-8*lengthElem ) || ( exL(2) > 1e-8*lengthElem ) ; % if it is not ezG
+  if ( exL(1) > 1e-8*lengthElem ) || ( exL(2) > 1e-8*lengthElem ) ; % if exL it is not ezG
     aux = cross( ezG, exL ) ;
     eyL = aux / norm( aux ) ;
   else
     eyL = eyG ;
   end
-
   ezL = cross( exL, eyL ) ;
 
-  Ro = [ exL eyL ezL ] ;
+  Ro  = [ exL eyL ezL ] ;
+
 end

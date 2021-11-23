@@ -59,7 +59,7 @@ lo = sqrt( ( x21       )' * ( x21       ) ) ; %
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
 
 % rotation matrix to reference configuration
-Ro = beamRefConfRotMat( x21 ) ;
+Ro = beamRefConfRotMat( x21 )
 
 % --- rigid rotation ---
 
@@ -86,13 +86,13 @@ Rr = [ e1 e2 e3 ] ;
 u  = l - lo;
 
 % local rotations
+% Rr * Re1 * u = Rg1 * R0 * u
 Re1 = Rr' * Rg1 * Ro;
 Re2 = Rr' * Rg2 * Ro;
 
 tl1 = logar( Re1 ) ;
 tl2 = logar( Re2 ) ;
-
-locDisp = [ u tl1' tl2' ] ;
+locDisp = [ u tl1' tl2' ] 
 % -----------------------
 
 
@@ -235,7 +235,7 @@ if elemrho > 0
   sumGyro        = zeros (12    ) ;
   sumMass        = zeros (12    ) ;
 
-  % Compute interial force by quadrature 
+  % Compute interial force by quadrature
   xIntPoints = [ -sqrt(3/5)     0  sqrt(3/5)  ] ;
   wIntPoints = [        5/9	  8/9        5/9  ] ;
 
@@ -267,7 +267,7 @@ if elemrho > 0
   %     O3     O3      O3      inv(Dg2)' ];
   % MassMatrix = MassMatrix * Bt ;
   % GyroMatrix = GyroMatrix * Bt ;
-  
+
   Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
   GyroMatrix = Cambio_Base(GyroMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
   MassMatrix = Cambio_Base(MassMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
@@ -281,7 +281,7 @@ elseif elemrho == 0
   fs{3} = zeros(12,1) ;
   ks{2} = zeros(12) ;
   ks{3} = zeros(12) ;
-else 
+else
   error("Negative density \n")
 end
 end%endFunction
@@ -314,7 +314,7 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     % local displacements
     ul  = P1 * [ tl1; tl2 ] ; % Eq. 38 local disp
     wdoter  = G' * EE' * ddotg ;% Eq. 65
-    
+
     H1  = N + P1 * P - 1 * skew( ul ) * G' ;
 
     A1  =[  O1           O1   O1         O1 ;
@@ -337,7 +337,7 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
 
     % Linear and angular veclocites and acelerations
     udot    = Rr * H1 * EE' * ddotg; %Ec 61
-    udotdot = Rr * H1 * EE' * ddotdotg + Rr * C1 * EE' * ddotg; % Ec 67       
+    udotdot = Rr * H1 * EE' * ddotdotg + Rr * C1 * EE' * ddotg; % Ec 67
 
     H2      = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
     wdot  = Rr * H2 * EE' * ddotg;%Ec74
@@ -363,26 +363,26 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     IntegrandoForce  =      H1'* Rr' * Area * rho * udotdot ...
                             + H2' * Rr' * ( ...
                             Irho*wdotdot...
-                            + skew(wdot) * Irho * wdot 
-                            ) ;  %Eq 78     
+                            + skew(wdot) * Irho * wdot
+                            ) ;  %Eq 78
 
     IntegrandoMassMatrix  = 1*H1'*Area*rho*H1 + 1*H2'*Irhoe*H2;
 
     % Compute C3 and C4
     h1 = H1 * ddotg ; %Eq B6
     h2 = H2 * ddotg ;
-    
+
     rElem = [ [-1 0 0]   O1  [1 0 0] O1]; %Ec B10
-    
+
     % Could be worng
     F1    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']'; %Chequear con los nodales
-    
+
     C3    = -skew(h1) * G'  + (N7 / l^2) * A1 *(ddotg * rElem)...
                   +skewWdoter * P1 * P + H1 * F1 * G'; % B13
-    
+
     C4  = -skew(h2)*G' + ( N8 / l^2 )*A2*ddotg*rElem + H2 * F1 * G'; %B14
-    
+
     % Compute Gyroscopic Matrix
     IntegrandoGyroMatrix  =    H2' * ( ( skewWdoter * Irhoe ) - skew( Irhoe * wdoter) ) * H2 ...
-                                + H1' * Area*rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88                            
+                                + H1' * Area*rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88
 end
