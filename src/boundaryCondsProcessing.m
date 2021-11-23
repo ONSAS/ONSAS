@@ -18,7 +18,7 @@
 
 %md This function converts the mesh MEBI information to the data structures used in the numerical simulation
 
-function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing ( mesh, ...
+function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel ] = boundaryCondsProcessing ( mesh, ...
                         materials, ...     % M
                         elements, ...      % E
                         boundaryConds, ... % B
@@ -117,10 +117,17 @@ if neumDofs(1) == 0,
   neumDofs(1)=[] ;
 end
 
+% FIx me when userLoadsFilename boundaryConds(wind is not in the first cell)
 if isfield( boundaryConds,'userLoadsFilename' )
   userLoadsFilename = boundaryConds.userLoadsFilename ;
 else
   userLoadsFilename =[];
+end
+% FIx me when userWindVel boundaryConds(wind is not in the first cell)
+if isfield( boundaryConds,'userWindVel' )
+  userWindVel  = boundaryConds.userWindVel     ;  
+else
+  userWindVel     = [];
 end
 % ----------------------------------------------------------------------
 

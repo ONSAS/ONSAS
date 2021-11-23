@@ -31,9 +31,10 @@ nNodes     = size(Nodes, 1) ;
 % -------  residual forces vector ------------------------------------
 if fsBool
   % --- creates Fint vector ---
-  Fint = zeros( nNodes*6 , 1 ) ;
-  Fmas = zeros( nNodes*6 , 1 ) ;
-  Fvis = zeros( nNodes*6 , 1 ) ;
+  Fint  = zeros( nNodes*6 , 1 ) ;
+  Fmas  = zeros( nNodes*6 , 1 ) ;
+  Fvis  = zeros( nNodes*6 , 1 ) ;
+  Faero = zeros( nNodes*6 , 1 ) ;
 end
 
 % -------  tangent matrix        -------------------------------------
@@ -75,6 +76,13 @@ for elem = 1:nElems
   elemTypeParams   = elements(mebiVec(2)).elemTypeParams   ;
   elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry ;
 
+  % extract aerodinamic properties
+  elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
+  userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
+  userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
+  userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
+
+  aeroBool = ~isempty(elemTypeAero) && ~isempty(userDragCoef) && ~isempty(userMomentCoef) && ~isempty(userLiftCoef);
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
@@ -128,8 +136,28 @@ for elem = 1:nElems
     else
       error('wrong hyperElasModel for frame element.')
 		end
+    % -----------   aerodynmamic force   ------------------------------------
+    if aeroBool
+      % extract wind function name
+      userWindVel = analysisSettings.userWindVel;
+      numGaussPoints = 2;
+      % read aero paramters of the element
+      elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
+      userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
+      userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
+      userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
+      elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
+      % compute force
+      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry,
+                             u2ElemDisps( Ut       , dofselem ),
+                             u2ElemDisps( Udott    , dofselem ),
+                             u2ElemDisps( Udotdott , dofselem ) ,...
+                             userDragCoef, userLiftCoef, userMomentCoef,
+                             elemTypeAero, userWindVel, numGaussPoints);
 
-  % ---------  triangle solid element -----------------------------
+    end 
+
+   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemTypeGeometry ;
@@ -169,11 +197,8 @@ for elem = 1:nElems
    [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
-  end   % case tipo elemento
+  end   % case in typee of element ----
   % -------------------------------------------
-
-
-
 
   %md### Assembly
   %md
@@ -182,6 +207,9 @@ for elem = 1:nElems
     Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
+    end
+    if aeroBool
+      Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
   end
 
@@ -214,10 +242,6 @@ end % for elements ----
 
 
 % ============================================================================
-
-
-
-% ============================================================================
 %  --- 3 global additions and output ---
 % ============================================================================
 
@@ -241,8 +265,8 @@ if fsBool
 
   fsCell{2} = Fvis ;
   fsCell{3} = Fmas ;
+  fsCell{4} = Faero;
 end
-
 
 if tangBool
 
@@ -266,13 +290,6 @@ if tangBool
   tangMatsCell{2} = C ;
   tangMatsCell{3} = M ;
 end
-
-
-% ----------------------------------------
-
-
-
-
 
 % ==============================================================================
 %

@@ -23,14 +23,18 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams', []     ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry', []   ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeParams'   , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry' , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeAero'     , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'userDragCoef'     , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'userLiftCoef'     , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'userMomentCoef'   , []   ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 
 % analysis
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight' , false  )  ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'  , false  )  ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'              , [] )  ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'         , 'Octave' ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'         , 'newtonRaphson' ) ;

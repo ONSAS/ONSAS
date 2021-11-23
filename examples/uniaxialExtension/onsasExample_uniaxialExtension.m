@@ -200,7 +200,7 @@ aux2 = loadFactorNumericalValsCase2' - loadFactorAnalyticalValsCase1 ;
 
 verifBoolean = ...
      ( norm( aux1 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ...
-  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance )
+  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ;
 %md
 %md
 %md## Plot
