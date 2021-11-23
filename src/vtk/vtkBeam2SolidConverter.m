@@ -55,14 +55,10 @@ function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
     matrixSectionMed = [] ;
   end
 
-
-locRotIni
-locRotEnd
   % 2- apply the local rotation for the initial and final sections
   matrixRotatedSectionIni = ( expon( locRotIni ) * matrixSectionIni' )' ;
   matrixRotatedSectionEnd = ( expon( locRotEnd ) * matrixSectionEnd' )' ;
 
-dispLocEnd
   % 3- add local displacement and position
   matrixDisplacedSectionIni = matrixRotatedSectionIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
   matrixDisplacedSectionEnd = matrixRotatedSectionEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;

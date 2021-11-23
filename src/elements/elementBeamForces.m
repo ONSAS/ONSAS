@@ -59,7 +59,7 @@ lo = sqrt( ( x21       )' * ( x21       ) ) ; %
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
 
 % rotation matrix to reference configuration
-Ro = beamRefConfRotMat( x21 )
+Ro = beamRefConfRotMat( x21 ) ;
 
 % --- rigid rotation ---
 
@@ -92,7 +92,7 @@ Re2 = Rr' * Rg2 * Ro;
 
 tl1 = logar( Re1 ) ;
 tl2 = logar( Re2 ) ;
-locDisp = [ u tl1' tl2' ] 
+locDisp = [ u tl1' tl2' ] ;
 % -----------------------
 
 

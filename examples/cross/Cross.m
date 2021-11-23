@@ -47,8 +47,12 @@ boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 % Roller support
 boundaryConds(2).loadsCoordSys = 'global'        ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -50 0 ] ;
-boundaryConds(2).loadsTimeFact = @(t) t     ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -10 0 ] ;
+boundaryConds(2).loadsTimeFact = @(t) 1     ;
+
+boundaryConds(3).loadsCoordSys = 'global'        ;
+boundaryConds(3).loadsBaseVals = [ 0 0 0 0 -20 0 ] ;
+boundaryConds(3).loadsTimeFact = @(t) t     ;
 
 % Initial conditions
 % ----------------------------------------------------------------------
@@ -66,24 +70,22 @@ mesh.nodesCoords = [ -1   0  0  ; ...
 
 % Conec cell
 % ----------------------------------------------------------------------
-% First BC
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1 ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0   3 ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 1 0   4 ] ;
-mesh.conecCell{ 4, 1 } = [ 0 1 2 0   5 ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2 0   3 ] ;
 
-mesh.conecCell{ 5, 1 } = [ 1 2 0 0 1 2 ] ;
-mesh.conecCell{ 6, 1 } = [ 1 2 0 0 2 3 ] ;
-mesh.conecCell{ 7, 1 } = [ 1 3 0 0 4 2 ] ;
-mesh.conecCell{ 8, 1 } = [ 1 3 0 0 2 5 ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2 ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0 0   2 3 ] ;
+
+mesh.conecCell{ 5, 1 } = [ 1 2 0 0   4 2 ] ;
+mesh.conecCell{ 6, 1 } = [ 1 2 0 0   2 5 ] ;
+
+mesh.conecCell{ 7, 1 } = [ 0 1 3 0   5 ] ;
 
 
 % Analysis settings
-
-% Parameters
 % ----------------------------------------------------------------------
 analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   1  ;
+analysisSettings.deltaT        =   .5  ;
 analysisSettings.finalTime      =   1   ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
@@ -95,7 +97,6 @@ otherParams.plotsFormat = 'vtk' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 controlDisps =  matUs( 6+6, :)
-stop
 
 loadFactors  =  loadFactorsMat(:, 2) 			;
 stop

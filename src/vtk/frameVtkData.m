@@ -1,11 +1,6 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
    = frameVtkData( Nodes, Conec, elemTypeGeom, U )
 
-   disp("AAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-   disp("AAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-disp("AAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-Nodes, Conec
-
   vtkNodes        = [] ;
   vtkConec        = [] ;
   vtkNodalDisps   = [] ;
@@ -42,28 +37,23 @@ Nodes, Conec
     interFuncCubic  = bendingInterFuns( xsloc, elemLength, 0 ) ;
     interFuncQuad   = bendingInterFuns( xsloc, elemLength, 1 ) ;
 
-dispsElem
     [ R0, Rr, locDisp ] = elementBeamRotData( coordsElemNodes, dispsElem ) ;
 
-    ul              = locDisp( 1   )
-    thetaLocIniElem = locDisp( 2:4 )
-    thetaLocEndElem = locDisp( 5:7 )
+    ul              = locDisp( 1   ) ;
+    thetaLocIniElem = locDisp( 2:4 ) ;
+    thetaLocEndElem = locDisp( 5:7 ) ;
 
     % interpolation of displacements
     valsLocDispXSubElements = interFuncLinear * [ 0;  ul ] ;
     valsLocDispYSubElements = interFuncCubic  * [ 0;  thetaLocIniElem(3); 0;  thetaLocEndElem(3) ] ;
-    valsLocDispZSubElements = interFuncQuad   * [ 0; -thetaLocIniElem(2); 0; -thetaLocEndElem(2) ] ;
+    valsLocDispZSubElements = interFuncCubic   * [ 0; -thetaLocIniElem(2); 0; -thetaLocEndElem(2) ] ;
 
     % interpolation of angles
     valsLocThetaXSubElements = interFuncLinear * [    thetaLocIniElem(1);    thetaLocEndElem(1) ] ;
     valsLocThetaYSubElements = interFuncQuad   * [ 0; thetaLocIniElem(2); 0; thetaLocEndElem(2) ] ;
-    valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ]
-
-
+    valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ] ;
 
     for j = 1:nPlotSubElements,
-
-      fprintf('subelement: %3i \n--------- \n',j)
 
       dispLocIniSubElem = [ valsLocDispXSubElements( j   ) ; ...
                             valsLocDispYSubElements( j   ) ; ...
@@ -86,7 +76,6 @@ dispsElem
 
       [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( coordsElemNodes, ...
          dispsElem, coordLocSubElem, dispLocIniSubElem, dispLocEndSubElem, thetaLocIniSubElem, thetaLocEndSubElem, sectPar, Rr, R0 ) ;
-      %[ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( dispsElem, .2*[1 0 2]', [1 0 2]', [0; 0; 0.2], [.1; 0; 0], sectPar, Rr ) ;
 
       Conecvtk( :, 2:end ) = Conecvtk(:,2:end)+counterNodes ;
       vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
