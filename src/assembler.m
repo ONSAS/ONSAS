@@ -138,15 +138,16 @@ for elem = 1:nElems
 		end
     % -----------   aerodynmamic force   ------------------------------------
     if aeroBool
-      userWindVel = "windVel";
+      % extract wind function name
+      userWindVel = analysisSettings.userWindVel;
       numGaussPoints = 2;
-
+      % read aero paramters of the element
       elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
       userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
       userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
       userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
       elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
-
+      % compute force
       FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry,
                              u2ElemDisps( Ut       , dofselem ),
                              u2ElemDisps( Udott    , dofselem ),
