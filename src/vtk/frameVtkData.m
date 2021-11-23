@@ -1,86 +1,135 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
    = frameVtkData( Nodes, Conec, elemTypeGeom, U )
 
-  vtkNodes = [] ;
-  vtkConec = [] ;
+  vtkNodes        = [] ;
+  vtkConec        = [] ;
   vtkNodalDisps   = [] ;
   vtkNormalForces = [] ;
 
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
-  nelem = size(Conec,1) ;
+  nelem            = size(Conec,1) ;
 
   for i=1:nelem
 
-    nodesElem    = Conec(i,1:2)               ;
-    dofsElem     = nodes2dofs( nodesElem, 6 ) ;
-    coordSubElem = reshape( Nodes( nodesElem(:), : )', 6, 1 ) ;
+    % nodes and degrees of freedom of current element
+    nodesElem  = Conec(i,1:2)               ;
+    dofsElem   = nodes2dofs( nodesElem, 6 ) ;
 
-    l = norm( coordSubElem(4:6) - coordSubElem(1:3) ) ; % length
+    % column vector with the coordinates of the nodes of the element
+    coordsElemNodes = reshape( Nodes( nodesElem(:), : )', 6, 1 ) ;
 
+    % computes connectivity of vtk element associated with frame cross-section
     [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemTypeGeom ) ;
+
+    % length of current element
+    elemLength = norm( coordsElemNodes(4:6) - coordsElemNodes(1:3) ) ;
+
+    % column vector with displacements of the dofs of the current element
     dispsElem  = U( dofsElem ) ;
 
-    [ ~, ~, ~, rotData ] = elementBeamForces( coordSubElem, ones(5, 1)', [1 1 1], dispsElem, [], [] ,0 ) ;
+    % column vector with discretization in subelements, using local coordinates (r1,r2,r3)
+    xsloc  = linspace( 0, elemLength, nPlotSubElements+1 )' ;
 
-    locDisp = rotData{1} ;
-    Rr      = rotData{2} ;
+    % interpolation functions evaluation matrix with columns
+    %    [  N1(lin1)                          N2(lin2)            N3(v1) N4(theta1) N5(v2) N6(theta2) ]
+    interFuncLinear = [ ( elemLength - xsloc )/elemLength  xsloc/elemLength  ] ;
+    interFuncCubic  = bendingInterFuns( xsloc, elemLength, 0 ) ;
+    interFuncQuad   = bendingInterFuns( xsloc, elemLength, 1 ) ;
 
-    % set rotations in co-rot system
-    ul  = locDisp(1)   ;   tl1 = locDisp(2:4) ;  tl2 = locDisp(5:7) ;
+    [ R0, Rr, locDisp ] = elementBeamRotData( coordsElemNodes, dispsElem ) ;
 
-    % loc axial coords to evaluate magnitudes
-    xsloc  = linspace( 0 , l, nPlotSubElements+1 )' ;
+    ul              = locDisp( 1   ) ;
+    thetaLocIniElem = locDisp( 2:4 ) ;
+    thetaLocEndElem = locDisp( 5:7 ) ;
 
-    % conecSubElem = zeros( nPlotPoints, 2 ) ;
+    % interpolation of displacements
+    valsLocDispXSubElements = interFuncLinear * [ 0;  ul ] ;
+    valsLocDispYSubElements = interFuncCubic  * [ 0;  thetaLocIniElem(3); 0;  thetaLocEndElem(3) ] ;
+    valsLocDispZSubElements = interFuncCubic   * [ 0; -thetaLocIniElem(2); 0; -thetaLocEndElem(2) ] ;
 
-    % interpolation functions evaluation  matrix with columns
-    %    [  N1(lin1)        N2(lin2)   N3(v1) N4(theta1) N5(v2) N6(theta2) ]
-    Ns = [ ( l - xsloc )/l  xsloc/l    bendingInterFuns( xsloc, l, 0 )     ] ;
+    % interpolation of angles
+    valsLocThetaXSubElements = interFuncLinear * [    thetaLocIniElem(1);    thetaLocEndElem(1) ] ;
+    valsLocThetaYSubElements = interFuncQuad   * [ 0; thetaLocIniElem(2); 0; thetaLocEndElem(2) ] ;
+    valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ] ;
 
-    coordPlotSubElement = zeros(6,1) ;
+    for j = 1:nPlotSubElements,
 
-    for j=1:nPlotSubElements,
-      %fprintf('subelement: %3i \n--------- \n',j)
+      dispLocIniSubElem = [ valsLocDispXSubElements( j   ) ; ...
+                            valsLocDispYSubElements( j   ) ; ...
+                            valsLocDispZSubElements( j   ) ] ;
 
-      if j==1
-        veculIni = [ 0 ; ...
-                 [ Ns(j, 2+2)  Ns(j, 2+4) ]*[tl1(3); tl2(3)] ; ...
-                -[ Ns(j, 2+2)  Ns(j, 2+4) ]*[tl1(2); tl2(2)]  ] ;
+      dispLocEndSubElem = [ valsLocDispXSubElements( j+1 ) ; ...
+                            valsLocDispYSubElements( j+1 ) ; ...
+                            valsLocDispZSubElements( j+1 ) ] ;
 
-        nodalDispIni   = Ns(j  ,1) * ( dispsElem(1:2:6 ) ) ...
-                       + Ns(j  ,2) * ( dispsElem(7:2:12) ) ...
-                       + Rr        * veculIni ;
-        coordPlotSubElement(1:3) = Ns(j  ,1) * ( coordSubElem(1:3 ) ) ...
-                                 + Ns(j  ,2) * ( coordSubElem(4:6 ) ) ;
+      % 2-compute local rotations for the initial and final sections
+      thetaLocIniSubElem = [ valsLocThetaXSubElements( j   ) ; ...
+                             valsLocThetaYSubElements( j   ) ; ...
+                             valsLocThetaZSubElements( j   ) ] ;
+      %
+      thetaLocEndSubElem = [ valsLocThetaXSubElements( j+1 ) ; ...
+                             valsLocThetaYSubElements( j+1 ) ; ...
+                             valsLocThetaZSubElements( j+1 ) ] ;
 
-      else
-        veculIni = veculEnd ;
-        nodalDispIni = nodalDispEnd ;
-        coordPlotSubElement(1:3) = coordPlotSubElement(4:6) ;
-      end
+      coordLocSubElem = [ xsloc(j); xsloc(j+1) ] ;
 
-      veculEnd = [ 0 ; ...
-               [ Ns(j+1, 2+2)  Ns(j+1, 2+4) ]*[tl1(3); tl2(3)] ; ...
-              -[ Ns(j+1, 2+2)  Ns(j+1, 2+4) ]*[tl1(2); tl2(2)]  ] ;
+      [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( coordsElemNodes, ...
+         dispsElem, coordLocSubElem, dispLocIniSubElem, dispLocEndSubElem, thetaLocIniSubElem, thetaLocEndSubElem, sectPar, Rr, R0 ) ;
 
-      nodalDispEnd   = Ns(j+1,1) * ( dispsElem(1:2:6 ) ) ...
-                     + Ns(j+1,2) * ( dispsElem(7:2:12) ) ...
-                     + Rr        * veculEnd ;
-      coordPlotSubElement(4:6) = Ns(j+1,1) * ( coordSubElem(1:3 ) ) ...
-                               + Ns(j+1,2) * ( coordSubElem(4:6 ) ) ;
-
-      nodalDisp = [ nodalDispIni ; nodalDispEnd ] ;
-
-      [ Nodesvtk, Conecvtk ] = vtkBeam2SolidConverter( coordPlotSubElement, nodalDisp, locDisp(2:7), sectPar ) ;
-
-      Conecvtk(:,2:end) = Conecvtk(:,2:end)+counterNodes ;
-      vtkNodes = [ vtkNodes ; Nodesvtk ] ;
-      vtkConec = [ vtkConec ; Conecvtk ] ;
-      vtkNodalDisps = [ vtkNodalDisps; ones(4, 1)*(nodalDispIni') ; ones(4, 1)*(nodalDispEnd') ] ;
+      Conecvtk( :, 2:end ) = Conecvtk(:,2:end)+counterNodes ;
+      vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
+      vtkConec             = [ vtkConec ;     Conecvtk ] ;
+      vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
 
       counterNodes = counterNodes + 8 ;
 
     end % for plot points
 
   end % for elements
+
+
+
+
+
+
+
+
+
+
+  %
+  %
+  %       if j==1 % compute the first face of the first subelement
+  %         % compute the transversal displacements ux,uy,uz for the baricenter of the
+  %         % initial cross section of the current sub element
+  %         % interpolates using navier-Bernoulli
+  %         veculIni = [ 0 ; ...
+  %                  [ Ns(j, 2+2)  Ns(j, 2+4) ]*[tl1(3); tl2(3)] ; ...
+  %                 -[ Ns(j, 2+2)  Ns(j, 2+4) ]*[tl1(2); tl2(2)]  ]
+  % Rr
+  % absolutedisp = Rr        * veculIni
+  % %stop
+  %         % compute nodal displacemets, interpolates using linear functions
+  %         nodalDispIni   = Ns(j  ,1) * ( dispsElem(1:2:6 ) ) ...
+  %                        + Ns(j  ,2) * ( dispsElem(7:2:12) ) ...
+  %                        + Rr        * veculIni
+  %         coordPlotSubElement(1:3) = Ns(j  ,1) * ( coordSubElem(1:3 ) ) ...
+  %                                  + Ns(j  ,2) * ( coordSubElem(4:6 ) )
+  %
+  %       else
+  %         veculIni = veculEnd ;
+  %         nodalDispIni = nodalDispEnd ;
+  %         coordPlotSubElement(1:3) = coordPlotSubElement(4:6) ;
+  %       end
+  %
+  %       veculEnd = [ 0 ; ...
+  %                [ Ns(j+1, 2+2)  Ns(j+1, 2+4) ]*[tl1(3); tl2(3)] ; ...
+  %               -[ Ns(j+1, 2+2)  Ns(j+1, 2+4) ]*[tl1(2); tl2(2)]  ] ;
+  %
+  %       nodalDispEnd   = Ns(j+1,1) * ( dispsElem(1:2:6 ) ) ...
+  %                      + Ns(j+1,2) * ( dispsElem(7:2:12) ) ...
+  %                      + Rr        * veculEnd ;
+  %       coordPlotSubElement(4:6) = Ns(j+1,1) * ( coordSubElem(1:3 ) ) ...
+  %                                + Ns(j+1,2) * ( coordSubElem(4:6 ) ) ;
+  %
+  %       nodalDisp = [ nodalDispIni ; nodalDispEnd ] ;
