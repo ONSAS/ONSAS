@@ -17,7 +17,7 @@ numElements = 10 ;
 %md
 %md### materials
 %md Since the example contains only aeroFoone rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
-materials.hyperElasModel  = '1DrotEngStrain' ;
+materials.hyperElasModel  = 'linearElastic' ;
 materials.hyperElasParams = [ E nu ] ;
 materials.density = rho ;
 %md
@@ -129,7 +129,7 @@ thetaZdefNum = matUs(6:6:end,end);
 % Plot parameters:
 lw = 5 ; ms = 8 ;
 % labels parameters:
-labelTitle= [' Validating solution with ' num2str(numElements) ' element' ];
+labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
 axislw= 2; axisFontSize = 20 ; legendFontSize = 15; curveFontSize = 15;       
 
 % Plot linear displacements
