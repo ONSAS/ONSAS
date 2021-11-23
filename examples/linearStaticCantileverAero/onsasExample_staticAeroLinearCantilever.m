@@ -43,7 +43,6 @@ boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) 0;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
 %md the name of the wind velocity function is: 
-boundaryConds(3).userWindVel    = 'windVel';
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
@@ -69,6 +68,7 @@ analysisSettings.finalTime     =   0.5    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
+analysisSettings.userWindVel   = 'windVel';
 %md
 %md## otherParams
 otherParams.problemName = 'aeroLinStaticCantilever';
@@ -88,7 +88,7 @@ c_l = feval(elements(2).userLiftCoef,   betaRel);
 c_m = feval(elements(2).userMomentCoef, betaRel);
 
 %mdget wind velocity
-windVel = feval(boundaryConds(3).userWindVel, betaRel);
+windVel = feval(analysisSettings.userWindVel, betaRel);
 %mdcaracteristicDimension
 dimCaracteristic = norm(elements(2).elemTypeAero);
 
