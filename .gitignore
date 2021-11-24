@@ -17,8 +17,6 @@
 /*/*/*.toc
 /*/*/*.xwm
 octave-workspace
-/documentation/*.bbl
-/documentation/*.blg
 /src/*.txt
 /src/*.oct
 *.mat
@@ -26,3 +24,6 @@ octave-workspace
 *.dat
 *.lnx
 /examples/strings.txt
+Manifest.toml
+docs/build/
+docs/site/

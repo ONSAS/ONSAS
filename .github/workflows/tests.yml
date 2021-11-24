@@ -11,6 +11,23 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: 1.6
+      - name: Install julia dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.add("Documenter"); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Build and deploy
+        env:
+          url: https://onsas.github.io/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
+        run: julia --project=docs/ docs/make.jl
+
+
   # tests-disp-coverage:
   #   runs-on: [ubuntu-latest]
   #   steps:
