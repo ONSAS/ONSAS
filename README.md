@@ -1,5 +1,5 @@
 
-# ONSAS: an Open Nonlinear Structural Analysis Solver
+# ONSAS.m: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
