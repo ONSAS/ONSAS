@@ -1,8 +1,11 @@
-# This is a basic workflow to help you get started with Actions
-name: tests
+# This is the ONSAS.m continuous integration config file
+#
+name: tests+docs
+
 on: [push, pull_request]
+
 jobs:
-  tests-disp:
+  tests:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
@@ -11,7 +14,7 @@ jobs:
         with:
           src: examples/staticVonMisesTruss examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint src src/elements src/vtk src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
-  build:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
