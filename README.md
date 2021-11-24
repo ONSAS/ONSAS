@@ -2,7 +2,7 @@
 # ONSAS: an Open Nonlinear Structural Analysis Solver
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.docs/dev/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
 [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -53,7 +53,7 @@ The code is distributed under a GNU-GPL 3.0 license.
 The user should follow these steps to install and run onsas:
 
 1. Download and install [GNU-Octave](https://www.gnu.org/software/octave/) and [Paraview](https://www.paraview.org/)
-1. Download the ONSAS source files from https://github.com/onsas/onsas/archive/v0.1.10.zip
+1. Download the ONSAS zip source files from the realeases web https://github.com/ONSAS/ONSAS/releases
 1. Open GNU-Octave, move to the _examples_ directory and run one of the examples.
 
 ## Contributions <a name="contributions"></a>
