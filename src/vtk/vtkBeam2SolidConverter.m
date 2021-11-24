@@ -23,8 +23,7 @@ function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
 
   typeSolid = sectPar(1) ;
 
-  dispIniSection = dispsElem(1:2:5)  ;
-  dispEndSection = dispsElem(7:2:11) ;
+  dispIniSection = dispsElem(1:2:5) ;    dispEndSection = dispsElem(7:2:11) ;
 
   if typeSolid == 12 % vtkHexa
 

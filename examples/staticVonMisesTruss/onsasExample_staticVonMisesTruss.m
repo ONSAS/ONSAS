@@ -140,7 +140,7 @@ otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
 analysisSettings.finalTime     = 4.5                             ;
 analysisSettings.incremArcLen = 0.1                             ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -153,7 +153,7 @@ difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 
 verifBoolean =  ( ( norm( difLoadEngRot    ) / norm( loadFactorsNREngRot  ) ) <  1e-4 ) ...
              && ( ( norm( difLoadGreen     ) / norm( loadFactorsNRGreen   ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 )
+             && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 ) ;
 
 %md### Plots
 %md and solutions are plotted.
