@@ -98,7 +98,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     vtkConec      = [ vtkConec ;  [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes]]           ;
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
-		totalNodes = totalNodes + size(currVtkNodes,1) 
+		totalNodes = totalNodes + size(currVtkNodes,1) ; 
 
   end % for: elemTypeInds
 
