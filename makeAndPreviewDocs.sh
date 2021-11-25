@@ -1,17 +1,12 @@
 #!/bin/bash
 
-if [ -z "$ONSAS_PATH" ]; then
-    echo "Need to set ONSAS_PATH"
-    exit 1
-fi
-
 cd src
-octave --eval "bringONSASmFilesToONSASdocs('$ONSAS_PATH')"
+octave --eval "bringONSASmFilesToONSASdocs"
 cd ..
 
-cp "$ONSAS_PATH/examples/staticVonMisesTruss/output/vonMisesTrussCheck.png" docs/src/
-cp "$ONSAS_PATH/examples/uniaxialExtension/output/verifUniaxial.png" docs/src/
-cp "$ONSAS_PATH/examples/uniformCurvatureCantilever/output/verifCantileverBeam.png" docs/src/
+cp "examples/staticVonMisesTruss/output/vonMisesTrussCheck.png" docs/src/
+cp "examples/uniaxialExtension/output/verifUniaxial.png" docs/src/
+cp "examples/uniformCurvatureCantilever/output/verifCantileverBeam.png" docs/src/
 
 # make documention
 julia docs/make.jl $1
@@ -23,4 +18,7 @@ then
 elif [ $1 = html ]
 then
   firefox docs/build/index.html
+else
+  echo "ERROR 'pdf' or 'html' argument must be provided to this script"
+  exit 1
 fi
