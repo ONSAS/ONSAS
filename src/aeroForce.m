@@ -165,10 +165,22 @@ function integAeroForce = integAeroForce(x, ddotg, udotWindElem, lo, l, nu, nu11
   % rotate chord vector
   tch = RgGx * vecChordUndef;
   betaRelG =  acos ( dot(tch ,td ) ) ;
-  % Aero coefficients:
-  C_d =  feval( userDragCoef    , betaRelG );
-  C_l =  feval( userLiftCoef    , betaRelG ); 
-  C_m =  feval( userMomentCoef  , betaRelG ); 
+  % If exisits coefficients then compute:
+  if ~isempty(userDragCoef)
+    C_d = feval(userDragCoef, betaRelG);
+  else
+    C_d = 0;
+  end
+  if ~isempty(userLiftCoef)
+    C_l = feval(userLiftCoef, betaRelG); 
+  else
+    C_l = 0;
+  end
+  if ~isempty(userMomentCoef)
+    C_m = feval(userMomentCoef, betaRelG ); 
+  else
+    C_m = 0;
+  end
 
   % Aero forces
   rhoAire = 1.2;

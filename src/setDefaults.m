@@ -32,6 +32,7 @@ elements          = checkOrSetDefault ( elements         , 'userMomentCoef'   , 
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
+boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
 
 % analysis
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'  , false  )  ;

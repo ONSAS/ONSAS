@@ -83,9 +83,25 @@ rhoAire = 1.2;
 %evaluate drag/lift and moment coefficents
 betaRel = acos(dot(elements(2).elemTypeAero , [0 0 1] ));
 
-c_d = feval(elements(2).userDragCoef,   betaRel);
-c_l = feval(elements(2).userLiftCoef,   betaRel);
-c_m = feval(elements(2).userMomentCoef, betaRel);
+
+if isfield(elements(2), 'userDragCoef')
+  c_d = feval(elements(2).userDragCoef, betaRel);
+else
+  c_d = 0;
+end
+if isfield(elements(2), 'userLiftCoef')
+  c_l = feval(elements(2).userLiftCoef, betaRel);
+else
+  c_l = 0;
+end
+if isfield(elements(2), 'userMomentCoef')
+  c_m = feval(elements(2).userMomentCoef, betaRel);
+else
+  c_m = 0;
+end
+
+% c_l = feval(elements(2).userLiftCoef,   betaRel);
+% c_m = feval(elements(2).userMomentCoef, betaRel);
 
 %mdget wind velocity
 windVel = feval(analysisSettings.userWindVel, betaRel);
