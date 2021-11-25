@@ -23,32 +23,34 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams'   , []   ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry' , []   ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeAero'     , []   ) ;
-elements          = checkOrSetDefault ( elements         , 'userDragCoef'     , []   ) ;
-elements          = checkOrSetDefault ( elements         , 'userLiftCoef'     , []   ) ;
-elements          = checkOrSetDefault ( elements         , 'userMomentCoef'   , []   ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeParams'   , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry' , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeAero'     , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userDragCoef'     , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userLiftCoef'     , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userMomentCoef'   , [] ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
 
 % analysis
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'  , false  )  ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'              , [] )  ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'         , 'Octave' ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'         , 'newtonRaphson' ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'             , 1    ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'          , 1    ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'      , 1e-6 ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'      , 1e-6 ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'         , 10   ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'userWindVel'            , []              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'             , 'Octave'        ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'                 , 1               ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'              , 1               ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'          , 1e-6            ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'          , 1e-6            ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'             , 10              ) ;
 
 
 % otherParams
-otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1  ) ;
-otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []  ) ;
+otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1 ) ;
+otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []     ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
 
 

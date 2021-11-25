@@ -76,7 +76,6 @@ for elem = 1:nElems
   elemTypeParams   = elements(mebiVec(2)).elemTypeParams   ;
   elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry ;
 
-  % -----------   aerodynmamic force   ------------------------------------
   %md extract aerodinamic properties
   elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
   userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
@@ -152,6 +151,8 @@ for elem = 1:nElems
     if aeroBool
       % extract wind function name
       userWindVel = analysisSettings.userWindVel;
+      % extract nonLinearity in aero force boolean
+      geometricNonLinearAero = analysisSettings.geometricNonLinearAero;
       numGaussPoints = 2;
       % read aero paramters of the element
       elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
@@ -171,7 +172,7 @@ for elem = 1:nElems
                              u2ElemDisps( Udott    , dofselem ),
                              u2ElemDisps( Udotdott , dofselem ) ,...
                              userDragCoef, userLiftCoef, userMomentCoef,
-                             elemTypeAero, userWindVel, numGaussPoints);
+                             elemTypeAero, userWindVel, numGaussPoints, geometricNonLinearAero);
 
     end 
 
@@ -182,6 +183,7 @@ for elem = 1:nElems
 
     if strcmp( hyperElasModel, 'linearElastic' )
 
+    % -----------   aerodynmamic force   ------------------------------------
       planeStateFlag = elemTypeParams ;
       dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
 

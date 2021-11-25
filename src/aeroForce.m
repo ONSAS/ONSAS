@@ -1,14 +1,16 @@
-function fagElem = aeroForce(elemCoords, elemCrossSecParams, Ue, Udote, Udotdote, userDragCoef, userLiftCoef, userMomentCoef, elemTypeAero, userWindVel, numGaussPoints)                               
+function fagElem = aeroForce(elemCoords, elemCrossSecParams, Ue, Udote, Udotdote, userDragCoef, userLiftCoef, userMomentCoef, elemTypeAero, userWindVel, numGaussPoints,geometricNonLinearAero)                               
   %Boolean to compute aerodinamic force with ut = 0
-  booleanLinearForce = true;
-
-  if booleanLinearForce
+  if ~geometricNonLinearAero 
     Ue = zeros(12,1);
   end
   % Nodal Winds:
-  udotWindNode1 = feval( userWindVel, elemCoords(1) ); 
-  udotWindNode2 = feval( userWindVel, elemCoords(4) ); 
-  udotWindElem  = [udotWindNode1; udotWindNode2];
+  if ~isempty(userWindVel)
+    udotWindNode1 = feval( userWindVel, elemCoords(1) ); 
+    udotWindNode2 = feval( userWindVel, elemCoords(4) ); 
+    udotWindElem  = [udotWindNode1; udotWindNode2];
+  else
+    error('A userWindVel field with the name of wind velocty function must be defined into analysiSettings struct')
+  end
   % Elem reference coordinates:
   xs = elemCoords(:);
 
