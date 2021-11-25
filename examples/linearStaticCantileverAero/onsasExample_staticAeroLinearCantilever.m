@@ -39,10 +39,6 @@ elements(2).userMomentCoef = 'momentCoefFunction' ;
 %md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
-% boundaryConds(2).loadsCoordSys = 'global'        ;
-% boundaryConds(2).loadsTimeFact = @(t) 0;
-% boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
-%md the name of the wind velocity function is: 
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
@@ -68,7 +64,10 @@ analysisSettings.finalTime     =   0.5    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
+%md the name of the wind velocity function is: 
 analysisSettings.userWindVel   = 'windVel';
+%md geomtrical nonlinearty in wind force is no taking into account in this example:
+analysisSettings.geometricNonLinearAero = false;
 %md
 %md## otherParams
 otherParams.problemName = 'aeroLinStaticCantilever';
