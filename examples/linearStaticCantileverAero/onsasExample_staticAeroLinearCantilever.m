@@ -4,7 +4,7 @@ close all, clear all ;
 addpath( genpath( [ pwd '/../../src'] ) );
 addpath( genpath( [ pwd ] ) );
 % material scalar parameters
-E = 70e9 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu))
+E = 70e9 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
 l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b ;
 A = pi * (dext^2 - dint^2) / 4  ;
@@ -58,7 +58,7 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 % mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1   ] ;
 %md the following case only differs in the boundary condition and the node number
 for i=1:numElements,
-  mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 %md
 %md### analysisSettings
