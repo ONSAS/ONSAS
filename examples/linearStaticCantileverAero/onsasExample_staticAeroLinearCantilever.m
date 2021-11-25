@@ -39,9 +39,9 @@ elements(2).userMomentCoef = 'momentCoefFunction' ;
 %md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
-boundaryConds(2).loadsCoordSys = 'global'        ;
-boundaryConds(2).loadsTimeFact = @(t) 0;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
+% boundaryConds(2).loadsCoordSys = 'global'        ;
+% boundaryConds(2).loadsTimeFact = @(t) 0;
+% boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
 %md the name of the wind velocity function is: 
 %md
 %md### initial Conditions
@@ -55,7 +55,7 @@ mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] 
 mesh.conecCell = { } ;
 %md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node is included.
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1   ] ;
+% mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1   ] ;
 %md the following case only differs in the boundary condition and the node number
 for i=1:numElements,
   mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
