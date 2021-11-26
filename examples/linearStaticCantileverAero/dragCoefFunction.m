@@ -6,6 +6,6 @@ function C_d = dragCoefFunction (betaRel)
       C_d = +1.2 - 0.6* cos( omega_drag * betaRel);
     else 
       betaRel
-      error ('The angle must be between 0 and 210 degrees to use these aerodynamic coefficients')
+      error ("The angle must be beteween 0º and 210 to use this aerodynamic coefficents")
     end
 end

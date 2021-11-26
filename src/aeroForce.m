@@ -167,7 +167,7 @@ function integAeroForce = integAeroForce(x, ddotg, udotWindElem, lo, l, nu, nu11
   % rotate chord vector
   tch = RgGx * vecChordUndef;
   betaRelG =  acos ( dot(tch ,td ) ) ;
-  % If exisits coefficients then compute:
+  %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty(userDragCoef)
     C_d = feval(userDragCoef, betaRelG);
   else
