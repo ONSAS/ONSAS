@@ -65,7 +65,7 @@ analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
 %md the name of the wind velocity function is: 
 analysisSettings.userWindVel   = 'windVel';
-%md geomtrical nonlinearty in wind force is no taking into account in this example:
+%md geometrical nonlinearity in the wind force is not taken into account in this example:
 analysisSettings.geometricNonLinearAero = false;
 %md
 %md## otherParams
