@@ -2,7 +2,6 @@
 close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
-addpath( genpath( [ pwd ] ) );
 % material scalar parameters
 E = 70e9 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
