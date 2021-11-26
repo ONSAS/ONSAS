@@ -17,7 +17,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping )
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,... 
+                                                           materials, KS, Ut, Udott, Udotdott,
+                                                           analysisSettings, outputBooleans, nodalDispDamping )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
@@ -77,23 +79,23 @@ for elem = 1:nElems
   elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry ;
 
   %md extract aerodinamic properties
-  elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
-  userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
-  userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
-  userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
+  elemTypeAero     = elements(mebiVec(2)).elemTypeAero     ;
+  userDragCoef     = elements(mebiVec(2)).userDragCoef     ;
+  userLiftCoef     = elements(mebiVec(2)).userLiftCoef     ;
+  userMomentCoef   = elements(mebiVec(2)).userMomentCoef   ;
   
   %md compute aerodynamic compute force boolean
   AeroCoefficentsBool = ~isempty(userDragCoef) || ~isempty(userMomentCoef) || ~isempty(userLiftCoef) ;
-  aeroBool = ~isempty(elemTypeAero) && AeroCoefficentsBool;
+  aeroBool = ~isempty(elemTypeAero) && AeroCoefficentsBool ;
   %md chcek unless one coefficient is defined 
 
   %md obtain elemeny info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
-  nodeselem   = Conec( elem, (4+1):(4+numNodes) )'      ;
-  dofselem    = nodes2dofs( nodeselem , 6 )  ;
-  dofselemRed = dofselem ( 1 : dofsStep : end ) ;
+  nodeselem   = Conec( elem, (4+1):(4+numNodes) )' ;
+  dofselem    = nodes2dofs( nodeselem , 6 )        ;
+  dofselemRed = dofselem ( 1 : dofsStep : end )    ;
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
@@ -133,37 +135,37 @@ for elem = 1:nElems
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
-      Finte = fs{1} ;  Ke    = ks{1} ;
+      Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-        Fmase = fs{3} ;  Ce    = ks{2} ;   Mmase = ks{3} ;
+        Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
       error('wrong hyperElasModel for frame element.')
 		end
-    if ~isempty(elemTypeAero) &&  aeroBool== 0
-    error("Drag, Lift or Moment coefficients must be defined in elements struct\n ")
+    if ~isempty(elemTypeAero) &&  aeroBool == 0
+      error("Drag, Lift or Moment coefficients must be defined in elements struct\n ")
     end
     %md chcek wind velocity is defined
-    if AeroCoefficentsBool &&  aeroBool== 0
-    error("elemTypeAero chord vector must be defined must be defined in elements struct \n")
+    if AeroCoefficentsBool &&  aeroBool == 0
+      error("elemTypeAero chord vector must be defined in elements struct \n")
     end
     if aeroBool
       % extract wind function name
-      userWindVel = analysisSettings.userWindVel;
+      userWindVel = analysisSettings.userWindVel ;
       % extract nonLinearity in aero force boolean
-      geometricNonLinearAero = analysisSettings.geometricNonLinearAero;
-      numGaussPoints = 2;
+      geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
+      numGaussPoints = 2 ;
       % read aero paramters of the element
-      elemTypeAero     = elements(mebiVec(2)).elemTypeAero    ;
+      elemTypeAero = elements(mebiVec(2)).elemTypeAero ;  
       if ~isempty(userDragCoef)
-        userDragCoef     = elements(mebiVec(2)).userDragCoef    ;
+        userDragCoef = elements(mebiVec(2)).userDragCoef ;
       end
       if ~isempty(userLiftCoef)
-        userLiftCoef     = elements(mebiVec(2)).userLiftCoef    ;
+        userLiftCoef = elements(mebiVec(2)).userLiftCoef ;
       end
       if ~isempty(userMomentCoef)
-      userMomentCoef   = elements(mebiVec(2)).userMomentCoef  ;
+        userMomentCoef = elements(mebiVec(2)).userMomentCoef ;
       end
       elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
       % compute force
@@ -172,7 +174,7 @@ for elem = 1:nElems
                              u2ElemDisps( Udott    , dofselem ),
                              u2ElemDisps( Udotdott , dofselem ) ,...
                              userDragCoef, userLiftCoef, userMomentCoef,
-                             elemTypeAero, userWindVel, numGaussPoints, geometricNonLinearAero);
+                             elemTypeAero, userWindVel, numGaussPoints, geometricNonLinearAero) ;
 
     end 
 
@@ -238,8 +240,8 @@ for elem = 1:nElems
 
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
 
-      indsIK ( entriesSparseStorVecs  ) = dofselemRed( indRow )     ;
-      indsJK ( entriesSparseStorVecs )  = dofselemRed       ;
+      indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
+      indsJK ( entriesSparseStorVecs )  = dofselemRed ;
       valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
 
       if dynamicProblemBool
@@ -283,9 +285,9 @@ if fsBool
     Fvis = dampingMat * Udott ;
   end
 
-  fsCell{2} = Fvis ;
-  fsCell{3} = Fmas ;
-  fsCell{4} = Faero;
+  fsCell{2} = Fvis  ;
+  fsCell{3} = Fmas  ;
+  fsCell{4} = Faero ;
 end
 
 if tangBool
@@ -336,4 +338,4 @@ end
 % _____&&&&&&&&&&&&&& GENERALIZAR PARA RELEASES &&&&&&&&&&&&&&&
 function elemDisps = u2ElemDisps( U, dofselem)
 
-elemDisps = U(dofselem);
+elemDisps = U( dofselem ) ;
