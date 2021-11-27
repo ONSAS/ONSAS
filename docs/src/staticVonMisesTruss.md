@@ -17,6 +17,7 @@ The solutions are developed in [section 2.3 of (Bazzano and Pérez Zerpa, 2017)]
 ## Numerical solution
 ---------------------
 
+
 The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/onsasExample_staticVonMisesTruss.m).
 
 Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.

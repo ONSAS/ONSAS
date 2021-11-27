@@ -3,9 +3,10 @@
 %md executed from the bash terminal: `octave --eval "bringONSASmFilesToONSAS_docs('$ONSAS_PATH')"`
 %md where \$ONSAS_PATH is the environment variable with the directory of ONSAS.m
 
-function bringONSASmFilesToONSASdocs( dirONSASm );
+function bringONSASmFilesToONSASdocs
 
   dirONSAS_docs = '../docs/src/' ;
+  dirONSASm     = '../'          ; 
 
   addpath( genpath( '../src/' ));
 
