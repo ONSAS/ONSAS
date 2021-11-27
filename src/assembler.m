@@ -142,7 +142,7 @@ for elem = 1:nElems
       end
     else
       error('wrong hyperElasModel for frame element.')
-		end
+   end
     if ~isempty(elemTypeAero) &&  aeroBool == 0
       error("Drag, Lift or Moment coefficients must be defined in elements struct\n ")
     end
