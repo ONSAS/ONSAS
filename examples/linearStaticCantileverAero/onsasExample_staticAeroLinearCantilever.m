@@ -17,8 +17,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only aeroFoone rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams = [ E nu ] ;
-materials.density = rho ;
+materials.hyperElasParams = [ E nu ]        ;
+materials.density         = rho             ;
 %md
 %md### elements
 %md
@@ -58,8 +58,8 @@ end
 %md
 %md### analysisSettings
 analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   0.5  ;
-analysisSettings.finalTime     =   0.5    ;
+analysisSettings.deltaT        =   0.1  ;
+analysisSettings.finalTime     =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
@@ -98,63 +98,60 @@ else
   c_m = 0;
 end
 
-% c_l = feval(elements(2).userLiftCoef,   betaRel);
-% c_m = feval(elements(2).userMomentCoef, betaRel);
-
 %mdget wind velocity
-windVel = feval(analysisSettings.userWindVel, betaRel);
+windVel = feval(analysisSettings.userWindVel, betaRel, analysisSettings.finalTime) ;
 %mdcaracteristicDimension
-dimCaracteristic = norm(elements(2).elemTypeAero);
+dimCaracteristic = norm(elements(2).elemTypeAero) ;
 
 %dynamic presure
-q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2);
+q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) ;
 %loads per unit of length  
-qz = q * c_d * dimCaracteristic; 
-qy = q * c_l * dimCaracteristic; 
-qm = q * c_m * dimCaracteristic; 
+qz = q * c_d * dimCaracteristic ; 
+qy = q * c_l * dimCaracteristic ; 
+qm = q * c_m * dimCaracteristic ; 
 %reference coordinates
-xref = mesh.nodesCoords(:,1);
-yref = mesh.nodesCoords(:,2);
-zref = mesh.nodesCoords(:,3);
+xref = mesh.nodesCoords(:,1) ;
+yref = mesh.nodesCoords(:,2) ;
+zref = mesh.nodesCoords(:,3) ;
 
 %Analytic x vector
-sizeAnalyticX = 100;
-xanal = linspace(0,l,sizeAnalyticX)';
+sizeAnalyticX = 100 ;
+xanal = linspace(0,l,sizeAnalyticX)' ;
 
 %Evaluate analytical solutions
 % linear disp
 ydefAnalytic = qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 zdefAnalytic = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 % angular disp
-thetaXAnalytic = qm / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 );
-thetaYAnalytic = -qz / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3);
-thetaZAnalytic = qy / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3);
+thetaXAnalytic = qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
+thetaYAnalytic = -qz  / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
+thetaZAnalytic = qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 
 % Load numerical solution
 %linear disp
-xdefNum = mesh.nodesCoords(:,1) + matUs(1:6:end,end);
-ydefNum = mesh.nodesCoords(:,2) + matUs(3:6:end,end);
-zdefNum = mesh.nodesCoords(:,2) + matUs(5:6:end,end);
+xdefNum = mesh.nodesCoords(:,1) + matUs(1:6:end,end) ;
+ydefNum = mesh.nodesCoords(:,2) + matUs(3:6:end,end) ;
+zdefNum = mesh.nodesCoords(:,2) + matUs(5:6:end,end) ;
 %angular disp
-thetaXdefNum = matUs(2:6:end,end);
-thetaYdefNum = matUs(4:6:end,end);
-thetaZdefNum = matUs(6:6:end,end);
+thetaXdefNum = matUs(2:6:end,end) ;
+thetaYdefNum = matUs(4:6:end,end) ;
+thetaZdefNum = matUs(6:6:end,end) ;
 
 % Plot parameters:
 lw = 5 ; ms = 8 ;
 % labels parameters:
 labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
-axislw= 2; axisFontSize = 20 ; legendFontSize = 15; curveFontSize = 15;       
+axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;       
 
 % Plot linear displacements
 figure
 hold on  
 grid on
-plot(xdefNum, zdefNum,'ro' , 'linewidth', lw, 'markersize', ms);
-plot(xanal, zdefAnalytic,'r-' , 'linewidth', lw, 'markersize', ms);
-plot(xdefNum, ydefNum, 'bo' , 'linewidth', lw,'markersize', ms);
-plot(xanal, ydefAnalytic,'b-' , 'linewidth', lw, 'markersize', ms);
-legend('z_n', 'z_a','y_n', 'y_a', 'location', 'north')
+plot(xdefNum, zdefNum     ,'ro' , 'linewidth', lw, 'markersize' , ms) ;
+plot(xanal  , zdefAnalytic,'r-' , 'linewidth', lw, 'markersize' , ms) ;
+plot(xdefNum, ydefNum     ,'bo' , 'linewidth', lw,'markersize'  , ms) ;
+plot(xanal  , ydefAnalytic,'b-' , 'linewidth', lw, 'markersize' , ms) ;
+legend('z_n', 'z_a',  'y_n', 'y_a', 'location', 'north')
 labx=xlabel(' x (m)');    laby=ylabel('Displacements (m)');
 title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
@@ -167,18 +164,18 @@ print('./output/linearDisp.png')
 figure
 hold on  
 grid on
-plot(xdefNum, rad2deg(thetaYdefNum), 'ro' , 'linewidth', lw, 'markersize', ms);
-plot(xanal, rad2deg(thetaYAnalytic), 'r-' , 'linewidth', lw, 'markersize', ms);
-plot(xdefNum, rad2deg(thetaZdefNum), 'bo' , 'linewidth', lw,'markersize', ms);
-plot(xanal, rad2deg(thetaZAnalytic), 'b-' , 'linewidth', lw, 'markersize', ms);
-plot(xdefNum, rad2deg(thetaXdefNum), 'go' , 'linewidth', lw, 'markersize', ms);
-plot(xanal, rad2deg(thetaXAnalytic), 'g-' , 'linewidth', lw, 'markersize', ms);
-legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a', '\theta x_n', '\theta x_a', 'location','eastoutside')
-labx=xlabel(' x (m)');    laby=ylabel('Angle (º)');
+plot(xdefNum, rad2deg(thetaYdefNum)   , 'ro' , 'linewidth', lw, 'markersize', ms);
+plot(xanal  , rad2deg(thetaYAnalytic) , 'r-' , 'linewidth', lw, 'markersize', ms);
+plot(xdefNum, rad2deg(thetaZdefNum)   , 'bo' , 'linewidth', lw,'markersize', ms);
+plot(xanal  , rad2deg(thetaZAnalytic) , 'b-' , 'linewidth', lw, 'markersize', ms);
+plot(xdefNum, rad2deg(thetaXdefNum)   , 'go' , 'linewidth', lw, 'markersize', ms);
+plot(xanal  , rad2deg(thetaXAnalytic) , 'g-' , 'linewidth', lw, 'markersize', ms);
+legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a', '\theta x_n', '\theta x_a', 'location', 'eastoutside' )
+labx=xlabel(' x (m)'); laby=ylabel('Angle (º)');
 title (labelTitle)
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
-set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
-set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
+set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
+set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/angDisp.png')
 
 %Plot 3D deformed
@@ -186,15 +183,13 @@ print('./output/angDisp.png')
 figure
 hold on
 grid on
-plot3(xref, yref, zref,'k-' , 'linewidth', lw+300,'markersize', ms+200);
-plot3(xanal, ydefAnalytic, zdefAnalytic,'r-' , 'linewidth', lw,'markersize', ms);
-plot3(xdefNum, ydefNum, zdefNum,'bo' , 'linewidth', lw,'markersize', ms);
-legend('Reference config','Numerical def config', 'Analytic def config','location','northEast')
-labx=xlabel('x (m)');    laby=ylabel('y(m)'); labz=zlabel('z(m)');
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
-set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
-set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
+plot3(xref   , yref         , zref        ,'k-'     , 'linewidth', lw + 300, 'markersize', ms+200 );
+plot3(xanal  , ydefAnalytic , zdefAnalytic,'r-'     , 'linewidth', lw      , 'markersize', ms     );
+plot3(xdefNum, ydefNum      , zdefNum     ,'bo'     , 'linewidth', lw      , 'markersize', ms     );
+legend('Reference config'   , 'Numerical def config', 'Analytic def config', 'location','northEast')
+labx=xlabel( 'x (m)' )      ; laby=ylabel('y(m)')   ; labz=zlabel('z(m)')  ;
+set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
+set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
+set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
-% axis ( [0 L max(ydefAnalytic) -max(ydefAnalytic)/10 max(zdefAnalytic) -max(zdefAnalytic)/10 ] )
-grid on
 print('./output/def.png','-dpng')    
