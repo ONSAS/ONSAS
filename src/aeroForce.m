@@ -1,14 +1,16 @@
-function fagElem = aeroForce(elemCoords, elemCrossSecParams, Ue, Udote, Udotdote, userDragCoef, userLiftCoef, userMomentCoef, elemTypeAero, userWindVel, numGaussPoints)                               
+function fagElem = aeroForce(elemCoords, elemCrossSecParams, Ue, Udote, Udotdote, userDragCoef, userLiftCoef, userMomentCoef, elemTypeAero, userWindVel, numGaussPoints,geometricNonLinearAero)                               
   %Boolean to compute aerodinamic force with ut = 0
-  booleanLinearForce = true;
-
-  if booleanLinearForce
+  if ~geometricNonLinearAero 
     Ue = zeros(12,1);
   end
   % Nodal Winds:
-  udotWindNode1 = feval( userWindVel, elemCoords(1) ); 
-  udotWindNode2 = feval( userWindVel, elemCoords(4) ); 
-  udotWindElem  = [udotWindNode1; udotWindNode2];
+  if ~isempty(userWindVel)
+    udotWindNode1 = feval( userWindVel, elemCoords(1) ); 
+    udotWindNode2 = feval( userWindVel, elemCoords(4) ); 
+    udotWindElem  = [udotWindNode1; udotWindNode2];
+  else
+    error('A userWindVel field with the name of wind velocty function must be defined into analysiSettings struct')
+  end
   % Elem reference coordinates:
   xs = elemCoords(:);
 
@@ -165,10 +167,22 @@ function integAeroForce = integAeroForce(x, ddotg, udotWindElem, lo, l, nu, nu11
   % rotate chord vector
   tch = RgGx * vecChordUndef;
   betaRelG =  acos ( dot(tch ,td ) ) ;
-  % Aero coefficients:
-  C_d =  feval( userDragCoef    , betaRelG );
-  C_l =  feval( userLiftCoef    , betaRelG ); 
-  C_m =  feval( userMomentCoef  , betaRelG ); 
+  %Check aerodynamic coefficients existence and the load the value:  
+  if ~isempty(userDragCoef)
+    C_d = feval(userDragCoef, betaRelG);
+  else
+    C_d = 0;
+  end
+  if ~isempty(userLiftCoef)
+    C_l = feval(userLiftCoef, betaRelG); 
+  else
+    C_l = 0;
+  end
+  if ~isempty(userMomentCoef)
+    C_m = feval(userMomentCoef, betaRelG ); 
+  else
+    C_m = 0;
+  end
 
   % Aero forces
   rhoAire = 1.2;
