@@ -17,15 +17,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,... 
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, 
                                                            materials, KS, Ut, Udott, Udotdott,
-                                                           analysisSettings, outputBooleans, nodalDispDamping )
+                                                           analysisSettings, outputBooleans, nodalDispDamping,
+                                                           nextTime )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
 nElems     = size(Conec, 1) ;
 nNodes     = size(Nodes, 1) ;
-
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
@@ -70,23 +70,23 @@ for elem = 1:nElems
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
-  hyperElasModel   = materials(mebiVec(1)).hyperElasModel  ;
-  hyperElasParams  = materials(mebiVec(1)).hyperElasParams ;
-  density          = materials(mebiVec(1)).density         ;
+  hyperElasModel   = materials( mebiVec( 1 ) ).hyperElasModel  ;
+  hyperElasParams  = materials( mebiVec( 1 ) ).hyperElasParams ;
+  density          = materials( mebiVec( 1 ) ).density         ;
 
-  elemType         = elements(mebiVec(2)).elemType         ;
-  elemTypeParams   = elements(mebiVec(2)).elemTypeParams   ;
-  elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry ;
+  elemType         = elements( mebiVec( 2 ) ).elemType         ;
+  elemTypeParams   = elements( mebiVec( 2 ) ).elemTypeParams   ;
+  elemTypeGeometry = elements( mebiVec( 2 ) ).elemTypeGeometry ;
 
   %md extract aerodinamic properties
-  elemTypeAero     = elements(mebiVec(2)).elemTypeAero     ;
-  userDragCoef     = elements(mebiVec(2)).userDragCoef     ;
-  userLiftCoef     = elements(mebiVec(2)).userLiftCoef     ;
-  userMomentCoef   = elements(mebiVec(2)).userMomentCoef   ;
+  elemTypeAero     = elements( mebiVec( 2 ) ).elemTypeAero     ;
+  userDragCoef     = elements( mebiVec( 2 ) ).userDragCoef     ;
+  userLiftCoef     = elements( mebiVec( 2 ) ).userLiftCoef     ;
+  userMomentCoef   = elements( mebiVec( 2 ) ).userMomentCoef   ;
   
   %md compute aerodynamic compute force boolean
-  AeroCoefficentsBool = ~isempty(userDragCoef) || ~isempty(userMomentCoef) || ~isempty(userLiftCoef) ;
-  aeroBool = ~isempty(elemTypeAero) && AeroCoefficentsBool ;
+  AeroCoefficentsBool = ~isempty( userDragCoef ) || ~isempty( userMomentCoef ) || ~isempty( userLiftCoef ) ;
+  aeroBool = ~isempty( elemTypeAero ) && AeroCoefficentsBool ;
   %md chcek unless one coefficient is defined 
 
   %md obtain elemeny info
@@ -157,24 +157,25 @@ for elem = 1:nElems
       geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
       numGaussPoints = 2 ;
       % read aero paramters of the element
-      elemTypeAero = elements(mebiVec(2)).elemTypeAero ;  
+      elemTypeAero      = elements( mebiVec( 2 ) ).elemTypeAero ;  
       if ~isempty(userDragCoef)
-        userDragCoef = elements(mebiVec(2)).userDragCoef ;
+        userDragCoef    = elements( mebiVec( 2 ) ).userDragCoef ;
       end
       if ~isempty(userLiftCoef)
-        userLiftCoef = elements(mebiVec(2)).userLiftCoef ;
+        userLiftCoef    = elements( mebiVec( 2 ) ).userLiftCoef ;
       end
       if ~isempty(userMomentCoef)
-        userMomentCoef = elements(mebiVec(2)).userMomentCoef ;
+        userMomentCoef  = elements( mebiVec( 2 ) ).userMomentCoef ;
       end
-      elemTypeGeometry = elements(mebiVec(2)).elemTypeGeometry;
+      elemTypeGeometry  = elements( mebiVec( 2 ) ).elemTypeGeometry;
       % compute force
-      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry,
-                             u2ElemDisps( Ut       , dofselem ),
-                             u2ElemDisps( Udott    , dofselem ),
-                             u2ElemDisps( Udotdott , dofselem ) ,...
-                             userDragCoef, userLiftCoef, userMomentCoef,
-                             elemTypeAero, userWindVel, numGaussPoints, geometricNonLinearAero) ;
+      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry    ,
+                             u2ElemDisps( Ut       , dofselem )         ,
+                             u2ElemDisps( Udott    , dofselem )         ,
+                             u2ElemDisps( Udotdott , dofselem )         ,
+                             userDragCoef, userLiftCoef, userMomentCoef ,
+                             elemTypeAero, userWindVel, numGaussPoints  , 
+                             geometricNonLinearAero, nextTime ) ;
 
     end 
 
