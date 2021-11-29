@@ -177,8 +177,13 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
       td = VpiRelG / norm( VpiRelG ) ;
   end
   % rotate chord vector
-  tch      = RgGx * vecChordUndef / norm( vecChordUndef ) ;
-  betaRelG = acos ( dot( tch ,td ) ) ;
+  tch             = RgGx * vecChordUndef / norm( vecChordUndef ) ;
+  scalarProduct   = dot( tch ,td ) ; 
+  if abs(scalarProduct) <= 1 
+    betaRelG = acos ( scalarProduct ) ;
+  else
+    error('scalarProduct between chord vector and drag tch.td is larger than 1')
+  end
   % betaRelGDeg=rad2deg(betaRelG)
   %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty( userDragCoef )
