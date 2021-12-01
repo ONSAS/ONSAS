@@ -1,0 +1,89 @@
+# Include libreries
+using BoundaryValueDiffEq, Plots, FileIO
+# Register elapsed time
+tiempo = @elapsed begin
+# Define problem parameters
+dext = 0.5; t = 1e-3;
+dint = dext - 2 * t;
+J = pi * (dext^4 - dint^4) / 32;
+Iyy = J/2;
+Izz = Iyy;
+E = 70e9;
+L = 20.0;
+
+# Define wind paramets
+c_d = 1.2;
+vw = 40;
+rhoAire = 1.2
+dimCaracteristic = dext
+q0 = 1/2 * rhoAire * vw^2 * dimCaracteristic 
+qz = q0 * c_d; 
+
+# Define numerical method params
+tspan = (0.0,L)
+deltaX = 0.1
+aboslutoTolerance = 1e-7
+relativeTolerance = 1e-9
+
+#Define differential equations of the problem
+function nonLinearStaticCantilever!(du,u,p,t)
+    Vz = u[1]
+    My = u[2]
+    θy = u[3]
+    uz = u[4]
+    du[1] = -qz * cos(θy)^3
+    du[2] = Vz
+    du[3] = My / (E*Iyy)
+    du[4] = θy
+end
+
+function bc2!(residual, u, p, t) # u[1] is the beginning of the time span, and u[end] is the ending
+    residual[1] = u[end][1] + 0 # the sheer force solution at the end of the x span should be 0
+    residual[2] = u[end][2] + 0 # the benging moment solution at the end of the x span should be 0
+    residual[3] = u[1][3] + 0 # the benging moment solution at the end of the x span should be 0
+    residual[4] = u[1][4] + 0 # the displacement at x = 0 span should be 0
+end
+
+# The MIRK4 solver is necessary for TwoPointBVProblem
+bvp2 = TwoPointBVProblem(nonLinearStaticCantilever!, bc2!, [0,0,0,0], tspan)
+sol = solve(bvp2, MIRK4(), dt = deltaX, abstol = aboslutoTolerance, retol = relativeTolerance, save_everystep = true, alg_hints=[:stiff]) 
+
+# Plot solutions
+lw = 5; plotDensity = 1000;
+plotVz = plot(sol, plotdensity=plotDensity, vars=(1), fmt = :png, title ="Sheer force in axis z", xaxis="x (m)", yaxis="Vz (N)", label ="Vz",lc=[:red], linewidth = lw)
+png(plotVz,"plotVz")
+plotMy = plot(sol, plotdensity=plotDensity, vars=(2), fmt = :png, title ="Bending moment in axis y", xaxis="x (m)", yaxis="My (N.m)", label ="My", lc=[:black], linewidth=lw)
+png(plotMy,"plotMy")
+plotThetaY = plot(sol, plotdensity=plotDensity, vars=(3), fmt = :png, title ="Angle in axis y", xaxis="x (m)", yaxis="θy (rad)", label ="θy", lc=[:blue], linewidth=lw)
+png(plotThetaY,"plotThetaY")
+plotUz = plot(sol, plotdensity=plotDensity, vars=(4), fmt = :png, title ="Displacement in axis z", xaxis="x (m)", yaxis="uz (m)", label ="uz", lc=[:green], linewidth=lw)
+png(plotUz,"plotUz")
+
+# Export results functions
+function createTxt(x; name)
+    open(name, "w") do io
+       [print(io, xi, " ,") for xi in x]
+    end
+end
+
+function sliceMatrix(A)
+    m, n = size(A)
+    B = Array{Array{eltype(A), 1}, 1}(undef, m)
+
+    for i = 1:m
+        B[i] = A[i, :]
+    end
+    return B
+end
+
+solArray = sliceMatrix(sol)
+createTxt(solArray[3]; name="solJDiffEq_thetaY.txt")
+createTxt(solArray[4]; name="solJDiffEq_uz.txt")
+createTxt(range(0, L, length = trunc(Int, round(L / deltaX +1))); name="solJDiffEq_xcords.txt")
+end
+
+defEnergy = sum( solArray[2].^2 / (2*E*Iyy)*deltaX )
+
+return solArray[3][end], tiempo
+
+
