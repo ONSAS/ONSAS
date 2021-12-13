@@ -20,7 +20,7 @@
 function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, 
                                                            materials, KS, Ut, Udott, Udotdott,
                                                            analysisSettings, outputBooleans, nodalDispDamping,
-                                                           time )
+                                                           timeVar )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
@@ -175,7 +175,7 @@ for elem = 1:nElems
                              u2ElemDisps( Udotdott , dofselem )         ,
                              userDragCoef, userLiftCoef, userMomentCoef ,
                              elemTypeAero, userWindVel, numGaussPoints  , 
-                             geometricNonLinearAero, time ) ;
+                             geometricNonLinearAero, timeVar ) ;
 
     end 
 
