@@ -144,7 +144,7 @@ else
 end
 
 %mdget wind velocity
-windVel = feval(analysisSettings.userWindVel, analysisSettings.finalTime) ;
+windVel = feval(analysisSettings.userWindVel, mesh.nodesCoords(1,1), analysisSettings.finalTime) ;
 %mdcaracteristicDimension
 dimCaracteristic = norm(elements(2).elemTypeAero) ;
 
