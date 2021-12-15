@@ -29,7 +29,9 @@ elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
 elements(2).elemTypeGeometry = [1 A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md The drag and lift section function names are:
-elements(2).elemTypeAero   = [0 dext 0];
+numGaussPoints  = 3 ;
+formulationType = 4 ;
+elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ];
 elements(2).userDragCoef   = 'dragCoefNonLinear'   ;
 elements(2).userLiftCoef   = 'liftCoefNonLinear'   ;
 elements(2).userMomentCoef = 'momentCoefNonLinear' ;
@@ -124,7 +126,7 @@ end
 %md## Evaluate analytical solutions
 rhoAire = 1.2;
 %evaluate drag/lift and moment coefficents
-betaRel = acos(dot(elements(2).elemTypeAero , [0 0 1] ));
+betaRel = acos(dot(elements(2).elemTypeAero(1:3) , [0 0 1] ));
 
 
 if isfield(elements(2), 'userDragCoef')
@@ -247,7 +249,7 @@ figure
 hold on
 grid on
 plot3(xref, yref, zref,'k-' , 'linewidth', lw+300,'markersize', ms+200);
-plot3(xanal, ydefAnalyticLin, zdefAnalyticLin,'k-' , 'linewidth', lw,'markersize', ms);
+plot3(xanal, ydefAnalyticLin, zdefAnalyticLin,'b:' , 'linewidth', lw,'markersize', ms);
 plot3(xdefJulia, ydefJulia, zdefJulia,'g-' , 'linewidth', lw,'markersize', ms);
 plot3(xdefNum, ydefNum, zdefNum,'ro' , 'linewidth', lw,'markersize', ms+5);
 % legend('Reference config','Linear defomred config','Julia DiffEqSol defomred config',  'Numerical defomred config','location','northEast')

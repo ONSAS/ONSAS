@@ -1,13 +1,21 @@
 function fagElem = aeroForce( elemCoords, elemCrossSecParams,
                               Ue, Udote, Udotdote, userDragCoef, 
                               userLiftCoef, userMomentCoef, elemTypeAero,
-                              userWindVel, numGaussPoints,geometricNonLinearAero,
-                              nextTime ) 
+                              userWindVel,geometricNonLinearAero, nextTime ) 
   %Implementation Booleans
-  jorgeBool = false ;
-  jorgeBoolRigid = false ;
-  battiBool = false ;
-  rigidBool = true ;
+  jorgeBool = false ; jorgeBoolRigid  = false ;
+  battiBool = false ; rigidBool       = false ;
+
+  switch elemTypeAero(5)
+    case 1 
+      jorgeBool = true ;
+    case 2
+      jorgeBoolRigid = true;
+    case 3 
+      battiBool = true;
+    case 4 
+      rigidBool = true;
+  end
   
   %Boolean to compute aerodinamic force with ut = 0
   if ~geometricNonLinearAero 
@@ -15,7 +23,6 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
   end
   % Nodal Winds:
   if ~isempty(userWindVel)
-    nextTime
     udotWindNode1 = feval( userWindVel, elemCoords(1), nextTime ) ; 
     udotWindNode2 = feval( userWindVel, elemCoords(4), nextTime ) ; 
     udotWindElem  = [udotWindNode1; udotWindNode2] ;
@@ -80,7 +87,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
     Re2 = Rr' * Rg2 * R0 ;
     tl1 = logar( Re1 ) ;
     tl2 = logar( Re2 ) ;
-  elseif jorgeBool ; ;
+  elseif jorgeBool || jorgeBoolRigid; ;
     Re1 = Rr' * R0 * Rg1 ;
     Re2 = Rr' * R0 * Rg2 ;
     tl1 = logar( Re1 ) ;
@@ -117,6 +124,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
   wdoter = G' * EE' * ddotg ;% Eq. 65
 
   %Extract points and wieghts for numGausspoints selected
+  numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
 
   fagElem = zeros(12,1) ;
@@ -128,10 +136,9 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
                                                           vecChordUndef, dimCaracteristic,
                                                           I3, O3, P, G, EE, L2, L3,
                                                           userDragCoef, userLiftCoef, userMomentCoef,
-                                                          jorgeBool, battiBool, rigidBool ) ;
+                                                          jorgeBool, battiBool, rigidBool, jorgeBoolRigid ) ;
   end
   % express aerodinamic force in ONSAS nomencalture  [force1 moment1 force2 moment2  ...];
-  fagElem
   fagElem = Cambio_Base(fagElem) ;
 end
 
@@ -139,7 +146,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
                                           lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0, 
                                           vecChordUndef, dimCaracteristic, I3, O3, P, G, EE, L2, L3, 
                                           userDragCoef, userLiftCoef, userMomentCoef,
-                                          jorgeBool, battiBool, rigidBool )
+                                          jorgeBool, battiBool, rigidBool, jorgeBoolRigid )
   % Compute udot(x) and velWind(x):
   % Shape functions:
   % linear
@@ -177,7 +184,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   Rroofx      = expon( thethaRoof ) ; 
   if battiBool || rigidBool
     RgGx        = Rr * Rroofx * R0' ;
-  else jorgeBool ;
+  else jorgeBool || jorgeBoolRigid ;
     RgGx         = R0' * Rr * Rroofx ;
   end
   % Wind velocity inside te element
@@ -185,7 +192,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   %Transverse wind velocity inside the element:
   % proyect velocity and chord vector into transverse plane
   VrelG       = udotWindG - udotG  ;
-  if battiBool || jorgeBool ;
+  if battiBool || jorgeBool || jorgeBoolRigid ;
 ;    VpiRelG   = L2 * RgGx' * VrelG ;
   elseif rigidBool 
     VpiRelG   = L2 * Rr' * VrelG ;
@@ -199,7 +206,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
       td = VpiRelG / norm( VpiRelG ) ;
   end
   % rotate chord vector
-  if battiBool || jorgeBool ;
+  if battiBool || jorgeBool || jorgeBoolRigid ;
 ;    tch = R0 * RgGx * vecChordUndef / norm( vecChordUndef ) ;
   elseif rigidBool
     tch = Rroofx * vecChordUndef / norm( vecChordUndef ) ;
@@ -229,7 +236,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   fdl     =  1/2 * rhoAire * C_d * dimCaracteristic * norm( VpiRelG) * VpiRelG     ; 
   fll     =  1/2 * rhoAire * C_l * dimCaracteristic * norm( VpiRelG) * VpiRelGperp ; 
   fal     =  fdl + fll ;
-  if battiBool || jorgeBool ; ;
+  if battiBool || jorgeBool || jorgeBoolRigid; ;
     ma      =  1/2 * rhoAire * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( R0 * RgGx * [1 0 0]' ) ; 
   elseif rigidBool
     ma      =  1/2 * rhoAire * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( Rr * [1 0 0]' ) ;

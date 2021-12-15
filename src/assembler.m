@@ -174,8 +174,8 @@ for elem = 1:nElems
                              u2ElemDisps( Udott    , dofselem )         ,
                              u2ElemDisps( Udotdott , dofselem )         ,
                              userDragCoef, userLiftCoef, userMomentCoef ,
-                             elemTypeAero, userWindVel, numGaussPoints  , 
-                             geometricNonLinearAero, timeVar ) ;
+                             elemTypeAero, userWindVel ,  geometricNonLinearAero,
+                             timeVar ) ;
 
     end 
 
