@@ -28,7 +28,10 @@ elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
 elements(2).elemTypeGeometry = [1 A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md The drag and lift section function names are:
-elements(2).elemTypeAero   = [0 dext 0];
+numGaussPoints  = 3 ;
+formulationType = 2 ;
+elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ];
+% elements(2).elemTypeAero   = [0 dext 0 ] % numGaussPoints formulationType ];
 elements(2).userDragCoef   = 'dragCoefFunction'   ;
 elements(2).userLiftCoef   = 'liftCoefFunction'   ;
 elements(2).userMomentCoef = 'momentCoefFunction' ;
@@ -79,7 +82,7 @@ otherParams.plotsFormat = 'vtk' ;
 %md## Verification
 rhoAire = 1.2;
 %evaluate drag/lift and moment coefficents
-betaRel = acos(dot(elements(2).elemTypeAero , [0 0 1] ));
+betaRel = acos(dot(elements(2).elemTypeAero( 1:3 ) , [0 0 1] ));
 
 
 if isfield(elements(2), 'userDragCoef')
@@ -101,7 +104,7 @@ end
 %mdget wind velocity
 windVel = feval(analysisSettings.userWindVel, betaRel, analysisSettings.finalTime) ;
 %mdcaracteristicDimension
-dimCaracteristic = norm(elements(2).elemTypeAero) ;
+dimCaracteristic = norm(elements(2).elemTypeAero (1:3) ) ;
 
 %dynamic presure
 q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) ;
