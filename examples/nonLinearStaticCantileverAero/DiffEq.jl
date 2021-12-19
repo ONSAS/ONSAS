@@ -1,7 +1,5 @@
 # Include libreries
 using BoundaryValueDiffEq, Plots, FileIO
-# Register elapsed time
-tiempo = @elapsed begin
 # Define problem parameters
 dext = 0.5; t = 1e-3;
 dint = dext - 2 * t;
@@ -27,10 +25,7 @@ relativeTolerance = 1e-9
 
 #Define differential equations of the problem
 function nonLinearStaticCantilever!(du,u,p,t)
-    Vz = u[1]
-    My = u[2]
-    θy = u[3]
-    uz = u[4]
+    Vz, My, θy, uz = u
     du[1] = -qz * cos(θy)^3
     du[2] = Vz
     du[3] = My / (E*Iyy)
@@ -44,11 +39,14 @@ function bc2!(residual, u, p, t) # u[1] is the beginning of the time span, and u
     residual[4] = u[1][4] + 0 # the displacement at x = 0 span should be 0
 end
 
+# Register elapsed time
+tiempo = @elapsed begin
 # The MIRK4 solver is necessary for TwoPointBVProblem
 bvp2 = TwoPointBVProblem(nonLinearStaticCantilever!, bc2!, [0,0,0,0], tspan)
 sol = solve(bvp2, MIRK4(), dt = deltaX, abstol = aboslutoTolerance, retol = relativeTolerance, save_everystep = true, alg_hints=[:stiff]) 
-
+end 
 # Plot solutions
+cd("output/")
 lw = 5; plotDensity = 1000;
 plotVz = plot(sol, plotdensity=plotDensity, vars=(1), fmt = :png, title ="Sheer force in axis z", xaxis="x (m)", yaxis="Vz (N)", label ="Vz",lc=[:red], linewidth = lw)
 png(plotVz,"plotVz")
@@ -62,14 +60,14 @@ png(plotUz,"plotUz")
 # Export results functions
 function createTxt(x; name)
     open(name, "w") do io
-       [print(io, xi, " ,") for xi in x]
+        [print(io, xi, " ,") for xi in x]
     end
 end
 
 function sliceMatrix(A)
     m, n = size(A)
     B = Array{Array{eltype(A), 1}, 1}(undef, m)
-
+    
     for i = 1:m
         B[i] = A[i, :]
     end
@@ -80,9 +78,10 @@ solArray = sliceMatrix(sol)
 createTxt(solArray[3]; name="solJDiffEq_thetaY.txt")
 createTxt(solArray[4]; name="solJDiffEq_uz.txt")
 createTxt(range(0, L, length = trunc(Int, round(L / deltaX +1))); name="solJDiffEq_xcords.txt")
-end
 
 defEnergy = sum( solArray[2].^2 / (2*E*Iyy)*deltaX )
+
+cd("..")
 
 return solArray[3][end], tiempo
 

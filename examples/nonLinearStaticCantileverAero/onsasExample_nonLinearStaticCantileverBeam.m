@@ -85,10 +85,10 @@ otherParams.plotsFormat = 'vtk' ;
 %md## Assamble Julia solution
 %md
 %mdread julia solution
-xJulia    = load ( 'solJDiffEq_xcords.txt' )    ;
-dSolJulia = zeros( 6*size( xJulia, 2 ),1   )    ;
-uYJulia   = load ( 'solJDiffEq_uz.txt'     )    ;
-thetaZdefJulia = load ('solJDiffEq_thetaY.txt') ;
+xJulia         = load ( 'output/solJDiffEq_xcords.txt' ) ;
+dSolJulia      = zeros( 6*size( xJulia, 2 ),1          ) ;
+uYJulia        = load ( 'output/solJDiffEq_uz.txt'     ) ;
+thetaZdefJulia = load ( 'output/solJDiffEq_thetaY.txt' ) ;
 
 %md fill sol vector
 dSolJulia(3:6:end) = -1 * uYJulia';
@@ -102,7 +102,7 @@ numElemJulia = size(dSolJulia(1:6:end)) - 1;
 
 for elem = 1:size(conecElemMatrix,1)
   % Localizate dofs and element coordinates
-    %Cords element
+  %Cords element
   x = mesh.nodesCoords(conecElemMatrix(elem,5:6)',1) ;
   y = mesh.nodesCoords(conecElemMatrix(elem,5:6)',2) ;	
   z = mesh.nodesCoords(conecElemMatrix(elem,5:6)',3) ;
@@ -148,7 +148,7 @@ end
 %mdget wind velocity
 windVel = feval(analysisSettings.userWindVel, mesh.nodesCoords(1,1), analysisSettings.finalTime) ;
 %mdcaracteristicDimension
-dimCaracteristic = norm(elements(2).elemTypeAero) ;
+dimCaracteristic = norm(elements(2).elemTypeAero(1:3)) ;
 
 %dynamic presure
 q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) ;
@@ -253,7 +253,7 @@ plot3(xanal, ydefAnalyticLin, zdefAnalyticLin,'b:' , 'linewidth', lw,'markersize
 plot3(xdefJulia, ydefJulia, zdefJulia,'g-' , 'linewidth', lw,'markersize', ms);
 plot3(xdefNum, ydefNum, zdefNum,'ro' , 'linewidth', lw,'markersize', ms+5);
 % legend('Reference config','Linear defomred config','Julia DiffEqSol defomred config',  'Numerical defomred config','location','northEast')
-legend('Reference config','DiffEq.jl defomred config',  'Numerical defomred config', 'location','northEast')
+legend('Reference config','Linear defomred config', 'DiffEq.jl defomred config',  'Numerical defomred config', 'location','northEast')
 labx=xlabel('x (m)');    laby=ylabel('y(m)'); labz=zlabel('z(m)');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
