@@ -2,7 +2,18 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Pérez Zerpa"
-  given-names: "Jorge"
-title: "ONSAS.m"
+  given-names: "Jorge M."
+  orcid: "https://orcid.org/0000-0003-2104-382X"
+- family-names: "Bazzano"
+  given-names: "Juan Bruno"
+  orcid: "https://orcid.org/TOFILL"
+  , Joaquin Viera,
+   Mauricio Vanzulli,
+   Marcelo Forets
+- family-names: "Battini"
+  given-names: "Jean-Marc"
+  orcid: "https://orcid.org/0000-0003-2104-382X"
+   Sebastian Toro
+title: "ONSAS.m: an Open Nonlinear Structural Analysis Solver for GNU-Octave and Matlab"
 version: 0.2.3
 url: "https://github.com/ONSAS/ONSAS.m"
