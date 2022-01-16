@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Pérez Zerpa"
+  given-names: "Jorge"
+title: "ONSAS.m"
+version: 0.2.3
+url: "https://github.com/ONSAS/ONSAS.m"
