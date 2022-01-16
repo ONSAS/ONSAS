@@ -148,6 +148,7 @@ This struct contains the parameters required to apply the numerical method for t
 
 another additional optional parameters are:
 
+ * `booleanSelfWeight`: a boolean indicating if self weight loads are considered or not. The loads are computed using the density of the material and in the $-z$ global direction.
  * `iniMatUs`: a matrix with initial solutions for each time step.
 
 ## The `otherParams` struct

@@ -23,7 +23,7 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         elements, ...      % E
                         boundaryConds, ... % B
                         initialConds,...   % I
-                        analysisSettings  ) 		 
+                        analysisSettings  )
 
 Conec = myCell2Mat( mesh.conecCell ) ;
 Nodes = mesh.nodesCoords ;
@@ -125,7 +125,7 @@ else
 end
 % FIx me when userWindVel boundaryConds(wind is not in the first cell)
 if isfield( boundaryConds,'userWindVel' )
-  userWindVel  = boundaryConds.userWindVel     ;  
+  userWindVel  = boundaryConds.userWindVel     ;
 else
   userWindVel     = [];
 end
@@ -147,69 +147,82 @@ KS        = sparse( 6*nnodes, 6*nnodes );
   %~ end
 %~ end
 % ----------------------------------------------------------------------
-%md Loop for computing of gravity external force vector 
+%md Loop for computing of gravity external force vector
 if analysisSettings.booleanSelfWeight == true
-  %initilize the gravity load factors
+  % initialize the gravity load vector
   gravityFactorLoads = zeros( 6*nnodes, 1 ) ; % maximum possible vector
-  g = 9.8 ;
+  g = 9.8067 ;
+
   %md loop in type of element indexes
   for elemNum = 1:length( elementTypes )
     %md find the numbers of the elements with the current element type
     elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
+
     %md if there is any element
     if length( elementsNums ) > 0
+
       %md get current element type
       elemType = elements( elementTypes(elemNum) ).elemType ;
 
       %md get current element elemTypeGeometry
       elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
 
-      %md get the number of material of the corruent element type
-      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
+      %md get the material types of the current element type
+      materialElemTypes   = unique( Conec( elementsNums, 1) )
 
-      if materialElemTypes(1)  == 0, % checks if all elements have a type
-       error('all elements must have material defined');
-      end
-      
+      % keep positive-rho materials
+      materialElemTypes = materialElemTypes( find( materials( materialElemTypes ).density ) ) ;
+
       %md  loop in different materials of current element
-      
       for matElem = 1: length(materialElemTypes)
-        %md  find the elements with elements = elemNum and material = matElem
-        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) ) ;
 
         %md  extract the material of the current element type
         rhoElemTypeMaterial = materials( materialElemTypes(matElem) ).density ;
-      
-        if elemType == 'truss' || elemType == 'frame' ; 
-          %md compute gravity force
-          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );            
+
+        %md  find the elements with elements = elemNum and material = matElem
+        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) ) ;
+
+        if strcmp( elemType, 'truss') || strcmp( elemType, 'frame') ;
+
+          %md extract connectivity of element
+          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );
           % final minus initial nodes coords matrices
           matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : );
           vecSquareDiff = sum( (matrixDiffs.^2)' )';
-          lengthElems = sqrt( vecSquareDiff ) ; 
+          lengthElems = sqrt( vecSquareDiff ) ;
           elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
           [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
-          %md compute nodal gracitiy
-          Fz = - rhoElemTypeMaterial * lengthElems * areaElem * g/2; 
-          %md compute the dofs where gravitiy is applied:
-          for elem = 1: size(conecElemsThisMat, 1)
-            dofs  = nodes2dofs(conecElemsThisMat(elem,:), 6)';                                          
-            dofs  = dofs(5:6:end);                               
-            gravityFactorLoads(dofs,1) =gravityFactorLoads(dofs,1) + Fz(elem);
-          end
 
-          %md the number of BC that represent the self weight condition is
-          numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
-          factorLoadsFextCell{numberOfBCSelfWeight} = gravityFactorLoads    ;
-          loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;
+          %md compute nodal selfweight loads
+          Fz = - rhoElemTypeMaterial * lengthElems * areaElem * g * 0.5;
 
-          %md reset the gravity factorLoads
-          gravityFactorLoads = zeros( 6*nnodes, 1 ) ;
-          
-          else 
-          error("this elemType is not implemented using self weight boolean yet") 
+        elseif strcmp( elemType, 'tetrahedron')
+
+          %md extract connectivity of element
+          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );
+          Fz = - 1e-3*ones(size(conecElemsThisMat,1),1);
+
+        else
+          error("this elemType is not implemented using self weight boolean yet")
+
+        end % element type case
+
+        %md compute the dofs where gravitiy is applied: and add loads
+        for elem = 1: size(conecElemsThisMat, 1)
+          dofs  = nodes2dofs( conecElemsThisMat(elem,:), 6)';
+          dofs  = dofs(5:6:end);
+          gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fz(elem);
         end
-      end 
-    end
-  end
-end
+
+      end % for materials
+
+    end % if there are elements
+
+  end % for elementTypes
+
+  %md the number of BC that represent the self weight condition is
+  numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
+  factorLoadsFextCell{numberOfBCSelfWeight} = gravityFactorLoads    ;
+  loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;
+
+end % if booleanSelfWeight
