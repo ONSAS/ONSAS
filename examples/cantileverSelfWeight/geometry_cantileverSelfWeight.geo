@@ -1,10 +1,10 @@
 
 // Dimensions
-Lx = 10.0 ;
-Ly = 1.0 ;
-Lz = 1.0 ;
+Lx = 2 ;
+Ly = 0.02 ;
+Lz = 0.2 ;
 
-ms = 1.0 ;
+ms = 0.03 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {0,0,Lz, ms} ;

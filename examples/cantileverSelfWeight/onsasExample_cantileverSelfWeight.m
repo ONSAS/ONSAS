@@ -6,7 +6,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 200 ; nu = 0.3 ; Lx = 10 ; Ly = 1 ; Lz = 1 ; rho = 8e3 ;
+E = 200e9 ; nu = 0.3 ; Lx = 2 ; Ly = .02 ; Lz = .2 ; rho = 8e3 ;
 %md
 %md### MEBI parameters
 %md
@@ -40,8 +40,8 @@ initialConds = struct();
 analysisSettings.booleanSelfWeight = true  ;
 analysisSettings.methodName        = 'newtonRaphson' ;
 analysisSettings.stopTolIts        = 30     ;
-analysisSettings.stopTolDeltau     = 1.0e-8 ;
-analysisSettings.stopTolForces     = 1.0e-8 ;
+analysisSettings.stopTolDeltau     = 1.0e-12 ;
+analysisSettings.stopTolForces     = 1.0e-12 ;
 analysisSettings.finalTime          = 1   ;
 analysisSettings.deltaT            = 1   ;
 %md
@@ -50,3 +50,10 @@ otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'cantileverSelfWeight' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+
+numericalDeflection = min( matUs(:,2) )
+
+EI = E*Lz^3*Ly/12 ;
+analyticalDeflectionLinearTheory = - ( rho*9.806*Ly*Lz * Lx^4 ) / ( 8 * EI )
+verifBoolean = abs( analyticalDeflectionLinearTheory - numericalDeflection ) / abs( analyticalDeflectionLinearTheory ) < 0.03

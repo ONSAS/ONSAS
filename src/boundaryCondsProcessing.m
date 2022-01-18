@@ -202,27 +202,37 @@ if analysisSettings.booleanSelfWeight == true
           %md compute nodal selfweight loads
           Fz = - rhoElemTypeMaterial * lengthElems * areaElem * g * 0.5;
 
+          %md compute the dofs where gravitiy is applied: and add loads
+          for elem = 1: size(conecElemsThisMat, 1)
+            dofs  = nodes2dofs( conecElemsThisMat(elem,:), 6)';
+            dofs  = dofs(5:6:end);
+            gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fz(elem);
+          end
+
         elseif strcmp( elemType, 'tetrahedron')
 
           %md extract connectivity of element
-          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );
-          Fz = - 1e-3*ones(size(conecElemsThisMat,1),1) ;
+          conecElemsThisMat = Conec( elemntsSameMat, 5:8 );
 
+          %md compute the dofs where gravitiy is applied: and add loads
+          for elem = 1: size(conecElemsThisMat, 1)
+            auxnodes = conecElemsThisMat(elem,:) ;
+            dofs     = nodes2dofs( auxnodes, 6)' ;
+            dofs     = dofs(5:6:end) ;
 
+            elemCoords = reshape( Nodes( auxnodes, : )', 1, 12 ) ;
 
+            [ ~, ~, vol ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
 
+            Fzval = - vol *.25 * rhoElemTypeMaterial * g ;
+
+            gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fzval ;
+          end
 
         else
           error("this elemType is not implemented using self weight boolean yet")
 
         end % element type case
-
-        %md compute the dofs where gravitiy is applied: and add loads
-        for elem = 1: size(conecElemsThisMat, 1)
-          dofs  = nodes2dofs( conecElemsThisMat(elem,:), 6)';
-          dofs  = dofs(5:6:end);
-          gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fz(elem);
-        end
 
       end % for materials
 

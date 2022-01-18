@@ -4,12 +4,14 @@ close all, clear all %#ok
 if isunix, dirSep = '/'; else dirSep = '\'; end
 addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
 
-keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m';
+keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'    ;
              'uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m' ;
-             'linearPlaneStrain/onsasExample_linearPlaneStrain.m' ;
-             'uniaxialExtension/onsasExample_uniaxialExtension.m' ;
-             'nonlinearPendulum/onsasExample_nonlinearPendulum.m' ;
-             'beamTrussJoint/onsasExample_beamTrussJoint.m'   } ;
+             'linearPlaneStrain/onsasExample_linearPlaneStrain.m'       ;
+             'uniaxialExtension/onsasExample_uniaxialExtension.m'       ;
+             'nonlinearPendulum/onsasExample_nonlinearPendulum.m'       ;
+             'beamTrussJoint/onsasExample_beamTrussJoint.m'             ;
+             'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' } ;
+
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;
 
