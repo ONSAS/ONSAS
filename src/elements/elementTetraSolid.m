@@ -25,56 +25,10 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
   Finte = zeros(12,1) ;
   booleanKTAnalytic = 1 ;
 
-  tetCoordMat        = reshape( elemCoords', 3, 4 ) ;
+  [ funder, jacobianmat, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
 
-  %~ [ deriv , vol ] =  DerivFun( tetCoordMat ) ;
-
-  %~ tetVol = vol ;
-  %~ BMat = BMats ( deriv ) ;
-
-  eleCoordMat = tetCoordMat               ;
   eleDispsMat = reshape( elemDisps, 3, 4) ;
   eleCoordSpa = tetCoordMat + eleDispsMat ;
-
-  xi = 0.25 ;  wi = 1/6  ;
-
-  % matriz de derivadas de fun forma respecto a coordenadas isoparametricas
-  deriv = shapeFuns( xi, xi , xi , 1 ) ;
-
-  % jacobiano que relaciona coordenadas materiales con isoparametricas
-  jacobianmat = eleCoordMat * deriv'  ;
-
-  vol = analyDet( jacobianmat ) / 6.0 ;
-
-  if vol<0,  vol, error('Element with negative volume, check connectivity.'), end
-
-
-  %~ E  = params(1) ;
-  %~ nu = params(2) ;
-
-  %~ mu    = E / (2.0 * ( 1.0 + nu ) ) ;
-  %~ Bulk  = E / (3.0 * ( 1.0 - 2.0 * nu ) ) ;
-
-  %~ eyetres      = eye(3)     ;
-  %~ eyevoig      = zeros(6,1) ;
-  %~ eyevoig(1:3) = 1.0        ;
-
-  %~ ConsMat = zeros(6,6) ;
-  %~ ConsMat (1:3,1:3) = Bulk  + 2* mu * ( eyetres - 1.0/3.0 ) ;
-  %~ ConsMat (4:6,4:6) =            mu *   eyetres ;
-
-  %~ Kml    = BMat' * ConsMat * BMat * tetVol ;
-
-  %~ KTe([1:2:end], [1:2:end])  =  Kml ;
-
-  %~ strain = BMat * Ue ;
-  %~ stress = ConsMat * strain ;
-  %~ Fint   = stress' * BMat * tetVol ;
-
-  %~ Finte(1:2:end) = Fint ;
-
-
-  funder = inv(jacobianmat)' * deriv ;
 
   H = eleDispsMat * funder' ;
 
@@ -120,6 +74,32 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
     KTe = Kml + Kgl ;
 
   end % if param out
+
+
+
+  %~ mu    = E / (2.0 * ( 1.0 + nu ) ) ;
+  %~ Bulk  = E / (3.0 * ( 1.0 - 2.0 * nu ) ) ;
+
+  %~ eyetres      = eye(3)     ;
+  %~ eyevoig      = zeros(6,1) ;
+  %~ eyevoig(1:3) = 1.0        ;
+
+  %~ ConsMat = zeros(6,6) ;
+  %~ ConsMat (1:3,1:3) = Bulk  + 2* mu * ( eyetres - 1.0/3.0 ) ;
+  %~ ConsMat (4:6,4:6) =            mu *   eyetres ;
+
+  %~ Kml    = BMat' * ConsMat * BMat * tetVol ;
+
+  %~ KTe([1:2:end], [1:2:end])  =  Kml ;
+
+  %~ strain = BMat * Ue ;
+  %~ stress = ConsMat * strain ;
+  %~ Fint   = stress' * BMat * tetVol ;
+
+  %~ Finte(1:2:end) = Fint ;
+
+
+
 
 % ======================================================================
 % ======================================================================
