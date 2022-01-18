@@ -143,11 +143,11 @@ This struct contains the parameters required to apply the numerical method for t
  * `deltaNM`: delta parameter of newmark method
  * `alphaNM`: alpha parameter of newmark method
  * `alphaHHT`: alpha parameter of alpha-HHT method
- * `solverLang`: parameter setting the programming language of the solver: `Octave` (default) or `C++` (binaries required).
+ * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
+ * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
 
 another additional optional parameters are:
 
- * `nodalDispDamping`: scalar value of linear external viscous damping for the displacements degrees of freedom [default: 0]
  * `iniMatUs`: a matrix with initial solutions for each time step.
 
 ## The `otherParams` struct
@@ -156,3 +156,4 @@ another additional optional parameters are:
   * `plotsFormat`: strint indicating the format of the output. Use __'vtk'__ for vtk output.
   * `controlDofs`: matrix with information of the degrees of freedom to compute and control. Each row should contain this form: `[ node localdof ]`.
   * `storeBoolean`: boolean to store the results of the current iteration such as the displacements, tangent matrices, normal forces and stresses. [default: 1]
+  * `nodalDispDamping`: scalar value of a linear viscous damping factor applied for all the displacement degrees of freedom [default: 0]
