@@ -30,5 +30,9 @@ function test_5
   assertEqual( verifBoolean, true );
 
 function test_6
-    onsasExample_springMass
-    assertEqual( verifBoolean, true );
+  onsasExample_springMass
+  assertEqual( verifBoolean, true );
+
+function test_7
+  onsasExample_cantileverSelfWeight
+  assertEqual( verifBoolean, true );
