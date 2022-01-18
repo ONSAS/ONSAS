@@ -1,5 +1,5 @@
-# Include libreries
-using BoundaryValueDiffEq, Plots, FileIO
+# Include libreries (DifferentialEquations, BoundaryValueDiffEq, Plots, DataFrames, must be included into manifest)
+using BoundaryValueDiffEq, Plots, FileIO, DataFrames, CSV
 # Define problem parameters
 dext = 0.5; t = 1e-3;
 dint = dext - 2 * t;
@@ -23,7 +23,7 @@ deltaX = 0.1
 aboslutoTolerance = 1e-7
 relativeTolerance = 1e-9
 
-#Define differential equations of the problem
+# Define differential equations of the problem
 function nonLinearStaticCantilever!(du,u,p,t)
     Vz, My, θy, uz = u
     du[1] = -qz * cos(θy)^3
@@ -73,11 +73,15 @@ function sliceMatrix(A)
     end
     return B
 end
+# Export solution in CSV format
+df_solution = DataFrame(sol)
+CSV.write("solJDiffEq.csv", df_solution)
 
+# Export solutions into .txt file
 solArray = sliceMatrix(sol)
-createTxt(solArray[3]; name="solJDiffEq_thetaY.txt")
-createTxt(solArray[4]; name="solJDiffEq_uz.txt")
-createTxt(range(0, L, length = trunc(Int, round(L / deltaX +1))); name="solJDiffEq_xcords.txt")
+# createTxt(solArray[3]; name="solJDiffEq_thetaY.txt")
+# createTxt(solArray[4]; name="solJDiffEq_uz.txt")
+# createTxt(range(0, L, length = trunc(Int, round(L / deltaX +1))); name="solJDiffEq_xcords.txt")
 
 defEnergy = sum( solArray[2].^2 / (2*E*Iyy)*deltaX )
 

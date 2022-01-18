@@ -5,10 +5,10 @@ addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 E = 70e9 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
-l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b ;
+l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
 A = pi * (dext^2 - dint^2) / 4  ;
 J = pi * (dext^4 - dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
-Irho = diag([J Iyy Izz],3,3);
+Irho = diag([J Iyy Izz],3,3) ;
 % the number of elements of the mesh
 numElements = 20 ;
 %md##Numerical solution
@@ -31,7 +31,7 @@ elements(2).elemTypeGeometry = [1 A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md The drag and lift section function names are:
 numGaussPoints  = 3 ;
 formulationType = 4 ;
-elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ];
+elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ] ;
 elements(2).userDragCoef   = 'dragCoefNonLinear'   ;
 elements(2).userLiftCoef   = 'liftCoefNonLinear'   ;
 elements(2).userMomentCoef = 'momentCoefNonLinear' ;
@@ -72,7 +72,7 @@ analysisSettings.userWindVel   = 'windVelNonLinear';
 %md geometrical nonlinearity in the wind force is not taken into account in this example:
 %mdloadsSettings
 analysisSettings.booleanSelfWeight      = false ;
-analysisSettings.geometricNonLinearAero = true ;
+analysisSettings.geometricNonLinearAero = true  ;
 %md
 %md## otherParams
 otherParams.problemName = 'onsasExample_nonLinearStaticCantilever';
@@ -81,24 +81,34 @@ otherParams.plotsFormat = 'vtk' ;
 %md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-%md
-%md## Assamble Julia solution
-%md
-%mdread julia solution
-xJulia         = load ( 'output/solJDiffEq_xcords.txt' ) ;
-dSolJulia      = zeros( 6*size( xJulia, 2 ),1          ) ;
-uYJulia        = load ( 'output/solJDiffEq_uz.txt'     ) ;
-thetaZdefJulia = load ( 'output/solJDiffEq_thetaY.txt' ) ;
+% %md
+% %md## Assamble Julia solution
+% %md
+% %mdread julia solution
+% xJulia         = load ( 'output/solJDiffEq_xcords.txt' ) ;
+% dSolJulia      = zeros( 6*size( xJulia, 2 ),1          ) ;
+% uYJulia        = load ( 'output/solJDiffEq_uz.txt'     ) ;
+% thetaZdefJulia = load ( 'output/solJDiffEq_thetaY.txt' ) ;
 
-%md fill sol vector
-dSolJulia(3:6:end) = -1 * uYJulia';
-dSolJulia(6:6:end) = -1 * thetaZdefJulia';
-% dSolJulia(4:6:end) = thetaYdefJulia';
-% dSolJulia(4:6:end) = thetaYdefJulia';
+% %md fill sol vector
+% dSolJulia(3:6:end) = -1 * uYJulia';
+% dSolJulia(6:6:end) = -1 * thetaZdefJulia';
+
+
+%md## Assamble Julia solution
+%mdread julia solution
+solCell     = dlmread ('output/solJDiffEq.csv', ',', 1, 0) ;
+xJulia      = solCell(:,1) ;
+thetaZJulia = solCell(:,4) ;
+uYJulia     = solCell(:,5) ;
+%md fill julia solution vector
+dSolJulia          = zeros( 6*size( xJulia, 1 ), 1 ) ;
+dSolJulia(3:6:end) = -1 * uYJulia'                   ;
+dSolJulia(6:6:end) = -1 * thetaZJulia'               ;
 
 %md create and fill solution with the same size of the vector lacating their cooridnates
 dSol = zeros( (numElements + 1) * 6 ,1 );
-numElemJulia = size(dSolJulia(1:6:end)) - 1;
+numElemJulia = size( dSolJulia(1:6:end) ) - 1;
 
 for elem = 1:size(conecElemMatrix,1)
   % Localizate dofs and element coordinates
@@ -126,21 +136,21 @@ end
 %md## Evaluate analytical solutions
 rhoAire = 1.2;
 %evaluate drag/lift and moment coefficents
-betaRel = acos(dot(elements(2).elemTypeAero(1:3) , [0 0 1] ));
+betaRel = acos(dot(elements(2).elemTypeAero(1:3) , [0 0 1] )) ;
 
 
 if isfield(elements(2), 'userDragCoef')
-  c_d = feval(elements(2).userDragCoef, betaRel);
+  c_d = feval(elements(2).userDragCoef, betaRel) ;
 else
   c_d = 0;
 end
 if isfield(elements(2), 'userLiftCoef')
-  c_l = feval(elements(2).userLiftCoef, betaRel);
+  c_l = feval(elements(2).userLiftCoef, betaRel) ;
 else
   c_l = 0;
 end
 if isfield(elements(2), 'userMomentCoef')
-  c_m = feval(elements(2).userMomentCoef, betaRel);
+  c_m = feval(elements(2).userMomentCoef, betaRel) ;
 else
   c_m = 0;
 end
@@ -167,17 +177,17 @@ sizeAnalyticX = 100 ;
 xanal = linspace( 0, l , sizeAnalyticX )' ;
 
 % linear disp
-ydefAnalyticLin = qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
-zdefAnalyticLin = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
+ydefAnalyticLin = qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4) ;
+zdefAnalyticLin = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4) ;
 % angular disp
 thetaXAnalyticLin = qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
 thetaYAnalyticLin = -qz  / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 thetaZAnalyticLin = qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 
 %linear disp
-xdefJulia = xJulia' +  dSolJulia(1:6:end) ;
-ydefJulia = dSolJulia(3:6:end)            ;
-zdefJulia = dSolJulia(5:6:end)            ;
+xdefJulia = xJulia +  dSolJulia(1:6:end) ;
+ydefJulia = dSolJulia(3:6:end)           ;
+zdefJulia = dSolJulia(5:6:end)           ;
 %angular disp
 thetaXdefJulia = dSolJulia(2:6:end) ;
 thetaYdefJulia = dSolJulia(4:6:end) ;
@@ -185,9 +195,9 @@ thetaZdefJulia = dSolJulia(6:6:end) ;
 
 % Load numerical solution
 %linear disp
-xdefNum = mesh.nodesCoords(:,1) + matUs(1:6:end, end);
-ydefNum = mesh.nodesCoords(:,2) + matUs(3:6:end, end);
-zdefNum = mesh.nodesCoords(:,2) + matUs(5:6:end, end);
+xdefNum = mesh.nodesCoords(:,1) + matUs(1:6:end, end) ;
+ydefNum = mesh.nodesCoords(:,2) + matUs(3:6:end, end) ;
+zdefNum = mesh.nodesCoords(:,2) + matUs(5:6:end, end) ;
 %angular disp
 thetaXdefNum = matUs(2:6:end, end) ;
 thetaYdefNum = matUs(4:6:end, end) ;
@@ -196,7 +206,7 @@ thetaZdefNum = matUs(6:6:end, end) ;
 % Plot parameters:
 lw = 5 ; ms = 5 ;
 % labels parameters:
-labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
+labelTitle = [' Validating solution with ' num2str(numElements) ' elements' ] ;
 axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
 
 % Plot linear displacements
