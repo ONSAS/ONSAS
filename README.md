@@ -74,9 +74,10 @@ Affiliations:
 1. CIMEC Santa Fe, Argentina
 
 ### Contributions and Acknowledgments
-The functions linearStiffMatPlate3D.m and assemblyUniform.m use part of the [fem_plate_example.m](https://gitlab.fing.edu.uy/snippets/60) code developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).  J. M. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es) from the [hemolab.lncc.br](http://hemolab.lncc.br/) group at LNCC Brazil, [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) from Univ. Nacional de Mar del Plata, [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) from the Auckland Bioengineering Institute and [**Diego Figueredo**](https://www.researchgate.net/profile/Diego_Figueredo4) for their numerous comments and suggestions. The development of this version was partially supported by funds provided by the following agencies/projects: Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza ( project: _Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales_, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación (project VIOLETA, code FSE_1_2016_1_131837, manager, Prof. [**Usera**](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
+
+The complete list of contributions and acknowledgments is available at the documentation site.
 
 ## Contact <a name="contact"></a>
 ------
 
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ .
+If you have any question you can send an e-mail to _jorgepz[AT]fing.edu.uy_ or [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) .
