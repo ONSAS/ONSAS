@@ -168,10 +168,16 @@ if analysisSettings.booleanSelfWeight == true
       elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
 
       %md get the material types of the current element type
-      materialElemTypes   = unique( Conec( elementsNums, 1) )
+      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
 
       % keep positive-rho materials
-      materialElemTypes = materialElemTypes( find( materials( materialElemTypes ).density ) ) ;
+      aux = [ ] ;
+      for ir = 1:length( materialElemTypes )
+        if materials( materialElemTypes(ir) ).density > 0
+          aux = [ aux; materialElemTypes(ir) ] ;
+        end
+      end
+      materialElemTypes = aux ;
 
       %md  loop in different materials of current element
       for matElem = 1: length(materialElemTypes)
@@ -200,7 +206,11 @@ if analysisSettings.booleanSelfWeight == true
 
           %md extract connectivity of element
           conecElemsThisMat = Conec( elemntsSameMat, 5:6 );
-          Fz = - 1e-3*ones(size(conecElemsThisMat,1),1);
+          Fz = - 1e-3*ones(size(conecElemsThisMat,1),1) ;
+
+
+
+
 
         else
           error("this elemType is not implemented using self weight boolean yet")
