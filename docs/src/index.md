@@ -1,29 +1,21 @@
 
 # Introduction
 
-```@raw html
-<a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/onsas_/community.svg" alt="Join the chat at https://gitter.im/onsas_/community">
-</a>
-```
+## What is ONSAS.m?
 
-## What is ONSAS?
+ONSAS.m is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf).
 
-ONSAS is an Open Nonlinear Structural Analysis Solver. It consists in a set of implementations of different numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf).
-
-Currently different implementations and tools aimed for diverse applications are under development. The most mature is [ONSAS.m](https://github.com/ONSAS/ONSAS.m), a GNU-Octave implementation of the solver, whose user guide is described in this documentation.
-
-### What can ONSAS be used for?
+### What can ONSAS.m be used for?
 
 The current version allows to perform dynamic/static nonlinear analyses of beam/truss/solid 3D structures. A reduced list of features is listed at next:
 
-* **Elements** 2-node truss, 2-node Bernoulli frame, 4-node tetrahedron.
-* **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method (**to be fixed!**).
+* **Elements** 2-node truss, 2-node Bernoulli co-rotational frame, 4-node tetrahedron, 3-node triangle.
+* **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method.
 * **Dynamic analysis methods** Newmark Method and $\alpha$-HHT.
-* **Loads** nodal loads, time-history user-defined loading program.
 
 ### Some examples
 
-#### A wind turbine model
+#### A simple wind turbine model
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true" alt="wind turbine animation">
@@ -65,11 +57,16 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 <img src="https://raw.githubusercontent.com/mvanzulli/Tex_CorrotationalDynamicTL_TesisMV/main/Presentacion/Videos/4.gif" alt="transmission line">
 ```
 
+## Contact
+
+You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or ```@raw html
+<a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/onsas_/community.svg" alt="Join the chat at https://gitter.im/onsas_/community">
+</a>
+``` .
+
 ## Contributors and License
 
 The code is distributed under a [GNU-GPL 3.0 license](https://www.gnu.org/licenses/gpl-3.0.html).
-
-
 
 ### Authors
 
@@ -85,7 +82,7 @@ The following authors collaborated in various tasks including: design, developme
 
 * [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) developed the Neo-Hookean solid model.
 
-The following authors contributed by :
+The following authors contributed specific relevant functions:
 
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions associated with the computation of static internal forces of the nonlinear frame element.
 
@@ -106,16 +103,10 @@ The functions in `linearStiffMatPlate3D.m` and `assemblyUniform.m` use part of t
 [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code
 developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
 
- J. M. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es)
- from the [hemolab.lncc.br](http://hemolab.lncc.br/) group at LNCC Brazil,
- [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) from Univ. Nacional de Mar del Plata, [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) from
- the Auckland Bioengineering Institute and [**Diego Figueredo**](https://www.researchgate.net/profile/Diego_Figueredo4)
- for their numerous comments and suggestions.
+J. M. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es),
+ [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) and [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) for their numerous and valuable comments and suggestions during early stages of the design of the code.
 
- The development of ONSAS has been partially supported by funds provided by the following agencies/projects:
- Comisión de Investigación Científica (CSIC), Comisión Sectorial de Enseñanza (project: *Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales*, manager, Prof. Pérez Zerpa), Agencia Nacional de Investigación e Innovación
- (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. [**Usera**](https://scholar.google.com/citations?user=9U_jEd4AAAAJ&hl=en).
-
-### Contact
-
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ .
+The development of ONSAS has been partially supported by funds provided by the following agencies/projects:
+ - Comisión de Investigación Científica (CSIC) (project: *Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama*, manager, Prof. Pérez Zerpa),
+ - Comisión Sectorial de Enseñanza (project: *Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales*, manager, Prof. Pérez Zerpa),
+ - Agencia Nacional de Investigación e Innovación (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. Gabriel Usera).
