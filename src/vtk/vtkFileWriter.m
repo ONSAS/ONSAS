@@ -98,7 +98,7 @@ for i=1:nelem,
     fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8)) ) ;
 
   elseif (conect(i,1) == 25)
-    fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;
+    fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20)) ) ;
   end
 end
 %

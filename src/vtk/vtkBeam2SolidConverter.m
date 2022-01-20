@@ -21,75 +21,41 @@ function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
   coordsElemNodes, dispsElem, coordLocSubElem, dispLocIni, dispLocEnd, ...
   locRotIni, locRotEnd, sectPar, Rr, R0 ) ;
 
-  typeSolid = sectPar(1) ;
+typeSolid = sectPar(1) ;
 
-  dispIniSection = dispsElem(1:2:5) ;    dispEndSection = dispsElem(7:2:11) ;
+dispIniSection = dispsElem(1:2:5) ;    dispEndSection = dispsElem(7:2:11) ;
 
-  dispLocMed = 0.5 * ( dispLocIni + dispLocEnd ) ;
+dispLocMed = 0.5 * ( dispLocIni + dispLocEnd ) ;
 
-  ex = [1 0 0] ;
-  ey = [0 1 0] ;
-  ez = [0 0 1] ;
+ex = [1 0 0] ;
+ey = [0 1 0] ;
+ez = [0 0 1] ;
 
-  if typeSolid == 12 % vtkHexa
+if typeSolid == 12 % vtkHexa
 
-     by = sectPar(2) ;  bz = sectPar(3) ;
+   by = sectPar(2) ;  bz = sectPar(3) ;
 
-     Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
+   Nodesvtk = zeros( 8,3 ) ;  Conecvtk = zeros( 8,1 ) ;
 
-    % 1- compute the vectors of the section in Rr coords
-    % matrix with coords of four vertices of cross section to be plotted
-    matrixSectionIni = [ -ey*by*.5-ez*bz*.5 ; ...
-                         +ey*by*.5-ez*bz*.5 ; ...
-                         +ey*by*.5+ez*bz*.5 ; ...
-                         -ey*by*.5+ez*bz*.5 ] ;
-    matrixSectionEnd = matrixSectionIni ;
-    matrixSectionMed = [] ;
-
-  elseif typeSolid == 25 % vtkQuadHexa
-    R = sectPar(2) / 2 ;
-
-    Nodesvtk = zeros( 20,3 ) ;  Conecvtk = zeros( 20,1 ) ;
-
-    matrixSectionIni = [ -ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
-  											 +ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
-  											 +ey*R/sqrt(2)+ez*R/sqrt(2) ; ...
-  											 -ey*R/sqrt(2)+ez*R/sqrt(2) ] ;
-    matrixSectionEnd = matrixSectionIni ;
-
-    matrixSectionMed = [ 0-ez*R      ; ...
-                        +ey*R-0      ; ...
-                        0+ez*R       ; ...
-                        -ey*R+0      ] ;
-  end
+  % 1- compute the vectors of the section in Rr coords
+  % matrix with coords of four vertices of cross section to be plotted
+  matrixSectionIni = [ -ey*by*.5-ez*bz*.5 ; ...
+                       +ey*by*.5-ez*bz*.5 ; ...
+                       +ey*by*.5+ez*bz*.5 ; ...
+                       -ey*by*.5+ez*bz*.5 ] ;
+  matrixSectionEnd = matrixSectionIni ;
 
   % 2- apply the local rotation for the initial and final sections
   matrixRotatedSectionIni = ( expon( locRotIni ) * matrixSectionIni' )' ;
   matrixRotatedSectionEnd = ( expon( locRotEnd ) * matrixSectionEnd' )' ;
-  if isempty(matrixSectionMed)
-    matrixRotatedSectionMed = [] ;
-  else
-    matrixRotatedSectionMed = ( expon( (locRotIni+locRotEnd)*0.5  ) * matrixSectionMed' )' ;
-  end
 
   % 3- add local displacement and position
   matrixDisplacedSectionIni = matrixRotatedSectionIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
   matrixDisplacedSectionEnd = matrixRotatedSectionEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
-  if isempty(matrixSectionMed)
-    matrixDisplacedSectionMed = [] ;
-  else
-    matrixDisplacedSectionMed = matrixRotatedSectionMed + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] + dispLocMed' ;
-  end
 
   % 4- apply Rr' change basis matrix
   matrixRotatedSectionIni = ( Rr * matrixDisplacedSectionIni' )' ;
   matrixRotatedSectionEnd = ( Rr * matrixDisplacedSectionEnd' )' ;
-
-  if isempty(matrixSectionMed)
-    matrixRotatedSectionMed = [] ;
-  else
-    matrixRotatedSectionMed = ( Rr * matrixDisplacedSectionMed' )' ;
-  end
 
   defPosIniSec = coordsElemNodes(1:3) + dispIniSection ;
 
@@ -97,78 +63,76 @@ function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
   nodesVtkSectionIni = matrixRotatedSectionIni + defPosIniSec' ;
   nodesVtkSectionEnd = matrixRotatedSectionEnd + defPosIniSec' ;
 
-  if isempty(matrixSectionMed)
-    nodesVtkSectionMed = [] ;
-  else
-    nodesVtkSectionMed = matrixRotatedSectionMed + defPosIniSec' ;
-  end
-
-  if typeSolid == 12 % vtkHexa
-    Nodesvtk = [ nodesVtkSectionIni ; nodesVtkSectionEnd ] ;
-    Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
-  elseif typeSolid == 25 % vtkQuadHexa
-    Nodesvtk = [ nodesVtkSectionIni ; nodesVtkSectionMed; nodesVtkSectionEnd ] ;
-    Conecvtk = [ 25 0:19 ] ; % in vtk indexation (from 0)
-  end
+  Nodesvtk = [ nodesVtkSectionIni ; nodesVtkSectionEnd ] ;
+  Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
 
   matrixRefIni = ( R0 * (matrixSectionIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
   matrixRefEnd = ( R0 * (matrixSectionEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
 
-  if isempty(matrixSectionMed)
-    matrixRefMed = [] ;
-  else
-    matrixRefMed = ( R0 * (matrixSectionMed + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] )')' + coordsElemNodes(1:3)' ;
-  end
+  NodesRefvtk = [ matrixRefIni; matrixRefEnd ] ;
 
-  NodesRefvtk = [ matrixRefIni ; matrixRefMed; matrixRefEnd ] ;
+elseif typeSolid == 25 % vtkQuadHexa
+  R = sectPar(2) / 2 ;
 
-  Dispsvtk = Nodesvtk - NodesRefvtk ;
+  Nodesvtk = zeros( 20,3 ) ;  Conecvtk = zeros( 20,1 ) ;
 
-return
+  matrixSectionIni = [ -ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
+											 +ey*R/sqrt(2)-ez*R/sqrt(2) ; ...
+											 +ey*R/sqrt(2)+ez*R/sqrt(2) ; ...
+											 -ey*R/sqrt(2)+ez*R/sqrt(2) ] ;
+  matrixSectionEnd = matrixSectionIni ;
 
+  matrixSectionCurvIni = [ 0-ez*R      ; ...
+                      +ey*R-0      ; ...
+                      0+ez*R       ; ...
+                      -ey*R+0      ] ;
 
-  NodesDef  = nodesCoords + [ Ue(1:6:end) Ue(3:6:end) Ue(5:6:end) ] ;
-  rotsMat   = 			        [ Ue(2:6:end) Ue(4:6:end) Ue(6:6:end) ] ;
+  matrixSectionCurvEnd = matrixSectionCurvIni ;
 
-  [~, locglos] = beamParameters( NodesDef ) ;
+  matrixSectionMed = matrixSectionIni ;
 
+  % 2- apply the local rotation for the initial and final sections
+  matrixRotatedSectionIni     = ( expon( locRotIni )                  * matrixSectionIni'     )' ;
+  matrixRotatedSectionEnd     = ( expon( locRotEnd )                  * matrixSectionEnd'     )' ;
+  matrixRotatedSectionCurvIni = ( expon( locRotIni )                  * matrixSectionCurvIni' )' ;
+  matrixRotatedSectionCurvEnd = ( expon( locRotEnd )                  * matrixSectionCurvEnd' )' ;
+  matrixRotatedSectionMed     = ( expon( (locRotIni+locRotEnd)*0.5  ) * matrixSectionMed'     )' ;
 
-  ex = locglos(:,1)' ;
-	ey = locglos(:,2)' ;
-	ez = locglos(:,3)' ;
+  % 3- add local displacement and position
+  matrixDisplacedSectionIni     = matrixRotatedSectionIni     + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
+  matrixDisplacedSectionEnd     = matrixRotatedSectionEnd     + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
+  matrixDisplacedSectionCurvIni = matrixRotatedSectionCurvIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
+  matrixDisplacedSectionCurvEnd = matrixRotatedSectionCurvEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
+  matrixDisplacedSectionMed     = matrixRotatedSectionMed     + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] + dispLocMed' ;
 
-	%
+  % 4- apply Rr' change basis matrix
+  matrixRotatedSectionIni     = ( Rr * matrixDisplacedSectionIni'     )' ;
+  matrixRotatedSectionEnd     = ( Rr * matrixDisplacedSectionEnd'     )' ;
+  matrixRotatedSectionCurvIni = ( Rr * matrixDisplacedSectionCurvIni' )' ;
+  matrixRotatedSectionCurvEnd = ( Rr * matrixDisplacedSectionCurvEnd' )' ;
+  matrixRotatedSectionMed     = ( Rr * matrixDisplacedSectionMed'     )' ;
 
+  defPosIniSec = coordsElemNodes(1:3) + dispIniSection ;
 
+  % 5- add nodal displacements in e1,e2,e3 system
+  nodesVtkSectionIni     = matrixRotatedSectionIni     + defPosIniSec' ;
+  nodesVtkSectionEnd     = matrixRotatedSectionEnd     + defPosIniSec' ;
+  nodesVtkSectionCurvIni = matrixRotatedSectionCurvIni + defPosIniSec' ;
+  nodesVtkSectionCurvEnd = matrixRotatedSectionCurvEnd + defPosIniSec' ;
+  nodesVtkSectionMed     = matrixRotatedSectionMed     + defPosIniSec' ;
 
-	% Rot section 1
-	matSecNodesExtVerticesR  = ( expon( vecrotNode1 ) * matSecNodesExtVertices' )'  ;
-	matSecNodesExtInterR     = ( expon( vecrotNode1 ) * matSecNodesExtInter' )'     ;
+  Nodesvtk = [ nodesVtkSectionIni ;     nodesVtkSectionEnd; ...
+               nodesVtkSectionCurvIni;  nodesVtkSectionCurvEnd;  nodesVtkSectionMed ] ;
+  Conecvtk = [ 25 0:19 ] ; % in vtk indexation (from 0)
 
-	nodeExtVertices1  = ones(4,1) * NodesDef(1,:) + matSecNodesExtVerticesR    ;
-	nodeExtInter1     = ones(4,1) * NodesDef(1,:) + matSecNodesExtInterR       ;
+  matrixRefIni = ( R0 * (matrixSectionIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefEnd = ( R0 * (matrixSectionEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefCurvIni = ( R0 * (matrixSectionCurvIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefCurvEnd = ( R0 * (matrixSectionCurvEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefMed = ( R0 * (matrixSectionMed + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] )')' + coordsElemNodes(1:3)' ;
 
-	% Rot section 2
-	matSecNodesExtVerticesR  = ( expon( vecrotNode2 ) * matSecNodesExtVertices' )'  ;
-	matSecNodesExtInterR     = ( expon( vecrotNode2 ) * matSecNodesExtInter' )'     ;
+  NodesRefvtk = [ matrixRefIni ;  matrixRefEnd; matrixRefCurvIni; matrixRefCurvEnd; matrixRefMed ] ;
 
-	nodeExtVertices2  = ones(4,1) * NodesDef(2,:) + matSecNodesExtVerticesR     ;
-	nodeExtInter2     = ones(4,1) * NodesDef(2,:) + matSecNodesExtInterR        ;
+end
 
-  % Rot intermediate section
-	vecrot = ( vecrotNode1 + vecrotNode2 ) / 2            ;
-	matSecNodesInterR = ( expon( vecrot) * matSecNodesInter' )'               ;
-	nodeInt           = ones(4,1) * ( NodesDef(1,:) + NodesDef(2,:) ) / 2 + matSecNodesInterR ; % Interpolated linearly ...
-
-  % Nodes
-	Nodesvtk = [ Nodesvtk         ; ...
-               nodeExtVertices1 ; ...
-               nodeExtVertices2 ; ...
-               nodeExtInter1    ; ...
-               nodeExtInter2    ; ...
-               nodeInt          ] ;
-
-	% Connectivity
-	Conecvtk = [ Conecvtk ; 25 1:20 ] ;
-
-%end
+Dispsvtk = Nodesvtk - NodesRefvtk ;

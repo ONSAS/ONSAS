@@ -15,7 +15,6 @@
 1. [Contact](#contact)
 
 ## About ONSAS <a name="aboutonsas"></a>
-------
 
 ### What is ONSAS?
 
@@ -57,7 +56,6 @@ The user should follow these steps to install and run onsas:
 1. Open GNU-Octave, move to the _examples_ directory and run one of the examples.
 
 ## Contributions <a name="contributions"></a>
-------
 
 ### Authors of code
 The following authors collaborated in various tasks including: design, development and testing of the code, with specific contributions given by the commits history: [**Jorge M. Pérez Zerpa**](https://www.fing.edu.uy/~jorgepz) <sup>1</sup>, **J. Bruno Bazzano**<sup>1,2</sup>, [**Joaquín Viera**](https://www.researchgate.net/profile/Joaquin_Viera_Sosa) <sup>1</sup>, **Mauricio Vanzulli** <sup>3</sup> and [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en)<sup>4</sup>.
@@ -78,6 +76,5 @@ Affiliations:
 The complete list of contributions and acknowledgments is available at the documentation site.
 
 ## Contact <a name="contact"></a>
-------
 
-If you have any question you can send an e-mail to _jorgepz[AT]fing.edu.uy_ or [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) .
+If you have any question you can send an e-mail to _jorgepz [AT] fing.edu.uy_ or [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) .

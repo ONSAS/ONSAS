@@ -52,6 +52,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
         elemTypeGeom, modS.U ) ;
 
+
     elseif strcmp( elemTypeString, 'frame' )
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
@@ -87,18 +88,25 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
             % if nargout > numminout
               % add the tetrahedron vtk cell type to the first column
-      currVtkConec = [ 10*ones( nelems, 1 )     modP.Conec(:, 5:8 )-1 ] ;
-            elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
-            % end
-
+      currVtkConec    = [ 10*ones( nelems, 1 )     modP.Conec(:, 5:8 )-1 ] ;
+      elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
     end % if: type
 
     % add entries from current element type
     vtkNodes      = [ vtkNodes ;  currVtkNodes ]           ;
-    vtkConec      = [ vtkConec ;  [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes]]           ;
+
+    if size(vtkConec,1) > 0
+      vtkConec( ...
+        (size(vtkConec,1)+1):(size(vtkConec,1)+size(currVtkConec,1)), 1:(size(currVtkConec,2)) ) ...
+        = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
+    else
+      vtkConec = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
+    end
+
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
-		totalNodes = totalNodes + size(currVtkNodes,1) ; 
+		totalNodes = totalNodes + size(currVtkNodes, 1) ;
+
 
   end % for: elemTypeInds
 
