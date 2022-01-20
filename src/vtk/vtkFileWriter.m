@@ -75,6 +75,9 @@ for i = 1:length(cellTypes)
   elseif ( cellTypes(i) == 12 ) % if it is tetrahedron add (4+1)*nelemCurrType
     nTotNumbers = nTotNumbers + (8+1)*nelemCurrType ;
 
+  elseif ( cellTypes(i) == 25 ) % if it is tetrahedron add (4+1)*nelemCurrType
+    nTotNumbers = nTotNumbers + (20+1)*nelemCurrType ;
+
   end % if celltype
 end % for celltypes
 
@@ -93,9 +96,9 @@ for i=1:nelem,
 
   elseif (conect(i,1) == 12)
     fprintf(fid,'8 %g %g %g %g %g %g %g %g \n', conect(i,1+(1:8)) ) ;
-  %
-  % elseif (conect(i,1) == 25)
-  %   fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;
+
+  elseif (conect(i,1) == 25)
+    fprintf(fid, '20 %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g \n', conect(i,1+(1:20))-1 ) ;
   end
 end
 %
