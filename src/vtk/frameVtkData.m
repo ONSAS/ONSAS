@@ -6,7 +6,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
   vtkNodalDisps   = [] ;
   vtkNormalForces = [] ;
 
-  nPlotSubElements = 10 ; % number of plot subsegments
+  nPlotSubElements = 1 ; % number of plot subsegments
   counterNodes     = 0 ;
   nelem            = size(Conec,1) ;
 
@@ -82,19 +82,11 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
       vtkConec             = [ vtkConec ;     Conecvtk ] ;
       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
 
-      counterNodes = counterNodes + 8 ;
+      counterNodes = counterNodes + (size(Conecvtk,2)-1) ;
 
     end % for plot points
 
   end % for elements
-
-
-
-
-
-
-
-
 
 
   %
