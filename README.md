@@ -31,16 +31,16 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 
 ## Some examples
 
-# A wind turbine model
+### A wind turbine model
 ![wind](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true)
 
-# A truss tower model
+### A truss tower model
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
 
-# A chain model
+### A chain model
 ![chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
-### License
+## License
 
 The code is distributed under a GNU-GPL 3.0 license.
 
