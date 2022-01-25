@@ -1,10 +1,11 @@
 Mesh.Algorithm = 6;
-lc     =  .50 ;
-lc2    =  .9 ;
+lc     =  .0125 ;
+lc2    =  .025 ;
 
-radio  =  .70 ;         // radius inclusion
-radio2 = 4.00 ;         // radius semi-sphere
-alt1   = 3.00*radio ;
+radio  = 0.03 ;         // radius inclusion
+radio2 = 0.15 ;         // radius semi-sphere
+radio3 = 0.02  ;         // radius pressure
+alt1   = radio2*.5 ;
 alt2   = 0 ;
 
 angCarg = 0.1*Pi ;
@@ -23,10 +24,18 @@ Point(7) = {0      , 0      +alt1 ,   radio , lc};
 // --- points semi-sphere ---
 Point(11) = {0.0      , 0.0+alt2 , 0.0,lc2};
 Point(12) = {  radio2 , 0.0+alt2 , 0.0 , lc2};
-Point(13) = {0        , radio2+alt2 , 0.0 , lc2};
+Point(13) = {0        , 0+alt2,-radio2,lc2};
 Point(14) = { -radio2 , 0+alt2 , 0.0 , lc2};
-Point(16) = {0        , 0+alt2,-radio2,lc2};
-Point(17) = {0        , 0+alt2,radio2,lc2};
+Point(15) = {0        , 0+alt2,radio2,lc2};
+
+alt3 = Sqrt( radio2*radio2 - radio3*radio3  ) ;
+
+Point(16) = {  radio3 , alt3 , 0.0 , lc2};
+Point(17) = {0        , alt3,-radio3,lc2};
+Point(18) = { -radio3 , alt3 , 0.0 , lc2};
+Point(19) = {0        , alt3,radio3,lc2};
+
+Point(20) = {0        , alt3,0,lc2};
 
 Circle(1) = {2,1,3};
 Circle(2) = {3,1,4};
@@ -41,14 +50,20 @@ Circle(10) = {7,1,4};
 Circle(11) = {4,1,6};
 Circle(12) = {6,1,2};
 
-Circle(21) = {12,11,13};
-Circle(22) = {13,11,14};
-Circle(25) = {13,11,16};
-Circle(28) = {17,11,13};
-Circle(29) = {12,11,17};
-Circle(210) = {17,11,14};
-Circle(211) = {14,11,16};
-Circle(212) = {16,11,12};
+Circle(21) = {12,11,16};
+Circle(22) = {13,11,17};
+Circle(25) = {14,11,18};
+Circle(28) = {15,11,19};
+
+Circle(29) = {12,11,13};
+Circle(210) = {13,11,14};
+Circle(211) = {14,11,15};
+Circle(212) = {15,11,12};
+
+Circle(31) = {16,20,17};
+Circle(32) = {17,20,18};
+Circle(33) = {18,20,19};
+Circle(34) = {19,20,16};
 
 Line Loop(13) = {2,8,-10};
 Ruled Surface(14) = {13};
@@ -67,30 +82,34 @@ Ruled Surface(26) = {25};
 Line Loop(27) = {-4,12,-6};
 Ruled Surface(28) = {27};
 
-Line Loop(113) = {22,28,-210};
-Ruled Surface(114) = {113};
+Line Loop(111) = {21,-34,-28,212};
+Line Loop(112) = {22,-31,-21,29};
+Line Loop(113) = {25,-32,-22,210};
+Line Loop(114) = {28,-33,-25,211};
 
-Line Loop(117) = {-28,-29,21};
-Ruled Surface(118) = {117};
+// pressure
+Line Loop(115) = {31,32,33,34};
 
-Line Loop(119) = {-211,-22,25};
-Ruled Surface(120) = {119};
+// bottom
+Line Loop(116) = {-212,-211,-210,-29};
 
-Line Loop(121) = {-25,-212,-21};
-Ruled Surface(122) = {121};
-
-Line Loop(200) = {29,210,211,212};
-Plane Surface(123) = {200};
+Ruled Surface(121) = {111};
+Ruled Surface(122) = {112};
+Ruled Surface(123) = {113};
+Ruled Surface(124) = {114};
+Ruled Surface(125) = {115};
+Ruled Surface(126) = {116};
 
 Surface Loop(29) = {28,26,16,14,20,24,22,18};
 Volume(30) = {29};
 
-Surface Loop(31) = {-28,-26,-16,-14,-20,-24,-22,-18,-114,-118,-120,-122,-123};
+//Surface Loop(31) = {-28,-26,-16,-14,-20,-24,-22,-18,-114,-118,-120,-122,-123};
+Surface Loop(31) = {-28,-26,-16,-14,-20,-24,-22,-18,121,122,123,124,125,126};
 Volume(32) = {31};
 //+
 
-Physical Surface("00_01_01_00") = {123};
-Physical Surface("00_01_02_00") = {120};
+Physical Surface("00_01_01_00") = {125};
+Physical Surface("00_01_02_00") = {126};
 
 // inclusion
 Physical Volume("01_02_00_00") = {30};

@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes, 
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,
                                                            materials, KS, Ut, Udott, Udotdott,
                                                            analysisSettings, outputBooleans, nodalDispDamping,
                                                            timeVar )
@@ -83,11 +83,11 @@ for elem = 1:nElems
   userDragCoef     = elements( mebiVec( 2 ) ).userDragCoef     ;
   userLiftCoef     = elements( mebiVec( 2 ) ).userLiftCoef     ;
   userMomentCoef   = elements( mebiVec( 2 ) ).userMomentCoef   ;
-  
+
   %md compute aerodynamic compute force boolean
   AeroCoefficentsBool = ~isempty( userDragCoef ) || ~isempty( userMomentCoef ) || ~isempty( userLiftCoef ) ;
   aeroBool = ~isempty( elemTypeAero ) && AeroCoefficentsBool ;
-  %md chcek unless one coefficient is defined 
+  %md chcek unless one coefficient is defined
 
   %md obtain elemeny info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
@@ -157,7 +157,7 @@ for elem = 1:nElems
       geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
       numGaussPoints = 2 ;
       % read aero paramters of the element
-      elemTypeAero      = elements( mebiVec( 2 ) ).elemTypeAero ;  
+      elemTypeAero      = elements( mebiVec( 2 ) ).elemTypeAero ;
       if ~isempty(userDragCoef)
         userDragCoef    = elements( mebiVec( 2 ) ).userDragCoef ;
       end
@@ -177,7 +177,7 @@ for elem = 1:nElems
                              elemTypeAero, userWindVel ,  geometricNonLinearAero,
                              timeVar ) ;
 
-    end 
+    end
 
    % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
@@ -206,6 +206,9 @@ for elem = 1:nElems
 
     if strcmp( hyperElasModel, 'SVK' )
       auxMatNum = 2 ;
+
+    elseif strcmp( hyperElasModel, 'NHC' )
+      auxMatNum = 3 ;
     else
       hyperElasModel
       error('material not implemented yet! open an issue.')

@@ -1,10 +1,11 @@
-%md# Semi-sphere with inclusion
-%mdIn this example a semi-spherical solid is considered with a spherical inclusion inside. The constitutive behavior of the solids is assumed given by a Neo-Hookean law, with the inclusion being stiffer than the matrix solid.
-%md
-%md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/assets/semiSphere.png" alt="plot check" width="500"/>
-%md```
-%md
+# Semi-sphere with inclusion
+In this example a semi-spherical solid is considered with a spherical inclusion inside. The constitutive behavior of the solids is assumed given by a Neo-Hookean law, with the inclusion being stiffer than the matrix solid.
+
+```@raw html
+<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/assets/semiSphere.png" alt="plot check" width="500"/>
+```
+
+```
 clear all, close all
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
@@ -28,7 +29,9 @@ elements(2).elemType = 'tetrahedron' ;
 boundaryConds(1).loadsCoordSys = 'global';
 boundaryConds(1).loadsTimeFact = @(t) t*200 ;
 boundaryConds(1).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
-%md the other BCs have imposed displacements
+```
+ the other BCs have imposed displacements
+```
 boundaryConds(2).imposDispDofs = [1 3 5] ;
 boundaryConds(2).imposDispVals = [0 0 0 ]  ;
 

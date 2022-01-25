@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -19,11 +19,8 @@
 
 function [S, ConsMat] = cosseratNH( consParams, Egreen, consMatFlag)
 
-young   = consParams(1) ;
-nu      = consParams(2) ;
-
-lambda  = young * nu / ( (1 + nu) * (1 - 2*nu) ) ;
-shear   = young      / ( 2 * (1 + nu) )          ;
+lambda  = consParams(1) ;
+shear   = consParams(2) ;
 
 C       = 2*Egreen + eye(3);  % Egreen = 1/2 (C - I)
 invC    = inv(C);
@@ -41,5 +38,4 @@ elseif consMatFlag == 1 % complex-step computation expression
 
 else
   error("the analytical expression for the Neo-Hookean constitutive law is not available")
-
 end
