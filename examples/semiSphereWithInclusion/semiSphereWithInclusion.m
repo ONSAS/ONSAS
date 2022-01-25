@@ -2,7 +2,7 @@
 %mdIn this example a semi-spherical solid is considered with a spherical inclusion inside. The constitutive behavior of the solids is assumed given by a Neo-Hookean law, with the inclusion being stiffer than the matrix solid.
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/assets/semiSphere.png" alt="plot check" width="500"/>
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.m/master/docs/src/assets/semiSphere.png" alt="plot" width="500"/>
 %md```
 %md
 clear all, close all
