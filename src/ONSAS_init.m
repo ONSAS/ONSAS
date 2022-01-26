@@ -45,7 +45,7 @@ end
 
 % process initial conditions
 % --------------------------
-[ U, Udot, Udotdot ] = initialCondsProcessing( size(Nodes,1) ) ;
+[ U, Udot, Udotdot ] = initialCondsProcessing( Conec, Nodes, mesh, initialConds ) ;
 
 currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) ) ;
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
