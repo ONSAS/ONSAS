@@ -17,14 +17,14 @@
 %md
 %mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/chain/onsasExample_chain.m).
 %md
-%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
+%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliary parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 E  = 210e9 ; nu  = 0 ; rho = 8050 ;
 % gemotric scalar parameters
-rotAng = 45 ; L = 2 ; b = 0.05 ; % m - width of square section
+rotAng = 45 ; L = 270 ; b = 0.05 ; % m - width of square section
 % the number of elements of the mesh
-numElements = 4 ;
+numElements = 50 ;
 %md
 %md## Numerical solution: truss case
 %md---
@@ -38,7 +38,7 @@ numElements = 4 ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 %md and in the field `hyperElasParams` a vector with the parameters of the Engineering Strain model is set
 materials.hyperElasParams = [ E nu ] ;
-%md which in the case of this model are the Young modulus and the Poisson ratio. Then, the material density is seted using `denisity` field of materials sutruct using
+%md which in the case of this model are the Young modulus and the Poisson ratio. Then, the material density is set using `denisity` field of materials struct using
 materials.density = rho ;
 %md
 %md#### elements
@@ -52,10 +52,10 @@ elements(2).elemTypeGeometry = [2 b b ] ;
 elements(2).elemTypeParams = 1 ;
 %md
 %md#### initial Conditions
-%md homogeneous initial conditions are considered, by the V-shape depicted in the diagram above, consequently the coordinates mathematical expression of the iniital configuration shape is built for 0 and l/2 and fliping that vector from l/2 to 0.
+%md homogeneous initial conditions are considered, by the V-shape depicted in the diagram above, consequently the coordinates mathematical expression of the initial configuration shape is built for 0 and l/2 and flipping that vector from l/2 to 0.
 yInitConfigCoordsMiddle = linspace(0, L, numElements +1)(1:end/2 +1 ) / cos(rotAng) ; 
 yInitConfigCoords = [ yInitConfigCoordsMiddle flip( yInitConfigCoordsMiddle(1:end-1) ) ] ;
-%md since only non homogenous initial conditios are added into $y$ axis the asociated degrees of freedom are
+%md since only non homogenous initial conditios are added into $y$ axis the associated degrees of freedom are
 dofsYInitCond = ( 3:6:6*(numElements +1) );
 %md first create an empty `initialConds` struct
 initialConds = struct() ;
@@ -65,9 +65,9 @@ initialConds.nonHomogeneousInitialCondU0 = [ 3 1 ] ;
 %md
 %md#### boundaryConds
 %md
-%md The elements are submitted to only one kinematic boudanry condition (BC), then the struct _boundaryConds_ will have length one.
+%md The elements are submitted to only one kinematic boundary condition (BC), then the struct _boundaryConds_ will have length one.
 %md The nodes $1$ and $3$ are fixed, without loads applied. Since the gravity is going to be added by a boolean later. 
-%md So the fixed displacemnts boundary condition is typed
+%md So the fixed displacements boundary condition is typed
 %md
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
@@ -75,18 +75,18 @@ boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 %md### mesh parameters
 %mdThe coordinates of the nodes in the reference configuration are given by the matrix:
 mesh.nodesCoords = [ ( 0:(numElements) )' * L / numElements  zeros(numElements+1,2) ] ;
-%md where the columns 1,2 and 3 correspond to $x$ (a unispaced vector form 0 to L), $y$ and $z$ null coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
+%md where the columns 1,2 and 3 correspond to $x$ (a equally spaced vector form 0 to L), $y$ and $z$ null coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 %md
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is created
 mesh.conecCell = { } ;
-%md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the `elements` struct), and the first entry of the cells of the boundary conditions struct. Fixed nodes MEBI data is setted by
+%md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the `elements` struct), and the first entry of the cells of the boundary conditions struct. Fixed nodes MEBI data is set as
 mesh.conecCell{ 1, 1 } = [ 0 1 1 1  1  ] ;
 mesh.conecCell{ 2, 1 } = [ 0 1 1 1  numElements + 1 ] ;
 %md since all nodes have the first not homogenous initial condition and no material, and boundary condition then
 for node = 2:numElements
   mesh.conecCell{ node + 1, 1 } = [ 0 1 0 1  node  ] ;
 end
-%md the truss elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element, constecutive to the nods data into conecCell we add
+%md the truss elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element, consecutive to the nods data into conecCell we add
 for i = 1:numElements
   mesh.conecCell{ numElements + 1 + i,1 } = [ 1 2 0 0  i i+1 ] ;
 end
