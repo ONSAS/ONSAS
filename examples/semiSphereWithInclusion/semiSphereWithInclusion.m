@@ -24,7 +24,6 @@ elements(1).elemType = 'triangle' ;
 elements(2).elemType = 'tetrahedron' ;
 
 
-
 boundaryConds(1).loadsCoordSys = 'global';
 boundaryConds(1).loadsTimeFact = @(t) t*200 ;
 boundaryConds(1).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;

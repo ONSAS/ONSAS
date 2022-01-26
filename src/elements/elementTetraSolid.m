@@ -42,7 +42,7 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
 
   elseif elemConstitutiveParams(1) == 3 % Neo-Hookean Compressible
 
-    [ S, ConsMat ] = cosseratNH ( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
+    [ S, ConsMat ] = cosseratNHC( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
   end
 
   matBgrande = BgrandeMats ( funder , F ) ;
