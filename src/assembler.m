@@ -17,9 +17,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,
-                                                           materials, KS, Ut, Udott, Udotdott,
-                                                           analysisSettings, outputBooleans, nodalDispDamping,
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
+                                                           materials, KS, Ut, Udott, Udotdott,...
+                                                           analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
@@ -169,12 +169,12 @@ for elem = 1:nElems
       end
       elemTypeGeometry  = elements( mebiVec( 2 ) ).elemTypeGeometry;
       % compute force
-      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry    ,
-                             u2ElemDisps( Ut       , dofselem )         ,
-                             u2ElemDisps( Udott    , dofselem )         ,
-                             u2ElemDisps( Udotdott , dofselem )         ,
-                             userDragCoef, userLiftCoef, userMomentCoef ,
-                             elemTypeAero, userWindVel ,  geometricNonLinearAero,
+      FaeroElem = aeroForce( elemNodesxyzRefCoords, elemTypeGeometry    , ...
+                             u2ElemDisps( Ut       , dofselem )         , ...
+                             u2ElemDisps( Udott    , dofselem )         , ...
+                             u2ElemDisps( Udotdott , dofselem )         , ...
+                             userDragCoef, userLiftCoef, userMomentCoef , ...
+                             elemTypeAero, userWindVel ,  geometricNonLinearAero, ...
                              timeVar ) ;
 
     end
