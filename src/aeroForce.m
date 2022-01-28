@@ -198,18 +198,18 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
     VpiRelG   = L2 * Rr' * VrelG ;
   end
   VpiRelGperp = L3 * VpiRelG       ;
-  % Calculate relative incidence angle
-  if( norm( VpiRelG) == 0)
-      fprintf('WARNING: Relative velocity is zero \n')
-      td = [0, 0, 1];%define random vector to compute zero force
-  else
-      td = VpiRelG / norm( VpiRelG ) ;
-  end
   % rotate chord vector
   if battiBool || jorgeBool || jorgeBoolRigid ;
 ;    tch = R0 * RgGx * vecChordUndef / norm( vecChordUndef ) ;
   elseif rigidBool
     tch = Rroofx * vecChordUndef / norm( vecChordUndef ) ;
+  end
+  % Calculate relative incidence angle
+  if( norm( VpiRelG) == 0)
+      % fprintf('WARNING: Relative velocity is zero \n')
+      td = tch ;%define random vector tch = td so angle of attach is null to compute aerodynamic force
+  else
+      td = VpiRelG / norm( VpiRelG ) ;
   end
   scalarProduct   = dot( tch ,td ) ; 
   betaRelG = acos ( scalarProduct / ( norm (tch) * norm(td) ) );
