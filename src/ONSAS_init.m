@@ -51,7 +51,7 @@ currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) )
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 %md call assembler
-[~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ], otherParams.nodalDispDamping, analysisSettings.deltaT ) ;
+[~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ], otherParams.nodalDispDamping, currTime ) ;
 
 systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
 
