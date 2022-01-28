@@ -150,7 +150,7 @@ for elem = 1:nElems
     if AeroCoefficentsBool &&  aeroBool == 0
       error("elemTypeAero chord vector must be defined in elements struct \n")
     end
-    if aeroBool
+    if aeroBool && fsBool
       % extract wind function name
       userWindVel = analysisSettings.userWindVel ;
       % extract nonLinearity in aero force boolean
