@@ -1,7 +1,6 @@
-# This is the ONSAS.m continuous integration config file
+# This is the ONSAS.m code continuous integration config file
 #
-name: tests+docs
-
+name: tests
 on: [push, pull_request]
 
 jobs:

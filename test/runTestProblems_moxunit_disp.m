@@ -18,7 +18,7 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
-  onsasExample_uniaxialExtension
+  uniaxialExtension
   assertEqual( verifBoolean, true );
 
 function test_4
