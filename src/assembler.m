@@ -17,9 +17,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,
-                                                           materials, KS, Ut, Udott, Udotdott,
-                                                           analysisSettings, outputBooleans, nodalDispDamping,
+function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
+                                                           materials, KS, Ut, Udott, Udotdott,...
+                                                           analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
