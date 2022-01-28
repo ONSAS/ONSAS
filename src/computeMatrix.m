@@ -17,10 +17,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % ======================================================================
-function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
+function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping, timeVar ) ;
 
   % computes static tangent matrix
-  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping, analysisSettings.deltaT ) ;
+  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping, timeVar ) ;
 
   KT      = mats{1} ;
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )

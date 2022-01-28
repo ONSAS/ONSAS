@@ -2,16 +2,16 @@
 using BoundaryValueDiffEq, Plots, FileIO, DataFrames, CSV
 # Define problem parameters
 dext = 0.5; t = 1e-3;
-dint = dext - 2 * t;
-J = pi * (dext^4 - dint^4) / 32;
-Iyy = J/2;
-Izz = Iyy;
-E = 70e9;
-L = 20.0;
+dint = dext - 2 * t
+J = pi * (dext^4 - dint^4) / 32
+Iyy = J/2
+Izz = Iyy
+E = 70e8
+L = 20.0
 
 # Define wind paramets
-c_d = 1.2;
-vw = 40;
+c_d = 1.2
+vw = 25
 rhoAire = 1.2
 dimCaracteristic = dext
 q0 = 1/2 * rhoAire * vw^2 * dimCaracteristic 
@@ -19,9 +19,9 @@ qz = q0 * c_d;
 
 # Define numerical method params
 tspan = (0.0,L)
-deltaX = 0.1
-aboslutoTolerance = 1e-7
-relativeTolerance = 1e-9
+deltaX = 0.05
+aboslutoTolerance = 1e-5
+relativeTolerance = 1e-5
 
 # Define differential equations of the problem
 function nonLinearStaticCantilever!(du,u,p,t)

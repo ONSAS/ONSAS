@@ -66,7 +66,7 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
     systemDeltauRHS = -rhat ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
-
+    nextTime69RHS = nextTime
     fs = assembler ( ...
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping, nextTime ) ;
 
