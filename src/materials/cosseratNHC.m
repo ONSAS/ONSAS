@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [S, ConsMat] = cosseratNH( consParams, Egreen, consMatFlag)
+function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
 
 lambda  = consParams(1) ;
 shear   = consParams(2) ;
@@ -34,7 +34,7 @@ if consMatFlag == 0 % only stress computed
 elseif consMatFlag == 1 % complex-step computation expression
 
   ConsMat = zeros(6,6);
-  ConsMat = complexStepConsMat( 'cosseratNH', consParams, Egreen ) ;
+  ConsMat = complexStepConsMat( 'cosseratNHC', consParams, Egreen ) ;
 
 else
   error("the analytical expression for the Neo-Hookean constitutive law is not available")
