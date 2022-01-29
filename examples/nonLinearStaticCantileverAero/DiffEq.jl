@@ -1,19 +1,18 @@
 # Include libreries (DifferentialEquations, BoundaryValueDiffEq, Plots, DataFrames, must be included into manifest)
 using BoundaryValueDiffEq, Plots, FileIO, DataFrames, CSV
 # Define problem parameters
-dext = 0.5; t = 1e-3;
-dint = dext - 2 * t;
-J = pi * (dext^4 - dint^4) / 32;
+L = 2;
+d = L/10; 
+J = pi * (d^4) / 32;
 Iyy = J/2;
 Izz = Iyy;
-E = 70e9;
-L = 20.0;
+E = 3e7;
 
 # Define wind paramets
 c_d = 1.2;
-vw = 40;
+vw = 30;
 rhoAire = 1.2
-dimCaracteristic = dext
+dimCaracteristic = d
 q0 = 1/2 * rhoAire * vw^2 * dimCaracteristic 
 qz = q0 * c_d; 
 
