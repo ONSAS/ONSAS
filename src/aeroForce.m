@@ -118,7 +118,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
          0 1 0 
          0 0 1 ] ;
 
-  L3 = expon( [-pi/2 0 0] ) ;         
+  L3 = expon( [pi/2 0 0] ) ;         
 
   %angular velocity from rigid component
   wdoter = G' * EE' * ddotg ;% Eq. 65
