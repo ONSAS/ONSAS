@@ -3,6 +3,8 @@ close all, clear all ;
 % add path
 accDir = pwd ;
 addpath( genpath( [ accDir '/../../src'] ) );
+% measure execution time
+tic
 % material scalar parameters
 E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
@@ -445,4 +447,7 @@ for formulCase = [2]
     set(laby  , 'FontSize'  , axisFontSize) ;
     print( strcat(folderLD2DDynamicPath, 'uyA.png') ) ;
     cd(accDir)
+    % elapsed time in seconds
+    elapTime = toc ;
+    fprintf( strcat("\n The elapsed execution time was ", num2str(elapTime/60), "  minutes", '\n' ) );
 end
