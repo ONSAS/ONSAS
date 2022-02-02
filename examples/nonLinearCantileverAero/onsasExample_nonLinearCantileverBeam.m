@@ -1,7 +1,8 @@
 %md# Aerodynamic linear static cantilever beam example
 close all, clear all ;
 % add path
-addpath( genpath( [ pwd '/../../src'] ) );
+accDir = pwd ;
+addpath( genpath( [ accDir '/../../src'] ) );
 % material scalar parameters
 E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
@@ -188,6 +189,8 @@ for formulCase = [2]
   axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
   % folder to save plots
   folderSDpath = './output/SD/' ;
+  mkdir(folderSDpath) ;
+
   % Plot linear displacements
   figure(1)
   hold on  
@@ -260,7 +263,7 @@ for formulCase = [2]
   analysisSettings.finalTime     =   1             ;%the final time must achive 20m&s
   analysisSettings.stopTolDeltau =   1e-7          ;
   analysisSettings.stopTolForces =   1e-7          ;
-  analysisSettings.stopTolIts    =   30            ;
+  analysisSettings.stopTolIts    =   35            ;
   %md the name of the wind velocity function is: 
   analysisSettings.userWindVel   = 'windVelNonLinearStaticLD';
   %md geometrical nonlinearity in the wind force is not taken into account in this example:
@@ -289,6 +292,9 @@ for formulCase = [2]
 
   % Folder path
   folderLD2Dpath = strcat('./output/', 'LD/', '2D/') ;
+  mkdir(folderLD2Dpath) ;
+  folderLD2DStaticPath = strcat(folderLD2Dpath, 'static/') ;
+  mkdir(folderLD2DStaticPath) ;
   % Plot linear displacements
   figure(1)
   hold on  
@@ -302,7 +308,7 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   print( strcat('./output/', otherParams.problemName, '/linDispLD.png') ) ;
-  print( strcat(folderLD2Dpath, 'static/', 'linDispLD.png') ) ;
+  print( strcat(folderLD2DStaticPath, 'linDispLD.png') ) ;
   close(1)
   % Plot angular displacements
   figure(2)
@@ -337,7 +343,7 @@ for formulCase = [2]
   %md-------------------------------------
   %md Dynamic 2D Case 
   %md-------------------------------------
-  numElements2DLDDynamic = 20 ;
+  numElements2DLDDynamic = 10 ;
   %md## mesh parameters
   %mdThe coordinates of the nodes of the mesh are given by the matrix:
   mesh.nodesCoords = [ (0:(numElements2DLDDynamic))'*l/numElements2DLDDynamic  zeros(numElements2DLDDynamic+1,2) ] ;
@@ -355,14 +361,20 @@ for formulCase = [2]
   % analysisSettings
   %
   analysisSettings.finalTime   =   5                               ;
-  analysisSettings.deltaT      =   analysisSettings.finalTime /100 ;
+  analysisSettings.deltaT      =   analysisSettings.finalTime /400 ;
   analysisSettings.methodName  = 'newmark'                         ;
   analysisSettings.alphaNM     =   0.25                            ;
   analysisSettings.deltaNM     =   0.5                             ;
   analysisSettings.userWindVel = 'windVelNonLinearDynamic'         ;
+  analysisSettings.stopTolIts  =   10                              ;
+  
+   % create folder 
+  folderLD2DDynamicPath = strcat(folderLD2Dpath, 'dynamic/') ;
+  mkdir(folderLD2DDynamicPath) ;
+  
   %md 
   %mdRun with different nodal disp dampings
-  dampingVec = [ 5 ] ;
+  dampingVec = [0 1 5 ] ;
   for dampingCase = dampingVec
     %
     % otherParams
@@ -374,7 +386,7 @@ for formulCase = [2]
     % Run ONSAS
     %
     [ matUsDynLD2D, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
-
+    %
     % Extract numerical solution
     %linear disp
     xdefNum = mesh.nodesCoords(:,1) + matUsDynLD2D(1:6:end, :) ;
@@ -384,7 +396,7 @@ for formulCase = [2]
     thetaXdefNum = matUsDynLD2D(2:6:end, :) ;
     thetaYdefNum = matUsDynLD2D(4:6:end, :) ;
     thetaZdefNum = matUsDynLD2D(6:6:end, :) ;
-    
+    %
     %Plot deformed configurations at different times
     timVec = linspace(0, analysisSettings.finalTime, size( matUsDynLD2D, 2 ) ) ;
     numTimesToPlot = 4 ;
@@ -401,6 +413,8 @@ for formulCase = [2]
       % plot3(xdefNum(:, timePlot), ydefNum(:, timePlot), zdefNum(:, timePlot) , 'linewidth', lw,'markersize', ms+5) ;
       legendsText  = [ legendsText; strcat( 'deformed configuration t = ', num2str( timVec(timePlot) ), ' s' ) ] ;
     end
+
+
     % view([0 0 1])
     legend('Reference configuration',legendsText(1,:), legendsText(2,:), legendsText(3,:), legendsText(4,:), 'location','north')
     labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
@@ -409,8 +423,7 @@ for formulCase = [2]
     set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
     grid on
     print( strcat('./output/', otherParams.problemName, '/def.png') ) ;
-    print( strcat(folderLD2Dpath, 'dynamic/', 'def.png') ) ;
-    close(1)
+    print( strcat(folderLD2DDynamicPath, 'def.png') ) ;
     % Plot time evolution 
     % select node and dof 
     node = numElements2DLDDynamic +1 ;
@@ -430,5 +443,6 @@ for formulCase = [2]
     set(gca   , 'linewidth' , axislw    , 'fontsize', curveFontSize )   ;
     set(labx  , 'FontSize'  , axisFontSize) ; 
     set(laby  , 'FontSize'  , axisFontSize) ;
-    print( strcat(folderLD2Dpath, 'dynamic/', 'uyA.png') ) ;
+    print( strcat(folderLD2DDynamicPath, 'uyA.png') ) ;
+    cd(accDir)
 end
