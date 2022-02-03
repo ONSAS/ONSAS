@@ -325,7 +325,6 @@ for formulCase = [2]
   set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-  print( strcat('./output/', otherParams.problemName, '/angDispLD.png') ) ;
   namefig2 = strcat(folderLD2Dpath, 'static/', 'angDispLD.png');
   print( fig2, namefig2, '-dpng' ) ;  
   close(2)
