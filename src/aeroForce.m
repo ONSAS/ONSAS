@@ -193,16 +193,16 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   % proyect velocity and chord vector into transverse plane
   VrelG       = udotWindG - udotG  ;
   if battiBool || jorgeBool || jorgeBoolRigid ;
-    VpiRelG   = L2 * RgGx' * VrelG ;
+    VpiRelG   = L2 * RgGx' * R0' * VrelG ;
   elseif rigidBool 
     VpiRelG   = L2 * Rr' * VrelG ;
   end
   VpiRelGperp = L3 * VpiRelG       ;
   % rotate chord vector
   if battiBool || jorgeBool || jorgeBoolRigid ;
-;    tch = R0 * RgGx * vecChordUndef / norm( vecChordUndef ) ;
+    tch = vecChordUndef / norm( vecChordUndef ) ;
   elseif rigidBool
-    tch = Rroofx * vecChordUndef / norm( vecChordUndef ) ;
+    tch = vecChordUndef / norm( vecChordUndef ) ;
   end
   % Calculate relative incidence angle
   if( norm( VpiRelG) == 0 )
@@ -213,7 +213,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   end
   scalarProduct   = dot( tch ,td ) ; 
   betaRelG = acos ( scalarProduct / ( norm (tch) * norm(td) ) );
-  
+  rad2deg(betaRelG)
   %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty( userDragCoef )
     C_d = feval( userDragCoef, betaRelG ) ;
