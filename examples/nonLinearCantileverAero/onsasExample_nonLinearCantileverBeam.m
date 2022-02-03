@@ -342,7 +342,7 @@ for formulCase = [2]
   set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
-  namefig3 = strcat(folderLD2Dpath, 'static/', 'defLD.png') ) ;
+  namefig3 = strcat(folderLD2Dpath, 'static/', 'defLD.png') ;
   print( fig3, namefig3, '-dpng' ) ;  
   close(3)
   %md-------------------------------------
