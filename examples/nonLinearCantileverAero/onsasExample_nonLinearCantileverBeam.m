@@ -404,27 +404,27 @@ for formulCase = [2]
     numTimesToPlot = 4 ;
     timeIndexToPlot = floor( linspace( 1, size( matUsDynLD2D, 2 ), numTimesToPlot ) ) ; 
 
-    % Plot 2D deformed
-    legendsText = [] ;
-    fig1 = figure(1) ;
-    hold on
-    % plot3(xref, yref, zref,'k-' , 'linewidth', lw+300,'markersize', ms+200);
-    plot(xref, yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
-    for timePlot = timeIndexToPlot
-      plot(xdefNum(:, timePlot), ydefNum(:, timePlot) , 'linewidth', lw,'markersize', ms+5) ;
-      % plot3(xdefNum(:, timePlot), ydefNum(:, timePlot), zdefNum(:, timePlot) , 'linewidth', lw,'markersize', ms+5) ;
-      legendsText  = [ legendsText; strcat( 'deformed configuration t = ', num2str( timVec(timePlot) ), ' s' ) ] ;
-    end
+    % % Plot 2D deformed
+    % legendsText = [] ;
+    % fig1 = figure(1) ;
+    % hold on
+    % % plot3(xref, yref, zref,'k-' , 'linewidth', lw+300,'markersize', ms+200);
+    % plot(xref, yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
+    % for timePlot = timeIndexToPlot
+    %   plot(xdefNum(:, timePlot), ydefNum(:, timePlot) , 'linewidth', lw,'markersize', ms+5) ;
+    %   % plot3(xdefNum(:, timePlot), ydefNum(:, timePlot), zdefNum(:, timePlot) , 'linewidth', lw,'markersize', ms+5) ;
+    %   legendsText  = [ legendsText; strcat( 'deformed configuration t = ', num2str( timVec(timePlot) ), ' s' ) ] ;
+    % end
+    % % view([0 0 1])
+    % legend('Reference configuration',legendsText(1,:), legendsText(2,:), legendsText(3,:), legendsText(4,:), 'location','north')
+    % labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
+    % set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
+    % set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
+    % set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
+    % grid on
+    % namefig1 = strcat(folderLD2DDynamicPath, 'def.png') ;
+    % print( fig1, namefig1, '-dpng' ) ;
 
-    % view([0 0 1])
-    legend('Reference configuration',legendsText(1,:), legendsText(2,:), legendsText(3,:), legendsText(4,:), 'location','north')
-    labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
-    set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
-    set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
-    set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
-    grid on
-    namefig1 = strcat(folderLD2DDynamicPath, 'def.png') ;
-    print( fig1, namefig1, '-dpng' ) ;
     % Plot time evolution 
     % select node and dof 
     node = numElements2DLDDynamic +1 ;
