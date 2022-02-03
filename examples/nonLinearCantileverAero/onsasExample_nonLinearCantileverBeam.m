@@ -416,7 +416,6 @@ for formulCase = [2]
       legendsText  = [ legendsText; strcat( 'deformed configuration t = ', num2str( timVec(timePlot) ), ' s' ) ] ;
     end
 
-
     % view([0 0 1])
     legend('Reference configuration',legendsText(1,:), legendsText(2,:), legendsText(3,:), legendsText(4,:), 'location','north')
     labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
