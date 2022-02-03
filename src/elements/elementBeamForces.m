@@ -361,10 +361,7 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
 
      % Calculate integral Force
     IntegrandoForce  =      H1'* Rr' * Area * rho * udotdot ...
-                            + H2' * Rr' * ( ...
-                            Irho*wdotdot...
-                            + skew(wdot) * Irho * wdot
-                            ) ;  %Eq 78
+                            + H2' * Rr' * ( Irho*wdotdot + skew(wdot) * Irho * wdot ) ;  %Eq 78
 
     IntegrandoMassMatrix  = 1*H1'*Area*rho*H1 + 1*H2'*Irhoe*H2;
 
