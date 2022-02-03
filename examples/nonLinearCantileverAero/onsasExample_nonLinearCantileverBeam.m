@@ -85,7 +85,7 @@ for formulCase = [2]
   %md
   %md## Assamble static Julia solution
   %mdread julia solution
-  solCell     = dlmread ('output/solJDiffEq.csv', ',', 1, 0) ;
+  solCell     = dlmread ('solJDiffEq.csv', ',', 1, 0) ;
   xJulia      = solCell(:,1) ;
   thetaZJulia = solCell(:,4) ;
   uYJulia     = solCell(:,5) ;
