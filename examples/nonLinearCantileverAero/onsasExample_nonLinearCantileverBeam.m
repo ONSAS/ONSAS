@@ -207,7 +207,7 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   namefig1 = strcat(folderSDpath, 'linDispSD.png') ;
-  print(fig1, namefig1,'-dpng')
+  print(fig1, namefig1,'-dpng') ;
   close(1)
   % Plot angular displacements
   fig2 = figure(2) ;
@@ -298,7 +298,7 @@ for formulCase = [2]
   folderLD2DStaticPath = strcat(folderLD2Dpath, 'static/') ;
   mkdir(folderLD2DStaticPath) ;
   % Plot linear displacements
-  fig1 = figure(1)
+  fig1 = figure(1) ;
   hold on  
   grid on
   plot(xdefNum,   ydefNum,                   'bo' , 'linewidth', lw,'markersize', ms+5 );
@@ -309,7 +309,6 @@ for formulCase = [2]
   set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-  print( strcat('./output/', otherParams.problemName, '/linDispLD.png') ) ;
   namefig1 = strcat(folderLD2DStaticPath, 'linDispLD.png') ;
   print( fig1, namefig1, '-dpng' ) ;
   close(3)
