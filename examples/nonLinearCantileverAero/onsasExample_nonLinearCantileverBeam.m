@@ -311,7 +311,6 @@ for formulCase = [2]
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   namefig1 = strcat(folderLD2DStaticPath, 'linDispLD.png') ;
   print( fig1, namefig1, '-dpng' ) ;
-  close(3)
   close(1)
   % Plot angular displacements
   fig2 = figure(2) ;
@@ -448,6 +447,7 @@ for formulCase = [2]
     namefig2 = strcat(folderLD2DDynamicPath, 'uyA.png') ;
     print( fig2, namefig2, '-dpng' ) ;
     cd(accDir)
+    close(2)
     % elapsed time in seconds
     elapTime = toc ;
     fprintf( strcat("\n The elapsed execution time was ", num2str(elapTime/60), "  minutes", '\n' ) );
