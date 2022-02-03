@@ -194,7 +194,7 @@ for formulCase = [2]
   mkdir(folderSDpath) ;
 
   % Plot linear displacements
-  fig1 = figure(1)
+  fig1 = figure(1) ;
   hold on  
   grid on
   plot(xdefNum    , ydefNum,        'bo' , 'linewidth', lw, 'markersize', ms+5   );
@@ -207,10 +207,10 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   namefig1 = strcat(folderSDpath, 'linDispSD.png') ;
-  print(fig, namefig1,'-dpng')
+  print(fig1, namefig1,'-dpng')
   close(1)
   % Plot angular displacements
-  figure(2)
+  fig2 = figure(2) ;
   hold on  
   grid on
   plot(xdefNum,     rad2deg(thetaZdefNum),      'bo' , 'linewidth', lw,'markersize', ms+5   );
@@ -222,11 +222,11 @@ for formulCase = [2]
   set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-  print( strcat('./output/', otherParams.problemName, '/angDispSD.png') ) ;
-  print( strcat(folderSDpath, 'angDispSD.png') ) ;
+  namefig2 = strcat(folderSDpath, 'angDispSD.png') ;
+  print(fig2, namefig2,'-dpng')
   close(2)
   % %Plot 3D deformed
-  figure(3)
+  fig3 = figure(3) ;
   hold on
   plot(xref,      yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
   plot(xanal,     ydefAnalyticLin(windVel), 'b:' , 'linewidth', lw,'markersize', ms);
@@ -238,8 +238,8 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
   grid on
-  print( strcat('./output/', otherParams.problemName, '/defSD.png') ) ;
-  print( strcat(folderSDpath, 'defSD.png') ) ;
+  namefig3 = strcat(folderSDpath, 'defSD.png') ;
+  print( fig3, namefig3, '-dpng' ) ;
   close(3)
   %md-------------------------------------
   %md## Static 2D large displacements case
@@ -298,7 +298,7 @@ for formulCase = [2]
   folderLD2DStaticPath = strcat(folderLD2Dpath, 'static/') ;
   mkdir(folderLD2DStaticPath) ;
   % Plot linear displacements
-  figure(1)
+  fig1 = figure(1)
   hold on  
   grid on
   plot(xdefNum,   ydefNum,                   'bo' , 'linewidth', lw,'markersize', ms+5 );
@@ -310,10 +310,12 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   print( strcat('./output/', otherParams.problemName, '/linDispLD.png') ) ;
-  print( strcat(folderLD2DStaticPath, 'linDispLD.png') ) ;
+  namefig1 = strcat(folderLD2DStaticPath, 'linDispLD.png') ;
+  print( fig1, namefig1, '-dpng' ) ;
+  close(3)
   close(1)
   % Plot angular displacements
-  figure(2)
+  fig2 = figure(2) ;
   hold on  
   grid on
   plot(xdefNum,     rad2deg(thetaZdefNum),               'bo' , 'linewidth', lw,'markersize', ms+5 );
@@ -325,10 +327,11 @@ for formulCase = [2]
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
   print( strcat('./output/', otherParams.problemName, '/angDispLD.png') ) ;
-  print( strcat(folderLD2Dpath, 'static/', 'angDispLD.png') ) ;
+  namefig2 = strcat(folderLD2Dpath, 'static/', 'angDispLD.png');
+  print( fig2, namefig2, '-dpng' ) ;  
   close(2)
   %Plot 3D deformed
-  figure(3)
+  fig3 = figure(3) ;
   hold on
   grid on
   plot(xref,      yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
@@ -339,8 +342,8 @@ for formulCase = [2]
   set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
   set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
   set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
-  print( strcat('./output/', otherParams.problemName, '/defLD.png') ) ;
-  print( strcat(folderLD2Dpath, 'static/', 'defLD.png') ) ;
+  namefig3 = strcat(folderLD2Dpath, 'static/', 'defLD.png') ) ;
+  print( fig3, namefig3, '-dpng' ) ;  
   close(3)
   %md-------------------------------------
   %md Dynamic 2D Case 
@@ -406,7 +409,7 @@ for formulCase = [2]
 
     % Plot 2D deformed
     legendsText = [] ;
-    figure(1)
+    fig1 = figure(1) ;
     hold on
     % plot3(xref, yref, zref,'k-' , 'linewidth', lw+300,'markersize', ms+200);
     plot(xref, yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
@@ -423,13 +426,13 @@ for formulCase = [2]
     set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
     set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
     grid on
-    print( strcat('./output/', otherParams.problemName, '/def.png') ) ;
-    print( strcat(folderLD2DDynamicPath, 'def.png') ) ;
+    namefig1 = strcat(folderLD2DDynamicPath, 'def.png') ;
+    print( fig1, namefig1, '-dpng' ) ;
     % Plot time evolution 
     % select node and dof 
     node = numElements2DLDDynamic +1 ;
     dofNodeY = 3 ;
-    figure(2)
+    fig2 = figure(2) ;
     hold on
     grid on
     plot ( timVec, matUsDynLD2D( (node-1)*6 + dofNodeY, :), 'linewidth', lw, 'markersize' , ms ) 
@@ -444,7 +447,8 @@ for formulCase = [2]
     set(gca   , 'linewidth' , axislw    , 'fontsize', curveFontSize )   ;
     set(labx  , 'FontSize'  , axisFontSize) ; 
     set(laby  , 'FontSize'  , axisFontSize) ;
-    print( strcat(folderLD2DDynamicPath, 'uyA.png') ) ;
+    namefig2 = strcat(folderLD2DDynamicPath, 'uyA.png') ;
+    print( fig2, namefig2, '-dpng' ) ;
     cd(accDir)
     % elapsed time in seconds
     elapTime = toc ;
