@@ -123,12 +123,12 @@ xanal = linspace(0,l,sizeAnalyticX)' ;
 
 %Evaluate analytical solutions
 % linear disp
-ydefAnalytic = qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
+ydefAnalytic = -qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 zdefAnalytic = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 % angular disp
 thetaXAnalytic = qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
 thetaYAnalytic = -qz  / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
-thetaZAnalytic = qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
+thetaZAnalytic = -qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 
 % Load numerical solution
 %linear disp
