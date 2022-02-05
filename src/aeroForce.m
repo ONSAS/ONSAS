@@ -192,6 +192,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
   %Transverse wind velocity inside the element:
   % proyect velocity and chord vector into transverse plane
   VrelG       = udotWindG - udotG  ;
+  
   if battiBool || jorgeBool || jorgeBoolRigid ;
     VpiRelG   = L2 * RgGx' * R0' * VrelG ;
   elseif rigidBool 
@@ -211,8 +212,9 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
   else
       td = VpiRelG / norm( VpiRelG ) ;
   end
-  scalarProduct   = dot( tch ,td ) ; 
-  betaRelG = acos ( scalarProduct / ( norm (tch) * norm(td) ) );
+  cosTheta = dot(tch,td) / ( norm(td) * norm(tch) ) ;
+  sinTheta = dot( cross(td,tch), [1 0 0] ) / ( norm(td) * norm(tch) ) ;
+  betaRelG =  sign( sinTheta ) * acos(cosTheta) ;
   %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty( userDragCoef )
     C_d = feval( userDragCoef, betaRelG ) ;
