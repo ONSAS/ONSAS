@@ -72,22 +72,9 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 
-    %[FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
-    %[FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename ) ;
-
-%currTime
-%nextTime
-    [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [], nextTime ) ;
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
-    % fix me
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
     FextGt = FextG ;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-    %%%%%%%%%%%%%%%%%%%%%%%%%%=00000000=============================
-
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
