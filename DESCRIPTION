@@ -5,4 +5,5 @@ Author: Pérez Zerpa, Jorge M. and Bazzano García, Juan Bruno and Viera Sosa, J
 Maintainer: Pérez Zerpa, Jorge M. (jorgepz@fing.edu.uy)
 Title: ONSAS: an Open Nonlinear Structural Analysis Solver
 Description: ONSAS is a GNU-Octave code for static/dynamic and linear/non-linear analysis of structures including, solids, beams, truss or plane structures.
+Categories: package
 License: GPLv3+
