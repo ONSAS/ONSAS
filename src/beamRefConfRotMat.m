@@ -27,12 +27,9 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   eyG = [0 1 0]' ;    ezG = [0 0 1]' ;
 
   % Vector normal to beam in reference configuration
-  exL
-  if abs( exL(1) ) > 1e-8*lengthElem || abs( exL(2) ) > 1e-8*lengthElem  ; % if exL it is not ezG
-      exL
-      aux = cross( ezG, exL ) ;
+  if ( abs( exL(1) ) > 1e-8*lengthElem ) || ( abs( exL(2) ) > 1e-8*lengthElem ) ; % if exL it is not ezG
+    aux = cross( ezG, exL ) ;
     eyL = aux / norm( aux ) ;
-    eyL
   else
     eyL = eyG ;
   end
