@@ -135,21 +135,27 @@ for elem = 1:nElems
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
-      Finte = fs{1} ;  Ke = ks{1} ;
+      Finte = fs{1} ,  Ke = ks{1} ;
 
       if dynamicProblemBool
         Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
       end
+
     else
       error('wrong hyperElasModel for frame element.')
-   end
+    end
+
+
+
     if ~isempty(elemTypeAero) &&  aeroBool == 0
       error("Drag, Lift or Moment coefficients must be defined in elements struct\n ")
     end
+
     %md chcek wind velocity is defined
     if AeroCoefficentsBool &&  aeroBool == 0
       error("elemTypeAero chord vector must be defined in elements struct \n")
     end
+
     if aeroBool && fsBool
       % extract wind function name
       userWindVel = analysisSettings.userWindVel ;
@@ -158,15 +164,19 @@ for elem = 1:nElems
       numGaussPoints = 2 ;
       % read aero paramters of the element
       elemTypeAero      = elements( mebiVec( 2 ) ).elemTypeAero ;
+
       if ~isempty(userDragCoef)
         userDragCoef    = elements( mebiVec( 2 ) ).userDragCoef ;
       end
+
       if ~isempty(userLiftCoef)
         userLiftCoef    = elements( mebiVec( 2 ) ).userLiftCoef ;
       end
+
       if ~isempty(userMomentCoef)
         userMomentCoef  = elements( mebiVec( 2 ) ).userMomentCoef ;
       end
+
       elemTypeGeometry  = elements( mebiVec( 2 ) ).elemTypeGeometry ;
       % compute force
       [ FaeroElem ]= aeroForce( elemNodesxyzRefCoords, elemTypeGeometry    , ...
@@ -179,7 +189,7 @@ for elem = 1:nElems
 
     end
 
-   % ---------  triangle solid element -----------------------------
+  % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemTypeGeometry ;
