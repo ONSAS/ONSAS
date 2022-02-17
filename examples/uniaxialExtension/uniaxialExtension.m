@@ -73,7 +73,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 1 ; nu = 0.3 ; p = .1 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
 %md### MEBI parameters
@@ -94,8 +94,8 @@ elements(2).elemType = 'tetrahedron' ;
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
 %md the first BC introduced is a load, then the coordinate system, loadfactor time function and base load vector are defined
 boundaryConds(1).loadsCoordSys = 'global';
-boundaryConds(1).loadsTimeFact = @(t) t ;
-boundaryConds(1).loadsBaseVals = [ p 0 0 0 0 0 ] ;
+boundaryConds(1).loadsTimeFact = @(t) p*t ;
+boundaryConds(1).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
 %md the other BCs have imposed displacements
 boundaryConds(2).imposDispDofs = [1] ;
 boundaryConds(2).imposDispVals =  0  ;
@@ -168,7 +168,7 @@ otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
 %md
 analyticCheckTolerance = 1e-6 ;
-analyticFunc           = @(w) 1/p * E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
+analyticFunc           = @(w) E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
 controlDisps = matUs(6*6+1,:) ;
 analyticVals = analyticFunc( controlDisps ) ;
 controlDispsValsCase1         = controlDisps  ;
@@ -184,7 +184,7 @@ otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
 boundaryConds(1).loadsCoordSys = 'local';
-boundaryConds(1).loadsBaseVals = [0 0 0 0 p 0 ] ;
+boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 elements(2).elemTypeParams = [ 2 ] ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -203,6 +203,22 @@ verifBoolean = ...
   && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ;
 %md
 %md
+
+otherParams.problemName = 'uniaxialExtension_NHC' ;
+materials.hyperElasModel = 'NHC' ;
+bulk = E/(3*(1-2*nu)) ;
+materials.hyperElasParams = [ bulk mu  ] ;
+
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+controlDispsValsCase4         = matUs(6*6+1,:) ;
+loadFactorNumericalValsCase4  = loadFactorsMat ;
+
+analyticFunc           = @(w) mu * (1 + w/Lx)    - mu * 1 ./ (1 + w/Lx).^2 + (mu^2)/bulk * (1 + w/Lx).^3 ;
+analyticValsCase5 = analyticFunc( controlDispsValsCase4 ) ;
+
+
+
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -210,6 +226,8 @@ figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase4, loadFactorNumericalValsCase4,  'c-^' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase4, analyticValsCase5,  'y-.' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
