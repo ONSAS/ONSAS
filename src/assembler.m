@@ -132,8 +132,6 @@ for elem = 1:nElems
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-u2ElemDisps( Ut       , dofselem )
-
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
