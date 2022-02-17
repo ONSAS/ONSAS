@@ -35,8 +35,6 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
-fint = Fint( BCsData.neumDofs )
-stop
     systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) - Faero( BCsData.neumDofs ) ) ;
 
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
