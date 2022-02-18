@@ -30,9 +30,9 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
 ```
  * `'NHC'`: for a Neo-Hookean compressible material. The model implemented is given by
 ```math
-\Psi( \textbf{C} ) = \frac{p_1}{2} ( tr(\textbf{C})-3) + \frac{p_2}{2} ( \sqrt{det(\textbf{C})}-1)^2
+\Psi( \textbf{C} ) = \frac{p_1}{2} ( tr(\textbf{C})-3) + \frac{p_2}{2} \left( \sqrt{det(\textbf{C})}-1 \right)^2
  \quad
- p_1 = \frac{ E \nu }{ (1+\nu) (1-2\nu) }
+ p_1 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```

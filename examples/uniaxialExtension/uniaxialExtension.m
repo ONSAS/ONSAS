@@ -73,7 +73,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.3 ; p = .1 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 1 ; nu = 0.3 ; p = 2 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
 %md### MEBI parameters
@@ -206,8 +206,8 @@ verifBoolean = ...
 
 otherParams.problemName = 'uniaxialExtension_NHC' ;
 materials.hyperElasModel = 'NHC' ;
-bulk = E/(3*(1-2*nu)) ;
-materials.hyperElasParams = [ bulk mu  ] ;
+bulk = E / ( 3*(1-2*nu) ) ;
+materials.hyperElasParams = [ mu bulk ] ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
@@ -227,7 +227,7 @@ plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth',
 plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase4, loadFactorNumericalValsCase4,  'c-^' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase4, analyticValsCase5,  'y-.' , 'linewidth', lw,'markersize',ms )
+%plot( controlDispsValsCase4, analyticValsCase5,  'y-.' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )

@@ -19,8 +19,8 @@
 
 function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
 
-bulk     = consParams(1) ;
-shear    = consParams(2) ;
+shear    = consParams(1) ;
+bulk     = consParams(2) ;
 
 C       = 2*Egreen + eye(3);  % Egreen = 1/2 (C - I)
 invC    = inv(C);
