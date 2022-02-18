@@ -214,6 +214,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
   cosBeta = dot(tch, td) / ( norm(td) * norm(tch) ) ;
   sinBeta = dot( cross(td,tch), [1 0 0] ) / ( norm(td) * norm(tch) ) ;
   betaRelG =  sign( sinBeta ) * acos( cosBeta ) ;
+
   %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty( userDragCoef )
     C_d = feval( userDragCoef, betaRelG ) ;

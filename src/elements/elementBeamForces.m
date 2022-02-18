@@ -59,7 +59,7 @@ lo = sqrt( ( x21       )' * ( x21       ) ) ; %
 l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; %
 
 % rotation matrix to reference configuration
-Ro = beamRefConfRotMat( x21 )
+Ro = beamRefConfRotMat( x21 ) ;
 
 
 % --- rigid rotation ---
@@ -257,7 +257,7 @@ if elemrho > 0
       + lo/2 * wIntPoints( ind ) * interTermMassMatrix ;
   end
 
-  Fine       = EE * sumInterForce      ;
+  Fine       = EE * sumInterForce ;
   GyroMatrix = EE * sumGyro * EE' ;
   MassMatrix = EE * sumMass * EE' ;
 
@@ -383,4 +383,5 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
     % Compute Gyroscopic Matrix
     IntegrandoGyroMatrix  =    H2' * ( ( skewWdoter * Irhoe ) - skew( Irhoe * wdoter) ) * H2 ...
                                 + H1' * Area*rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88
+
 end
