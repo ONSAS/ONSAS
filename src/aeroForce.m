@@ -1,6 +1,6 @@
-function fagElem = aeroForce( elemCoords, elemCrossSecParams,
-                              Ue, Udote, Udotdote, userDragCoef, 
-                              userLiftCoef, userMomentCoef, elemTypeAero,
+function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
+                              Ue, Udote, Udotdote, userDragCoef,... 
+                              userLiftCoef, userMomentCoef, elemTypeAero,...
                               userWindVel,geometricNonLinearAero, nextTime ) 
   %Implementation Booleans
   jorgeBool = false ; jorgeBoolRigid  = false ;
@@ -118,7 +118,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
          0 1 0 
          0 0 1 ] ;
 
-  L3 = expon( [-pi/2 0 0] ) ;         
+  L3 = expon( [pi/2 0 0] ) ;         
 
   %angular velocity from rigid component
   wdoter = G' * EE' * ddotg ;% Eq. 65
@@ -130,22 +130,22 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,
   fagElem = zeros(12,1) ;
   for ind = 1 : length( xIntPoints )
       xGauss = lo/2 * (xIntPoints( ind ) + 1) ; 
-      fagElem =  fagElem +...
-                 lo/2 * wIntPoints(ind) * integAeroForce( xGauss, ddotg, udotWindElem, 
-                                                          lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0, 
-                                                          vecChordUndef, dimCaracteristic,
-                                                          I3, O3, P, G, EE, L2, L3,
-                                                          userDragCoef, userLiftCoef, userMomentCoef,
+      fagElem =  fagElem ...
+                 +lo/2 * wIntPoints(ind) * integAeroForce( xGauss, ddotg, udotWindElem,... 
+                                                          lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0,... 
+                                                          vecChordUndef, dimCaracteristic,...
+                                                          I3, O3, P, G, EE, L2, L3,...
+                                                          userDragCoef, userLiftCoef, userMomentCoef,...
                                                           jorgeBool, battiBool, rigidBool, jorgeBoolRigid ) ;
   end
   % express aerodinamic force in ONSAS nomencalture  [force1 moment1 force2 moment2  ...];
   fagElem = Cambio_Base(fagElem) ;
 end
 
-function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
-                                          lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0, 
-                                          vecChordUndef, dimCaracteristic, I3, O3, P, G, EE, L2, L3, 
-                                          userDragCoef, userLiftCoef, userMomentCoef,
+function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
+                                          lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0,... 
+                                          vecChordUndef, dimCaracteristic, I3, O3, P, G, EE, L2, L3,...
+                                          userDragCoef, userLiftCoef, userMomentCoef,...
                                           jorgeBool, battiBool, rigidBool, jorgeBoolRigid )
   % Compute udot(x) and velWind(x):
   % Shape functions:
@@ -193,16 +193,16 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   % proyect velocity and chord vector into transverse plane
   VrelG       = udotWindG - udotG  ;
   if battiBool || jorgeBool || jorgeBoolRigid ;
-    VpiRelG   = L2 * RgGx' * VrelG ;
+    VpiRelG   = L2 * RgGx' * R0' * VrelG ;
   elseif rigidBool 
     VpiRelG   = L2 * Rr' * VrelG ;
   end
   VpiRelGperp = L3 * VpiRelG       ;
   % rotate chord vector
   if battiBool || jorgeBool || jorgeBoolRigid ;
-;    tch = R0 * RgGx * vecChordUndef / norm( vecChordUndef ) ;
+    tch = vecChordUndef / norm( vecChordUndef ) ;
   elseif rigidBool
-    tch = Rroofx * vecChordUndef / norm( vecChordUndef ) ;
+    tch = vecChordUndef / norm( vecChordUndef ) ;
   end
   % Calculate relative incidence angle
   if( norm( VpiRelG) == 0 )
@@ -211,9 +211,9 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,
   else
       td = VpiRelG / norm( VpiRelG ) ;
   end
-  scalarProduct   = dot( tch ,td ) ; 
-  betaRelG = acos ( scalarProduct / ( norm (tch) * norm(td) ) );
-  
+  cosBeta = dot(tch, td) / ( norm(td) * norm(tch) ) ;
+  sinBeta = dot( cross(td,tch), [1 0 0] ) / ( norm(td) * norm(tch) ) ;
+  betaRelG =  sign( sinBeta ) * acos( cosBeta ) ;
   %Check aerodynamic coefficients existence and the load the value:  
   if ~isempty( userDragCoef )
     C_d = feval( userDragCoef, betaRelG ) ;
