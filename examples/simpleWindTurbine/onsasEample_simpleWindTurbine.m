@@ -5,26 +5,12 @@ addpath( genpath( [ pwd '/../../src'] ) );
 % General  problem parameters
 %----------------------------
 % material scalar parameters
-E = 210e9 ;  nu = 0.3 ; rho = 7850 ; G = E / (2 * (1+nu)) ;
+E = 210e6 ;  nu = 0.3 ; rho = 7850 ; G = E / (2 * (1+nu)) ;
 % geometrical scalar parameters
 % l = 5 ; a = 0.2 ; J = 1/3 * 0.40147 * a^4 ; Iyy = a ^ 4 / 12  ; Izz = Iyy ;  
-l = 5 ; d = 0.3;  
+l = 2 ; d = 0.1;  
 % the number of elements of the mesh for static case
 numElementsBlade = 1;
-
-% second carindal:
-rhoA = 1.225 ;
-c_l = feval('liftCoefS809', 0) ;
-vwind = feval('windVelDynamic', 0,0) ;
-fl = 1 / 2 * rhoA * norm(vwind) ^ 2 * d ;
-axialMoment = 3 * fl * l * l / 2 ;
-
-mass = rho * l * pi * d ^2 /4 ; 
-Jrho =  3 * mass  * l ^ 2 ; 
-angularAcel = axialMoment / Jrho ;
-timeT = 1 ;
-angleTimeT =  angularAcel * timeT ^ 2 / 2 ;
-
 %
 % materials
 %----------------------------
@@ -35,123 +21,105 @@ materials.density         = rho             ;
 %
 % elements
 %----------------------------
-%Two different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
+% nodes
 elements(1).elemType = 'node'  ;
+% first blade aligned with -z global axis
+numGaussPoints  = 4            ;
+formulCase      = 4            ;
 elements(2).elemType = 'frame' ;
-% for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
-elements(2).elemTypeGeometry = [2 d d] ;
+elements(2).elemTypeGeometry = [3 d ] ;
+elements(2).elemTypeAero     = [0 0 d numGaussPoints formulCase ] ;
+elements(2).userLiftCoef     = 'liftCoef'                         ;
+% second blade in (z,-y) quarter 
 elements(3).elemType = 'frame' ;
-elements(3).elemTypeGeometry = [2 d d] ;
-% Test different formulations
-for formulCase = [2]
-  % boundaryConds
-  %----------------------------
-  % The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
-  boundaryConds(1).imposDispDofs = [ 1 3 4 5 6 ] ;
-  boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
-  %
-  % initial Conditions
-  %----------------------------
-  % homogeneous initial conditions are considered, then an empty struct is set:
-  initialConds = struct() ;
-  %
-  % mesh parameters
-  %----------------------------
-  %The coordinates of the nodes of the mesh are given by the matrix:
-  localAxialBladeCords = ( 0:( numElementsBlade ) )'*l/ numElementsBlade ;
-  nodesLocalBladeZ = [ zeros( numElementsBlade +1,2) -localAxialBladeCords ] ;
-  nodesLocalBlade120 = [ zeros( numElementsBlade +1,1), +sin( deg2rad(0) )*localAxialBladeCords,  +cos( deg2rad(0) )*(localAxialBladeCords) ] ;
-  nodesLocalBlade120(1,:) = [] ;
-  nodesLocalBlade240 = [ zeros( numElementsBlade +1,1) -sin( deg2rad(60) )*localAxialBladeCords +cos( deg2rad(60) )*(localAxialBladeCords) ] ;
-  nodesLocalBlade240(1,:) = [] ;
-  %The final nodes coordinates matrix is:
-  % the mesh conecitvity cell is
-  % mesh.nodesCoords = [   nodesLocalBladeZ;  nodesLocalBlade240; nodesLocalBlade120; ] ;
-  mesh.nodesCoords = [   nodesLocalBladeZ;  nodesLocalBlade120; ] ;
-  mesh.conecCell = { } ;
-  mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
-  %The conec cell is assamble as:
-  for i=1:numElementsBlade
-    conecElemMatrix(i,:) = [ 1 2 0 0  i i+1 ] ;
-    mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
-    if i == 1 
-      conecElemMatrix( i + numElementsBlade  , : ) = [ 1 3 0 0  1   numElementsBlade + 1 + i ] ;
-      % conecElemMatrix( i + 2*numElementsBlade, : ) = [ 1 2 0 0  1 2*numElementsBlade + 1 + i ] ;
-      mesh.conecCell{ i  + numElementsBlade + 1 , 1 } = [ 1 3 0 0  1     numElementsBlade + 1 + i ] ;
-      % mesh.conecCell{ i  + 2*numElementsBlade +1, 1 } = [ 1 2 0 0  1   2*numElementsBlade + 1 + i ] ;
-    elseif i > 1
-      conecElemMatrix( i + numElementsBlade,   : ) = [ 1 2 0 0    numElementsBlade + i    numElementsBlade + i + 1  ] ;
-      % conecElemMatrix( i + 2*numElementsBlade, : ) = [ 1 3 0 0  2*numElementsBlade + i  2*numElementsBlade + i + 1  ] ;
-      mesh.conecCell{ i  +   numElementsBlade +1 , 1 } = [ 1 2 0 0    numElementsBlade + i   numElementsBlade + i + 1  ] ;
-      % mesh.conecCell{ i  + 2*numElementsBlade +1 , 1 } = [ 1 2 0 0  2*numElementsBlade + i 2*numElementsBlade + i + 1  ] ;
-    end
-  end
-  figure
-  hold on
-  plot(nodesLocalBladeZ(:,2), nodesLocalBladeZ(:,3),  'linewidth', 5 )
-  plot( [ 0; nodesLocalBlade120(:,2) ], [ 0; nodesLocalBlade120(:,3) ], 'linewidth', 5 )
-  plot( [ 0; nodesLocalBlade240(:,2) ], [ 0; nodesLocalBlade240(:,3) ], 'linewidth', 5 )
-  %-------------------------------------
-  % Static case
-  % -------------------------------------
-  % analysisSettings
-  %---------------------------- 
-  %numericalMethodSettings static case
-  analysisSettings.methodName    = 'newtonRaphson'                    ;
-  analysisSettings.finalTime     =   1                                ;
-  analysisSettings.deltaT        =   analysisSettings.finalTime / 10 ;
-  analysisSettings.stopTolDeltau =   1e-6                             ;
-  analysisSettings.stopTolForces =   1e-6                             ;
-  analysisSettings.stopTolIts    =   30                               ;
-  analysisSettings.booleanSelfWeight = true                           ;
-  %
-  % otherParams
-  %----------------------------
-  otherParams.problemName      = strcat( 'onsasExample_windTurbine_', 'SelfWeight',...
-                                         '_formulation=', num2str(formulCase), ' 3D' ) ;
-  otherParams.plotsFormat      = 'vtk' ;
-  % Execute ONSAS
-  % ----------------------------
-  % [ matUsStatic, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
-  %-------------------------------------
-  % Dynamic case
-  % -------------------------------------
-  %
-  % The drag and lift section function names are:
-  numGaussPoints  = 1 ;
-  elements(2).elemTypeAero   = [0 0 d numGaussPoints formulCase ] ;
-  elements(2).userDragCoef   = 'dragCoefS809'   ;
-  elements(2).userLiftCoef   = 'liftCoefS809'   ;
-  elements(2).userMomentCoef = 'momentCoefS809'   ;
-  elements(3).elemTypeAero   = [0 0 -d numGaussPoints formulCase ] ;
-  elements(3).userDragCoef   = 'dragCoefS809'   ;
-  elements(3).userLiftCoef   = 'liftCoefS809'   ;
-  elements(3).userMomentCoef = 'momentCoefS809' ;
-  %
-  % analysisSettings
-  % -------------------------------------
-  analysisSettings.finalTime         =   100     ;% This value must be manually introduced into windVelNonLinearDynamic to achive max wind vl
-  analysisSettings.deltaT            =   0.5   ;
-  analysisSettings.methodName        = 'alphaHHT';
-  analysisSettings.alphaHHT          =  -0.05    ;
-  analysisSettings.stopTolIts        =   10      ;
-  analysisSettings.geometricNonLinearAero = true  ;
-  % 
-  % Run with different velocity cases
-  %----------------------------
-  % matUsExamplesDyn = [] ;
-  velocitiyCases = ['windVelDynamic'] ;
-  velCaseIndex = 1 ;
-  % for velCaseIndex = 1 : size(velocitiyCases, 1)
-    %
-    % otherParams
-    %----------------------------
-    analysisSettings.userWindVel = velocitiyCases(velCaseIndex, :) ;
-    otherParams.problemName      = strcat( 'onsasExample_windTurbine_', analysisSettings.userWindVel, '_formulation=', num2str(formulCase), ' 3D' ) ;
-    otherParams.plotsFormat      = 'vtk' ;
-    % Execute ONSAS
-    % ----------------------------
-    [ matUsDyncurrVel, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
-    % fill matrix of matUs for different c cases
-    % matUsExamples3DDyn = [ matUsExamples3DDyn matUsDyn3DcurrVel ] ;
-  end
+elements(3).elemTypeGeometry = [3 d ] ;
+elements(3).elemTypeAero     = [0 d 0 numGaussPoints formulCase ] ;
+elements(3).userLiftCoef     = 'liftCoef'                         ;
+% third blade in (z,y) quarter 
+elements(4).elemType = 'frame' ;
+elements(4).elemTypeGeometry = [3 d ] ;
+elements(4).elemTypeAero     = [0 d 0 numGaussPoints formulCase ] ;
+elements(4).userLiftCoef     = 'liftCoef'                         ;
+%
+% boundaryConds
+%----------------------------
+% The elements are submitted to two different BC settings. The first BC corresponds to a free angle in x condition 
+boundaryConds(1).imposDispDofs = [ 1 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
+%
+% initial Conditions
+%----------------------------
+% homogeneous initial conditions are considered, then an empty struct is set:
+initialConds = struct() ;
+%
+% mesh parameters
+mesh.nodesCoords = [ 0        0              0            ; ...
+                     0  l*sin( pi )        l*cos( pi )    ; ...
+                     0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
+                     0  l*sin( 4*pi/3 )   -l*cos( 4*pi/3 ); ] 
+
+mesh.conecCell         = { } ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
+mesh.conecCell{ 2, 1 } = [ 1 2 0 0   1 2 ] ;
+mesh.conecCell{ 3, 1 } = [ 1 3 0 0   1 3 ] ;
+mesh.conecCell{ 4, 1 } = [ 1 4 0 0   1 4 ] ;
+%
+% analysisSettings
+% -------------------------------------
+analysisSettings.finalTime              =   210     ;
+analysisSettings.deltaT                 =   5     ;
+analysisSettings.methodName             = 'alphaHHT';
+analysisSettings.alphaHHT               =  -0.05    ;
+analysisSettings.stopTolIts             =   30      ;
+analysisSettings.geometricNonLinearAero = true      ;
+analysisSettings.booleanSelfWeight      = false     ;
+%
+% add wind veloctiy into analysisSettings struct
+analysisSettings.userWindVel = 'windVel' ;
+%
+% otherParams
+%----------------------------
+otherParams.problemName = strcat( 'onsasExample_simpleWindTurbine' ) ;
+otherParams.plotsFormat = 'vtk' ;
+%
+% Execute ONSAS
+% ----------------------------
+[ matUs, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
+%md
+%md## Verification
+%mdcompute solution by the second carindal, firt the wind parameters are lodaded
+rhoA = 1.225 ; c_l = feval('liftCoef', 0) ; vwind = feval('windVel', 0,0) ;
+%md lift load per unit of length: 
+fl = 1 / 2 * c_l * rhoA * norm(vwind) ^ 2 * d ;
+%md the total moment induced in node 1 in x direction for is the sum for three blades: 
+moment1x = 3 * fl * l * l / 2 ;
+%md then the angular moment is:
+bladeMass = rho * l * pi * d ^2 /4 ; 
+Jrho =  3 * 1/3 * bladeMass  * l ^ 2 ; 
+angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
+%md numercial time vector is given by:
+timeVec = linspace(0, analysisSettings.finalTime, size(matUs, 2) ) ;
+%md numercial rotation angle is:
+dofAngleXnode1 = 2 ;
+angleXnode1Numeric = -matUs(dofAngleXnode1,:) ;
+%md analytical rotation angle is:
+angleXnode1Analytic = angleXnode1(timeVec) ;
+%md
+%md## Verification
+%md
+verifBoolean = norm( angleXnode1Numeric - angleXnode1Analytic )  ...
+                    < ( norm( angleXnode1Numeric ) * 1e-2 ) ;
+%md
+%md## Plots
+%md
+lw = 2.0 ; ms = 10; plotfontsize = 22 ;
+spanPlotTime = 2 ;
+figure
+plot( timeVec(1:spanPlotTime:end), angleXnode1Analytic(1:spanPlotTime:end) ,'b-x' , 'linewidth', lw,'markersize',ms )
+hold on, grid on
+plot( timeVec(1:spanPlotTime:end), angleXnode1Numeric(1:spanPlotTime:end), 'ko' , 'linewidth', lw,'markersize',ms )
+labx = xlabel('time(s)');   laby = ylabel('$\theta_x node 1$') ;
+legend('analytic','numeric','location','North')
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+print('output/verifSimpleWindTurbine.png','-dpng')
