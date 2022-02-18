@@ -19,6 +19,7 @@ function c_d = dragCoefS809(betaRel)
       c_d = 0.05 ;
   else 
   end
+  c_d = 0 ;
 end
 
 function computeDragPolyFitCoefs()

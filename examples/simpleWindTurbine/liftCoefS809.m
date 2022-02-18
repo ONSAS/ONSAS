@@ -18,6 +18,7 @@ function c_l = liftCoefS809(betaRel)
   elseif rad2deg( betaRel ) < -15
       c_l = -0.75 ;
   end
+  c_l = 0.2 ;
 end
 
 function computeLiftPolyFitCoefs()

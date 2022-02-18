@@ -18,6 +18,7 @@ function c_m = momentCoefS809(betaRel)
   elseif rad2deg( betaRel ) < -13
       c_m = -0.06 ;
   end
+    c_m = 0 ;
 end
 
 function computeLiftPolyFitCoefs()
