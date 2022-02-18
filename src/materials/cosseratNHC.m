@@ -19,23 +19,25 @@
 
 function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
 
-lambda  = consParams(1) ;
-shear   = consParams(2) ;
+shear    = consParams(1) ;
+bulk     = consParams(2) ;
 
 C       = 2*Egreen + eye(3);  % Egreen = 1/2 (C - I)
 invC    = inv(C);
 detC    = det(C); % TODO use analyDet ?
 J       = sqrt(detC);
-S       = shear * (eye(3) - invC) + lambda * log(J) * invC;
+S       = shear * ( eye(3) - invC ) + bulk * ( J * (J-1)* invC) ;
+%S       = shear * (eye(3) - invC) + bulk * log(J) * invC;
+%S       = shear * eye(3)  + bulk * ( J * (J-1)* invC) ;
 
 if consMatFlag == 0 % only stress computed
   ConsMat = [] ;
 
-elseif consMatFlag == 1 % complex-step computation expression
+elseif consMatFlag == 1 % analytic expression
+  error("the analytical expression for the Neo-Hookean constitutive law is not available")
+
+elseif consMatFlag == 2 % complex-step computation expression
 
   ConsMat = zeros(6,6);
   ConsMat = complexStepConsMat( 'cosseratNHC', consParams, Egreen ) ;
-
-else
-  error("the analytical expression for the Neo-Hookean constitutive law is not available")
 end
