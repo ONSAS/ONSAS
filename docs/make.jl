@@ -1,5 +1,5 @@
-push!(LOAD_PATH, "src")
-push!(LOAD_PATH, joinpath("docs","src") )
+#push!(LOAD_PATH, "src")
+#push!(LOAD_PATH, joinpath("docs","src") )
 
 using Documenter, ONSAS_docs
 
