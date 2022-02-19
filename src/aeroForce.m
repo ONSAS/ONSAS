@@ -232,7 +232,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
   end
 
   % Aero forces
-  rhoAire = 1.2 ;
+  rhoAire = 1.225 ;
   fdl     =  1/2 * rhoAire * C_d * dimCaracteristic * norm( VpiRelG) * VpiRelG     ; 
   fll     =  1/2 * rhoAire * C_l * dimCaracteristic * norm( VpiRelG) * VpiRelGperp ; 
   fal     =  fdl + fll ;
