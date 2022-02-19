@@ -27,8 +27,6 @@ invC    = inv(C);
 detC    = det(C); % TODO use analyDet ?
 J       = sqrt(detC);
 S       = shear * ( eye(3) - invC ) + bulk * ( J * (J-1)* invC) ;
-%S       = shear * (eye(3) - invC) + bulk * log(J) * invC;
-%S       = shear * eye(3)  + bulk * ( J * (J-1)* invC) ;
 
 if consMatFlag == 0 % only stress computed
   ConsMat = [] ;
