@@ -117,12 +117,6 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   end
 
 
-
-
-
-
-
-
 %   % Scalars vals
 %   svm             = [] ;
 %   vecSigI         = [] ;

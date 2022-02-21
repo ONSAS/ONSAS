@@ -148,7 +148,7 @@ end
 
 if size( cellCellData, 1 ) > 0
   fprintf(fid, 'CELL_DATA  %8i \n' , nelem ) ;
-  for k = 1:size(cellCellData,1)
+  for k = 1:size( cellCellData, 1 )
     auxtype = cellCellData(k,1) ;
     auxstr  = cellCellData(k,2) ;
     auxdata = cell2mat(cellCellData(k,3)) ;
@@ -160,6 +160,7 @@ if size( cellCellData, 1 ) > 0
         fprintf(fid,[' ' format_B ' \n'], auxdata(i) ) ;
       end
       fprintf(fid,'\n') ;
+
     elseif strcmp(auxtype, 'VECTORS')
       fprintf(fid, ['VECTORS ' '%s' ' float\n'], [auxstr{:}] ) ;
       for i = 1:nelem
