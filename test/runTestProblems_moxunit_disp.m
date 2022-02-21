@@ -36,3 +36,8 @@ function test_6
 function test_7
   onsasExample_cantileverSelfWeight
   assertEqual( verifBoolean, true );
+
+function test_8
+  onsasExample_simpleWindTurbine
+  assertEqual( verifBoolean, true );
+
