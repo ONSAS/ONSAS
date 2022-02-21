@@ -116,6 +116,8 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     vtkPointDataCell{1,3} = vtkNodalDisps ;
   end
 
+  stressMat =   modS.Stress ;
+
 
 %   % Scalars vals
 %   svm             = [] ;
@@ -142,18 +144,17 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 %     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Normal_Force' ; cellCellData{1,3} = vtkNormalForce ;
 %   end
 %
-%   if size( cellStress, 1 ) > 0 && size( cellStress{3}, 1) > 0 && size( cellStress{3}, 2) > 1
-%     stressMat = cellStress{3} ;
-%     nelems    = size( stressMat, 1 ) ;
-%
-%     sxx = stressMat(:, 1 ) ;
-%     syy = stressMat(:, 2 ) ;
-%     szz = stressMat(:, 3 ) ;
-%     tyz = stressMat(:, 4 ) ;
-%     txz = stressMat(:, 5 ) ;
-%     txy = stressMat(:, 6 ) ;
-%
-%     svm = sqrt( 0.5*( (sxx-syy).^2 + (syy-szz).^2 + (szz-sxx).^2  + 6*(tyz.^2 + txz.^2 + txy.^2) ) ) ;
+   if size( stressMat, 1 ) > 0
+     nelems    = size( stressMat, 1 ) ;
+
+     sxx = stressMat(:, 1 ) ;
+     syy = stressMat(:, 2 ) ;
+     szz = stressMat(:, 3 ) ;
+     tyz = stressMat(:, 4 ) ;
+     txz = stressMat(:, 5 ) ;
+     txy = stressMat(:, 6 ) ;
+
+     svm = sqrt( 0.5*( (sxx-syy).^2 + (syy-szz).^2 + (szz-sxx).^2  + 6*(tyz.^2 + txz.^2 + txy.^2) ) ) ;
 %
 %     for i = 1:nelems
 %       tensor = [ sxx(i) txy(i) txz(i) ; txy(i) syy(i) tyz(i) ; txz(i) tyz(i) szz(i) ] ;
@@ -185,7 +186,8 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 %       vecIII = [vecIII ; vec(:,indIII)'/(norm(vec(:,indIII)'))*abs(sigIII)] ;
 %
 %     end
-%     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'Von_Mises'   ; cellCellData{1,3} = svm ;
+     vtkCellDataCell{1,1} = 'SCALARS' ; vtkCellDataCell{1,2} = 'Von_Mises'   ; vtkCellDataCell{1,3} = svm ;
+     vtkCellDataCell{2,1} = 'SCALARS' ; vtkCellDataCell{2,2} = 'Sxx'   ; vtkCellDataCell{2,3} = sxx ;
 %     cellCellData{2,1} = 'VECTORS' ; cellCellData{2,2} = 'vI'          ; cellCellData{2,3} = vecI ;
 %     cellCellData{3,1} = 'VECTORS' ; cellCellData{3,2} = 'vII'         ; cellCellData{3,3} = vecII ;
 %     cellCellData{4,1} = 'VECTORS' ; cellCellData{4,2} = 'vIII'        ; cellCellData{4,3} = vecIII ;
@@ -201,8 +203,4 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 %
 %     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'SigXLoc'   ; cellCellData{1,3} = sxx ;
 %
-%   end
-%
-%
-%
-%
+   end
