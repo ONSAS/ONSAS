@@ -10,7 +10,8 @@ keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'    ;
              'uniaxialExtension/onsasExample_uniaxialExtension.m'       ;
              'nonlinearPendulum/onsasExample_nonlinearPendulum.m'       ;
              'beamTrussJoint/onsasExample_beamTrussJoint.m'             ;
-             'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' } ;
+             'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' ;
+             'simpleWindTurbine/onsasExample_simpleWindTurbine.m'       } ;
 
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;
