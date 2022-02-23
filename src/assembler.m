@@ -147,12 +147,12 @@ for elem = 1:nElems
 
 
     if ~isempty(elemTypeAero) &&  aeroBool == 0
-      error("Drag, Lift or Moment coefficients must be defined in elements struct\n ")
+      error('Drag, Lift or Moment coefficients must be defined in elements struct\n ')
     end
 
     %md chcek wind velocity is defined
     if AeroCoefficentsBool &&  aeroBool == 0
-      error("elemTypeAero chord vector must be defined in elements struct \n")
+      error('elemTypeAero chord vector must be defined in elements struct \n')
     end
 
     if aeroBool && fsBool
