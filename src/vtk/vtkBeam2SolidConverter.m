@@ -50,8 +50,8 @@ if typeSolid == 12 % vtkHexa
   matrixRotatedSectionEnd = ( expon( locRotEnd ) * matrixSectionEnd' )' ;
 
   % 3- add local displacement and position
-  matrixDisplacedSectionIni = matrixRotatedSectionIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
-  matrixDisplacedSectionEnd = matrixRotatedSectionEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
+  matrixDisplacedSectionIni = matrixRotatedSectionIni + ones( size(matrixRotatedSectionIni,1) , 1) * ( [ coordLocSubElem(1) 0 0] + dispLocIni') ;
+  matrixDisplacedSectionEnd = matrixRotatedSectionEnd + ones( size(matrixRotatedSectionIni,1) , 1) * ( [ coordLocSubElem(2) 0 0] + dispLocEnd') ;
 
   % 4- apply Rr' change basis matrix
   matrixRotatedSectionIni = ( Rr * matrixDisplacedSectionIni' )' ;
@@ -60,14 +60,14 @@ if typeSolid == 12 % vtkHexa
   defPosIniSec = coordsElemNodes(1:3) + dispIniSection ;
 
   % 5- add nodal displacements in e1,e2,e3 system
-  nodesVtkSectionIni = matrixRotatedSectionIni + defPosIniSec' ;
-  nodesVtkSectionEnd = matrixRotatedSectionEnd + defPosIniSec' ;
+  nodesVtkSectionIni = matrixRotatedSectionIni + ones( size(matrixRotatedSectionIni,1) , 1) * defPosIniSec' ;
+  nodesVtkSectionEnd = matrixRotatedSectionEnd + ones( size(matrixRotatedSectionIni,1) , 1) * defPosIniSec' ;
 
   Nodesvtk = [ nodesVtkSectionIni ; nodesVtkSectionEnd ] ;
   Conecvtk = [ 12 0:7 ] ; % in vtk indexation (from 0)
 
-  matrixRefIni = ( R0 * (matrixSectionIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
-  matrixRefEnd = ( R0 * (matrixSectionEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefIni = ( R0 * (matrixSectionIni + ones( size(matrixRotatedSectionIni,1) , 1) * [ coordLocSubElem(1) 0 0] )')' + ones( size(matrixRotatedSectionIni,1) , 1) * coordsElemNodes(1:3)' ;
+  matrixRefEnd = ( R0 * (matrixSectionEnd + ones( size(matrixRotatedSectionIni,1) , 1) * [ coordLocSubElem(2) 0 0] )')' + ones( size(matrixRotatedSectionIni,1) , 1) * coordsElemNodes(1:3)' ;
 
   NodesRefvtk = [ matrixRefIni; matrixRefEnd ] ;
 
@@ -99,11 +99,11 @@ elseif typeSolid == 25 % vtkQuadHexa
   matrixRotatedSectionMed     = ( expon( (locRotIni+locRotEnd)*0.5  ) * matrixSectionMed'     )' ;
 
   % 3- add local displacement and position
-  matrixDisplacedSectionIni     = matrixRotatedSectionIni     + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
-  matrixDisplacedSectionEnd     = matrixRotatedSectionEnd     + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
-  matrixDisplacedSectionCurvIni = matrixRotatedSectionCurvIni + [ coordLocSubElem(1) 0 0] + dispLocIni' ;
-  matrixDisplacedSectionCurvEnd = matrixRotatedSectionCurvEnd + [ coordLocSubElem(2) 0 0] + dispLocEnd' ;
-  matrixDisplacedSectionMed     = matrixRotatedSectionMed     + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] + dispLocMed' ;
+  matrixDisplacedSectionIni     = matrixRotatedSectionIni     + ones( size(matrixRotatedSectionIni,1) , 1) * ( [ coordLocSubElem(1) 0 0] + dispLocIni' ) ;
+  matrixDisplacedSectionEnd     = matrixRotatedSectionEnd     + ones( size(matrixRotatedSectionEnd,1) , 1) * ( [ coordLocSubElem(2) 0 0] + dispLocEnd' ) ;
+  matrixDisplacedSectionCurvIni = matrixRotatedSectionCurvIni + ones( size(matrixRotatedSectionCurvIni,1) , 1) * ( [ coordLocSubElem(1) 0 0] + dispLocIni' ) ;
+  matrixDisplacedSectionCurvEnd = matrixRotatedSectionCurvEnd + ones( size(matrixRotatedSectionCurvEnd,1) , 1) * ( [ coordLocSubElem(2) 0 0] + dispLocEnd' ) ;
+  matrixDisplacedSectionMed     = matrixRotatedSectionMed     + ones( size(matrixRotatedSectionMed,1) , 1) * ( [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] + dispLocMed' );
 
   % 4- apply Rr' change basis matrix
   matrixRotatedSectionIni     = ( Rr * matrixDisplacedSectionIni'     )' ;
@@ -115,21 +115,21 @@ elseif typeSolid == 25 % vtkQuadHexa
   defPosIniSec = coordsElemNodes(1:3) + dispIniSection ;
 
   % 5- add nodal displacements in e1,e2,e3 system
-  nodesVtkSectionIni     = matrixRotatedSectionIni     + defPosIniSec' ;
-  nodesVtkSectionEnd     = matrixRotatedSectionEnd     + defPosIniSec' ;
-  nodesVtkSectionCurvIni = matrixRotatedSectionCurvIni + defPosIniSec' ;
-  nodesVtkSectionCurvEnd = matrixRotatedSectionCurvEnd + defPosIniSec' ;
-  nodesVtkSectionMed     = matrixRotatedSectionMed     + defPosIniSec' ;
+  nodesVtkSectionIni     = matrixRotatedSectionIni     + ones( size(matrixRotatedSectionIni,1) , 1) * defPosIniSec' ;
+  nodesVtkSectionEnd     = matrixRotatedSectionEnd     + ones( size(matrixRotatedSectionEnd,1) , 1) * defPosIniSec' ;
+  nodesVtkSectionCurvIni = matrixRotatedSectionCurvIni + ones( size(matrixRotatedSectionCurvIni,1) , 1) * defPosIniSec' ;
+  nodesVtkSectionCurvEnd = matrixRotatedSectionCurvEnd + ones( size(matrixRotatedSectionCurvEnd,1) , 1) * defPosIniSec' ;
+  nodesVtkSectionMed     = matrixRotatedSectionMed     + ones( size(matrixRotatedSectionMed,1) , 1) * defPosIniSec' ;
 
   Nodesvtk = [ nodesVtkSectionIni ;     nodesVtkSectionEnd; ...
                nodesVtkSectionCurvIni;  nodesVtkSectionCurvEnd;  nodesVtkSectionMed ] ;
   Conecvtk = [ 25 0:19 ] ; % in vtk indexation (from 0)
 
-  matrixRefIni = ( R0 * (matrixSectionIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
-  matrixRefEnd = ( R0 * (matrixSectionEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
-  matrixRefCurvIni = ( R0 * (matrixSectionCurvIni + [ coordLocSubElem(1) 0 0] )')' + coordsElemNodes(1:3)' ;
-  matrixRefCurvEnd = ( R0 * (matrixSectionCurvEnd + [ coordLocSubElem(2) 0 0] )')' + coordsElemNodes(1:3)' ;
-  matrixRefMed = ( R0 * (matrixSectionMed + [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] )')' + coordsElemNodes(1:3)' ;
+  matrixRefIni = ( R0 * (matrixSectionIni + ones( size(matrixRotatedSectionIni,1) , 1) * [ coordLocSubElem(1) 0 0] )')' + ones( size(matrixRotatedSectionIni,1) , 1) * coordsElemNodes(1:3)' ;
+  matrixRefEnd = ( R0 * (matrixSectionEnd + ones( size(matrixRotatedSectionEnd,1) , 1) * [ coordLocSubElem(2) 0 0] )')' + ones( size(matrixRotatedSectionEnd,1) , 1) * coordsElemNodes(1:3)' ;
+  matrixRefCurvIni = ( R0 * (matrixSectionCurvIni + ones( size(matrixSectionCurvIni,1) , 1) * [ coordLocSubElem(1) 0 0] )')' + ones( size(matrixSectionCurvIni,1) , 1) * coordsElemNodes(1:3)' ;
+  matrixRefCurvEnd = ( R0 * (matrixSectionCurvEnd + ones( size(matrixSectionCurvEnd,1) , 1) * [ coordLocSubElem(2) 0 0] )')' + ones( size(matrixSectionCurvEnd,1) , 1) * coordsElemNodes(1:3)' ;
+  matrixRefMed = ( R0 * (matrixSectionMed +  ones( size(matrixSectionMed,1) , 1) * [ (coordLocSubElem(1)+coordLocSubElem(2))*.5 0 0] )')' + ones( size(matrixSectionMed,1) , 1) * coordsElemNodes(1:3)' ;
 
   NodesRefvtk = [ matrixRefIni ;  matrixRefEnd; matrixRefCurvIni; matrixRefCurvEnd; matrixRefMed ] ;
 
