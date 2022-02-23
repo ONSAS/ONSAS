@@ -86,7 +86,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0] ;
 
-      assert( size( elemNodeLoadsMatrix, 2)==6,"error, maybe missing thickness")
+      assert( size( elemNodeLoadsMatrix, 2)==6,'error, maybe missing thickness')
 
 
 

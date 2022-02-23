@@ -283,7 +283,7 @@ elseif elemrho == 0
   ks{2} = zeros(12) ;
   ks{3} = zeros(12) ;
 else
-  error("Negative density \n")
+  error('Negative density \n')
 end
 end%endFunction
 

@@ -424,4 +424,4 @@ cd(accDir)
 close(2)
 % elapsed time in seconds
 elapTime = toc ;
-fprintf( strcat("\n The elapsed execution time was ", num2str(elapTime/60), "  minutes", '\n' ) );
+fprintf( strcat('\n The elapsed execution time was ', num2str(elapTime/60), '  minutes', '\n' ) );
