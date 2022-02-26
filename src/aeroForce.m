@@ -277,6 +277,6 @@ function [xIntPoints, wIntPoints] = GaussPointsAndWeights (numGaussPoints )
       wIntPoints = [ ( 18 + sqrt(30) ) / 36                   ( 18 + sqrt(30) ) / 36      ... 
                      ( 18 - sqrt(30) ) / 36                   ( 18 - sqrt(30) ) / 36                  ];
   else
-      error("The number of gauss cuadrature points introduced are not implemented, only 1 2 3 or 4")
+      error('The number of gauss cuadrature points introduced are not implemented, only 1 2 3 or 4')
   end
 end

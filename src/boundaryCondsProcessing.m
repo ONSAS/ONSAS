@@ -230,7 +230,7 @@ if analysisSettings.booleanSelfWeight == true
           end
 
         else
-          error("this elemType is not implemented using self weight boolean yet")
+          error('this elemType is not implemented using self weight boolean yet')
 
         end % element type case
 
