@@ -229,7 +229,7 @@ for elem = 1:nElems
    else
      consMatFlag = elemTypeParams(1) ;
    end
-   [ Finte, Ke, stress ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
+   [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
   end   % case in typee of element ----
