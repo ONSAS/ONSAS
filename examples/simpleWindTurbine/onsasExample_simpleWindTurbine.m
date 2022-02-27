@@ -159,8 +159,8 @@ hold on, grid on
 plot( timeVec(1:spanPlotTime:end), angleXnode1Numeric_NodalMoment(1:spanPlotTime:end), 'ko' , 'linewidth', lw,'markersize',ms )
 plot( timeVec(1:spanPlotTime:end), angleXnode1Numeric_aeroForce(1:spanPlotTime:end), 'rs' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('time(s)');   laby = ylabel('$\theta_x node 1$') ;
-legend('analytic','numeric','location','North')
+legend('analytic','nodal moment', 'aero force', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print(fig1, 'output/verifSimpleWindTurbine.png','-dpng')
-% close(1)
+close(1)
