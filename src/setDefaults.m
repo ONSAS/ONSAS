@@ -23,12 +23,12 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams'   , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeGeometry' , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeAero'     , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userDragCoef'     , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userLiftCoef'     , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userMomentCoef'   , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'elemTypeAero'       , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userDragCoef'       , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userLiftCoef'       , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'userMomentCoef'     , [] ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;

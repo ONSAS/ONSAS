@@ -76,7 +76,7 @@ for elem = 1:nElems
 
   elemType         = elements( mebiVec( 2 ) ).elemType         ;
   elemTypeParams   = elements( mebiVec( 2 ) ).elemTypeParams   ;
-  elemTypeGeometry = elements( mebiVec( 2 ) ).elemTypeGeometry ;
+  elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams ;
 
   %md extract aerodinamic properties
   elemTypeAero     = elements( mebiVec( 2 ) ).elemTypeAero     ;
@@ -107,7 +107,7 @@ for elem = 1:nElems
   % -----------   truss element   ------------------------------
   if strcmp( elemType, 'truss')
 
-    A  = crossSectionProps ( elemTypeGeometry, density ) ;
+    A  = crossSectionProps ( elemCrossSecParams, density ) ;
 
     [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
 
@@ -128,11 +128,11 @@ for elem = 1:nElems
 
 		if strcmp(hyperElasModel, 'linearElastic')
 
-			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemTypeGeometry, density, hyperElasParams, elemDisps ) ;
+			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, density, hyperElasParams, elemDisps ) ;
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemTypeGeometry, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
+      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ), density ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
@@ -176,9 +176,9 @@ for elem = 1:nElems
         userMomentCoef  = elements( mebiVec( 2 ) ).userMomentCoef ;
       end
 
-      elemTypeGeometry  = elements( mebiVec( 2 ) ).elemTypeGeometry ;
+      elemCrossSecParams  = elements( mebiVec( 2 ) ).elemCrossSecParams ;
       % compute force
-      [ FaeroElem ]= aeroForce( elemNodesxyzRefCoords, elemTypeGeometry    , ...
+      [ FaeroElem ]= aeroForce( elemNodesxyzRefCoords, elemCrossSecParams    , ...
                              u2ElemDisps( Ut       , dofselem )         , ...
                              u2ElemDisps( Udott    , dofselem )         , ...
                              u2ElemDisps( Udotdott , dofselem )         , ...
@@ -190,8 +190,8 @@ for elem = 1:nElems
 
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
-
-    thickness = elemTypeGeometry ;
+    
+    thickness = elemCrossSecParams ;
 
     if strcmp( hyperElasModel, 'linearElastic' )
 

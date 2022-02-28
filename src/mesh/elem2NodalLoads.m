@@ -66,7 +66,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
       orientedVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
 
       lengthElem = norm( orientedVector ) ;
-      thickness  = elements( elemInd ).elemTypeGeometry ;
+      thickness  = elements( elemInd ).elemCrossSecParams ;
 
       factor = lengthElem * thickness * 0.5 ;
 

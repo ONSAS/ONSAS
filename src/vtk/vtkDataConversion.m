@@ -41,7 +41,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
 		elemTypeInds(indType) ;
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType       ;
-    elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemTypeGeometry ;
+    elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
 
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) ) ;

@@ -165,7 +165,7 @@ if analysisSettings.booleanSelfWeight == true
       elemType = elements( elementTypes(elemNum) ).elemType ;
 
       %md get current element elemTypeGeometry
-      elemTypeGeometry = elements( elementTypes(elemNum) ).elemTypeGeometry ;
+      elemTypeGeometry = elements( elementTypes(elemNum) ).elemCrossSecParams ;
 
       %md get the material types of the current element type
       materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
@@ -196,7 +196,7 @@ if analysisSettings.booleanSelfWeight == true
           matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : );
           vecSquareDiff = sum( (matrixDiffs.^2)' )';
           lengthElems = sqrt( vecSquareDiff ) ;
-          elemCrossSecParams = elements(elemNum).elemTypeGeometry ;
+          elemCrossSecParams = elements(elemNum).elemCrossSecParams ;
           [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
 
           %md compute nodal selfweight loads
