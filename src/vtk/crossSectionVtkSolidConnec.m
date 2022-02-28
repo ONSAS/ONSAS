@@ -18,23 +18,41 @@
 
 function [ iniNodes, midNodes, endNodes, secc ] = crossSectionVtkSolidConnec( elemCrossSecParams )
 
-  if elemCrossSecParams(1) == 1  || elemCrossSecParams(1) == 2 % general or rectangular section
-    if elemCrossSecParams(1) == 1
+  crossSecShape  = elemCrossSecParams{1} ;
+  crossSecParams = elemCrossSecParams{2} ;
+  if size( elemCrossSecParams, 1 ) > 2
+    crossSecBoundary = elemCrossSecParams{3} ;
+    if ~strcmp( crossSecShape, 'generic' )
+      error('check element sections')
+    end
+  end
+
+  if strcmp( crossSecShape, 'circle' )
+    diameter = crossSecParams(1) ;
+    secc = [ 25 diameter ] ;
+    iniNodes = [ 1 2 3 4 9 10 11 12  ] ;
+    midNodes = [ 17 18 19 20         ] ;
+    endNodes = [ 5 6 7 8 13 14 15 16 ] ;
+
+  elseif strcmp( crossSecShape, 'rectangle' ) || ( strcmp( crossSecShape, 'generic' ) && ~exist('crossSecBoundary') )
+
+    if strcmp( crossSecShape, 'generic' )
+      area = crossSecParams(1) ;
       % equivalent square section using A = wy * wz
-      auxh = sqrt( elemCrossSecParams(2) ) ;   auxb = auxh ;
+      auxh = sqrt( area ) ;   auxb = auxh ;
       secc = [ 12 auxb auxh ] ;
     else
-      secc = [ 12 elemCrossSecParams(2) elemCrossSecParams(3) ] ;
+      by = crossSecParams(1);  bz = crossSecParams(2);
+      secc = [ 12 by bz ] ;
     end
 
 		iniNodes = [ 1 2 3 4  ] ;
 		midNodes = [          ] ;
     endNodes = [ 5 6 7 8  ] ;
 
-  elseif elemCrossSecParams(1) == 3 % circular section
+  else
+    iniNodes = [ ] ;
+    midNodes = [          ] ;
+    endNodes = [   ] ;
 
-    secc = [ 25 elemCrossSecParams(2) ] ;
-		iniNodes = [ 1 2 3 4 9 10 11 12  ] ;
-		midNodes = [ 17 18 19 20         ] ;
-    endNodes = [ 5 6 7 8 13 14 15 16 ] ;
   end
