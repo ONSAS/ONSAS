@@ -102,10 +102,10 @@ materials.hyperElasParams =  [ E nu ]       ;
 %md#### elements
 elements(1).elemType = 'node';
 elements(2).elemType = 'edge';
-elements(2).elemTypeGeometry = thickness ;
+elements(2).elemCrossSecParams = thickness ;
 elements(3).elemType = 'triangle';
 elements(3).elemTypeParams = 2 ;
-elements(3).elemTypeGeometry = thickness ;
+elements(3).elemCrossSecParams = thickness ;
 %md
 %md#### boundaryConds
 boundaryConds(1).imposDispDofs = [1] ;

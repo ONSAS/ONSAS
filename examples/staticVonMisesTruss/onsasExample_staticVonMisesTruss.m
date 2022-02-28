@@ -47,7 +47,9 @@ elements(1).elemType = 'node' ;
 %md and the second entry is
 elements(2).elemType = 'truss';
 %md for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
-elements(2).elemTypeGeometry = [2 sqrt(A) sqrt(A) ] ;
+elements(2).elemCrossSecParams = { } ;
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
+elements(2).elemCrossSecParams{2,1} =  sqrt(A*4/pi) ;
 elements(2).elemTypeParams = 1 ;
 %md
 %md#### boundaryConds
