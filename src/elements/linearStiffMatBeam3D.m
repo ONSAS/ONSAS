@@ -19,8 +19,8 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density, hyperElasParams, Ut)
-
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density, hyperElasParams, Ut, Udotdotte)
+  
   ndofpnode = 6 ;
 
   % --- material constit params ---
@@ -101,6 +101,39 @@ function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, 
 
   KGelem = R * KL * R' ;
   Finte = KGelem * Ut ;
+
+  fs{1} = Finte  ;
+  ks{1} = KGelem ;
+
+  if density > 0
+    Xe = elemCoords(:) ;
+    localAxisRef = Xe(4:6) - Xe(1:3) ;
+    lini = sqrt( sum( localAxisRef.^2 ) ) ;
+    Me = sparse( 12, 12 ) ;
+    booleanConsistentMassMat = false
+    if booleanConsistentMassMat 
+      Me (1:2:end, 1:2:end) = density * A * lini * 2 / 6 * speye(6) ;
+
+      Me (      1,       7) = density * A * lini * 1 / 6            ;
+      Me (      7,       1) = density * A * lini * 1 / 6            ;
+
+      Me (      3,       9) = density * A * lini * 1 / 6            ;
+      Me (      9,       3) = density * A * lini * 1 / 6            ;
+
+      Me (      5,      11) = density * A * lini * 1 / 6            ;
+      Me (     11,       5) = density * A * lini * 1 / 6            ;
+    elseif ~booleanConsistentMassMat 
+      Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
+    else
+      error('The booleanConsistentMassMat must be a boolean \n')
+    end
+Udotdotte(2:2:end)
+    Me = R * Me * R' ;
+    Fmasse = Me * Udotdotte ;
+
+    fs{3} = Fmasse  ;
+    ks{3} = Me      ;
+  end
 
 end
 % ==============================================================================
