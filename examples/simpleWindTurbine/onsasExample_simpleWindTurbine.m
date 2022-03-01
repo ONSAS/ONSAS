@@ -47,7 +47,8 @@ materials.density         = rho             ;
 elements(1).elemType = 'node'  ;
 %md beams
 elements(2).elemType = 'frame' ;
-elements(2).elemTypeGeometry = [3 d ] ;
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
+elements(2).elemCrossSecParams{2,1} =  d       ;
 %md 
 %md### boundary Conditions
 %md
@@ -106,12 +107,14 @@ elements(2).elemTypeAero     = [0 0 d numGaussPoints formulCase ] ;
 elements(2).userLiftCoef     = 'liftCoef'                         ;
 %mdsecond blade in (z,-y) quarter 
 elements(3).elemType = 'frame' ;
-elements(3).elemTypeGeometry = [3 d ] ;
+elements(3).elemCrossSecParams{1,1} = 'circle' ;
+elements(3).elemCrossSecParams{2,1} =  d       ;
 elements(3).elemTypeAero     = [0 d 0 numGaussPoints formulCase ] ;
 elements(3).userLiftCoef     = 'liftCoef'                         ;
 %mdthird blade in (z,y) quarter 
 elements(4).elemType = 'frame' ;
-elements(4).elemTypeGeometry = [3 d ] ;
+elements(4).elemCrossSecParams{1,1} = 'circle' ;
+elements(4).elemCrossSecParams{2,1} =  d       ;
 elements(4).elemTypeAero     = [0 -d 0 numGaussPoints formulCase ] ;
 elements(4).userLiftCoef     = 'liftCoef'                          ;
 %md
@@ -153,7 +156,7 @@ verifBoolean = norm( angleXnode1Numeric_aeroForce - angleXnode1Analytic )  ...
 %md
 lw = 2.0 ; ms = 10; plotfontsize = 22 ;
 spanPlotTime = 2 ;
-fig1 = figure(1)
+fig1 = figure(1) ;
 plot( timeVec(1:spanPlotTime:end), angleXnode1Analytic(1:spanPlotTime:end) ,'b-x' , 'linewidth', lw,'markersize',ms )
 hold on, grid on
 plot( timeVec(1:spanPlotTime:end), angleXnode1Numeric_NodalMoment(1:spanPlotTime:end), 'ko' , 'linewidth', lw,'markersize',ms )

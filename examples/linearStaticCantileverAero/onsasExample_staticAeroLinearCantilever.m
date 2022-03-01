@@ -26,7 +26,8 @@ materials.density         = rho             ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
-elements(2).elemTypeGeometry = [1 A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
+elements(2).elemCrossSecParams{1,1} = 'generic' ;
+elements(2).elemCrossSecParams{2,1} = [1 A J I I Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md The drag and lift section function names are:
 numGaussPoints  = 3 ;
 formulationType = 2 ;

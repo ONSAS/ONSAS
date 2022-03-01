@@ -19,7 +19,8 @@ materials(1).hyperElasParams = [ E nu ] ;
 %Element Definitions
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'frame';
-elements(2).elemTypeGeometry = [2 a b ] ;
+elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
+elements(2).elemCrossSecParams{2,1} = [a b ]      ;
 
 %Boundary Conditions Definitions
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;	% pinned node

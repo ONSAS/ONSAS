@@ -27,9 +27,10 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'truss' ;
 elements(3).elemType = 'frame' ;
 %mdgeometrical properties are only assigned to the truss and beam elements:
-elements(2).elemTypeGeometry = [3 dt] ;
-elements(3).elemTypeGeometry = [3 db] ;
-
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
+elements(2).elemCrossSecParams{2,1} = dt         ;
+elements(3).elemCrossSecParams{1,1} = 'circle' ;
+elements(3).elemCrossSecParams{2,1} = db         ;
 %mdTruss number of elements
 %
 numElemT  = 1            ;
@@ -101,7 +102,7 @@ analysisSettings.stopTolIts    =   10   ;
 
 %md### otherParams
 otherParams.problemName = problemName   ;
-otherParams.plotsFormat = ''            ;
+otherParams.plotsFormat = 'vtk'         ;
 
 %md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint. 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

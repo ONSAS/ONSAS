@@ -46,8 +46,9 @@ materials(1).density  = rho ;
 
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
-elements(2).elemTypeGeometry = [2 sqrt(A) sqrt(A) ] ;
-elements(2).elemTypeParams = 0 ;
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
+elements(2).elemCrossSecParams{2,1} = [sqrt(4*A/pi) ] ;
+elements(2).elemTypeParams = 0 
 
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;

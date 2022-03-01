@@ -11,7 +11,7 @@ L0  = .205 ;
 Lc  = .240; %m
 Ic  = .0254*.0032^3/12; %m4
 Ac  = .0254*.0032; %m2
-E   = 200000e6 %Pa (acero)
+E   = 200000e6 ; %Pa (acero)
 kc  = 3*E*Ic/Lc^3; %N/m
 mConc   = 1.4; %kg Pandeo incipiente en 1.4
 c   = 0; %kg/s (amortiguamiento por friccion juntas y arrastre pesa)
@@ -27,7 +27,7 @@ Lz = sqrt( L0^2 - Lx^2 ); %m
 
 rhoBarraMasa = mConc*.5 / (Lz*Ac);
 
-M = [mb 0 ; 0 (mb+mConc)/2]
+M = [mb 0 ; 0 (mb+mConc)/2] ;`
 
 
 nu = .3 ;
@@ -47,7 +47,8 @@ materials(3).density = rho ;
 elements(1).elemType = 'node' ;
 
 elements(2).elemType = 'truss';
-elements(2).elemTypeGeometry = [2 sqrt(Ac) sqrt(Ac) ] ;
+elements(2).elemCrossSecParams{1,1} = 'rectangle'            ;
+elements(2).elemCrossSecParams{2,1} = [sqrt(Ac) sqrt(Ac) ] ;
 elements(2).elemTypeParams = 0 ;
 
 boundaryConds(1).imposDispDofs = [ 3 5 ] ;
