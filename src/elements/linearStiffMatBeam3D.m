@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density, hyperElasParams, Ut)
+function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut)
 
   ndofpnode = 6 ;
 
@@ -28,7 +28,7 @@ function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, 
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
 
-	[A, J, Iy, Iz] = crossSectionProps ( elemTypeGeometry, density ) ;
+	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 
   % --- elem lengths and rotation matrix
 	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
