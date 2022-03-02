@@ -3,13 +3,13 @@ function [Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams, rh
 % --- cross section ---
 if strcmp( elemCrossSecParams{1,1}, 'generic' ) %general section
     elemCrossSecParamsVec = elemCrossSecParams{2,1} ;
-    Area = elemCrossSecParamsVec( 2 ) ;
-    J    = elemCrossSecParamsVec( 3 ) ;
-    Iyy  = elemCrossSecParamsVec( 4 ) ;
-    Izz  = elemCrossSecParamsVec( 5 ) ;
+    Area = elemCrossSecParamsVec( 1 ) ;
+    J    = elemCrossSecParamsVec( 2 ) ;
+    Iyy  = elemCrossSecParamsVec( 3 ) ;
+    Izz  = elemCrossSecParamsVec( 4 ) ;
     %
     if length( elemCrossSecParamsVec ) > 5
-        Jrho =  diag( elemCrossSecParamsVec( 6:8 ) ) ;
+        Jrho =  diag( elemCrossSecParamsVec( 5:7 ) ) ;
     else
         Jrho = rho * diag( [ J Iyy Izz ] ) ;
     end

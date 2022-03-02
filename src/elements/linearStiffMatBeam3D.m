@@ -28,7 +28,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
 
-	[A, J, Iy, Iz] = crossSectionProps ( elemTypeGeometry, density ) ;
+	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 
   % --- elem lengths and rotation matrix
 	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
