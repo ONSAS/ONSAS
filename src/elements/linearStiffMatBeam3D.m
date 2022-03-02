@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density, hyperElasParams, Ut, Udotdotte)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
 
@@ -110,29 +110,25 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemTypeGeometry, density
     localAxisRef = Xe(4:6) - Xe(1:3) ;
     lini = sqrt( sum( localAxisRef.^2 ) ) ;
     Me = sparse( 12, 12 ) ;
-    booleanConsistentMassMat = false
+    %boolean harcoded
+    booleanConsistentMassMat = false ;
     if booleanConsistentMassMat 
-      Me (1:2:end, 1:2:end) = density * A * lini * 2 / 6 * speye(6) ;
-
-      Me (      1,       7) = density * A * lini * 1 / 6            ;
-      Me (      7,       1) = density * A * lini * 1 / 6            ;
-
-      Me (      3,       9) = density * A * lini * 1 / 6            ;
-      Me (      9,       3) = density * A * lini * 1 / 6            ;
-
-      Me (      5,      11) = density * A * lini * 1 / 6            ;
-      Me (     11,       5) = density * A * lini * 1 / 6            ;
+    % Implement conssitent mass matrix
+      error('The conssintent mass matrix is not implmented yet for linear elasitc frame \n')
     elseif ~booleanConsistentMassMat 
       Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
     else
       error('The booleanConsistentMassMat must be a boolean \n')
     end
-Udotdotte(2:2:end)
     Me = R * Me * R' ;
     Fmasse = Me * Udotdotte ;
 
     fs{3} = Fmasse  ;
     ks{3} = Me      ;
+  elseif density == 0
+    fs{3} = zeros(12,1) ;
+    ks{2} = zeros(12)   ;
+    ks{3} = zeros(12)   ;
   end
 
 end

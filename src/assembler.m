@@ -140,7 +140,8 @@ for elem = 1:nElems
 
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ), density ) ;
+                                               u2ElemDisps( Udotdott , dofselem ), 
+                                               density, elemTypeParams ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool

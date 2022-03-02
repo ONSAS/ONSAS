@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
-  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho ) ;
+  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho, elemTypeParams ) ;
   % element coordiantes
   xs = elemCoords(:) ;
 
@@ -230,7 +230,7 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   rotData = {locDisp, Rr} ;
 
   if elemrho > 0
-    booleanConsistentMassMat = false;
+    booleanConsistentMassMat = elemTypeParams(1) ;
     if booleanConsistentMassMat
       sumInterForce  = zeros (12, 1 ) ;
       sumGyro        = zeros (12    ) ;
