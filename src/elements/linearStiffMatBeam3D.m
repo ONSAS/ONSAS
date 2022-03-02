@@ -19,8 +19,8 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut)
-
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut, Udotdotte)
+  
   ndofpnode = 6 ;
 
   % --- material constit params ---
@@ -101,6 +101,35 @@ function [ Finte, KGelem ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams
 
   KGelem = R * KL * R' ;
   Finte = KGelem * Ut ;
+
+  fs{1} = Finte  ;
+  ks{1} = KGelem ;
+
+  if density > 0
+    Xe = elemCoords(:) ;
+    localAxisRef = Xe(4:6) - Xe(1:3) ;
+    lini = sqrt( sum( localAxisRef.^2 ) ) ;
+    Me = sparse( 12, 12 ) ;
+    %boolean harcoded
+    booleanConsistentMassMat = false ;
+    if booleanConsistentMassMat 
+    % Implement conssitent mass matrix
+      error('The conssintent mass matrix is not implmented yet for linear elasitc frame \n')
+    elseif ~booleanConsistentMassMat 
+      Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
+    else
+      error('The booleanConsistentMassMat must be a boolean \n')
+    end
+    Me = R * Me * R' ;
+    Fmasse = Me * Udotdotte ;
+
+    fs{3} = Fmasse  ;
+    ks{3} = Me      ;
+  elseif density == 0
+    fs{3} = zeros(12,1) ;
+    ks{2} = zeros(12)   ;
+    ks{3} = zeros(12)   ;
+  end
 
 end
 % ==============================================================================

@@ -114,9 +114,10 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 %md
 %mdNow the element type number two is a frame:
 elements(2).elemType        = 'frame';
+%mdand the according to the literature example the element include conssitent mass matrix
+elements(2).elemTypeParams  = 1;
 %and the fraction of the new element in the pendulum length:
 lumpedParam = 0.01 ;
-%mdThe new mass matrix consist in three nodes that produce a final element with $length = lumpedParam)*l0$, so the nodes coordinates matrix is:
 mesh.nodesCoords = [   0                    0    l0 ; ...
                        (1-lumpedParam)*l0   0    l0 ; ... 
                        l0                   0    l0 ] ;
