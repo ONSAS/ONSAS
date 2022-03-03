@@ -280,14 +280,13 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
       ks{3} = MassMatrix ;
       
       elseif ~booleanConsistentMassMat
-        MassMatrixloc = zeros(12,12)                                      ;
-        MassMatrixloc (1:2:end, 1:2:end) = rho * Area * lo * 0.5 * eye(6) ;
-        MassMatrixglob = EE * MassMatrixloc * EE'                         ;
-        Fine = MassMatrixglob * Udotdote                                  ;
+        Me = sparse(12,12)                                      ;
+        Me (1:2:end, 1:2:end) = rho * Area * lo * 0.5 * eye(6)  ;
+        Fine = Me * Udotdote                                    ;
         
-        fs{3} = Fine            ;
-        ks{2} = zeros(12)       ;
-        ks{3} = MassMatrixglob  ;
+        fs{3} = Fine      ;
+        ks{2} = zeros(12) ;
+        ks{3} = Me        ;
       else
       error('booleanConsistentMassMat must be a boolean \n')
     end%endIfConssistentBoolean

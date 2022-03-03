@@ -120,7 +120,6 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, densi
     else
       error('The booleanConsistentMassMat must be a boolean \n')
     end
-    Me = R * Me * R' ;
     Fmasse = Me * Udotdotte ;
 
     fs{3} = Fmasse  ;
