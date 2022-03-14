@@ -200,7 +200,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotWindElem,...
   VpiRelGperp = L3 * VpiRelG       ;
   % rotate chord vector
   if battiBool || jorgeBool || jorgeBoolRigid ;
-    tch = vecChordUndef / norm( vecChordUndef ) ;
+    tch = Rroofx * ( vecChordUndef / norm( vecChordUndef ) ) ;
   elseif rigidBool
     tch = vecChordUndef / norm( vecChordUndef ) ;
   end
