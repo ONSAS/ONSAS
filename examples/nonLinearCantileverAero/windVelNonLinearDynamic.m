@@ -1,7 +1,7 @@
 function windVel = windVelNonLinearDynamic(x,t)
   finalTime = 5 ;
   constWindTime = finalTime / 10 ;
-  vwindMax = 100 ;
+  vwindMax = 80 ;
   windy = t * vwindMax / constWindTime * (t <= constWindTime) + vwindMax * (t > constWindTime) ;
   windz =  0  ;
 

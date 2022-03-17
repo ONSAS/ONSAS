@@ -15,8 +15,10 @@ numElements = 5 ;
 %md### MEBI parameters
 %md
 %md### materials
-%md Since the example contains only aeroFoone rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
+%md Since the example contains only one rod the fields of the `materials` struct will have only one entry. In order to validate against and analytical solution solved with DiffEq.jl file the Euler-Bernoulli linear element is employed:
 materials.hyperElasModel  = 'linearElastic' ;
+%mdthis moddel is valid only under small displacements regime.
+%mdalthough, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials.hyperElasParams = [ E nu ]        ;
 materials.density         = rho             ;
 %md
@@ -25,27 +27,31 @@ materials.density         = rho             ;
 %mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
-elements(2).elemCrossSecParams{1,1} = 'circular' ;
+%md for the geometries, the node has not geometry to assign (empty array), and the beam elements will be set as a circlular-cross section with $d$ diamater, then the first entery of the elemCrossSecParams cell is filled with 'circular' and then the second with a the diameter length 'd':
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = d          ;
-%md The drag and lift section function names are:
-numGaussPoints  = 3 ;
-%mdTest different formulations
-formulCase = 2 ;
+%md now the element aerodynmamic properties are defined
+%md The number of Guass integration points selected is
+numGaussPoints  = 4 ;
+%the fluid density of the fluid is conisdered as air at 20 degreess and atmospheric pressure
+formulCase = 4 ;
+%mdthe element typeAero in the first 3 entries contain the direction and the norm of the chord vector. Since a cylinder is simulated for this case and the orientation is alog y local axis, then:
 elements(2).elemTypeAero   = [0 d 0 numGaussPoints formulCase ] ;
+%mdthe drag function dependeing on the angle of incidence is
 elements(2).userDragCoef   = 'dragCoefNonLinear'   ;
+%md no lift and moment is condiered so
 % elements(2).userLiftCoef   = 'liftCoefNonLinear'   ;
 % elements(2).userMomentCoef = 'momentCoefNonLinear' ;
 %md
 %md### boundaryConds
 %md
-%md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
+%md The elements are submitted to two different BC settings. The first and unique BC corresponds to a welded condition for a cantilever beam (all 6 dofs set to zero)
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                = struct() ;
+initialConds = struct() ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
@@ -54,25 +60,25 @@ mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] 
 mesh.conecCell = { } ;
 %md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node is included.
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
-% mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1   ] ;
-%md the following case only differs in the boundary condition and the node number
+%md the following beam elements only differ in the second and first enerty (MEBI), the first material is considered, then the second enerty refers to the beam aerodynamic element and finally no initial and boundary condition is used, as consequence
 for i=1:numElements
   conecElemMatrix(i,:) = [ 1 2 0 0  i i+1 ] ;
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
+%md A first static small displacements case is executed 
 %md-------------------------------------
-%md## Static small displacements case
+%md## Static small displacements(SD) case
 %md -------------------------------------
 %md### analysisSettings
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   .1            ;
 analysisSettings.finalTime     =   1             ;%the final time must achive 20m&s
-analysisSettings.stopTolDeltau =   1e-8          ;
-analysisSettings.stopTolForces =   1e-8          ;
-analysisSettings.stopTolIts    =   30            ;
+analysisSettings.stopTolDeltau =   0             ;
+analysisSettings.stopTolForces =   1e-9          ;
+analysisSettings.stopTolIts    =   50            ;
 %md the name of the wind velocity function is: 
 analysisSettings.userWindVel   = 'windVelNonLinearStaticSD';
-%md geometrical nonlinearity in the wind force is not taken into account in this example:
+%md geometrical nonlinearity in the wind force is taken into account in this example, as consequence the drag force is computed in the rigid configuration:
 %mdloadsSettings
 analysisSettings.booleanSelfWeight      = false ;
 analysisSettings.geometricNonLinearAero = true  ;
@@ -158,19 +164,12 @@ zref = mesh.nodesCoords(:,3) ;
 sizeAnalyticX = 100 ;
 xanal = linspace( 0, l , sizeAnalyticX )' ;
 
-% linear disp
-ydefAnalyticLin = @(windVel) 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) * c_d * dimCaracteristic / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4) ;
-zdefAnalyticLin = @(windVel) 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) * c_l * dimCaracteristic  / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4) ;
-% angular disp
-thetaXAnalyticLin = @(windVel)  1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) * c_m * dimCaracteristic   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
-thetaYAnalyticLin = @(windVel) -1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) * c_l * dimCaracteristic   / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
-thetaZAnalyticLin = @(windVel)  1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) * c_d * dimCaracteristic   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 
-%linear disp
+%linear disp julia Diff eq solution
 xdefJulia = xJulia +  dSolJulia(1:6:end) ;
 ydefJulia = dSolJulia(3:6:end)           ;
 zdefJulia = dSolJulia(5:6:end)           ;
-%angular disp
+%angular disp julia Diff eq solution
 thetaXdefJulia = dSolJulia(2:6:end) ;
 thetaYdefJulia = dSolJulia(4:6:end) ;
 thetaZdefJulia = dSolJulia(6:6:end) ;
@@ -199,41 +198,38 @@ fig1 = figure(1) ;
 hold on  
 grid on
 plot(xdefNum    , ydefNum,        'bo' , 'linewidth', lw, 'markersize', ms+5   );
-plot(xanal      , ydefAnalyticLin(windVel),'b:' , 'linewidth', lw, 'markersize', ms     );
 plot(xdefJulia  , ydefJulia,      'b-' , 'linewidth', lw, 'markersize', ms     );
-legend('y_n', 'y_{lin}', 'y_{sa}', 'location', 'north')
-labx=xlabel(' x ');    laby=ylabel('Displacements ');
+legend('y numeric', 'y semi-analytic', 'location', 'northEast')
+labx=xlabel(' x[m] ');    laby=ylabel('y ');
 % title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 namefig1 = strcat(folderSDpath, 'linDispSD.png') ;
 print(fig1, namefig1,'-dpng') ;
-close(1)
+% close(1)
 % Plot angular displacements
 fig2 = figure(2) ;
 hold on  
 grid on
 plot(xdefNum,     rad2deg(thetaZdefNum),      'bo' , 'linewidth', lw,'markersize', ms+5   );
-plot(xanal,       rad2deg( thetaZAnalyticLin(windVel) ), 'b:' , 'linewidth', lw, 'markersize', ms    );
 plot(xdefJulia,   rad2deg(thetaZdefJulia),    'b-' , 'linewidth', lw, 'markersize', ms    );
-legend('\theta z_n SD', '\theta z_{lin} SD', '\theta z_{sa} SD', 'location','eastoutside')
-labx=xlabel(' x ');    laby=ylabel('Angle');
+legend('\theta_z numeric SD', '\theta_z semi-analyitc SD', 'location','northEast')
+labx=xlabel(' x[m] ');    laby=ylabel('Angle');
 % title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 namefig2 = strcat(folderSDpath, 'angDispSD.png') ;
 print(fig2, namefig2,'-dpng')
-close(2)
+% close(2)
 % %Plot 3D deformed
 fig3 = figure(3) ;
 hold on
 plot(xref,      yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
-plot(xanal,     ydefAnalyticLin(windVel), 'b:' , 'linewidth', lw,'markersize', ms);
 plot(xdefJulia, ydefJulia, 'b-' , 'linewidth', lw,'markersize', ms);
 plot(xdefNum,   ydefNum, 'bo' , 'linewidth', lw,'markersize', ms+5);
-legend('Reference config','Linear defomred config SD', 'DiffEq.jl defomred config SD',  'Numerical defomred config SD', 'location','northEast')
+legend('Reference config', 'DiffEq.jl defomred config SD',  'Numerical defomred config SD', 'location','northEast')
 labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
@@ -241,7 +237,6 @@ set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(l
 grid on
 namefig3 = strcat(folderSDpath, 'defSD.png') ;
 print( fig3, namefig3, '-dpng' ) ;
-close(3)
 %md-------------------------------------
 %md## Static 2D large displacements case
 %md -------------------------------------
@@ -260,12 +255,16 @@ for i=1:numElementsLD2DStatic
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 materials.hyperElasModel  = '1DrotEngStrain' ;
+%
+% elements
+%md element elemTypeAero if it is conssistent is equal to 1 and lumped 0:
+elements(2).elemTypeParams = 1 ;
 %md### analysisSettings
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   .1            ;
 analysisSettings.finalTime     =   1             ;%the final time must achive 20m&s
-analysisSettings.stopTolDeltau =   1e-7          ;
-analysisSettings.stopTolForces =   1e-7          ;
+analysisSettings.stopTolDeltau =   1e-6          ;
+analysisSettings.stopTolForces =   1e-6          ;
 analysisSettings.stopTolIts    =   35            ;
 %md the name of the wind velocity function is: 
 analysisSettings.userWindVel   = 'windVelNonLinearStaticLD';
@@ -299,50 +298,44 @@ mkdir(folderLD2Dpath) ;
 folderLD2DStaticPath = strcat(folderLD2Dpath, 'static/') ;
 mkdir(folderLD2DStaticPath) ;
 % Plot linear displacements
-fig1 = figure(1) ;
+fig4 = figure(4) ;
 hold on  
 grid on
 plot(xdefNum,   ydefNum,                   'b-o' , 'linewidth', lw,'markersize', ms+5 );
-plot(xanal,     ydefAnalyticLin(windVel),  'b:' , 'linewidth', lw,'markersize', ms   );
-legend('y_n LD', 'y_{lin} LD', 'location', 'north')
-labx=xlabel(' x ');    laby=ylabel('Displacements ');
+legend('y numeric LD', 'location', 'north')
+labx=xlabel(' x [m] ');    laby=ylabel('y [m] ');
 % title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-namefig1 = strcat(folderLD2DStaticPath, 'linDispLD.png') ;
-print( fig1, namefig1, '-dpng' ) ;
-close(1)
+namefig4 = strcat(folderLD2DStaticPath, 'linDispLD.png') ;
+print( fig4, namefig4, '-dpng' ) ;
 % Plot angular displacements
-fig2 = figure(2) ;
+fig5 = figure(5) ;
 hold on  
 grid on
-plot(xdefNum,     rad2deg(thetaZdefNum),               'b-o' , 'linewidth', lw,'markersize', ms+5 );
-plot(xanal,       rad2deg(thetaZAnalyticLin(windVel)), 'b:' , 'linewidth', lw, 'markersize', ms  );
-legend('\theta z_n LD', '\theta z_{lin} LD', 'location','eastoutside')
-labx=xlabel(' x ');    laby=ylabel('Angle');
+plot(xdefNum,     thetaZdefNum,               'b-o' , 'linewidth', lw,'markersize', ms+5 );
+legend('\theta z numeric LD', 'location','north')
+labx=xlabel(' x [m] ');    laby=ylabel('\theta z [rad]');
 % title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-namefig2 = strcat(folderLD2Dpath, 'static/', 'angDispLD.png');
-print( fig2, namefig2, '-dpng' ) ;  
-close(2)
+namefig5 = strcat(folderLD2Dpath, 'static/', 'angDispLD.png');
+print( fig5, namefig5, '-dpng' ) ;  
 %Plot 3D deformed
-fig3 = figure(3) ;
+fig6 = figure(6) ;
 hold on
 grid on
-plot(xref,      yref, 'b-' , 'linewidth', lw+300,'markersize', ms+200);
-plot(xanal,     ydefAnalyticLin(windVel), 'b:' , 'linewidth', lw,'markersize', ms);
+plot(xref,      yref, 'k-' , 'linewidth', lw+300,'markersize', ms+200);
 plot(xdefNum,   ydefNum, 'b-o' , 'linewidth', lw,'markersize', ms+5);
-legend('Reference config','Linear defomred config LD',  'Numerical defomred config LD', 'location','northEast')
+legend('Reference config', 'Numerical defomred config LD', 'location','northwest')
 labx=xlabel('x ');    laby=ylabel('y'); labz=zlabel('z');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ; set(labz, 'FontSize', axisFontSize) ;
-namefig3 = strcat(folderLD2Dpath, 'static/', 'defLD.png') ;
-print( fig3, namefig3, '-dpng' ) ;  
-close(3)
+namefig6 = strcat(folderLD2Dpath, 'static/', 'defLD.png') ;
+print( fig6, namefig6, '-dpng' ) ;  
 %md-------------------------------------
 %md Dynamic 2D Case 
 %md-------------------------------------
@@ -360,9 +353,10 @@ for i=1:numElements2DLDDynamic
   conecElemMatrix(i,:) = [ 1 2 0 0  i i+1 ] ;
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
+
 % MEBI parameters
-% analysisSettings
 %
+% analysisSettings
 analysisSettings.finalTime   =   5                               ;
 analysisSettings.deltaT      =   analysisSettings.finalTime /400 ;
 analysisSettings.methodName  = 'newmark'                         ;
@@ -379,7 +373,7 @@ mkdir(folderLD2DDynamicPath) ;
 %
 % otherParams
 %
-otherParams.problemName      = strcat( 'onsasExample_nonLinearCantilever_dynamc', '_formulation=', num2str(formulCase) ) ;
+otherParams.problemName      = strcat( 'onsasExample_nonLinearCantilever_dynamic', '_formulation=', num2str(formulCase) ) ;
 otherParams.plotsFormat      = 'vtk' ;
 %
 % Run ONSAS
@@ -405,13 +399,12 @@ timeIndexToPlot = floor( linspace( 1, size( matUsDynLD2D, 2 ), numTimesToPlot ) 
 % select node and dof 
 node = numElements2DLDDynamic +1 ;
 dofNodeY = 3 ;
-fig2 = figure(2) ;
+fig7 = figure(7) ;
 hold on
 grid on
 plot ( timVec, matUsDynLD2D( (node-1)*6 + dofNodeY, :), 'linewidth', lw, 'markersize' , ms ) 
 %
 % Add legend to yA displacements plot
-figure(2)
 plot ( timVec, ones(size(timVec, 2),1) * matUsLD2DStatic( (numElementsLD2DStatic)*6 + dofNodeY, end), 'g:', 'linewidth', lw, 'markersize' , ms ) 
 legend('Dynamic solution', 'Static solution', 'location', 'South' ) ;
 labx = xlabel(' time (s)');    laby=ylabel('Displacements ');
@@ -419,10 +412,10 @@ set(legend, 'linewidth' , axislw    , 'fontsize', legendFontSize )  ;
 set(gca   , 'linewidth' , axislw    , 'fontsize', curveFontSize )   ;
 set(labx  , 'FontSize'  , axisFontSize) ; 
 set(laby  , 'FontSize'  , axisFontSize) ;
-namefig2 = strcat(folderLD2DDynamicPath, 'uyA.png') ;
-print( fig2, namefig2, '-dpng' ) ;
+namefig5 = strcat(folderLD2DDynamicPath, 'uyA.png') ;
+print( fig5, namefig5, '-dpng' ) ;
 cd(accDir)
-close(2)
+% close(2)
 % elapsed time in seconds
 elapTime = toc ;
 fprintf( strcat('\n The elapsed execution time was ', num2str(elapTime/60), '  minutes', '\n' ) );

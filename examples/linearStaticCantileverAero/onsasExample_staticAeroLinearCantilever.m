@@ -29,8 +29,8 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md The drag and lift section function names are:
-numGaussPoints  = 3 ;
-formulationType = 2 ;
+numGaussPoints  = 4 ;
+formulationType = 4 ;
 elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ];
 % elements(2).elemTypeAero   = [0 dext 0 ] % numGaussPoints formulationType ];
 elements(2).userDragCoef   = 'dragCoefFunction'   ;
@@ -127,7 +127,7 @@ xanal = linspace(0,l,sizeAnalyticX)' ;
 ydefAnalytic = -qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 zdefAnalytic = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
 % angular disp
-thetaXAnalytic = -qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
+% thetaXAnalytic = -qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
 thetaYAnalytic = -qz  / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 thetaZAnalytic = -qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
 
@@ -172,9 +172,10 @@ plot(xdefNum, rad2deg(thetaYdefNum)   , 'ro' , 'linewidth', lw, 'markersize', ms
 plot(xanal  , rad2deg(thetaYAnalytic) , 'r-' , 'linewidth', lw, 'markersize', ms);
 plot(xdefNum, rad2deg(thetaZdefNum)   , 'bo' , 'linewidth', lw,'markersize', ms);
 plot(xanal  , rad2deg(thetaZAnalytic) , 'b-' , 'linewidth', lw, 'markersize', ms);
-plot(xdefNum, rad2deg(thetaXdefNum)   , 'go' , 'linewidth', lw, 'markersize', ms);
-plot(xanal  , rad2deg(thetaXAnalytic) , 'g-' , 'linewidth', lw, 'markersize', ms);
-legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a', '\theta x_n', '\theta x_a', 'location', 'eastoutside' )
+% plot(xdefNum, rad2deg(thetaXdefNum)   , 'go' , 'linewidth', lw, 'markersize', ms);
+% plot(xanal  , rad2deg(thetaXAnalytic) , 'g-' , 'linewidth', lw, 'markersize', ms);
+% legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a', '\theta x_n', '\theta x_a', 'location', 'eastoutside' )
+legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a',  'location', 'eastoutside' )
 labx=xlabel(' x (m)'); laby=ylabel('Angle (º)');
 title (labelTitle)
 set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
@@ -183,7 +184,6 @@ set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/angDisp.png')
 
 %Plot 3D deformed
-
 figure
 hold on
 grid on
