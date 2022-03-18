@@ -127,14 +127,21 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'frame')
 
 		if strcmp(hyperElasModel, 'linearElastic')
+      
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
 
-			[ Finte, Ke ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, density, hyperElasParams, elemDisps ) ;
+      Finte = fs{1} ;  Ke = ks{1} ;
+
+      if dynamicProblemBool
+        Fmase = fs{3} ; Mmase = ks{3} ;
+      end
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ), density ) ;
+                                               u2ElemDisps( Udotdott , dofselem ), 
+                                               density, elemTypeParams ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
