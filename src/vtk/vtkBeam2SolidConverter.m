@@ -72,7 +72,7 @@ if typeSolid == 12 % vtkHexa
   NodesRefvtk = [ matrixRefIni; matrixRefEnd ] ;
 
 elseif typeSolid == 25 % vtkQuadHexa
-  R = sectPar(2) / 2 ;
+  R = sectPar(2) / 2 ;   % compute the radius
 
   Nodesvtk = zeros( 20,3 ) ;  Conecvtk = zeros( 20,1 ) ;
 
