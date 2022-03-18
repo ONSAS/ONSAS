@@ -63,19 +63,19 @@ cell structure with auxiliar params information, required for some element types
 
 ### `elements.elemTypeGeometry`
 
-cell structure with the information of the geometry of the element.
+This is a cell structure with the information of the geometry of the element.
 
 #### 1D elements
 
-For `truss` or `frame` elements a vector with the cross-section properties is required:
+For `truss` or `frame` elements, this cell contains the cross-section properties:
 ```math
-[ crossSectionType, \,\, crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n}]
+\{ crossSectionTypeString, \,\, crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n}\}
 ```
-with $n$ being the number of parameters of the cross section type, and `crossSectionType` a paramter setting the type of cross section. As follow:
+with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross-section and its properties are:
 
-1. general sections areas and inertias are provided
-1. rectangular sections: thicknesses ``t_y`` and ``t_z`` are provided
-1. circular sections: diameter is provided.
+ - `generic`  :general sections, where areas and inertias are provided as parameters
+1. `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
+1. `circle` : circular sections where diameter is provided.
 
 See the `crossSectionProps.m` function for more details.
 

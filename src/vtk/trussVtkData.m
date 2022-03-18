@@ -41,6 +41,6 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
        vtkConec             = [ vtkConec ;     Conecvtk ]    ;
        vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ]    ;
 
-       counterNodes = counterNodes + 8 ;
+       counterNodes = counterNodes + size( vtkNodes, 1 ) ;
 
   end % for plot element subdivision
