@@ -74,8 +74,8 @@ For `truss` or `frame` elements, this cell contains the cross-section properties
 with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross-section and its properties are:
 
  - `generic`  :general sections, where areas and inertias are provided as parameters
-1. `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
-1. `circle` : circular sections where diameter is provided.
+ - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
+ - `circle` : circular sections where diameter is provided.
 
 See the `crossSectionProps.m` function for more details.
 
