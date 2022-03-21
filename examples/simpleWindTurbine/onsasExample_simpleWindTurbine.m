@@ -70,7 +70,7 @@ initialConds = struct() ;
 mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
                      0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
-                     0  l*sin( 4*pi/3 )   -l*cos( 4*pi/3 ); ] 
+                     0  l*sin( 4*pi/3 )   -l*cos( 4*pi/3 ); ] ;
 %md
 mesh.conecCell         = { } ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
@@ -80,7 +80,7 @@ mesh.conecCell{ 4, 1 } = [ 1 2 0 0   1 4 ] ;
 %md
 %md## analysisSettings
 %md
-analysisSettings.finalTime              =   250     ;
+analysisSettings.finalTime              =   450     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
 analysisSettings.alphaHHT               =  -0.05    ;
