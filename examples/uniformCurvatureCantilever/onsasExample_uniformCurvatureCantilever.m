@@ -20,12 +20,12 @@ l = 10 ; ty = .1 ;  tz = .1 ;
 % the number of elements of the mesh
 numElements = 10 ;
 %md
-%md##Analytic solution
+%md## Analytic solution
 %md The rotation of the right end, for a given moment $M$, can be computed as:
 %md```math
 %md M( \theta ) = E I_y \frac{ \theta}{ l }  ;
 %md```
-%md##Numerical solution
+%md## Numerical solution
 %md### MEBI parameters
 %md
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
