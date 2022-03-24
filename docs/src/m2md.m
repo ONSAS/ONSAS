@@ -30,7 +30,7 @@ while ~feof( fidIn )
   else
     if ~isInCodeBlock % open code block
       if includeCodeBoolean
-        fprintf( fidOut,'```\n' );
+        fprintf( fidOut,'```matlab\n' );
       end
       isInCodeBlock = true ;
     end
