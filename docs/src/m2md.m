@@ -13,7 +13,7 @@ lineCount = 0 ;
 while ~feof( fidIn )
 
   lineCount = lineCount + 1;
-  if lineCount != 1
+  if lineCount ~= 1
     currentLine = fgetl( fidIn ) ;
   end
 
