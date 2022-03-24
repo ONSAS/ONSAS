@@ -4,7 +4,7 @@
 %md where \$ONSAS_PATH is the environment variable with the directory of ONSAS.m
 
 function bringONSASmFilesToONSASdocs
-
+  disp('running bringONSASmFilesToONSASdocs script...')
   dirONSASdocs = './' ;
   dirONSASm     = '../../'          ;
 

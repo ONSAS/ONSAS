@@ -10,8 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: extract markdown from example scripts
         uses: joergbrech/moxunit-action@v1.1
-        with:
-          tests: ./docs/src/bringONSASmFilesToONSASdocs.m
+        run: octave ./docs/src/bringONSASmFilesToONSASdocs.m
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.7
