@@ -49,8 +49,9 @@ elements(2).elemType = 'frame' ;
 ```
  for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
 ```
-elements(2).elemTypeGeometry = [2 ty tz ] ;
-elements(2).elemTypeParams   = 1          ;
+elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
+elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
+elements(2).elemTypeParams          = 1           ;
 ```
 
 ### boundaryConds
@@ -160,6 +161,6 @@ print('output/verifCantileverBeam.png','-dpng')
 
 
 ```
-verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 )
+verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;
 ```
 
