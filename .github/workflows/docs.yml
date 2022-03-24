@@ -9,8 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: extract markdown from example scripts
-        uses: joergbrech/moxunit-action@v1.1
-        run: octave --no-gui --eval "run('./docs/src/bringONSASmFilesToONSASdocs.m')"
+        uses: matlab-actions/run-command@v1
+        with:
+          command: ./docs/src/bringONSASmFilesToONSASdocs.m
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.7
