@@ -1,4 +1,4 @@
-# This is the ONSAS.m code continuous integration config file
+# This is the ONSAS.m coode testing continuous integration config file
 #
 name: tests
 on: [push, pull_request]

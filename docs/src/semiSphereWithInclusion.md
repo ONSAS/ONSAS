@@ -12,20 +12,22 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 then the material paraemeters are defined
 ```
 % scalar parameters
-E = 500 ; nu = 0.45 ;
+Ematrix = 500 ; nu = 0.45 ; Einclus = 1000 ;
 % inclusion
-lambda = 2*E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+mu = Einclus/(2*(1+nu)) ; bulk = Einclus / ( 3*(1-2*nu) ) ;
 materials(1).hyperElasModel = 'NHC' ;
-materials(1).hyperElasParams = [ lambda mu ] ;
+materials(1).hyperElasParams = [  mu bulk ] ;
 % matrix
-lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+mu = Ematrix/(2*(1+nu)) ;  bulk = Ematrix / ( 3*(1-2*nu) ) ;
 materials(2).hyperElasModel = 'NHC' ;
-materials(2).hyperElasParams = [ lambda mu ] ;
+materials(2).hyperElasParams = [ mu bulk ] ;
 ```
 the elements are defined
 ```
 elements(1).elemType = 'triangle' ;
 elements(2).elemType = 'tetrahedron' ;
+elements(2).elemTypeParams = [ 2 ] ;
+
 ```
 the boundary conditions are considered
 ```
