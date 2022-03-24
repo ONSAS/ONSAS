@@ -13,7 +13,7 @@ jobs:
       - name: extract markdown from example scripts
         uses: matlab-actions/run-command@v1
         with:
-          command: ./docs/src/bringONSASmFilesToONSASdocs.m
+          command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.7
