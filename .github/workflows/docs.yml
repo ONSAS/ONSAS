@@ -1,12 +1,19 @@
-# This is the ONSAS.m docs continuous integration config file
+# This is the ONSAS.m documentation continuous integration config file
 #
 name: docs
 on: [push, pull_request]
+
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+      - name: extract markdown from example scripts
+        uses: matlab-actions/run-command@v1
+        with:
+          command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.7

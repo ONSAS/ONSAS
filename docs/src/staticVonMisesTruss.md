@@ -58,7 +58,9 @@ elements(2).elemType = 'truss';
 ```
  for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
 ```
-elements(2).elemTypeGeometry = [2 sqrt(A) sqrt(A) ] ;
+elements(2).elemCrossSecParams = { } ;
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
+elements(2).elemCrossSecParams{2,1} = sqrt(A*4/pi) ;
 elements(2).elemTypeParams = 1 ;
 ```
 
@@ -184,6 +186,12 @@ difLoadGreen = analyticLoadFactorsGreen( controlDispsNRGreen )' - loadFactorsNRG
 ```
 
 ### Analysis case 3: NR-AL with Green Strain
+```
+
+elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
+elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
+
+```
  In this case, the numerical method is changed for newtonRaphson arc length.
 ```
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;

@@ -10,6 +10,12 @@ The data and properties of each structural model are defined through a set of de
  1. `numericalMethod`
  1. `otherParams`
 
+
+```@raw matlab
+a=2;
+b=2;
+```
+
 Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assiged using _structName.fieldName_. A description of each struct and its fields follows at next.
 
 ## The `materials` struct
