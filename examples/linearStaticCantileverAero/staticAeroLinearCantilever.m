@@ -1,10 +1,12 @@
 %md# Aerodynamic linear static cantilever beam example
 %md ---
-%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam under small displacements and deformations regime (ignoring the aerodynamic force modification due to the beam deformation). For such case a symbolic solution is available to validate numerical results provided by ONSAS. The beam is submitted to a uniform wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$. 
+%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam considering small displacements and deformations. As consequence the aerodynamic force modification due to the beam deformation is meaningless and thus neglected. Considering this a symbolic solution is available. 
+%md
+%md The beam is submitted to a uniform wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
 %mdThe beam has a length $L$ and a hollow cylindrical cross section with $d_{ext}$ and a thickness $b$ as it is shown in Fig.1. 
 %md
 %md```@raw html
-%#<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.m/docs/src/tutorials/LinearAeroCantilever/ilusDimenssions.png" alt="plot check" width="500"/>
+%md<img src="./assets/linearStaticCantileverAero/ilusLinearStaticCantileverAero.svg" alt="plot check angular displacements" width="700"/>
 %md```
 %md## Analytic solution
 %md--------------------
@@ -19,107 +21,115 @@
 %md
 %md Integrating respect to x the angular rotations stated above derives to the following expressions: 
 %md
-%md * $u_y(x)= -\frac{qy}{24 EI_{zz}} \left( 6*L^2*x^2 - 4*L*x^3 + x^4 \right)$
+%md * $u_y(x)= -\frac{qy}{24 EI_{zz}} \left( 6L^2x^2 - 4Lx^3 + x^4 \right)$
 %md 
 %md and
 %md
-%md * $u_z(x)= -\frac{qz}{24 EI_{yy}} \left( 6*L^2*x^2 - 4*L*x^3 + x^4 \right)$ 
+%md * $u_z(x)= -\frac{qz}{24 EI_{yy}} \left( 6L^2x^2 - 4Lx^3 + x^4 \right)$ 
 %md
 %md in which $q = 1/2 \rho v_a^2 d_{ext}$, $q_z = q c_d$ and $q_y = q c_l$.
 %md## Numerical solution
 %md---------------------
 %md
-%md
 %mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearStaticCantileverAero/onsasExample_staticAeroLinearCantilever.m).
-%md
-%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
+%md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
-% material scalar parameters
-E = 70e9 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
-% geometrical scalar parameters
-l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b ;
+%md The material linear $E$ and shear $G$ Elastic modulus and the Poisson's ratio $\nu$ are:
+E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
+%md
+%md Geometrical dimensions sketched in Fig 1 are:
+l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
 A = pi * (dext^2 - dint^2) / 4  ;
 J = pi * (dext^4 - dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
-Irho = diag([J Iyy Izz],3,3);
-% the number of elements used to build the mesh is
-numElements = 10 ;
-%md```
 %md
-%md##Numerical solution
+%md the number of elements employed to discriteze the beam is:
+numElements = 10 ;
+%md
 %md### MEBI parameters
 %md
 %md### materials
-%md Since the example contains only aeroFoone rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
+%md Since the example contains only one linear Euler Bernoulli element the fields of the `materials` struct will have only one entry. Although, the constitutive behavior law selected is Saint-Venant-Kirchhoff:
 materials.hyperElasModel  = 'linearElastic' ;
 materials.hyperElasParams = [ E nu ]        ;
-materials.density         = rho             ;
 %md
 %md### elements
 %md
-%mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
+%md Two different types of elements are considered, node and frame. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
+%md The node has not cross section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross section, then a `'generic'` cross-section dimensions in $y$ and $z$ directions is used. Thus the _elemCrossSecParams_ field is:
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
-elements(2).elemCrossSecParams{2,1} = [A J Iyy Izz Irho(1,1) Irho(2,2) Irho(3,3)] ;
-%md The drag and lift section function names are:
-numGaussPoints  = 4 ;
-formulationType = 4 ;
-elements(2).elemTypeAero   = [0 dext 0 numGaussPoints formulationType ];
-% elements(2).elemTypeAero   = [0 dext 0 ] % numGaussPoints formulationType ];
+elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
+%md Now the parameters to include aerodynamic forces automatically on the frame element are defined. First the drag and lift cross section functions are set in concordance with the function names located at the same example folder. Thus the userDragCoef_  userLiftCoef_ _momentCoefFunction_ fields are:
 elements(2).userDragCoef   = 'dragCoefFunction'   ;
 elements(2).userLiftCoef   = 'liftCoefFunction'   ;
 elements(2).userMomentCoef = 'momentCoefFunction' ;
+%md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. All this information is added into _elemTypeAero_ field of `elements` struct such that:
+numGaussPoints  = 4 ; 
+elements(2).elemTypeAero   = [0 dext 0 numGaussPoints];
+%md in which 4 Gauss integration points are employed to compute the aerodynamic force. This value is enough in most cases. 
 %md
 %md### boundaryConds
 %md
-%md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
+%md Only one welded (6 degrees of freedom are set to zero) boundary condition (BC) is considered:
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md
 %md### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                = struct() ;
+%md Any non-homogeneous initial condition (IC) are set for this case, then an empty struct is used:
+initialConds = struct() ;
 %md
 %md### mesh parameters
-%mdThe coordinates of the nodes of the mesh are given by the matrix:
+%mdThe coordinates of the mesh nodes are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
-%md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node is included.
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-% mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1   ] ;
-%md the following case only differs in the boundary condition and the node number
+%md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. For (I) no non-homogeneous initial condition is considered (then zero is used) and finally the node is assigned:
+mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
+%md Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
 for i=1:numElements,
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 %md
 %md### analysisSettings
-analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   0.1  ;
-analysisSettings.finalTime     =   1    ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   10   ;
-%md the name of the wind velocity function is: 
-analysisSettings.userWindVel   = 'windVel';
-%md geometrical nonlinearity in the wind force is not taken into account in this example:
-analysisSettings.geometricNonLinearAero = false;
 %md
-%md## otherParams
+%md First the wind velocity function name is set into _userWindVel_ field of `analysisSettings` struct. This will apply a external wind loads for each element with _elemTypeAero_ field into the `elements` struct. The name of the wind velocity function located on the same example path is: 
+analysisSettings.userWindVel = 'windVel' ;
+%md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
+analysisSettings.geometricNonLinearAero = false;
+%md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
+analysisSettings.deltaT        =   0.1           ;
+analysisSettings.finalTime     =   1             ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+%md Next the maximum number of iterations per load(time) step, the residual force and the displacements tolerances are set to: 
+analysisSettings.stopTolDeltau =   1e-6          ;
+analysisSettings.stopTolForces =   1e-6          ;
+analysisSettings.stopTolIts    =   10            ;
+%md
+%md### otherParams
+%md The name of the problem and vtk format output are selected: 
 otherParams.problemName = 'aeroLinStaticCantilever';
-otherParams.controlDofs = [ numElements+1  4 ] ;
 otherParams.plotsFormat = 'vtk' ;
-%md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-
+%md
+%md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved as:
+[matUs, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md 
 %md## Verification
-rhoAire = 1.2;
-%evaluate drag/lift and moment coefficents
+%md---------------------
+%md This example validation is ascertained comparing analytical and numerical solutions.
+%md
+%md### Symoblic solution
+%md
+%md For such propose the angle of incidence and the wind properties are computed as:
+% air density is:
+rhoAire = 1.2 ;
+% then characteristic dimension is extracted executing: 
+dimCaracteristic = norm(elements(2).elemTypeAero (1:3) ) ;
+% the angle of attack is: 
 betaRel = acos(dot(elements(2).elemTypeAero( 1:3 ) , [0 0 1] ));
-
-
+% the wind velocity is:
+windVel = feval(analysisSettings.userWindVel, betaRel, analysisSettings.finalTime) ;
+% the drag, lift and eventually moment coef are:
 if isfield(elements(2), 'userDragCoef')
   c_d = feval(elements(2).userDragCoef, betaRel);
 else
@@ -130,65 +140,50 @@ if isfield(elements(2), 'userLiftCoef')
 else
   c_l = 0;
 end
-if isfield(elements(2), 'userMomentCoef')
-  c_m = feval(elements(2).userMomentCoef, betaRel);
-else
-  c_m = 0;
-end
-
-%mdget wind velocity
-windVel = feval(analysisSettings.userWindVel, betaRel, analysisSettings.finalTime) ;
-%mdcaracteristicDimension
-dimCaracteristic = norm(elements(2).elemTypeAero (1:3) ) ;
-
-%dynamic presure
+%md Then the dynamic pressures $q_0$ defined above are expressed such that: 
 q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) ;
-%loads per unit of length  
-qz = q * c_d * dimCaracteristic ; 
-qy = q * c_l * dimCaracteristic ; 
-qm = q * c_m * dimCaracteristic ; 
-%reference coordinates
-xref = mesh.nodesCoords(:,1) ;
-yref = mesh.nodesCoords(:,2) ;
-zref = mesh.nodesCoords(:,3) ;
-
-%Analytic x vector
+%md next the loads per unit of length are  
+qz = q * c_d * dimCaracteristic ; qy = q * c_l * dimCaracteristic ; 
+%md then an analytic x vector to evaluate the deformed analytic solution is build as 
 sizeAnalyticX = 100 ;
-xanal = linspace(0,l,sizeAnalyticX)' ;
-
-%Evaluate analytical solutions
-% linear disp
-ydefAnalytic = -qy / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
-zdefAnalytic = qz / (24*E*Izz) * (6*l^2*xanal.^2 -4*l*xanal.^3+xanal.^4);
-% angular disp
-% thetaXAnalytic = -qm   / (2 * (Izz + Iyy) * G) * ( l^2  - ( xanal - l).^2 )  ;
-thetaYAnalytic = -qz  / (6*E*Iyy) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
-thetaZAnalytic = -qy   / (6*E*Izz) * (3* l^2 * xanal -3*l*xanal.^2+xanal.^3) ;
-
-% Load numerical solution
-%linear disp
-xdefNum = mesh.nodesCoords(:,1) + matUs(1:6:end,end) ;
-ydefNum = mesh.nodesCoords(:,2) + matUs(3:6:end,end) ;
-zdefNum = mesh.nodesCoords(:,2) + matUs(5:6:end,end) ;
-%angular disp
-thetaXdefNum = matUs(2:6:end,end) ;
-thetaYdefNum = matUs(4:6:end,end) ;
-thetaZdefNum = matUs(6:6:end,end) ;
-
-% Plot parameters:
+xAnalytic = linspace(0,l,sizeAnalyticX)' ;
+%md The linear displacements symbolic solutions are:
+ydefAnalytic = @(x) -qy / (24*E*Izz) * (6*l^2*x.^2 -4*l*x.^3+x.^4) ;
+zdefAnalytic = @(x) qz  / (24*E*Izz) * (6*l^2*x.^2 -4*l*x.^3+x.^4) ;
+%md then the angular displacements symbolic solutions are:
+thetaYAnalytic = @(x) -qz  / (6*E*Iyy) * (3* l^2 * x -3*l*x.^2+x.^3) ;
+thetaZAnalytic = @(x) -qy  / (6*E*Izz) * (3* l^2 * x -3*l*x.^2+x.^3) ;
+%md
+%md### Numeric solution
+%md
+%md The numerical solution is extracted:
+xref    = mesh.nodesCoords(:,1)     ;
+yref    = mesh.nodesCoords(:,2)     ;
+zref    = mesh.nodesCoords(:,3)     ;
+ydefNum = yref + matUs(3:6:end,end) ;
+zdefNum = zref + matUs(5:6:end,end) ;
+thetaYdefNum = matUs(4:6:end,end)   ;
+thetaZdefNum = matUs(6:6:end,end)   ;
+%md
+%md### Verification boolean
+%md
+%md The verification boolean is computed as $||U_n - U_a || / || U_a || < 10^{-1}$
+verifBoolean = norm( [ ydefNum - ydefAnalytic(xref); thetaYdefNum - thetaYAnalytic(xref); zdefNum - zdefAnalytic(xref); thetaZdefNum - thetaZAnalytic(xref) ] ) ...
+                <  1e-1 * norm( [ ydefAnalytic(xref);  thetaYAnalytic(xref);  zdefAnalytic(xref); thetaZAnalytic(xref) ] )  ;      
+%md
+%md### Plot verification
+%md
+%md The plot parameters are:
 lw = 5 ; ms = 8 ;
-% labels parameters:
 labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
 axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;       
-
-% Plot linear displacements
-figure
-hold on  
-grid on
-plot(xdefNum, zdefNum     ,'ro' , 'linewidth', lw, 'markersize' , ms) ;
-plot(xanal  , zdefAnalytic,'r-' , 'linewidth', lw, 'markersize' , ms) ;
-plot(xdefNum, ydefNum     ,'bo' , 'linewidth', lw,'markersize'  , ms) ;
-plot(xanal  , ydefAnalytic,'b-' , 'linewidth', lw, 'markersize' , ms) ;
+%md The linear displacements verification is plotted using:  
+figure(1)
+hold on, grid on
+plot(xref      , zdefNum                ,'ro' , 'linewidth', lw, 'markersize' , ms) ;
+plot(xAnalytic , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw, 'markersize' , ms) ;
+plot(xref      , ydefNum                ,'bo' , 'linewidth', lw,'markersize'  , ms) ;
+plot(xAnalytic , ydefAnalytic(xAnalytic),'b-' , 'linewidth', lw, 'markersize' , ms) ;
 legend('z_n', 'z_a',  'y_n', 'y_a', 'location', 'north')
 labx=xlabel(' x (m)');    laby=ylabel('Displacements (m)');
 title (labelTitle)
@@ -196,19 +191,18 @@ set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/linearDisp.png')
-
-
-% Plot angular displacements
-figure
-hold on  
-grid on
-plot(xdefNum, rad2deg(thetaYdefNum)   , 'ro' , 'linewidth', lw, 'markersize', ms);
-plot(xanal  , rad2deg(thetaYAnalytic) , 'r-' , 'linewidth', lw, 'markersize', ms);
-plot(xdefNum, rad2deg(thetaZdefNum)   , 'bo' , 'linewidth', lw,'markersize', ms);
-plot(xanal  , rad2deg(thetaZAnalytic) , 'b-' , 'linewidth', lw, 'markersize', ms);
-% plot(xdefNum, rad2deg(thetaXdefNum)   , 'go' , 'linewidth', lw, 'markersize', ms);
-% plot(xanal  , rad2deg(thetaXAnalytic) , 'g-' , 'linewidth', lw, 'markersize', ms);
-% legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a', '\theta x_n', '\theta x_a', 'location', 'eastoutside' )
+%md
+%md```@raw html
+%md<img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
+%md```
+%md
+%md The angular displacements verification is executed using:  
+figure(2)
+hold on, grid on
+plot(xref      , rad2deg(thetaYdefNum)              , 'ro' , 'linewidth', lw, 'markersize', ms) ;
+plot(xAnalytic , rad2deg(thetaYAnalytic(xAnalytic)) , 'r-' , 'linewidth', lw, 'markersize', ms) ;
+plot(xref      , rad2deg(thetaZdefNum)              , 'bo' , 'linewidth', lw, 'markersize', ms) ;
+plot(xAnalytic , rad2deg(thetaZAnalytic(xAnalytic)) , 'b-' , 'linewidth', lw, 'markersize', ms) ;
 legend('\theta y_n', '\theta y_a', '\theta z_n', '\theta z_a',  'location', 'eastoutside' )
 labx=xlabel(' x (m)'); laby=ylabel('Angle (º)');
 title (labelTitle)
@@ -216,18 +210,26 @@ set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
 set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
 set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/angDisp.png')
-
-%Plot 3D deformed
+%md
+%md```@raw html
+%md<img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero2.png" alt="plot check angular displacements" width="500"/>
+%md```
+%md
+%md The 3D deformed configuration is executed using:  
 figure
-hold on
-grid on
-plot3(xref   , yref         , zref        ,'k-'     , 'linewidth', lw + 300, 'markersize', ms+200 );
-plot3(xanal  , ydefAnalytic , zdefAnalytic,'r-'     , 'linewidth', lw      , 'markersize', ms     );
-plot3(xdefNum, ydefNum      , zdefNum     ,'bo'     , 'linewidth', lw      , 'markersize', ms     );
-legend('Reference config'   , 'Numerical def config', 'Analytic def config', 'location','northEast')
+hold on, grid on
+plot3(xref     , yref                    , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
+plot3(xAnalytic, ydefAnalytic(xAnalytic) , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw      , 'markersize', ms     );
+plot3(xref     , ydefNum                 , zdefNum                ,'bo' , 'linewidth', lw      , 'markersize', ms     );
+legend('Reference config'   , 'Analytic def config' , 'Numerical def config', 'location','northEast')
 labx=xlabel( 'x (m)' )      ; laby=ylabel('y(m)')   ; labz=zlabel('z(m)')  ;
 set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
 set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
 set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
 print('./output/def.png','-dpng')    
+%md
+%md```@raw html
+%md<img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero3.png" alt="plot check deformed configurations" width="500"/>
+%md```
+%md
