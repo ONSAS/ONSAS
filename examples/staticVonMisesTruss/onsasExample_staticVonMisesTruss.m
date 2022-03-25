@@ -114,6 +114,13 @@ otherParams.controlDofs = [2 5 ];
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
+
+
+materials.hyperElasModel  = 'linearElastic' ;
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+controlDispsNRLinearElastic =  -matUs(11,:) ;
+loadFactorsNRLinearElastic  =  loadFactorsMat(:,2) ;
+
 %md
 %md and the analytical value of the load factors is computed, as well as its difference with the numerical solution
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
@@ -172,8 +179,9 @@ plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'marker
 plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'location','SouthEast')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green','LinearElastic', 'location','SouthEast')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
