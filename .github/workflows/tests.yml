@@ -14,3 +14,7 @@ jobs:
           src: examples/staticVonMisesTruss examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine src src/elements src/vtk src/materials src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
           with_coverage: true
+          cover_xml_file: coverage.xml
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
