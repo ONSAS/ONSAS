@@ -26,7 +26,7 @@ function bringONSASmFilesToONSASdocs
 
 
   if exist( dirONSASdocs ) ~= 7
-    printf('creating examples dir...\n')
+    fprintf('creating examples dir...\n')
     mkdir( './examples/' );
   end
 
