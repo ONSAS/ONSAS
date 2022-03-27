@@ -5,8 +5,8 @@
 
 function bringONSASmFilesToONSASdocs
   disp('running bringONSASmFilesToONSASdocs script...')
-  dirONSASdocs = './' ;
-  dirONSASm     = '../../'          ;
+  dirONSASdocs = './examples/' ;
+  dirONSASm     = '../../examples/'          ;
 
   addpath( genpath( '../../src/examples/' ));
 
@@ -20,8 +20,16 @@ function bringONSASmFilesToONSASdocs
   MDFiles    = {   'staticVonMisesTruss.md' ...
                  ; 'cantileverBeam.md' ...
                  ; 'uniaxialExtension.md' ...
+                 ; 'springMass.md' ...
                  ; 'semiSphereWithInclusion.md' ...
                 } ;
+
+
+  if exist( dirONSASdocs ) ~= 7
+    printf('creating examples dir...\n')
+    mkdir( './examples/' );
+  end
+
 
   fprintf( 'converting:\n' )
   for i=1:length( ONSASmFiles )

@@ -4,7 +4,7 @@
 %mdIn this tutorial, the Static Von Mises Truss example and its resolution using ONSAS are described. The aim of this example is to validate the Newton-Raphson method implementation by comparing the results provided by ONSAS with analytic solutions. The structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane and nodes $1$ and $3$ fixed.
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/vonMisesTruss.svg" alt="structure diagram" width="500"/>
+%md<img src="assets/vonMisesTruss.svg" alt="structure diagram" width="500"/>
 %md```
 %md## Analytic solution
 %md--------------------
@@ -187,6 +187,6 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
 %md
