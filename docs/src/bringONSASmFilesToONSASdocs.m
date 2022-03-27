@@ -30,7 +30,6 @@ function bringONSASmFilesToONSASdocs
     mkdir( './examples/' );
   end
 
-
   fprintf( 'converting:\n' )
   for i=1:length( ONSASmFiles )
     fprintf([ '  - ' ONSASmFiles{i} '\n' ])

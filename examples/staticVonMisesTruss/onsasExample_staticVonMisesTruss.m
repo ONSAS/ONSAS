@@ -1,24 +1,22 @@
-%md# Static Von Mises Truss example
-%md---
+%md# Static Von-Mises Truss example
 %md
-%mdIn this tutorial, the Static Von Mises Truss example and its resolution using ONSAS are described. The aim of this example is to validate the Newton-Raphson method implementation by comparing the results provided by ONSAS with analytic solutions. The structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane and nodes $1$ and $3$ fixed.
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/onsasExample_staticVonMisesTruss.m)
+%md
+%mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the Newton-Raphson and Newton-Raphson-Arc-Length methods implementation by comparing the results provided with the analytic solutions.
+%md
+%mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane, and nodes $1$ and $3$ fixed.
 %md
 %md```@raw html
-%md<img src="assets/vonMisesTruss.svg" alt="structure diagram" width="500"/>
+%md<img src="../assets/vonMisesTruss.svg" alt="structure diagram" width="500"/>
 %md```
-%md## Analytic solution
-%md--------------------
+%md## Analytic solutions
 %md
-%mdThe solutions are developed in [section 2.3 of (Bazzano and Pérez Zerpa, 2017)](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf#section.2.3). The expressions obtained for different strain measures are:
+%mdThe solutions for the nonlinear cases are developed in section 2.3 of [(Bazzano and Pérez Zerpa, 2017)](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf#section.2.3). The expressions obtained for different strain measures are:
 %md * Rotated-Engineering: $P = \frac{EA_o(z_2+w)\left(\sqrt{(w+z_2)^2+x_2^2}-l_o\right)}{l_o\sqrt{(w+z_2)^2+x_2^2}}$
 %md * SVK: $P = \frac{EA_o (z_2+w)\left( 2 z_2 w + w^2 \right) }{ 2 l_o^3 }$
 %md where $x_2$ and $z_2$ are the coordinates of node 2 and $w$ is measured positive as $z$.
 %md
-%md## Numerical solution
-%md---------------------
-%md
-%md
-%mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/onsasExample_staticVonMisesTruss.m).
+%md## Numerical solutions
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
@@ -46,10 +44,8 @@ materials.hyperElasParams = [ E nu ] ;
 elements(1).elemType = 'node' ;
 %md and the second entry is
 elements(2).elemType = 'truss';
-%md for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
-elements(2).elemCrossSecParams = { } ;
-elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = sqrt(A*4/pi) ;
+%md for the geometries, the node has no geometry to assign, and the truss elements will be set as a circle cross-section, then the elemCrossSecParams field is:
+elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
 elements(2).elemTypeParams = 1 ;
 %md
 %md#### boundaryConds
@@ -100,27 +96,29 @@ analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        =   0.1  ;
 analysisSettings.finalTime      =   1    ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   10   ;
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
 otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
 otherParams.plotsFormat = 'vtk' ;
-otherParams.controlDofs = [2 5 ];
 %md
 %md### Analysis case 1: NR with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
-
-
+%md
+%md### Numerical solution for linear elastic behavior
+%md
 materials.hyperElasModel  = 'linearElastic' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRLinearElastic =  -matUs(11,:) ;
 loadFactorsNRLinearElastic  =  loadFactorsMat(:,2) ;
-
+analysisSettings.finalTime      =   1.5    ;
+otherParams.problemName = 'staticVonMisesTruss_linearElastic';
+%md
 %md
 %md and the analytical value of the load factors is computed, as well as its difference with the numerical solution
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
@@ -132,6 +130,7 @@ difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactor
 %md In order to perform a SVK case, the material is changed and the problemName is also updated
 otherParams.problemName = 'staticVonMisesTruss_NR_Green';
 materials.hyperElasModel  = 'SVK' ;
+analysisSettings.finalTime      =   1.0    ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 materials.hyperElasParams = [ lambda mu ] ;
 %md the load history is also changed
@@ -152,8 +151,8 @@ elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
 %md In this case, the numerical method is changed for newtonRaphson arc length.
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime     = 4.5                             ;
-analysisSettings.incremArcLen = 0.1                             ;
+analysisSettings.finalTime     = 1                               ;
+analysisSettings.incremArcLen = 0.15                             ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md
@@ -181,12 +180,13 @@ plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersi
 plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green','LinearElastic', 'location','SouthEast')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green','LinearElastic', 'location','northoutside')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
+print('../../docs/src/assets/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="../assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
 %md
