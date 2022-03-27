@@ -8,7 +8,8 @@
 %md```@raw html
 %md<img src="../../assets/nonLinearCantileverAero/ilusNonLinearStaticCantileverAero.svg" alt="general dimensions sketch" width="700"/>
 %md```
-%mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m).
+%md The Octave script of this example is available at [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
+%md
 %md## Small displacements 2D case
 %md--------------------
 %md
@@ -142,7 +143,7 @@ namefig1 = strcat(folderPathFigs, 'linDispSD.png') ;
 print(fig1, namefig1,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="./../assets/nonLinearCantileverAero/linDispSD.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearCantileverAero/linDispSD.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The angular $\theta_z$ displacements verification is plotted executing:  
@@ -264,7 +265,7 @@ print(fig3, namefig3,'-dpng') ;
 %md
 %md## Large displacements 3D case
 %md--------------------
-%md A large displacements dynamic 3D case is presented as follows. This example is inspired on [Vortex-Induced Vibration of Soft Corals](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin).
+%md A large displacements dynamic 3D case is presented as follows. This example is inspired on [![Vortex-Induced Vibration of Soft Corals](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin)
 %md### MEBI parameters
 %md---------------------
 %md

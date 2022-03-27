@@ -8,6 +8,8 @@
 %md```@raw html
 %md<img src="../../assets/linearStaticCantileverAero/ilusLinearStaticCantileverAero.svg" alt="plot check angular displacements" width="700"/>
 %md```
+%md The example is avaliable at %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearStaticCantileverAero/staticAeroLinearCantilever.m)
+
 %md## Analytic solution
 %md--------------------
 %md
@@ -192,7 +194,7 @@ set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/linearDisp.png')
 %md
 %md```@raw html
-%md<img src="./../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
+%md<img src="../../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
 %md```
 %md
 %md The angular displacements verification is plotted using:  
