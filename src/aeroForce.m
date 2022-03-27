@@ -6,16 +6,16 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
   jorgeBool = false ; jorgeBoolRigid  = false ;
   battiBool = false ; rigidBool       = true ;
 
-  switch elemTypeAero(5)
-    case 1 
-      jorgeBool = true ;
-    case 2
-      jorgeBoolRigid = true;
-    case 3 
-      battiBool = true;
-    case 4 
-      rigidBool = true;
-  end
+  % switch elemTypeAero(5)
+  %   case 1 
+  %     jorgeBool = true ;
+  %   case 2
+  %     jorgeBoolRigid = true;
+  %   case 3 
+  %     battiBool = true;
+  %   case 4 
+  %     rigidBool = true;
+  % end
   
   %Boolean to compute aerodinamic force with ut = 0 compte aerodynamic force in the reference configuration 
   if ~geometricNonLinearAero 
