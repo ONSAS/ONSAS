@@ -140,7 +140,7 @@ plot(times, valsHHT,'g-s')
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
 legend( 'analytic', 'truss-Newmark','nodalMass-HHT', 'location','northoutside')
 print('output/springMassCheck.png','-dpng')
-print('../../docs/src/assets/springMassCheck.png','-dpng')
+%print('../../docs/src/assets/springMassCheck.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../assets/springMassCheck.png" alt="plot check" width="500"/>
