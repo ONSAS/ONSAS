@@ -1,8 +1,8 @@
 
 function [Area, J, Iyy, Izz, Jrho ] = crossSectionProps ( elemCrossSecParams, rho )
 % --- cross section ---
-if strcmp( elemCrossSecParams{1,1}, 'generic' ) %general section
-    elemCrossSecParamsVec = elemCrossSecParams{2,1} ;
+if strcmp( elemCrossSecParams{1}, 'generic' ) %general section
+    elemCrossSecParamsVec = elemCrossSecParams{2} ;
     Area = elemCrossSecParamsVec( 1 ) ;
     J    = elemCrossSecParamsVec( 2 ) ;
     Iyy  = elemCrossSecParamsVec( 3 ) ;
@@ -14,8 +14,8 @@ if strcmp( elemCrossSecParams{1,1}, 'generic' ) %general section
         Jrho = rho * diag( [ J Iyy Izz ] ) ;
     end
 
-elseif strcmp( elemCrossSecParams{1,1}, 'rectangle' )
-    elemCrossSecParamsVec = elemCrossSecParams{2,1} ;
+elseif strcmp( elemCrossSecParams{1}, 'rectangle' )
+    elemCrossSecParamsVec = elemCrossSecParams{2} ;
     Area = elemCrossSecParamsVec( 1 ) *elemCrossSecParamsVec( 2 )        ;
     Iyy  = elemCrossSecParamsVec( 1 ) *elemCrossSecParamsVec( 2 ) ^ 3/12 ;
     Izz  = elemCrossSecParamsVec( 1 ) *elemCrossSecParamsVec( 2 ) ^ 3/12 ;
@@ -31,8 +31,8 @@ elseif strcmp( elemCrossSecParams{1,1}, 'rectangle' )
     end
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
 
-elseif strcmp( elemCrossSecParams{1,1}, 'circle' )
-    diameter = elemCrossSecParams{2,1} ;
+elseif strcmp( elemCrossSecParams{1}, 'circle' )
+    diameter = elemCrossSecParams{2} ;
     Area = pi*diameter^2/4             ;
     Iyy  = pi*diameter^4/64            ;
     Izz  = Iyy                         ;
