@@ -31,12 +31,13 @@ elseif outputFormat == "html"
     pages = [
       "Home" => "index.md",
       "Learning by examples" => Any["Static Von-Mises Truss" =>  "staticVonMisesTruss.md",
+                                     "Spring-mass system" => "springMass.md",
                                     "Uniaxial extension" => "uniaxialExtension.md",
                                     "Cantilever Beam" => "cantileverBeam.md",
                                     "Solid with inclusion" => "semiSphereWithInclusion.md"],
       "User guide" => Any["Installation" =>  "howtouse/install.md",
                           "Creating Models"  => "howtouse/creatingModels.md",
-                          "Corotational frame"  => "corotationalFrameElement.md",
+#                          "Corotational frame"  => "corotationalFrameElement.md",
                           "References"  => "theory/references.md"]
       #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
     ],

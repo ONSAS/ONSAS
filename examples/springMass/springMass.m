@@ -1,55 +1,47 @@
-% ------------------------------------
-% springmass example
-% Notation and analytical based on chapter 3 from
-% Ray W. Clough and Joseph Penzien, Dynamics of Structures, Third Edition, 2003
-% ------------------------------------
-
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
-
-otherParams.problemName = 'springMass' ;
-otherParams.plotsFormat = 'vtk' ;
-
-% spring mass system
+%md# Spring-mass system example
+%mdIn this example a simple spring-mass system is considered. The notation and the analytical solution are based on chapter 3 from
+%mdthe book Dynamics of Structures by Ray W. Clough and Joseph Penzien, Third Edition, 2003.
+%md
+%md First the path to the onsas folder is added and scalar parameters are set.
+% add path
+close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
+% scalar parameters for spring-mass system
 k        = 39.47 ;
-p0       = 40    ;
 c        = 0.1   ;
 m        = 1     ;
-omegaBar = 4*sqrt(k/m) ;
-p0       = 40    ;
+p0       = 40    ; % amplitude of applied load
 u0       = 0.0   ; % initial displacement
 
-% parameters for truss model
+% parameters for the equivalent truss model
 l   = 1   ;
 A   = 0.1 ;
 rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
 
-omegaN = sqrt( k / m );
-xi     = c / m  / ( 2 * omegaN ) ;
+omegaN       = sqrt( k / m );
+omegaBar     = 4*omegaN ;
+xi           = c / m  / ( 2 * omegaN ) ;
 nodalDamping = c ;
 
 freq   = omegaN / (2*pi)      ;
 TN     = 2*pi / omegaN        ;
 dtCrit = TN / pi              ;
-
-% numerical method params
-stopTolDeltau = 1e-10           ;
-stopTolForces = 1e-10           ;
-stopTolIts    = 30              ;
-alphaHHT      = 0;
-% ------------------------------------
-
-
+%md
+%md## Materials
+%md
 materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E 0 ] ;
-materials(1).density  = rho ;
-
+materials(1).density         = rho ;
+%md
+%md## Elements
+%md
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
-elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = [sqrt(4*A/pi) ] ;
-elements(2).elemTypeParams = 0 
-
+elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
+elements(2).elemTypeParams = 0
+%md
+%md## Boundary conditions
+%md
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 
@@ -58,8 +50,8 @@ boundaryConds(2).imposDispVals =  [ 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'                  ;
 boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )                    ;
 boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
-
-% initial conditions
+%md
+%md## Initial conditions
 initialConds.nonHomogeneousInitialCondU0    = [ 2 1 u0    ] ;
 
 mesh.nodesCoords = [  0  0  0 ; ...
@@ -79,6 +71,11 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 analysisSettings.alphaNM      =   0.25   ;
 analysisSettings.deltaNM      =   0.5   ;
+% ------------------------------------
+
+
+otherParams.problemName = 'springMass' ;
+
 
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
@@ -117,8 +114,8 @@ analysisSettings.alphaHHT      =   0   ;
 
 valsHHT = matUsHHT(6+1,:) ;
 
-verifBooleanNewmark =  ( ( norm( valsAnaly - valsNewmark    ) / norm( valsAnaly   ) ) <  analyticCheckTolerance )
-verifBooleanHHT     =  ( ( norm( valsAnaly - valsNewmark     ) / norm( valsAnaly  ) ) <  analyticCheckTolerance )
+verifBooleanNewmark =  ( ( norm( valsAnaly - valsNewmark    ) / norm( valsAnaly   ) ) <  analyticCheckTolerance ) ;
+verifBooleanHHT     =  ( ( norm( valsAnaly - valsNewmark     ) / norm( valsAnaly  ) ) <  analyticCheckTolerance ) ;
 verifBoolean = verifBooleanHHT && verifBooleanNewmark ;
 
 figure

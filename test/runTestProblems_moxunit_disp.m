@@ -40,4 +40,3 @@ function test_7
 function test_8
   onsasExample_simpleWindTurbine
   assertEqual( verifBoolean, true );
-
