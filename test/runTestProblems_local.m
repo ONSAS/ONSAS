@@ -7,8 +7,9 @@ addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOcta
 keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'    ;
              'uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m' ;
              'linearPlaneStrain/onsasExample_linearPlaneStrain.m'       ;
-             'uniaxialExtension/uniaxialExtension.m'       ;
+             'uniaxialExtension/uniaxialExtension.m'                    ;
              'nonlinearPendulum/onsasExample_nonlinearPendulum.m'       ;
+             'springMass/springMass.m'                                  ;
              'beamTrussJoint/onsasExample_beamTrussJoint.m'             ;
              'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' ;
              'simpleWindTurbine/onsasExample_simpleWindTurbine.m'       } ;

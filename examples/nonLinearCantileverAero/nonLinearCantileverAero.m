@@ -6,7 +6,7 @@
 %mdThe beam has a length $L$ and a circular solid cross section with diameter $d$ as it is shown in the following figure: 
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/ilusNonLinearStaticCantileverAero.svg" alt="general dimensions sketch" width="700"/>
+%md<img src="./../assets/nonLinearCantileverAero/ilusNonLinearStaticCantileverAero.svg" alt="general dimensions sketch" width="700"/>
 %md```
 %mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m).
 %md## Small displacements 2D case
