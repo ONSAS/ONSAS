@@ -8,8 +8,8 @@
 %md```@raw html
 %md<img src="../../assets/linearStaticCantileverAero/ilusLinearStaticCantileverAero.svg" alt="plot check angular displacements" width="700"/>
 %md```
-%md The example is avaliable at %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearStaticCantileverAero/staticAeroLinearCantilever.m)
-
+%md The Octave script of this example is available at : [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearStaticCantileverAero/staticAeroLinearCantilever.m)
+%md
 %md## Analytic solution
 %md--------------------
 %md

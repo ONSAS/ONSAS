@@ -8,7 +8,7 @@
 %md```@raw html
 %md<img src="../../assets/nonLinearCantileverAero/ilusNonLinearStaticCantileverAero.svg" alt="general dimensions sketch" width="700"/>
 %md```
-%md The Octave script of this example is available at [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
+%md The Octave script of this example is available at : [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
 %md
 %md## Small displacements 2D case
 %md--------------------
