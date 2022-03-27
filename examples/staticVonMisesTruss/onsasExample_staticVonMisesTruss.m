@@ -10,14 +10,14 @@
 %md<img src="../assets/vonMisesTruss.svg" alt="structure diagram1" width="500"/>
 %md```
 %md```@raw html
-%md<img src="./assets/vonMisesTruss.svg" alt="structure diagram2" width="500"/>
+%md<img src="../../assets/vonMisesTruss.svg" alt="structure diagram2" width="500"/>
 %md```
 %md```@raw html
-%md<img src="./assets/vonMisesTruss.svg" alt="structure diagram3" width="500"/>
+%md<img src="assets/vonMisesTruss.svg" alt="structure diagram3" width="500"/>
 %md```
 
 %md```@raw html
-%md<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/vonMisesTruss.svg" alt="structure diagram4" width="500"/>
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.m/master/docs/src/assets/vonMisesTruss.svg" alt="structure diagram4" width="500"/>
 %md```
 
 %md## Analytic solutions
