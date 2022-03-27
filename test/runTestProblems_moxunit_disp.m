@@ -30,7 +30,7 @@ function test_5
   assertEqual( verifBoolean, true );
 
 function test_6
-  onsasExample_springMass
+  springMass
   assertEqual( verifBoolean, true );
 
 function test_7

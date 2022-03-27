@@ -118,7 +118,7 @@ valsNewmark = matUsNewmark(6+1,:) ;
 %md
 %md### Numerical case 2: nodal mass model with $\alpha$-HHT method
 %md
-materials(1).density  = 0 ;
+%materials(1).density  = 0 ;
 elements(1).nodalMass = [m m m] ;
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.alphaHHT      =   0   ;
@@ -141,3 +141,8 @@ labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
 legend( 'analytic', 'truss-Newmark','nodalMass-HHT', 'location','northoutside')
 print('output/springMassCheck.png','-dpng')
 print('../../docs/src/assets/springMassCheck.png','-dpng')
+%md
+%md```@raw html
+%md<img src="../assets/springMassCheck.png" alt="plot check" width="500"/>
+%md```
+%md
