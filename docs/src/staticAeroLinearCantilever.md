@@ -1,8 +1,8 @@
 # Aerodynamic linear static cantilever beam example
  ---
- In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam considering small displacements and deformations. As consequence the aerodynamic force modification due to the beam deformation is meaningless and thus neglected. Considering this a symbolic solution is available. 
+ In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under this hypothesis a symbolic solution is available. 
 
- The beam is submitted to a uniform wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
+ The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
 The beam has a length $L$ and a hollow cylindrical cross section with $d_{ext}$ and a thickness $b$ as it is shown in Fig.1. 
 
 ```@raw html
@@ -64,7 +64,7 @@ materials.hyperElasParams = [ E nu ]        ;
 
 ### elements
 
- Two different types of elements are considered, node and frame. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
+ Two different types of elements are considered, node and frames. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
 ```
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
@@ -78,7 +78,6 @@ elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 ```
 elements(2).userDragCoef   = 'dragCoefFunction'   ;
 elements(2).userLiftCoef   = 'liftCoefFunction'   ;
-elements(2).userMomentCoef = 'momentCoefFunction' ;
 ```
  Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. All this information is added into _elemTypeAero_ field of `elements` struct such that:
 ```
@@ -114,7 +113,7 @@ mesh.conecCell = { } ;
 ```
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
 ```
- Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
+ Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and no IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
 ```
 for i=1:numElements,
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
@@ -160,7 +159,7 @@ otherParams.plotsFormat = 'vtk' ;
 ---------------------
  This example validation is ascertained comparing analytical and numerical solutions.
 
-### Symoblic solution
+### Symbolic solution
 
  For such propose the angle of incidence and the wind properties are computed as:
 ```
@@ -258,7 +257,7 @@ print('./output/linearDisp.png')
 <img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
 ```
 
- The angular displacements verification is executed using:  
+ The angular displacements verification is plotted using:  
 ```
 figure(2)
 hold on, grid on
@@ -279,7 +278,7 @@ print('./output/angDisp.png')
 <img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero2.png" alt="plot check angular displacements" width="500"/>
 ```
 
- The 3D deformed configuration is executed using:  
+ The 3D deformed configuration is plotted executing:  
 ```
 figure
 hold on, grid on

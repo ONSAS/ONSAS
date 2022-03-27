@@ -10,4 +10,4 @@
 
 #PATH TO MATLAB bin: /clusteruy/apps/matlab/R2018b/bin/matlab  
 #ALIAS FOR MATLAB bin: alias matlab = "/clusteruy/apps/matlab/R2018b/bin/matlab"
-/clusteruy/apps/matlab/R2018b/bin/matlab -nodisplay -nosplash -nodesktop -r "run('./onsasExample_nonLinearCantileverBeam.m');exit;"
+/clusteruy/apps/matlab/R2018b/bin/matlab -nodisplay -nosplash -nodesktop -r "run('./nonLinearCantileverAero.m');exit;"

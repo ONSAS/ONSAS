@@ -1,8 +1,8 @@
 %md# Aerodynamic linear static cantilever beam example
 %md ---
-%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam considering small displacements and deformations. As consequence the aerodynamic force modification due to the beam deformation is meaningless and thus neglected. Considering this a symbolic solution is available. 
+%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under this hypothesis a symbolic solution is available. 
 %md
-%md The beam is submitted to a uniform wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
+%md The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift and drag forces are characterized with their respective aerodynamic coefficients $c_d$ and $c_l$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
 %mdThe beam has a length $L$ and a hollow cylindrical cross section with $d_{ext}$ and a thickness $b$ as it is shown in Fig.1. 
 %md
 %md```@raw html
@@ -54,7 +54,7 @@ materials.hyperElasParams = [ E nu ]        ;
 %md
 %md### elements
 %md
-%md Two different types of elements are considered, node and frame. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
+%md Two different types of elements are considered, node and frames. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md The node has not cross section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross section, then a `'generic'` cross-section dimensions in $y$ and $z$ directions is used. Thus the _elemCrossSecParams_ field is:
@@ -63,7 +63,6 @@ elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 %md Now the parameters to include aerodynamic forces automatically on the frame element are defined. First the drag and lift cross section functions are set in concordance with the function names located at the same example folder. Thus the userDragCoef_  userLiftCoef_ _momentCoefFunction_ fields are:
 elements(2).userDragCoef   = 'dragCoefFunction'   ;
 elements(2).userLiftCoef   = 'liftCoefFunction'   ;
-elements(2).userMomentCoef = 'momentCoefFunction' ;
 %md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. All this information is added into _elemTypeAero_ field of `elements` struct such that:
 numGaussPoints  = 4 ; 
 elements(2).elemTypeAero   = [0 dext 0 numGaussPoints];
@@ -86,7 +85,7 @@ mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] 
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. For (I) no non-homogeneous initial condition is considered (then zero is used) and finally the node is assigned:
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
-%md Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
+%md Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and no IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
 for i=1:numElements,
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
@@ -118,7 +117,7 @@ otherParams.plotsFormat = 'vtk' ;
 %md---------------------
 %md This example validation is ascertained comparing analytical and numerical solutions.
 %md
-%md### Symoblic solution
+%md### Symbolic solution
 %md
 %md For such propose the angle of incidence and the wind properties are computed as:
 % air density is:
@@ -196,7 +195,7 @@ print('./output/linearDisp.png')
 %md<img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
 %md```
 %md
-%md The angular displacements verification is executed using:  
+%md The angular displacements verification is plotted using:  
 figure(2)
 hold on, grid on
 plot(xref      , rad2deg(thetaYdefNum)              , 'ro' , 'linewidth', lw, 'markersize', ms) ;
@@ -215,7 +214,7 @@ print('./output/angDisp.png')
 %md<img src="./assets/linearStaticCantileverAero/verifLinearStaticCantileverAero2.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
-%md The 3D deformed configuration is executed using:  
+%md The 3D deformed configuration is plotted executing:  
 figure
 hold on, grid on
 plot3(xref     , yref                    , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
