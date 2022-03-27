@@ -142,7 +142,7 @@ namefig1 = strcat(folderPathFigs, 'linDispSD.png') ;
 print(fig1, namefig1,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/linDispSD.png" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/linDispSD.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The angular $\theta_z$ displacements verification is plotted executing:  
@@ -160,7 +160,7 @@ namefig2 = strcat(folderPathFigs, 'angDispSD.png') ;
 print(fig2, namefig2,'-dpng')
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/angDispSD.png" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/angDispSD.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md## Large displacements 2D case
@@ -259,7 +259,7 @@ namefig3 = strcat(folderPathFigs, 'uyA.png') ;
 print(fig3, namefig3,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/uyA.png" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/uyA.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md## Large displacements 3D case
@@ -328,7 +328,7 @@ axis([0,50])
 print(fig4, namefig4,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/windVel3D.png" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/windVel3D.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md Then $u_y$ of node A  is computed using:  
@@ -366,12 +366,12 @@ namefig5 = strcat(folderPathFigs, 'uA3D.png') ;
 print(fig5, namefig5,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/uA3D.png" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/uA3D.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md Finally a GIF to illustrate the motion amplitude is subsequently presented:
 %md
 %md```@raw html
-%md<img src="./assets/nonLinearCantileverAero/cyilindricalCantBeam3D.gif" alt="plot check angular displacements" width="500"/>
+%md<img src="./../assets/nonLinearCantileverAero/cyilindricalCantBeam3D.gif" alt="plot check angular displacements" width="500"/>
 %md```
 %md
