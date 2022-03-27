@@ -3,7 +3,6 @@
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING.txt)
-[![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
 [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
