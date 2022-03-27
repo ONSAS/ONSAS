@@ -265,7 +265,7 @@ print(fig3, namefig3,'-dpng') ;
 %md
 %md## Large displacements 3D case
 %md--------------------
-%md A large displacements dynamic 3D case is presented as follows. This example is inspired on [![Vortex-Induced Vibration of Soft Corals](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin)
+%md A large displacements dynamic 3D case is presented as follows. This example is inspired on [![Vortex-Induced Vibration of Soft Corals](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin)](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin)
 %md### MEBI parameters
 %md---------------------
 %md
