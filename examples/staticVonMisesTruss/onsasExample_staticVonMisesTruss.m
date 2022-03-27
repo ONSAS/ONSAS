@@ -7,19 +7,9 @@
 %mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane, and nodes $1$ and $3$ fixed.
 %md
 %md```@raw html
-%md<img src="../assets/vonMisesTruss.svg" alt="structure diagram1" width="500"/>
+%md<img src="../../assets/vonMisesTruss.svg" alt="von-mises truss structure diagram" width="500"/>
 %md```
-%md```@raw html
-%md<img src="../../assets/vonMisesTruss.svg" alt="structure diagram2" width="500"/>
-%md```
-%md```@raw html
-%md<img src="assets/vonMisesTruss.svg" alt="structure diagram3" width="500"/>
-%md```
-
-%md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.m/master/docs/src/assets/vonMisesTruss.svg" alt="structure diagram4" width="500"/>
-%md```
-
+%md
 %md## Analytic solutions
 %md
 %mdThe solutions for the nonlinear cases are developed in section 2.3 of [(Bazzano and Pérez Zerpa, 2017)](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf#section.2.3). The expressions obtained for different strain measures are:
@@ -174,11 +164,11 @@ analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
 difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md## Verification
 %md the numerical resolution is validated for both strain measures.
-
+%md
 verifBoolean =  ( ( norm( difLoadEngRot    ) / norm( loadFactorsNREngRot  ) ) <  1e-4 ) ...
              && ( ( norm( difLoadGreen     ) / norm( loadFactorsNRGreen   ) ) <  1e-4 ) ...
              && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 ) ;
-
+%md
 %md### Plots
 %md and solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -198,8 +188,6 @@ print('output/vonMisesTrussCheck.png','-dpng')
 %print('../../docs/src/assets/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="../assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="../../assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
-%md
-%md![](assets/vonMisesTrussCheck.png)
 %md

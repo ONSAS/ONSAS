@@ -1,4 +1,7 @@
 %md# Spring-mass system example
+%md
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/springMass/springMass.m)
+%md
 %mdIn this example a simple spring-mass system is considered. The notation and the analytical solution are based on chapter 3 from
 %mdthe book Dynamics of Structures by Ray W. Clough and Joseph Penzien, Third Edition, 2003.
 %md
@@ -143,6 +146,6 @@ print('output/springMassCheck.png','-dpng')
 %print('../../docs/src/assets/springMassCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="../assets/springMassCheck.png" alt="plot check" width="500"/>
+%md<img src="../../assets/springMassCheck.png" alt="plot check" width="500"/>
 %md```
 %md

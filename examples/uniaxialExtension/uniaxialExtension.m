@@ -1,21 +1,15 @@
 %md# Uniaxial Extension Solid example
-%md---
+%md
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialExtension/uniaxialExtension.m)
 %md
 %mdIn this tutorial example an elastic solid is submitted to a uniaxial extension test. The problem is inspired by Exercise 4 from section 6.5 in (Holzapfel,2000). The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions and the tension $p$ is applied on the face $x=Lx$, as nominal traction (see (Holzapfel,2000)).
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/diagramSolidUniaxialHTML.svg" alt="structure diagram" width="500"/>
-%md```
-%md
-%md```@raw latex
-%md\begin{center}
-%md\def\svgwidth{0.7\textwidth}
-%md\input{diagramSolidUniaxialPDF.pdf_tex}
-%md\end{center}
+%md<img src="../../assets/diagramSolidUniaxial.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %md## Analytic solution
-%md---
+%md
 %mdLet us consider that a uniform deformation is produced, with a nonzero axial stretch $\alpha$ and nonzero transversal stretch $\beta$. The corresponding deformation gradient and Green-Lagrange strain tensor are given by:
 %md```math
 %md\textbf{F} = \left[ \begin{matrix} \alpha & 0 & 0 \\ 0 & \beta & 0 \\ 0 & 0 & \beta \end{matrix} \right]
