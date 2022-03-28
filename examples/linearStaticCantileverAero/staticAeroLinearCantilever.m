@@ -6,8 +6,10 @@
 %mdThe beam has a length $L$ and a hollow cylindrical cross section with $d_{ext}$ and a thickness $b$ as it is shown in Fig.1. 
 %md
 %md```@raw html
-%md<img src="./../assets/linearStaticCantileverAero/ilusLinearStaticCantileverAero.svg" alt="plot check angular displacements" width="700"/>
+%md<img src="../../assets/linearStaticCantileverAero/ilusLinearStaticCantileverAero.svg" alt="plot check angular displacements" width="700"/>
 %md```
+%md The Octave script of this example is available at : [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearStaticCantileverAero/staticAeroLinearCantilever.m)
+%md
 %md## Analytic solution
 %md--------------------
 %md
@@ -192,7 +194,7 @@ set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/linearDisp.png')
 %md
 %md```@raw html
-%md<img src="./../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
+%md<img src="../../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero1.png" alt="plot check linear displacements" width="500"/>
 %md```
 %md
 %md The angular displacements verification is plotted using:  
@@ -211,7 +213,7 @@ set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('./output/angDisp.png')
 %md
 %md```@raw html
-%md<img src="./../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero2.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero2.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The 3D deformed configuration is plotted executing:  
@@ -229,6 +231,6 @@ view([0.5 +0.5 -1])
 print('./output/def.png','-dpng')    
 %md
 %md```@raw html
-%md<img src="./../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero3.png" alt="plot check deformed configurations" width="500"/>
+%md<img src="../../assets/linearStaticCantileverAero/verifLinearStaticCantileverAero3.png" alt="plot check deformed configurations" width="500"/>
 %md```
 %md
