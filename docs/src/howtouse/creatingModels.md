@@ -54,6 +54,9 @@ where $n_P$ is the number of parameters of the constitutive model and $\mathbf{p
 
 This is a cell with the scalar values of the densities of the materials used in the model.
 
+### `material.nodalMass`
+
+This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is assigned to nodes.
 
 ## The `elements` struct
 
