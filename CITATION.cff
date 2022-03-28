@@ -20,5 +20,5 @@ authors:
 - family-names: "Toro"
   given-names: "Sebastián"
 title: "ONSAS.m: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab"
-version: 0.2.5
+version: 0.2.6
 url: "https://github.com/ONSAS/ONSAS.m"
