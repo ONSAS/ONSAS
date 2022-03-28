@@ -117,9 +117,12 @@ valsNewmark = matUsNewmark(6+1,:) ;
 exportFirstMatrices = true      ;
 materials(1).density  = 0 ;
 materials(2).nodalMass = [m m m] ;
+mesh.conecCell{ 2, 1 } = [ 2 1 2 0   2   ] ;
+%md
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.alphaHHT      =   0   ;
-mesh.conecCell{ 2, 1 } = [ 2 1 2 0   2   ] ;
+%md
+otherParams.plotsFormat = 'vtk' ;
 %md
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 valsHHT  = matUsHHT(6+1,:) ;
