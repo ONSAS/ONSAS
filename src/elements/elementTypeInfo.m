@@ -1,10 +1,10 @@
 function [numNodes, dofsStep] = elementTypeInfo ( elemType )
 
-%~ if strcmp( elemType, 'node') %non physical real element
-  %~ numNodes = 1 ;
-  %~ dofsStep = 1 ;
+if strcmp( elemType, 'node');
+  numNodes = 1 ;
+  dofsStep = 2 ;
 
-if strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
+elseif strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
   numNodes = 2 ;
   dofsStep = 2 ;
 
