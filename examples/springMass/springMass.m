@@ -69,7 +69,7 @@ materials(1).density         = rho ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
-elements(2).elemTypeParams = 0
+elements(2).elemTypeParams = 0 ;
 %md
 %md### Boundary conditions
 %md
@@ -103,6 +103,8 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
 otherParams.problemName = 'springMass' ;
+global exportMatrices
+exportMatrices = true      ;
 %md
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 times = 0:analysisSettings.deltaT:(analysisSettings.finalTime+analysisSettings.deltaT) ;

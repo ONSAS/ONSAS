@@ -24,24 +24,22 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
 
   KT      = mats{1} ;
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
-
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
-
-    global spitMatrices
-    if spitMatrices == true
-      KTred = KT(neumdofs,neumdofs);
+    global exportMatrices;
+    if exportMatrices == true
+      KTred      = KT(neumdofs,neumdofs);
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KTred','massMatred','neumdofs' );
       figure
       spy(full(KTred))
       figure
       spy(full(massMatred))
-      fprintf('matrices spitted.\n--------\n')
-      spitMatrices = false;
+      fprintf('matrices exported.\n--------\n')
+      exportMatrices = false;
     end
-
   end
+
 
   if strcmp( analysisSettings.methodName, 'newtonRaphson' ) || strcmp( analysisSettings.methodName, 'arcLength' )
 
