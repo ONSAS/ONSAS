@@ -69,7 +69,7 @@ materials(1).density         = rho ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
-elements(2).elemTypeParams = 0
+elements(2).elemTypeParams = 0 ;
 %md
 %md### Boundary conditions
 %md
@@ -103,6 +103,8 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
 otherParams.problemName = 'springMass' ;
+global exportFirstMatrices
+exportFirstMatrices = true      ;
 %md
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 times = 0:analysisSettings.deltaT:(analysisSettings.finalTime+analysisSettings.deltaT) ;
@@ -112,6 +114,7 @@ valsNewmark = matUsNewmark(6+1,:) ;
 %md
 %md### Numerical case 2: nodal mass model with $\alpha$-HHT method
 %md
+exportFirstMatrices = true      ;
 materials(1).density  = 0 ;
 materials(2).nodalMass = [m m m] ;
 analysisSettings.methodName    = 'alphaHHT' ;

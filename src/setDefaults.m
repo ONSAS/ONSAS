@@ -56,8 +56,10 @@ otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1
 otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []     ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
 
-
-
+global exportFirstMatrices;
+if isempty( exportFirstMatrices )
+  exportFirstMatrices = false ;
+end
 
 %md function that checks if a field is defined in a (scalar or array) struct
 %md and sets a default value if it is not defined.
