@@ -46,12 +46,17 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) ) ;
 
-    if strcmp( elemTypeString, 'truss' )
+    if strcmp( elemTypeString, 'node' )
+
+      currVtkNodes = [] ;
+      currVtkConec = [] ;
+      currVtkNodalDisps = [] ;
+
+    elseif strcmp( elemTypeString, 'truss' )
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
         elemTypeGeom, modS.U ) ;
-
 
     elseif strcmp( elemTypeString, 'frame' )
 
@@ -91,18 +96,16 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       currVtkConec    = [ 10*ones( nelems, 1 )     modP.Conec(:, 5:8 )-1 ] ;
       elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
 
-
-
     end % if: type
 
     % add entries from current element type
     vtkNodes      = [ vtkNodes ;  currVtkNodes ]           ;
 
-    if size(vtkConec,1) > 0
+    if size( vtkConec, 1 ) > 0
       vtkConec( ...
         (size(vtkConec,1)+1):(size(vtkConec,1)+size(currVtkConec,1)), 1:(size(currVtkConec,2)) ) ...
         = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
-    else
+    elseif size( currVtkConec, 1 ) > 0
       vtkConec = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
     end
 
@@ -212,6 +215,6 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 %
 %     cellCellData{1,1} = 'SCALARS' ; cellCellData{1,2} = 'SigXLoc'   ; cellCellData{1,3} = sxx ;
 %
-       end  
+       end
      end
    end
