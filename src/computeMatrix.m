@@ -26,17 +26,18 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
-    global exportMatrices;
-    if exportMatrices == true
+
+    global exportFirstMatrices;
+    if exportFirstMatrices == true
       KTred      = KT(neumdofs,neumdofs);
       massMatred = massMat(neumdofs,neumdofs);
-      save('-mat', 'output/matrices.mat', 'KTred','massMatred','neumdofs' );
+      save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
       figure
-      spy(full(KTred))
+      spy(full(KT))
       figure
-      spy(full(massMatred))
+      spy(full(massMat))
       fprintf('matrices exported.\n--------\n')
-      exportMatrices = false;
+      exportFirstMatrices = false;
     end
   end
 

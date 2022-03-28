@@ -103,8 +103,8 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
 otherParams.problemName = 'springMass' ;
-global exportMatrices
-exportMatrices = true      ;
+global exportFirstMatrices
+exportFirstMatrices = true      ;
 %md
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 times = 0:analysisSettings.deltaT:(analysisSettings.finalTime+analysisSettings.deltaT) ;
@@ -114,6 +114,7 @@ valsNewmark = matUsNewmark(6+1,:) ;
 %md
 %md### Numerical case 2: nodal mass model with $\alpha$-HHT method
 %md
+exportFirstMatrices = true      ;
 materials(1).density  = 0 ;
 materials(2).nodalMass = [m m m] ;
 analysisSettings.methodName    = 'alphaHHT' ;
