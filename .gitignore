@@ -27,3 +27,5 @@ octave-workspace
 Manifest.toml
 docs/build/
 docs/site/
+*.vscode
+docs/src/examples/

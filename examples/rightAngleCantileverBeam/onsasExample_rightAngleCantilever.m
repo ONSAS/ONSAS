@@ -45,10 +45,13 @@ materials.density = rho ;
 %md### elements
 %md
 %mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The `elemType` field is then:
-elements(1).elemType = 'node'  ;
-elements(2).elemType = 'frame' ;
+elements(1).elemType = 'node'     ;
+elements(2).elemType = 'frame'    ;
+elements(2).elemTypeParams = true ;
+
 %mdIn order to add the struct of geometry the assign to the node is an empty input (because it has not geometrical properties), and the truss elements will be set as with synthetical cross section with properties stated above, subsequently the `elemTypeGeometry` field is the:
-elements(2).elemTypeGeometry = [1 A J I I Irho(1,1) Irho(2,2) Irho(3,3)] ;
+elements(2).elemCrossSecParams{1,1} = 'generic' ;
+elements(2).elemCrossSecParams{2,1} = [A J I I Irho(1,1) Irho(2,2) Irho(3,3)] ;
 %md
 %md### boundaryConds
 %md
@@ -85,7 +88,7 @@ end
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
 analysisSettings.deltaT        =   0.25 ;
-analysisSettings.finalTime     =   2    ;
+analysisSettings.finalTime     =   20    ;
 analysisSettings.stopTolDeltau =   0    ;
 analysisSettings.stopTolForces =   1e-7 ;
 analysisSettings.stopTolIts    =   30   ;
@@ -100,11 +103,9 @@ analysisSettings.alphaHHT      =   -0.05   ;
 ### otherParams
 %mdA name problem and vtk output is set:
 otherParams.problemName = 'rightAngleCantilever'; 
-otherParams.plotsFormat = '' ;
-tic 
+otherParams.plotsFormat = 'vtk' ;
 %mdONSAS code is run for the input structs stated above
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-LAERONAVE = toc
 %md
 %md the control dof to validate the solution is $u_z$ and $u_y$ at the loaded node:
 dofDispY = (nElemsPerBeam + 1)*6 - 3 ;

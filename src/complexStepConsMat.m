@@ -1,5 +1,5 @@
 % Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro  
+%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
 %
@@ -18,7 +18,7 @@
 
 function ConsMat = complexStepConsMat( stressFun, consParams, Egreen )
 
-  compStep = 1e-8 ;
+  compStep = 1e-10 ;
 
   for i=1:6
 

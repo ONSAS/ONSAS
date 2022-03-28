@@ -6,7 +6,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
   vtkNodalDisps   = [] ;
   vtkNormalForces = [] ;
 
-  nPlotSubElements = 1 ; % number of plot subsegments
+  nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
   nelem            = size(Conec,1) ;
 

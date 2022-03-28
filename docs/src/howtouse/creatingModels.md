@@ -10,6 +10,12 @@ The data and properties of each structural model are defined through a set of de
  1. `numericalMethod`
  1. `otherParams`
 
+
+```@raw matlab
+a=2;
+b=2;
+```
+
 Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assiged using _structName.fieldName_. A description of each struct and its fields follows at next.
 
 ## The `materials` struct
@@ -28,7 +34,14 @@ p_1 = \frac{ E \nu }{ (1+\nu) (1-2\nu) }
 \quad
 p_2 = \frac{ E }{ 2 (1+\nu) }
 ```
- * `'NHC'`: for a Neo-Hookean compressible material
+ * `'NHC'`: for a Neo-Hookean compressible material. The model implemented is given by
+```math
+\Psi( \textbf{C} ) = \frac{p_1}{2} ( tr(\textbf{C})-3 -2 L( \sqrt{det(\textbf{C})} ) ) + \frac{p_2}{2} \left( \sqrt{det(\textbf{C})}-1 \right)^2
+ \quad
+ p_1 = \frac{ E }{ 2 (1+\nu) }
+ \quad
+ p_2 = \frac{ E }{ 3 (1-2 \nu) }
+```
 
 ### `materials.hyperElasParams`
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
@@ -41,6 +54,9 @@ where $n_P$ is the number of parameters of the constitutive model and $\mathbf{p
 
 This is a cell with the scalar values of the densities of the materials used in the model.
 
+### `material.nodalMass`
+
+This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is assigned to nodes.
 
 ## The `elements` struct
 
@@ -56,19 +72,19 @@ cell structure with auxiliar params information, required for some element types
 
 ### `elements.elemTypeGeometry`
 
-cell structure with the information of the geometry of the element.
+This is a cell structure with the information of the geometry of the element.
 
 #### 1D elements
 
-For `truss` or `frame` elements a vector with the cross-section properties is required:
+For `truss` or `frame` elements, this cell contains the cross-section properties:
 ```math
-[ crossSectionType, \,\, crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n}]
+\{ crossSectionTypeString, \,\, crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n}\}
 ```
-with $n$ being the number of parameters of the cross section type, and `crossSectionType` a paramter setting the type of cross section. As follow:
+with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross-section and its properties are:
 
-1. general sections areas and inertias are provided
-1. rectangular sections: thicknesses ``t_y`` and ``t_z`` are provided
-1. circular sections: diameter is provided.
+ - `generic`  :general sections, where areas and inertias are provided as parameters
+ - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
+ - `circle` : circular sections where diameter is provided.
 
 See the `crossSectionProps.m` function for more details.
 

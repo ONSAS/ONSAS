@@ -18,7 +18,7 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
-  onsasExample_uniaxialExtension
+  uniaxialExtension
   assertEqual( verifBoolean, true );
 
 function test_4
@@ -30,9 +30,13 @@ function test_5
   assertEqual( verifBoolean, true );
 
 function test_6
-  onsasExample_springMass
+  springMass
   assertEqual( verifBoolean, true );
 
 function test_7
   onsasExample_cantileverSelfWeight
+  assertEqual( verifBoolean, true );
+
+function test_8
+  onsasExample_simpleWindTurbine
   assertEqual( verifBoolean, true );

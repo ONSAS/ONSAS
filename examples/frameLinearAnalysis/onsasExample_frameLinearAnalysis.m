@@ -17,7 +17,8 @@ materials.hyperElasParams = [ E, nu] ;
 %md### Elements
 elements(1).elemType  = 'node'  ;
 elements(2).elemType  = 'frame' ;
-elements(2).elemTypeGeometry = [2, b, b] ;
+elements(2).elemCrossSecParams{1,1} = "rectangle" ;
+elements(2).elemCrossSecParams{2,1} = [2 b b ]    ;
 elements(2).elemTypeParams   =  1 ;
 %md### BoundaryConditions
 % Supports

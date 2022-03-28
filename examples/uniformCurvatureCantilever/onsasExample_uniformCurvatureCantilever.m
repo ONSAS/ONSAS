@@ -6,7 +6,7 @@
 %mdThe problem consists in a beam, with one free end (right) submitted to a nodal moment $M$, and the other end (left) constrained (welded), as it is shown in the figure.
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/cantileverBeam_HTML.svg" alt="structure diagram" width="500"/>
+%md<img src="assets/cantileverBeam_HTML.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
@@ -20,12 +20,12 @@ l = 10 ; ty = .1 ;  tz = .1 ;
 % the number of elements of the mesh
 numElements = 10 ;
 %md
-%md##Analytic solution
+%md## Analytic solution
 %md The rotation of the right end, for a given moment $M$, can be computed as:
 %md```math
 %md M( \theta ) = E I_y \frac{ \theta}{ l }  ;
 %md```
-%md##Numerical solution
+%md## Numerical solution
 %md### MEBI parameters
 %md
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
@@ -42,8 +42,9 @@ materials.hyperElasParams = [ E nu ] ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
-elements(2).elemTypeGeometry = [2 ty tz ] ;
-elements(2).elemTypeParams   = 1          ;
+elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
+elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
+elements(2).elemTypeParams          = 1           ;
 %md
 %md### boundaryConds
 %md
@@ -117,9 +118,9 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/verifCantileverBeam.png','-dpng')
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/verifCantileverBeam.png" alt="plot check" width="500"/>
+%md<img src="assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 %md```
 %md
 %md
-verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 )
+verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;
 %md
