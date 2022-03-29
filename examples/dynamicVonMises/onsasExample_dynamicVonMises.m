@@ -90,8 +90,6 @@ analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
-analysisSettings.alphaNM      =   0.25   ;
-analysisSettings.deltaNM      =   0.5   ;
 
 %md
 %md### otherParams

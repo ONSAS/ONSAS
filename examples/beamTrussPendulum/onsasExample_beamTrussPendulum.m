@@ -89,7 +89,6 @@ end
 analysisSettings.deltaT        =   0.025 ;
 analysisSettings.finalTime     =   1.0 ;
 analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   -0.05   ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   30   ;

@@ -49,6 +49,9 @@ if strcmp( analysisSettings.methodName, 'newmark' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaNM', 0.25 ) ;
   analysisSettings = checkOrSetDefault( analysisSettings , 'deltaNM', 0.50 ) ;
 end
+if strcmp( analysisSettings.methodName, 'alphaHHT' )
+  analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
+end
 % -----------------------------
 
 % otherParams
