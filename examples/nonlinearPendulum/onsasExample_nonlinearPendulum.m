@@ -93,8 +93,6 @@ otherParams.plotsFormat        = '' ;
 
 %md### Analysis case 1: Solution using Newmark with truss element and mass lumped and the weight force is included by external force according to Bathe problem
 analysisSettings.methodName = 'newmark'     ;
-analysisSettings.alphaNM    =   0.25        ;
-analysisSettings.deltaNM    =   0.5         ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
 [matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -172,7 +170,7 @@ verifBoolean    = verifBooleanCase1 && verifBooleanCase2 && verifBooleanCase3;
 %md
 %mdPlot parameters
 MS = 10; LW = 1.5 ;
-legendCase1 = [' Truss lumped Bathe Newmark \delta =' num2str(analysisSettings.deltaNM) ' and \alpha = ' num2str(analysisSettings.alphaNM)];
+legendCase1 = [' Truss lumped Bathe Trapezoidal Newmark'];
 legendCase2 = [' Truss lumped Bathe HHT with \alpha =' num2str(analysisSettings.alphaHHT)];
 legendCase3 = [' Frame HHT with \alpha =' num2str(analysisSettings.alphaHHT)];
 %mdPlot displacement solution of bathe problem

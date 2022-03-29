@@ -202,8 +202,6 @@ analysisSettings.userWindVel = 'windVelNonLinearDynamic2D' ;
 analysisSettings.deltaT     =  1        ;
 analysisSettings.finalTime  =  200      ;
 analysisSettings.methodName = 'newmark' ;
-analysisSettings.alphaNM    =  0.25     ;
-analysisSettings.deltaNM    =  0.5      ;
 %md
 %md### otherParams
 %md The name of this case problem is:
@@ -276,7 +274,6 @@ materials.hyperElasParams = [ 1e8 nu ]       ;
 %md### analysisSettings  
 %md Regarding the integration time method scheme, a classic $\alpha-HHT$ method is employed. This method is more stable numerically than Newmark, the keen reader is refereed to [this reference](https://onlinelibrary.wiley.com/doi/abs/10.1002/eqe.4290050306):
 analysisSettings.methodName = 'alphaHHT';
-analysisSettings.alphaHHT   =   -0.05   ;
 %md the simulation time is defined such that:  
 analysisSettings.deltaT     =  .2  ;
 analysisSettings.finalTime  =  120 ;

@@ -68,8 +68,6 @@ analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
 analysisSettings.stopTolForces = 1.0e-12 ;
 analysisSettings.finalTime      = 1    ;
-analysisSettings.alphaNM       = 0.25    ;
-analysisSettings.deltaNM       = 0.5     ;
 analysisSettings.deltaT        = dt      ;
 %md
 %md
