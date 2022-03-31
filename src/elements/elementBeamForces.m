@@ -231,7 +231,9 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
 
   if elemrho > 0
     booleanConsistentMassMat = elemTypeParams(1) ;
-    assert( isbool( booleanConsistentMassMat), 'booleanConsistentMassMat must be a boolean.') ;
+    assert( isbool( booleanConsistentMassMat) || ...
+      booleanConsistentMassMat==1 || booleanConsistentMassMat == 0, ...
+      'booleanConsistentMassMat must be a boolean.') ;
 
     if booleanConsistentMassMat
       sumInterForce  = zeros (12, 1 ) ;
