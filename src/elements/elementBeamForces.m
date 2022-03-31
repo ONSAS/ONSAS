@@ -231,6 +231,10 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
 
   if elemrho > 0
     booleanConsistentMassMat = elemTypeParams(1) ;
+    assert( isbool( booleanConsistentMassMat) || ...
+      booleanConsistentMassMat==1 || booleanConsistentMassMat == 0, ...
+      'booleanConsistentMassMat must be a boolean.') ;
+
     if booleanConsistentMassMat
       sumInterForce  = zeros (12, 1 ) ;
       sumGyro        = zeros (12    ) ;
@@ -278,27 +282,25 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
 
       ks{2} = GyroMatrix ;
       ks{3} = MassMatrix ;
-      
-      elseif ~booleanConsistentMassMat
+
+    else % lumped case
         Me = sparse(12,12)                                      ;
         Me (1:2:end, 1:2:end) = rho * Area * lo * 0.5 * eye(6)  ;
         Fine = Me * Udotdote                                    ;
-        
+
         fs{3} = Fine      ;
         ks{2} = zeros(12) ;
         ks{3} = Me        ;
-      else
-      error('booleanConsistentMassMat must be a boolean \n')
-    end%endIfConssistentBoolean
-    
+    end %endIfConssistentBoolean
+
     elseif elemrho == 0
       fs{3} = zeros(12,1) ;
       ks{2} = zeros(12) ;
       ks{3} = zeros(12) ;
-    
+
   else
    error('Negative density \n')
-  
+
   end%endIfelemRho
 
 end%endFunction

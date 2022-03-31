@@ -27,7 +27,7 @@ Lz = sqrt( L0^2 - Lx^2 ); %m
 
 rhoBarraMasa = mConc*.5 / (Lz*Ac);
 
-M = [mb 0 ; 0 (mb+mConc)/2] ;`
+M = [mb 0 ; 0 (mb+mConc)/2] ;
 
 
 nu = .3 ;

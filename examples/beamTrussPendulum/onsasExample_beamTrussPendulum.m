@@ -35,12 +35,13 @@ elements(1).elemType = 'node'           ;
 elements(2).elemType = 'truss'                    ;
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ dt dt ] ;
-elements(2).elemTypeParams = 1          ;
+elements(2).elemTypeParams = true          ;
 %md
 %mdFrame:
 elements(3).elemType = 'frame'                  ;
 elements(3).elemCrossSecParams{1,1} = 'circle'  ;
 elements(3).elemCrossSecParams{2,1} =  df       ;
+elements(3).elemTypeParams = true          ;
 %md
 %md### boundaryConds
 %md
@@ -87,7 +88,7 @@ end
 %md### analysisSettings
 %md
 analysisSettings.deltaT        =   0.025 ;
-analysisSettings.finalTime     =   1.0 ;
+analysisSettings.finalTime      =   1.0 ;
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
