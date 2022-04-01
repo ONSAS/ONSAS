@@ -83,7 +83,6 @@ mesh.conecCell{ 4, 1 } = [ 1 2 0 0   1 4 ] ;
 analysisSettings.finalTime              =   450     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
-analysisSettings.alphaHHT               =  -0.05    ;
 analysisSettings.stopTolIts             =   50      ;
 analysisSettings.geometricNonLinearAero = true      ;
 analysisSettings.booleanSelfWeight      = false     ;
