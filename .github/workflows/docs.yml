@@ -17,7 +17,7 @@ jobs:
       - name: run matlab test problems
         uses: matlab-actions/run-command@v1
         with:
-          command: cd tests, runTestProblems_local
+          command: cd test, runTestProblems_local
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.7
