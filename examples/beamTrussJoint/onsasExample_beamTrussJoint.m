@@ -79,11 +79,9 @@ mesh.conecCell{3,1} = [ 0 1 3 0  numNodesB + numElemT ];
 %mdTo define the conecCell of elements a auxiliar auxConecElem matrix is defined using MEBI nomenclature:
 auxConecElem  = [   %MEBI frame elements
                     [ (ones(numElemB,1)*2 )  (ones(numElemB,1)*3)   (zeros(numElemB,1))  (zeros(numElemB,1)) ...
-                    %ElemNodes..
-                    (1:(numElemB))'         (2:numElemB + 1)' ] ;
+                    (1:(numElemB))'         (2:numElemB + 1)' ] ;...
                     %MEBI truss elements
                     [ (ones(numElemT,1)*1 )  (ones(numElemT,1)*2)   (zeros(numElemT,1))  (zeros(numElemT,1)) ... 
-                     %ElemNodes...
                     (numElemB + 1: numElemB + numElemT)'    (numElemB + 2:numElemB + numElemT + 1)'   ] ... 
                 ] ;  
 
@@ -114,7 +112,7 @@ beamTruss_stiffRatio    = Et*At/lt/(3*Eb*Ib/lb^3)           ;
 %mdThe numerical result is: 
 controlDof  = (numNodesB)*6 - 1     ;
 dispZnum    = matUs(controlDof,:)   ;
-#md and the verification boolean is computed as follows:
+%md and the verification boolean is computed as follows:
 difLoadEngRot   = loadFactorsMat(:,2)' - analyticFunc(dispZnum) ;
 verifBoolean    = ( ( norm( difLoadEngRot    ) / norm( loadFactorsMat(:,2)  ) ) <  1e-4 ) ;
 %md
