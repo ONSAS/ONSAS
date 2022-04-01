@@ -135,7 +135,7 @@ otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------
 [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-#md### extract control displacements
+%md### extract control displacements
 %mdThe mass displacement in z are:
 controlDofDispUz = 6 + 5 ;
 controlDispZCase1 = matUsCase1( controlDofDispUz , : ) ;

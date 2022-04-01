@@ -98,7 +98,7 @@ for elem = 1:nElems
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
     nodalMass = materials( mebiVec( 1 ) ).nodalMass ;
-    (iscolumn(nodalMass)) && ( nodalMass = nodalMass' ) ;
+    (iscolumn(nodalMass)) && ( nodalMass == nodalMass' ) ;
 
     Finte = zeros(3,1) ;    Ke    = zeros(3,3) ;
 
