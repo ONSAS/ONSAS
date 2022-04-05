@@ -1,20 +1,4 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
-%
-% This file is part of ONSAS.
-%
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% ONSAS is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
@@ -41,6 +25,8 @@ end
 
 % -------  tangent matrix        -------------------------------------
 if tangBool
+
+  % "allocates" space for the bigest possible matrices (4 nodes per element)
   indsIK =         zeros( nElems*24*24, 1 )   ;
   indsJK =         zeros( nElems*24*24, 1 )   ;
   valsK  =         zeros( nElems*24*24, 1 )   ;
@@ -70,12 +56,12 @@ for elem = 1:nElems
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
-  hyperElasModel   = materials( mebiVec( 1 ) ).hyperElasModel  ;
-  hyperElasParams  = materials( mebiVec( 1 ) ).hyperElasParams ;
-  density          = materials( mebiVec( 1 ) ).density         ;
+  hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel  ;
+  hyperElasParams    = materials( mebiVec( 1 ) ).hyperElasParams ;
+  density            = materials( mebiVec( 1 ) ).density         ;
 
-  elemType         = elements( mebiVec( 2 ) ).elemType         ;
-  elemTypeParams   = elements( mebiVec( 2 ) ).elemTypeParams   ;
+  elemType           = elements( mebiVec( 2 ) ).elemType         ;
+  elemTypeParams     = elements( mebiVec( 2 ) ).elemTypeParams   ;
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams ;
 
   %md extract aerodinamic properties
@@ -100,18 +86,36 @@ for elem = 1:nElems
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
 
+  %md dotdotdispsElem contains the accelerations corresponding to the dofs of the element
+  if dynamicProblemBool
+    dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
+  end
+
   elemNodesxyzRefCoords  = reshape( Nodes( Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
 
   stressElem = [] ;
 
+  % -----------   node element   ------------------------------
+  if strcmp( elemType, 'node')
+    nodalMass = materials( mebiVec( 1 ) ).nodalMass ;
+    (iscolumn(nodalMass)) && ( nodalMass == nodalMass' ) ;
+
+    Finte = zeros(3,1) ;    Ke    = zeros(3,3) ;
+
+    if dynamicProblemBool
+      % Mmase = spdiags( nodalMass', 0, 3, 3 ) ; % sparse option for someday...
+      Mmase = diag( nodalMass ) ;
+      Fmase = Mmase * dotdotdispsElem        ;
+    end
+
   % -----------   truss element   ------------------------------
-  if strcmp( elemType, 'truss')
+  elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
 
     [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
 
-    Finte = fs{1} ;    Ke    = ks{1} ;
+    Finte = fs{1} ;  Ke = ks{1} ;
 
     if dynamicProblemBool
       booleanConsistentMassMat = elemTypeParams(1) ;
@@ -127,7 +131,7 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'frame')
 
 		if strcmp(hyperElasModel, 'linearElastic')
-      
+
 			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
@@ -140,18 +144,16 @@ for elem = 1:nElems
 
       [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) , ...  
+                                               u2ElemDisps( Udotdott , dofselem ) , ...
                                                density, elemTypeParams ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
         Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
       end
-
     else
       error('wrong hyperElasModel for frame element.')
     end
-
 
     if ~isempty(elemTypeAero) &&  aeroBool == 0
       error('Drag, Lift or Moment coefficients must be defined in elements struct\n ')
@@ -197,7 +199,7 @@ for elem = 1:nElems
 
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
-    
+
     thickness = elemCrossSecParams ;
 
     if strcmp( hyperElasModel, 'linearElastic' )
@@ -242,11 +244,14 @@ for elem = 1:nElems
   end   % case in typee of element ----
   % -------------------------------------------
 
+
   %md### Assembly
   %md
   if fsBool
     % internal loads vector assembly
-    Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
+    if norm( Finte ) > 0.0
+      Fint ( dofselemRed ) = Fint( dofselemRed ) + Finte ;
+    end
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
@@ -267,7 +272,7 @@ for elem = 1:nElems
       if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
         if exist('Ce')~=0
-          valsC( entriesSparseStorVecs ) = Ce   ( indRow, : )' ;
+          valsC( entriesSparseStorVecs ) = Ce( indRow, : )' ;
         end
       end
 
@@ -309,6 +314,7 @@ if fsBool
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
 end
+
 
 if tangBool
 

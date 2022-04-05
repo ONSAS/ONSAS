@@ -27,7 +27,7 @@ Lz = sqrt( L0^2 - Lx^2 ); %m
 
 rhoBarraMasa = mConc*.5 / (Lz*Ac);
 
-M = [mb 0 ; 0 (mb+mConc)/2] ;`
+M = [mb 0 ; 0 (mb+mConc)/2] ;
 
 
 nu = .3 ;
@@ -90,8 +90,6 @@ analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
-analysisSettings.alphaNM      =   0.25   ;
-analysisSettings.deltaNM      =   0.5   ;
 
 %md
 %md### otherParams

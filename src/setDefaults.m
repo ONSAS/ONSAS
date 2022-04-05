@@ -34,27 +34,35 @@ elements          = checkOrSetDefault ( elements         , 'userMomentCoef'     
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
 
-% analysis
+% analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'userWindVel'            , []              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'solverLang'             , 'Octave'        ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'                 , 1               ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'              , 1               ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'               , 1               ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'          , 1e-6            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'          , 1e-6            ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'             , 10              ) ;
-
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'             , 15              ) ;
+if strcmp( analysisSettings.methodName, 'newmark' )
+  analysisSettings = checkOrSetDefault( analysisSettings , 'alphaNM', 0.25 ) ;
+  analysisSettings = checkOrSetDefault( analysisSettings , 'deltaNM', 0.50 ) ;
+end
+if strcmp( analysisSettings.methodName, 'alphaHHT' )
+  analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
+end
+% -----------------------------
 
 % otherParams
 otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1 ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []     ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
 
-
-
+global exportFirstMatrices;
+if isempty( exportFirstMatrices )
+  exportFirstMatrices = false ;
+end
 
 %md function that checks if a field is defined in a (scalar or array) struct
 %md and sets a default value if it is not defined.

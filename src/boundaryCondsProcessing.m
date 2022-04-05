@@ -25,8 +25,8 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         initialConds,...   % I
                         analysisSettings  )
 
-Conec = myCell2Mat( mesh.conecCell ) ;
-Nodes = mesh.nodesCoords ;
+Conec  = myCell2Mat( mesh.conecCell ) ;
+Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
 
 %md Since we want to process the BCs, we keep only the nonzero BCs

@@ -86,7 +86,7 @@ for i = 1 : 2*nElemsPerBeam,
 end
 %md
 %md### analysisSettings
-%mdA Newmark algorithm is used to solve this problem with the following parameters during $30$ s: 
+%mdA aplha-HHT algorithm is used to solve this problem with the following parameters during $30$ s: 
 analysisSettings.deltaT        =   0.25 ;
 analysisSettings.finalTime     =   20    ;
 analysisSettings.stopTolDeltau =   0    ;
@@ -94,11 +94,7 @@ analysisSettings.stopTolForces =   1e-7 ;
 analysisSettings.stopTolIts    =   30   ;
 
 
-% analysisSettings.methodName    = 'newmark' ;
-% analysisSettings.alphaNM      =   0.25   ;
-% antalysisSettings.deltaNM      =   0.5   ;
 analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   -0.05   ;
 %md
 ### otherParams
 %mdA name problem and vtk output is set:
