@@ -9,25 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run mechanical-work tests
-        uses: joergbrech/moxunit-action@master
+        uses: joergbrech/moxunit-action@v1.2.0
         with:
           src: examples/staticVonMisesTruss examples/frameLinearAnalysis examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine src src/elements src/vtk src/materials src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
-  tests_with_coverage:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: run mechanical-work tests
-        uses: joergbrech/moxunit-action@master
-        with:
-          tests: ./test/runTestProblems_moxunit_disp.m
-          src: examples/staticVonMisesTruss examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine src src/elements src/vtk src/materials src/mesh
           with_coverage: true
           cover_xml_file: coverage.xml
-      - uses: actions/upload-artifact@v1
-        with:
-          name: coverage_file
-          path: coverage.xml
       - uses: codecov/codecov-action@v1
         with:
           file: ./coverage.xml
