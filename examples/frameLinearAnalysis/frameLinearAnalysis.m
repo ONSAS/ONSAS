@@ -7,7 +7,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 %md scalar auxiliar parameters
 E  = 210e6 ; nu = 0.3 ; %
 ty = 0.3   ; tz = 0.6 ; % cross-section widths
-L = 2      ;            %
+L1 = 2     ; L2 = 1.0 ; %
 P = 1e3    ;            % applied nodal load
 %md
 %md## MEBI parameters: Material-Element-BoundaryConditions-InitialConditions
@@ -35,8 +35,8 @@ initialConds = struct() ;
 %md Mesh nodes
 mesh.nodesCoords = ...
 					[ 0 	0	 0	; ...
-						L   0  0 	; ...
-						L   L  0 	] ;
+						L1  0  0 	; ...
+						L1  L2 0 	] ;
 %md
 %md Conec Cell
 mesh.conecCell = { } ;
@@ -55,25 +55,22 @@ otherParams.plotsFormat = 'vtk' ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+
 matUs
-stop
-%md## Verification
-A = b^2 ;  I = b^4/12 ;
-axial = E*A/L *2;  bending = E*I/L^3 *4*L^2*2 ;
 
-flechaTeo = P*(2*L)^3 / (3*E*I) ;
-flechaNum = -matUs( 2*6+5, 2 ) ;
-verifBoolean = abs( flechaTeo - flechaNum  ) < ( 1e-4 * abs( flechaTeo ) )
+mu = E /( 2*(1+nu) ) ;
+a = .5 * max( elements(2).elemCrossSecParams{2} )
+b = .5 * min( elements(2).elemCrossSecParams{2} )
+J = a * b^3 * ( 16/3 - 3.36 * b/a * ( 1 - b^4 / ( 12*a^4 ) ) )
+Iyy = ty * tz^3 / 12.0 ;
 
-nodesx = mesh.nodesCoords( :, 1 ) ;
-nodesz = mesh.nodesCoords( :, 3 ) ;
+Mt = P*L2
 
-scalefac = 1e2;
-nodesxdef = nodesx + scalefac * matUs(1:6:end,2) ;
-nodeszdef = nodesz + scalefac * matUs(5:6:end,2) ;
+analyThetax1 = - L1 * Mt / ( mu * J )
+numerThetax1 = matUs( 8, 2 )
 
-figure, hold on
-plot( nodesx, nodesz, 'b-o' )
-grid on
-plot( nodesxdef, nodeszdef, 'r-s' )
-axis equal
+analyDefl = -P*L1^3/ ( 3*E*Iyy ) +analyThetax1*L2 - P*L2^3/ ( 3*E*Iyy )
+numerDefl = matUs(6*2+5,2)
+
+verifBoolean = ( abs( numerThetax1 - analyThetax1 ) < 1e-8 ) * ...
+               ( abs( numerDefl     - analyDefl     ) < 1e-8 )
