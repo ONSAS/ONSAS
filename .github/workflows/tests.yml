@@ -12,8 +12,7 @@ jobs:
         uses: joergbrech/moxunit-action@v1.2.0
         with:
           tests: test/runTestProblems_moxunit_disp.m
-          src: .
-          with_coverage: true
+          src: examples/staticVonMisesTruss examples/frameLinearAnalysis examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine src src/elements src/vtk src/materials src/mesh          with_coverage: true
           cover_xml_file: coverage.xml
       - uses: codecov/codecov-action@v1
         with:
