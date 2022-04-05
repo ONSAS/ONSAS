@@ -1,4 +1,4 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+% Copyright (C) 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
-  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho, elemTypeParams ) ;
+  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho, massMatType ) ;
   % element coordiantes
   xs = elemCoords(:) ;
 
@@ -227,14 +227,11 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   fs = {Finte} ;
   ks = {KTe};
 
+
   rotData = {locDisp, Rr} ;
-
   if elemrho > 0
-    booleanConsistentMassMat = elemTypeParams(1) ;
-    assert( booleanConsistentMassMat==1 || booleanConsistentMassMat == 0, ...
-      'booleanConsistentMassMat must be a 1 or 0.') ;
 
-    if booleanConsistentMassMat
+    if strcmp(massMatType, 'consistent') == 1
       sumInterForce  = zeros (12, 1 ) ;
       sumGyro        = zeros (12    ) ;
       sumMass        = zeros (12    ) ;
@@ -282,7 +279,7 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
       ks{2} = GyroMatrix ;
       ks{3} = MassMatrix ;
 
-    else % lumped case
+    elseif strcmp(massMatType, 'lumped') == 1
         Me = sparse(12,12)                                      ;
         Me (1:2:end, 1:2:end) = rho * Area * lo * 0.5 * eye(6)  ;
         Fine = Me * Udotdote                                    ;
@@ -290,7 +287,9 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
         fs{3} = Fine      ;
         ks{2} = zeros(12) ;
         ks{3} = Me        ;
-    end %endIfConssistentBoolean
+    else
+      error('the massMatType field into the elements struct must be or consistent or lumped' )
+    end %endIfConsistentBoolean
 
     elseif elemrho == 0
       fs{3} = zeros(12,1) ;

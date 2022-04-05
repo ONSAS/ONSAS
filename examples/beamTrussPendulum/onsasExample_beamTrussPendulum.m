@@ -34,14 +34,14 @@ elements(1).elemType = 'node'           ;
 %mdTruss:
 elements(2).elemType = 'truss'                    ;
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
-elements(2).elemCrossSecParams{2,1} = [ dt dt ] ;
-elements(2).elemTypeParams = true          ;
+elements(2).elemCrossSecParams{2,1} = [ dt dt ]   ;
+elements(2).massMatType = 'consistent'            ;
 %md
 %mdFrame:
 elements(3).elemType = 'frame'                  ;
 elements(3).elemCrossSecParams{1,1} = 'circle'  ;
 elements(3).elemCrossSecParams{2,1} =  df       ;
-elements(3).elemTypeParams = true          ;
+elements(3).massMatType = 'consistent'       ;
 %md
 %md### boundaryConds
 %md

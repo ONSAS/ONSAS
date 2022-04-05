@@ -49,7 +49,7 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} =  d       ;
-elements(2).elemTypeParams =  true             ;
+elements(2).massMatType =  'consistent'     ;
 %md 
 %md### boundary Conditions
 %md

@@ -49,7 +49,7 @@ elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A) ] ;
 %mdand the according to the literature example the element include conssitent mass matrix
-elements(2).elemTypeParams = 0 ;
+elements(2).massMatType = 'lumped' ;
 %md
 %md### boundaryConds
 %md
@@ -111,9 +111,9 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 %md### Analysis case 3: Solution using HHT using frame element, mass lumped at the final element and self weight boolean is activated. For this case denisity is null for the rest of the elements and rhoF =  m / ( A * (lNEWelem * l0) ) for the new one in order to produce the same force that is considered by [(K.J Bathe 2006)]
 %md
 %mdNow the element type number two is a frame:
-elements(2).elemType        = 'frame';
+elements(2).elemType     = 'frame';
 %mdand the according to the literature example the element include conssitent mass matrix
-elements(2).elemTypeParams  = 1;
+elements(2).massMatType  = 'consistent';
 %and the fraction of the new element in the pendulum length:
 lumpedParam = 0.01 ;
 mesh.nodesCoords = [   0                    0    l0 ; ...

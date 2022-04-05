@@ -69,7 +69,7 @@ materials(1).density         = rho ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
-elements(2).elemTypeParams = 0 ;
+elements(2).massMatType = 'lumped' ;
 %md
 %md### Boundary conditions
 %md

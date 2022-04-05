@@ -1,4 +1,4 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+% Copyright (C) 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut, Udotdotte)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
 
@@ -111,14 +111,14 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, densi
     lini = sqrt( sum( localAxisRef.^2 ) ) ;
     Me = sparse( 12, 12 ) ;
     %boolean harcoded
-    booleanConsistentMassMat = false ;
-    if booleanConsistentMassMat 
-    % Implement conssitent mass matrix
-      error('The conssintent mass matrix is not implmented yet for linear elasitc frame \n')
-    elseif ~booleanConsistentMassMat 
+    massMatType = 'consistent' ;
+    if strcmp(massMatType, 'consistent') == 1
+    % Implement consistent mass matrix
+      error('The consistent mass matrix is not implemented yet for linear elastic frame \n')
+    elseif strcmp(massMatType, 'lumped') == 1 
       Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
     else
-      error('The booleanConsistentMassMat must be a boolean \n')
+      error('the massMatType field into the elements struct must be or consistent or lumped' )
     end
     Fmasse = Me * Udotdotte ;
 

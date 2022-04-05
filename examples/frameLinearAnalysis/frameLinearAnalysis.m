@@ -19,7 +19,7 @@ materials(1).hyperElasParams = [ E, nu] ;
 elements(1).elemType  = 'node'  ;
 elements(2).elemType  = 'frame' ;
 elements(2).elemCrossSecParams = { 'rectangle'; [ ty tz ] };
-elements(2).elemTypeParams     =  1 ; % consistenMatrix
+elements(2).massMatType     =  'consistent' ; 
 %md### BoundaryConditions
 % Supports
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;

@@ -53,7 +53,7 @@ Udotdot = zeros( 6*nNodes,   1 ) ;
 % ---------------------------------------------------
 
 % --- initial tangent matrices ---
-%~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, booleanConsistentMassMat ) ;
+%~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, massMatType ) ;
 
 %~ systemDeltauMatrix = mats{1}
 

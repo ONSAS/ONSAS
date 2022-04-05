@@ -47,7 +47,7 @@ elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 %md for the geometries, the node has no geometry to assign, and the truss elements will be set as a circle cross-section, then the elemCrossSecParams field is:
 elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
-elements(2).elemTypeParams = 1 ;
+elements(2).massMatType = 'consistent' ;
 %md
 %md#### boundaryConds
 %md

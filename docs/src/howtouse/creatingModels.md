@@ -10,12 +10,6 @@ The data and properties of each structural model are defined through a set of de
  1. `numericalMethod`
  1. `otherParams`
 
-
-```@raw matlab
-a=2;
-b=2;
-```
-
 Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assiged using _structName.fieldName_. A description of each struct and its fields follows at next.
 
 ## The `materials` struct
@@ -69,8 +63,9 @@ cell structure with the string-names of the elements used: `node`, `truss`, `fra
 cell structure with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
- * `frame` or `truss` : the `elemTypeParams` field for frame or truss elements sets the `booleanConsistentMassMat` boolean variable, which defines for dynamic analyses, if the consistent or lumped matrix is used for the tangent inertial computation.
+### `elements.massMatType`
 
+ * `frame` or `truss` : the `massMatType` field for frame or truss elements sets the `massMatType` string variable (`'consistent'` or `'lumped'`), which defines for dynamic analyses, if the consistent or lumped matrix is used for the tangent inertial computation. If it is not declared then by default the `'lumped'` mass matrix is set.
 
 ### `elements.elemTypeGeometry`
 
@@ -158,9 +153,9 @@ This struct contains the parameters required to apply the numerical method for t
  * `deltaT`: time step
  * `finalTime`: final time of simulation
  * `incremArcLen`: with of cylinder for arcLength method
- * `deltaNM`: delta parameter of newmark method
- * `alphaNM`: alpha parameter of newmark method
- * `alphaHHT`: alpha parameter of alpha-HHT method
+ * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark is set.
+ * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark is set.
+ * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
  * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
  * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
 
