@@ -10,6 +10,7 @@ keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'    ;
              'uniaxialExtension/uniaxialExtension.m'                    ;
              'nonlinearPendulum/onsasExample_nonlinearPendulum.m'       ;
              'springMass/springMass.m'                                  ;
+             'frameLinearAnalysis/frameLinearAnalysis.m'                ;
              'beamTrussJoint/onsasExample_beamTrussJoint.m'             ;
              'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' ;
              'simpleWindTurbine/onsasExample_simpleWindTurbine.m'       } ;

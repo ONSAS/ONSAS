@@ -69,6 +69,8 @@ cell structure with the string-names of the elements used: `node`, `truss`, `fra
 cell structure with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
+ * `frame` or `truss` : the `elemTypeParams` field for frame or truss elements sets the `booleanConsistentMassMat` boolean variable, which defines for dynamic analyses, if the consistent or lumped matrix is used for the tangent inertial computation.
+
 
 ### `elements.elemTypeGeometry`
 
