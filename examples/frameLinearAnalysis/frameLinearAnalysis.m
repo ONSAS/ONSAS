@@ -55,22 +55,19 @@ otherParams.plotsFormat = 'vtk' ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-
-matUs
-
 mu = E /( 2*(1+nu) ) ;
 a = .5 * max( elements(2).elemCrossSecParams{2} )
 b = .5 * min( elements(2).elemCrossSecParams{2} )
 J = a * b^3 * ( 16/3 - 3.36 * b/a * ( 1 - b^4 / ( 12*a^4 ) ) )
 Iyy = ty * tz^3 / 12.0 ;
 
-Mt = P*L2
+Mt = P*L2 ;
 
-analyThetax1 = - L1 * Mt / ( mu * J )
-numerThetax1 = matUs( 8, 2 )
+analyThetax1 = - L1 * Mt / ( mu * J ) ;
+numerThetax1 = matUs( 8, 2 ) ;
 
-analyDefl = -P*L1^3/ ( 3*E*Iyy ) +analyThetax1*L2 - P*L2^3/ ( 3*E*Iyy )
-numerDefl = matUs(6*2+5,2)
+analyDefl = -P*L1^3/ ( 3*E*Iyy ) +analyThetax1*L2 - P*L2^3/ ( 3*E*Iyy ) ;
+numerDefl = matUs(6*2+5,2) ;
 
-verifBoolean = ( abs( numerThetax1 - analyThetax1 ) < 1e-8 ) * ...
-               ( abs( numerDefl     - analyDefl     ) < 1e-8 )
+verifBoolean = ( abs( numerThetax1 - analyThetax1 ) < 1e-8 ) && ...
+               ( abs( numerDefl     - analyDefl     ) < 1e-8 ) ;
