@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % ==============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut, Udotdotte)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, booleanConsistentMassMat, density, hyperElasParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
 
@@ -110,11 +110,21 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, densi
     localAxisRef = Xe(4:6) - Xe(1:3) ;
     lini = sqrt( sum( localAxisRef.^2 ) ) ;
     Me = sparse( 12, 12 ) ;
-    %boolean harcoded
-    booleanConsistentMassMat = false ;
     if booleanConsistentMassMat 
     % Implement conssitent mass matrix
-      error('The conssintent mass matrix is not implmented yet for linear elasitc frame \n')
+
+    MeBending = density * A *  l / 420 *       [156     22*l    54     -13*l   ;...
+                                                22*l    4*l^2   13*l   -3*l^2  ;...
+                                                54      13*l    156    -22*l   ;...
+                                                -13*l   -3*l^2  -22*l  4*l^2  ] ;
+
+    MeAxial   = density * A * l / 6 *     [ 2  1;...
+                                            1  2];
+
+    Me(LocBendXYdofs,LocBendXYdofs) = MeBending;
+    Me(LocBendXZdofs,LocBendXZdofs) = MeBending;
+    Me(LocAxialdofs, LocAxialdofs)  = MeAxial;
+
     elseif ~booleanConsistentMassMat 
       Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
     else
