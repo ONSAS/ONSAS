@@ -27,7 +27,7 @@ Udotdotte )
 
   Me = sparse( 12, 12 ) ;
 
-  if strcmp(massMatType, 'consistent') == 1
+  if strcmp( massMatType, 'consistent' )
     Me (1:2:end, 1:2:end) = rho * A * lini * 2 / 6 * speye(6) ;
 
     Me (      1,       7) = rho * A * lini * 1 / 6            ;
