@@ -279,7 +279,7 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
       ks{2} = GyroMatrix ;
       ks{3} = MassMatrix ;
 
-    elseif strcmp(massMatType, 'lumped') == 1
+    elseif strcmp( massMatType, 'lumped' )
         Me = sparse(12,12)                                      ;
         Me (1:2:end, 1:2:end) = rho * Area * lo * 0.5 * eye(6)  ;
         Fine = Me * Udotdote                                    ;
