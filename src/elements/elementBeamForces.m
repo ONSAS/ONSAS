@@ -231,7 +231,7 @@ function  [ fs, ks, stress, rotData ]= elementBeamForces( ...
   rotData = {locDisp, Rr} ;
   if elemrho > 0
 
-    if strcmp(massMatType, 'consistent') == 1
+    if strcmp( massMatType, 'consistent' )
       sumInterForce  = zeros (12, 1 ) ;
       sumGyro        = zeros (12    ) ;
       sumMass        = zeros (12    ) ;
