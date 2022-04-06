@@ -38,7 +38,7 @@ Udotdotte )
 
     Me (      5,      11) = rho * A * lini * 1 / 6            ;
     Me (     11,       5) = rho * A * lini * 1 / 6            ;
-  elseif strcmp(massMatType, 'lumped') == 1
+  elseif strcmp( massMatType, 'lumped' )
     Me (1:2:end, 1:2:end) = rho * A * lini * 0.5 * eye(6)     ;
   else
     error('the massMatType field into the elements struct must be or consistent or lumped' )
