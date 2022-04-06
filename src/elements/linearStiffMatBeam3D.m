@@ -112,7 +112,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
     Me = sparse( 12, 12 ) ;
     %boolean harcoded
     massMatType = 'consistent' ;
-    if strcmp(massMatType, 'consistent') == 1
+    if strcmp(massMatType, 'consistent')
     % Implement consistent mass matrix
       error('The consistent mass matrix is not implemented yet for linear elastic frame \n')
     elseif strcmp(massMatType, 'lumped')
