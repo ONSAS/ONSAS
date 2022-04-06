@@ -60,9 +60,10 @@ for elem = 1:nElems
   hyperElasParams    = materials( mebiVec( 1 ) ).hyperElasParams ;
   density            = materials( mebiVec( 1 ) ).density         ;
 
-  elemType           = elements( mebiVec( 2 ) ).elemType         ;
-  elemTypeParams     = elements( mebiVec( 2 ) ).elemTypeParams   ;
-  elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams ;
+  elemType           = elements( mebiVec( 2 ) ).elemType          ;
+  elemTypeParams     = elements( mebiVec( 2 ) ).elemTypeParams    ;
+  massMatType        = elements( mebiVec( 2 ) ).massMatType       ;
+  elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodinamic properties
   elemTypeAero     = elements( mebiVec( 2 ) ).elemTypeAero     ;
@@ -118,10 +119,8 @@ for elem = 1:nElems
     Finte = fs{1} ;  Ke = ks{1} ;
 
     if dynamicProblemBool
-      booleanConsistentMassMat = elemTypeParams(1) ;
-
       dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
-      [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, booleanConsistentMassMat, dotdotdispsElem ) ;
+      [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
@@ -132,7 +131,7 @@ for elem = 1:nElems
 
 		if strcmp(hyperElasModel, 'linearElastic')
 
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -142,10 +141,10 @@ for elem = 1:nElems
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut       , dofselem ) , ...
+      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut, dofselem ) , ...
                                                u2ElemDisps( Udott    , dofselem ) , ...
                                                u2ElemDisps( Udotdott , dofselem ) , ...
-                                               density, elemTypeParams ) ;
+                                               density, massMatType ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
