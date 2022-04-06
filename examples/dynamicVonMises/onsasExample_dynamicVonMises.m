@@ -49,7 +49,7 @@ elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams{1,1} = 'rectangle'            ;
 elements(2).elemCrossSecParams{2,1} = [sqrt(Ac) sqrt(Ac) ] ;
-elements(2).elemTypeParams = 0 ;
+elements(2).massMatType = 'lumped' ;
 
 boundaryConds(1).imposDispDofs = [ 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 ] ;

@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function massMat = tangentInertialMassMatrix ( ...
-                     Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes, booleanConsistentMassMat ) ;
+                     Conec, secGeomProps, hyperElasParamsMat, coordsElemsMat, nnodes, massMatType ) ;
 
 ndofpnode = 6 ;
 nelems = size(Conec,1);
@@ -32,7 +32,7 @@ for elem = 1:nelems
   dofselem  = nodes2dofs( nodeselem , ndofpnode ) ;
 
   if Conec(elem,7)==1
-    massMate = elementTruss3DMassMats(coordsElemsMat(elem,:), rho, A, booleanConsistentMassMat ) ;
+    massMate = elementTruss3DMassMats(coordsElemsMat(elem,:), rho, A, massMatType ) ;
     %~ elseif Conec(elem,7)==2
     %~ massMate = elementBeam3DMassMats( coordsElemsMat(elem,:), rho, A, deltamassMat );
   elseif Conec( elem,7) == 2
