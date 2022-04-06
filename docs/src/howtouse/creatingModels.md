@@ -154,8 +154,8 @@ This struct contains the parameters required to apply the numerical method for t
  * `deltaT`: time step
  * `finalTime`: final time of simulation
  * `incremArcLen`: with of cylinder for arcLength method
- * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark is set.
- * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark is set.
+ * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark delta = $1/2$ is set.
+ * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark alpha = $1/4$ is set.
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
  * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
  * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
