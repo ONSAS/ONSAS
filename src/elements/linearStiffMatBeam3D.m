@@ -115,7 +115,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
     if strcmp(massMatType, 'consistent') == 1
     % Implement consistent mass matrix
       error('The consistent mass matrix is not implemented yet for linear elastic frame \n')
-    elseif strcmp(massMatType, 'lumped') == 1 
+    elseif strcmp(massMatType, 'lumped')
       Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
     else
       error('the massMatType field into the elements struct must be or consistent or lumped' )
