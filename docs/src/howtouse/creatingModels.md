@@ -65,7 +65,8 @@ cell structure with auxiliar params information, required for some element types
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
 ### `elements.massMatType`
 
- * `frame` or `truss` : the `massMatType` field for frame or truss elements sets the `massMatType` string variable (`'consistent'` or `'lumped'`), which defines for dynamic analyses, if the consistent or lumped matrix is used for the tangent inertial computation. If it is not declared then by default the `'lumped'` mass matrix is set.
+ 
+ The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
 
 ### `elements.elemTypeGeometry`
 
