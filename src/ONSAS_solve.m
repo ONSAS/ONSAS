@@ -49,7 +49,18 @@ if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   Mred = Mred + speye(size(Mred,1));
   numModes = 10;
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
+
+modelProperties.problemName = [ modelProperties.problemName '_mode1' ] ;
+npl = 32;
+dispMode = [ zeros(32*6,1); PHI(:,1) ] ;
+
+  modelCurrSol.U = dispMode ;
+
+  vtkMainWriter( modelCurrSol, modelProperties );
+
   save('-binary','Modal.mat','PHI','OMEGA')
+  stop
 end %endif
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %md
