@@ -42,7 +42,7 @@ end %while time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%
 global modalAnalysisBoolean
-if isempty(modalAnalysisBoolean) && modalAnalysisBoolean
+if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   addpath('./output'); filename = 'matrices.mat'; load(filename);
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
