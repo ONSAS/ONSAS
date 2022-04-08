@@ -46,7 +46,7 @@ if isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   addpath('./output'); filename = 'matrices.mat'; load(filename);
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
-  Mred = Mred + speye(size(Mred)(1));
+  Mred = Mred + speye(size(Mred,1));
   numModes = 10;
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
   save('-binary','Modal.mat','PHI','OMEGA')
