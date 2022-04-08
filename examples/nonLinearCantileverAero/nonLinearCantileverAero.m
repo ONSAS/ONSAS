@@ -180,7 +180,7 @@ materials.density         = rho              ;
 %md
 %md### elements
 %md The element tangent matrices of the consistent inertial force vector are taking into account by the following boolean:
-elements(2).elemTypeParams = 1 ;
+elements(2).massMatType = 'consistent' ;
 %md
 %md### otherParams
 %md The name of this case problem is:

@@ -1,4 +1,4 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
+% Copyright (C) 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
 %   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
 %
 % This file is part of ONSAS.
@@ -18,8 +18,8 @@
 
 % --------------------------------------------------------------------------------------------------
 
-% ==============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, density, hyperElasParams, Ut, Udotdotte)
+% =============================================================================
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
 
@@ -110,16 +110,29 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, densi
     localAxisRef = Xe(4:6) - Xe(1:3) ;
     lini = sqrt( sum( localAxisRef.^2 ) ) ;
     Me = sparse( 12, 12 ) ;
-    %boolean harcoded
-    booleanConsistentMassMat = false ;
-    if booleanConsistentMassMat 
-    % Implement conssitent mass matrix
-      error('The conssintent mass matrix is not implmented yet for linear elasitc frame \n')
-    elseif ~booleanConsistentMassMat 
-      Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
+
+    if strcmp(massMatType, 'consistent')
+    
+          MeBending = density * A *  l / 420 *       [156     22*l    54     -13*l   ;...
+                                                22*l    4*l^2   13*l   -3*l^2  ;...
+                                                54      13*l    156    -22*l   ;...
+                                                -13*l   -3*l^2  -22*l  4*l^2  ] ;
+
+          MeAxial   = density * A * l / 6 *     [ 2  1;...
+                                                  1  2];
+                                                  
+          Me(LocBendXYdofs,LocBendXYdofs) = MeBending;
+          Me(LocBendXZdofs,LocBendXZdofs) = MeBending;
+          Me(LocAxialdofs, LocAxialdofs)  = MeAxial;
+          
+    elseif strcmp(massMatType, 'lumped')
+    
+          Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
+          
     else
-      error('The booleanConsistentMassMat must be a boolean \n')
+      error('the massMatType field into the elements struct must be or consistent or lumped' )
     end
+    
     Fmasse = Me * Udotdotte ;
 
     fs{3} = Fmasse  ;

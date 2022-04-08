@@ -23,6 +23,7 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
+elements          = checkOrSetDefault ( elements         , 'massMatType'        , 'lumped' ) ;
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemTypeAero'       , [] ) ;
