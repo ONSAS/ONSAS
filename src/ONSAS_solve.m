@@ -51,9 +51,9 @@ if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
 
   npl = 32;
-  for i = 1:numModes
+  for i = 1:3
     modelProperties.problemName = [ modelProperties.problemName sprintf('_mode_%02i', i ) ] ;
-    dispMode = [ zeros(32*6,1); PHI(:,1) ] ;
+    dispMode = [ zeros(32*6,1); PHI(:,i) ] ;
     modelCurrSol.U = dispMode ;
     vtkMainWriter( modelCurrSol, modelProperties );
   end
