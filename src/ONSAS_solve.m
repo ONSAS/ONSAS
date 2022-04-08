@@ -50,6 +50,6 @@ if modalAnalysisBoolean
   numModes = 10;
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
   save('-binary','Modal.mat','PHI','OMEGA')
-endif
+end %endif
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %md
