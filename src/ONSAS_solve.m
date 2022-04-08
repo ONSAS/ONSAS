@@ -50,15 +50,16 @@ if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   numModes = 10;
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
 
-modelProperties.problemName = [ modelProperties.problemName '_mode1' ] ;
-npl = 32;
-dispMode = [ zeros(32*6,1); PHI(:,1) ] ;
-
-  modelCurrSol.U = dispMode ;
-
-  vtkMainWriter( modelCurrSol, modelProperties );
+  npl = 32;
+  for i = 1:numModes
+    modelProperties.problemName = [ modelProperties.problemName sprintf('_mode_%02i', i ) ] ;
+    dispMode = [ zeros(32*6,1); PHI(:,1) ] ;
+    modelCurrSol.U = dispMode ;
+    vtkMainWriter( modelCurrSol, modelProperties );
+  end
 
   save('-binary','Modal.mat','PHI','OMEGA')
+  fprintf(' MODAL ANALYSIS DONE. EXITING ONSAS.\n')
   stop
 end %endif
 
