@@ -43,24 +43,30 @@ end %while time
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%
 global modalAnalysisBoolean
 if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
-  addpath('./output'); filename = 'matrices.mat'; load(filename);
+  pwd
+  genpath( [ pwd '/output'])
+  addpath( genpath( [ pwd '/output'] ) ); load( 'matrices.mat' ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   Mred = Mred + speye(size(Mred,1));
   numModes = 10;
   [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
 
-  npl = 32;
-  for i = 1:3
-    modelProperties.problemName = [ modelProperties.problemName sprintf('_mode_%02i', i ) ] ;
-    dispMode = [ zeros(32*6,1); PHI(:,i) ] ;
-    modelCurrSol.U = dispMode ;
-    vtkMainWriter( modelCurrSol, modelProperties );
+  modelPropertiesModal = modelProperties ;
+  modelCurrSolModal    = modelCurrSol    ;
+
+  for i = 1:4
+    fprintf(' generating mode %2i vtk\n', i) ;
+    modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
+    modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
+    modelCurrSolModal.U( BCsData.neumDofs ) = PHI(:,i)  ;
+    vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
   end
 
   save('-binary','Modal.mat','PHI','OMEGA')
-  fprintf(' MODAL ANALYSIS DONE. EXITING ONSAS.\n')
-  stop
+  fprintf(' MODAL ANALYSIS DONE. Setting modalAnalysisBoolean to false.\n')
+  modalAnalysisBoolean = false ;
+
 end %endif
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
