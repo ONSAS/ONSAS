@@ -2,21 +2,9 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
                               Ue, Udote, Udotdote, userDragCoef,... 
                               userLiftCoef, userMomentCoef, elemTypeAero,...
                               userFlowVel,geometricNonLinearAero, nextTime ) 
-  %Implementation Booleans for internal test it hardcoded into rigidBool, essentaly this will compute the aerodynamic force in the rigid confguration
-  jorgeBool = false ; jorgeBoolRigid  = false ;
-  battiBool = false ; rigidBool       = true ;
+  %Implementation Booleans for internal test it hardcoded into baseBool, essentaly this will compute the aerodynamic force in the rigid confguration
+ baseBool = false ;
 
-  % switch elemTypeAero(5)
-  %   case 1 
-  %     jorgeBool = true ;
-  %   case 2
-  %     jorgeBoolRigid = true;
-  %   case 3 
-  %     battiBool = true;
-  %   case 4 
-  %     rigidBool = true;
-  % end
-  
   %Boolean to compute aerodinamic force with ut = 0 compte aerodynamic force in the reference configuration 
   if ~geometricNonLinearAero 
     Ue = zeros(12,1) ;
@@ -82,12 +70,12 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
   nu22 = 2 - nu12         ;
 
   % local rotations
-  if battiBool || rigidBool ;
+  if ~baseBool  ;
     Re1 = Rr' * Rg1 * R0 ;
     Re2 = Rr' * Rg2 * R0 ;
     tl1 = logar( Re1 ) ;
     tl2 = logar( Re2 ) ;
-  elseif jorgeBool || jorgeBoolRigid; ;
+  elseif baseBool ;
     Re1 = Rr' * R0 * Rg1 ;
     Re2 = Rr' * R0 * Rg2 ;
     tl1 = logar( Re1 ) ;
@@ -135,8 +123,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
                                                           lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0,... 
                                                           vecChordUndef, dimCaracteristic,...
                                                           I3, O3, P, G, EE, L2, L3,...
-                                                          userDragCoef, userLiftCoef, userMomentCoef,...
-                                                          jorgeBool, battiBool, rigidBool, jorgeBoolRigid ) ;
+                                                          userDragCoef, userLiftCoef, userMomentCoef ) ;
   end
   % express aerodinamic force in ONSAS nomencalture  [force1 moment1 force2 moment2  ...];
   fagElem = Cambio_Base(fagElem) ;
@@ -145,8 +132,7 @@ end
 function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
                                           lo, l, nu, nu11, nu12, nu21, nu22, tl1, tl2, Rr, R0,... 
                                           vecChordUndef, dimCaracteristic, I3, O3, P, G, EE, L2, L3,...
-                                          userDragCoef, userLiftCoef, userMomentCoef,...
-                                          jorgeBool, battiBool, rigidBool, jorgeBoolRigid )
+                                          userDragCoef, userLiftCoef, userMomentCoef )
   
   % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
   % linear
@@ -180,12 +166,6 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   thethaRoof  = P2 * [tl1 ; tl2]    ; % Eq. 39 Le, Battini 2014
   % local Rroof rotation matrix is
   Rroofx      = expon( thethaRoof ) ; 
-  % the global rotation matrix is
-  if battiBool || rigidBool
-    RgGx      = Rr * Rroofx * R0'   ; %Eq 18 Le, Battini 2014
-  else jorgeBool || jorgeBoolRigid  
-    RgGx      = R0' * Rr * Rroofx   ;
-  end
   
   % Kinematic velocities for the generic cross section
   % cross section centroid rigid velocity in global coordiantes:
@@ -198,24 +178,15 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   VrelG       = udotFlowG - udotG   ;
   %then the proyection of the relative flow velocity on the bending plane is 
   %using deformed configuration coordiantes
-  if battiBool || jorgeBool || jorgeBoolRigid 
-    VpiRelG   = L2 * RgGx' * R0' * VrelG ;
-  %using rigid configuration coordiantes
-  elseif rigidBool 
-    VpiRelG   = L2 * Rroofx' * Rr' * VrelG   ;
-  end
+  VpiRelG   = L2 * Rroofx' * Rr' * VrelG   ;
+
   %the perpendicular flow relative velocity proyection in the rigid confugration coordiantes is
   VpiRelGperp = L3 * VpiRelG       ;
   
   %Compute relative incidence angle
   %the chord vector orientation in the deformed confugration coordiantes to compute incidence flow angle is
-  if battiBool || jorgeBool || jorgeBoolRigid ;
-    tch = ( vecChordUndef / norm( vecChordUndef ) ) ;
-  %the chord vector orientation in the rigid confugration coordiantes to compute incidence flow angle is:
-  elseif rigidBool
-    tch = Rroofx * (vecChordUndef / norm( vecChordUndef )) ;
-  end
-
+  tch = ( vecChordUndef / norm( vecChordUndef ) ) ;
+  
   % Calculate relative incidence angle in the rigid confugration
   if( norm( VpiRelG) == 0 )
       td = tch;%define tch equal to td if vRel is zero to compute force with zero angle of attack
@@ -252,31 +223,13 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   fll     =  1/2 * rhoFliud * C_l * dimCaracteristic * norm( VpiRelG) * VpiRelGperp ; 
   %drag +lift cross section force vector in rigid configuration coordiantes
   fal     =  fdl + fll ;
-  if battiBool || jorgeBool || jorgeBoolRigid; ;
-    ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( R0 * RgGx * [1 0 0]' ) ; 
-  elseif rigidBool
-    ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( Rr * Rroofx * [1 0 0]' ) ;
-  end
-
-  %  RG  is used to rotate from deformed tomatrix to global rotation matrix:
-  RG =   [ R0 * RgGx     O3          O3          O3
-           O3            R0 * RgGx   O3          O3
-           O3            O3          R0 * RgGx   O3
-           O3            O3          O3          R0 * RgGx ];    
+  ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( Rr * Rroofx * [1 0 0]' ) ;
 
   % Rotate to global coordiantes with EE matrix for rigid configuration formulation
   % compute the inegral term of the current cross section
-  if rigidBool
     integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;  %Similar to Eq 78 with the different that Rr' is not necessary beacous fal is rigid coordinates
     integAeroForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordiantes
-  elseif jorgeBool ;
-    integAeroForce  =  RG *( H1' * Rroofx * fal + H2' * Rroofx * ma ) ;  %Eq 78
-  elseif battiBool
-    integAeroForce  =  EE * ( H1' * Rr' * R0 * RgGx * fal + H2' *  Rr' * R0 * RgGx * ma ) ;  %Eq 78
-  elseif jorgeBoolRigid ;
-    integAeroForce  =  EE *( H1' * Rroofx * fal + H2' * Rroofx * ma ) ;  %Eq 78
-  end
-  
+
 end
 
 function [xIntPoints, wIntPoints] = GaussPointsAndWeights (numGaussPoints )
