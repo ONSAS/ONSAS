@@ -202,7 +202,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
     VpiRelG   = L2 * RgGx' * R0' * VrelG ;
   %using rigid configuration coordiantes
   elseif rigidBool 
-    VpiRelG   = L2 * Rr' * VrelG   ;
+    VpiRelG   = L2 * Rroofx' * Rr' * VrelG   ;
   end
   %the perpendicular flow relative velocity proyection in the rigid confugration coordiantes is
   VpiRelGperp = L3 * VpiRelG       ;
@@ -255,7 +255,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   if battiBool || jorgeBool || jorgeBoolRigid; ;
     ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( R0 * RgGx * [1 0 0]' ) ; 
   elseif rigidBool
-    ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( Rr * [1 0 0]' ) ;
+    ma      =  1/2 * rhoFliud * C_m * VpiRelG' * VpiRelG * dimCaracteristic * ( Rr * Rroofx * [1 0 0]' ) ;
   end
 
   %  RG  is used to rotate from deformed tomatrix to global rotation matrix:
@@ -267,7 +267,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   % Rotate to global coordiantes with EE matrix for rigid configuration formulation
   % compute the inegral term of the current cross section
   if rigidBool
-    integralTermAeroForceRigid  =   H1' * fal + H2' * ma ;  %Similar to Eq 78 with the different that Rr' is not necessary beacous fal is rigid coordinates
+    integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;  %Similar to Eq 78 with the different that Rr' is not necessary beacous fal is rigid coordinates
     integAeroForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordiantes
   elseif jorgeBool ;
     integAeroForce  =  RG *( H1' * Rroofx * fal + H2' * Rroofx * ma ) ;  %Eq 78
