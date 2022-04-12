@@ -3,7 +3,7 @@ function fagElem = aeroForce( elemCoords, elemCrossSecParams,...
                               userLiftCoef, userMomentCoef, elemTypeAero,...
                               userFlowVel,geometricNonLinearAero, nextTime ) 
   %Implementation Booleans for internal test it hardcoded into baseBool, essentaly this will compute the aerodynamic force in the rigid confguration
- baseBool = false ;
+ baseBool = true ;
 
   %Boolean to compute aerodinamic force with ut = 0 compte aerodynamic force in the reference configuration 
   if ~geometricNonLinearAero 
