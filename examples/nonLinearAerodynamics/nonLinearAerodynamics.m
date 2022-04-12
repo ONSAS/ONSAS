@@ -1,14 +1,15 @@
 %md# Aerodynamic non-linear cantilever beam example
-%md--------------------
+%md
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
+%md
 %md In this tutorial, the aerodynamic non-linear cantilever beam example is solved using ONSAS. The aim of this problem is to validate aerodynamic steady wind loads applied to a cantilever beam undergoing small strains. The aerodynamic force modification due to the beam deformation is considered (drag reconfiguration). Given the aforementioned characteristics and under the hypothesis of small displacements regime a semi-analytic solution is available.   
 %md
 %md The beam is submitted to a uniform air wind velocity field $V_a$, at 20 degrees and atmospheric pressure, along axis $y$. Due to revolution symmetry of the problem lift $c_l$ and torsional moment $c_m$ coefficients are null. A drag coefficient $c_d=1.2$ is extracted from [this reference](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/abs/experiments-on-the-flow-past-a-circular-cylinder-at-very-high-reynolds-number/7859A6C46BF4B0F43F11F52AE1C60150). 
 %mdThe beam has a length $L$ and a circular solid cross section with diameter $d$ as it is shown in the following figure: 
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/ilusNonLinearStaticCantileverAero.svg" alt="general dimensions sketch" width="700"/>
+%md<img src="../../assets/nonLinearAerodynamics/ilusNonLinearAerodynamics.svg" alt="general dimensions sketch" width="700"/>
 %md```
-%md The Octave script of this example is available at : [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
 %md
 %md## Small displacements 2D case
 %md--------------------
@@ -127,7 +128,7 @@ thetaZdefNum = matUsSD(6:6:end,end)   ;
 lw = 2 ; ms = 12 ;
 labelTitle = [' Validating solution with ' num2str(numElements) ' elements' ] ;
 axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
-folderPathFigs = './output/figs/' ;
+folderPathFigs = '../../docs/src/assets/nonLinearAerodynamics' ;
 mkdir(folderPathFigs) ;
 %md The linear $u_y$ displacements verification is plotted executing:  
 fig1 = figure(1) ;
@@ -143,7 +144,7 @@ namefig1 = strcat(folderPathFigs, 'linDispSD.png') ;
 print(fig1, namefig1,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/linDispSD.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/linDispSD.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The angular $\theta_z$ displacements verification is plotted executing:  
@@ -161,7 +162,7 @@ namefig2 = strcat(folderPathFigs, 'angDispSD.png') ;
 print(fig2, namefig2,'-dpng')
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/angDispSD.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/angDispSD.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md## Large displacements 2D case
@@ -258,7 +259,7 @@ namefig3 = strcat(folderPathFigs, 'uyA.png') ;
 print(fig3, namefig3,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/uyA.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/uyA.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md## Large displacements 3D case
@@ -326,7 +327,7 @@ axis([0,50])
 print(fig4, namefig4,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/windVel3D.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/windVel3D.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md Then $u_y$ of node A  is computed using:  
@@ -364,12 +365,12 @@ namefig5 = strcat(folderPathFigs, 'uA3D.png') ;
 print(fig5, namefig5,'-dpng') ;
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/uA3D.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/uA3D.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md Finally a GIF to illustrate the motion amplitude is subsequently presented:
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearCantileverAero/cyilindricalCantBeam3D.gif" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/nonLinearAerodynamics/cyilindricalCantBeam3D.gif" alt="plot check angular displacements" width="500"/>
 %md```
 %md

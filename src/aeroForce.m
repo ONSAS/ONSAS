@@ -254,7 +254,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   fal = fdl + fll ;
   % torsional moment fluid load in deformed coordinates
   ma = 1/2 * rhoFliud * c_m * VpiRelG' * VpiRelG * dimCaracteristic * ( [1 0 0]' ) ;
-
+  
   % Compute the element fluid load forces vector in global coordinates
   % compute the integral term of the current cross section in rigid coordinates
     integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;  
