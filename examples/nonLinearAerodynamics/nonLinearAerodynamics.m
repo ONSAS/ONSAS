@@ -8,7 +8,7 @@
 %mdThe beam has a length $L$ and a circular solid cross section with diameter $d$ as it is shown in the following figure: 
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearAerodynamics/ilusLinearAerodynamics.svg" alt="general dimensions sketch" width="700"/>
+%md<img src="../../assets/nonLinearAerodynamics/ilusNonLinearAerodynamics.svg" alt="general dimensions sketch" width="700"/>
 %md```
 %md
 %md## Small displacements 2D case
