@@ -8,7 +8,7 @@
 %mdThe beam has a length $L$ and a circular solid cross section with diameter $d$ as it is shown in the following figure: 
 %md
 %md```@raw html
-%md<img src="../../assets/nonLinearAerodynamics/ilusNonLinearAerodynamics.svg" alt="general dimensions sketch" width="700"/>
+%md<img src="../../assets/nonLinearAerodynamics/ilusLinearAerodynamics.svg" alt="general dimensions sketch" width="700"/>
 %md```
 %md
 %md## Small displacements 2D case
@@ -128,7 +128,7 @@ thetaZdefNum = matUsSD(6:6:end,end)   ;
 lw = 2 ; ms = 12 ;
 labelTitle = [' Validating solution with ' num2str(numElements) ' elements' ] ;
 axislw = 2 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
-folderPathFigs = '../../docs/src/assets/nonLinearAerodynamics' ;
+folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
 %md The linear $u_y$ displacements verification is plotted executing:  
 fig1 = figure(1) ;
