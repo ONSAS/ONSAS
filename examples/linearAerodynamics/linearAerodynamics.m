@@ -202,8 +202,8 @@ title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('./output/linearDisp.png')
-print('../../docs/src/assets/linearAerodynamics/linearDisp.png','-dpng')    
+print('../../docs/src/assets/linearAerodynamics/linearDisp.png','-dpng')
+close(1)    
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/linearDisp.png" alt="plot check linear displacements" width="500"/>
@@ -224,15 +224,15 @@ title (labelTitle)
 set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
 set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
 set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('../../docs/src/assets/linearAerodynamics/angDisp.png','-dpng')    
-
+print('../../docs/src/assets/linearAerodynamics/angDisp.png','-dpng')  
+close(2)  
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/angDisp.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The 3D deformed configuration is plotted executing:  
-figure
+figure(3)
 hold on, grid on
 plot3(xref     , yref                    , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
 plot3(xAnalytic, ydefAnalytic(xAnalytic) , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw      , 'markersize', ms     );
@@ -243,7 +243,8 @@ set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
 set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
 set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
-print('../../docs/src/assets/linearAerodynamics/def.png','-dpng')    
+print('../../docs/src/assets/linearAerodynamics/def.png','-dpng')
+close(3)    
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/def.png" alt="plot check deformed configurations" width="500"/>

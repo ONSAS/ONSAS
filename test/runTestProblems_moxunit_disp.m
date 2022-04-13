@@ -38,9 +38,13 @@ function test_7
   assertEqual( verifBoolean, true );
 
 function test_8
-  onsasExample_simpleWindTurbine
+  linearAerodynamics
   assertEqual( verifBoolean, true );
 
 function test_9
+  onsasExample_simpleWindTurbine
+  assertEqual( verifBoolean, true );
+
+function test_10
   frameLinearAnalysis
   assertEqual( verifBoolean, true );
