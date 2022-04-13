@@ -39,7 +39,7 @@
 %md
 %md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
-%md The material linear $E$ and shear $G$ Elastic modulus and the Poisson's ratio $\nu$ are:
+%md The material parameters, Young $E$ and shear $G$ moduli and the Poisson's ratio $\nu$ are:
 E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 %md
 %md Geometrical dimensions sketched in Fig 1 are:
