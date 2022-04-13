@@ -14,7 +14,7 @@
 %md## Analytic solution
 %md--------------------
 %md
-%mdThe static solution is obtained within the static Euler-Bernoulli beam theory,thus the angular rotations field are: 
+%mdThe analytic steady solution is obtained using the Euler-Bernoulli beam theory. The rotations are: 
 %md
 %md```math 
 %md \theta_z(x)= \frac{qy}{6 EI_{zz}} \left( (x-L)^3 +L^3 \right)
