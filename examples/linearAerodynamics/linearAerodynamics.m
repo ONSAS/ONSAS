@@ -2,10 +2,10 @@
 %md
 %md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
 %md
-%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under this hypothesis a symbolic solution is available. 
+%md In this tutorial, the linear steady analysis of a cantilever beam is presented and how to solve it using ONSAS is described. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
 %md
 %md The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift, drag and moment fluid forces are characterized with their respective aerodynamic coefficients $c_d$ $c_l$ and $c_m$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
-%mdThe beam has a length $L$ and a hollow cylindrical cross section with $d_{ext}$ and a thickness $b$ as it is shown in Fig.1. 
+%mdThe beam has a length $L$ and a hollow cylindrical cross-section with diameter $d_{ext}$ and a thickness $b$ as it is shown in the following figure. 
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/ilusLinearAerodynamics.svg" alt="general sketch" width="700"/>
@@ -14,7 +14,7 @@
 %md## Analytic solution
 %md--------------------
 %md
-%mdThe static solution is obtained within the static Euler-Bernoulli beam theory,thus the angular rotations field are: 
+%mdThe analytic steady solution is obtained using the Euler-Bernoulli beam theory. The rotations are: 
 %md
 %md```math 
 %md \theta_z(x)= \frac{qy}{6 EI_{zz}} \left( (x-L)^3 +L^3 \right)
@@ -27,7 +27,7 @@
 %md```
 %md in which $q = 1/2 \rho v_a^2 d_{ext}$, $q_z = q c_d$, $q_y = q c_l$ and $q_m = q c_m$.
 %md
-%md Integrating respect to x the angular rotations stated above derives to the following expressions: 
+%md Integrating the rotations we obtain the displacements: 
 %md```math
 %md u_y(x)= -\frac{qy}{24 EI_{zz}} \left( 6L^2x^2 - 4Lx^3 + x^4 \right)
 %md```
@@ -39,7 +39,7 @@
 %md
 %md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
-%md The material linear $E$ and shear $G$ Elastic modulus and the Poisson's ratio $\nu$ are:
+%md The material parameters, Young $E$ and shear $G$ moduli and the Poisson's ratio $\nu$ are:
 E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 %md
 %md Geometrical dimensions sketched in Fig 1 are:
@@ -62,7 +62,7 @@ materials.hyperElasParams = [ E nu ]        ;
 %md Two different types of elements are considered, node and frames. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md The node has not cross section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross section, then a `'generic'` cross-section dimensions in $y$ and $z$ directions is used. Thus the _elemCrossSecParams_ field is:
+%md The node type has no cross-section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross-section, then a `'generic'` cross-section (in $y$ and $z$) is used. Thus the _elemCrossSecParams_ field is:
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 %md Now the parameters to include aerodynamic forces automatically on the frame element are defined. First the drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _userDragCoef_  _userLiftCoef_ _momentCoefFunction_ fields are:
