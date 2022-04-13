@@ -62,7 +62,7 @@ materials.hyperElasParams = [ E nu ]        ;
 %md Two different types of elements are considered, node and frames. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The _elemType_ field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md The node has not cross section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross section, then a `'generic'` cross-section dimensions in $y$ and $z$ directions is used. Thus the _elemCrossSecParams_ field is:
+%md The node type has no cross-section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross-section, then a `'generic'` cross-section (in $y$ and $z$) is used. Thus the _elemCrossSecParams_ field is:
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 %md Now the parameters to include aerodynamic forces automatically on the frame element are defined. First the drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _userDragCoef_  _userLiftCoef_ _momentCoefFunction_ fields are:
