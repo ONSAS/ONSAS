@@ -27,7 +27,7 @@
 %md```
 %md in which $q = 1/2 \rho v_a^2 d_{ext}$, $q_z = q c_d$, $q_y = q c_l$ and $q_m = q c_m$.
 %md
-%md Integrating respect to x the angular rotations stated above derives to the following expressions: 
+%md Integrating the rotations we obtain the displacements: 
 %md```math
 %md u_y(x)= -\frac{qy}{24 EI_{zz}} \left( 6L^2x^2 - 4Lx^3 + x^4 \right)
 %md```
