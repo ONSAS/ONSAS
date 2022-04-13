@@ -2,7 +2,7 @@
 %md
 %md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
 %md
-%md In this tutorial, the linear static cantilever aero example and how to address the problem using ONSAS is described. The aim of this example is to validate aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under this hypothesis a symbolic solution is available. 
+%md In this tutorial, the linear steady analysis of a cantilever beam is presented and how to solve it using ONSAS is described. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
 %md
 %md The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift, drag and moment fluid forces are characterized with their respective aerodynamic coefficients $c_d$ $c_l$ and $c_m$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
 %mdThe beam has a length $L$ and a hollow cylindrical cross-section with diameter $d_{ext}$ and a thickness $b$ as it is shown in the following figure. 
