@@ -113,7 +113,7 @@ analysisSettings.stopTolIts    =   10            ;
 %md
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
-otherParams.problemName = 'aeroLinStaticCantilever';
+otherParams.problemName = 'linearAerodynamics';
 otherParams.plotsFormat = 'vtk' ;
 %md
 %md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved as:
@@ -180,8 +180,8 @@ thetaZdefNum = matUs(6:6:end,end)   ;
 %md### Verification boolean
 %md
 %md The verification boolean is computed as $||U_n - U_a || / || U_a || < 10^{-1}$
-verifBoolean = norm( [ ydefNum - ydefAnalytic(xref); thetaYdefNum - thetaYAnalytic(xref); zdefNum - zdefAnalytic(xref); thetaZdefNum - thetaZAnalytic(xref) ] ) ...
-                <  1e-1 * norm( [ ydefAnalytic(xref);  thetaYAnalytic(xref);  zdefAnalytic(xref); thetaZAnalytic(xref) ] )  ;      
+verifBoolean = norm( [ thetaXdefNum - thetaXAnalytic(xref); ;ydefNum - ydefAnalytic(xref); thetaYdefNum - thetaYAnalytic(xref); zdefNum - zdefAnalytic(xref); thetaZdefNum - thetaZAnalytic(xref) ] ) ...
+                <  1e-3 * norm( [ thetaXAnalytic(xref); ydefAnalytic(xref);  thetaYAnalytic(xref);  zdefAnalytic(xref); thetaZAnalytic(xref) ] )  ;      
 %md
 %md### Plot verification
 %md
