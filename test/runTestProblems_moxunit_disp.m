@@ -18,12 +18,13 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
+  onsasExample_linearPlaneStrain
+  assertEqual( verifBoolean, true );
+  
+function test_4
   uniaxialExtension
   assertEqual( verifBoolean, true );
 
-function test_4
-  onsasExample_linearPlaneStrain
-  assertEqual( verifBoolean, true );
 
 function test_5
   onsasExample_nonlinearPendulum
@@ -38,9 +39,13 @@ function test_7
   assertEqual( verifBoolean, true );
 
 function test_8
-  onsasExample_simpleWindTurbine
+  simpleWindTurbine
   assertEqual( verifBoolean, true );
 
 function test_9
   frameLinearAnalysis
+  assertEqual( verifBoolean, true );
+
+function test_10
+  linearAerodynamics
   assertEqual( verifBoolean, true );
