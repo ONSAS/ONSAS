@@ -14,7 +14,8 @@ keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'    ;
              'beamTrussJoint/onsasExample_beamTrussJoint.m'             ;
              'cantileverSelfWeight/onsasExample_cantileverSelfWeight.m' ;
              'simpleWindTurbine/simpleWindTurbine.m'                    ;
-             'linearAerodynamics/linearAerodynamics.m'                  }
+             'linearAerodynamics/linearAerodynamics.m'                  ;     
+             'consistentCantileverBeam/consistentCantileverBeam.m'      }
 
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;

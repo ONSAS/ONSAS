@@ -49,3 +49,7 @@ function test_9
 function test_10
   linearAerodynamics
   assertEqual( verifBoolean, true );
+
+function test_11
+  consistentCantileverBeam
+  assertEqual( verifBoolean, true );

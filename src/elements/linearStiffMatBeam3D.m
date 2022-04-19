@@ -121,8 +121,8 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
           MeAxial   = density * A * l / 6 *     [ 2  1;...
                                                   1  2];
                                                   
-          Me(LocBendXYdofs,LocBendXYdofs) = MeBending;
-          Me(LocBendXZdofs,LocBendXZdofs) = MeBending;
+          Me(LocBendXYdofs,LocBendXYdofs) = MeBending ;
+          Me(LocBendXZdofs,LocBendXZdofs) = RXYXZ * MeBending * RXYXZ ;
           Me(LocAxialdofs, LocAxialdofs)  = MeAxial;
           
     elseif strcmp(massMatType, 'lumped')
