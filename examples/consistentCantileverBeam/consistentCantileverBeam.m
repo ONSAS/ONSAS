@@ -11,9 +11,9 @@ l = 5 ; ty = .3 ;  tz = .1 ;
 numElements = 10 ;
 % reference bending periods in y and z direction 
 Iyy = ty * tz^3 / 12 ;
-Tbyy = 2 * pi / sqrt (4.73 * E * Iyy / (rho * (tz * ty *l ) ) ) 
+Tbyy = 2 * pi / sqrt (4.73 * E * Iyy / (rho * (tz * ty *l ) ) ) ;
 Izz = ty^3 * tz / 12 ;
-Tbzz = 2 * pi / sqrt (4.73 * E * Izz / (rho * (tz * ty *l ) ) ) 
+Tbzz = 2 * pi / sqrt (4.73 * E * Izz / (rho * (tz * ty *l ) ) ) ;
 %md
 %md### materials
 %md
