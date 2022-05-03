@@ -35,6 +35,7 @@ elseif outputFormat == "html"
                                     "Uniaxial extension" => "examples/uniaxialExtension.md",
                                     "Cantilever Beam" => "examples/cantileverBeam.md",
                                     "Solid with inclusion" => "examples/semiSphereWithInclusion.md",
+                                    "Linear beam vibration" => "examples/beamLinearVibration.md",
                                     "Linear aerodynamics" => "examples/linearAerodynamics.md",
                                     "Non-linear aerodynamics" => "examples/nonLinearAerodynamics.md"],
       "User guide" => Any["Installation" =>  "howtouse/install.md",
