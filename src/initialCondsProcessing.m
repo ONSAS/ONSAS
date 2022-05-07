@@ -20,49 +20,94 @@
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( nNodes )
+function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds )
+% Build nodes MEBI matrix by selecting the first Conec index null 
+conecCellMat = myCell2Mat( mesh.conecCell )                ;
+conecNodes = conecCellMat(find( conecCellMat(:,1)==0 ),:)  ;
 
-% create velocity and displacements vectors
+% Build nodes MEBI matrix
+conecElems = conecCellMat(find( conecCellMat(:,1) ~=0 ),:) ;
+
+% Compute number of nodes
+nNodes = size( mesh.nodesCoords, 1 ) ;
+
+% Create velocity and displacements vectors
 U       = zeros( 6*nNodes,   1 ) ;
 Udot    = zeros( 6*nNodes,   1 ) ;
 Udotdot = zeros( 6*nNodes,   1 ) ;
 
-% adds non homogeneous initial conditions
-%~ if length( nonHomogeneousInitialCondU0 ) > 0
-  %~ for i = 1 : size( nonHomogeneousInitialCondU0, 1 ) % loop over rows of matrix
-    %~ dofs = nodes2dofs(nonHomogeneousInitialCondU0(i, 1 ), 6 ) ;
-    %~ U( dofs ( nonHomogeneousInitialCondU0 (i, 2 ) ) ) = ...
-      %~ nonHomogeneousInitialCondU0 ( i, 3 ) ;
-  %~ end
-%~ end % if nonHomIniCond
+% Nodes initial conditions
 
-%~ if length( nonHomogeneousInitialCondUdot0 ) > 0
-  %~ if numericalMethodParams(1) >= 3
-    %~ for i=1:size(nonHomogeneousInitialCondUdot0, 1)
-      %~ dofs = nodes2dofs( nonHomogeneousInitialCondUdot0(i, 1), 6 ) ;
-      %~ Udot( dofs( nonHomogeneousInitialCondUdot0(i, 2 ))) = ...
-        %~ nonHomogeneousInitialCondUdot0(i, 3 );
-    %~ end
-  %~ else
-    %~ warning(' velocity initial conditions set for a static analysis method' ) ;
-  %~ end
-%~ end
+% Process nodal displacement initial condition (IC)
+if isfield( initialConds, 'nonHomogeneousInitialCondU0' )
 
+  % Compute different initial conditions loaded 
+  initialCondsTypes  = unique( conecNodes( :, 4) ) ; 
+  % delete null initial conditions
+  initialCondsTypes(initialCondsTypes==0) = [] ;
+  %md loop over the types of initial conditions added in the mesh
+  for indIC = 1:length( initialCondsTypes ) ;
 
-% computation of initial acceleration for some cases
+    % number of current IC processed
+    ICnum = initialCondsTypes( indIC ) ;
+
+    % locate nodes with that index of initial condition into conecNodes matrix
+    indexNodesIC = find( conecNodes( :, 4 ) == ICnum ) ;
+
+    % get the nodes that has that IC
+    nodesIC = conecNodes(indexNodesIC,5) ;
+    
+    % add the imposedDisps for all the nodes with the same IC
+    % this could be vectorized! using the Dofs relative to the dof of the node dofNodes = nodes2dofs(nodesIC, 6) and the dofNodes(1:dofsIC:end) and so on
+    for nodeIC = nodesIC'
+      % compute dofs of nodes with that IC 
+      dofsNodesIC = nodes2dofs(nodeIC, 6) ;
+
+      % load initial condition values
+      dofsICindex = initialConds(indIC).nonHomogeneousInitialCondU0.Dofs ; 
+      valsICindex = initialConds(indIC).nonHomogeneousInitialCondU0.Vals ; 
+
+      % add the initial condition displacements vector
+      U( dofsNodesIC(dofsICindex), 1 ) = valsICindex ;
+    end
+  end
+end
+% Process nodal velocity initial condition 
+if isfield( initialConds, 'nonHomogeneousInitialCondUdot0' )
+
+  % Compute different initial conditions loaded 
+  initialCondsTypes  = unique( conecNodes( :, 4) ) ; 
+  % delete null initial conditions
+  initialCondsTypes(initialCondsTypes==0) = [] ;
+  %md loop over the types of initial conditions added in the mesh
+  for indIC = 1:length( initialCondsTypes ) ;
+
+    % number of current IC processed
+    ICnum = initialCondsTypes( indIC ) ;
+
+    % locate nodes with that index of initial condition into conecNodes matrix
+    indexNodesIC = find( conecNodes( :, 4 ) == ICnum ) ;
+
+    % get the nodes that has that IC
+    nodesIC = conecNodes(indexNodesIC,5) ;
+    
+    % add the imposedDisps for all the nodes with the same IC
+    % this could be vectorized! using the Dofs relative to the dof of the node dofNodes = nodes2dofs(nodesIC, 6) and the dofNodes(1:dofsIC:end) and so on
+    for nodeIC = nodesIC'
+      % compute dofs of nodes with that IC 
+      dofsNodesIC = nodes2dofs(nodeIC, 6) ;
+
+      % load initial condition values
+      dofsICindex = initialConds(indIC).nonHomogeneousInitialCondUdot0.Dofs ; 
+      valsICindex = initialConds(indIC).nonHomogeneousInitialCondUdot0.Vals ; 
+
+      % add the initial condition displacements vector
+      Udot( dofsNodesIC(dofsICindex), 1 ) = valsICindex ;
+    end
+  end
+end
+
+% Add initial acceleration for some numerical method ?
+
+% Add elements initial condition here
 % ---------------------------------------------------
-
-% --- initial tangent matrices ---
-%~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, massMatType ) ;
-
-%~ systemDeltauMatrix = mats{1}
-
-%~ stop
-%~ if dynamicAnalysisBoolean == 1,
-
-  %~ massMat    = mats{2} ;
-
-  %~ % --- computation of initial Udotdott for truss elements only!!!
-  %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
-
-  %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;
