@@ -63,15 +63,14 @@ for elem = 1:nElems
   massMatType        = elements( mebiVec( 2 ) ).massMatType       ;
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
-  %md extract aerodinamic properties
+  %md extract aerodynamic properties
   elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
   aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
   
-  %md compute aerodynamic compute force boolean
-  AeroCoefficentsBool = ~isempty( aeroCoefs ) ;
-  %md chcek unless one coefficient is defined
-  aeroBool = ~isempty( elemTypeAero ) && AeroCoefficentsBool ;
-
+  %md compute aerodynamic compute force booleans
+  aeroBool = ~isempty(analysisSettings.fluidProps) || ...
+             ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
+  
   %md obtain elemeny info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
@@ -150,24 +149,16 @@ for elem = 1:nElems
       error('wrong hyperElasModel for frame element.')
     end
 
-    if ~isempty(elemTypeAero) &&  aeroBool == 0
-      error('Drag, Lift or Moment coefficients must be defined in elements struct\n ')
-    end
-
-    %md chcek wind velocity is defined
-    if AeroCoefficentsBool &&  aeroBool == 0
-      error('elemTypeAero chord vector must be defined in elements struct \n')
-    end
+    %md compute hydrodynamic force of the element}
     if aeroBool && fsBool
-      % read aero paramters of the element
-      elemTypeAero = elements( mebiVec( 2 ) ).elemTypeAero ;
-      % compute force
-      [ FaeroElem ]= hydroForce( elemNodesxyzRefCoords                , ...
+
+      [ FaeroElem ]= hydroForce( elemNodesxyzRefCoords               , ...
                                 u2ElemDisps( Ut       , dofselem )   , ...
                                 u2ElemDisps( Udott    , dofselem )   , ...
                                 u2ElemDisps( Udotdott , dofselem )   , ...
-                                aeroCoefs, elemTypeAero, analysisSettings,...
-                                timeVar ) ;
+                                elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
+                                analysisSettings, timeVar ) ;
+
     end
   
   % ---------  triangle solid element -----------------------------
