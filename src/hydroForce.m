@@ -17,15 +17,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function fagElem = aeroForce( elemCoords,... 
+function fagElem = hydroForce( elemCoords,... 
                               Ue, Udote, Udotdote,  
                               aeroCoefs, elemTypeAero, analysisSettings, nextTime ) 
   %Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
   % extract fluid properties
-  rhoFluid     = analysisSettings.fluidProps{1,1} ;
+  rhoFluid       = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
-  userFlowVel  = analysisSettings.fluidProps{3,1} ;
+  userFlowVel    = analysisSettings.fluidProps{3,1} ;
   % extract nonLinearity in aero force boolean
   geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
   
@@ -229,7 +229,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   userMomentCoef =aeroCoefs{3} ;
 
   % Computation of Renynolds number
-  Re = norm(udotFlowG) * dimCharacteristic / viscocsityFluid ;
+  Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
   
   % Check fluid coefficients existence and the load it values if not set 0:  
   if ~isempty( userDragCoef )
