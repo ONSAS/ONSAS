@@ -18,8 +18,9 @@
 
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
 function fagElem = hydroForce( elemCoords,... 
-                              Ue, Udote, Udotdote,  
-                              aeroCoefs, elemTypeAero, analysisSettings, nextTime ) 
+                              Ue, Udote, Udotdote,... 
+                              aeroCoefs, elemTypeAero, analysisSettings,...
+                              nextTime ) 
   % Check all required parameters are defined
   if isempty(analysisSettings.fluidProps) 
     error(' define correctly row cell analysisSettings.fluidProps = {fluidDensity; fluidViscosity; fluidVelocityFunction } ')
