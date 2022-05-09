@@ -1,5 +1,3 @@
-
-
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
@@ -56,26 +54,23 @@ for elem = 1:nElems
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
-  hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel  ;
-  hyperElasParams    = materials( mebiVec( 1 ) ).hyperElasParams ;
-  density            = materials( mebiVec( 1 ) ).density         ;
+  hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel   ;
+  hyperElasParams    = materials( mebiVec( 1 ) ).hyperElasParams  ;
+  density            = materials( mebiVec( 1 ) ).density          ;
 
   elemType           = elements( mebiVec( 2 ) ).elemType          ;
   elemTypeParams     = elements( mebiVec( 2 ) ).elemTypeParams    ;
   massMatType        = elements( mebiVec( 2 ) ).massMatType       ;
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
-  %md extract aerodinamic properties
-  elemTypeAero     = elements( mebiVec( 2 ) ).elemTypeAero     ;
-  userDragCoef     = elements( mebiVec( 2 ) ).userDragCoef     ;
-  userLiftCoef     = elements( mebiVec( 2 ) ).userLiftCoef     ;
-  userMomentCoef   = elements( mebiVec( 2 ) ).userMomentCoef   ;
-
-  %md compute aerodynamic compute force boolean
-  AeroCoefficentsBool = ~isempty( userDragCoef ) || ~isempty( userMomentCoef ) || ~isempty( userLiftCoef ) ;
-  aeroBool = ~isempty( elemTypeAero ) && AeroCoefficentsBool ;
-  %md chcek unless one coefficient is defined
-
+  %md extract aerodynamic properties
+  elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
+  aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
+  
+  %md compute aerodynamic compute force booleans
+  aeroBool = ~isempty(analysisSettings.fluidProps) || ...
+             ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
+  
   %md obtain elemeny info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
@@ -154,48 +149,18 @@ for elem = 1:nElems
       error('wrong hyperElasModel for frame element.')
     end
 
-    if ~isempty(elemTypeAero) &&  aeroBool == 0
-      error('Drag, Lift or Moment coefficients must be defined in elements struct\n ')
-    end
-
-    %md chcek wind velocity is defined
-    if AeroCoefficentsBool &&  aeroBool == 0
-      error('elemTypeAero chord vector must be defined in elements struct \n')
-    end
-
+    %md compute hydrodynamic force of the element}
     if aeroBool && fsBool
-      % extract wind function name
-      userWindVel = analysisSettings.userWindVel ;
-      % extract nonLinearity in aero force boolean
-      geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
-      numGaussPoints = 2 ;
-      % read aero paramters of the element
-      elemTypeAero      = elements( mebiVec( 2 ) ).elemTypeAero ;
 
-      if ~isempty(userDragCoef)
-        userDragCoef    = elements( mebiVec( 2 ) ).userDragCoef ;
-      end
-
-      if ~isempty(userLiftCoef)
-        userLiftCoef    = elements( mebiVec( 2 ) ).userLiftCoef ;
-      end
-
-      if ~isempty(userMomentCoef)
-        userMomentCoef  = elements( mebiVec( 2 ) ).userMomentCoef ;
-      end
-
-      elemCrossSecParams  = elements( mebiVec( 2 ) ).elemCrossSecParams ;
-      % compute force
-      [ FaeroElem ]= aeroForce( elemNodesxyzRefCoords                      , ...
-                                u2ElemDisps( Ut       , dofselem )         , ...
-                                u2ElemDisps( Udott    , dofselem )         , ...
-                                u2ElemDisps( Udotdott , dofselem )         , ...
-                                userDragCoef, userLiftCoef, userMomentCoef , ...
-                                elemTypeAero, userWindVel ,  geometricNonLinearAero, ...
-                                timeVar ) ;
+      [ FaeroElem ]= hydroForce( elemNodesxyzRefCoords               , ...
+                                u2ElemDisps( Ut       , dofselem )   , ...
+                                u2ElemDisps( Udott    , dofselem )   , ...
+                                u2ElemDisps( Udotdott , dofselem )   , ...
+                                elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
+                                analysisSettings, timeVar ) ;
 
     end
-
+  
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 

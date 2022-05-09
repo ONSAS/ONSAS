@@ -1,5 +1,6 @@
+# nonLinearAerodyamics script to execute in ClusrerUY
 #!/bin/bash
-#SBATCH --job-name=onsasExample_nonLinearCantileverBeam
+#SBATCH --job-name=onsasExample_nonLinearAerodyamics
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=32768
@@ -10,4 +11,4 @@
 
 #PATH TO MATLAB bin: /clusteruy/apps/matlab/R2018b/bin/matlab  
 #ALIAS FOR MATLAB bin: alias matlab = "/clusteruy/apps/matlab/R2018b/bin/matlab"
-/clusteruy/apps/matlab/R2018b/bin/matlab -nodisplay -nosplash -nodesktop -r "run('./nonLinearCantileverAero.m');exit;"
+/clusteruy/apps/matlab/R2018b/bin/matlab -nodisplay -nosplash -nodesktop -r "run('./nonLinearAerodynamics.m');exit;"

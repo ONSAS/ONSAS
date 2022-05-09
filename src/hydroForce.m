@@ -17,15 +17,29 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function fagElem = aeroForce( elemCoords,... 
-                              Ue, Udote, Udotdote,  
-                              aeroCoefs, elemTypeAero, analysisSettings, nextTime ) 
-  %Implementation Booleans for internal test, baseBool changes the local angles computation
+function fagElem = hydroForce( elemCoords,... 
+                              Ue, Udote, Udotdote,... 
+                              aeroCoefs, elemTypeAero, analysisSettings,...
+                              nextTime ) 
+  % Check all required parameters are defined
+  if isempty(analysisSettings.fluidProps) 
+    error(' define correctly row cell analysisSettings.fluidProps = {fluidDensity; fluidViscosity; fluidVelocityFunction } ')
+  end
+  if isempty(elemTypeAero) 
+    error(' define correctly elements.elemTypeAero = [chordVec1 chordVec2 chordVec3 numGauss  ] ')
+  end
+  if isempty( aeroCoefs ) 
+    error(' define correctly row cell of strings elements.aeroCoefs = {dragFunc; liftFunc; momentFunc } ')
+  end
+
+
+
+  % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
   % extract fluid properties
-  rhoFluid     = analysisSettings.fluidProps{1,1} ;
+  densityFluid       = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
-  userFlowVel  = analysisSettings.fluidProps{3,1} ;
+  userFlowVel    = analysisSettings.fluidProps{3,1} ;
   % extract nonLinearity in aero force boolean
   geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
   
@@ -48,7 +62,7 @@ function fagElem = aeroForce( elemCoords,...
   xs = elemCoords(:) ;
   
   % Load element properties to fluid loads 
-  % chord vecto
+  % chord vector
   vecChordUndef    = elemTypeAero( 1:3 )'  ;
   % length of the chord vector 
   dimCharacteristic = norm( vecChordUndef ) ; 
@@ -125,7 +139,7 @@ function fagElem = aeroForce( elemCoords,...
       0  -1/l  0       0        0     0  0  1/l   0       0        0     0 ]' ;% Eq(58) J.-M. Battini 2002     
 
   P = II - [G'; G'] ; % Eq(55) J.-M. Battini 2002
-  % tensor to rotat magnitudes from rigid to global configuration
+  % tensor to rotate magnitudes from rigid to global configuration
   EE=[ Rr O3 O3 O3
        O3 Rr O3 O3
        O3 O3 Rr O3
@@ -153,7 +167,7 @@ function fagElem = aeroForce( elemCoords,...
                                                           lo, tl1, tl2, Rr, ... 
                                                           vecChordUndef, dimCharacteristic,...
                                                           I3, O3, P, G, EE, L2, L3,...
-                                                          aeroCoefs, rhoFluid, viscosityFluid ) ;
+                                                          aeroCoefs, densityFluid, viscosityFluid ) ;
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = Cambio_Base(fagElem) ;
@@ -162,7 +176,7 @@ end
 function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
                                           lo, tl1, tl2, Rr, ... 
                                           vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
-                                          aeroCoefs, rhoFluid, viscosityFluid )
+                                          aeroCoefs, densityFluid, viscosityFluid )
   
   % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
   % linear
@@ -207,7 +221,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   % the perpendicular flow relative velocity projection in deformed coordinates is:
   VpiRelG   = L2 * Rroofx' * Rr' * VrelG   ;
   %the perpendicular flow relative velocity projection in the rigid configuration coordinates is
-  VpiRelGperp = L3 * VpiRelG       ;
+  VpiRelGperp = L3 * VpiRelG  ;
   
   % Compute relative incidence angle
   % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
@@ -229,7 +243,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   userMomentCoef =aeroCoefs{3} ;
 
   % Computation of Renynolds number
-  Re = norm(udotFlowG) * dimCharacteristic / viscocsityFluid ;
+  Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
   
   % Check fluid coefficients existence and the load it values if not set 0:  
   if ~isempty( userDragCoef )
@@ -249,13 +263,13 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   end
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  fdl =  1/2 * rhoFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; 
+  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; 
   % lift cross section force vector in deformed coordinates
-  fll =  1/2 * rhoFluid * c_l * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; 
+  fll =  1/2 * densityFluid * c_l * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; 
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll ;
  % torsional moment fluid load in deformed coordinates
-  ma =  1/2 * rhoFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
+  ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
 
   % Compute the element fluid load forces vector in global coordinates
   % compute the integral term of the current cross section in rigid coordinates

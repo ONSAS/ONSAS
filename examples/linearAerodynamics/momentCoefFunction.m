@@ -1,4 +1,4 @@
-function C_m = momentCoefFunction (betaRel)
+function C_m = momentCoefFunction ( betaRel, Re )
     % Aeroelastic stability of a 3DOF system based on quasi-steady theory with reference to inertial coupling
     % Emulation of aerodinamic moment extracted from the reference above
     if max(betaRel) < deg2rad(210)
