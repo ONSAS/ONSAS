@@ -19,95 +19,82 @@
 
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
+function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements, Nodes )
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds )
-% Build nodes MEBI matrix by selecting the first Conec index null 
-conecCellMat = myCell2Mat( mesh.conecCell )                ;
-conecNodes = conecCellMat(find( conecCellMat(:,1)==0 ),:)  ;
+  % Extract mesh parameters
+  Conec  = myCell2Mat( mesh.conecCell ) ;
+  nNodes = size( Nodes,1) ;
 
-% Build nodes MEBI matrix
-conecElems = conecCellMat(find( conecCellMat(:,1) ~=0 ),:) ;
+  % Create kinematic vectors
+  U       = zeros( 6*nNodes, 1 ) ;
+  Udot    = zeros( 6*nNodes, 1 ) ;
+  Udotdot = zeros( 6*nNodes, 1 ) ;
 
-% Compute number of nodes
-nNodes = size( mesh.nodesCoords, 1 ) ;
-
-% Create velocity and displacements vectors
-U       = zeros( 6*nNodes,   1 ) ;
-Udot    = zeros( 6*nNodes,   1 ) ;
-Udotdot = zeros( 6*nNodes,   1 ) ;
-
-% Nodes initial conditions
-
-% Process nodal displacement initial condition (IC)
-if isfield( initialConds, 'nonHomogeneousInitialCondU0' )
-
-  % Compute different initial conditions loaded 
-  initialCondsTypes  = unique( conecNodes( :, 4) ) ; 
-  % delete null initial conditions
-  initialCondsTypes(initialCondsTypes==0) = [] ;
-  %md loop over the types of initial conditions added in the mesh
-  for indIC = 1:length( initialCondsTypes ) ;
-
-    % number of current IC processed
-    ICnum = initialCondsTypes( indIC ) ;
-
-    % locate nodes with that index of initial condition into conecNodes matrix
-    indexNodesIC = find( conecNodes( :, 4 ) == ICnum ) ;
-
-    % get the nodes that has that IC
-    nodesIC = conecNodes(indexNodesIC,5) ;
+  % displacements initial conditions
+  if isfield( initialConds, 'nonHomogeneousUVals' )
     
-    % add the imposedDisps for all the nodes with the same IC
-    % this could be vectorized! using the Dofs relative to the dof of the node dofNodes = nodes2dofs(nodesIC, 6) and the dofNodes(1:dofsIC:end) and so on
-    for nodeIC = nodesIC'
-      % compute dofs of nodes with that IC 
-      dofsNodesIC = nodes2dofs(nodeIC, 6) ;
-
-      % load initial condition values
-      dofsICindex = initialConds(indIC).nonHomogeneousInitialCondU0.Dofs ; 
-      valsICindex = initialConds(indIC).nonHomogeneousInitialCondU0.Vals ; 
-
-      % add the initial condition displacements vector
-      U( dofsNodesIC(dofsICindex), 1 ) = valsICindex ;
+    % Compute different initial conditions loaded 
+    initialCondsTypes  = unique( Conec( :, 4) ) ;
+ 
+    % delete null initial conditions
+    if initialCondsTypes(1) == 0
+      initialCondsTypes(1) = [] ;
     end
-  end
-end
-% Process nodal velocity initial condition 
-if isfield( initialConds, 'nonHomogeneousInitialCondUdot0' )
-
-  % Compute different initial conditions loaded 
-  initialCondsTypes  = unique( conecNodes( :, 4) ) ; 
-  % delete null initial conditions
-  initialCondsTypes(initialCondsTypes==0) = [] ;
-  %md loop over the types of initial conditions added in the mesh
-  for indIC = 1:length( initialCondsTypes ) ;
-
-    % number of current IC processed
-    ICnum = initialCondsTypes( indIC ) ;
-
-    % locate nodes with that index of initial condition into conecNodes matrix
-    indexNodesIC = find( conecNodes( :, 4 ) == ICnum ) ;
-
-    % get the nodes that has that IC
-    nodesIC = conecNodes(indexNodesIC,5) ;
     
-    % add the imposedDisps for all the nodes with the same IC
-    % this could be vectorized! using the Dofs relative to the dof of the node dofNodes = nodes2dofs(nodesIC, 6) and the dofNodes(1:dofsIC:end) and so on
-    for nodeIC = nodesIC'
-      % compute dofs of nodes with that IC 
-      dofsNodesIC = nodes2dofs(nodeIC, 6) ;
+    %md loop over the types of initial conditions added in the mesh
+    for indIC = 1:length( initialCondsTypes ) ;
 
-      % load initial condition values
-      dofsICindex = initialConds(indIC).nonHomogeneousInitialCondUdot0.Dofs ; 
-      valsICindex = initialConds(indIC).nonHomogeneousInitialCondUdot0.Vals ; 
+      % number of current IC processed
+      indIC = initialCondsTypes( indIC ) ;
+     
+      %md find the elements with the current initial condition
+      elemsWithIC = find( Conec(:,4) == indIC ) ;
+     
+      %md values and imposed dofs of current IC
+      impoUDofs = initialConds(indIC).nonHomogeneousUDofs ;
+      impoUVals = initialConds(indIC).nonHomogeneousUVals ;
+     
+      % compute the imposed dofs and vals for the elements with that IC 
+      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) 
+      
+      % add the initial condition velocity vector
+      U( icDiriDofs, 1 ) = U( icDiriDofs, 1 ) + nonHomUDiriVals ;
+    
+    end %for types of IC
+  
+  end %if disp IC
+  % Process velocity initial condition 
+  % displacements initial conditions
+  if isfield( initialConds, 'nonHomogeneousUdotVals' )
 
-      % add the initial condition displacements vector
-      Udot( dofsNodesIC(dofsICindex), 1 ) = valsICindex ;
+    % Compute different initial conditions loaded 
+    initialCondsTypes  = unique( Conec( :, 4) ) ; 
+ 
+    % delete null initial conditions
+    if initialCondsTypes(1) == 0
+      initialCondsTypes(1) = [] ;
     end
-  end
-end
+    
+    %md loop over the types of initial conditions added in the mesh
+    for indIC = 1:length( initialCondsTypes ) ;
 
-% Add initial acceleration for some numerical method ?
-
-% Add elements initial condition here
-% ---------------------------------------------------
+      % number of current IC processed
+      indIC = initialCondsTypes( indIC ) ;
+     
+      %md find the elements with the current initial condition
+      elemsWithIC = find( Conec(:,4) == indIC ) ;
+     
+      %md values and imposed dofs of current IC
+      impoUdotDofs = initialConds(indIC).nonHomogeneousUdotDofs ;
+      impoUdotVals = initialConds(indIC).nonHomogeneousUdotVals ;
+     
+      % compute the imposed dofs and vals for the elements with that IC 
+      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUdotDofs, impoUdotVals, Nodes )
+      
+      % add the initial condition velocity vector
+      Udot( icDiriDofs, 1 ) = Udot( icDiriDofs, 1 ) + nonHomUDiriVals' ;
+    
+    end %for types of IC
+  
+  end %if disp IC
+end %end function

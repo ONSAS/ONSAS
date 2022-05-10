@@ -24,7 +24,7 @@ E  = 210e3 ; nu  = 0 ; rho = 8050 ;
 % gemotric scalar parameters
 rotAng = 45 ; L = 2 ; b = 0.05 ; % m - width of square section
 % the number of elements of the mesh
-numElements = 2 ;
+numElements = 10 ;
 %md
 %md## Numerical solution: truss case
 %md---
