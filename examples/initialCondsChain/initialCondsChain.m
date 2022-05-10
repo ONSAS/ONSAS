@@ -22,9 +22,9 @@ close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 E  = 210e3 ; nu  = 0 ; rho = 8050 ;
 % gemotric scalar parameters
-rotAng = 45 ; L = 2 ; b = 0.05 ; % m - width of square section
+rotAng = deg2rad(20) ; L = 2 ; b = 0.05 ; % m - width of square section
 % the number of elements of the mesh
-numElements = 6  ; %cant be changed
+numElements = 10  ; %must be greater than and a pair value 
 %md
 %md## Numerical solution: truss case
 %md---
@@ -54,20 +54,20 @@ elements(2).massMatType = 'consistent' ;
 %md
 %md#### initial Conditions
 %md homogeneous initial conditions are considered, by the V-shape depicted in the diagram above, consequently the coordinates mathematical expression of the initial configuration shape is built for 0 and l/2 and flipping that vector from l/2 to 0.
-yInitConfigCoordsMiddle = linspace(0, L, numElements +1)(1:end/2 +1 ) / cos(rotAng) ; 
+yInitConfigCoordsMiddle = linspace(0, L, numElements)(1:end/2 +1 ) / cos(rotAng) ; 
 yInitConfigCoords = [ yInitConfigCoordsMiddle flip( yInitConfigCoordsMiddle(1:end-1) ) ] ;
 %md since only non homogenous initial conditios are added into $y$ axis the associated degrees of freedom are
 dofsYInitCond = ( 3:6:6*(numElements +1) );
+% the number of different initial conditions imposed are:
+numDifInitialConds = floor(sum(dofsYInitCond>0) /2) ; 
 %md first create an empty `initialConds` struct
 initialConds = struct() ;
 %md the format code to add non homogeneous initial condition is a vector that $i-th$ position contain the degree of freedom and in the following column the value of the initial condition : [dof1 valueInitCond1; dof2 valueInitCond2]. In this case
 initialConds = {} ;
-initialConds(1).nonHomogeneousUDofs = [ 3 ] ;
-initialConds(1).nonHomogeneousUVals = [yInitConfigCoordsMiddle(2) ] ;
-initialConds(2).nonHomogeneousUDofs = [ 3 ] ;
-initialConds(2).nonHomogeneousUVals = [yInitConfigCoordsMiddle(3) ] ;
-initialConds(3).nonHomogeneousUDofs = [ 3 ] ;
-initialConds(3).nonHomogeneousUVals = [yInitConfigCoordsMiddle(4) ] ;
+for indCond = 1:numDifInitialConds
+  initialConds(indCond).nonHomogeneousUDofs = [ 3 ] ;
+  initialConds(indCond).nonHomogeneousUVals = [yInitConfigCoordsMiddle(indCond+1) ] ;
+end
 %md
 %md
 %md#### boundaryConds
@@ -90,23 +90,22 @@ mesh.conecCell = { } ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1  ] ;
 mesh.conecCell{ 2, 1 } = [ 0 1 1 0  numElements + 1 ] ;
 %md since all nodes have the first not homogenous initial condition and no material, and boundary condition then
-mesh.conecCell{ 3, 1 } = [ 0 1 0 1  2  ] ;
-mesh.conecCell{ 4, 1 } = [ 0 1 0 2  3  ] ;
-mesh.conecCell{ 5, 1 } = [ 0 1 0 3  4  ] ;
-mesh.conecCell{ 6, 1 } = [ 0 1 0 2  5  ] ;
-mesh.conecCell{ 7, 1 } = [ 0 1 0 1  6  ] ;
+%md the vector of initial conditions indexes is:
+initCondVec = [ [1:numDifInitialConds] flip( [ 1:numDifInitialConds-1] ) ] ;
+for numIC =  1:length(initCondVec)
+  mesh.conecCell{ numIC+2, 1 } = [ 0 1 0  initCondVec(numIC)  numIC+1  ] ;
+end
 %md the truss elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element, consecutive to the nods data into conecCell we add
 for i = 1:numElements
   mesh.conecCell{ numElements + 1 + i,1 } = [ 1 2 0 0  i i+1 ] ;
 end
-
 %md
 %md### analysisSettings
 %mdAn alpha HHT method algorithm is used to solve the problem so the `methodName` field of _analysisSettings_ struct is set
 analysisSettings.methodName    = 'alphaHHT' ;
 %md and the following parameters correspond to the iterative numerical analysis settings are
 analysisSettings.deltaT        =   0.01 ;
-analysisSettings.finalTime     =   5  ;
+analysisSettings.finalTime     =   5    ;
 analysisSettings.stopTolDeltau =   0    ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   30   ;
