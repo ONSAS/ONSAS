@@ -6,7 +6,7 @@
 %mdthe book Dynamics of Structures by Ray W. Clough and Joseph Penzien, Third Edition, 2003.
 %md
 %md```@raw html
-%md<img src="../../assets/springMass.svg" alt="spring-mass diagram" width="500"/>
+%md<img src="../../assets/springMass.svg" alt="spring-mass diagram" width="800"/>
 %md```
 %md
 %md
