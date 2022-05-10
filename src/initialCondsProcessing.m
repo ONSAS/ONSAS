@@ -55,7 +55,7 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
       impoUVals = initialConds(indIC).nonHomogeneousUVals ;
      
       % compute the imposed dofs and vals for the elements with that IC 
-      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) 
+      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ;
       
       % add the initial condition velocity vector
       U( icDiriDofs, 1 ) = U( icDiriDofs, 1 ) + nonHomUDiriVals ;
@@ -89,7 +89,7 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
       impoUdotVals = initialConds(indIC).nonHomogeneousUdotVals ;
      
       % compute the imposed dofs and vals for the elements with that IC 
-      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUdotDofs, impoUdotVals, Nodes )
+      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUdotDofs, impoUdotVals, Nodes ) ;
       
       % add the initial condition velocity vector
       Udot( icDiriDofs, 1 ) = Udot( icDiriDofs, 1 ) + nonHomUDiriVals' ;
