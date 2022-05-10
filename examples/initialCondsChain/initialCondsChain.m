@@ -61,8 +61,8 @@ dofsYInitCond = ( 3:6:6*(numElements +1) );
 %md first create an empty `initialConds` struct
 initialConds = struct() ;
 %md the format code to add non homogeneous initial condition is a vector that $i-th$ position contain the degree of freedom and in the following column the value of the initial condition : [dof1 valueInitCond1; dof2 valueInitCond2]. In this case
-initialConds(1).nonHomogeneousInitialCondU0.Dofs = [1   3  5 ] ;
-initialConds(1).nonHomogeneousInitialCondU0.Vals = [0.1 .5  0.1 ] ;
+initialConds(1).nonHomogeneousUDofs = [1   3  5 ] ;
+initialConds(1).nonHomogeneousUVals = [0.1 .5  0.1 ] ;
 % initialConds(2).nonHomogeneousInitialCondU0.Dofs = [1 3 5 ] ;
 % initialConds(2).nonHomogeneousInitialCondU0.Vals = [2 0 1 ] ;
 %md
