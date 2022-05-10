@@ -14,7 +14,7 @@ close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 % External forced load parameters
-Fo     = 100; % N 
+Fo     = 100; % N
 w      = 2;    % rad/s
 % Time values
 tf     = 8;    % sec
@@ -30,21 +30,21 @@ Izz = tz*ty^3/12 ;
 numElements = 50 ;
 %md
 %md## Analytic solution
-%md 
+%md
 %md The dynamic displacement of a forced beam describe by the next differential equation
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2
 %w}{\partial t^2} = f(x,t)
 %md```math
 %md Implementig a solution w(x,t) = W(x)T(t) it is possible to find:
-%md```math 
+%md```math
 %md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
 %md```math
-%md 
-%md## External Load application node
-a  = l*(numElements/2+1)/numElements; 
 %md
-%md## Analytic solution of a beam with fix nodes in both ends. 
+%md## External Load application node
+a  = l*(numElements/2+1)/numElements;
+%md
+%md## Analytic solution of a beam with fix nodes in both ends.
 analyticSol  = @(x, t, wn, n) (1/(wn^2 - w^2))*sin(n*pi*a/l)*sin(n*pi*x/l)*sin(w*t);
 %md
 t  = 0:deltat:tf; % time vector
