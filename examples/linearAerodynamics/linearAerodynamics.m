@@ -46,6 +46,10 @@ E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
 A = pi * (dext^2 - dint^2) / 4  ;
 J = pi * (dext^4 - dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
+%md 
+%md The fluid properties are:
+rhoA = 1.225 ; nuA = 1.6e-5;
+
 %md
 %md the number of elements employed to discretize the beam is:
 numElements = 10 ;
@@ -65,10 +69,8 @@ elements(2).elemType = 'frame' ;
 %md The node type has no cross-section geometry to assign (an empty array is automatically set). Since the frame element has no implemented a hollow cylindrical cross-section, then a `'generic'` cross-section (in $y$ and $z$) is used. Thus the _elemCrossSecParams_ field is:
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
-%md Now the parameters to include aerodynamic forces automatically on the frame element are defined. First the drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _userDragCoef_  _userLiftCoef_ _momentCoefFunction_ fields are:
-elements(2).userDragCoef   = 'dragCoefFunction'   ;
-elements(2).userLiftCoef   = 'liftCoefFunction'   ;
-elements(2).userMomentCoef = 'momentCoefFunction' ;
+%md Now the parameters to include aerodynamic forces automatically on the frame element are defined. The drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _aeroCoefs_ field is a row cell defined as:
+elements(2).aeroCoefs   = {'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction'} ;
 %md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. All this information is added into _elemTypeAero_ field of `elements` struct such that:
 numGaussPoints  = 4 ; 
 elements(2).elemTypeAero   = [0 dext 0 numGaussPoints];
@@ -98,8 +100,8 @@ end
 %md
 %md### analysisSettings
 %md
-%md First the wind velocity function name is set into _userWindVel_ field of `analysisSettings` struct. This will apply a external wind loads for each element with _elemTypeAero_ field into the `elements` struct. The name of the wind velocity function located on the same example path is: 
-analysisSettings.userWindVel = 'windVel' ;
+%md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with _elemTypeAero_ field into the `elements` struct. The name of the wind velocity function located on the same example path is introduced as a string 'windVel': 
+analysisSettings.fluidProps = {rhoA; nuA; 'windVel'} ;
 %md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = false;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
@@ -126,32 +128,39 @@ otherParams.plotsFormat = 'vtk' ;
 %md### Symbolic solution
 %md
 %md For such propose the angle of incidence and the wind properties are computed as:
-% air density is:
-rhoAire = 1.225 ;
 % then characteristic dimension is extracted executing: 
 dimCaracteristic = norm(elements(2).elemTypeAero (1:3) ) ;
 % the angle of attack is: 
 betaRel = acos(dot(elements(2).elemTypeAero( 1:3 ) , [0 0 1] ));
 % the wind velocity is:
-windVel = feval(analysisSettings.userWindVel, betaRel, analysisSettings.finalTime) ;
-% the drag, lift and eventually moment coef are:
-if isfield(elements(2), 'userDragCoef')
-  c_d = feval(elements(2).userDragCoef, betaRel);
+windVel = feval(analysisSettings.fluidProps{3,:}, betaRel, analysisSettings.finalTime) ;
+% Extract the aerodynamic coefficients 
+userDragCoef   = elements(2).aeroCoefs{1,:} ; 
+userLiftCoef   = elements(2).aeroCoefs{2,:} ; 
+userMomentCoef = elements(2).aeroCoefs{3,:} ; 
+% Delete spaces
+userDragCoef   = strrep(userDragCoef,' ','')   ;
+userLiftCoef   = strrep(userLiftCoef,' ','')   ;
+userMomentCoef = strrep(userMomentCoef,' ','') ;
+
+% the drag, lift and eventually moment coefficients are:
+if ~isempty(userDragCoef)
+  c_d = feval(userDragCoef, betaRel);
 else
   c_d = 0;
 end
-if isfield(elements(2), 'userLiftCoef')
-  c_l = feval(elements(2).userLiftCoef, betaRel);
+if ~isempty(userLiftCoef)
+  c_l = feval(userLiftCoef, betaRel);
 else
   c_l = 0;
 end
-if isfield(elements(2), 'userMomentCoef')
-  c_m = feval(elements(2).userLiftCoef, betaRel);
+if ~isempty(userMomentCoef)
+  c_m = feval(userMomentCoef, -betaRel);
 else
   c_m = 0;
 end
 %md Then the dynamic pressures $q_0$ defined above are expressed such that: 
-q = 1/2 * rhoAire * (windVel(3)^2 + windVel(2)^2) ;
+q = 1/2 * rhoA * (windVel(3)^2 + windVel(2)^2) ;
 %md next the loads per unit of length are  
 qz = q * c_d * dimCaracteristic ; qy = q * c_l * dimCaracteristic ;  qm = q * c_m * dimCaracteristic ; 
 %md then an analytic x vector to evaluate the deformed analytic solution is build as 
