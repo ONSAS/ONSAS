@@ -55,10 +55,10 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
       impoUVals = initialConds(indIC).nonHomogeneousUVals ;
      
       % compute the imposed dofs and vals for the elements with that IC 
-      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ;
+      [ nonHomUDiriVals, diriDofs, nonHomoDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ;
       
       % add the initial condition velocity vector
-      U( icDiriDofs, 1 ) = U( icDiriDofs, 1 ) + nonHomUDiriVals ;
+      U( diriDofs, 1 ) = U( diriDofs, 1 ) + nonHomUDiriVals ;
     
     end %for types of IC
   
@@ -66,9 +66,9 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
   % Process velocity initial condition 
   % displacements initial conditions
   if isfield( initialConds, 'nonHomogeneousUdotVals' )
-
+    
     % Compute different initial conditions loaded 
-    initialCondsTypes  = unique( Conec( :, 4) ) ; 
+    initialCondsTypes  = unique( Conec( :, 4) ) ;
  
     % delete null initial conditions
     if initialCondsTypes(1) == 0
@@ -85,16 +85,17 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
       elemsWithIC = find( Conec(:,4) == indIC ) ;
      
       %md values and imposed dofs of current IC
-      impoUdotDofs = initialConds(indIC).nonHomogeneousUdotDofs ;
-      impoUdotVals = initialConds(indIC).nonHomogeneousUdotVals ;
+      impoUDofs = initialConds(indIC).nonHomogeneousUdotDofs ;
+      impoUVals = initialConds(indIC).nonHomogeneousUdotVals ;
      
       % compute the imposed dofs and vals for the elements with that IC 
-      [ nonHomUDiriVals, icDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUdotDofs, impoUdotVals, Nodes ) ;
+      [ nonHomUDiriVals, ~, nonHomoDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ; 
       
       % add the initial condition velocity vector
-      Udot( icDiriDofs, 1 ) = Udot( icDiriDofs, 1 ) + nonHomUDiriVals' ;
+      Udot( nonHomoDiriDofs, 1 ) = Udot( nonHomoDiriDofs, 1 ) + nonHomUDiriVals ;
     
     end %for types of IC
   
   end %if disp IC
+
 end %end function
