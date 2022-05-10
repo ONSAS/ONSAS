@@ -13,9 +13,9 @@ E = 210e9 ;  nu = 0.3 ; rho = 6000 ; G = E / (2 * (1+nu)) ;
 l = 3 ; d = 0.1; 
 %md```
 %md# analytical solution
-%mdcompute solution by the second carindal, firt the wind parameters are lodaded
+%mdcompute solution by the second carindal, first the wind parameters are loaded
 %md```math
-rhoA = 1.225 ; c_l = feval('liftCoef', 0) ; vwind = feval('windVel', 0,0) ;
+rhoA = 1.225 ; nuA = 1.6e-5;   c_l = feval('liftCoef', 0) ; vwind = feval('windVel', 0,0) ;
 %md```
 %md lift load per unit of length: 
 %md```math
@@ -102,33 +102,33 @@ otherParams.plotsFormat = 'vtk' ;
 %md## elements
 %md
 %mdAdd aerodynamic properties into elements struct:
-numGaussPoints = 4 ; formulCase = 4 ;
-elements(2).elemTypeAero     = [0 0 d numGaussPoints formulCase ] ;
-elements(2).userLiftCoef     = 'liftCoef'                         ;
-%mdsecond blade in (z,-y) quarter 
+numGaussPoints = 4 ;
+elements(2).elemTypeAero  = [0 0 d numGaussPoints ] ;
+elements(2).aeroCoefs     = { []; 'liftCoef'; []  }            ;
+%md second blade in (z,-y) quarter 
 elements(3).elemType = 'frame' ;
 elements(3).elemCrossSecParams{1,1} = 'circle' ;
 elements(3).elemCrossSecParams{2,1} =  d       ;
-elements(3).elemTypeAero     = [0 d 0 numGaussPoints formulCase ] ;
-elements(3).userLiftCoef     = 'liftCoef'                         ;
-%mdthird blade in (z,y) quarter 
+elements(3).elemTypeAero     = [0 d 0 numGaussPoints ] ;
+elements(2).aeroCoefs        = { []; 'liftCoef'; []  }            ;
+%md third blade in (z,y) quarter 
 elements(4).elemType = 'frame' ;
 elements(4).elemCrossSecParams{1,1} = 'circle' ;
 elements(4).elemCrossSecParams{2,1} =  d       ;
-elements(4).elemTypeAero     = [0 -d 0 numGaussPoints formulCase ] ;
-elements(4).userLiftCoef     = 'liftCoef'                          ;
+elements(4).elemTypeAero     = [0 -d 0 numGaussPoints ] ;
+elements(2).aeroCoefs        = { [], 'liftCoef', []  }             ;
 %md
 %md ## boundary Conditions
 %md
-%mdthen delete boundary conditions into the struct:
+%md then delete boundary conditions into the struct:
 boundaryConds(1).loadsCoordSys = [] ;
 boundaryConds(1).loadsTimeFact = [] ;
 boundaryConds(1).loadsBaseVals = [] ;
 %md
 %md ## analysisSettings
 %md
-%mdadd wind velocity function into analyisis settings struct:
-analysisSettings.userWindVel = 'windVel' ;
+%md add wind velocity function into analysis settings struct:
+analysisSettings.fluidProps = { rhoA ; nuA ; 'windVel' } ;
 %md### otherParams
 %md
 otherParams.problemName = strcat( 'onsasExample_simpleWindTurbine_aeroForce' ) ;
@@ -138,16 +138,15 @@ otherParams.plotsFormat = 'vtk' ;
 %md
 %md## Verification
 %md
-%md numercial time vector is given by:
+%md numerical time vector is given by:
 timeVec = linspace(0, analysisSettings.finalTime, size(matUs_nodalMoment, 2) ) ;
-%md numercial rotation angle for nodal moment case is:
+%md numerical rotation angle for nodal moment case is:
 dofAngleXnode1 = 2 ;
 angleXnode1Numeric_NodalMoment = -matUs_nodalMoment(dofAngleXnode1,:) ;
-%md numercial rotation angle for nodal moment case is:
+%md numerical rotation angle for nodal moment case is:
 angleXnode1Numeric_aeroForce = -matUs_aeroForce(dofAngleXnode1,:) ;
 %md analytical rotation angle is:
 angleXnode1Analytic = angleXnode1(timeVec) ;
-
 %md
 verifBoolean = norm( angleXnode1Numeric_aeroForce - angleXnode1Analytic )  ...
                     < ( norm( angleXnode1Numeric_aeroForce ) * 1e-1 ) ;

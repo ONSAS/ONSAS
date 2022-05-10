@@ -1,4 +1,4 @@
-function C_l = liftCoefFunction (betaRel)
+function C_l = liftCoefFunction ( betaRel, Re )
     % Aeroelastic stability of a 3DOF system based on quasi-steady theory with reference to inertial coupling
     % Emulation of lift extracted from the reference above
     if max(betaRel) < deg2rad(210)

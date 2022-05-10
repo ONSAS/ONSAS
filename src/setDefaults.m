@@ -27,9 +27,7 @@ elements          = checkOrSetDefault ( elements         , 'massMatType'        
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemTypeAero'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userDragCoef'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userLiftCoef'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'userMomentCoef'     , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'aeroCoefs'          , [] ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
@@ -37,7 +35,7 @@ boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] 
 
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'userWindVel'            , []              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;

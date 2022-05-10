@@ -10,7 +10,7 @@ The data and properties of each structural model are defined through a set of de
  1. `numericalMethod`
  1. `otherParams`
 
-Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assiged using _structName.fieldName_. A description of each struct and its fields follows at next.
+Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assigned using _structName.fieldName_. A description of each struct and its fields follows at next.
 
 ## The `materials` struct
 
@@ -19,7 +19,7 @@ The materials struct contains the information of the material behavior considere
 ### `material.hyperElasModel`
 
 This is a cell array with the string-names of the material models used, the options for these names are:
- * `'linearElastic'`: for linear behaviour in small strains and displacements. The scalar parameters of this model are $p_1=E$ the Young modulus and $p_2=\nu$ the Poisson's ratio.
+ * `'linearElastic'`: for linear behavior in small strains and displacements. The scalar parameters of this model are $p_1=E$ the Young modulus and $p_2=\nu$ the Poisson's ratio.
  * `'SVK'`: for a Saint-Venant-Kirchhoff material where the parameters $p_1$ and $p_2$ are the Lamé parameters and $\textbf{E}$ is the Green-Lagrange strain tensor, with the strain-energy density function given by
 ```math
 \Psi( \textbf{E} ) = \frac{p_1}{2} tr(\textbf{E})^2 + p_2 tr(\textbf{E}^2)
@@ -67,6 +67,15 @@ cell structure with auxiliar params information, required for some element types
 
  
  The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
+
+ ### `elements.elemTypeAero`
+The `elementTypeAero` field is a vector that sets for frame aerodynamic co-rotational element the chord vector in total-deformed coordinates $t$ (which initially are equal to reference $e$), and the number of gauss points $numGauss$:
+```math
+\{ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\}
+```
+ ### `elements.aeroCoefs`
+
+The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. 
 
 ### `elements.elemTypeGeometry`
 
@@ -141,7 +150,7 @@ matrix with the coordinates of all the nodes of the mesh. The $i$-th row contain
 ```math
  [ materialInd, \, elementInd, \, boundaryCondInd, \, initialCondInd, \, node_1 \dots node_{n} ]
 ```
-where the five indexes are natural numbers and $n$ is the number of nodes required by the type of element. If noproperty is assigned the $0$ index can be used, for instance, nodes used to introduced loads should be defined with `materialIndex = 0`.
+where the five indexes are natural numbers and $n$ is the number of nodes required by the type of element. If no property is assigned the $0$ index can be used, for instance, nodes used to introduced loads should be defined with `materialIndex = 0`.
 
 ## The `analysisSettings` struct
 
@@ -164,6 +173,13 @@ another additional optional parameters are:
 
  * `booleanSelfWeight`: a boolean indicating if self weight loads are considered or not. The loads are computed using the density of the material and in the $-z$ global direction.
  * `iniMatUs`: a matrix with initial solutions for each time step.
+
+then the aerodynamic-frame element parameters set are
+* `fluidProps`: is a row cell with the density $\rho_f$, viscosity $\nu_f$ and the function with the fluid velocity  
+
+```math
+\{ \rho_f; \,\, \rho_f; \,\, \rho_f; \,\,numGauss\}
+```
 
 ## The `otherParams` struct
 

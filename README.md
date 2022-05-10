@@ -77,4 +77,5 @@ The complete list of contributions and acknowledgments is available at the docum
 
 ## Contact <a name="contact"></a>
 
-If you have any question you can send an e-mail to _jorgepz [AT] fing.edu.uy_ or [![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) .
+If you have any question you can send an e-mail to _jorgepz [AT] fing.edu.uy_ or join the chat at   <a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge" target="_blank"><img alt="Gitter" src="https://img.shields.io/gitter/room/JuliaReach/Lobby?style=for-the-badge&logo=gitter&logoColor=white" /></a>
+</p>
