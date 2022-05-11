@@ -47,7 +47,7 @@ The code is distributed under a GNU-GPL 3.0 license.
 
 
 ## How to use ONSAS <a name="howtouseonsas"></a>
-------
+
 
 The user should follow these steps to install and run onsas:
 

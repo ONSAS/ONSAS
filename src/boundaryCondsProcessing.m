@@ -127,12 +127,21 @@ if neumDofs(1) == 0,
   neumDofs(1)=[] ;
 end
 
-% FIx me when userLoadsFilename boundaryConds(wind is not in the first cell)
+% read user load filename
+userLoadsFilename = [] ;
+
 if isfield( boundaryConds,'userLoadsFilename' )
-  userLoadsFilename = boundaryConds.userLoadsFilename ;
-else
-  userLoadsFilename =[];
+  for ind = 1:length(boundaryConds)
+    if ~isempty( boundaryConds(ind).userLoadsFilename )
+      if ~isempty( userLoadsFilename )
+        error('only one user load function can be used!');
+      else
+        userLoadsFilename = boundaryConds(ind).userLoadsFilename ;
+      end
+    end
+  end
 end
+
 % FIx me when userWindVel boundaryConds(wind is not in the first cell)
 if isfield( boundaryConds,'userWindVel' )
   userWindVel  = boundaryConds.userWindVel     ;
