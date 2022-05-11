@@ -2,7 +2,7 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/onsasExample_staticVonMisesTruss.m)
 %md
-%mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the Newton-Raphson and Newton-Raphson-Arc-Length methods implementation by comparing the results provided with the analytic solutions.
+%mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
 %md
 %mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane, and nodes $1$ and $3$ fixed.
 %md
@@ -15,11 +15,11 @@
 %mdThe solutions for the nonlinear cases are developed in section 2.3 of [(Bazzano and Pérez Zerpa, 2017)](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf#section.2.3). The expressions obtained for different strain measures are:
 %md * Rotated-Engineering: $P = \frac{EA_o(z_2+w)\left(\sqrt{(w+z_2)^2+x_2^2}-l_o\right)}{l_o\sqrt{(w+z_2)^2+x_2^2}}$
 %md * SVK: $P = \frac{EA_o (z_2+w)\left( 2 z_2 w + w^2 \right) }{ 2 l_o^3 }$
-%md where $x_2$ and $z_2$ are the coordinates of node 2 and $w$ is measured positive as $z$.
+%md where $x_2$ and $z_2$ are the coordinates of node 2 and $w$ is the vertical displacement, measured positive as $z$.
 %md
 %md## Numerical solutions
 %md
-%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
+%mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;
@@ -47,7 +47,6 @@ elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 %md for the geometries, the node has no geometry to assign, and the truss elements will be set as a circle cross-section, then the elemCrossSecParams field is:
 elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
-elements(2).massMatType = 'consistent' ;
 %md
 %md#### boundaryConds
 %md
@@ -79,7 +78,7 @@ mesh.nodesCoords = [   0  0   0 ; ...
 %md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 %md
 %mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
-mesh.conecCell = { } ;
+mesh.conecCell = cell(5,1) ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 %md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
@@ -105,23 +104,25 @@ analysisSettings.stopTolIts    =   15   ;
 otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
 otherParams.plotsFormat = 'vtk' ;
 %md
-%md### Analysis case 1: NR with Rotated Eng Strain
+%md### Analysis case 1: Newton-Raphson with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md
-%md### Numerical solution for linear elastic behavior
-%md
-materials.hyperElasModel  = 'linearElastic' ;
+%md### Analysis case 2: Newton-Raphson with linear elastic behavior
+%mdIn this case a linear elastic behavior is assumed. Then the hyperelasmodel es overwritten
+materials.hyperElasModel = 'linearElastic' ;
+otherParams.problemName  = 'staticVonMisesTruss_linearElastic';
+analysisSettings.finalTime  =   1.5    ;
+%md and the analysis is run again
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md the displacements are extracted
 controlDispsNRLinearElastic =  -matUs(11,:) ;
 loadFactorsNRLinearElastic  =  loadFactorsMat(:,2) ;
-analysisSettings.finalTime      =   1.5    ;
-otherParams.problemName = 'staticVonMisesTruss_linearElastic';
 %md
+%md and the analytic values of the load factor are computed, as well as its difference with the numerical solution
 %md
-%md and the analytical value of the load factors is computed, as well as its difference with the numerical solution
 analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      ( (  (z2+(-w)).^2 + x2^2 - L^2 ) ./ (L * ( L + sqrt((z2+(-w)).^2 + x2^2) )) ) ...
      .*  (z2+(-w))                    ./ ( sqrt((z2+(-w)).^2 + x2^2) )  ;
