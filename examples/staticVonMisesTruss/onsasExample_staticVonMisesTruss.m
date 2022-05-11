@@ -95,7 +95,7 @@ mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        =   0.1  ;
-analysisSettings.finalTime      =   1    ;
+analysisSettings.finalTime     =   1    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
@@ -128,34 +128,35 @@ analyticLoadFactorsNREngRot = @(w) -2 * E*A* ...
      .*  (z2+(-w))                    ./ ( sqrt((z2+(-w)).^2 + x2^2) )  ;
 difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactorsNREngRot ;
 %md
-%md### Analysis case 2: NR with Green Strain
-%md In order to perform a SVK case, the material is changed and the problemName is also updated
-otherParams.problemName = 'staticVonMisesTruss_NR_Green';
-materials.hyperElasModel  = 'SVK' ;
-analysisSettings.finalTime      =   1.0    ;
+%md### Analysis case 3: NR with Green Strain
+%md In order to perform a SVK case analysis, the material is changed and the problemName is also updated
+otherParams.problemName  = 'staticVonMisesTruss_NR_Green';
+materials.hyperElasModel = 'SVK' ;
+analysisSettings.finalTime =   1.0    ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 materials.hyperElasParams = [ lambda mu ] ;
 %md the load history is also changed
 boundaryConds(2).loadsTimeFact = @(t) 1.5e8*t ;
+%boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
 %md and the analysis is run
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md and the displacements are extracted
 controlDispsNRGreen =  -matUs(11,:) ;
 loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
-% %md the analytic solution is computed
+%md the analytic solution is computed
 analyticLoadFactorsGreen = @(w) - 2 * E*A * ( ( z2 + (-w) ) .* ( 2*z2*(-w) + w.^2 ) ) ./ ( 2.0 * L^3 )  ;
 difLoadGreen = analyticLoadFactorsGreen( controlDispsNRGreen )' - loadFactorsNRGreen ;
 %md
-%md### Analysis case 3: NR-AL with Green Strain
-
+%md### Analysis case 4: NR-AL with Green Strain
+%md
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
 %mdThe same loading conidition as before is used, but given by a user load function. The argument set in this case is:
-boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
 %md
 %md In this case, the numerical method is changed for newtonRaphson arc length.
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime     = 1                               ;
+analysisSettings.finalTime    = 1                               ;
 analysisSettings.incremArcLen = 0.15                             ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
