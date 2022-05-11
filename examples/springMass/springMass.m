@@ -41,7 +41,7 @@ E   = k * l /   A       ;
 %md     ( A_c \cos( \omega_D  t ) + B \sin( \omega_D t ) ) e^{ -\xi \omega_N t } +
 %md    G_1  \cos( \bar{\omega} t ) + G_2 \sin( \bar{\omega} t )
 %md``` 
-%md The expression of the equation above are computed depending of $c$ and the load amplitude $p_0$:
+%md The expression of the equation above is computed depending of $c$ and the load amplitude $p_0$:
 if (c == 0) && (p0 == 0) % free undamped solution
   myAnalyticFunc = @(t)   (   u0 * cos( omegaN * t )  ) ;
 else                     % other cases solution
