@@ -148,7 +148,9 @@ difLoadGreen = analyticLoadFactorsGreen( controlDispsNRGreen )' - loadFactorsNRG
 
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
-
+%mdThe same loading conidition as before is used, but given by a user load function. The argument set in this case is:
+boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
+%md
 %md In this case, the numerical method is changed for newtonRaphson arc length.
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
