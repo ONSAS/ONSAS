@@ -158,7 +158,7 @@ verifBoolean        = verifBooleanHHT && verifBooleanNewmark                    
 %md---------------------
 %md The control displacement $u(t)$ is plotted:  
 figure
-hold on, grid on, spanPlot = 8 ; lw = 2.0 ; ms = 11 ; plotfontsize = 25 ;
+hold on, grid on, spanPlot = 8 ; lw = 2.0 ; ms = 11 ; plotfontsize = 20 ;
 plot(times, valsAnaly   ,'b-', 'linewidth', lw,'markersize',ms )
 plot(times(1:spanPlot:end), valsNewmark(1:spanPlot:end) ,'ro', 'linewidth', lw,'markersize', ms )
 plot(times(1:spanPlot:end), valsHHT(1:spanPlot:end)     ,'gs', 'linewidth', lw,'markersize', ms )
@@ -166,11 +166,12 @@ labx = xlabel('t [s]');   laby = ylabel('u(t) [m]') ;
 legend( 'analytic', 'truss-Newmark','nodalMass-HHT', 'location','north')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/springMassCheck.png','-dpng')
 if exist('../../docs/src/assets/')==7
   % printing plot also to docs directory
   disp('printing plot also to docs directory')
-  print('../../docs/src/assets/springMassCheck.png','-dpng')
+  print('../../docs/src/build/springMassCheck.png','-dpng')
+  else 
+  print('output/springMassCheck.png','-dpng')
 end
 %md
 %md```@raw html
