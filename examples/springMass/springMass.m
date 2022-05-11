@@ -169,12 +169,12 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 if exist('../../docs/src/assets/')==7
   % printing plot also to docs directory
   disp('printing plot also to docs directory')
-  print('../../docs/src/assets/springMassCheck.png','-dpng')
+  print('../../docs/src/assets/springMassCheckU.png','-dpng')
   else 
-  print('output/springMassCheck.png','-dpng')
+  print('output/springMassCheckU.png','-dpng')
 end
 %md
 %md```@raw html
-%md<img src="../../assets/springMassCheck.png" alt="plot check" width="500"/>
+%md<img src="../../assets/springMassCheckU.png" alt="plot check" width="500"/>
 %md```
 %md
