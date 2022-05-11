@@ -23,6 +23,7 @@
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;
+
 % x and z coordinates of node 2
 x2 = cos( ang1*pi/180 ) * L ;
 z2 = sin( ang1*pi/180 ) * L ;
