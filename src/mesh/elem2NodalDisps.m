@@ -18,18 +18,14 @@
 
 %md function that constructs the vectors of constrained degrees of freedom
 
-function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elements, boundaryCond, Nodes )
+function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes )
 
   % declare outputs
   nonHomDiriVals = [] ;
   diriDofs = [] ;
   nonHomDiriDofs = [] ;
 
-  %md find the elements with the current boundary condition
-  elemsWithBC = find( Conec(:,3) == indBC ) ;
-
-  impoDofs = boundaryCond.imposDispDofs ;
-  impoVals = boundaryCond.imposDispVals ;
+  % find not null indexes of impoVals
   locNonHomDofs = find( impoVals )       ;
 
   %md loop in the elements to convert to nodal constraints
@@ -46,7 +42,7 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
     if strcmp( elemType, 'node') ; % node
       if ~isempty( locNonHomDofs)
         nonHomDiriDofs = [ nonHomDiriDofs; auxDofs(  locNonHomDofs) ];
-        nonHomDiriVals = [ nonHomDiriVals; impoVals( locNonHomDofs) ];
+        nonHomDiriVals = [ nonHomDiriVals; impoVals( locNonHomDofs)' ];
       end
       diriDofs = [ diriDofs ; auxDofs(impoDofs) ] ;
 
