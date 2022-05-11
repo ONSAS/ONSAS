@@ -19,50 +19,83 @@
 
 % This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
+function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements, Nodes )
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( nNodes )
+  % Extract mesh parameters
+  Conec  = myCell2Mat( mesh.conecCell ) ;
+  nNodes = size( Nodes,1) ;
 
-% create velocity and displacements vectors
-U       = zeros( 6*nNodes,   1 ) ;
-Udot    = zeros( 6*nNodes,   1 ) ;
-Udotdot = zeros( 6*nNodes,   1 ) ;
+  % Create kinematic vectors
+  U       = zeros( 6*nNodes, 1 ) ;
+  Udot    = zeros( 6*nNodes, 1 ) ;
+  Udotdot = zeros( 6*nNodes, 1 ) ;
 
-% adds non homogeneous initial conditions
-%~ if length( nonHomogeneousInitialCondU0 ) > 0
-  %~ for i = 1 : size( nonHomogeneousInitialCondU0, 1 ) % loop over rows of matrix
-    %~ dofs = nodes2dofs(nonHomogeneousInitialCondU0(i, 1 ), 6 ) ;
-    %~ U( dofs ( nonHomogeneousInitialCondU0 (i, 2 ) ) ) = ...
-      %~ nonHomogeneousInitialCondU0 ( i, 3 ) ;
-  %~ end
-%~ end % if nonHomIniCond
+  % displacements initial conditions
+  if isfield( initialConds, 'nonHomogeneousUVals' )
+    
+    % Compute different initial conditions loaded 
+    initialCondsTypes  = unique( Conec( :, 4) ) ;
+ 
+    % delete null initial conditions
+    if initialCondsTypes(1) == 0
+      initialCondsTypes(1) = [] ;
+    end
+    
+    %md loop over the types of initial conditions added in the mesh
+    for indIC = 1:length( initialCondsTypes ) ;
 
-%~ if length( nonHomogeneousInitialCondUdot0 ) > 0
-  %~ if numericalMethodParams(1) >= 3
-    %~ for i=1:size(nonHomogeneousInitialCondUdot0, 1)
-      %~ dofs = nodes2dofs( nonHomogeneousInitialCondUdot0(i, 1), 6 ) ;
-      %~ Udot( dofs( nonHomogeneousInitialCondUdot0(i, 2 ))) = ...
-        %~ nonHomogeneousInitialCondUdot0(i, 3 );
-    %~ end
-  %~ else
-    %~ warning(' velocity initial conditions set for a static analysis method' ) ;
-  %~ end
-%~ end
+      % number of current IC processed
+      indIC = initialCondsTypes( indIC ) ;
+     
+      %md find the elements with the current initial condition
+      elemsWithIC = find( Conec(:,4) == indIC ) ;
+     
+      %md values and imposed dofs of current IC
+      impoUDofs = initialConds(indIC).nonHomogeneousUDofs ;
+      impoUVals = initialConds(indIC).nonHomogeneousUVals ;
+     
+      % compute the imposed dofs and vals for the elements with that IC 
+      [ nonHomUDiriVals, diriDofs, nonHomoDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ;
+      
+      % add the initial condition velocity vector
+      U( diriDofs, 1 ) = U( diriDofs, 1 ) + nonHomUDiriVals ;
+    
+    end %for types of IC
+  
+  end %if disp IC
+  % Process velocity initial condition 
+  % displacements initial conditions
+  if isfield( initialConds, 'nonHomogeneousUdotVals' )
+    
+    % Compute different initial conditions loaded 
+    initialCondsTypes  = unique( Conec( :, 4) ) ;
+ 
+    % delete null initial conditions
+    if initialCondsTypes(1) == 0
+      initialCondsTypes(1) = [] ;
+    end
+    
+    %md loop over the types of initial conditions added in the mesh
+    for indIC = 1:length( initialCondsTypes ) ;
 
+      % number of current IC processed
+      indIC = initialCondsTypes( indIC ) ;
+     
+      %md find the elements with the current initial condition
+      elemsWithIC = find( Conec(:,4) == indIC ) ;
+     
+      %md values and imposed dofs of current IC
+      impoUDofs = initialConds(indIC).nonHomogeneousUdotDofs ;
+      impoUVals = initialConds(indIC).nonHomogeneousUdotVals ;
+     
+      % compute the imposed dofs and vals for the elements with that IC 
+      [ nonHomUDiriVals, ~, nonHomoDiriDofs ] = elem2NodalDisps ( Conec, indIC, elemsWithIC, elements, impoUDofs, impoUVals, Nodes ) ; 
+      
+      % add the initial condition velocity vector
+      Udot( nonHomoDiriDofs, 1 ) = Udot( nonHomoDiriDofs, 1 ) + nonHomUDiriVals ;
+    
+    end %for types of IC
+  
+  end %if disp IC
 
-% computation of initial acceleration for some cases
-% ---------------------------------------------------
-
-% --- initial tangent matrices ---
-%~ [ mats ] = assembler ( Conec, secGeomProps, coordsElemsMat, hyperElasParamsMat, KS, Ut, dynamicAnalysisBoolean, 2, Udotdott, massMatType ) ;
-
-%~ systemDeltauMatrix = mats{1}
-
-%~ stop
-%~ if dynamicAnalysisBoolean == 1,
-
-  %~ massMat    = mats{2} ;
-
-  %~ % --- computation of initial Udotdott for truss elements only!!!
-  %~ Fext = computeFext( constantFext, variableFext, loadFactors(1), userLoadsFilename ) ;
-
-  %~ Udotdott (neumdofs) = massMat( neumdofs, neumdofs ) \ ( Fext(neumdofs) -Fintt( neumdofs ) ) ;
+end %end function

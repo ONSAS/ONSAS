@@ -29,6 +29,7 @@ Conec  = myCell2Mat( mesh.conecCell ) ;
 Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
 
+
 %md Since we want to process the BCs, we keep only the nonzero BCs
 %md Computes the number of elements and BCs we have
 boundaryTypes  = unique( Conec( :, 3) ) ;
@@ -55,7 +56,7 @@ for indBC = 1:length( boundaryTypes )
   %md is loadsCoordSys is not empty, then some load is applied in this BC
   if ~isempty( boundaryConds( indBC ).loadsCoordSys )
     %md The nodal loads vector is computed and assiged to the corresponding BC entry.
-    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ), Nodes ) ;
+    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ),  Nodes ) ;
     % defaul load factor function
     if isempty( boundaryConds(BCnum).loadsTimeFact ),
       boundaryConds(BCnum).loadsTimeFact = @(t) t ;
@@ -65,7 +66,16 @@ for indBC = 1:length( boundaryTypes )
 
   %md displacement verification
   if ~isempty( boundaryConds(BCnum).imposDispDofs ),
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, BCnum, elements, boundaryConds(BCnum), Nodes ) ;
+    
+    %md values and imposed dofs of current BC
+    impoDofs = boundaryConds(BCnum).imposDispDofs ;
+    impoVals = boundaryConds(BCnum).imposDispVals ;
+    
+    %md find the elements with the current boundary condition
+    elemsWithBC = find( Conec(:,3) == indBC ) ;
+    
+    %md compute the values of nonHom BC
+    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes ) ;
     diriDofs = [ diriDofs; bcDiriDofs ] ;
 
   end % if: disp dofs
