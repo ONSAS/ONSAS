@@ -43,7 +43,7 @@ for i=1:nElem
   elseif strcmp( elements.elemType{i}, 'truss' )
     elementsParams{i,1} = 2 ;
     ncros = ncros+1 ;
-    crossSecsParams{ncros,1} = elements.elemTypeGeometry{i} ;
+    crossSecsParams{ncros,1} = elements.elemCrossSecParams{i} ;
     vecOldCross(i)= ncros;
   end
 end
