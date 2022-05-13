@@ -41,7 +41,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
 		elemTypeInds(indType) ;
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType       ;
-    elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
+    elemCrossSecParams   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
 
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) ) ;
@@ -56,13 +56,13 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
-        elemTypeGeom, modS.U ) ;
+        elemCrossSecParams, modS.U ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
-        elemTypeGeom, modS.U ) ;
+        elemCrossSecParams, modS.U ) ;
 
     elseif strcmp( elemTypeString, 'triangle' )
 

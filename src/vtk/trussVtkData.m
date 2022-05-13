@@ -1,5 +1,5 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = trussVtkData( Nodes, Conec, elemTypeGeom, U )
+   = trussVtkData( Nodes, Conec, elemCrossSecParams, U )
 
   vtkNodes = [] ;
   vtkConec = [] ;
@@ -20,7 +20,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     elemLength = norm( coordsElemNodes(4:6) - coordsElemNodes(1:3) ) ;
 
     % q section tengo
-    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemTypeGeom ) ;
+    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemCrossSecParams ) ;
 
     dispsElem          = U( dofsElem ) ;
     thetaLocIniSubElem = zeros(3,1)    ;
