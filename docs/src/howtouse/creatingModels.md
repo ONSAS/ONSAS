@@ -65,7 +65,6 @@ cell structure with auxiliar params information, required for some element types
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
 ### `elements.massMatType`
 
- 
  The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
 
  ### `elements.elemTypeAero`
@@ -75,9 +74,13 @@ The `elementTypeAero` field is a vector that sets for frame aerodynamic co-rotat
 ```
  ### `elements.aeroCoefs`
 
-The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. 
+The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are: (1) the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. The aeroCoefs field is: 
 
-### `elements.elemTypeGeometry`
+```math
+\{ 'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction' \} ;
+```
+
+### `elements.elemCrossSecParams`
 
 This is a cell structure with the information of the geometry of the element.
 
@@ -89,18 +92,16 @@ For `truss` or `frame` elements, this cell contains the cross-section properties
 ```
 with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross-section and its properties are:
 
- - `generic`  :general sections, where areas and inertias are provided as parameters
+ - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
  - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
  - `circle` : circular sections where diameter is provided.
 
-See the `crossSectionProps.m` function for more details.
-
 For `edge` elements the thickness is expected (for 2D load computations).
 
+See the `crossSectionProps.m` function for more details.
 #### 2D elements
 
-For 2D elements such as `triangle` the thickness is expected to be introduced. The elementtype  
-
+For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
 
 ## The `boundaryConds` struct
 
@@ -131,12 +132,18 @@ cell with vectors of the values of the springs stiffnesses.
 
 ## The `initialConds` struct
 
-It initial conditions are homogeneous, then an empty struct should be defined `initialConds = struct() ;`.
+It initial conditions are homogeneous, then an empty struct should be defined `initialConds = struct() ;`. Otherwise the fields to set are:
 
-### `initialConds.nonHomogeneousInitialCondU0`
-matrix to set  the value of displacements at the time step $t$=0. [default: []]
-### `initialConds.nonHomogeneousInitialCondUdot0`
-matrix to prescribe the value of velocities at the time step $t$=0. [default: []]
+### `initialConds.nonHomogeneousUDofs`
+cell with vectors of the local degrees of freedom initially imposed for displacements (integers from 1 to 6)
+### `initialConds.nonHomogeneousUVals`
+cell with vectors defining the displacement values for each initial condition linked to `nonHomogeneousUDofs` definition.
+
+### `initialConds.nonHomogeneousUdotDofs`
+cell with vectors of the local degrees of freedom initially imposed for velocities (integers from 1 to 6) `initialConds.nonHomogeneousUVals`
+
+### `initialConds.nonHomogeneousUdotVals`
+cell with vectors defining the velocity values for each initial condition linked to `nonHomogeneousUdotDofs` definition.
 
 ## The `mesh` struct
 
@@ -178,7 +185,7 @@ then the aerodynamic-frame element parameters set are
 * `fluidProps`: is a row cell with the density $\rho_f$, viscosity $\nu_f$ and the function with the fluid velocity  
 
 ```math
-\{ \rho_f; \,\, \rho_f; \,\, \rho_f; \,\,numGauss\}
+\{ \rho_f; \,\, \nu_f; \,\, 'fluidVelocity'\}
 ```
 
 ## The `otherParams` struct

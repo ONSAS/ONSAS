@@ -1,5 +1,5 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemTypeGeom, U )
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U )
 
   vtkNodes        = [] ;
   vtkConec        = [] ;
@@ -20,7 +20,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     coordsElemNodes = reshape( Nodes( nodesElem(:), : )', 6, 1 ) ;
 
     % computes connectivity of vtk element associated with frame cross-section
-    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemTypeGeom ) ;
+    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemCrossSecParams ) ;
 
     % length of current element
     elemLength = norm( coordsElemNodes(4:6) - coordsElemNodes(1:3) ) ;

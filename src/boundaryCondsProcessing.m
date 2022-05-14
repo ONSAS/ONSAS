@@ -183,9 +183,6 @@ if analysisSettings.booleanSelfWeight == true
       %md get current element type
       elemType = elements( elementTypes(elemNum) ).elemType ;
 
-      %md get current element elemTypeGeometry
-      elemTypeGeometry = elements( elementTypes(elemNum) ).elemCrossSecParams ;
-
       %md get the material types of the current element type
       materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
 
