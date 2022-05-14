@@ -15,7 +15,7 @@
 close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters for spring-mass system
 k        = 39.47 ; % spring constant
-c        = 0.01  ; % damping parameter
+c        = 0.5  ; % damping parameter
 m        = 1     ; % mass of the system
 p0       = 40    ; % amplitude of applied load
 u0       = 0.1   ; % initial displacement
@@ -89,9 +89,9 @@ boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 boundaryConds(2).imposDispDofs =  [ 3 5 ] ;
 boundaryConds(2).imposDispVals =  [ 0 0 ] ;
 %md ant the external load is added into the same boundary condition using:
-boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )                    ;
-boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global'                   ;
+boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )  ;
+boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ]            ;
 %md
 %md### Initial conditions
 %md An initial displacements $u_0$ is set in $x$ direction:
@@ -103,9 +103,14 @@ initialConds(1).nonHomogeneousUVals = [ u0 ] ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   0.005   ;
 analysisSettings.finalTime     =   1.2*TN  ;
+% analysisSettings.finalTime     =   10*analysisSettings.deltaT  ;
 analysisSettings.stopTolDeltau =   1e-8    ;
 analysisSettings.stopTolForces =   1e-8    ;
 analysisSettings.stopTolIts    =   10      ;
+%md
+%md### OtherParams settings
+%md The nodalDispDamping is added into the model using: 
+otherParams.nodalDispDamping =   c    ;
 %md The name of the problem is:
 %md
 otherParams.problemName = 'springMass'     ;
@@ -124,12 +129,18 @@ mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
 %md
 %md Execute ONSAS and save results: 
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%md
-%md### Numerical case 2: nodal mass model with $\alpha$-HHT method
+%md### Numerical case 2: nodal mass model with $\alpha$-HHT method and user loads function
 %md
 %md The nodalMass field allows to add lumped matrices to a node, since this field is used, then the equivalent $\rho$ of the `material(1)` aforementioned now is set to 0. Although an equal mass $m$ is considered for $u_x$ $u_y$ and $u_z$ at the node $2$, so: 
 materials(1).density   = 0       ;
 materials(2).nodalMass = [m m m] ;
+%md Next the external load is added with the `userLoadsFilename` field into `boundaryConds` struct. Therafter the external force is removed from the previous `boundaryConds` struct executing:
+boundaryConds(2).loadsTimeFact = @(t) 0  ;
+% boundaryConds(2) = []  ;
+%md then the user load function is declared using: 
+boundaryConds(2).userLoadsFilename = 'myLoadSpringMass' ;
+%md where inside the function 'myLoadSpringMass' the external force vector of the structure with 12 = (2x6) entries is computed. 
+%md
 %md now the initial condition is added to the node $2$ with the second material:
 mesh.conecCell{ 2, 1 } = [ 2 1 2 1   2  ] ;
 %md
@@ -139,6 +150,7 @@ analysisSettings.alphaHHT      =   0        ;
 %md
 %md Execute ONSAS and save results: 
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+% stop%md
 %md 
 %md## Verification
 %md---------------------
@@ -146,7 +158,7 @@ analysisSettings.alphaHHT      =   0        ;
 valsNewmark = matUsNewmark(6+1,:) ;
 valsHHT     = matUsHHT(6+1,:)     ;
 %md The analytical solution is evaluated:
-times       = 0:analysisSettings.deltaT:(analysisSettings.finalTime+analysisSettings.deltaT) ;
+times       = linspace( 0,analysisSettings.finalTime, size(matUsHHT,2) ) ;
 valsAnaly   = myAnalyticFunc(times)                                                          ;
 %md The boolean to validate the implementation is evaluated such as:
 analyticCheckTolerance = 5e-2 ;
