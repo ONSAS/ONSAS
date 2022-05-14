@@ -125,12 +125,12 @@ otherParams.plotsFormat = 'vtk' ;
 %md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUsCase1`matrix:
 [matUsCase1, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md### Case 1: user load function 
+%md### Case 2: user load function 
 %md
-%md In this case the wind load is added throguh a user load function.  Since geometric-nonlinearties are not conisdered in this example then wind loads can be computed externally. First the previous aerodynamic parameters of the element are deleted:
+%md In this case the wind load is added through a user load function. Since geometric-nonlinearties are not considered in this example then wind loads can be computed externally. First the previous aerodynamic parameters of the element are deleted:
 analysisSettingsCase2 = analysisSettings ; elementsCase2 = elements ;
 analysisSettingsCase2.fluidProps = [] ; elementsCase2(2).elemTypeAero = [] ; elementsCase2(2).aeroCoefs = [] ;
-%md now the boundary condition with the name of the user laod function is declared into the `boundaryConds` struct
+%md now the boundary condition with the name of the user load function is declared into the `boundaryConds` struct
 boundaryConds(2).userLoadsFilename = 'myLinearAero' ;
 %md and finally is assigned to all cantilever beam nodes:
 for i=1:numElements + 1,
@@ -242,30 +242,30 @@ verifBoolean         = verifBooleanCase1 && verifBooleanCase2 ;
 %md### Plot verification
 %md
 %md The plot parameters are:
-lw = 3 ; ms = 8 ;
+lw = 2 ; ms = 5 ;
 labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
 axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;       
 %md The linear displacements verification is plotted using:  
 figure(1)
 hold on, grid on
-plot(xref      , zdefNumCase1                 ,'ro' , 'linewidth', lw, 'markersize' , ms    ) ;
-plot(xref      , zdefNumCase2                 ,'rs' , 'linewidth', lw, 'markersize' , ms+10 ) ;
-plot(xAnalytic , zdefAnalytic(xAnalytic)      ,'r-' , 'linewidth', lw, 'markersize' , ms    ) ;
-plot(xref      , ydefNumCase1                 ,'bo' , 'linewidth', lw,'markersize'  , ms    ) ;
-plot(xref      , ydefNumCase2                 ,'bs' , 'linewidth', lw, 'markersize' , ms+10 ) ;
-plot(xAnalytic , ydefAnalytic(xAnalytic)      ,'b-' , 'linewidth', lw, 'markersize' , ms    ) ;
+plot(xref      , zdefNumCase1            ,'ro' , 'linewidth', lw, 'markersize' , ms    ) ;
+plot(xref      , zdefNumCase2            ,'rs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
+plot(xAnalytic , zdefAnalytic(xAnalytic) ,'r-' , 'linewidth', lw, 'markersize' , ms    ) ;
+plot(xref      , ydefNumCase1            ,'bo' , 'linewidth', lw,'markersize'  , ms    ) ;
+plot(xref      , ydefNumCase2            ,'bs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
+plot(xAnalytic , ydefAnalytic(xAnalytic) ,'b-' , 'linewidth', lw, 'markersize' , ms    ) ;
 legend('z_nC1','z_nC2', 'z_a',  'y_nC1', 'y_nC2', 'y_a', 'location', 'northwest')
 labx=xlabel(' x (m)');    laby=ylabel('Displacements (m)');
 title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('output/linearDisp.png','-dpng')
-% print('../../docs/src/assets/linearAerodynamics/linearDisp.png','-dpng')
+print('output/linearDispAero.png','-dpng')
+% print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
 close(1)    
 %md
 %md```@raw html
-%md<img src="../../assets/linearAerodynamics/linearDisp.png" alt="plot check linear displacements" width="500"/>
+%md<img src="../../assets/linearAerodynamics/linearDispAero.png" alt="plot check linear displacements" width="500"/>
 %md```
 %md
 %md The angular displacements verification is plotted using:  
@@ -286,13 +286,13 @@ title (labelTitle)
 set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
 set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
 set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('output/angDisp.png','-dpng')  
-% print('../../docs/src/assets/linearAerodynamics/angDisp.png','-dpng')  
+print('output/angDispAero.png','-dpng')  
+% print('../../docs/src/assets/linearAerodynamics/angDispAero.png','-dpng')  
 close(2)
 
 %md
 %md```@raw html
-%md<img src="../../assets/linearAerodynamics/angDisp.png" alt="plot check angular displacements" width="500"/>
+%md<img src="../../assets/linearAerodynamics/angDispAero.png" alt="plot check angular displacements" width="500"/>
 %md```
 %md
 %md The 3D deformed configuration is plotted executing:  
@@ -301,18 +301,18 @@ hold on, grid on
 plot3(xref     , yref                       , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
 plot3(xAnalytic, ydefAnalytic(xAnalytic) , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw      , 'markersize', ms     );
 plot3(xref     , ydefNumCase1            , zdefNumCase1           ,'bo' , 'linewidth', lw      , 'markersize', ms     );
-plot3(xref     , ydefNumCase2            , zdefNumCase2           ,'gs' , 'linewidth', lw      , 'markersize', ms +10    );
+plot3(xref     , ydefNumCase2            , zdefNumCase2           ,'gs' , 'linewidth', lw      , 'markersize', ms +5    );
 legend('Reference config'   , 'Analytic def config' , 'Numerical def config c1', 'Numerical def config c2', 'location','northEast')
 labx=xlabel( 'x (m)' )      ; laby=ylabel('y(m)')   ; labz=zlabel('z(m)')  ;
 set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
 set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
 set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
-print('output/def.png','-dpng')
-% print('../../docs/src/assets/linearAerodynamics/def.png','-dpng')
+print('output/defaAero.png','-dpng')
+% print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
 close(3)    
 %md
 %md```@raw html
-%md<img src="../../assets/linearAerodynamics/def.png" alt="plot check deformed configurations" width="500"/>
+%md<img src="../../assets/linearAerodynamics/defAero.png" alt="plot check deformed configurations" width="500"/>
 %md```
 %md
