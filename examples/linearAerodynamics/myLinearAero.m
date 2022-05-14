@@ -1,8 +1,6 @@
-function fext = myLinearAero(t)
 %md This functions computes manually the aerodynamic loads submitted to the hole beam
-
-% global numElements
- numElements = 10 ;
+function f = myLinearAero(t)
+global numElements
 %geometric parameers
 l = 20 ; d = .5 ; 
 %fluid parameters
@@ -43,9 +41,9 @@ for elem = 1:numElements
   dofsMy = dofsElem(4:6:end);
 
   % add into f vectos
-  fext(dofsMx) = f(dofsMx) + Tx          ; 
-  fext(dofsMy) = f(dofsMy) + [-My ; My ] ; 
-  fext(dofsMz) = f(dofsMz) + [-Mz ; Mz ] ; 
-  fext(dofsFY) = f(dofsFY) + Fy          ; 
-  fext(dofsFz) = f(dofsFz) + Fz          ; 
+  f(dofsMx) = f(dofsMx) + Tx          ; 
+  f(dofsMy) = f(dofsMy) + [-My ; My ] ; 
+  f(dofsMz) = f(dofsMz) + [-Mz ; Mz ] ; 
+  f(dofsFY) = f(dofsFY) + Fy          ; 
+  f(dofsFz) = f(dofsFz) + Fz          ; 
 end
