@@ -1,4 +1,4 @@
-# This functions computes manually the aerodynamic loads submitted to the hole beam
+%md This functions computes manually the aerodynamic loads submitted to the hole beam
 function f = myLinearAero(t)
 global numElements
 %geometric parameers
