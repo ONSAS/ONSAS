@@ -1,9 +1,3 @@
-
-function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
-
-%md sets the current version
-ONSASversion = '0.2.6'  ;
-
 % Copyright 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
 % Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini. 
 
@@ -21,6 +15,12 @@ ONSASversion = '0.2.6'  ;
 
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
+function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
+
+%md sets the current version
+ONSASversion = '0.2.6'  ;
+
  
 %md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
