@@ -16,26 +16,17 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%% 			Matriz Bt del elemento	      	 %%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function t = logar(R) ;
 
-function[Bt_e] = elementMatrizBt (Dte)
+  u = [ R(3,2)-R(2,3)
+        R(1,3)-R(3,1)
+        R(2,1)-R(1,2) ] ;
 
-Bt 		 = zeros(size(Dte,1),size(Dte,1));
+  nu = norm(u) ;
 
-%Angulos en el paso k
-Wtk = Dte(2:2:end);
-%Matriz Bt
-for aux= 1:6:size(Dte,1)
-	Bt(aux:aux+2,aux:aux+2) = eye(3,3);
-
-	%calculo de la Ts
-	indexANG1 = aux/2 + 1/2 ;
-	indexANG2	 = indexANG1 +2;
-	Wti = Wtk(indexANG1:indexANG2);
-	inversaTs=invTs(Wti);
-	Bt(aux+3:aux+5,aux+3:aux+5) = inversaTs';
+  if nu == 0
+    t = [0 0 0]' ;
+  else
+    t = asin( nu/2 ) / nu * u ;
+  end
 end
-
-Bt_e = Cambio_Base(Bt);
