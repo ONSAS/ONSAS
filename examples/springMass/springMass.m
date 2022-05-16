@@ -62,8 +62,8 @@ else                     % other cases solution
 end
 %md 
 %md## Numerical solution
-%md---------------------
-%md The solution is used to validate two different dynamics methods: Newmark and $\alpha-HHT$ considering truss elements with nodal or '`lumped`' mass inertial formulation. 
+%md
+%md The solution is used to validate two different numerical solution cases.
 %md
 %md### Numerical case 1: truss element model with Newmark method
 %md
@@ -74,7 +74,7 @@ materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E 0 ]          ;
 materials(1).density         = rho              ;
 %md
-%md### Elements
+%md#### Elements
 %md
 %md In this case only `'node'` and  `'truss'` elements are considered and the lumped inertial formulation is set for the truss element: 
 elements(1).elemType = 'node'                                 ;
@@ -82,7 +82,7 @@ elements(2).elemType = 'truss'                                ;
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
 elements(2).massMatType = 'lumped'                            ;
 %md
-%md### Boundary conditions
+%md#### Boundary conditions
 %md
 %md The node $1$ is fixed, so the boundary condition set is:
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
@@ -95,27 +95,26 @@ boundaryConds(2).loadsCoordSys = 'global'                   ;
 boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )  ;
 boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ]            ;
 %md
-%md### Initial conditions
+%md#### Initial conditions
 %md An initial displacements $u_0$ is set in $x$ direction:
 initialConds(1).nonHomogeneousUDofs = [ 1  ] ;
 initialConds(1).nonHomogeneousUVals = [ u0 ] ;
 %md
-%md### Analysis settings
+%md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   0.005   ;
-analysisSettings.finalTime     =   1.2*TN  ;
-% analysisSettings.finalTime     =   10*analysisSettings.deltaT  ;
-analysisSettings.stopTolDeltau =   1e-8    ;
-analysisSettings.stopTolForces =   1e-8    ;
+analysisSettings.finalTime     =   2*TN  ;
+analysisSettings.stopTolDeltau =   1e-10    ;
+analysisSettings.stopTolForces =   1e-10    ;
 analysisSettings.stopTolIts    =   10      ;
 %md
-%md### OtherParams settings
+%md#### OtherParams
 %md The nodalDispDamping is added into the model using: 
 otherParams.nodalDispDamping =   c    ;
 %md The name of the problem is:
 %md
-otherParams.problemName = 'springMass'     ;
+otherParams.problemName = 'springMass_case1'     ;
 %md
 %md### mesh
 %md Only two nodes are considered so the nodes matrix is:
@@ -126,21 +125,29 @@ mesh.conecCell = { } ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
 % The second node has no material, the first element of the _elements_ struct, which is `'node'` also the second boundary condition (x disp free) and the first initial condition ($u_0$) is set.
 mesh.conecCell{ 2, 1 } = [ 0 1 2 1   2   ] ;
-% Only one element is considered with the first material and the second element of respective structs
+% Only one element is considered with the first material and the second element setting
 mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
 %md
-%md Execute ONSAS and save results: 
+%md Execute ONSAS and save the results: 
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md### Numerical case 2: nodal mass model with $\alpha$-HHT method and user loads function
 %md
+%md#### Material
 %md The nodalMass field allows to add lumped matrices to a node, since this field is used, then the equivalent $\rho$ of the `material(1)` aforementioned now is set to 0. Although an equal mass $m$ is considered for $u_x$ $u_y$ and $u_z$ at the node $2$, so: 
 materials(1).density   = 0       ;
 materials(2).nodalMass = [m m m] ;
-%md Next the external load is added with the `userLoadsFilename` field into `boundaryConds` struct. Therafter the external force is removed from the previous `boundaryConds` struct executing:
-boundaryConds(2).loadsTimeFact = @(t) 0  ;
-% boundaryConds(2) = []  ;
-%md then the user load function is declared using: 
-boundaryConds(2).userLoadsFilename = 'myLoadSpringMass' ;
+%md
+%md#### Boundary conditions
+%md the boundary conditions struct is entirely re-written.
+% repeat the BCs for node 1
+boundaryConds = { } ;
+boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
+boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
+% repeat the BCs for node 2
+boundaryConds(2).imposDispDofs =  [ 3 5 ] ;
+boundaryConds(2).imposDispVals =  [ 0 0 ] ;
+%md ant the external load is added into the same boundary condition using:
+boundaryConds(3).userLoadsFilename = 'myLoadSpringMass' ;
 %md where inside the function 'myLoadSpringMass' the external force vector of the structure with 12 = (2x6) entries is computed. 
 %md
 %md now the initial condition is added to the node $2$ with the second material:
@@ -150,7 +157,9 @@ mesh.conecCell{ 2, 1 } = [ 2 1 2 1   2  ] ;
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.alphaHHT      =   0        ;
 %md
-%md Execute ONSAS and save results: 
+otherParams.problemName = 'springMass_case2'     ;
+%md
+%md Execute ONSAS and save the results: 
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md 
 %md## Verification
