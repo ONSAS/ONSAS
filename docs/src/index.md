@@ -86,7 +86,6 @@ The following co-authors contributed specific relevant functions:
 
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions associated with the computation of static internal forces of the nonlinear frame element.
 
-* [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) (**6**), provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf import function.
 
 **Affiliations**:
 
