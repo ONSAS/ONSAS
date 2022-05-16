@@ -1,9 +1,34 @@
-function updateLicenseHeaders
+% Recursive function for updating headers of source files in src and downwards ...
 
-% scan files in src folder
+function updateLicenseHeaders( folder )
 
-% while
-%fopen( , 'a' )
-%frewind
-% fprintf header
-%end
+folder
+files = dir( folder ) ;
+
+for i = 1:length( files )
+  i
+  if files(i).isdir
+    if ~strcmp(files(i).name(1),'.')
+      files(i).name
+      updateLicenseHeaders( [ folder '/' files(i).name ] )
+    end 
+  else
+    completeFilename = [ folder '/' files(i).name ] 
+    showHeaderAndReplace( completeFilename )
+  end
+end
+
+
+function showHeaderAndReplace( filename )
+
+lengthOfCurrentHeader = '17';
+
+system( [ 'head -n ' lengthOfCurrentHeader ' ' filename ] );
+
+reply = input('    replace yes or no? (y/n):','s' ) ;
+
+if strcmp( reply, 'y')
+  system( [ 'more currentFileHeader.txt > test.txt' ] ) ;
+  system( [ 'tail  -n ' lengthOfCurrentHeader ' ' filename ' >> test.txt'] ) ;
+end
+pause
