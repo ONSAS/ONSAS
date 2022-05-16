@@ -11,34 +11,36 @@
 %md
 %md
 %md First, the path to the ONSAS folder is added and scalar parameters are set:
-% add path
+% clear workspace and add path
 close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters for spring-mass system
 k        = 39.47 ; % spring constant
-c        = 0.5  ; % damping parameter
+c        = 0.5   ; % damping parameter
 m        = 1     ; % mass of the system
 p0       = 40    ; % amplitude of applied load
 u0       = 0.1   ; % initial displacement
+%md
 %md The free vibration motion parameters are:
-omegaN       = sqrt( k / m )           ;
+%md
+omegaN       = sqrt( k / m )           ; % the natural frequency
 xi           = c / m  / ( 2 * omegaN ) ;
 freq         = omegaN / (2*pi)         ;
 TN           = 2*pi / omegaN           ;
 dtCrit       = TN / pi                 ;
-%md The frequency of the sinusoidal external force is set:
+%md The frequency of the sinusoidal external force is:
 omegaBar     = 4*omegaN ;
 %md The scalar parameters for the equivalent truss model are:
 l   = 1                 ;
 A   = 0.1               ;
 rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
-%md where the material of the truss was selected to set a constant mass at the node $2$ equal to $m$.
+%md where the material of the truss was selected to set a mass $m$ at the node $2$.
 %md
 %md## Analytic solution
 %md The analytical solution of the problem is:
 %md```math 
 %md  u(t) =
-%md     ( A_c \cos( \omega_D  t ) + B \sin( \omega_D t ) ) e^{ -\xi \omega_N t } +
+%md     \left( A_c \cos( \omega_D  t ) + B \sin( \omega_D t )  \right) e^{ -\xi \omega_N t } +
 %md    G_1  \cos( \bar{\omega} t ) + G_2 \sin( \bar{\omega} t )
 %md``` 
 %md The expression of the equation above is computed depending of $c$ and the load amplitude $p_0$:
