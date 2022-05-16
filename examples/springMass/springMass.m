@@ -150,7 +150,6 @@ analysisSettings.alphaHHT      =   0        ;
 %md
 %md Execute ONSAS and save results: 
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-% stop%md
 %md 
 %md## Verification
 %md---------------------
