@@ -10,13 +10,23 @@
 
 ONSAS.m is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf).
 
-### What can ONSAS.m be used for?
-
 The current version allows to perform dynamic/static nonlinear analyses of beam/truss/solid 3D structures. A reduced list of features is listed at next:
 
 * **Elements** 2-node truss, 2-node Bernoulli co-rotational frame, 4-node tetrahedron, 3-node triangle.
 * **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method.
 * **Dynamic analysis methods** Newmark Method and $\alpha$-HHT.
+
+### Publications using ONSAS
+
+Journal articles using ONSAS:
+
+ * 2022, M. Vanzulli, J. M. Pérez Zerpa, https://arxiv.org/abs/2204.10545
+ * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor
+
+Theses using ONSAS:
+
+ * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388
+
 
 ### Some examples
 
@@ -56,26 +66,17 @@ The current version allows to perform dynamic/static nonlinear analyses of beam/
 [chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
 
-#### A transmission line tower model
-
-```@raw html
-<img src="https://raw.githubusercontent.com/mvanzulli/Tex_CorrotationalDynamicTL_TesisMV/main/Presentacion/Videos/4.gif" alt="transmission line">
-```
-
-## Contact
-
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or ```@raw html
-<a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/onsas_/community.svg" alt="Join the chat at https://gitter.im/onsas_/community">
-</a>
-``` .
-
 ## Contributors and License
+
+### License
 
 The code is distributed under a [GNU-GPL 3.0 license](https://www.gnu.org/licenses/gpl-3.0.html).
 
 ### Authors
 
-The following authors collaborated in various tasks including: design, development and testing of the code.
+The authorship of each version is based on the criteria defined by [the JOSS journal](https://joss.readthedocs.io/en/latest/submitting.html#authorship).
+
+The following co-authors collaborated in various tasks including: design, development and testing of the code.
 
 * [**Jorge M. Pérez Zerpa**](https://scholar.google.com.uy/citations?user=Qb476KIAAAAJ&hl=en) (**1**), leaded and managed the design and development of the code, developed the assembly functions, nonlinear truss element formulation, nonlinear static analysis function, designed and co-authored Newmark's method function, input and output functions, leaded the generation of the documentation.
 
@@ -87,13 +88,13 @@ The following authors collaborated in various tasks including: design, developme
 
 * [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) developed the Neo-Hookean solid model.
 
-The following authors contributed specific relevant functions:
+The following co-authors contributed specific relevant functions:
 
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions associated with the computation of static internal forces of the nonlinear frame element.
 
 * [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es) (**6**), provided the functions: f_LectDxf.m, f_ValGrCode.m and f_XData.m, used in the dxf import function.
 
-### Affiliations
+**Affiliations**:
 
  1. Instituto de Estructuras y Transporte, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay
  1. Bazzano & Scelza Ingenieros, Montevideo, Uruguay
@@ -115,3 +116,8 @@ The development of ONSAS has been partially supported by funds provided by the f
  - Comisión de Investigación Científica (CSIC) (project: *Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama*, manager, Prof. Pérez Zerpa),
  - Comisión Sectorial de Enseñanza (project: *Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales*, manager, Prof. Pérez Zerpa),
  - Agencia Nacional de Investigación e Innovación (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. Gabriel Usera).
+
+
+## Contact
+
+You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or <a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/onsas_/community.svg" alt="Join the chat at https://gitter.im/onsas_/community"></a>.
