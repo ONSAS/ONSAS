@@ -94,13 +94,12 @@ The following co-authors contributed specific relevant functions:
  1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
  1. Centro Universitario Regional Este, Universidad de la República, Maldonado, Uruguay
  1. Department of Civil and Architectural Engineering, KTH Royal Institute of Technology, Stockholm, Sweden
- 1. CIMEC Santa Fe, Argentina
 
 ### Contributions and Acknowledgments
 
 The functions in `linearStiffMatPlate3D.m` and `assemblyUniform.m` use part of the
 [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code
-developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/).
+developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/). Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es), provided functions for reading dxf fules which were part of ONSAS until version 0.2.6.
 
 J. M. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es),
  [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) and [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) for their numerous and valuable comments and suggestions during early stages of the design of the code.

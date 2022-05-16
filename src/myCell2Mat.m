@@ -1,6 +1,3 @@
-% Copyright (C) 2021
-% auxiliar function to convert a cell with vectors to a zeros-filled-matrix
-
 % Copyright 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
 % Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini. 
 

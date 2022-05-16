@@ -1,9 +1,3 @@
-
-function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
-
-%mdFirst the input structs are converted to structs with the model information
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
 % Copyright 2022, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera, 
 % Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini. 
 
@@ -21,6 +15,11 @@ function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, 
 
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
+function [ matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
+
+%mdFirst the input structs are converted to structs with the model information
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
  
 %mdAfter that the structs are used to perform the numerical time analysis
 [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
