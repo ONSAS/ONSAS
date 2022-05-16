@@ -19,7 +19,7 @@
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 %md sets the current version
-ONSASversion = '0.2.6'  ;
+ONSASversion = '0.2.7'  ;
 
  
 %md set defaults
