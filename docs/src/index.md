@@ -8,36 +8,30 @@
 
 ## What is ONSAS.m?
 
-ONSAS.m is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf).
+ONSAS.m is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf). The current version allows to perform a diverse set of simulations and it's been used in specific research applications.
 
-The current version allows to perform dynamic/static nonlinear analyses of beam/truss/solid 3D structures. A reduced list of features is listed at next:
-
-* **Elements** 2-node truss, 2-node Bernoulli co-rotational frame, 4-node tetrahedron, 3-node triangle.
-* **Static analysis methods** Newton-Raphson Method and Cylindrical Arc-Length Method.
-* **Dynamic analysis methods** Newmark Method and $\alpha$-HHT.
-
-### Publications using ONSAS
+## Publications using ONSAS
 
 Journal articles using ONSAS:
 
- * 2022, M. Vanzulli, J. M. Pérez Zerpa, https://arxiv.org/abs/2204.10545
- * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor
+ * 2022, M. Vanzulli, J. M. Pérez Zerpa, A consistent co-rotational formulation for aerodynamic nonlinear analysis of flexible frame structures, arXiv article under-review (https://arxiv.org/abs/2204.10545)
+ * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, Computers & Structures [url](https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor)
 
 Theses using ONSAS:
 
- * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388
+ * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* [url](https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388)
 
 
-### Some examples
+## Some example applications
 
-#### A simple wind turbine model
+### A simple wind turbine model
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true" alt="wind turbine animation">
 ```
 [wind turbine animation](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true)
 
-#### A tower model
+### A tower model
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true" alt="tower animation">
@@ -45,20 +39,20 @@ Theses using ONSAS:
 
 [tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
 
-#### A uniaxial extension test
+### A uniaxial extension test
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/uniaxial.gif?raw=true" alt="uniaxial animation">
 ```
 [uniaxial animation](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/uniaxial.gif?raw=true)
 
-#### A beam/truss pendulum
+### A beam/truss pendulum
 
 ```@raw html
 <img src="https://raw.githubusercontent.com/mvanzulli/Tex_CorrotationalDynamicTL_TesisMV/main/Presentacion/Videos/3.gif" alt="beam truss pendulum">
 ```
 
-#### A chain model
+### A chain model
 
 ```@raw html
 <img src="https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true" alt="chain animation">
