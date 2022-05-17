@@ -19,14 +19,13 @@ w      = 2;    % rad/s
 % Time values
 tf     = 8;    % sec
 deltat = 0.1; % sec
-%md
-% Material scalar parameters
+%md Material scalar parameters
 E = 200e9 ;  nu = 0.3 ; rho = 700;
-% geometrical scalar parameters
+%md Geometrical scalar parameters
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
-% Number of elements of the mesh
+%md Number of elements
 numElements = 51 ;
 %md
 %md## Analytic solution
@@ -35,18 +34,17 @@ numElements = 51 ;
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2
 %w}{\partial t^2} = f(x,t)
-%md```math
-%md Implementig a solution w(x,t) = W(x)T(t) it is possible to find:
+%md```
+%md Implementig a solution $w(x,t) = W(x)T(t)$ it is possible to find:
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
-%md```math
+%md```
 %md
 %md## External Load application node
 appNode     = (numElements+1)/2+1;
 appNodePos  = l*(appNode)/numElements;
 %md
 %md## Analytic solution of a beam with fix nodes in both ends.
-%analyticSol  = @(x, t, wn, n) (1/(wn^2 - w^2))*sin(n*pi*a/l)*sin(n*pi*x/l)*sin(w*t);
 %md
 t  = 0:deltat:tf; % time vector
 x  = 0:l/numElements:l; % beam mesh
@@ -58,23 +56,23 @@ wnY = ((n*pi).^2)*sqrt(E*Izz/rho/(ty*tz)/(l^4)); % Natural frecuency direction Y
 wnZ = ((n*pi).^2)*sqrt(E*Iyy/rho/(ty*tz)/(l^4)); % Natural frecuency direction Z
 %md
 for i=1:length(n)
-    analyticDisV = analyticDisV + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l)'.*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t);
-    analyticDisW = analyticDisW + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l)'.*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t);
+    analyticDisV = analyticDisV + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
+    analyticDisW = analyticDisW + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
 end
 %md
-%md## Numerical solution
+%md##  Numerical solution
 %md### MEBI parameters
 %md
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
 %md
-%md### materials
+%md### Materials
 %md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 %md The first analysis case implements the co-rotational formulation
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu] ;
 materials.density = rho;
 %md
-%md### elements
+%md### Elements
 %md
 %mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
 elements(1).elemType = 'node'  ;
@@ -154,42 +152,38 @@ lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md time vector
 timeVec = linspace( 0, tf, size(coRotMatUs,2) );
 %md
-%md error estimated for each method in the application point of the
-%external time dependency load
-
+% error estimated for each method in the application point of the
+% external time dependency load
 diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisV(: , appNode);
 diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisW(: , appNode);
 difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisV(: , appNode);
 difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisW(: , appNode);
-
+%
 intAnalyticDisV = 0;
 intAnalyticDisW = 0;
 errlinearDispUy = 0;
 errcoRotDispUy  = 0;
 errlinearDispUz = 0;
 errcoRotDispUz  = 0;
-
+%
 for h = 1:length(diflinearDispUy)-1
-    intAnalyticDisV = intAnalyticDisV + (analyticDisV(appNode , h+1) + analyticDisV(appNode, h))*deltat/2;
-    intAnalyticDisW = intAnalyticDisW + (analyticDisW(appNode , h+1) + analyticDisW(appNode, h))*deltat/2;
+    intAnalyticDisV = intAnalyticDisV + (analyticDisV(h+1 , appNode) + analyticDisV(h , appNode))*deltat/2;
+    intAnalyticDisW = intAnalyticDisW + (analyticDisW(h+1 , appNode) + analyticDisW(h , appNode))*deltat/2;
     errlinearDispUy = errlinearDispUy + (diflinearDispUy(h+1) + diflinearDispUy(h))*deltat/2;
     errcoRotDispUy  = errcoRotDispUy + (difcoRotDispUy(h+1) + difcoRotDispUy(h))*deltat/2;
     errlinearDispUz = errlinearDispUz + (diflinearDispUz(h+1) + diflinearDispUz(h))*deltat/2;
     errcoRotDispUz  = errcoRotDispUz + (difcoRotDispUz(h+1) + difcoRotDispUz(h))*deltat/2;
 end
-
+%md
 errlinearDispUy = norm(errlinearDispUy)/norm(intAnalyticDisV);
 errcoRotDispUy  = norm(errcoRotDispUy)/norm(intAnalyticDisV);
 errlinearDispUz = norm(errlinearDispUz)/norm(intAnalyticDisW);
 errcoRotDispUz  = norm(errcoRotDispUz)/norm(intAnalyticDisW);
-
-%md the numerical resolution is validated for both method and both directions.
-%md
+%the numerical resolution is validated for both method and both directions.
 verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
              && ( errcoRotDispUy  <  1e-1 ) ...
              && ( errlinearDispUz <  1e-1 ) ...
              && ( errcoRotDispUz  <  1e-1 );
-
 figure(1), hold on, grid on
 %md plot co-rotational solution
 plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
@@ -204,14 +198,14 @@ labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy','-dpng')
-
+%md
 figure(2), hold on, grid on
 % plot linear cases
 plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
 % plot co-rotational cases
 plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
 % plot analytic cases
-plot(timeVec, analyticDisW(appNode, :), 'b' , 'linewidth', lw, 'markersize', ms )
+plot(timeVec, analyticDisW(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
 % legends
 legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
        'location', 'eastoutside')

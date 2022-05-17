@@ -19,10 +19,9 @@ w      = 2;    % rad/s
 % Time values
 tf     = 8;    % sec
 deltat = 0.1; % sec
-%md
-% Material scalar parameters
+%md Material scalar parameters
 E = 200e9 ;  nu = 0.3 ; rho = 700;
-%md geometrical scalar parameters
+%md Geometrical scalar parameters
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
@@ -36,7 +35,7 @@ numElements = 51 ;
 %md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2
 %w}{\partial t^2} = f(x,t)
 %md```
-%md Implementig a solution w(x,t) = W(x)T(t) it is possible to find:
+%md Implementig a solution $w(x,t) = W(x)T(t)$ it is possible to find:
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
 %md```
@@ -46,23 +45,22 @@ appNode     = (numElements+1)/2+1;
 appNodePos  = l*(appNode)/numElements;
 %md
 %md## Analytic solution of a beam with fix nodes in both ends.
-%analyticSol  = @(x, t, wn, n) (1/(wn^2 - w^2))*sin(n*pi*a/l)*sin(n*pi*x/l)*sin(w*t);
 %md
 t  = 0:deltat:tf; % time vector
 x  = 0:l/numElements:l; % beam mesh
 n  = 1:1:8; % number of nodes
 analyticDisV = 0;
 analyticDisW = 0;
-%md   
+%md Natural frecuency mode vibration vector
 wnY = ((n*pi).^2)*sqrt(E*Izz/rho/(ty*tz)/(l^4)); % Natural frecuency direction Y
 wnZ = ((n*pi).^2)*sqrt(E*Iyy/rho/(ty*tz)/(l^4)); % Natural frecuency direction Z
-%md
+%md Analytic solution
 for i=1:length(n)
     analyticDisV = analyticDisV + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
     analyticDisW = analyticDisW + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
 end
 %md
-%md##  Numerical solution
+%md### Numerical solution
 %md### MEBI parameters
 %md
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
