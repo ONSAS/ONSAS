@@ -112,4 +112,4 @@ The development of ONSAS has been partially supported by funds provided by the f
 
 ## Contact
 
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or <a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/onsas_/community.svg" alt="Join the chat at https://gitter.im/onsas_/community" /></a>.
+You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or join the chat in the gitter [chat room](https://gitter.im/onsas_/community).
