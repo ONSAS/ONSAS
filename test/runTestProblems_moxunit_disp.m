@@ -18,7 +18,7 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
-  onsasExample_linearPlaneStrain
+  linearCylinderPlaneStrain
   assertEqual( verifBoolean, true );
   
 function test_4
