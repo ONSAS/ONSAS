@@ -1,21 +1,21 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
+% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% ONSAS is free software: you can redistribute it and/or modify 
+% it under the terms of the GNU General Public License as published by 
+% the Free Software Foundation, either version 3 of the License, or 
+% (at your option) any later version. 
 %
-% ONSAS is distributed in the hope that it will be useful,
+% ONSAS is distributed in the hope that it will be useful, 
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+ 
 %md This function converts the mesh MEBI information to the data structures used in the numerical simulation
 
 function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel ] = boundaryCondsProcessing ( mesh, ...
@@ -28,6 +28,7 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
 Conec  = myCell2Mat( mesh.conecCell ) ;
 Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
+
 
 %md Since we want to process the BCs, we keep only the nonzero BCs
 %md Computes the number of elements and BCs we have
@@ -55,7 +56,7 @@ for indBC = 1:length( boundaryTypes )
   %md is loadsCoordSys is not empty, then some load is applied in this BC
   if ~isempty( boundaryConds( indBC ).loadsCoordSys )
     %md The nodal loads vector is computed and assiged to the corresponding BC entry.
-    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ), Nodes ) ;
+    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ),  Nodes ) ;
     % defaul load factor function
     if isempty( boundaryConds(BCnum).loadsTimeFact ),
       boundaryConds(BCnum).loadsTimeFact = @(t) t ;
@@ -65,7 +66,16 @@ for indBC = 1:length( boundaryTypes )
 
   %md displacement verification
   if ~isempty( boundaryConds(BCnum).imposDispDofs ),
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, BCnum, elements, boundaryConds(BCnum), Nodes ) ;
+    
+    %md values and imposed dofs of current BC
+    impoDofs = boundaryConds(BCnum).imposDispDofs ;
+    impoVals = boundaryConds(BCnum).imposDispVals ;
+    
+    %md find the elements with the current boundary condition
+    elemsWithBC = find( Conec(:,3) == indBC ) ;
+    
+    %md compute the values of nonHom BC
+    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes ) ;
     diriDofs = [ diriDofs; bcDiriDofs ] ;
 
   end % if: disp dofs
@@ -117,12 +127,21 @@ if neumDofs(1) == 0,
   neumDofs(1)=[] ;
 end
 
-% FIx me when userLoadsFilename boundaryConds(wind is not in the first cell)
+% read user load filename
+userLoadsFilename = [] ;
+
 if isfield( boundaryConds,'userLoadsFilename' )
-  userLoadsFilename = boundaryConds.userLoadsFilename ;
-else
-  userLoadsFilename =[];
+  for ind = 1:length(boundaryConds)
+    if ~isempty( boundaryConds(ind).userLoadsFilename )
+      if ~isempty( userLoadsFilename )
+        error('only one user load function can be used!');
+      else
+        userLoadsFilename = boundaryConds(ind).userLoadsFilename ;
+      end
+    end
+  end
 end
+
 % FIx me when userWindVel boundaryConds(wind is not in the first cell)
 if isfield( boundaryConds,'userWindVel' )
   userWindVel  = boundaryConds.userWindVel     ;
@@ -163,9 +182,6 @@ if analysisSettings.booleanSelfWeight == true
 
       %md get current element type
       elemType = elements( elementTypes(elemNum) ).elemType ;
-
-      %md get current element elemTypeGeometry
-      elemTypeGeometry = elements( elementTypes(elemNum) ).elemCrossSecParams ;
 
       %md get the material types of the current element type
       materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
