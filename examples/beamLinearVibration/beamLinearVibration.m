@@ -32,8 +32,7 @@ numElements = 51 ;
 %md
 %md The dynamic displacement of a forced beam describe by the next differential equation
 %md```math
-%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2
-%w}{\partial t^2} = f(x,t)
+%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2 w}{\partial t^2} = f(x,t)
 %md```
 %md Implementig a solution $w(x,t) = W(x)T(t)$ it is possible to find:
 %md```math
