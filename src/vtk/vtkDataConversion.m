@@ -1,21 +1,21 @@
-% Copyright (C) 2021, Jorge M. Perez Zerpa, J. Bruno Bazzano, Joaquin Viera,
-%   Mauricio Vanzulli, Marcelo Forets, Jean-Marc Battini, Sebastian Toro
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
+% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% ONSAS is free software: you can redistribute it and/or modify 
+% it under the terms of the GNU General Public License as published by 
+% the Free Software Foundation, either version 3 of the License, or 
+% (at your option) any later version. 
 %
-% ONSAS is distributed in the hope that it will be useful,
+% ONSAS is distributed in the hope that it will be useful, 
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+ 
 %md This function creates the point and cell data matrices for writing
 %md vtk files of the solids or structures.
 
@@ -41,7 +41,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
 		elemTypeInds(indType) ;
     elemTypeString = modP.elements( elemTypeInds(indType) ).elemType       ;
-    elemTypeGeom   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
+    elemCrossSecParams   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
 
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) ) ;
@@ -56,13 +56,13 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
-        elemTypeGeom, modS.U ) ;
+        elemCrossSecParams, modS.U ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 5:end ), ...
-        elemTypeGeom, modS.U ) ;
+        elemCrossSecParams, modS.U ) ;
 
     elseif strcmp( elemTypeString, 'triangle' )
 
