@@ -141,8 +141,9 @@ print('verifLinearCylinderPlaneStrain.png','-dpng')
 %md<img src="../../assets/linearCylinderPlaneStrain/verifLinearCylinderPlaneStrain.png" alt="verification plot" width="500"/>
 %md```
 %md
+%md Finally the deformed configuration is illustrated:  
 %md```@raw html
-%md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="def plot" width="500"/>
+%md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
 %md```
 %md
 
