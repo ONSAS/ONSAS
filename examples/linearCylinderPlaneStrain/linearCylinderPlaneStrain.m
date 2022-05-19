@@ -1,4 +1,4 @@
-%md# Linear plane strain cylinder example  
+%md# Linear cylinder plane strain  example  
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearPlaneStrain/onsasExample_linearPlaneStrain.m)
 %md
