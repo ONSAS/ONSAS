@@ -33,7 +33,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1e6 ; nu = 0.3 ; p = 2 ; L = .75 ;
+E = 1e6 ; nu = 0.3 ; p = 1 ; L = .75 ;
 %md
 %md
 %md### MEBI parameters
@@ -123,7 +123,7 @@ verifBoolean = ( ( numericalRInt - analyticValRInt ) < analyticCheckTolerance ) 
 %md
 %md The numerical and analytical solution for the internal and external surface are plotted:
 %plot parameters
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+lw = 2.0 ; ms = 11 ; plotfontsize = 10 ;
 figure, hold on, grid on
 %internal surface
 plot( matUs(dofXRint,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
@@ -131,15 +131,18 @@ plot( linspace(0,analyticValRInt,length(loadFactorsMat(:,3) ) )  , loadFactorsMa
 %internal surface
 plot( matUs(dofXRext,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
 plot( linspace(0,analyticValRExt,length(loadFactorsMat(:,3)) ) , loadFactorsMat(:,3), 'k-', 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
+labx = xlabel('Displacement [m]');   laby = ylabel('\lambda(t)') ;
 legend('Numeric','Analytic','location','East')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-% print('verifLinearCylinderPlaneStrain.png','-dpng')
+print('verifLinearCylinderPlaneStrain.png','-dpng')
 %md
 %md```@raw html
-%md<img src="../../assets/linearCylinderPlaneStrain/verifLinCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
+%md<img src="../../assets/linearCylinderPlaneStrain/verifLinearCylinderPlaneStrain.png" alt="verification plot" width="500"/>
 %md```
 %md
-
+%md```@raw html
+%md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="def plot" width="500"/>
+%md```
+%md
 
