@@ -195,6 +195,7 @@ if exist('../../docs/src/assets/')==7
   else
   print('output/springMassCheckU.png','-dpng')
 end
+
 %md
 %md```@raw html
 %md<img src="../../assets/springMassCheckU.png" alt="plot check" width="500"/>
