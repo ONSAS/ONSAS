@@ -8,7 +8,7 @@
 %md<img src="../../assets/linearCylinderPlaneStrain/ilusCylinderPlaneStrain.svg" alt="linear cylinder diagram" width="500"/>
 %md```
 %md
-%md A classic cylindrical sistem of coordinates is defined considering the unitary vectors ($e_r$, $e_\theta$, $e_z$). 
+%md A cylindrical system of coordinates is defined considering the unitary vectors ($e_r$, $e_\theta$, $e_z$). 
 %md The material employed is isotropic and homogeneous with elasticity modulus $E=1$ MPa and Poisson's coefficient $\nu=0.3$. The pressure is radial and applied on the internal surface $\mathbf{\mathit{p_i}} =  - p_i \, e_r$. The boundary conditions correspond to this plane strain example holds:
 %md```math 
 %md \mathbf{\mathit{u}}_z(r, \theta, z=0)=0\;\;\quad\forall\; (r,\theta) \\
