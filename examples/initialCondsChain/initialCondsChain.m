@@ -47,7 +47,7 @@ materials.density = rho ;
 elements(1).elemType = 'node' ;
 %md and the second a truss
 elements(2).elemType = 'truss';
-%md for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemTypeGeometry field is:
+%md for the geometries, the node has no geometry to assign, and the truss elements will be set as a square-cross section, then the elemCrossSecParams field is:
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [b b] ;
 elements(2).massMatType = 'consistent' ;

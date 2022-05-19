@@ -1,5 +1,23 @@
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
+% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify 
+% it under the terms of the GNU General Public License as published by 
+% the Free Software Foundation, either version 3 of the License, or 
+% (at your option) any later version. 
+%
+% ONSAS is distributed in the hope that it will be useful, 
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+ 
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemTypeGeom, U )
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U )
 
   vtkNodes        = [] ;
   vtkConec        = [] ;
@@ -20,7 +38,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     coordsElemNodes = reshape( Nodes( nodesElem(:), : )', 6, 1 ) ;
 
     % computes connectivity of vtk element associated with frame cross-section
-    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemTypeGeom ) ;
+    [ iniNodes, midNodes, endNodes, sectPar ] = crossSectionVtkSolidConnec( elemCrossSecParams ) ;
 
     % length of current element
     elemLength = norm( coordsElemNodes(4:6) - coordsElemNodes(1:3) ) ;

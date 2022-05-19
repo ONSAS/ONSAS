@@ -45,7 +45,7 @@ materials.hyperElasParams = [ E nu ] ;
 %mdTwo different types of elements are considered, node and truss. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The `elemType` field is then:
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
-%mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemTypeGeometry` field is:
+%mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemCrossSecParams` field is:
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A) ] ;
 %mdand the according to the literature example the element include conssitent mass matrix
