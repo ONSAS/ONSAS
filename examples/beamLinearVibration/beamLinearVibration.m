@@ -182,32 +182,26 @@ verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
              && ( errcoRotDispUy  <  1e-1 ) ...
              && ( errlinearDispUz <  1e-1 ) ...
              && ( errcoRotDispUz  <  1e-1 );
+%md
+%md plot y-axis linear, co-rotational and analytic result 
 figure(1), hold on, grid on
-%md plot co-rotational solution
 plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
-%md plot linear elastic solution
 plot(timeVec, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
-%md plot analytic solution
 plot(timeVec, analyticDisV(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
-%md legends
 legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
        'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy','-dpng')
-%md
+%md plot z-axis linear, co-rotational and analytic result 
 figure(2), hold on, grid on
-%md plot linear cases
 plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
-%md plot co-rotational cases
 plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
-%md plot analytic cases
 plot(timeVec, analyticDisW(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
-%md legends
-legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
-       'location', 'eastoutside')
+legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy','-dpng')
+%md
