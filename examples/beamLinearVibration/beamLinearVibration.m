@@ -6,7 +6,7 @@
 %mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency is applied $(F = F_o sin(wt))$, as it is shown in the figure.
 %md
 %md```@raw html
-%md<img src="assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
+%md<img src="../../assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry, material parameters and load values are defined.
@@ -32,7 +32,7 @@ numElements = 51 ;
 %md
 %md The dynamic displacement of a forced beam describe by the next differential equation
 %md```math
-%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2 w}{\partial t^2} = f(x,t)
+%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2w}{\partial t^2} = f(x,t)
 %md```
 %md Implementig a solution $w(x,t) = W(x)T(t)$ it is possible to find:
 %md```math
@@ -151,20 +151,19 @@ lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md time vector
 timeVec = linspace( 0, tf, size(coRotMatUs,2) );
 %md
-% error estimated for each method in the application point of the
-% external time dependency load
+%md error estimated for each method in the application point of the
+%md external time dependency load
 diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisV(: , appNode);
 diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisW(: , appNode);
 difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisV(: , appNode);
 difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisW(: , appNode);
-%
 intAnalyticDisV = 0;
 intAnalyticDisW = 0;
 errlinearDispUy = 0;
 errcoRotDispUy  = 0;
 errlinearDispUz = 0;
 errcoRotDispUz  = 0;
-%
+%md
 for h = 1:length(diflinearDispUy)-1
     intAnalyticDisV = intAnalyticDisV + (analyticDisV(h+1 , appNode) + analyticDisV(h , appNode))*deltat/2;
     intAnalyticDisW = intAnalyticDisW + (analyticDisW(h+1 , appNode) + analyticDisW(h , appNode))*deltat/2;
@@ -178,7 +177,7 @@ errlinearDispUy = norm(errlinearDispUy)/norm(intAnalyticDisV);
 errcoRotDispUy  = norm(errcoRotDispUy)/norm(intAnalyticDisV);
 errlinearDispUz = norm(errlinearDispUz)/norm(intAnalyticDisW);
 errcoRotDispUz  = norm(errcoRotDispUz)/norm(intAnalyticDisW);
-%the numerical resolution is validated for both method and both directions.
+%md the numerical resolution is validated for both method and both directions.
 verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
              && ( errcoRotDispUy  <  1e-1 ) ...
              && ( errlinearDispUz <  1e-1 ) ...
@@ -190,7 +189,7 @@ plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms
 plot(timeVec, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
 %md plot analytic solution
 plot(timeVec, analyticDisV(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
-% legends
+%md legends
 legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
        'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
@@ -199,13 +198,13 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy','-dpng')
 %md
 figure(2), hold on, grid on
-% plot linear cases
+%md plot linear cases
 plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
-% plot co-rotational cases
+%md plot co-rotational cases
 plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
-% plot analytic cases
+%md plot analytic cases
 plot(timeVec, analyticDisW(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
-% legends
+%md legends
 legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
        'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
