@@ -2,28 +2,29 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearPlaneStrain/onsasExample_linearPlaneStrain.m)
 %md
-%md In this example a hollow cylinder submitted to an internal pressure $p_i$ Pa as shown in the diagram depcited below is considered. The length of the cylinder is $L_z $ m and the internal and external radios are $R_i$ m and $R_e$ m, respectively. 
+%md In this example a hollow cylinder submitted to an internal pressure $p_i$ Pa as shown in the diagram depicted below is considered. The length of the cylinder is $L_z $ m and the internal and external radious are $R_i$ m and $R_e$ m, respectively. 
 %md
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/ilusCylinderPlaneStrain.svg" alt="linear cylinder diagram" width="500"/>
 %md```
 %md
 %md A cylindrical system of coordinates is defined considering the unitary vectors ($e_r$, $e_\theta$, $e_z$). 
-%md The material employed is isotropic and homogeneous with elasticity modulus $E=1$ MPa and Poisson's coefficient $\nu=0.3$. The pressure is radial and applied on the internal surface $\mathbf{\mathit{p_i}} =  - p_i \, e_r$. The boundary conditions correspond to this plane strain example holds:
+%md The material employed is isotropic and homogeneous with elasticity modulus $E=1$ MPa and Poisson's ratio $\nu=0.3$. The pressure is radial and applied on the internal surface $\mathbf{\mathit{p_i}} =  - p_i \, e_r$. The boundary conditions corresponding to this plane strain example are:
 %md```math 
 %md \mathbf{\mathit{u}}_z(r, \theta, z=0)=0\;\;\quad\forall\; (r,\theta) \\
 %md u_z(r, \theta, z=L_z)=0\;\;\quad\forall\ (r,\theta)
+%md \mathbf{\mathit{\sigma}}_z(Ri, \theta, z).e_r=p_i\;\;\quad\forall\; (z,\theta) \\
 %md```
 %md
 %md## Analytic solution
 %md
-%md The analytical solution is obtained using the Navier's equation, imposing no temperature variation and no volumetric forces field. Thus the displacements field $\mathbf{\mathit{u}}$ solution satisfies:
+%md The solution displacement field is obtained using the Navier's equation, imposing no temperature variation and no volumetric forces field. Thus the displacements field $\mathbf{\mathit{u}}$ solution satisfies:
 %md```math
 %md  \nabla (\nabla . u(r,\theta,z) )  = 0  
 %md```
-%md Due to the symmetry of the problem $\mathbf{\mathit{u_{\theta}}} = 0 $ and also $\mathbf{ \mathit{ u (r,\theta,z) } } = \mathbf{ \mathit{ u(r,z) } } $. Thus, according to the boundary conditions stated above $\mathit{u_z(r,z)=0}$ and the radial displacements field $\mathit{u_r(r)}$ only varies with $r$. Therafter by imposing the boundary conditions stated above and substituting ($E$, $\nu$) into Lamé parameters ($\lambda=\frac{ E\nu }{(1 + 2\nu )(1 - 2\nu )}$ and $\mu=\frac{ E\nu }{(1 + 2\nu )}$) we obtain:
+%md Due to the symmetry of the problem $\mathbf{\mathit{u_{\theta}}} = 0 $ and also $\mathbf{ \mathit{ u (r,\theta,z) } } = \mathbf{ \mathit{ u(r,z) } } $. Thus, according to the boundary conditions stated above $\mathit{u_z(r,z)=0}$ and the radial displacements field $\mathit{u_r(r)}$ only varies with $r$. Thereafter by imposing the boundary conditions stated above and substituting ($E$, $\nu$) into Lamé parameters ($\lambda=\frac{ E\nu }{(1 + 2\nu )(1 - 2\nu )}$ and $\mu=\frac{ E\nu }{(1 + 2\nu )}$) we obtain:
 %md```math 
-%md u_r(r) = Ar + \dfrac{B}{r} \quad \text{and} \quad u_z(z)  \\
+%md u_r(r) = Ar + \dfrac{B}{r}  \\
 %md A = \dfrac{(1+\nu)(1-2\nu)R_i^2p_i}{E(R_e^2-R_i^2)}, \quad
 %md B = \dfrac{(1+\nu)R_i^2R_e^2p_i}{E(R_e^2-R_i^2)}
 %md```
@@ -78,12 +79,12 @@ initialConds = struct();
 %md<img src="../../assets/linearCylinderPlaneStrain/meshCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
 %md```
 %md
-%md the mesh is read using `meshFileReader.m` function
+%md the mesh is read using the `meshFileReader.m` function
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' ) ;
 %md
 %md### Analysis parameters
 %md
-%md The Newton-Raphson method is employed with tight tolerances and 2 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
+%md The Newton-Raphson method is employed to solve 2 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
@@ -95,7 +96,7 @@ analysisSettings.deltaT        = .5      ;
 %md
 otherParams.problemName = 'linearPlaneStrain' ;
 otherParams.plotsFormat = 'vtk' ;
-%md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUs`matrix:
+%md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

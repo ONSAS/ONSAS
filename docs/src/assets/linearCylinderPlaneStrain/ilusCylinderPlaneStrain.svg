@@ -23,11 +23,11 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.0116647"
-     inkscape:cx="440.85754"
-     inkscape:cy="344.97597"
+     inkscape:zoom="2.0233294"
+     inkscape:cx="303.46023"
+     inkscape:cy="415.40443"
      inkscape:window-width="1920"
-     inkscape:window-height="1006"
+     inkscape:window-height="1041"
      inkscape:window-x="0"
      inkscape:window-y="39"
      inkscape:window-maximized="1"
@@ -597,19 +597,19 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="92.748276"
-       y="121.71564"
+       x="50.043427"
+       y="129.59625"
        id="text14819-6"><tspan
          sodipodi:role="line"
          id="tspan14817-0"
          style="stroke-width:0.264583"
-         x="92.748276"
-         y="121.71564">e<tspan
+         x="50.043427"
+         y="129.59625">e<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan17701-6">z</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker6222)"
-       d="M 75.840609,120.4649 94.33828,115.50846"
+       d="m 75.840608,120.4649 -18.497671,4.95644"
        id="path18784" />
   </g>
 </svg>
