@@ -1,50 +1,24 @@
-%md# Spring-mass system example
+%md# Spring-mass-damper system example
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/springMass/springMass.m)
 %md
-%mdIn this example a simple spring-mass system is considered. The notation and the analytical solution are based on chapter 3 from
-%mdthe book Dynamics of Structures by Ray W. Clough and Joseph Penzien, Third Edition, 2003.
+%md## ODE System definition
+%mdIn this example a simple spring-mass-damper system is considered. This simple problem is used to validate different implementations of truss and frame elements submitted to dynamic loads.
 %md
 %md```@raw html
-%md<img src="../../assets/springMass.svg" alt="spring-mass diagram" width="800"/>
+%md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
 %md```
-%md
-%md
-%md First, the path to the ONSAS folder is added and scalar parameters are set:
-% clear workspace and add path
-close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
-% scalar parameters for spring-mass system
-k        = 39.47 ; % spring constant
-c        = 0.5   ; % damping parameter
-m        = 1     ; % mass of the system
-p0       = 40    ; % amplitude of applied load
-u0       = 0.1   ; % initial displacement
-du0      = 0.0   ; % initial vemoity
-%md
-%md The free vibration motion parameters are:
-%md
-omegaN       = sqrt( k / m )           ; % the natural frequency
-xi           = c / m  / ( 2 * omegaN ) ;
-freq         = omegaN / (2*pi)         ;
-TN           = 2*pi / omegaN           ;
-dtCrit       = TN / pi                 ;
-%md The frequency of the sinusoidal external force is:
-omegaBar     = 4*omegaN ;
-%md The scalar parameters for the equivalent truss model are:
-l   = 1                 ;
-A   = 0.1               ;
-rho = m * 2 / ( A * l ) ;
-E   = k * l /   A       ;
-%md where the material of the truss was selected to set a mass $m$ at the node $2$.
-%md
 %md## Analytic solution
-%md The analytical solution of the problem is:
+%mdThe analytical solution is based on chapter 3 from _Dynamics of Structures_ by Ray W. Clough and Joseph Penzien, Third Edition, 2003.
+%mdThe analytical solution of the problem is given by:
 %md```math
 %md  u(t) =
 %md     \left( A_c \cos( \omega_D  t ) + B \sin( \omega_D t )  \right) e^{ -\xi \omega_N t } +
 %md    G_1  \cos( \bar{\omega} t ) + G_2 \sin( \bar{\omega} t )
 %md```
-%md The expression of the equation above is computed depending of $c$ and the load amplitude $p_0$:
+%md where the notation and the parameters interpretation can be seen in the cited reference.
+%md
+%md The analytic solution can be computed for specific cases as follows:
 if (c == 0) && (p0 == 0) % free undamped solution
   myAnalyticFunc = @(t)   (   u0 * cos( omegaN * t )  ) ;
 else                     % other cases solution
@@ -52,8 +26,7 @@ else                     % other cases solution
   G1 = (p0/k) * ( -2 * xi * beta   ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
   G2 = (p0/k) * (  1      - beta^2 ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
   if u0 < l
-    Ac = u0 - G1 ;
-    B  =  (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD);
+    Ac = u0 - G1 ;  B = (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD);
   else
     error('this analytical solution is not valid for this u0 and l0');
   end
@@ -62,11 +35,48 @@ else                     % other cases solution
     + G1  * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
 end
 %md
-%md## Numerical solution
+%md## Numerical parameters
+% clear workspace and add path
+close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
+%md The following numeric parameters are considered.
+% scalar parameters for spring-mass system
+k    = 39.47 ; % spring constant
+c    = 0.5   ; % damping parameter
+m    = 1     ; % mass of the system
+p0   = 40    ; % amplitude of applied load
+u0   = 0.1   ; % initial displacement
+du0  = 0.0   ; % initial velocity
 %md
-%md The solution is used to validate two different numerical solution cases.
+%md Then other parameters are computed:
+%md
+omegaN       = sqrt( k / m )           ; % the natural frequency
+xi           = c / m  / ( 2 * omegaN ) ;
+freq         = omegaN / (2*pi)         ;
+TN           = 2*pi / omegaN           ;
+dtCrit       = TN / pi                 ;
+%md
+%md The frequency of the sinusoidal external force is set as:
+omegaBar     = 4*omegaN ;
+%md
+%md## Numerical solutions
+%md
+%md The analytic solution is used to validate two numerical solution approaches using different structural physical models, governed by the same ODE.
 %md
 %md### Numerical case 1: truss element model with Newmark method
+%mdIn this case, a truss element is considered, as shown in the figure, with Young modulus, cross-section, area, mass, nodal damping and length corresponding to the parameters considered for the spring-mass-damper system 
+%md```@raw html
+%md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
+%md```
+
+
+
+%md The scalar parameters for the equivalent truss model are:
+l   = 1                 ;
+A   = 0.1               ;
+rho = m * 2 / ( A * l ) ;
+E   = k * l /   A       ;
+%md where the material of the truss was selected to set a mass $m$ at the node $2$.
+%md
 %md
 %md#### Materials
 %md
