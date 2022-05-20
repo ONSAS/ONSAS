@@ -27,11 +27,11 @@
      inkscape:cx="74.089092"
      inkscape:cy="430.55548"
      inkscape:window-width="1920"
-     inkscape:window-height="1048"
+     inkscape:window-height="1006"
      inkscape:window-x="0"
-     inkscape:window-y="1080"
+     inkscape:window-y="39"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer2" />
   <defs
      id="defs2">
     <marker
@@ -353,6 +353,18 @@
          id="path6220-60-6" />
     </marker>
   </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2">
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.264583;stroke-dasharray:1.5875, 1.5875"
+       id="rect1096"
+       width="242.74684"
+       height="191.85107"
+       x="-4.7376499"
+       y="-3.2908416" />
+  </g>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
