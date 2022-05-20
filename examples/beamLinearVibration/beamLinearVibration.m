@@ -155,37 +155,24 @@ lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md time vector
 timeVec = linspace( 0, tf, size(coRotMatUs,2) );
 %md
-%md error estimated for each method in the application point of the
-%md external time dependency load
+%md error estimated for each method in the application point of the external time dependency load
 diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisY(: , appNode);
 diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
 difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisY(: , appNode);
 difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
-intAnalyticDisY = 0;
-intAnalyticDisZ = 0;
-errlinearDispUy = 0;
-errcoRotDispUy  = 0;
-errlinearDispUz = 0;
-errcoRotDispUz  = 0;
 %md
-for h = 1:length(diflinearDispUy)-1
-    intAnalyticDisY = intAnalyticDisY + (analyticDisY(h+1 , appNode) + analyticDisY(h , appNode))*deltat/2;
-    intAnalyticDisZ = intAnalyticDisZ + (analyticDisZ(h+1 , appNode) + analyticDisZ(h , appNode))*deltat/2;
-    errlinearDispUy = errlinearDispUy + (diflinearDispUy(h+1) + diflinearDispUy(h))*deltat/2;
-    errcoRotDispUy  = errcoRotDispUy + (difcoRotDispUy(h+1) + difcoRotDispUy(h))*deltat/2;
-    errlinearDispUz = errlinearDispUz + (diflinearDispUz(h+1) + diflinearDispUz(h))*deltat/2;
-    errcoRotDispUz  = errcoRotDispUz + (difcoRotDispUz(h+1) + difcoRotDispUz(h))*deltat/2;
-end
+intAnalyticDisY = (analyticDisY(2:end , appNode) + analyticDisY(1:end-1, appNode))*deltat/2;
+intAnalyticDisZ = (analyticDisZ(2:end , appNode) + analyticDisZ(1:end-1 , appNode))*deltat/2;
+errlinearDispUy = norm((diflinearDispUy(2:end) + diflinearDispUy(1:end-1))*deltat/2)/norm(intAnalyticDisY);
+errcoRotDispUy  = norm((difcoRotDispUy(2:end) + difcoRotDispUy(1:end-1))*deltat/2)/norm(intAnalyticDisY);
+errlinearDispUz = norm((diflinearDispUz(2:end) + diflinearDispUz(1:end-1))*deltat/2)/norm(intAnalyticDisZ);
+errcoRotDispUz  = norm((difcoRotDispUz(2:end) + difcoRotDispUz(1:end-1))*deltat/2)/norm(intAnalyticDisZ);
 %md
-errlinearDispUy = norm(errlinearDispUy)/norm(intAnalyticDisY);
-errcoRotDispUy  = norm(errcoRotDispUy)/norm(intAnalyticDisY);
-errlinearDispUz = norm(errlinearDispUz)/norm(intAnalyticDisZ);
-errcoRotDispUz  = norm(errcoRotDispUz)/norm(intAnalyticDisZ);
 %md the numerical resolution is validated for both method and both directions.
-verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
-             && ( errcoRotDispUy  <  1e-1 ) ...
-             && ( errlinearDispUz <  1e-1 ) ...
-             && ( errcoRotDispUz  <  1e-1 );
+verifBoolean =  ( errlinearDispUy <  1e-2 ) ...
+             && ( errcoRotDispUy  <  1e-2 ) ...
+             && ( errlinearDispUz <  1e-2 ) ...
+             && ( errcoRotDispUz  <  1e-2 );
 %md
 %md plot y-axis linear, co-rotational and analytic result 
 figure(1), hold on, grid on
