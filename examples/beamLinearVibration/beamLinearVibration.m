@@ -10,24 +10,24 @@
 %md<img src="../../docs/assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
 %md```
 %md
-%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry, material parameters and load values are defined.
+%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path
 close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
-% External forced load parameters
-Fo     = 100; % N
-w      = 2;    % rad/s
-% Time values
-tf     = 8;    % sec
+%md External forced load parameters, time values and Material and Geometric parameters are added to find both analytic and numerical solutions.
+%md Time and applied forced parameters.
+Fo = 100; % N
+w = 2;    % rad/s
+tf = 8;    % sec
 deltat = 0.1; % sec
 %md Material scalar parameters
-E = 200e9 ;  nu = 0.3 ; rho = 700;
+E = 200e9 ;  nu = 0.3;  rho = 700;
 %md Geometrical scalar parameters
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 %md Number of elements
-numElements = 51 ;
+numElements = 21 ;
 %md
 %md## Analytic solution
 %md
@@ -41,8 +41,12 @@ numElements = 51 ;
 %md```
 %md
 %md## External Load application node
-appNode     = (numElements+1)/2+1;
-appNodePos  = l*(appNode)/numElements;
+if rem(numElements+1,2) == 0
+    appNode = (numElements+1)/2;
+elseif rem(numElements+1,2) ~= 0
+    appNode = (numElements)/2;
+end
+appNodePos = l*(appNode)/numElements;
 %md
 %md## Analytic solution of a beam with fix nodes in both ends.
 %md
@@ -53,11 +57,11 @@ n  = 1:1:8; % number of nodes
 wnY = ((n*pi).^2)*sqrt(E*Izz/rho/(ty*tz)/(l^4)); % Natural frecuency direction Y
 wnZ = ((n*pi).^2)*sqrt(E*Iyy/rho/(ty*tz)/(l^4)); % Natural frecuency direction Z
 %md Analytic solution
-analyticDisV = 0;
-analyticDisW = 0;
+analyticDisY = 0;
+analyticDisZ = 0;
 for i=1:length(n)
-    analyticDisV = analyticDisV + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
-    analyticDisW = analyticDisW + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
+    analyticDisY = analyticDisY + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
+    analyticDisZ = analyticDisZ + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
 end
 %md
 %md### Numerical solution
@@ -83,7 +87,7 @@ elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
 elements(2).elemTypeParams          = 1           ;
 %md the consistent mass type is selected to solve the dynamic response of
 %the beam
-elements(2).massMatType             = 'consistent';
+elements(2).massMatType = 'consistent';
 %md
 %md### boundaryConds
 %md
@@ -100,7 +104,7 @@ boundaryConds(2).loadsBaseVals = [ 0 0 1 0 1 0 ] ;
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                   = struct() ;
+initialConds = struct() ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
@@ -112,7 +116,7 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 %md the following case only differs in the boundary condition and the node number
 mesh.conecCell{ 2, 1 } = [ 0 1 1 0  numElements+1 ] ;
 %md the following case only differs in the boundary condition and the node number
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  (numElements+1)/2+1 ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2 0  appNode ] ;
 %md the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
 for i=1:numElements,
   mesh.conecCell{ i+3,1 } = [ 1 2 0 0  i i+1 ] ;
@@ -128,7 +132,7 @@ analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
-otherParams.controlDofs = [ numElements/2+1 3 ] ;
+otherParams.controlDofs = [ appNode 3 ] ;
 otherParams.plotsFormat = 'vtk' ;
 %md Beam with simple supported nodes in the ends
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -136,7 +140,7 @@ otherParams.plotsFormat = 'vtk' ;
 %md The second analysis case implements the linear elastic formulation
 materials.hyperElasModel  = 'linearElastic' ;
 otherParams.problemName = 'linearElasticuniformDynamicBeam';
-otherParams.controlDofs = [ numElements/2+1 3 ] ;
+otherParams.controlDofs = [ appNode 5 ] ;
 otherParams.plotsFormat = 'vtk' ;
 %md
 %md## Analysis case 1: Linear Elastic Y
@@ -153,30 +157,30 @@ timeVec = linspace( 0, tf, size(coRotMatUs,2) );
 %md
 %md error estimated for each method in the application point of the
 %md external time dependency load
-diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisV(: , appNode);
-diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisW(: , appNode);
-difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisV(: , appNode);
-difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisW(: , appNode);
-intAnalyticDisV = 0;
-intAnalyticDisW = 0;
+diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisY(: , appNode);
+diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
+difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisY(: , appNode);
+difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
+intAnalyticDisY = 0;
+intAnalyticDisZ = 0;
 errlinearDispUy = 0;
 errcoRotDispUy  = 0;
 errlinearDispUz = 0;
 errcoRotDispUz  = 0;
 %md
 for h = 1:length(diflinearDispUy)-1
-    intAnalyticDisV = intAnalyticDisV + (analyticDisV(h+1 , appNode) + analyticDisV(h , appNode))*deltat/2;
-    intAnalyticDisW = intAnalyticDisW + (analyticDisW(h+1 , appNode) + analyticDisW(h , appNode))*deltat/2;
+    intAnalyticDisY = intAnalyticDisY + (analyticDisY(h+1 , appNode) + analyticDisY(h , appNode))*deltat/2;
+    intAnalyticDisZ = intAnalyticDisZ + (analyticDisZ(h+1 , appNode) + analyticDisZ(h , appNode))*deltat/2;
     errlinearDispUy = errlinearDispUy + (diflinearDispUy(h+1) + diflinearDispUy(h))*deltat/2;
     errcoRotDispUy  = errcoRotDispUy + (difcoRotDispUy(h+1) + difcoRotDispUy(h))*deltat/2;
     errlinearDispUz = errlinearDispUz + (diflinearDispUz(h+1) + diflinearDispUz(h))*deltat/2;
     errcoRotDispUz  = errcoRotDispUz + (difcoRotDispUz(h+1) + difcoRotDispUz(h))*deltat/2;
 end
 %md
-errlinearDispUy = norm(errlinearDispUy)/norm(intAnalyticDisV);
-errcoRotDispUy  = norm(errcoRotDispUy)/norm(intAnalyticDisV);
-errlinearDispUz = norm(errlinearDispUz)/norm(intAnalyticDisW);
-errcoRotDispUz  = norm(errcoRotDispUz)/norm(intAnalyticDisW);
+errlinearDispUy = norm(errlinearDispUy)/norm(intAnalyticDisY);
+errcoRotDispUy  = norm(errcoRotDispUy)/norm(intAnalyticDisY);
+errlinearDispUz = norm(errlinearDispUz)/norm(intAnalyticDisZ);
+errcoRotDispUz  = norm(errcoRotDispUz)/norm(intAnalyticDisZ);
 %md the numerical resolution is validated for both method and both directions.
 verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
              && ( errcoRotDispUy  <  1e-1 ) ...
@@ -187,7 +191,7 @@ verifBoolean =  ( errlinearDispUy <  1e-1 ) ...
 figure(1), hold on, grid on
 plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
 plot(timeVec, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
-plot(timeVec, analyticDisV(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
+plot(timeVec, analyticDisY(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
 legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
        'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
@@ -198,7 +202,7 @@ print('output/Uy','-dpng')
 figure(2), hold on, grid on
 plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
 plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
-plot(timeVec, analyticDisW(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
+plot(timeVec, analyticDisZ(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
 legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
