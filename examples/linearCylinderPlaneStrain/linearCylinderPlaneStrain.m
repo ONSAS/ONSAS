@@ -9,20 +9,23 @@
 %md```
 %md
 %md A cylindrical system of coordinates is defined considering the unitary vectors ($e_r$, $e_\theta$, $e_z$). 
-%md The material employed is isotropic and homogeneous with elasticity modulus $E=1$ MPa and Poisson's ratio $\nu=0.3$. The pressure is radial and applied on the internal surface $\mathbf{\mathit{p_i}} =  - p_i \, e_r$. The boundary conditions corresponding to this plane strain example are:
+%md The material employed is isotropic and homogeneous with elasticity modulus $E=1$ MPa and Poisson's ratio $\nu=0.3$. The boundary condition on the Cauchy stress tensor $\mathbf{\sigma}$ is given by the radial pressure on the internal surface:
+%md```math 
+%md \mathbf{\sigma}(Ri, \theta, z).e_r=p_i\;\;\quad\forall\; (\theta,z) \\
+%md```
+%md and the plane strain boundary conditions imposed to the displacement field are:
 %md```math 
 %md \mathbf{\mathit{u}}_z(r, \theta, z=0)=0\;\;\quad\forall\; (r,\theta) \\
-%md u_z(r, \theta, z=L_z)=0\;\;\quad\forall\ (r,\theta)
-%md \mathbf{\mathit{\sigma}}_z(Ri, \theta, z).e_r=p_i\;\;\quad\forall\; (z,\theta) \\
+%md u_z(r, \theta, z=L_z)=0\;\;\quad\forall\ (r,\theta) \\
 %md```
 %md
 %md## Analytic solution
 %md
 %md The solution displacement field is obtained using the Navier's equation, imposing no temperature variation and no volumetric forces field. Thus the displacements field $\mathbf{\mathit{u}}$ solution satisfies:
 %md```math
-%md  \nabla (\nabla . u(r,\theta,z) )  = 0  
+%md  \nabla (\nabla . \textbf{u}(r,\theta,z) )  = 0  
 %md```
-%md Due to the symmetry of the problem $\mathbf{\mathit{u_{\theta}}} = 0 $ and also $\mathbf{ \mathit{ u (r,\theta,z) } } = \mathbf{ \mathit{ u(r,z) } } $. Thus, according to the boundary conditions stated above $\mathit{u_z(r,z)=0}$ and the radial displacements field $\mathit{u_r(r)}$ only varies with $r$. Thereafter by imposing the boundary conditions stated above and substituting ($E$, $\nu$) into Lamé parameters ($\lambda=\frac{ E\nu }{(1 + 2\nu )(1 - 2\nu )}$ and $\mu=\frac{ E\nu }{(1 + 2\nu )}$) we obtain:
+%md Due to the symmetry of the problem $\mathbf{\mathit{u_{\theta}}} = 0 $ and also $\mathbf{ \mathit{ \textbf{u} (r,\theta,z) } } = \mathbf{ \mathit{ \textbf{u}(r,z) } } $. Thus, according to the boundary conditions stated above $\mathit{u_z(r,z)=0}$ and the radial displacements field $\mathit{u_r(r)}$ only varies with $r$. Thereafter by imposing the boundary conditions stated above and substituting ($E$, $\nu$) into Lamé parameters ($\lambda=\frac{ E\nu }{(1 + 2\nu )(1 - 2\nu )}$ and $\mu=\frac{ E\nu }{(1 + 2\nu )}$) we obtain:
 %md```math 
 %md u_r(r) = Ar + \dfrac{B}{r}  \\
 %md A = \dfrac{(1+\nu)(1-2\nu)R_i^2p_i}{E(R_e^2-R_i^2)}, \quad
@@ -144,7 +147,6 @@ print('verifLinearCylinderPlaneStrain.png','-dpng')
 %md
 %md Finally the deformed configuration is illustrated:  
 %md```@raw html
-%md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
+%md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="def plot" width="500"/>
 %md```
-%md
 
