@@ -62,7 +62,7 @@ boundaryConds(1).imposDispDofs = [1] ;
 boundaryConds(1).imposDispVals = [0] ;
 boundaryConds(2).imposDispDofs = [3] ;
 boundaryConds(2).imposDispVals = [0] ;
-%md then the third BC introduced in local coordinates sets the radial internal pressure (here is used as a convention that compression to the surface is positive):
+%md then the third BC corresponds to the pressure. It is introduced in `local` coordinates:
 boundaryConds(3).loadsCoordSys = 'local' ;
 boundaryConds(3).loadsTimeFact = @(t) t  ;
 boundaryConds(3).loadsBaseVals = [ p 0  0 0  0 0 ]  ;
