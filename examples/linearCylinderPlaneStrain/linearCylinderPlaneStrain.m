@@ -114,7 +114,7 @@ analyticValRExt = A*Rext + B/Rext ;
 % external surface numerical solution
 dofXRext = (8-1)*6+3 ;
 numericalRExt = matUs( dofXRext , end ) ;
-%md The boolean to verify the accurate of the numerical solution vs analytic is: 
+%md The numerical solution is verified: 
 analyticCheckTolerance = 1e-3 ;
 verifBoolean = ( ( numericalRInt - analyticValRInt ) < analyticCheckTolerance ) && ...
                ( ( numericalRExt - analyticValRExt ) < analyticCheckTolerance )
