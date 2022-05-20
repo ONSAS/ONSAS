@@ -34,14 +34,14 @@ du0  = 0.0   ; % initial velocity
 %md
 %md Then other parameters are computed:
 %md
-omegaN       = sqrt( k / m )           ; % the natural frequency
-xi           = c / m  / ( 2 * omegaN ) ;
-freq         = omegaN / (2*pi)         ;
-TN           = 2*pi / omegaN           ;
-dtCrit       = TN / pi                 ;
+omegaN  = sqrt( k / m )           ; % the natural frequency
+xi      = c / m  / ( 2 * omegaN ) ;
+freq    = omegaN / (2*pi)         ;
+TN      = 2*pi / omegaN           ;
+dtCrit  = TN / pi                 ;
 %md
 %md The frequency of the sinusoidal external force is set as:
-omegaBar     = 4*omegaN ;
+omegaBar = 4*omegaN ;
 %md
 %md The analytic solution can be computed for specific cases as follows:
 if (c == 0) && (p0 == 0) % free undamped solution
@@ -50,11 +50,9 @@ else                     % other cases solution
   beta   = omegaBar / omegaN ;  omegaD = omegaN * sqrt( 1-xi^2 ) ; %forced and damped
   G1 = (p0/k) * ( -2 * xi * beta   ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
   G2 = (p0/k) * (  1      - beta^2 ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
-  if u0 < l
-    Ac = u0 - G1 ;  B = (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD);
-  else
-    error('this analytical solution is not valid for this u0 and l0');
-  end
+  
+  Ac = u0 - G1 ;  B = (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD) ;
+  
   myAnalyticFunc = @(t) ...
      ( Ac * cos( omegaD   * t ) + B  * sin( omegaD   * t ) ) .* exp( -xi * omegaN * t ) ...
     + G1  * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
@@ -64,19 +62,21 @@ end
 %md
 %md The analytic solution is used to validate two numerical solution approaches using different structural physical models, governed by the same ODE.
 %md
-%md### Numerical case 1: truss element model with Newmark method
+%md### Numerical case 1: truss element model with Newmark method and lumped masses
 %mdIn this case, a truss element is considered, as shown in the figure, with Young modulus, cross-section, area, mass, nodal damping and length corresponding to the parameters considered for the spring-mass-damper system 
 %md```@raw html
 %md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
 %md```
 %md
 %md The scalar parameters for the equivalent truss model are:
-l   = 1                 ;
-A   = 0.1               ;
+l   = 2                 ;
+A   = 0.2               ;
 rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
 %md where the material of the truss was selected to set a mass $m$ at the node $2$.
 %md
+assert( u0 < l, 'this analytical solution is not valid for this u0 and l0');
+%md  
 %md#### Materials
 %md
 materials(1).hyperElasModel  = '1DrotEngStrain' ;
@@ -164,7 +164,7 @@ boundaryConds(3).userLoadsFilename = 'myLoadSpringMass' ;
 %md now the initial condition is added to the node $2$ with the second material:
 mesh.conecCell{ 2, 1 } = [ 2 1 2 1   2  ] ;
 %md
-%md The $\alpha_{HHT}$ method with $\alpha=0$ is equivalent to Newmark, this is employed to validate results of both methods, as consequence is using:
+%md The $\alpha_{HHT}$ method with $\alpha=0$ is equivalent to Newmark, this is employed to validate results of both methods, then:
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.alphaHHT      =   0        ;
 %md
@@ -174,7 +174,6 @@ otherParams.problemName = 'springMass_case2'     ;
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md## Verification
-%md---------------------
 %md The numerical displacements of the node $2$ is extracted for both study cases:
 valsNewmark = matUsNewmark(6+1,:) ;
 valsHHT     = matUsHHT(6+1,:)     ;
@@ -187,19 +186,25 @@ verifBooleanNewmark =  ( ( norm( valsAnaly - valsNewmark ) / norm( valsAnaly ) )
 verifBooleanHHT     =  ( ( norm( valsAnaly - valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
 verifBoolean        = verifBooleanHHT && verifBooleanNewmark                                                 ;
 %md
+%md
 
-%md---------------Bending beam mass-spring system--------
-l = 10 ;
+
+
+%md## Bending beam mass-spring system
+
+
 d = l/10;
-A   = pi * d^2 /4; %0.1 ;
-Izz = pi * d ^ 4 / 64 ; 
-E = k*l*l*l/(3*Izz) ;   
+A   = pi * d^2 /  4 ;
+Izz = pi * d^4 / 64 ; 
+E   = k* l^3 / ( 3 * Izz ) ; % delta = P L3/(3EI)  =>  k = P/delta = 3EI/L3  => E = kL3/(3I)
 rho = 2*m/(A*l) ; 
+%md
+materials = {};
 materials(1).hyperElasParams = [ E 0 ] ;
 materials(1).density  = rho ;
-
-materials(1).hyperElasModel  = 'linearElastic' ; % 1DrotEngStrain should work as well
+materials(1).hyperElasModel  = '1DrotEngStrain'; %'linearElastic' ; % 1DrotEngStrain should work as well
 %md
+elements = {} ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'frame'; %and not truss
 elements(2).massMatType = 'lumped' ;
@@ -207,18 +212,19 @@ elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [d] ;
 elements(2).elemTypeParams = 0 ;
 %md
+boundaryConds = {} ;
 boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0] ;
 %md
 boundaryConds(2).loadsCoordSys = 'global'                  ;
 boundaryConds(2).loadsTieFact = @(t) p0*sin( omegaBar*t )        ;
-%boundaryConds(2).loadsTimeFact = @(t) 100*p0;
 boundaryConds(2).loadsBaseVals = [0 0 1 0 0 0 ] ; %along Y axis
 %md An initial displacements $u_0$ is set in $y$ direction:
-initialConds(1).nonHomogeneousUDofs   = 3;
-initialConds(1).nonHomogeneousUVals = [u0];
-initialConds(1).nonHomogeneousUdotDofs   = 3;
-initialConds(1).nonHomogeneousUdotVals = [du0];
+initialConds = {} ;
+initialConds(1).nonHomogeneousUDofs    = 3   ; 
+initialConds(1).nonHomogeneousUVals    = u0  ;
+initialConds(1).nonHomogeneousUdotDofs = 3   ;
+initialConds(1).nonHomogeneousUdotVals = du0 ;
 %md
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
@@ -233,99 +239,17 @@ otherParams.problemName = 'springMass_case3'     ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   0.005   ;
 analysisSettings.finalTime     =   2.5*TN  ;
-%%
-%---------------------------------------------------------
-ku        = 39.47 ; % spring constant
-cu        = 0   ; % damping parameter
-m        = 1     ; % mass of the system
-force = 0;
-p0       = 1;
-omegaBar = 4*sqrt(ku/m) ;
-Ut0= 0.1; dUt0= 0; ddUt0 = 0;
-% parameters for truss model
-l   = 100 ;
-d = l/20;
-A   = pi * d^2 /4; %0.1 ;
-%J = pi * d ^ 4 / 64 ; Iyy = J / 2 ; Izz = J / 2 ;
-Izz = pi * d ^ 4 / 64 ; %actually
-% Y deformation 
-E = ku*l*l*l/(3*Izz) ;   % E   = ku * l /   A       ;
-rho = 2*m/(A*l) ; % rho = m * 2 / ( A * l ) ;
-omegaN = sqrt( ku / m );
-freq   = omegaN / (2*pi)      ;
-TN     = 2*pi / omegaN        
-dtCrit = TN / pi              ;
-dt = 0.028                ;
-finalTime = 5*TN          ;
-
-xi     = cu / m  / ( 2 * omegaN ) ;
-nodalDamping = cu ;
-
-% numerical method params
-stopTolDeltau = 1e-10           ;
-stopTolForces = 1e-10           ;
-stopTolIts    = 30              ;
-alphaHHT      = 0               ;
-% ------------------------------------
+analysisSettings.stopTolDeltau =   1e-10    ;
+analysisSettings.stopTolForces =   1e-10    ;
+analysisSettings.stopTolIts    =   10      ;
 
 
-materials(1).hyperElasModel  = '1DrotEngStrain' ;%'1DrotEngStrain' ;
-materials(1).hyperElasParams = [ E 0 ] ;
-materials(1).density  = rho ;
-
-elements(1).elemType = 'node' ;
-elements(2).elemType = 'frame';
-
-elements(2).massMatType = 'lumped' ;
-elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = [d] ;%[sqrt(4*A/pi) ] ;
-elements(2).elemTypeParams = 0 ;
-
-boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6] ;
-boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0] ;
-
-%boundaryConds(2).imposDispDofs =  [ 1 5 ] ; % Y displacement
-%boundaryConds(2).imposDispVals =  [ 0 0 ] ;
-boundaryConds(2).loadsCoordSys = 'global'                  ;
-% boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )        ;
-boundaryConds(2).loadsTimeFact = @(t) force        ;
-boundaryConds(2).loadsBaseVals = [0 0 1 0 0 0 ] ;
-%boundaryConds(2).userLoadsFilename = 'myLoadSpringMass' ;
-% initial conditions
-%initialConds.nonHomogeneousInitialCondU0   = [ 2 1 Ut0 ] ;
-initialConds(1).nonHomogeneousUDofs   = 3;
-initialConds(1).nonHomogeneousUVals = [Ut0];
-%Not working
-% initialConds(1).nonHomogeneousUdotDofs   = 3;
-% initialConds(1).nonHomogeneousUdotVals = [dUt0];
-mesh.nodesCoords = [  0  0  0 ; ...
-                      l  0  0 ] ;
-mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 1   2   ] ;
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
-
-otherParams.nodalDispDamping = cu ;
-analysisSettings.methodName    = 'newmark' ;
-%md and the following parameters correspond to the iterative numerical analysis settings
-analysisSettings.deltaT        =   dt  ;
-analysisSettings.finalTime      =  finalTime  ;
-analysisSettings.stopTolDeltau =   1e-8 ;
-analysisSettings.stopTolForces =   1e-8 ;
-analysisSettings.stopTolIts    =   10   ;
-analysisSettings.alphaNM      =   0.25   ;
-analysisSettings.deltaNM      =   0.5   ;
 [matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-valsBending = matUsBending(6+3,:) 
-times = 0:dt:(finalTime+dt); 
-figure(11)
-hold on, grid on
-plot(times, valsBending,'b-o')
-xlabel('times')
-ylabel('U')
-title(sprintf('dt = %.3d, m = %d, c = %d, ku = %d, f = %d', dt, m, cu, ku, force))
-legend('ONSAS mass-spring model', 'Newmark solution','location', 'South' ) ;
-box off;
+valsBending = matUsBending(6+3,:) ;
+
+
+%title( sprintf('dt = %.3d, m = %d, c = %d, ku = %d, f = %d', analysisSettings.deltaT, m, c, k, p0 ) )
+
 %%
 %md------------------------------------------------------
 %md## Plot verification
@@ -336,20 +260,18 @@ hold on, grid on, spanPlot = 8 ; lw = 2.0 ; ms = 11 ; plotfontsize = 20 ;
 plot(times, valsAnaly   ,'b-', 'linewidth', lw,'markersize',ms )
 plot(times(1:spanPlot:end), valsNewmark(1:spanPlot:end) ,'ro', 'linewidth', lw,'markersize', ms )
 plot(times(1:spanPlot:end), valsHHT(1:spanPlot:end)     ,'gs', 'linewidth', lw,'markersize', ms )
+plot(times(1:spanPlot:end), valsBending(1:spanPlot:end)     ,'yx', 'linewidth', lw,'markersize', ms )
 labx = xlabel('t [s]');   laby = ylabel('u(t) [m]') ;
-legend( 'analytic', 'truss-Newmark','nodalMass-HHT','Beam oscillator', 'location','southeast')
+legend( 'analytic', 'truss-Newmark', 'nodalMass-HHT', 'Beam-oscillator', 'location','southeast')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 if exist('../../docs/src/assets/')==7
   % printing plot also to docs directory
   disp('printing plot also to docs directory')
   print('../../docs/src/assets/springMassCheckU.png','-dpng')
-  else
+else
   print('output/springMassCheckU.png','-dpng')
 end
-figure(10)
-hold on, grid on,
-plot(times(1:spanPlot:end), valsBending(1:spanPlot:end)     ,'y*', 'linewidth', lw,'markersize', ms )
 %md
 %md```@raw html
 %md<img src="../../assets/springMassCheckU.png" alt="plot check" width="500"/>
