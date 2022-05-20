@@ -46,7 +46,7 @@ materials.hyperElasParams =  [ E nu ]       ;
 %md
 %md#### elements
 %md 
-%md In this model three kinds of elements are used: `triangle` for the solid, `edges` to add external loads and `nodes`. Since three kinds of elements are used, the struct has length 3: 
+%md In this plane model, three kinds of elements are used: `triangle` for the solid, `edges` to add pressure loads and `nodes` to set additional boundary conditions for the numerical resolution. Since three kinds of elements are used, the struct has length 3: 
 elements(1).elemType = 'node';
 elements(2).elemType = 'edge';
 elements(2).elemCrossSecParams = L ;
