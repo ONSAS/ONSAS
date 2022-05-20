@@ -26,7 +26,7 @@ close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
 % scalar parameters for spring-mass system
 k    = 39.47 ; % spring constant
-c    = 0.5   ; % damping parameter
+c    = .5   ; % damping parameter
 m    = 1     ; % mass of the system
 p0   = 40    ; % amplitude of applied load
 u0   = 0.1   ; % initial displacement
@@ -69,7 +69,7 @@ end
 %md```
 %md
 %md The scalar parameters for the equivalent truss model are:
-l   = 2                 ;
+l   = 10                ;
 A   = 0.2               ;
 rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
@@ -173,23 +173,7 @@ otherParams.problemName = 'springMass_case2'     ;
 %md Execute ONSAS and save the results:
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md## Verification
-%md The numerical displacements of the node $2$ is extracted for both study cases:
-valsNewmark = matUsNewmark(6+1,:) ;
-valsHHT     = matUsHHT(6+1,:)     ;
-%md The analytical solution is evaluated:
-times       = linspace( 0,analysisSettings.finalTime, size(matUsHHT,2) ) ;
-valsAnaly   = myAnalyticFunc(times)                                                          ;
-%md The boolean to validate the implementation is evaluated such as:
-analyticCheckTolerance = 5e-2 ;
-verifBooleanNewmark =  ( ( norm( valsAnaly - valsNewmark ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
-verifBooleanHHT     =  ( ( norm( valsAnaly - valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
-verifBoolean        = verifBooleanHHT && verifBooleanNewmark                                                 ;
 %md
-%md
-
-
-
 %md## Bending beam mass-spring system
 
 
@@ -202,7 +186,7 @@ rho = 2*m/(A*l) ;
 materials = {};
 materials(1).hyperElasParams = [ E 0 ] ;
 materials(1).density  = rho ;
-materials(1).hyperElasModel  = '1DrotEngStrain'; %'linearElastic' ; % 1DrotEngStrain should work as well
+materials(1).hyperElasModel  = 'linearElastic' ; % 1DrotEngStrain should work as well
 %md
 elements = {} ;
 elements(1).elemType = 'node' ;
@@ -217,7 +201,7 @@ boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0] ;
 %md
 boundaryConds(2).loadsCoordSys = 'global'                  ;
-boundaryConds(2).loadsTieFact = @(t) p0*sin( omegaBar*t )        ;
+boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )        ;
 boundaryConds(2).loadsBaseVals = [0 0 1 0 0 0 ] ; %along Y axis
 %md An initial displacements $u_0$ is set in $y$ direction:
 initialConds = {} ;
@@ -247,13 +231,23 @@ analysisSettings.stopTolIts    =   10      ;
 [matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 valsBending = matUsBending(6+3,:) ;
 
-
-%title( sprintf('dt = %.3d, m = %d, c = %d, ku = %d, f = %d', analysisSettings.deltaT, m, c, k, p0 ) )
-
-%%
-%md------------------------------------------------------
+%md## Verification
+%md The numerical displacements of the node $2$ is extracted for both study cases:
+valsNewmark = matUsNewmark(6+1,:) ;
+valsHHT     = matUsHHT(6+1,:)     ;
+%md The analytical solution is evaluated:
+times       = linspace( 0,analysisSettings.finalTime, size(matUsHHT,2) ) ;
+valsAnaly   = myAnalyticFunc(times)                                                          ;
+%md The boolean to validate the implementation is evaluated such as:
+analyticCheckTolerance = 5e-2 ;
+verifBooleanNewmark =  ( ( norm( valsAnaly  - valsNewmark ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
+verifBooleanHHT     =  ( ( norm( valsAnaly  - valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
+verifBooleanBending =  ( ( norm( valsBending- valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
+verifBoolean        = verifBooleanHHT && verifBooleanNewmark && valsBending                                   ;
+%md
+%md
 %md## Plot verification
-%md---------------------
+%md
 %md The control displacement $u(t)$ is plotted:
 figure
 hold on, grid on, spanPlot = 8 ; lw = 2.0 ; ms = 11 ; plotfontsize = 20 ;
@@ -262,7 +256,9 @@ plot(times(1:spanPlot:end), valsNewmark(1:spanPlot:end) ,'ro', 'linewidth', lw,'
 plot(times(1:spanPlot:end), valsHHT(1:spanPlot:end)     ,'gs', 'linewidth', lw,'markersize', ms )
 plot(times(1:spanPlot:end), valsBending(1:spanPlot:end)     ,'yx', 'linewidth', lw,'markersize', ms )
 labx = xlabel('t [s]');   laby = ylabel('u(t) [m]') ;
-legend( 'analytic', 'truss-Newmark', 'nodalMass-HHT', 'Beam-oscillator', 'location','southeast')
+legend( 'analytic', 'truss-Newmark', 'nodalMass-HHT', 'Beam-model', 'location','southeast')
+title( sprintf('dt = %.3d, m = %d, c = %d, k = %d, p0 = %d', analysisSettings.deltaT, m, c, k, p0 ) )
+
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 if exist('../../docs/src/assets/')==7
