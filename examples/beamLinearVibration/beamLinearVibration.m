@@ -48,12 +48,12 @@ appNodePos  = l*(appNode)/numElements;
 t  = 0:deltat:tf; % time vector
 x  = 0:l/numElements:l; % beam mesh
 n  = 1:1:8; % number of nodes
-analyticDisV = 0;
-analyticDisW = 0;
 %md Natural frecuency mode vibration vector
 wnY = ((n*pi).^2)*sqrt(E*Izz/rho/(ty*tz)/(l^4)); % Natural frecuency direction Y
 wnZ = ((n*pi).^2)*sqrt(E*Iyy/rho/(ty*tz)/(l^4)); % Natural frecuency direction Z
 %md Analytic solution
+analyticDisV = 0;
+analyticDisW = 0;
 for i=1:length(n)
     analyticDisV = analyticDisV + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
     analyticDisW = analyticDisW + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
@@ -141,9 +141,8 @@ otherParams.plotsFormat = 'vtk' ;
 %md## Analysis case 1: Linear Elastic Y
 %md Beam with simple supported nodes in the ends
 [linElasMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%md## Analytic solution
 %md
-%md### Plots
+%md### Error estimation and Plots
 dofYendNode = 6*(appNode) - 3;
 dofZendNode = 6*(appNode) - 1;
 %mdPlot parameters:
