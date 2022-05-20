@@ -63,6 +63,7 @@ end
 %md The analytic solution is used to validate two numerical solution approaches using different structural physical models, governed by the same ODE.
 %md
 %md### Numerical case 1: truss element model with Newmark method and lumped masses
+%md
 %mdIn this case, a truss element is considered, as shown in the figure, with Young modulus, cross-section, area, mass, nodal damping and length corresponding to the parameters considered for the spring-mass-damper system 
 %md```@raw html
 %md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
@@ -141,7 +142,8 @@ mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
 %md
 %md Execute ONSAS and save the results:
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%md### Numerical case 2: nodal mass model with $\alpha$-HHT method and user loads function
+%md
+%md### Numerical case 2: truss model with nodal masses, using $\alpha$-HHT method and user loads function
 %md
 %md#### Material
 %md The nodalMass field allows to add lumped matrices to a node, since this field is used, then the equivalent $\rho$ of the `material(1)` aforementioned now is set to 0. Although an equal mass $m$ is considered for $u_x$ $u_y$ and $u_z$ at the node $2$, so:
@@ -174,9 +176,8 @@ otherParams.problemName = 'springMass_case2'     ;
 [matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md
-%md## Bending beam mass-spring system
-
-
+%md### Numerical case 3: beam element model
+%md
 d = l/10;
 A   = pi * d^2 /  4 ;
 Izz = pi * d^4 / 64 ; 
@@ -243,7 +244,7 @@ analyticCheckTolerance = 5e-2 ;
 verifBooleanNewmark =  ( ( norm( valsAnaly  - valsNewmark ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
 verifBooleanHHT     =  ( ( norm( valsAnaly  - valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
 verifBooleanBending =  ( ( norm( valsBending- valsHHT     ) / norm( valsAnaly ) ) <  analyticCheckTolerance ) ;
-verifBoolean        = verifBooleanHHT && verifBooleanNewmark && valsBending                                   ;
+verifBoolean        = verifBooleanHHT && verifBooleanNewmark && verifBooleanBending                                   ;
 %md
 %md
 %md## Plot verification
