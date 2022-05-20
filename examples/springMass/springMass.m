@@ -18,24 +18,9 @@
 %md```
 %md where the notation and the parameters interpretation can be seen in the cited reference.
 %md
-%md The analytic solution can be computed for specific cases as follows:
-if (c == 0) && (p0 == 0) % free undamped solution
-  myAnalyticFunc = @(t)   (   u0 * cos( omegaN * t )  ) ;
-else                     % other cases solution
-  beta   = omegaBar / omegaN ;  omegaD = omegaN * sqrt( 1-xi^2 ) ; %forced and damped
-  G1 = (p0/k) * ( -2 * xi * beta   ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
-  G2 = (p0/k) * (  1      - beta^2 ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
-  if u0 < l
-    Ac = u0 - G1 ;  B = (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD);
-  else
-    error('this analytical solution is not valid for this u0 and l0');
-  end
-  myAnalyticFunc = @(t) ...
-     ( Ac * cos( omegaD   * t ) + B  * sin( omegaD   * t ) ) .* exp( -xi * omegaN * t ) ...
-    + G1  * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
-end
+%mdA set of numerical parameters must be defined to compute the analytic solution.
 %md
-%md## Numerical parameters
+%md We start as all models, clearing the workspace and adding the ONSAS path to the work path.
 % clear workspace and add path
 close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
@@ -58,6 +43,23 @@ dtCrit       = TN / pi                 ;
 %md The frequency of the sinusoidal external force is set as:
 omegaBar     = 4*omegaN ;
 %md
+%md The analytic solution can be computed for specific cases as follows:
+if (c == 0) && (p0 == 0) % free undamped solution
+  myAnalyticFunc = @(t)   (   u0 * cos( omegaN * t )  ) ;
+else                     % other cases solution
+  beta   = omegaBar / omegaN ;  omegaD = omegaN * sqrt( 1-xi^2 ) ; %forced and damped
+  G1 = (p0/k) * ( -2 * xi * beta   ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
+  G2 = (p0/k) * (  1      - beta^2 ) / ( ( 1 - beta^2 )^2 + ( 2 * xi * beta )^2 ) ;
+  if u0 < l
+    Ac = u0 - G1 ;  B = (xi*omegaN*Ac - omegaBar*G2 ) / (omegaD);
+  else
+    error('this analytical solution is not valid for this u0 and l0');
+  end
+  myAnalyticFunc = @(t) ...
+     ( Ac * cos( omegaD   * t ) + B  * sin( omegaD   * t ) ) .* exp( -xi * omegaN * t ) ...
+    + G1  * cos( omegaBar * t ) + G2 * sin( omegaBar * t ) ;
+end
+%md
 %md## Numerical solutions
 %md
 %md The analytic solution is used to validate two numerical solution approaches using different structural physical models, governed by the same ODE.
@@ -67,9 +69,7 @@ omegaBar     = 4*omegaN ;
 %md```@raw html
 %md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
 %md```
-
-
-
+%md
 %md The scalar parameters for the equivalent truss model are:
 l   = 1                 ;
 A   = 0.1               ;
@@ -77,9 +77,7 @@ rho = m * 2 / ( A * l ) ;
 E   = k * l /   A       ;
 %md where the material of the truss was selected to set a mass $m$ at the node $2$.
 %md
-%md
 %md#### Materials
-%md
 %md
 materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E 0 ]          ;
@@ -107,11 +105,11 @@ boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )  ;
 boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ]            ;
 %md
 %md#### Initial conditions
-%md An initial displacements $u_0$ is set in $x$ direction:
-initialConds(1).nonHomogeneousUDofs   = 1;
-initialConds(1).nonHomogeneousUVals = [u0];
-initialConds(1).nonHomogeneousUdotDofs   = 1;
-initialConds(1).nonHomogeneousUdotVals = [du0];
+%md Initial displacement and velocity are set:
+initialConds(1).nonHomogeneousUDofs    = 1   ;
+initialConds(1).nonHomogeneousUVals    = u0  ;
+initialConds(1).nonHomogeneousUdotDofs = 1   ;
+initialConds(1).nonHomogeneousUdotVals = du0 ;
 %md
 %md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
