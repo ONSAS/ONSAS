@@ -72,7 +72,7 @@ boundaryConds(3).loadsBaseVals = [ p 0  0 0  0 0 ]  ;
 initialConds = struct();
 %md
 %md### Mesh
-%md The mesh is automatically generetd with GMSH software:
+%md The mesh can be read from the msh file. However, if any changes to the mesh are desired, the .geo file can be edited and the msh file can be re-generated using GMSH.
 %md
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/meshCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
