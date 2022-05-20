@@ -53,13 +53,3 @@ elseif outputFormat == "html"
   )
 
 end
-#
-
-#         "Guide" => Any["Installation"     => "howtouse/install.md",
-#         "Theory" => Any["Virtual mechanical work " => "theory/prinMechWork.md",
-#                         "References"               => "theory/references.md"  ],
-#         "About" => "about.md",
-#     ],
-#     strict = false
-# )
-#

@@ -1,7 +1,28 @@
-*.DS_Store
 /examples/*/output/*
 */html/*
 /html/*
+/src/*.txt
+/src/*.oct
+*.mat
+*.vtk
+*.dat
+/examples/strings.txt
+Manifest.toml
+docs/build/
+docs/site/
+docs/src/examples/
+
+*.vscode
+
+# matlab autosave
+*.asv
+
+# macOS 
+*.DS_Store
+
+octave-workspace
+
+# LaTeX outputs
 /*/*.aux
 /*/*.pdf
 /*/*.log
@@ -17,16 +38,3 @@
 /*/*/*.gz
 /*/*/*.toc
 /*/*/*.xwm
-octave-workspace
-/src/*.txt
-/src/*.oct
-*.mat
-*.vtk
-*.dat
-*.lnx
-/examples/strings.txt
-Manifest.toml
-docs/build/
-docs/site/
-*.vscode
-docs/src/examples/
