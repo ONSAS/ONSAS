@@ -1,12 +1,13 @@
 %md# Dynamic Vibration modes of a Beam with fix nodes in both ends.
-%md---
 %md
-%mdIn this tutorial, the dynamic response of a beam with fix nodes in both ends is solved using ONSAS implementing the corotational model and the linear elastic model. The aim of this example is to validate the dynamic response of a beam, to do this the analytic solution is comapred with the ONSAS result and the error is estimated in order to validete the result. The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m).
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m)
+%md
+%mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
 %mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency is applied $(F = F_o sin(wt))$, as it is shown in the figure.
 %md
 %md```@raw html
-%md<img src="../../assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
+%md<img src="../../docs/assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry, material parameters and load values are defined.
