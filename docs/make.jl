@@ -34,7 +34,6 @@ elseif outputFormat == "html"
                                      "Spring-mass system" => "examples/springMass.md",
                                     "Uniaxial extension" => "examples/uniaxialExtension.md",
                                     "Cantilever Beam" => "examples/cantileverBeam.md",
-                                    "Solid with inclusion" => "examples/semiSphereWithInclusion.md",
                                     "Linear elastic cylinder" => "examples/linearCylinderPlaneStrain.md",
                                     "Linear aerodynamics" => "examples/linearAerodynamics.md",
                                     "Non-linear aerodynamics" => "examples/nonLinearAerodynamics.md"],
