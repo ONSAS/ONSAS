@@ -140,7 +140,7 @@ labx = xlabel('Displacement [m]');   laby = ylabel('\lambda(t)') ;
 legend('Numeric','Analytic','location','East')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('verifLinearCylinderPlaneStrain.png','-dpng')
+print('output/verifLinearCylinderPlaneStrain.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/verifLinearCylinderPlaneStrain.png" alt="verification plot" width="500"/>

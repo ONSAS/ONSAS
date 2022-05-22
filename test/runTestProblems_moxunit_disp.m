@@ -49,5 +49,5 @@ function test_10
   assertEqual( verifBoolean, true );
 
 function test_11
-  consistentCantileverBeam
+  beamLinearVibration
   assertEqual( verifBoolean, true );
