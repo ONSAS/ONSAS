@@ -1,4 +1,4 @@
-%md# Dynamic Vibration of a Beam with fix nodes in both ends.
+%md# Linear Dynamic Vibration of a Simply Supported Beam
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m
 %md
@@ -10,59 +10,62 @@
 %md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
 %md```
 %md
-%mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path
-close all, clear all ;
-% add path
-addpath( genpath( [ pwd '/../../src'] ) );
-%md External forced load parameters, time values, Material and Geometric parameters are defined to find both analytic and numerical solutions.
+%mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
+close all, clear all, addpath( genpath( [ pwd '/../../src'] ) );
+%mdExternal forced load parameters, time values, Material and Geometric parameters are defined to find both analytic and numerical solutions.
 %md
-%md Material scalar parameters
-E = 200e9 ;  nu = 0.3;  rho = 700;
-%md Geometrical scalar parameters
+%mdMaterial scalar parameters
+E = 200e9 ; nu = 0.3;  rho = 700;
+%mdGeometrical scalar parameters
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
+%md
 %md Number of elements
-numElements = 11 ;
+numElements = 10 ;
 %md Time and applied forced parameters.
-Fo     = 100; % N
-w      = 2  ; % rad/s
-tf     = 8  ; % s
-deltat = 0.1; % s
-%md## External Load application node
-if rem(numElements+1,2) == 0
-    appNode = (numElements+1)/2;
-elseif rem(numElements+1,2) ~= 0
-    appNode = (numElements)/2;
-end
-appNodePos = l*(appNode)/numElements;
+Fo     = 100 ; % N
+w      = 2   ; % rad/s
+tf     = 8   ; % s
+deltat = 0.1 ; % s
+%md External Load application node
+assert( rem( numElements, 2 ) == 0, 'the number of elements must be even.' )
+appNode    = ( numElements ) / 2 + 1       ;
+appNodePos = (appNode-1) * l / numElements ;
+%md
 %md## Analytic solution
 %md
 %md The dynamic displacement of a forced beam is described by the next differential equation
 %md```math
-%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2w}{\partial t^2} = f(x,t)
+%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
 %md```
 %md Defining a solution $w(x,t) = W(x)T(t)$ it is possible to find:
+%md
 %md```math
-%md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
+%md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
-%md## Analytic solution of a beam with fix nodes in both ends.
+%md where $f_0$ is the applied force and $\omega_n$ is the natural frequency.
 %md
-t  = 0:deltat:tf; % time vector
-x  = 0:l/numElements:l; % beam mesh
-n  = 1:1:8; % number of nodes
+%md### Numerical computation of the analytic solution
+%md
+ts = 0:deltat:tf       ; % times vector
+xs = 0:l/numElements:l ; % beam mesh
+ns = 1:8               ; % number of nodes
+%md
 %md Natural frecuency mode vibration vector
-wnY = ((n*pi).^2)*sqrt(E*Izz/rho/(ty*tz)/(l^4)); % Natural frecuency direction Y
-wnZ = ((n*pi).^2)*sqrt(E*Iyy/rho/(ty*tz)/(l^4)); % Natural frecuency direction Z
-%md Analytic solution
-analyticDisY = 0;
-analyticDisZ = 0;
-for i=1:length(n)
-    analyticDisY = analyticDisY + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnY(i)^2 - w^2)).*sin(w.*t)';
-    analyticDisZ = analyticDisZ + (2*Fo/(rho*ty*tz*l))*sin(i*x*pi/l).*sin(i*pi*appNodePos/l)*(1./(wnZ(i)^2 - w^2)).*sin(w.*t)';
-end
 %md
-%md### Numerical solution
+wnY = ( (ns*pi).^2 ) * sqrt(E*Izz/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Y
+wnZ = ( (ns*pi).^2 ) * sqrt(E*Iyy/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Z
+%md
+%md Analytic solution
+analyticDisY = 0; analyticDisZ = 0;
+for i = 1:length( ns )
+  analyticDisY = analyticDisY + (1/(wnY(i)^2 - w^2)) .* sin(i*xs/l*pi) .* sin(i*pi*appNodePos/l) .* sin(w*ts)';
+  analyticDisZ = analyticDisZ + (1/(wnZ(i)^2 - w^2)) .* sin(i*xs/l*pi) .* sin(i*pi*appNodePos/l) .* sin(w*ts)';
+end
+analyticDisY = analyticDisY * (2*Fo/(rho*ty*tz*l) ) ;   analyticDisZ = analyticDisZ * (2*Fo/(rho*ty*tz*l) ) ;
+%md
+%md## Numerical solution
 %md### MEBI parameters
 %md
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
@@ -71,8 +74,8 @@ end
 %md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 %md The first analysis case implements the co-rotational formulation
 materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu] ;
-materials.density = rho;
+materials.hyperElasParams = [ E nu]          ;
+materials.density         = rho              ;
 %md
 %md### Elements
 %md
@@ -80,11 +83,9 @@ materials.density = rho;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemTypeGeometry field is:
-elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
-elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
-elements(2).elemTypeParams          = 1           ;
-%md the consistent mass type is selected to solve the dynamic response of
-%the beam
+elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
+elements(2).elemTypeParams     = 1                         ;
+%md the consistent mass type is selected to solve the dynamic response of the beam
 elements(2).massMatType = 'consistent';
 %md
 %md### boundaryConds
@@ -183,7 +184,7 @@ figure(2), hold on, grid on
 plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
 plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
 plot(timeVec, analyticDisZ(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
-legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m', 'location', 'eastoutside')
+legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
