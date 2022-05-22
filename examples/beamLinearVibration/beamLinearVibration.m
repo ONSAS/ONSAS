@@ -1,6 +1,6 @@
 %md# Linear Dynamic Vibration of a Simply Supported Beam
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m)
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
@@ -24,9 +24,9 @@ Izz = tz*ty^3/12 ;
 %md Number of elements
 numElements = 10 ;
 %md Time and applied forced parameters.
-Fo     = 100 ; % N
-w      = 2   ; % rad/s
-tf     = 8   ; % s
+Fo     = 100   ; % N
+w      = 2     ; % rad/s
+tf     = 8     ; % s
 deltat = 0.1 ; % s
 %md External Load application node
 assert( rem( numElements, 2 ) == 0, 'the number of elements must be even.' )
@@ -50,7 +50,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md
 ts = 0:deltat:tf       ; % times vector
 xs = 0:l/numElements:l ; % beam mesh
-ns = 1:8               ; % number of nodes
+ns = 1:10              ; % modes
 %md
 %md Natural frecuency mode vibration vector
 %md
@@ -59,9 +59,10 @@ wnZ = ( (ns*pi).^2 ) * sqrt(E*Iyy/rho/(ty*tz)/(l^4)) ; % Natural frecuency direc
 %md
 %md Analytic solution
 analyticDisY = 0; analyticDisZ = 0;
+analySolPos = appNodePos ;  % the analytic solution is computed at the point of application of the load
 for i = 1:length( ns )
-  analyticDisY = analyticDisY + (1/(wnY(i)^2 - w^2)) .* sin(i*xs/l*pi) .* sin(i*pi*appNodePos/l) .* sin(w*ts)';
-  analyticDisZ = analyticDisZ + (1/(wnZ(i)^2 - w^2)) .* sin(i*xs/l*pi) .* sin(i*pi*appNodePos/l) .* sin(w*ts)';
+  analyticDisY = analyticDisY + (1/(wnY(i)^2 - w^2)) * sin(i*analySolPos/l*pi) * sin(i*pi*appNodePos/l) * sin(w*ts)' ;
+  analyticDisZ = analyticDisZ + (1/(wnZ(i)^2 - w^2)) * sin(i*analySolPos/l*pi) * sin(i*pi*appNodePos/l) * sin(w*ts)' ;
 end
 analyticDisY = analyticDisY * (2*Fo/(rho*ty*tz*l) ) ;   analyticDisZ = analyticDisZ * (2*Fo/(rho*ty*tz*l) ) ;
 %md
@@ -122,13 +123,12 @@ end
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   deltat  ;
 analysisSettings.finalTime     =   tf   ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
-otherParams.controlDofs = [ appNode 3 ] ;
 otherParams.plotsFormat = 'vtk' ;
 %md Beam with simple supported nodes in the ends
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -136,54 +136,45 @@ otherParams.plotsFormat = 'vtk' ;
 %md The second analysis case implements the linear elastic formulation
 materials.hyperElasModel  = 'linearElastic' ;
 otherParams.problemName = 'linearElasticuniformDynamicBeam';
-otherParams.controlDofs = [ appNode 5 ] ;
-otherParams.plotsFormat = 'vtk' ;
 %md
 %md Beam with simple supported nodes in the ends
 [linElasMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md### Error estimation
-dofYendNode = 6*(appNode) - 3;
-dofZendNode = 6*(appNode) - 1;
-%md time vector
-timeVec = linspace( 0, tf, size(coRotMatUs,2) );
+dofYendNode = 6*(appNode) - 3;     dofZendNode = 6*(appNode) - 1;
 %md
-%md error estimated for each method in the application node of the external force
-diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisY(: , appNode);
-diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
-difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisY(: , appNode);
-difcoRotDispUz  = coRotMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
+%md error computed for each method in the application node of the external force
+diflinearDispUy = linElasMatUs(dofYendNode, :)' - analyticDisY ;
+diflinearDispUz = linElasMatUs(dofZendNode, :)' - analyticDisZ ;
+difcoRotDispUy  = coRotMatUs(dofYendNode, :)'   - analyticDisY ;
+difcoRotDispUz  = coRotMatUs(dofZendNode, :)'   - analyticDisZ ;
 %md
-intAnalyticDisY = (analyticDisY(2:end , appNode) + analyticDisY(1:end-1, appNode))*deltat/2;
-intAnalyticDisZ = (analyticDisZ(2:end , appNode) + analyticDisZ(1:end-1 , appNode))*deltat/2;
-errlinearDispUy = norm((diflinearDispUy(2:end) + diflinearDispUy(1:end-1))*deltat/2)/norm(intAnalyticDisY);
-errcoRotDispUy  = norm((difcoRotDispUy(2:end) + difcoRotDispUy(1:end-1))*deltat/2)/norm(intAnalyticDisY);
-errlinearDispUz = norm((diflinearDispUz(2:end) + diflinearDispUz(1:end-1))*deltat/2)/norm(intAnalyticDisZ);
-errcoRotDispUz  = norm((difcoRotDispUz(2:end) + difcoRotDispUz(1:end-1))*deltat/2)/norm(intAnalyticDisZ);
+errlinearDispUy = norm( diflinearDispUy, 1 ) / norm( analyticDisY, 1 ) ;
+errcoRotDispUy  = norm( difcoRotDispUy , 1 ) / norm( analyticDisY, 1 ) ;
+errlinearDispUz = norm( diflinearDispUz, 1 ) / norm( analyticDisZ, 1 ) ;
+errcoRotDispUz  = norm( difcoRotDispUz , 1 ) / norm( analyticDisZ, 1 ) ;
 %md
 %md the numerical resolution is validated for both method and both directions.
-verifBoolean =  ( errlinearDispUy <  1e-2 ) ...
-             && ( errcoRotDispUy  <  1e-2 ) ...
-             && ( errlinearDispUz <  1e-2 ) ...
-             && ( errcoRotDispUz  <  1e-2 );
+verifBoolean =  ( errlinearDispUy <  5e-2 ) && ( errcoRotDispUy  <  5e-2 ) ...
+             && ( errlinearDispUz <  5e-2 ) && ( errcoRotDispUz  <  5e-2 );
 %md
 %md Plot parameters:
 lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md plot y-axis linear, co-rotational and analytic result 
-figure(1), hold on, grid on
-plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
-plot(timeVec, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
-plot(timeVec, analyticDisY(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
+figure, hold on, grid on
+plot(ts, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
+plot(ts, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
+plot(ts, analyticDisY,'b' , 'linewidth', lw,'markersize',ms )
 legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy','-dpng')
 %md plot z-axis linear, co-rotational and analytic result 
-figure(2), hold on, grid on
-plot(timeVec, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
-plot(timeVec, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
-plot(timeVec, analyticDisZ(:, appNode), 'b' , 'linewidth', lw, 'markersize', ms )
+figure, hold on, grid on
+plot(ts, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
+plot(ts, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
+plot(ts, analyticDisZ, 'b' , 'linewidth', lw, 'markersize', ms )
 legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
