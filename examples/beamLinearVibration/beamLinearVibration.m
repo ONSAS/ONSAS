@@ -6,7 +6,7 @@
 %md
 %mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F = F_o sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure.
 %md
-%md```@raw svg
+%md```@raw html
 %md<img src="../../docs/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
 %md```
 %md
