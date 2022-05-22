@@ -177,7 +177,7 @@ labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/Uy.png','-dpng')
-print('../../docs/src/assets/beamDynamicVibrationVerifUy.png','-dpng')
+%print('../../docs/src/assets/beamDynamicVibrationVerifUy.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../../assets/beamDynamicVibrationVerifUy.png" alt="structure diagram" width="500"/>
