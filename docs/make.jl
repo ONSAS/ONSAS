@@ -34,8 +34,8 @@ elseif outputFormat == "html"
                                      "Spring-mass system" => "examples/springMass.md",
                                     "Uniaxial extension" => "examples/uniaxialExtension.md",
                                     "Cantilever Beam" => "examples/cantileverBeam.md",
-                                    "Solid with inclusion" => "examples/semiSphereWithInclusion.md",
                                     "Linear beam vibration" => "examples/beamLinearVibration.md",
+                                    "Linear elastic cylinder" => "examples/linearCylinderPlaneStrain.md",
                                     "Linear aerodynamics" => "examples/linearAerodynamics.md",
                                     "Non-linear aerodynamics" => "examples/nonLinearAerodynamics.md"],
       "User guide" => Any["Installation" =>  "howtouse/install.md",
@@ -53,13 +53,3 @@ elseif outputFormat == "html"
   )
 
 end
-#
-
-#         "Guide" => Any["Installation"     => "howtouse/install.md",
-#         "Theory" => Any["Virtual mechanical work " => "theory/prinMechWork.md",
-#                         "References"               => "theory/references.md"  ],
-#         "About" => "about.md",
-#     ],
-#     strict = false
-# )
-#
