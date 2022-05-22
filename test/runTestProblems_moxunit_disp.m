@@ -1,6 +1,5 @@
 % function for testing ONSAS using moxunit
 % ----------------------------------------
-
 function test_suite=runTestProblems_moxunit_disp
   % initialize tests
   try
@@ -24,7 +23,6 @@ function test_3
 function test_4
   uniaxialExtension
   assertEqual( verifBoolean, true );
-
 
 function test_5
   onsasExample_nonlinearPendulum
