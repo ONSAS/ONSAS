@@ -7,7 +7,7 @@
 %mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F = F_o sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure.
 %md
 %md```@raw html
-%md<img src="../../docs/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
+%md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path
@@ -23,12 +23,12 @@ l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 %md Number of elements
-numElements = 21 ;
+numElements = 11 ;
 %md Time and applied forced parameters.
-Fo = 100; % N
-w = 2; % rad/s
-tf = 8; % sec
-deltat = 0.1; % sec
+Fo     = 100; % N
+w      = 2  ; % rad/s
+tf     = 8  ; % s
+deltat = 0.1; % s
 %md## External Load application node
 if rem(numElements+1,2) == 0
     appNode = (numElements+1)/2;
@@ -173,8 +173,7 @@ figure(1), hold on, grid on
 plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
 plot(timeVec, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
 plot(timeVec, analyticDisY(:,appNode),'b' , 'linewidth', lw,'markersize',ms )
-legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'time displacement 0 m',...
-       'location', 'eastoutside')
+legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
