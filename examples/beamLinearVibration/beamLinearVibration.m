@@ -1,25 +1,21 @@
-%md# Dynamic Vibration modes of a Beam with fix nodes in both ends.
+%md# Dynamic Vibration of a Beam with fix nodes in both ends.
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
-%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency is applied $(F = F_o sin(wt))$, as it is shown in the figure.
+%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F = F_o sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure.
 %md
-%md```@raw html
-%md<img src="../../docs/assets/dynamicBeamHTML.svg" alt="structure diagram" width="500"/>
+%md```@raw svg
+%md<img src="../../docs/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path
 close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
-%md External forced load parameters, time values and Material and Geometric parameters are added to find both analytic and numerical solutions.
-%md Time and applied forced parameters.
-Fo = 100; % N
-w = 2;    % rad/s
-tf = 8;    % sec
-deltat = 0.1; % sec
+%md External forced load parameters, time values, Material and Geometric parameters are defined to find both analytic and numerical solutions.
+%md
 %md Material scalar parameters
 E = 200e9 ;  nu = 0.3;  rho = 700;
 %md Geometrical scalar parameters
@@ -28,18 +24,11 @@ Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 %md Number of elements
 numElements = 21 ;
-%md
-%md## Analytic solution
-%md
-%md The dynamic displacement of a forced beam describe by the next differential equation
-%md```math
-%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2w}{\partial t^2} = f(x,t)
-%md```
-%md Implementig a solution $w(x,t) = W(x)T(t)$ it is possible to find:
-%md```math
-%md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
-%md```
-%md
+%md Time and applied forced parameters.
+Fo = 100; % N
+w = 2; % rad/s
+tf = 8; % sec
+deltat = 0.1; % sec
 %md## External Load application node
 if rem(numElements+1,2) == 0
     appNode = (numElements+1)/2;
@@ -47,7 +36,16 @@ elseif rem(numElements+1,2) ~= 0
     appNode = (numElements)/2;
 end
 appNodePos = l*(appNode)/numElements;
+%md## Analytic solution
 %md
+%md The dynamic displacement of a forced beam is described by the next differential equation
+%md```math
+%md EI \frac{\partial^4 w}{\partial x^4} + \rho A \frac{\partial^2w}{\partial t^2} = f(x,t)
+%md```
+%md Defining a solution $w(x,t) = W(x)T(t)$ it is possible to find:
+%md```math
+%md w(x,t) = \frac{2fo}{\rho A l}\sum_{n=1}^{\infty } \frac{1}{w_{n}^2 - w^2}\sin(\frac{n \pi a}{l})\sin(\frac{n \pi x}{l})\sin(wt)
+%md```
 %md## Analytic solution of a beam with fix nodes in both ends.
 %md
 t  = 0:deltat:tf; % time vector
@@ -91,16 +89,13 @@ elements(2).massMatType = 'consistent';
 %md
 %md### boundaryConds
 %md
-%md The elements are submitted to two different BC settings. The first BC
-%corresponds to the fixed points
+%md The elements are submitted to two different BC settings. The first BC corresponds to the fixed points
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 ] ;
-%mdand the second corresponds to an external force with time dependency and
-%an application frequency $w$
+%md and the second corresponds to an time dependecy external force
 boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) Fo*sin(w*t) ;
 boundaryConds(2).loadsBaseVals = [ 0 0 1 0 1 0 ] ;
-%md
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
@@ -143,19 +138,16 @@ otherParams.problemName = 'linearElasticuniformDynamicBeam';
 otherParams.controlDofs = [ appNode 5 ] ;
 otherParams.plotsFormat = 'vtk' ;
 %md
-%md## Analysis case 1: Linear Elastic Y
 %md Beam with simple supported nodes in the ends
 [linElasMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md### Error estimation and Plots
+%md### Error estimation
 dofYendNode = 6*(appNode) - 3;
 dofZendNode = 6*(appNode) - 1;
-%mdPlot parameters:
-lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md time vector
 timeVec = linspace( 0, tf, size(coRotMatUs,2) );
 %md
-%md error estimated for each method in the application point of the external time dependency load
+%md error estimated for each method in the application node of the external force
 diflinearDispUy = linElasMatUs(dofYendNode, :) - analyticDisY(: , appNode);
 diflinearDispUz = linElasMatUs(dofZendNode, :) - analyticDisZ(: , appNode);
 difcoRotDispUy  = coRotMatUs(dofYendNode, :) - analyticDisY(: , appNode);
@@ -174,6 +166,8 @@ verifBoolean =  ( errlinearDispUy <  1e-2 ) ...
              && ( errlinearDispUz <  1e-2 ) ...
              && ( errcoRotDispUz  <  1e-2 );
 %md
+%md Plot parameters:
+lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 %md plot y-axis linear, co-rotational and analytic result 
 figure(1), hold on, grid on
 plot(timeVec, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
