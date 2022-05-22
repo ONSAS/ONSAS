@@ -200,7 +200,7 @@
      id="layer1"
      transform="translate(-15.970336,-67.081897)">
     <rect
-       style="fill:#ffffff;fill-opacity:0.660802;stroke:none;stroke-width:0.855324;-inkscape-stroke:none;stop-color:#000000"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.855324;-inkscape-stroke:none;stop-color:#000000"
        id="rect1106"
        width="181.60326"
        height="76.665894"
@@ -374,7 +374,7 @@
        transform="matrix(0.98558557,0,0,0.98944503,-4.4648774,6.6117101)"><tspan
          x="115.93044"
          y="69.826836"
-         id="tspan1760">F(t)</tspan></text>
+         id="tspan1045">F(t)</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.3431px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;inline-size:38.0374;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -384,7 +384,7 @@
        transform="matrix(0.98558557,0,0,1.0359425,-22.157895,48.449202)"><tspan
          x="115.93044"
          y="69.826836"
-         id="tspan1762">F(t)</tspan></text>
+         id="tspan1047">F(t)</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 35.366022,131.90571 182.08723,131.42779"
@@ -408,7 +408,7 @@
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect6239-2);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="366.68164"
          y="559.79672"
-         id="tspan1764">L/2</tspan></text>
+         id="tspan1049">L/2</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,40.192249,-6.5541972)"
@@ -416,6 +416,6 @@
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect6239-2-1);display:inline;fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="366.68164"
          y="559.79672"
-         id="tspan1766">L/2</tspan></text>
+         id="tspan1051">L/2</tspan></text>
   </g>
 </svg>
