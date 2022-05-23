@@ -62,33 +62,41 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
     %md edge
     elseif strcmp( elemType , 'edge') ; %
       nodes          = Conec( elem, 4+(1:2) ) ;
+      
       % vector from node 1 to node 2
-      orientedVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
-
-      lengthElem = norm( orientedVector ) ;
+      directionVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
+      % length of the edge
+      lengthElem = norm(directionVector) ;
+      % thickness of the edge element
       thickness  = elements( elemInd ).elemCrossSecParams ;
+      
+      % check oriented vector is defined into x-y plane
+      assert( abs( directionVector(3) ) < eps * 10 ,'edge must be defined into x-y plane' )
 
+      % factor of the load for each node
       factor = lengthElem * thickness * 0.5 ;
 
-      % check for plane state loads
-      assert( sum( loadvals( [ 2 4 5 6 ] )==0 )==4,'error in loads of edge' )
-
       if strcmp( loadCoordSys, 'global' )
-        Fx =   loadvals( 1 ) * factor ;
-        Fy =   loadvals( 3 ) * factor ;
+        Fx = loadvals( 1 ) * factor ;
+        Fy = loadvals( 2 ) * factor ;
         Fz = 0 ;
       elseif strcmp( loadCoordSys, 'local' )
         % consider a 90 degrees rotation of the oriented vector of the line element
-        Fx = - orientedVector( 2 ) / lengthElem * factor ;
-        Fy =   orientedVector( 1 ) / lengthElem * factor ;
+        % tanget unitary vector
+        tangUniVec = directionVector / lengthElem ;
+        % normal unitary vector
+        normalUniVec = cross( [ 0 0 1 ] , tangUniVec ) ;
+        % tension vector
+        tensionVec = ( loadvals( 1 ) * tangUniVec  + loadvals( 2 ) * normalUniVec ) * factor; 
+        % nodal forces in global coordinates
+        Fx = tensionVec(1) ;
+        Fy = tensionVec(2) ;
         Fz = 0 ;
       end % if global/local system
 
       elemNodeLoadsMatrix = ones( length(nodes), 1 )*[Fx 0 Fy 0 Fz 0] ;
 
       assert( size( elemNodeLoadsMatrix, 2)==6,'error, maybe missing thickness')
-
-
 
     %md triangle tension
     elseif strcmp( elemType , 'triangle') ; %

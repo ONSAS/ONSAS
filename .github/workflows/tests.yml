@@ -11,5 +11,5 @@ jobs:
       - name: run mechanical-work tests
         uses: joergbrech/moxunit-action@v1.1
         with:
-          src: examples/staticVonMisesTruss examples/frameLinearAnalysis examples/springMass examples/linearPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine examples/linearAerodynamics examples/consistentCantileverBeam src src/elements src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh
+          src: examples/staticVonMisesTruss examples/frameLinearAnalysis examples/springMass examples/linearCylinderPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine examples/linearAerodynamics examples/beamLinearVibration src src/elements src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh
           tests: ./test/runTestProblems_moxunit_disp.m
