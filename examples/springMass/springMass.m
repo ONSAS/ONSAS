@@ -26,7 +26,7 @@ close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
 % scalar parameters for spring-mass system
 k    = 39.47 ; % spring constant
-c    = .5   ; % damping parameter
+c    = 2   ; % damping parameter
 m    = 1     ; % mass of the system
 p0   = 40    ; % amplitude of applied load
 u0   = 0.1   ; % initial displacement
@@ -218,17 +218,10 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
 mesh.conecCell{ 2, 1 } = [ 0 1 2 1   2   ] ;
 mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
 %md
-otherParams.nodalDispDamping =   c    ;
 otherParams.problemName = 'springMass_case3'     ;
 %md
 analysisSettings.methodName    = 'newmark' ;
-analysisSettings.deltaT        =   0.005   ;
-analysisSettings.finalTime     =   2.5*TN  ;
-analysisSettings.stopTolDeltau =   1e-10    ;
-analysisSettings.stopTolForces =   1e-10    ;
-analysisSettings.stopTolIts    =   10      ;
-
-
+%md
 [matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 valsBending = matUsBending(6+3,:) ;
 

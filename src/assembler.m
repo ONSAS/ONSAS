@@ -279,8 +279,8 @@ tangMatsCell = cell( 3, 1 ) ;
 
 if dynamicProblemBool
   dampingMat          = sparse( nNodes*6, nNodes*6 ) ;
-  dampingMat(1:2:end) = nodalDispDamping             ;
-  dampingMat(2:2:end) = nodalDispDamping * 0.01      ;
+  dampingMat(1:2:end,1:2:end) = nodalDispDamping*speye(nNodes*3,nNodes*3)             ;
+  % dampingMat(2:2:end,1:2:end) = nodalDispDamping * 0.00      ;
 end
 
 if fsBool
