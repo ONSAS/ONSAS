@@ -52,7 +52,7 @@ rhoA = 1.225 ; nuA = 1.6e-5;
 %md
 %md the number of elements employed to discretize the beam is declared as a global variable:
 global numElements
-numElements = 2 ;
+numElements = 10 ;
 %md
 %md### MEBI parameters
 %md
@@ -196,9 +196,9 @@ thetaZAnalytic = @(x) -qy  / (6*E*Izz) * (3* l^2 * x -3*l*x.^2+x.^3) ;
 %md### Numeric solution
 %md
 %md The numerical solution is extracted:
-xref = mesh.nodesCoords(:,1)     ;
-yref = mesh.nodesCoords(:,2)     ;
-zref = mesh.nodesCoords(:,3)     ;
+xref    = mesh.nodesCoords(:,1)     ;
+yref    = mesh.nodesCoords(:,2)     ;
+zref    = mesh.nodesCoords(:,3)     ;
 % Numerical solution case 1
 ydefNumCase1 = yref + matUsCase1(3:6:end,end) ;
 zdefNumCase1 = zref + matUsCase1(5:6:end,end) ;
@@ -262,7 +262,7 @@ set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('output/linearDispAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
-% close(1)    
+close(1)    
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/linearDispAero.png" alt="plot check linear displacements" width="500"/>
@@ -288,7 +288,7 @@ set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
 set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 print('output/angDispAero.png','-dpng')  
 % print('../../docs/src/assets/linearAerodynamics/angDispAero.png','-dpng')  
-% close(2)
+close(2)
 
 %md
 %md```@raw html
@@ -310,7 +310,7 @@ set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set
 view([0.5 +0.5 -1])
 print('output/defaAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
-% close(3)    
+close(3)    
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/defAero.png" alt="plot check deformed configurations" width="500"/>
