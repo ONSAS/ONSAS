@@ -173,15 +173,8 @@ function fagElem = hydroFrameForces( elemCoords,...
       % directions of lift forces
       tl1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
       tl2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
-      % evaluate cl0(at the moment cl0 cannot depend on Reynolds and relative incidence angle)
-      userLiftCoef   = aeroCoefs{2} ;
-      if ~isempty( userLiftCoef )
-        c_l0 = feval( userLiftCoef, 0, 0  ) ;
-      else
-        error('for the VIV force you need to define a userLiftCoef returning c_l0')
-      end
       % compute
-      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, c_l0, nextTime, analysiSettings.deltaT ) ; 
+      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysiSettings.deltaT ) ; 
     end
     else
       q = 2 ;
