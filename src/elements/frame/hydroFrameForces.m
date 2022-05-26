@@ -174,7 +174,7 @@ function fagElem = hydroFrameForces( elemCoords,...
       tl1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
       tl2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
       % compute
-      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysiSettings.deltaT ) ; 
+      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
     end
     else
       q = 2 ;
