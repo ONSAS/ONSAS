@@ -156,7 +156,7 @@ function fagElem = hydroFrameForces( elemCoords,...
   [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
   % WOM computation call for cases with VIVbool equal to true
   if exist('VIVBool')~=0
-    if VIVBool == 'true'
+    if VIVBool == true
       % extract the accelerations and the velocities of nodes
       % node 1
       udotFrame1    = Udote(1:2:6)      ;
