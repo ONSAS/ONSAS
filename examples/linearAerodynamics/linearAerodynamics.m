@@ -120,7 +120,7 @@ otherParams.plotsFormat = 'vtk' ;
 %md
 %md### Case 1: hydrodynamic ONSAS element 
 %md
-%md The first case is executed used the internal ONSAS functions such as `hydroForce.m`to compute the aerodynamic forces:
+%md The first case is executed used the internal ONSAS functions such as `hydroFrameForce.m`to compute the aerodynamic forces:
 %md
 %md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUsCase1`matrix:
 [matUsCase1, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

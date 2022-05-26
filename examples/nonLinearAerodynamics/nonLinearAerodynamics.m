@@ -288,7 +288,7 @@ analysisSettings.fluidProps = {rhoA; nuA; 'windVelNonLinearDynamic3D'} ;
 timeVecLD3d = linspace(0,analysisSettings.finalTime, ceil(analysisSettings.finalTime / analysisSettings.deltaT + 1) ) ;
 windVelY = [] ; windVelZ = [] ;
 for timeIndex = timeVecLD3d
-    windVelVecTimeIndex = feval(analysisSettings.userWindVel, 0, timeIndex) ;
+    windVelVecTimeIndex = feval(analysisSettings.fluidProps{3}, 0, timeIndex) ;
     windVelY = [windVelY windVelVecTimeIndex(2) ] ;
     windVelZ = [windVelZ windVelVecTimeIndex(3) ] ;
 end
