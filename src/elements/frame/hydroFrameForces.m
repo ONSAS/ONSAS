@@ -21,6 +21,7 @@ function fagElem = hydroFrameForces( elemCoords,...
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
                                      nextTime ) 
+  global VIVBool;
   % Check all required parameters are defined
   if isempty(analysisSettings.fluidProps) 
     error(' define correctly row cell analysisSettings.fluidProps = {fluidDensity; fluidViscosity; fluidVelocityFunction } ')
@@ -174,7 +175,7 @@ function fagElem = hydroFrameForces( elemCoords,...
       tl1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
       tl2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
       % compute
-      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
+      q = WOMV2(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
     end
     else
       q = 2 ;
