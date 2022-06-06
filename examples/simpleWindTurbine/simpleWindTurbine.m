@@ -49,7 +49,7 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} =  d       ;
-elements(2).massMatType =  'consistent'     ;
+elements(2).massMatType =  'consistent'        ;
 %md 
 %md### boundary Conditions
 %md
@@ -67,6 +67,7 @@ boundaryConds(1).loadsBaseVals = [ 0 -1 0 0 0 0 ] ;
 initialConds = struct() ;
 %md
 %md### mesh parameters
+%md
 mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
                      0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
@@ -99,24 +100,31 @@ otherParams.plotsFormat = 'vtk' ;
 %md
 %md ## Aeroydinaic force case
 %md
+%md### mesh parameters
+%md
+mesh.conecCell{ 3, 1 } = [ 1 3 0 0   1 3 ] ;
+mesh.conecCell{ 4, 1 } = [ 1 4 0 0   1 4 ] ;
+%md
 %md## elements
 %md
 %mdAdd aerodynamic properties into elements struct:
 numGaussPoints = 4 ;
 elements(2).elemTypeAero  = [0 0 d numGaussPoints ] ;
-elements(2).aeroCoefs     = { []; 'liftCoef'; []  }            ;
+elements(2).aeroCoefs     = { []; 'liftCoef'; []  } ;
 %md second blade in (z,-y) quarter 
-elements(3).elemType = 'frame' ;
-elements(3).elemCrossSecParams{1,1} = 'circle' ;
-elements(3).elemCrossSecParams{2,1} =  d       ;
-elements(3).elemTypeAero     = [0 d 0 numGaussPoints ] ;
-elements(2).aeroCoefs        = { []; 'liftCoef'; []  }            ;
+elements(3).elemType                = 'frame'                 ;
+elements(3).elemCrossSecParams{1,1} = 'circle'                ;
+elements(3).elemCrossSecParams{2,1} =  d                      ;
+elements(3).elemTypeAero            = [0 d 0 numGaussPoints ] ;
+elements(3).aeroCoefs               = { []; 'liftCoef'; []  } ;
+elements(3).massMatType             =  'consistent'           ;
 %md third blade in (z,y) quarter 
-elements(4).elemType = 'frame' ;
-elements(4).elemCrossSecParams{1,1} = 'circle' ;
-elements(4).elemCrossSecParams{2,1} =  d       ;
-elements(4).elemTypeAero     = [0 -d 0 numGaussPoints ] ;
-elements(2).aeroCoefs        = { [], 'liftCoef', []  }             ;
+elements(4).elemType                = 'frame'                  ;
+elements(4).elemCrossSecParams{1,1} = 'circle'                 ;
+elements(4).elemCrossSecParams{2,1} =  d                       ;
+elements(4).elemTypeAero            = [0 -d 0 numGaussPoints ] ;
+elements(4).aeroCoefs               = { [], 'liftCoef', []  }  ;
+elements(4).massMatType             =  'consistent'           ;
 %md
 %md ## boundary Conditions
 %md

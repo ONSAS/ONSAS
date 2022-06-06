@@ -31,7 +31,10 @@ function fagElem = hydroFrameForces( elemCoords,...
   if isempty( aeroCoefs ) 
     error(' define correctly row cell of strings elements.aeroCoefs = {dragFunc; liftFunc; momentFunc } ')
   end
-
+  % Declare booleans for VIV phenomenon 
+  % set boolean to set constant lift direction in VIV problems
+  global VIVBool
+  global constantLiftDir 
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
   % extract fluid properties
@@ -117,14 +120,14 @@ function fagElem = hydroFrameForces( elemCoords,...
 
   % local rotations
   if ~baseBool ;
-    Re1 = Rr' * Rg1 * R0 ;% Eq(30) J.-M. Battini 2002
-    Re2 = Rr' * Rg2 * R0 ;% Eq(30) J.-M. Battini 2002
+    Rroof1 = Rr' * Rg1 * R0 ;% Eq(30) J.-M. Battini 2002
+    Rroof2 = Rr' * Rg2 * R0 ;% Eq(30) J.-M. Battini 2002
   elseif baseBool ;
-    Re1 = Rr' * R0 * Rg1 ;
-    Re2 = Rr' * R0 * Rg2 ;
+    Rroof1 = Rr' * R0 * Rg1 ;
+    Rroof2 = Rr' * R0 * Rg2 ;
   end
-  tl1 = logar( Re1 ) ; % Eq(31) J.-M. Battini 2002
-  tl2 = logar( Re2 ) ;% Eq(31) J.-M. Battini 2002
+  tl1 = logar( Rroof1 ) ; % Eq(31) J.-M. Battini 2002
+  tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
   
   % identity and null auxiliary matrices
   I3 = eye(3)     ;
@@ -155,9 +158,9 @@ function fagElem = hydroFrameForces( elemCoords,...
   numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
   % WOM computation call for cases with VIVbool equal to true
-  if exist('VIVBool')~=0
-    if VIVBool == true
-      % extract the accelerations and the velocities of nodes
+  if ~isempty(VIVBool) && ~isempty(constantLiftDir)
+    if VIVBool
+      % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
       udotFrame1    = Udote(1:2:6)      ;
       udotdotFrame1 = Udotdote(1:2:6)   ;
@@ -165,19 +168,49 @@ function fagElem = hydroFrameForces( elemCoords,...
       udotFrame2    = Udote(7:2:end)    ;
       udotdotFrame2 = Udotdote(7:2:end) ;
 
-      % projected velocities at nodes 1 and 2 
+      % projected velocities at nodes 1 and 2 in deformed coordinates 
       %node 1 
-      [VpiRel1, VpiRelPerp1, Vrel1] = computeVpiRels( udotFlowNode1, udotFrame1, Re1, Rr, L2, L3 ) ;
+      [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, udotFrame1, Rroof1, Rr, L2, L3 ) ;
       %node 2 
-      [VpiRel2, VpiRelPerp2, Vrel2] = computeVpiRels( udotFlowNode2, udotFrame2, Re2, Rr, L2, L3 ) ;
+      [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, udotFrame2, Rroof2, Rr, L2, L3 ) ;
+      
+      % transform them into global coordinates
+      %node 1 
+      VpiRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;   
+      VpiRelPerp1 =  Rr * Rroof1 * VpiRelPerp1_defCords  ;   
+      %node 2 
+      VpiRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;   
+      VpiRelPerp2 =  Rr * Rroof2 * VpiRelPerp2_defCords  ;   
+
       % directions of lift forces
-      tl1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
-      tl2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
-      % compute
-      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tl1, tl2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
+      if ~constantLiftDir 
+        tlift1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
+        tlift2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
+      else
+        % Compute fluid mean velocity at the nodes on the initial configuration
+        % find the first veloctiy direction unitll is not null
+        t0 = 0; timeStepNotNullVel = 0;
+        udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
+        udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+        while norm(udotFlowNode10) == 0 && norm(udotFlowNode10) == 0
+          timeStepNotNullVel = timeStepNotNullVel + 1;
+          t0 = timeStepNotNullVel*analysiSettings.deltaT
+          udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
+          udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+        end
+        % Compute the direction of the axial vector on the initial configuration in global coordinates
+        e1 = R0 * [1 0 0]';
+        % Transform axial vector in the initial configuration to global cooridantes
+        tlift1 = cross(e1,udotFlowNode10) / norm( cross(e1,udotFlowNode10) ) ;
+        tlift2 = cross(e1,udotFlowNode20) / norm( cross(e1,udotFlowNode20) ) ;
+      end
+      % compute van der pol solution for current element
+      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
     end
-    else
+  else
       q = 2 ;
+      % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
+      tlift1 = [] ; tlift2 = [] ;
   end
   % Compute the element fluid force by the equivalent virtual work theory
   fagElem = zeros(12,1) ;
@@ -190,7 +223,8 @@ function fagElem = hydroFrameForces( elemCoords,...
                                                           lo, tl1, tl2, Rr, ... 
                                                           vecChordUndef, dimCharacteristic,...
                                                           I3, O3, P, G, EE, L2, L3,...
-                                                          aeroCoefs, densityFluid, viscosityFluid, q ) ;
+                                                          aeroCoefs, densityFluid, viscosityFluid,...
+                                                          VIVBool, q,  constantLiftDir, tlift1, tlift2 ) ;
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = Cambio_Base(fagElem) ;
@@ -199,7 +233,8 @@ end
 function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
                                           lo, tl1, tl2, Rr, ... 
                                           vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
-                                          aeroCoefs, densityFluid, viscosityFluid, q )
+                                          aeroCoefs, densityFluid, viscosityFluid,...
+                                          VIVBool, q, constantLiftDir, tlift1, tlift2 )
   
   % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
   % linear
@@ -272,7 +307,11 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   if ~isempty( userLiftCoef )
     c_l = feval( userLiftCoef, betaRelG, Re  ) ; 
   else
-    c_l = 0 ;
+    if VIVBool
+      error("The lift coef function must be defined for VIVBool problems ")
+      else
+      c_l = 0 ;
+    end
   end
   if ~isempty( userMomentCoef )
     c_m = feval( userMomentCoef, betaRelG, Re) ; 
@@ -283,10 +322,23 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   % drag cross section force vector in deformed coordinates
   fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; 
   % lift cross section force vector in deformed coordinates
-  fll =  1/2 * densityFluid * c_l * dimCharacteristic * norm( VpiRelG) * VpiRelGperp * q / 2 ; %note that if there is no VIV effect q is 2
+  if ~isempty(VIVBool) && ~isempty(constantLiftDir)
+    if constantLiftDir % lift direction is constant
+      %prom the lift direction in global coordinates
+      tlift = (tlift1 + tlift2) / 2 ;
+      % transform the lift direction into deformed coordinates to re use the Eq in line 330
+      tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;  
+      % compute the lift force in deformed coordinates
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG)^2 * tlift_defCoords ;
+    else ~constantLiftDir % lift direction is variable
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+    end
+  else % no WOM and a variable lift direction
+    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+  end
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll ;
- % torsional moment fluid load in deformed coordinates
+  % torsional moment fluid load in deformed coordinates
   ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
 
   % Compute the element fluid load forces vector in global coordinates
@@ -296,11 +348,11 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   integAeroForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
 
 end
-% This function return the relative projected velocity
+% This function return the relative projected velocity in local cooridantes
 function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroof, Rr, L2, L3 )
-  % the relative velocity is:
+  % the relative velocity in global cooridantes is:
   VrelG = udotFlow - udotFrame ;
-  % then the projection (in t2,t3 plane) of the relative flow velocity in the deformed coordinates is:
+  % then the projection (in t2,t3 plane) of the relative flow velocity in deformed coordinates is:
   VpiRel = L2 * Rroof' * Rr' * VrelG ;
   % the perpendicular flow relative velocity projection in deformed coordinates is:
   VpiRelPerp = L3 * VpiRel ;
