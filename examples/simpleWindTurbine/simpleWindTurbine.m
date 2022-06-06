@@ -104,19 +104,19 @@ otherParams.plotsFormat = 'vtk' ;
 %mdAdd aerodynamic properties into elements struct:
 numGaussPoints = 4 ;
 elements(2).elemTypeAero  = [0 0 d numGaussPoints ] ;
-elements(2).aeroCoefs     = { []; 'liftCoef'; []  }            ;
+elements(2).aeroCoefs     = { []; 'liftCoef'; []  } ;
 %md second blade in (z,-y) quarter 
-elements(3).elemType = 'frame' ;
-elements(3).elemCrossSecParams{1,1} = 'circle' ;
-elements(3).elemCrossSecParams{2,1} =  d       ;
-elements(3).elemTypeAero     = [0 d 0 numGaussPoints ] ;
-elements(2).aeroCoefs        = { []; 'liftCoef'; []  }            ;
+elements(3).elemType               = 'frame'                 ;
+elements(3).elemCrossSecParams{1,1}= 'circle'                ;
+elements(3).elemCrossSecParams{2,1}=  d                      ;
+elements(3).elemTypeAero           = [0 d 0 numGaussPoints ] ;
+elements(3).aeroCoefs              = { []; 'liftCoef'; []  } ;
 %md third blade in (z,y) quarter 
-elements(4).elemType = 'frame' ;
-elements(4).elemCrossSecParams{1,1} = 'circle' ;
-elements(4).elemCrossSecParams{2,1} =  d       ;
-elements(4).elemTypeAero     = [0 -d 0 numGaussPoints ] ;
-elements(2).aeroCoefs        = { [], 'liftCoef', []  }             ;
+elements(4).elemType                = 'frame'                  ;
+elements(4).elemCrossSecParams{1,1} = 'circle'                 ;
+elements(4).elemCrossSecParams{2,1} =  d                       ;
+elements(4).elemTypeAero            = [0 -d 0 numGaussPoints ] ;
+elements(4).aeroCoefs               = { [], 'liftCoef', []  }  ;
 %md
 %md ## boundary Conditions
 %md
