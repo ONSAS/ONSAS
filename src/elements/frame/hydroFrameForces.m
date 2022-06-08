@@ -205,6 +205,10 @@ function fagElem = hydroFrameForces( elemCoords,...
       end
       % compute van der pol solution for current element
       q = WOMV2(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
+      else
+      q = 2 ;
+      % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
+      tlift1 = [] ; tlift2 = [] ;
     end
   else
       q = 2 ;
@@ -306,11 +310,8 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   if ~isempty( userLiftCoef )
     c_l = feval( userLiftCoef, betaRelG, Re  ) ; 
   else
-    if VIVBool
-      error("The lift coef function must be defined for VIVBool problems ")
-      else
-      c_l = 0 ;
-    end
+    assert(VIVBool, 'The lift CL0 coef function must be defined for VIVBool problems ')
+    c_l = 0 ;
   end
   if ~isempty( userMomentCoef )
     c_m = feval( userMomentCoef, betaRelG, Re) ; 
@@ -329,7 +330,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
       tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;  
       % compute the lift force in deformed coordinates
       fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG)^2 * tlift_defCoords ;
-    else ~constantLiftDir % lift direction is variable
+    else % lift direction is variable
       fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
     end
   else % no WOM and a variable lift direction
@@ -339,7 +340,6 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   fal =  fdl + fll ;
   % torsional moment fluid load in deformed coordinates
   ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
-
   % Compute the element fluid load forces vector in global coordinates
   % compute the integral term of the current cross section in rigid coordinates
   integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;  
