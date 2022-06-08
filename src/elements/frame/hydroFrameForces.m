@@ -22,42 +22,40 @@ function fagElem = hydroFrameForces( elemCoords,...
                                      aeroCoefs, elemTypeAero, analysisSettings,...
                                      nextTime ) 
   % Check all required parameters are defined
-  if isempty(analysisSettings.fluidProps) 
-    error(' define correctly row cell analysisSettings.fluidProps = {fluidDensity; fluidViscosity; fluidVelocityFunction } ')
-  end
-  if isempty(elemTypeAero) 
-    error(' define correctly elements.elemTypeAero = [chordVec1 chordVec2 chordVec3 numGauss  ] ')
-  end
-  if isempty( aeroCoefs ) 
-    error(' define correctly row cell of strings elements.aeroCoefs = {dragFunc; liftFunc; momentFunc } ')
-  end
+  assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
+  assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
+  assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
+
+
   % Declare booleans for VIV phenomenon 
   % set boolean to set constant lift direction in VIV problems
   global VIVBool
   global constantLiftDir 
+  
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
+  
   % extract fluid properties
-  densityFluid       = analysisSettings.fluidProps{1,1} ;
+  densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
+
+  assert( ~isempty( userFlowVel ), 'empty user windvel' )
+
   % extract nonLinearity in aero force boolean
   geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
   
-  % Boolean to compute fluid force with ut = 0, this should be used if the fluid loads are computed in the reference 
-  % configuration and thereafter nonlinear effects are not considered. 
+  % Boolean to compute the fluid force with ut = 0, this should be used if the fluid loads are computed in the reference 
+  % configuration and nonlinear effects are not considered. 
   if ~geometricNonLinearAero 
     Ue = zeros(12,1) ;
   end
+  
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  if ~isempty(userFlowVel)
-    udotFlowNode1 = feval( userFlowVel, elemCoords(1) + Ue(1:2:6), nextTime ) ; 
-    udotFlowNode2 = feval( userFlowVel, elemCoords(4) + Ue(7:2:12), nextTime ) ;
-    % compact them into a single vector for the element 
-    udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
-  else
-    error('A userFlowVel field with the name of Flow velocity function file must be defined into analysiSettings struct')
-  end
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1) + Ue(1:2:6), nextTime ) ; 
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4) + Ue(7:2:12), nextTime ) ;
+  % compact them into a single vector for the element 
+  udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
   
   % Elem reference coordinates:
   xs = elemCoords(:) ;
@@ -79,7 +77,8 @@ function fagElem = hydroFrameForces( elemCoords,...
   % select thetas
   tg1 = dg(  4:6  ) ;
   tg2 = dg( 10:12 ) ;
- % compute matrices with exp Rodrigue's formula
+  
+  % compute matrices with exp Rodrigue's formula
   Rg1 = expon( tg1 ) ;% Eq(5) J.-M. Battini 2002
   Rg2 = expon( tg2 ) ;% Eq(5) J.-M. Battini 2002
 
@@ -194,7 +193,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
         while norm(udotFlowNode10) == 0 && norm(udotFlowNode10) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
-          t0 = timeStepNotNullVel*analysiSettings.deltaT
+          t0 = timeStepNotNullVel*analysisSettings.deltaT
           udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
           udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
         end
@@ -205,7 +204,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         tlift2 = cross(e1,udotFlowNode20) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
-      q = WOMV1(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
+      q = WOMV2(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
     end
   else
       q = 2 ;
