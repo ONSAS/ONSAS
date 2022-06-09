@@ -25,7 +25,6 @@ function fagElem = hydroFrameForces( elemCoords,...
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
   assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
   assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
-  assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
 
   % Declare booleans for VIV phenomenon 
@@ -40,6 +39,7 @@ function fagElem = hydroFrameForces( elemCoords,...
   densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
+  assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
   geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
