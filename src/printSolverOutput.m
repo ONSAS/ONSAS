@@ -66,6 +66,7 @@ elseif lineData(1) == 2 %end of iteration information
       stoptCritString = 'displac';
   elseif lineData(5)==3
     stoptCritString = 'iters';
+    fprintf('non convergence at step ', lineData(4));
   elseif lineData(5)==0
     stoptCritString = '';
   else
