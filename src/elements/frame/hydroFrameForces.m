@@ -280,6 +280,8 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
     else
       udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
     end
+    else
+      udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
   end
   % cross section absolute fluid flow velocity in global coordinates interpolated with linear shape functions:
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
