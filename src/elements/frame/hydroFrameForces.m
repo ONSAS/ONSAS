@@ -29,8 +29,10 @@ function fagElem = hydroFrameForces( elemCoords,...
 
   % Declare booleans for VIV phenomenon 
   % set boolean to set constant lift direction in VIV problems
+  % set boolean to set unfirom u dot 
   global VIVBool
   global constantLiftDir 
+  global uniformUdot 
   
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
@@ -156,7 +158,7 @@ function fagElem = hydroFrameForces( elemCoords,...
   numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
   % WOM computation call for cases with VIVbool equal to true
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir)
+  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
     if VIVBool
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
@@ -226,7 +228,7 @@ function fagElem = hydroFrameForces( elemCoords,...
                                                         vecChordUndef, dimCharacteristic,...
                                                         I3, O3, P, G, EE, L2, L3,...
                                                         aeroCoefs, densityFluid, viscosityFluid,...
-                                                        VIVBool, q,  constantLiftDir, tlift1, tlift2 ) ;
+                                                        VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = Cambio_Base(fagElem) ;
@@ -236,7 +238,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
                                           lo, tl1, tl2, Rr, ... 
                                           vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                           aeroCoefs, densityFluid, viscosityFluid,...
-                                          VIVBool, q, constantLiftDir, tlift1, tlift2 )
+                                          VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
   
   % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
   % linear
@@ -271,7 +273,16 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
  
   % Kinematic velocities for the generic cross section
   % cross section centroid rigid velocity in global coordinates:
-  udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
+  % if uniform 
+  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+    if uniformUdot
+      udotG = (ddotg(1:3) + ddotg(7:9))/2; 
+    else
+      udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
+    end
+    else
+      udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
+  end
   % cross section absolute fluid flow velocity in global coordinates interpolated with linear shape functions:
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
   
@@ -309,7 +320,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   if ~isempty( userLiftCoef )
     c_l = feval( userLiftCoef, betaRelG, Re  ) ; 
   else
-    assert(VIVBool, 'The lift CL0 coef function must be defined for VIVBool problems ')
+    assert(~VIVBool, 'The lift CL0 coef function must be defined for VIVBool problems ')
     c_l = 0 ;
   end
   if ~isempty( userMomentCoef )
@@ -319,21 +330,21 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   end
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; 
+  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm(VpiRelG) * VpiRelG     ; 
   % lift cross section force vector in deformed coordinates
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir)
+  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
     if constantLiftDir % lift direction is constant
       %prom the lift direction in global coordinates
       tlift = (tlift1 + tlift2) / 2 ;
       % transform the lift direction into deformed coordinates to re use the Eq in line 330
       tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;  
       % compute the lift force in deformed coordinates
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG)^2 * tlift_defCoords ;
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG)^2 * tlift_defCoords ;
     else % lift direction is variable
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
     end
   else % no WOM and a variable lift direction
-    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
   end
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll ;
