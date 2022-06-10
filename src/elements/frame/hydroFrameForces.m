@@ -20,7 +20,7 @@
 function fagElem = hydroFrameForces( elemCoords,... 
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
-                                     nextTime ) 
+                                     nextTime, currElem ) 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
   assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
@@ -205,7 +205,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         tlift2 = cross(e1,udotFlowNode20) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
-      q = WOMV2(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT ) ; 
+      q = WOMV3(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
       q = 2 ;
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
