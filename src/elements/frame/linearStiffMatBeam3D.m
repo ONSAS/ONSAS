@@ -19,17 +19,17 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasParams, Ut, Udotdotte)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool)
   
   ndofpnode = 6 ;
-
+  
   % --- material constit params ---
 	E   = hyperElasParams(1) ;
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
-
+	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
-
+	
   % --- elem lengths and rotation matrix
 	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
@@ -77,20 +77,97 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   else
     KbendXY = zeros(4,4) ;
   end
+	
+	if strcmp(hyperElasModel, 'linearElastic')
+		% bending XZ
+		RXYXZ = eye(4) ; RXYXZ(2,2) = 1; RXYXZ(4,4) = 1;
 
-  % bending XZ
-  RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
+		if     elemReleases(1) == 0 && elemReleases(2) == 0
+			KbendXZ = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ ;
+		elseif elemReleases(1) == 1 && elemReleases(2) == 0
+			KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseLef * RXYXZ ;
+		elseif elemReleases(1) == 0 && elemReleases(2) == 1
+			KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseRig * RXYXZ ;
+		else
+			KbendXZ = zeros(4,4) ;
+		end
+		
+	elseif strcmp(hyperElasModel, 'elastoPlasticPerfect')
+		% --- geometry params ---
+		elemCrossSecParamsVec = elemCrossSecParams{2} ;
+		
+		global ne
+		global ns
+		
+		KTe = zeros(4,4) ;
+		finte = zeros(4,1) ;
+		
+		% Elem Gauss points
+		[xge, we] = gaussParameters(ne) ;
+		[xgs, ws] = gaussParameters(ns) ; 
 
-  if     elemReleases(1) == 0 && elemReleases(2) == 0
-    KbendXZ = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ ;
-  elseif elemReleases(1) == 1 && elemReleases(2) == 0
-    KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseLef * RXYXZ ;
-  elseif elemReleases(1) == 0 && elemReleases(2) == 1
-    KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseRig * RXYXZ ;
-  else
-    KbendXZ = zeros(4,4) ;
-  end
+		a = 0 ;
+		b = l ;
+		p1 = (b-a)/2 ;
+		p2 = (b+a)/2 ;
+		
+		as = -elemCrossSecParamsVec(2)/2 ;
+		bs = elemCrossSecParamsVec(2)/2 ;
+		ps1 = (bs-as)/2 ;
+		ps2 = (bs+as)/2 ;
+		
+		pgeVec = (p1  * xge + p2 ) ;
+		pgsVec = (ps1 * xgs + ps2) ;
+		
+		for j = 1:length(we)
+			secFinte = 0 ;
+			secKTe = 0 ;
+			
+			pge = pgeVec(j) ;
+			
+			% Bending intern functions second derivative
+			B = bendingInterFuns(pge, l, 2) ;
+			epskVec = -pgsVec*B*Ut(LocBendXZdofs) ;
+			
+			% Section thk
+			tVec = secWidth(pgsVec, 2, elemCrossSecParamsVec(1), elemCrossSecParamsVec(2)) ;
+			
+			for m = 1:length(ws)
+     
+				pgs = pgsVec(m) ;
+				% Elem strain
+				epsk = epskVec(m) ;
+				
+				% Elem stress
+				[sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk) ;      
+				t = tVec(m) ;
+				
+				% Integration in section
+				% --------------------------------------------------------------------
+				
+				% to compute finte
+				secFinte = ps1 * ( t * (-B') * pgs * sigma * ws(m) ) + secFinte ;
+				if intBool == 1
+					% to compute KT
+					secKTe = ps1 * ( t * dsigdeps * pgs^2 * ws(m) ) + secKTe ;
+				end
+      
+			end % endif ws
 
+			if intBool == 1
+				% Tangent stiffness matrix
+				KTe = p1*( B'*secKTe*B*we(j) ) + KTe ;		
+			end
+		
+			% Internal force
+			finte = p1 * we(j) * secFinte + finte ;
+		
+		end % endif we
+	
+		KbendXZ = KTe ;
+		
+	end % endif hyperElasModel
+	
   Ktorsn = G*J/l * [  1 -1  ; ...
                      -1  1  ] ;
 
@@ -98,9 +175,12 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   KL( LocBendXZdofs , LocBendXZdofs ) = KbendXZ ;
   KL( LocTorsndofs  , LocTorsndofs  ) = Ktorsn ;
 
-
   KGelem = R * KL * R' ;
   Finte = KGelem * Ut ;
+  
+  if strcmp(hyperElasModel, 'elastoPlasticPerfect')
+		Finte(LocBendXZdofs) = finte ;
+  end
 
   fs{1} = Finte  ;
   ks{1} = KGelem ;

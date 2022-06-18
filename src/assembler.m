@@ -142,9 +142,9 @@ for elem = 1:nElems
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-		if strcmp(hyperElasModel, 'linearElastic')
+		if strcmp(hyperElasModel, 'linearElastic') || strcmp(hyperElasModel, 'elastoPlasticPerfect')
 
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 

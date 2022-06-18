@@ -54,7 +54,7 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 %md call assembler
 [~, Stress ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 ], otherParams.nodalDispDamping, currTime ) ;
 
-systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
+[Finte, systemDeltauMatrix] = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
 
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
 
@@ -80,7 +80,7 @@ timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
-  timesPlotsVec, otherParams.nodalDispDamping );
+  timesPlotsVec, otherParams.nodalDispDamping, Finte );
 
 %md writes vtk file
 if strcmp( modelProperties.plotsFormat, 'vtk' )
