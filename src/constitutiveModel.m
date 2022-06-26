@@ -1,5 +1,8 @@
 function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk)
 
+	% user function
+	global userFuncBool
+
 	E = hyperElasParams(1) ;
 			
 	% Linear elastic 
@@ -30,7 +33,8 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 			sigma = sigma_tr * sign(epsk) ;
 			dsigdeps = E ;
 		end
-	
+	elseif ~isempty(userFuncBool)
+		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk) ;
 	end
 	
 	

@@ -16,11 +16,11 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [Finte, systemDeltauMatrix] = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
+function [Finte, systemDeltauMatrix] = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping, outputBool ) ;
 %~ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
 
   % computes static tangent matrix
-  [ finte, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [1 0 1], nodalDispDamping, analysisSettings.deltaT ) ;
+  [ finte, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [1 0 1], nodalDispDamping, analysisSettings.deltaT, outputBool ) ;
   %~ [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping, analysisSettings.deltaT ) ;
 
   KT      = mats{1} ; Finte = finte{1} ;

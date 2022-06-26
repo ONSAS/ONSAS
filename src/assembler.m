@@ -20,7 +20,7 @@
 function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar )
+                                                           timeVar, outputBool )
  
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
 
@@ -141,13 +141,27 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
+  
+		if strcmp(hyperElasModel, 'linearElastic') 
+			boolLinear = 1 ;
+			boolPlas = 0 ;
+		elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') || strcmp(hyperElasModel, 'linearHardening') || strcmp(hyperElasModel, 'userFunc')
+			boolLinear = 1 ;
+			boolPlas = 1 ;
+		end
+		
+		if  boolLinear == 1
 
-		if strcmp(hyperElasModel, 'linearElastic') || strcmp(hyperElasModel, 'elastoPlasticPerfect')
-
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool, boolPlas ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
-
+			if outputBool == 1
+				global intForcesHistElem
+				%~ global LocBendXZdofs
+				%~ intForcesHistElem(elem, timeVar+1) = Finte(LocBendXZdofs) ;
+				intForcesHistElem(elem, timeVar+1) = Finte ;
+			end
+			
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end

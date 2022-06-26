@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, boolPlas)
   
   ndofpnode = 6 ;
   
@@ -78,9 +78,9 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
     KbendXY = zeros(4,4) ;
   end
 	
-	if strcmp(hyperElasModel, 'linearElastic')
+	if boolPlas == 0
 		% bending XZ
-		RXYXZ = eye(4) ; RXYXZ(2,2) = 1; RXYXZ(4,4) = 1;
+		RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
 
 		if     elemReleases(1) == 0 && elemReleases(2) == 0
 			KbendXZ = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ ;
@@ -92,7 +92,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 			KbendXZ = zeros(4,4) ;
 		end
 		
-	elseif strcmp(hyperElasModel, 'elastoPlasticPerfect')
+	elseif boolPlas == 1
 		% --- geometry params ---
 		elemCrossSecParamsVec = elemCrossSecParams{2} ;
 		
@@ -141,7 +141,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 				% Elem stress
 				[sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk) ;      
 				t = tVec(m) ;
-				
+
 				% Integration in section
 				% --------------------------------------------------------------------
 				
@@ -166,6 +166,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 	
 		KbendXZ = KTe ;
 		
+		
 	end % endif hyperElasModel
 	
   Ktorsn = G*J/l * [  1 -1  ; ...
@@ -178,8 +179,8 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   KGelem = R * KL * R' ;
   Finte = KGelem * Ut ;
   
-  if strcmp(hyperElasModel, 'elastoPlasticPerfect')
-		Finte(LocBendXZdofs) = finte ;
+  if boolPlas == 1
+		Finte(LocBendXZdofs) = R(LocBendXZdofs,LocBendXZdofs)*finte ;
   end
 
   fs{1} = Finte  ;

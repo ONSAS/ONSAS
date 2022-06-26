@@ -76,12 +76,12 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- system matrix ---
+  outputBool = 0 ;
   %~ systemDeltauMatrix = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
-  [fintek, systemDeltauMatrix] = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
-	
+  [fintek, systemDeltauMatrix] = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping, outputBool ) ;
+
   % --- new rhs ---
   [ systemDeltauRHS ]  = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
-
   % --- check convergence ---
   [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
@@ -103,7 +103,7 @@ KTtp1red = systemDeltauMatrix ;
 Finte = fintek ;
 
 % compute stress at converged state
-[~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping, nextTime ) ;
+[~, Stresstp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 ], modelProperties.nodalDispDamping, nextTime, outputBool ) ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
