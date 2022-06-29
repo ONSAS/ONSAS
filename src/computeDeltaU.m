@@ -59,6 +59,8 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, 
     deltaured = deltauast + deltalambda(1) * deltaubar ;
 
   else   % incremental displacement
+		%~ systemDeltauRHS
+		%~ systemDeltauMatrix
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
 
   end

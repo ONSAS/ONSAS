@@ -19,14 +19,14 @@
 
 function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
 
-	outputBool = 1 ;
-  [fs, ~, ~ ] = assembler ( ...
-    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping, nextTime, outputBool ) ;
+	
+  [fs, ~, ~, ~ ] = assembler ( ...
+    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime ) ;
 
   % TO BE REMOVEd!!!
   Stress = [] ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ;
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
@@ -65,7 +65,7 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
     fs = assembler ( ...
-      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT ) ;
+      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 

@@ -126,6 +126,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 			pge = pgeVec(j) ;
 			
 			% Bending intern functions second derivative
+
 			B = bendingInterFuns(pge, l, 2) ;
 			epskVec = -pgsVec*B*Ut(LocBendXZdofs) ;
 			
@@ -147,6 +148,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 				
 				% to compute finte
 				secFinte = ps1 * ( t * (-B') * pgs * sigma * ws(m) ) + secFinte ;
+				
 				if intBool == 1
 					% to compute KT
 					secKTe = ps1 * ( t * dsigdeps * pgs^2 * ws(m) ) + secKTe ;
@@ -156,14 +158,14 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 
 			if intBool == 1
 				% Tangent stiffness matrix
-				KTe = p1*( B'*secKTe*B*we(j) ) + KTe ;		
+				KTe = p1*( B'*secKTe*B*we(j) ) + KTe ;	
 			end
 		
 			% Internal force
 			finte = p1 * we(j) * secFinte + finte ;
 		
 		end % endif we
-	
+		
 		KbendXZ = KTe ;
 		
 		
@@ -171,13 +173,22 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 	
   Ktorsn = G*J/l * [  1 -1  ; ...
                      -1  1  ] ;
-
+	
+	
+	
   KL( LocBendXYdofs , LocBendXYdofs ) = KbendXY ;
   KL( LocBendXZdofs , LocBendXZdofs ) = KbendXZ ;
   KL( LocTorsndofs  , LocTorsndofs  ) = Ktorsn ;
 
   KGelem = R * KL * R' ;
   Finte = KGelem * Ut ;
+  
+  %~ RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
+  %~ KbendXZ
+	%~ KbendXZ2 = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ 
+  
+  
+  
   
   if boolPlas == 1
 		Finte(LocBendXZdofs) = R(LocBendXZdofs,LocBendXZdofs)*finte ;

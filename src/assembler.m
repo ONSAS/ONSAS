@@ -17,12 +17,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler ( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, outputBool )
+                                                           timeVar )
  
-fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
+fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
 nElems     = size(Conec, 1) ;
 nNodes     = size(Nodes, 1) ;
@@ -59,6 +59,14 @@ if stressBool
 else
   stressMat = [] ;
 end
+
+% -------  matrix with internal forces per element -------------------
+if matFintBool
+	matFint = zeros( nElems, 6*2 ) ;
+else
+	matFint = [] ;
+end
+
 % ====================================================================
 
 
@@ -148,18 +156,42 @@ for elem = 1:nElems
 		elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') || strcmp(hyperElasModel, 'linearHardening') || strcmp(hyperElasModel, 'userFunc')
 			boolLinear = 1 ;
 			boolPlas = 1 ;
+		else
+			boolLinear = 0 ;	
 		end
 		
 		if  boolLinear == 1
-
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool, boolPlas ) ;
+			
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
-			if outputBool == 1
+			
+			LocAxialdofs  = [ 1 7 ] ;
+			LocTorsndofs  = [ 2 8 ] ;
+			LocBendXYdofs = [ 3 6 9 12 ] ;
+			LocBendXZdofs = [ 5 4 11 10 ] ;
+			
+			%~ Ke(LocAxialdofs, LocAxialdofs)
+			%~ Ke(LocTorsndofs,LocTorsndofs)
+			%~ Ke(LocBendXZdofs,LocBendXZdofs)
+			%~ Ke(LocBendXYdofs,LocBendXYdofs)
+			
+			%~ Finte1 = Finte 
+				
+			%~ boolPlas = 0 ;
+			%~ [ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool, boolPlas ) ;
+			
+			%~ Ke = ks{1} ;
+			%~ Finte=fs{1} ;
+			
+			%~ Finte2 = Finte 
+			
+			if matFintBool == 1
 				global intForcesHistElem
-				%~ global LocBendXZdofs
-				%~ intForcesHistElem(elem, timeVar+1) = Finte(LocBendXZdofs) ;
-				intForcesHistElem(elem, timeVar+1) = Finte ;
+				if ~isempty(intForcesHistElem)
+					intForcesHistElem(elem, timeVar+1) = Finte ;
+				end
+				matFint(elem,:) = Finte' ;
 			end
 			
       if dynamicProblemBool
@@ -258,7 +290,7 @@ for elem = 1:nElems
 
   if tangBool
     for indRow = 1:length( dofselemRed )
-
+			
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
 
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
@@ -282,7 +314,6 @@ for elem = 1:nElems
   end % if stress
 
 end % for elements ----
-
 
 % ============================================================================
 %  --- 3 global additions and output ---
@@ -318,7 +349,12 @@ if tangBool
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
-
+	%~ length(indsIK)
+	%~ length(indsJK)
+	%~ length(valsK)
+	%~ find(valsK(1:end)~=0)
+	%~ length(find(valsK(1:end)~=0))
+	%~ valsK([40 41 46 47 52 53 58 59])
   tangMatsCell{1} = K ;
 
   if dynamicProblemBool

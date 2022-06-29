@@ -35,7 +35,7 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 		end
 	elseif ~isempty(userFuncBool)
 		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk) ;
+		
 	end
-	
 	
 end
