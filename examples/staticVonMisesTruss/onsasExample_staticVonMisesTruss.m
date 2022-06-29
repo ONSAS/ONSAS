@@ -107,7 +107,7 @@ otherParams.plotsFormat = 'vtk' ;
 %md
 %md### Analysis case 1: Newton-Raphson with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUs, loadFactorsMat, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md
