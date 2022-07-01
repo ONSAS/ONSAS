@@ -1,6 +1,7 @@
 /examples/*/output/*
 */html/*
 /html/*
+*.css
 /src/*.txt
 /src/*.oct
 *.mat
