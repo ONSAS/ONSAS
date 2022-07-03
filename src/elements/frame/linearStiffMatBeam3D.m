@@ -103,8 +103,8 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 		finte = zeros(4,1) ;
 		
 		% Elem Gauss points
-		[xge, we] = gaussParameters(ne) ;
-		[xgs, ws] = gaussParameters(ns) ; 
+		[xge, we] = GaussPointsAndWeights (ne) ;
+		[xgs, ws] = GaussPointsAndWeights(ns) ; 
 
 		a = 0 ;
 		b = l ;
@@ -116,8 +116,8 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 		ps1 = (bs-as)/2 ;
 		ps2 = (bs+as)/2 ;
 		
-		pgeVec = (p1  * xge + p2 ) ;
-		pgsVec = (ps1 * xgs + ps2) ;
+		pgeVec = (p1  * xge' + p2 ) ;
+		pgsVec = (ps1 * xgs' + ps2) ;
 		
 		for j = 1:length(we)
 			secFinte = 0 ;

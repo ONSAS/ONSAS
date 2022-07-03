@@ -166,34 +166,6 @@ for elem = 1:nElems
 
       Finte = fs{1} ;  Ke = ks{1} ;
 			
-			LocAxialdofs  = [ 1 7 ] ;
-			LocTorsndofs  = [ 2 8 ] ;
-			LocBendXYdofs = [ 3 6 9 12 ] ;
-			LocBendXZdofs = [ 5 4 11 10 ] ;
-			
-			%~ Ke(LocAxialdofs, LocAxialdofs)
-			%~ Ke(LocTorsndofs,LocTorsndofs)
-			%~ Ke(LocBendXZdofs,LocBendXZdofs)
-			%~ Ke(LocBendXYdofs,LocBendXYdofs)
-			
-			%~ Finte1 = Finte 
-				
-			%~ boolPlas = 0 ;
-			%~ [ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), fsBool, boolPlas ) ;
-			
-			%~ Ke = ks{1} ;
-			%~ Finte=fs{1} ;
-			
-			%~ Finte2 = Finte 
-			
-			if matFintBool == 1
-				global intForcesHistElem
-				if ~isempty(intForcesHistElem)
-					intForcesHistElem(elem, timeVar+1) = Finte ;
-				end
-				matFint(elem,:) = Finte' ;
-			end
-			
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
@@ -312,7 +284,11 @@ for elem = 1:nElems
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
   end % if stress
-
+	
+	if matFintBool == 1
+		matFint(elem,:) = Finte' ;
+	end
+	
 end % for elements ----
 
 % ============================================================================
