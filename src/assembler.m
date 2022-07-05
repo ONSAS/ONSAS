@@ -62,7 +62,7 @@ end
 
 % -------  matrix with internal forces per element -------------------
 if matFintBool
-	matFint = zeros( nElems, 6*2 ) ;
+	matFint = zeros( nElems, 6*4 ) ;
 else
 	matFint = [] ;
 end
@@ -286,7 +286,7 @@ for elem = 1:nElems
   end % if stress
 	
 	if matFintBool
-		matFint(elem,1:dofsStep:12) = Finte' ;
+		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
 	end
 	
 end % for elements ----
