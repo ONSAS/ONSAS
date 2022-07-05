@@ -27,7 +27,7 @@ loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot           ;
 cellStress     = { modelCurrSol.Stress }     ;
 
-cellFint = cell() ;
+cellFint = {};
 
 
 %md
