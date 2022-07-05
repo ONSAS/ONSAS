@@ -286,7 +286,7 @@ for elem = 1:nElems
   end % if stress
 	
 	if matFintBool
-		matFint(elem,dofselemRed) = Finte' ;
+		matFint(elem,1:dofsStep:12) = Finte' ;
 	end
 	
 end % for elements ----
