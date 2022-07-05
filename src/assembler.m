@@ -285,7 +285,7 @@ for elem = 1:nElems
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
   end % if stress
 	
-	if matFintBool == 1
+	if matFintBool
 		matFint(elem,dofselemRed) = Finte' ;
 	end
 	
