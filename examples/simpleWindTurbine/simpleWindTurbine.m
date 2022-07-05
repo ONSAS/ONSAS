@@ -88,12 +88,12 @@ analysisSettings.stopTolIts             =   50      ;
 analysisSettings.geometricNonLinearAero = true      ;
 analysisSettings.booleanSelfWeight      = false     ;
 analysisSettings.stopTolDeltau          =   0       ;
-analysisSettings.stopTolForces          =   1e-6    ;
+analysisSettings.stopTolForces          =   1e-5    ;
 %md
 %md### otherParams
 %md
 otherParams.problemName = strcat( 'onsasExample_simpleWindTurbine_nodalMoment' ) ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plotsFormat = '' ;
 %
 %md# Execute ONSAS
 [ matUs_nodalMoment, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
