@@ -286,7 +286,7 @@ for elem = 1:nElems
   end % if stress
 	
 	if matFintBool == 1
-		matFint(elem,:) = Finte' ;
+		matFint(elem,dofselemRed) = Finte' ;
 	end
 	
 end % for elements ----
