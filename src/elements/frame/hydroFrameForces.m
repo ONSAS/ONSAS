@@ -192,9 +192,9 @@ function fagElem = hydroFrameForces( elemCoords,...
         t0 = 0; timeStepNotNullVel = 0;
         udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
         udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
-        while norm(udotFlowNode10) == 0 && norm(udotFlowNode10) == 0
+        while norm(udotFlowNode10) == 0 && norm(udotFlowNode20) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
-          t0 = timeStepNotNullVel*analysisSettings.deltaT
+          t0 = timeStepNotNullVel*analysisSettings.deltaT ;
           udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
           udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
         end
