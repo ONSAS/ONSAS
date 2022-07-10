@@ -51,3 +51,6 @@ function test_10
 function test_11
   beamLinearVibration
   assertEqual( verifBoolean, true );
+
+function test_12
+  assertEqual( gaussIntegrationTest, true);
