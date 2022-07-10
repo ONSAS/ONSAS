@@ -2,9 +2,9 @@
 % ========================================================================================
 function resultBoolean = gaussIntegrationTest()
 
-  plots_boolean = false ;
+  plots_boolean = true ;
 
-  point_nums_to_test = [ 1:10 12 14 16   ] ;
+  point_nums_to_test = [ 1:10 12 14 16 28  ] ;
 %  point_nums_to_test = [ 1:10    ]
   int_values = zeros( size(point_nums_to_test) ) ;
 
@@ -34,11 +34,11 @@ function resultBoolean = gaussIntegrationTest()
   end
   
   if plots_boolean
-    numericalInt = quadl( 'test_fun_to_integrate', a, b )
+%    numericalInt = quadl( 'test_fun_to_integrate', a, b )
     figure
     plot(point_nums_to_test, int_values,'b-x')
     hold on, grid on
-    plot(point_nums_to_test, numericalInt*ones(size(point_nums_to_test)),'r-o')
+    plot(point_nums_to_test, analyInt*ones(size(point_nums_to_test)),'r-o')
   end
 
   resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
