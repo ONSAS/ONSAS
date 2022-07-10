@@ -1,7 +1,8 @@
-
+% ========================================================================================
+% ========================================================================================
 function resultBoolean = gaussIntegrationTest()
 
-  plots_boolean = true ;
+  plots_boolean = false ;
 
   point_nums_to_test = [ 1:10 12 14 16   ] ;
 %  point_nums_to_test = [ 1:10    ]
@@ -41,3 +42,8 @@ function resultBoolean = gaussIntegrationTest()
   end
 
   resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
+
+% ========================================================================================
+% ========================================================================================
+function ys = test_fun_to_integrate( xinput )
+  ys = 20 * xinput .^ 4 ;
