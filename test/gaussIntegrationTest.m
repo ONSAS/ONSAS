@@ -1,18 +1,18 @@
 
 function resultBoolean = gaussIntegrationTest()
 
-  plots_boolean = false ;
+  plots_boolean = true ;
 
-  point_nums_to_test = [ 1:10 12:14 16 26   ]
+  point_nums_to_test = [ 1:10 12 14 16   ] ;
 %  point_nums_to_test = [ 1:10    ]
   int_values = zeros( size(point_nums_to_test) ) ;
 
   a = -1.5 ;  b =  1 ;
-  analyInt = -50*.5 + -50*1*.5 + 100*.5*.5 + 100*.5  ;
+  %analyInt = -50*.5 + -50*1*.5 + 100*.5*.5 + 100*.5  ;
+  analyInt = 20 * ( b^5/5 - a^5/5 )  ;
 
   xs = -1.5:.02:1;
   ys = 0;
-
   for i=1:length(xs)
     ys(i) = test_fun_to_integrate(xs(i));
   end
@@ -40,4 +40,4 @@ function resultBoolean = gaussIntegrationTest()
     plot(point_nums_to_test, numericalInt*ones(size(point_nums_to_test)),'r-o')
   end
 
-  resultBoolean = norm( int_values( end ) - analyInt ) / norm( analyInt ) < 1e-2 ;
+  resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
