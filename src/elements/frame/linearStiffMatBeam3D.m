@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, boolPlas)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, boolPlas, matFintBool, elem)
   
   ndofpnode = 6 ;
   
@@ -33,7 +33,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   % --- elem lengths and rotation matrix
 	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
-
+	
   % temporary
   %~ ------------------------
   elemReleases = [0 0 0 0] ;
@@ -98,6 +98,8 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 		
 		global ne
 		global ns
+		global sigmaVec
+		global elemAux
 		
 		KTe = zeros(4,4) ;
 		finte = zeros(4,1) ;
@@ -119,16 +121,24 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 		pgeVec = (p1  * xge' + p2 ) ;
 		pgsVec = (ps1 * xgs' + ps2) ;
 		
+		
+		
+		
 		for j = 1:length(we)
 			secFinte = 0 ;
 			secKTe = 0 ;
 			
 			pge = pgeVec(j) ;
 			
+			%%%%%%%%%%%%%%%%
+			%~ n = 0 ;
+			sigmaAuxVec = [] ;
+			%%%%%%%%%%%%%%%%
+			
 			% Bending intern functions second derivative
 
 			B = bendingInterFuns(pge, l, 2) ;
-			epskVec = -pgsVec*B*Ut(LocBendXZdofs) ;
+			epskVec = -pgsVec*B*R(LocBendXZdofs,LocBendXZdofs)*Ut(LocBendXZdofs) ;
 			
 			% Section thk
 			tVec = secWidth(pgsVec, 2, elemCrossSecParamsVec(1), elemCrossSecParamsVec(2)) ;
@@ -140,7 +150,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 				epsk = epskVec(m) ;
 				
 				% Elem stress
-				[sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk) ;      
+				[sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk, matFintBool, elem, elemAux, xge(j), max(xge) ) ;      
 				t = tVec(m) ;
 
 				% Integration in section
@@ -153,7 +163,17 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 					% to compute KT
 					secKTe = ps1 * ( t * dsigdeps * pgs^2 * ws(m) ) + secKTe ;
 				end
-      
+			
+			%%%%%%%%%%%%%%%%
+			if matFintBool == 1
+				if elem == elemAux	
+					if xge(j) == max(xge)
+						sigmaAuxVec = [sigmaAuxVec, sigma] ;
+					end
+				end
+			end
+			%%%%%%%%%%%%%%%%
+		
 			end % endif ws
 
 			if intBool == 1
@@ -162,8 +182,18 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 			end
 		
 			% Internal force
-			finte = p1 * we(j) * secFinte + finte ;
+			finte = p1 * we(j) * secFinte + finte ;		
 		
+		%%%%%%%%%%%%%%%%
+		if matFintBool == 1
+			if elem == elemAux	
+				if xge(j) == max(xge)
+					sigmaVec{end+1} = sigmaAuxVec ;
+				end
+			end
+		end
+		%%%%%%%%%%%%%%%%
+
 		end % endif we
 		
 		KbendXZ = KTe ;

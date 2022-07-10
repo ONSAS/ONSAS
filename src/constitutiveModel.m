@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk)
+function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk, matFintBool, elem, elemAux, xgej,maxxge)
 
 	% user function
 	global userFuncBool
@@ -52,7 +52,7 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 			dsigdeps = E ;
 		end
 	elseif strcmp(hyperElasModel, 'userFunc')
-		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk) ;
+		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk, matFintBool, elem, elemAux, xgej,maxxge) ;
 	end
 	
 end
