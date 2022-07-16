@@ -59,12 +59,16 @@ booleanConverged = 0                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
+global timeInd
+	timeInd = modelCurrSol.timeIndex ;
+
+
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
-
-
+	
+	%~ dispIters
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ;
 

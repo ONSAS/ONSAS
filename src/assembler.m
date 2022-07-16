@@ -162,7 +162,7 @@ for elem = 1:nElems
 		
 		if  boolLinear == 1
 			
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 			
