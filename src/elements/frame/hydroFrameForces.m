@@ -41,6 +41,7 @@ function fagElem = hydroFrameForces( elemCoords,...
   densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
+  # check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
@@ -130,8 +131,8 @@ function fagElem = hydroFrameForces( elemCoords,...
   tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
   
   % identity and null auxiliary matrices
-  I3 = eye(3)     ;
-  O3 = zeros(3)   ;
+  I3 = eye( 3 )   ;
+  O3 = zeros( 3 ) ;
   
   II=[ O3 I3 O3 O3
        O3 O3 O3 I3 ];
@@ -158,15 +159,15 @@ function fagElem = hydroFrameForces( elemCoords,...
   numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
   % WOM computation call for cases with VIVbool equal to true
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     if VIVBool
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
-      udotFrame1    = Udote(1:2:6)      ;
-      udotdotFrame1 = Udotdote(1:2:6)   ;
+      udotFrame1    = Udote( 1:2:6 )      ;
+      udotdotFrame1 = Udotdote( 1:2:6 )   ;
       % node 2
-      udotFrame2    = Udote(7:2:end)    ;
-      udotdotFrame2 = Udotdote(7:2:end) ;
+      udotFrame2    = Udote( 7:2:end )    ;
+      udotdotFrame2 = Udotdote( 7:2:end ) ;
 
       % projected velocities at nodes 1 and 2 in deformed coordinates 
       %node 1 
@@ -192,7 +193,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         t0 = 0; timeStepNotNullVel = 0;
         udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
         udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
-        while norm(udotFlowNode10) == 0 && norm(udotFlowNode10) == 0
+        while norm( udotFlowNode10 ) == 0 && norm( udotFlowNode20 ) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
           t0 = timeStepNotNullVel*analysisSettings.deltaT
           udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
@@ -201,11 +202,12 @@ function fagElem = hydroFrameForces( elemCoords,...
         % Compute the direction of the axial vector on the initial configuration in global coordinates
         e1 = R0 * [1 0 0]';
         % Transform axial vector in the initial configuration to global cooridantes
-        tlift1 = cross(e1,udotFlowNode10) / norm( cross(e1,udotFlowNode10) ) ;
-        tlift2 = cross(e1,udotFlowNode20) / norm( cross(e1,udotFlowNode20) ) ;
+        tlift1 = cross( e1,udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
+        tlift2 = cross( e1,udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
-      q = WOMV3(VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2, tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
+      q = WOMV2( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
+                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
       q = 2 ;
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
@@ -220,22 +222,22 @@ function fagElem = hydroFrameForces( elemCoords,...
   fagElem = zeros(12,1) ;
   for ind = 1 : length( xIntPoints )
     %The Gauss integration coordinate is:
-    xGauss = lo/2 * (xIntPoints( ind ) + 1) ;
+    xGauss = lo/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element   
     fagElem =  fagElem ...
-               +lo/2 * wIntPoints(ind) * integAeroForce( xGauss, ddotg, udotFlowElem,... 
-                                                        lo, tl1, tl2, Rr, ... 
-                                                        vecChordUndef, dimCharacteristic,...
-                                                        I3, O3, P, G, EE, L2, L3,...
-                                                        aeroCoefs, densityFluid, viscosityFluid,...
-                                                        VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
+               +lo/2 * wIntPoints( ind ) * integAeroForce( xGauss, ddotg, udotFlowElem,... 
+                                                           lo, tl1, tl2, Rr,... 
+                                                           vecChordUndef, dimCharacteristic,...
+                                                           I3, O3, P, G, EE, L2, L3,...
+                                                           aeroCoefs, densityFluid, viscosityFluid,...
+                                                           VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
-  fagElem = Cambio_Base(fagElem) ;
+  fagElem = Cambio_Base( fagElem ) ;
 end
 
 function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
-                                          lo, tl1, tl2, Rr, ... 
+                                          lo, tl1, tl2, Rr,... 
                                           vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                           aeroCoefs, densityFluid, viscosityFluid,...
                                           VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
@@ -274,7 +276,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   % Kinematic velocities for the generic cross section
   % cross section centroid rigid velocity in global coordinates:
   % if uniform 
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     if uniformUdot
       udotG = (ddotg(1:3) + ddotg(7:9))/2; 
     else
@@ -287,20 +289,20 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
   
   % Relative, perpendicular and projected  flow velocity of the cross section to compute drag lift and moment:
-  [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels(udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
+  [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
   
   % Compute relative incidence angle
   % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
   tch = (vecChordUndef / norm( vecChordUndef )) ;
 
   % Calculate relative incidence angle in the deformed configuration
-  if( norm( VpiRelG) == 0 )
+  if( norm( VpiRelG ) == 0 )
       td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
   else % the drag direction at a generic cross section in deformed coordinates is:
       td = VpiRelG / norm( VpiRelG ) ;
   end
-  cosBeta  = dot(tch, td) / ( norm(td) * norm(tch) ) ;
-  sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm(td) * norm(tch) ) ;
+  cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
+  sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
   betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
   
   % Delete spaces
@@ -324,27 +326,27 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
     c_l = 0 ;
   end
   if ~isempty( userMomentCoef )
-    c_m = feval( userMomentCoef, betaRelG, Re) ; 
+    c_m = feval( userMomentCoef, betaRelG, Re ) ; 
   else
     c_m = 0 ;
   end
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm(VpiRelG) * VpiRelG     ; 
+  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ; 
   % lift cross section force vector in deformed coordinates
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     if constantLiftDir % lift direction is constant
       %prom the lift direction in global coordinates
       tlift = (tlift1 + tlift2) / 2 ;
       % transform the lift direction into deformed coordinates to re use the Eq in line 330
       tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;  
       % compute the lift force in deformed coordinates
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG)^2 * tlift_defCoords ;
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
     else % lift direction is variable
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
     end
   else % no WOM and a variable lift direction
-    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp ; %note that if there is VIV effect q is 2
+    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
   end
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll ;
