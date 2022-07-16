@@ -41,7 +41,7 @@ function fagElem = hydroFrameForces( elemCoords,...
   densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
-  # check user Flow Vel is not empty
+  % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
