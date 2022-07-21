@@ -21,7 +21,7 @@ function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler ( Conec, eleme
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar )
- 
+
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
 nElems     = size(Conec, 1) ;
