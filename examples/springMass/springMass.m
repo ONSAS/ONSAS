@@ -66,7 +66,7 @@ end
 %md
 %mdIn this case, a truss element is considered, as shown in the figure, with Young modulus, cross-section, area, mass, nodal damping and length corresponding to the parameters considered for the spring-mass-damper system 
 %md```@raw html
-%md<img src="../../assets/springMassSystem.svg" alt="spring-mass diagram" width="800"/>
+%md<img src="../../assets/springMassTrussModel.svg" alt="spring-mass diagram" width="800"/>
 %md```
 %md
 %md The scalar parameters for the equivalent truss model are:
