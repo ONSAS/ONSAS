@@ -195,7 +195,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
         while norm( udotFlowNode10 ) == 0 && norm( udotFlowNode20 ) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
-          t0 = timeStepNotNullVel*analysisSettings.deltaT
+          t0 = timeStepNotNullVel*analysisSettings.deltaT ;
           udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
           udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
         end
@@ -206,7 +206,7 @@ function fagElem = hydroFrameForces( elemCoords,...
         tlift2 = cross( e1,udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
-      q = WOMV2( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
+      q = WOMV3( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
       q = 2 ;
