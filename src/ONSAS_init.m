@@ -53,16 +53,10 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
 %md call assembler
 
-[~, Stress, ~, matFint ] = assembler ( Conec, elements, Nodes, materials, KS, U, Udot, Udotdot, analysisSettings, [ 0 1 0 1 ], otherParams.nodalDispDamping, currTime ) ;
-
-systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, U, Udot, Udotdot, neumDofs, otherParams.nodalDispDamping ) ;
-
+Stress = [] ;
+matFint = [] ;
+systemDeltauMatrix = [] ;
 [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
-
-%md prints headers for solver output file
-printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
-printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
-
 
 nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % number of times (including t=0)
 
@@ -75,13 +69,24 @@ nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % n
 
 timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
 
+
+
 %md compress model structs
 [ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
-  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, ...
+  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, [systemDeltauMatrix], ...
   timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
   KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
   outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
   timesPlotsVec, otherParams.nodalDispDamping, matFint );
+
+vecLoadFactors
+[ modelCurrSol.systemDeltauMatrix, ~ ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, analysisSettings.deltaT, nextLoadFactorsVals ) ;
+
+%md prints headers for solver output file
+printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
+printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
+
+
 
 %md writes vtk file
 if strcmp( modelProperties.plotsFormat, 'vtk' )

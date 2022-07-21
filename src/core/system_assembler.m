@@ -16,23 +16,49 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
 
-function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
-
+  analysisSettings = modelProperties.analysisSettings ;
+  nodalDispDamping = modelProperties.nodalDispDamping ;
+  neumdofs = BCsData.neumdofs ;
 	
-  [fs, ~, ~, ~ ] = assembler ( ...
-    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime ) ;
-
-  % TO BE REMOVEd!!!
-  Stress = [] ;
+  [fs, ~, mats, ~ ] = assembler ( ...
+    modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1,analysisSettings, [1 0 1 0], nodalDispDamping, nextTime ) ;
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; 
+  
+  KT   = mats{1} ; 
+
+  if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
+    dampingMat = mats{2} ;
+    massMat    = mats{3} ;
+
+    global exportFirstMatrices;
+    if exportFirstMatrices == true
+      KTred      = KT( neumdofs, neumdofs );
+      massMatred = massMat(neumdofs,neumdofs);
+      save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
+      figure
+      spy(full(KT))
+      figure
+      spy(full(massMat))
+      fprintf('matrices exported.\n--------\n')
+      exportFirstMatrices = false;
+    end
+  end
+
+
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
 
     systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) - Faero( BCsData.neumDofs ) ) ;
-		
+
+    systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
+	
+  % -----------------------------------------------------------------------------------
+  % newmark
+  % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, nexTimeLoadFactors ) ;
@@ -50,6 +76,11 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
     systemDeltauRHS = [ -(Fint(BCsData.neumDofs)-FextG(BCsData.neumDofs)) ...
                         BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 
+    systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
+
+  % -----------------------------------------------------------------------------------
+  % newmark
+  % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 
     [FextG, nexTimeLoadFactors ]  = computeFext( BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, modelProperties.analysisSettings, nextTime, length(Fint), BCsData.userLoadsFilename, [] ) ;
@@ -62,6 +93,17 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
     systemDeltauRHS = -rhat ;
 
+    alphaNM = analysisSettings.alphaNM ;
+    deltaNM = analysisSettings.deltaNM ;
+    deltaT  = analysisSettings.deltaT  ;
+
+    systemDeltauMatrix =                                   KT(         neumdofs, neumdofs ) ...
+                         + 1/( alphaNM * deltaT^2)       * massMat(    neumdofs, neumdofs ) ...
+                         + deltaNM / ( alphaNM * deltaT) * dampingMat( neumdofs, neumdofs )  ;
+
+  % -----------------------------------------------------------------------------------
+  % alpha-HHT
+  % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
     fs = assembler ( ...
@@ -93,4 +135,18 @@ function [systemDeltauRHS, FextG, fs, Stress, nexTimeLoadFactors ] = computeRHS(
 
     systemDeltauRHS = -rhat ;
 
+
+    alphaHHT = analysisSettings.alphaHHT ;
+    deltaT   = analysisSettings.deltaT  ;
+
+    deltaNM = (1 - 2 * alphaHHT ) / 2 ;
+    alphaNM = (1 - alphaHHT ^ 2 ) / 4 ;
+
+    systemDeltauMatrix = (1 + alphaHHT )                                 * KT         ( neumdofs, neumdofs ) ...
+                       + (1 + alphaHHT ) * deltaNM / ( alphaNM*deltaT  ) * dampingMat ( neumdofs, neumdofs )  ...
+                       +                         1 / ( alphaNM*deltaT^2) * massMat    ( neumdofs, neumdofs ) ;
+
+
   end
+
+
