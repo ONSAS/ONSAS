@@ -19,13 +19,17 @@
 %md### ONSAS_solve
 %md Function that performs the time analysis with the model structs as input.
 %md
-function [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
+function [ matUs, loadFactorsMat, cellFint ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 %md
 %md init structures to store solutions
 matUs          = modelCurrSol.U              ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot           ;
 cellStress     = { modelCurrSol.Stress }     ;
+
+cellFint = {};
+
+
 %md
 %md#### Incremental time analysis
 %md sets stopping boolean to false
@@ -47,10 +51,18 @@ while finalTimeReachedBoolean == false
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
 
   % store results and update structs
-  modelCurrSol   =   modelNextSol ;
-  matUs          = [ matUs          modelCurrSol.U                   ] ;
-  loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
-
+  modelCurrSol   	=  	modelNextSol ;
+  matUs          	= [ matUs          modelCurrSol.U                   ] ;
+  loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
+	
+	if length(cellFint) == 0
+		cellFint{1} = zeros(size(modelCurrSol.matFint)) ;
+	end
+		
+	cellFint{end+1}	= modelCurrSol.matFint ;
+	
+	 	
+	
   % generate vtk file for the new state
   if strcmp( modelProperties.plotsFormat, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );

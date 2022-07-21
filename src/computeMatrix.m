@@ -16,12 +16,12 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
+function [systemDeltauMatrix] = computeMatrix( Conec, elements, Nodes, materials, KS, analysisSettings, Uk, Udott, Udotdott, neumdofs, nodalDispDamping ) ;
 
   % computes static tangent matrix
-  [ ~, ~, mats ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1], nodalDispDamping, analysisSettings.deltaT ) ;
+  [ ~, ~, mats, ~ ] = assembler( Conec, elements, Nodes, materials, KS, Uk, Udott, Udotdott, analysisSettings, [0 0 1 0], nodalDispDamping, analysisSettings.deltaT ) ;
 
-  KT      = mats{1} ;
+  KT      = mats{1} ; 
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
@@ -44,6 +44,10 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
   if strcmp( analysisSettings.methodName, 'newtonRaphson' ) || strcmp( analysisSettings.methodName, 'arcLength' )
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
+		%~ KT
+		%~ neumdofs
+		%~ systemDeltauMatrix
+		%~ size(KT)
 
   elseif strcmp( analysisSettings.methodName, 'newmark' )
 
@@ -68,3 +72,4 @@ function systemDeltauMatrix = computeMatrix( Conec, elements, Nodes, materials, 
                        +                         1 / ( alphaNM*deltaT^2) * massMat    ( neumdofs, neumdofs ) ;
 
   end
+

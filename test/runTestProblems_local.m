@@ -16,7 +16,6 @@ keyfiles = { 'staticVonMisesTruss/onsasExample_staticVonMisesTruss.m'   ...
            ; 'linearAerodynamics/linearAerodynamics.m'                  ...    
            ; 'beamLinearVibration/beamLinearVibration.m'                ...
            }
-             
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;
 
@@ -47,8 +46,7 @@ while current <= length(keyfiles) && verifBoolean == 1
 end
 
 if verifBoolean ==1
-  fprintf('test PASSED!\n')
+  fprintf('all test examples PASSED!\n')
 else
   error('test examples not passed.')
-
 end

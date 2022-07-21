@@ -56,9 +56,9 @@ otherParams.plotsFormat = 'vtk' ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 mu = E /( 2*(1+nu) ) ;
-a = .5 * max( elements(2).elemCrossSecParams{2} )
-b = .5 * min( elements(2).elemCrossSecParams{2} )
-J = a * b^3 * ( 16/3 - 3.36 * b/a * ( 1 - b^4 / ( 12*a^4 ) ) )
+a = .5 * max( elements(2).elemCrossSecParams{2} ) ;
+b = .5 * min( elements(2).elemCrossSecParams{2} ) ;
+J = a * b^3 * ( 16/3 - 3.36 * b/a * ( 1 - b^4 / ( 12*a^4 ) ) ) ;
 Iyy = ty * tz^3 / 12.0 ;
 
 Mt = P*L2 ;
