@@ -34,16 +34,50 @@ appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
 %md
+%md If a section of a beam it is analized as in the figure, it is possible
+%consider that the intertial force can be express as:
+%md```math
+%md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
+%md```
+%md Due to this the ecuation law for that beam section in the vertical direction can be expressed as
+%md```math
+%md -(V + \partial V) + f(x, t) \partial x + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
+%md```
+%md In other hand the equation law for of the momentum in that section of
+%the beam is express as:
+%md```math
+%md (M + \partial M) + (V + \partial V) \partial x + f(x, t) \partial x \frac{\partial x}{2} - M = 0
+%md```
+%md if we assume that the second order terms of \partial x are negligible and expressing:
+%md```math
+%md \partial V = \frac{\partial V}{\partial x} \partial x
+%md```
+%md```math
+%md \partial M = \frac{\partial M}{\partial x} \partial x
+%md```
 %md The dynamic displacement of a forced beam is described by the next differential equation
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
 %md```
-%md Defining a solution $w(x,t) = W(x)T(t)$ it is possible to find:
-%md
+%md Defining a solution $w(x,t) = W(x)T(t)$ with initial condicion and
+%boundary conditions as below:
+%md```math
+%md w(x, t=0) = 0
+%md```
+%md```math
+%md \frac{\partial w(x, t=0)}{\partial x} = 0
+%md```
+%md```math
+%md w(x=0, t) = 0 and w(x=l, t) = 0
+%md```
+%md```math
+%md EI \frac{\partial^2 w(x=0, t)}{\partial x^2} = 0 and EI \frac{\partial^2 w(x=l, t)}{\partial x^2} = 0
+%md```
+%md it is possible to find an analytic solution for the vertical displacement of a beam beam with fixed nodes in both ends as 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
-%md where $f_0$ is the applied force and $\omega$ is the natural frequency.
+%md where $f_0$ is the amplitud of the applied force and $\omega$ is the natural frequency.
 %md
 %md### Numerical computation of the analytic solution
 %md
