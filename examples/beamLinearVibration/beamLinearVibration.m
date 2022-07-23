@@ -39,7 +39,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
-%md Due to this the ecuation law for that beam section in the vertical direction can be expressed as
+%md Due to this, the equation of the law for that beam section in the vertical direction can be expressed as
 %md```math
 %md -(V + \partial V) + f(x, t) \partial x + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
