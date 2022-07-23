@@ -35,7 +35,7 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 			sigma = sigmaY * sign(epsk) ;
 			dsigdeps = 0 ;
 		else
-			sigma = sigma_tr * sign(epsk) ;
+			sigma = sigma_tr .* sign(epsk) ;
 			dsigdeps = E ;
 		end	
 	% Linear hardening	
