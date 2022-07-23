@@ -77,7 +77,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
-%md where $f_0$ is the amplitud of the applied force and $\omega$ is the natural frequency.
+%md where $f_0$ is the amplitude of the applied force and $\omega$ is the natural frequency.
 %md
 %md### Numerical computation of the analytic solution
 %md
