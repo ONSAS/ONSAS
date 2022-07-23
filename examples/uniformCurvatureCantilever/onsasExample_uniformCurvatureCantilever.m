@@ -6,7 +6,7 @@
 %mdThe problem consists in a beam, with one free end (right) submitted to a nodal moment $M$, and the other end (left) constrained (welded), as it is shown in the figure.
 %md
 %md```@raw html
-%md<img src="../../assets/springMassTrussModel.svg" alt="structure diagram" width="500"/>
+%md<img src="../../assets/cantileverBeam_HTML.svg" alt="structure diagram" width="500"/>
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
