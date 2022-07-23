@@ -59,7 +59,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
 %md```
-%md Defining a solution $w(x,t) = W(x)T(t)$ with initial condicion and
+%md Defining a solution $w(x,t) = W(x)T(t)$ with initial condition and
 %boundary conditions as below:
 %md```math
 %md w(x, t=0) = 0
