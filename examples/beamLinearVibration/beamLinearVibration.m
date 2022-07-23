@@ -34,7 +34,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
 %md
-%md If a section of a beam it is analized as in the figure, it is possible
+%md If a section of a beam is analyzed as in the figure, it is possible
 %consider that the intertial force can be express as:
 %md```math
 %md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
