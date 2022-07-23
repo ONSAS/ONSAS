@@ -43,7 +43,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md -(V + \partial V) + f(x, t) \partial x + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
-%md In other hand the equation law for of the momentum in that section of
+%md In the other hand the equation law for the momentum in that section of
 %the beam is express as:
 %md```math
 %md (M + \partial M) + (V + \partial V) \partial x + f(x, t) \partial x \frac{\partial x}{2} - M = 0
