@@ -34,28 +34,27 @@ appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
 %md
-%md If a section of a beam is analyzed as in the figure, it is possible
-%consider that the inertial force can be expressed as:
+%md If a section of a beam is analyzed as in the figure, it is possible consider that the inertial force can be expressed as:
 %md```math
 %md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
-%md Due to this, the equation of the law for that beam section in the vertical direction can be expressed as
+%md Due to this, the equation of motion for that beam section in the vertical direction can be expressed as
 %md```math
-%md -(V + \partial V) + f(x, t) \partial x + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
+%md -(V + dV) + f(x, t) dx + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
-%md In the other hand the equation law for the momentum in that section of
-%md the beam is express as:
+%md In the other hand, the momentum equation in that section of the beam is express as:
+%md
 %md```math
 %md (M + \partial M) + (V + \partial V) \partial x + f(x, t) \partial x \frac{\partial x}{2} - M = 0
 %md```
-%md if we assume that the second order terms of \partial x are negligible and expressing:
+%md if we assume that the second order terms of $dx$ are negligible and expressing:
 %md```math
 %md \partial V = \frac{\partial V}{\partial x} \partial x
 %md```
 %md```math
 %md \partial M = \frac{\partial M}{\partial x} \partial x
 %md```
-%md The dynamic displacement of a forced beam is described by the next differential equation
+%md The dynamic vertical displacement of a forced beam is described by the next differential equation
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
 %md```
@@ -68,10 +67,16 @@ appNodePos = (appNode-1) * l / numElements ;
 %md \frac{\partial w(x, t=0)}{\partial x} = 0
 %md```
 %md```math
-%md w(x=0, t) = 0 and w(x=l, t) = 0
+%md w(x=0, t) = 0 
 %md```
 %md```math
-%md EI \frac{\partial^2 w(x=0, t)}{\partial x^2} = 0 and EI \frac{\partial^2 w(x=l, t)}{\partial x^2} = 0
+%md w(x=l, t) = 0
+%md```
+%md```math
+%md EI \frac{\partial^2 w(x=0, t)}{\partial x^2} = 0 
+%md```
+%md```math
+%md EI \frac{\partial^2 w(x=l, t)}{\partial x^2} = 0
 %md```
 %md it is possible to find an analytic solution for the vertical displacement of a beam beam with fixed nodes in both ends as 
 %md```math
