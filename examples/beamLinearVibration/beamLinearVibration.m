@@ -33,8 +33,18 @@ appNode    = ( numElements ) / 2 + 1       ;
 appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
+%md Considering a beam with a external time dependecy load applied as is
+%md show in the figure
+%md```@raw html
+%md<img src="../../assets/dynamicBeam.svg" alt="structure diagram" width="500"/>
+%md```
+%md If a section of a beam is analyzed, 
+%md 
+%md```@raw html
+%md<img src="../../assets/dynamicDiffBeam.svg" alt="structure diagram" width="500"/>
+%md```
 %md
-%md If a section of a beam is analyzed as in the figure, it is possible consider that the inertial force can be expressed as:
+%md it is possible consider that the inertial force can be expressed as
 %md```math
 %md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
@@ -42,12 +52,12 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md -(V + dV) + f(x, t) dx + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
 %md```
-%md In the other hand, the momentum equation in that section of the beam is express as:
+%md In the other hand, the momentum equation in that section of the beam is express as
 %md
 %md```math
 %md (M + \partial M) + (V + \partial V) \partial x + f(x, t) \partial x \frac{\partial x}{2} - M = 0
 %md```
-%md if we assume that the second order terms of $dx$ are negligible and expressing:
+%md if we assume that the second order terms of $dx$ are negligible and expressing
 %md```math
 %md \partial V = \frac{\partial V}{\partial x} \partial x
 %md```
@@ -58,8 +68,8 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
 %md```
-%md Defining a solution $w(x,t) = W(x)T(t)$ with initial condition and
-%md boundary conditions as below:
+%md Defining a solution $w(x,t) = W(x)T(t)$ with initial and
+%md boundary conditions as below
 %md```math
 %md w(x, t=0) = 0
 %md```
@@ -78,7 +88,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md EI \frac{\partial^2 w(x=l, t)}{\partial x^2} = 0
 %md```
-%md it is possible to find an analytic solution for the vertical displacement of a beam beam with fixed nodes in both ends as 
+%md the analytic solution for the vertical displacement of a beam with fixed nodes in both ends is 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
