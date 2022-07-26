@@ -4,7 +4,7 @@
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
-%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F = F_o sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure.
+%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F(t) = f_o \sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
 %md
 %md```@raw html
 %md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
@@ -12,100 +12,49 @@
 %md
 %mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
 close all, clear all, addpath( genpath( [ pwd '/../../src'] ) );
-%mdExternal forced load parameters, time values, Material and Geometric parameters are defined to find both analytic and numerical solutions.
 %md
-%mdMaterial scalar parameters
+%mdExternal load parameters, time values, material and geometric parameters are defined to find both analytic and numerical solutions. The material scalar parameters are
 E = 200e9 ; nu = 0.3;  rho = 700;
-%mdGeometrical scalar parameters
+%mdand the geometrical scalar parameters are
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 numElements = 10 ; % Number of elements
 
-%md Time and applied forced parameters.
+%md Time and applied force parameters are.
 Fo     = 100   ; % N
 w      = 2     ; % rad/s
 tf     = 8     ; % s
 deltat = 0.1 ; % s
-%md External Load application node
+%md The node of application of the external forces is assumed to be located at the mid-point of the beam  
 assert( rem( numElements, 2 ) == 0, 'the number of elements must be even.' )
 appNode    = ( numElements ) / 2 + 1       ;
 appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
-%md Considering a beam with a external time dependecy load applied as is
-%md show in the figure
-%md```@raw html
-%md<img src="../../assets/dynamicBeam.svg" alt="structure diagram" width="500"/>
-%md```
-%md If a section of a beam is analyzed, 
-%md 
-%md```@raw html
-%md<img src="../../assets/dynamicDiffBeam.svg" alt="structure diagram" width="500"/>
-%md```
 %md
-%md it is possible consider that the inertial force can be expressed as
+%md The governing equations for a beam with uniform cross-section, density and Young modulus with a transversal distributed applied load $q$ is given by
 %md```math
-%md \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
+%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = q(x,t)
 %md```
-%md Due to this, the equation of motion for that beam section in the vertical direction can be expressed as
-%md```math
-%md -(V + dV) + f(x, t) dx + V = \rho A(x) \partial x \frac{\partial^2w}{\partial t^2}(x,t)
-%md```
-%md In the other hand, the momentum equation in that section of the beam is express as
-%md
-%md```math
-%md (M + \partial M) + (V + \partial V) \partial x + f(x, t) \partial x \frac{\partial x}{2} - M = 0
-%md```
-%md if we assume that the second order terms of $dx$ are negligible and expressing
-%md```math
-%md \partial V = \frac{\partial V}{\partial x} \partial x
-%md```
-%md```math
-%md \partial M = \frac{\partial M}{\partial x} \partial x
-%md```
-%md The dynamic vertical displacement of a forced beam is described by the next differential equation
-%md```math
-%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
-%md```
-%md Defining a solution $w(x,t) = W(x)T(t)$ with initial and
-%md boundary conditions as below
-%md```math
-%md w(x, t=0) = 0
-%md```
-%md```math
-%md \frac{\partial w(x, t=0)}{\partial x} = 0
-%md```
-%md```math
-%md w(x=0, t) = 0 
-%md```
-%md```math
-%md w(x=l, t) = 0
-%md```
-%md```math
-%md EI \frac{\partial^2 w(x=0, t)}{\partial x^2} = 0 
-%md```
-%md```math
-%md EI \frac{\partial^2 w(x=l, t)}{\partial x^2} = 0
-%md```
-%md the analytic solution for the vertical displacement of a beam with fixed nodes in both ends is 
+%mdconsidering that the load is.... and using a Fourier decomposition... BCs and following INSERT BOOK we obtain the analytic solution for the vertical displacement of our problem 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
-%md where $f_0$ is the amplitude of the applied force and $\omega$ is the natural frequency.
 %md
-%md### Numerical computation of the analytic solution
+%mdThe solution can be numerically computed setting a mesh of spatial poins and a vector of times
 %md
 ts = 0:deltat:tf       ; % times vector
 xs = 0:l/numElements:l ; % beam mesh
 ns = 1:10              ; % modes
 %md
-%md Natural frecuency mode vibration vector
+%md As well as the vector of natural frecuencies
 %md
 wnY = ( (ns*pi).^2 ) * sqrt(E*Izz/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Y
 wnZ = ( (ns*pi).^2 ) * sqrt(E*Iyy/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Z
 %md
-%md Analytic solution
+%md The values of the analytic solution are computed as
+%md
 analyticDisY = 0; analyticDisZ = 0;
 analySolPos = appNodePos ;  % the analytic solution is computed at the point of application of the load
 for i = 1:length( ns )
