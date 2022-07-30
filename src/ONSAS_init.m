@@ -18,39 +18,43 @@
 
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-%md sets the current version
-ONSASversion = '0.2.7'  ;
-
- 
 %md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
-%md welcome message function
-welcomeMessage( ONSASversion, otherParams );
+%md sets the current version and welcomes user
+ONSASversion = '0.2.7'  ; welcome_message( ONSASversion, otherParams );
 
 % creates outputdir in current location
-% -------------------------------------
-outputDir = [ './output/' otherParams.problemName '/' ] ;
-createOutputDir( outputDir, otherParams ) ;
-otherParams.outputDir = outputDir ;
+create_outputDir( otherParams )
 
-%md process boundary conds information and elements
-[ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, ...
-  diriDofs, neumDofs, KS, userLoadsFilename ] = boundaryCondsProcessing( mesh, ...
-                           materials, elements, boundaryConds, initialConds, analysisSettings ) ;
+% =================================================================
+%md process boundary conds information and construct BCsData struct
+[ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] ...
+  = boundaryCondsProcessing( mesh, materials, elements, boundaryConds, analysisSettings ) ;
 
+BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename );
+% =================================================================
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TEMPORARY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global spitMatrices
 if spitMatrices == true
   save('-mat', 'output/loads.mat', 'factorLoadsFextCell' );
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 % process initial conditions
-% --------------------------
-[ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements, Nodes ) ;
+[ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
 
 currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) ) ;
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 
+
+stop
 %md call assembler
 
 Stress = [] ;
@@ -70,14 +74,6 @@ nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % n
 timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
 
 
-
-%md compress model structs
-[ modelCurrSol, modelProperties, BCsData ] = modelCompress( ...
-  timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, [systemDeltauMatrix], ...
-  timeStepStopCrit, timeStepIters, factorLoadsFextCell, loadFactorsFuncCell, neumDofs, ...
-  KS, userLoadsFilename, Nodes, Conec, materials, elements, analysisSettings, ...
-  outputDir, vecLoadFactors, otherParams.problemName, otherParams.plotsFormat, ...
-  timesPlotsVec, otherParams.nodalDispDamping, matFint );
 
 vecLoadFactors
 [ modelCurrSol.systemDeltauMatrix, ~ ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, analysisSettings.deltaT, nextLoadFactorsVals ) ;
@@ -110,10 +106,15 @@ end
 
 
 
+
+
+
 % =========================================
 % function for creation of output directory
 % -----------------------------------------
-function createOutputDir( outputDir, otherParams )
+function create_outputDir( otherParams )
+
+outputDir = otherParams.outputDir ;
 
 if exist( './output/' ) ~= 7
   if otherParams.screenOutputBool
@@ -158,8 +159,7 @@ end
 % =========================================
 % function for welcome message
 % -----------------------------------------
-function welcomeMessage( ONSASversion, otherParams )
-
+function welcome_message( ONSASversion, otherParams )
 if otherParams.screenOutputBool
   fprintf([ '\n' ...
             '|=================================================|\n' ...
