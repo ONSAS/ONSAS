@@ -21,7 +21,7 @@ Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 numElements = 10 ; % Number of elements
 
-%md Time and applied force parameters are.
+%md Time and applied force parameters are
 Fo     = 100   ; % N
 w      = 2     ; % rad/s
 tf     = 8     ; % s
@@ -37,7 +37,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = q(x,t)
 %md```
-%mdconsidering that the load is.... and using a Fourier decomposition... BCs and following INSERT BOOK we obtain the analytic solution for the vertical displacement of our problem 
+%mdconsidering the time depdency load, $f(x, t)=fo sin(wt)$, and using a Fourier decomposition with defined initial and boundarie conditions following the mathematical process explained in Mechanical Vibrations (5th Edition; Rao Singiresu) we obtain the analytic solution for the vertical displacement of our problem 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
@@ -48,7 +48,7 @@ ts = 0:deltat:tf       ; % times vector
 xs = 0:l/numElements:l ; % beam mesh
 ns = 1:10              ; % modes
 %md
-%md As well as the vector of natural frecuencies
+%md As well as the vector of natural frequencies
 %md
 wnY = ( (ns*pi).^2 ) * sqrt(E*Izz/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Y
 wnZ = ( (ns*pi).^2 ) * sqrt(E*Iyy/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Z
@@ -79,7 +79,7 @@ materials.density         = rho              ;
 %mdTwo different types of elements are considered, `node` and `beam`. The nodes will be assigned in the first entry (index $1$) and the beam at index $2$. The elemType field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md for the crossSection, for the frame element a rectangular-cross section with $t_y$ and $t_z$ dimensions in $y$ and $z$ directions is set, then the elemTypeGeometry field is:
+%md for the crossSection, a frame element of rectangular-cross section with $t_y$ and $t_z$ dimensions in $y$ and $z$ directions is set, then the elemTypeGeometry field is:
 elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
