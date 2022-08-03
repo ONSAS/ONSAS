@@ -37,7 +37,7 @@ appNodePos = (appNode-1) * l / numElements ;
 %md```math
 %md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = q(x,t)
 %md```
-%mdconsidering the time depdency load, $f(x, t)=fo sin(wt)$, and using a Fourier decomposition with defined initial and boundarie conditions following the mathematical process explained in Mechanical Vibrations (5th Edition; Rao Singiresu) we obtain the analytic solution for the vertical displacement of our problem 
+%mdconsidering the time depdency load, $F(x, t)=fo sin(wt)$, and using a Fourier decomposition with defined initial and boundarie conditions following the mathematical process explained on chapter 10 of _Mechanical Vibrations_ (5th Edition; Rao Singiresu) we obtain the analytic solution for the vertical displacement of our problem 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
@@ -84,7 +84,7 @@ elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
 %md
-%md### boundaryConds
+%md### boundaryConditions
 %md
 %md The elements are submitted to two different BC settings. The first BC corresponds to the fixed points
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 ] ;
@@ -110,7 +110,7 @@ mesh.conecCell{ 2, 1 } = [ 0 1 1 0  numElements+1 ] ;
 %md the following case only differs in the boundary condition and the node number
 mesh.conecCell{ 3, 1 } = [ 0 1 2 0  appNode ] ;
 %md the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
-for i=1:numElements,
+for i=1:numElements
   mesh.conecCell{ i+3,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 %md
