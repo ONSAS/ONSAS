@@ -4,7 +4,7 @@
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
-%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F = F_o sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure.
+%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F(t) = f_o \sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
 %md
 %md```@raw html
 %md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
@@ -12,51 +12,49 @@
 %md
 %mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
 close all, clear all, addpath( genpath( [ pwd '/../../src'] ) );
-%mdExternal forced load parameters, time values, Material and Geometric parameters are defined to find both analytic and numerical solutions.
 %md
-%mdMaterial scalar parameters
+%mdExternal load parameters, time values, material and geometric parameters are defined to find both analytic and numerical solutions. The material scalar parameters are
 E = 200e9 ; nu = 0.3;  rho = 700;
-%mdGeometrical scalar parameters
+%mdand the geometrical scalar parameters are
 l = 10 ; ty = .3 ;  tz = .1 ;
 Iyy = ty*tz^3/12 ;
 Izz = tz*ty^3/12 ;
 numElements = 10 ; % Number of elements
 
-%md Time and applied forced parameters.
+%md Time and applied force parameters are
 Fo     = 100   ; % N
 w      = 2     ; % rad/s
 tf     = 8     ; % s
 deltat = 0.1 ; % s
-%md External Load application node
+%md The node of application of the external forces is assumed to be located at the mid-point of the beam  
 assert( rem( numElements, 2 ) == 0, 'the number of elements must be even.' )
 appNode    = ( numElements ) / 2 + 1       ;
 appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
 %md
-%md The dynamic displacement of a forced beam is described by the next differential equation
+%md The governing equations for a beam with uniform cross-section, density and Young modulus with a transversal distributed applied load $q$ is given by
 %md```math
-%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = f(x,t)
+%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = q(x,t)
 %md```
-%md Defining a solution $w(x,t) = W(x)T(t)$ it is possible to find:
-%md
+%mdconsidering the time depdency load, $F(x, t)=fo sin(wt)$, and using a Fourier decomposition with defined initial and boundarie conditions following the mathematical process explained on chapter 10 of _Mechanical Vibrations_ (5th Edition; Rao Singiresu) we obtain the analytic solution for the vertical displacement of our problem 
 %md```math
 %md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
-%md where $f_0$ is the applied force and $\omega$ is the natural frequency.
 %md
-%md### Numerical computation of the analytic solution
+%mdThe solution can be numerically computed setting a mesh of spatial poins and a vector of times
 %md
 ts = 0:deltat:tf       ; % times vector
 xs = 0:l/numElements:l ; % beam mesh
 ns = 1:10              ; % modes
 %md
-%md Natural frecuency mode vibration vector
+%md As well as the vector of natural frequencies
 %md
 wnY = ( (ns*pi).^2 ) * sqrt(E*Izz/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Y
 wnZ = ( (ns*pi).^2 ) * sqrt(E*Iyy/rho/(ty*tz)/(l^4)) ; % Natural frecuency direction Z
 %md
-%md Analytic solution
+%md The values of the analytic solution are computed as
+%md
 analyticDisY = 0; analyticDisZ = 0;
 analySolPos = appNodePos ;  % the analytic solution is computed at the point of application of the load
 for i = 1:length( ns )
@@ -81,12 +79,12 @@ materials.density         = rho              ;
 %mdTwo different types of elements are considered, `node` and `beam`. The nodes will be assigned in the first entry (index $1$) and the beam at index $2$. The elemType field is then:
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
-%md for the crossSection, for the frame element a rectangular-cross section with $t_y$ and $t_z$ dimensions in $y$ and $z$ directions is set, then the elemTypeGeometry field is:
+%md for the crossSection, a frame element of rectangular-cross section with $t_y$ and $t_z$ dimensions in $y$ and $z$ directions is set, then the elemTypeGeometry field is:
 elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
 %md
-%md### boundaryConds
+%md### boundaryConditions
 %md
 %md The elements are submitted to two different BC settings. The first BC corresponds to the fixed points
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 ] ;
@@ -112,7 +110,7 @@ mesh.conecCell{ 2, 1 } = [ 0 1 1 0  numElements+1 ] ;
 %md the following case only differs in the boundary condition and the node number
 mesh.conecCell{ 3, 1 } = [ 0 1 2 0  appNode ] ;
 %md the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
-for i=1:numElements,
+for i=1:numElements
   mesh.conecCell{ i+3,1 } = [ 1 2 0 0  i i+1 ] ;
 end
 %md
