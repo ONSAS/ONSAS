@@ -36,6 +36,12 @@ BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs,
 % =================================================================
 
 
+% =================================================================
+%md construct modelProperties struct
+modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, analysisSettings, otherParams ) ;
+% =================================================================
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TEMPORARY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,41 +53,40 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% =================================================================
+%md process initial conds and construct modelSol struct
+currTime  = 0 ; timeIndex = 1 ; 
+
 % process initial conditions
 [ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
 
-currTime         = 0 ; timeIndex        = 1 ; convDeltau      = zeros( size(U) ) ;
+convDeltau   = zeros( size(U) ) ; 
+
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
+Stress = [] ;
 
-
-stop
 %md call assembler
 
-Stress = [] ;
 matFint = [] ;
-systemDeltauMatrix = [] ;
-[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
+%[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
 
-nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % number of times (including t=0)
+ [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] ) ;
+currLoadFactorsVals
+stop
 
-% if length( otherParams.plotParamsVector ) > 1
-%   nplots = min( [ nTimes otherParams.plotParamsVector(2) ] ) ;
-% else
-%   % default value: all
-   nplots = nTimes ;
-% end
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, 0, nextLoadFactorsVals ) ;
 
-timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
+modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
+% =================================================================
 
-
-
-vecLoadFactors
-[ modelCurrSol.systemDeltauMatrix, ~ ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, analysisSettings.deltaT, nextLoadFactorsVals ) ;
 
 %md prints headers for solver output file
 printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
 printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
+
+stop
 
 
 %md writes vtk file

@@ -16,17 +16,27 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, evalTime, lengthFext, userLoadsFilename, vecLoadFactors )
+function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors )
 
 Fext = zeros( lengthFext, 1 ) ;
 
-generateFactorsFlag = isempty( vecLoadFactors ) ;
+vecLoadFactors
+
+factorLoadsFextCell = BCsData.factorLoadsFextCell ; 
+loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
+userLoadsFilename   = BCsData.userLoadsFilename ;
+analysisSettings    = modelProperties.analysisSettings ;
+
+factorLoadsFextCell
 
 for i=1:length( factorLoadsFextCell )
   if ~isempty( factorLoadsFextCell{i} )
-    if generateFactorsFlag
-      vecLoadFactors(i) = loadFactorsFuncCell{i}(evalTime) ;
+
+    if isempty( vecLoadFactors )
+    disp("hollllllllllllaaaaaaaaa")
+      vecLoadFactors(i) = loadFactorsFuncCell{i}( evalTime ) ;
     end
+
     Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i} ;
   end
 end
