@@ -20,20 +20,15 @@ function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalT
 
 Fext = zeros( lengthFext, 1 ) ;
 
-vecLoadFactors
-
 factorLoadsFextCell = BCsData.factorLoadsFextCell ; 
 loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
 userLoadsFilename   = BCsData.userLoadsFilename ;
 analysisSettings    = modelProperties.analysisSettings ;
 
-factorLoadsFextCell
-
 for i=1:length( factorLoadsFextCell )
   if ~isempty( factorLoadsFextCell{i} )
 
     if isempty( vecLoadFactors )
-    disp("hollllllllllllaaaaaaaaa")
       vecLoadFactors(i) = loadFactorsFuncCell{i}( evalTime ) ;
     end
 

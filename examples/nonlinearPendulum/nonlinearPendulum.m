@@ -1,7 +1,7 @@
 %md# Non linear pendulum
 %md---
 %md
-%mdIn this tutorial, the nonlinear pendulum example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic HHT and Newmark methods to simple nonlinear pendulum using frame and truss submitted by its own weight.
+%mdIn this tutorial, the nonlinear pendulum example and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the $\alpha$-HHT and Newmark methods. The problem consists in a truss element with distributed mass submitted to its own weight.
 %md
 %mdThe examplpe is extracted from [(K.J Bathe 2006)](https://books.google.com.uy/books?hl=es&lr=&id=rWvefGICfO8C&oi=fnd&pg=PR13&dq=Bathe+finite+element+procedures+book&ots=gHFGuStsC0&sig=odG4LfWjFJ3CdkQxhnn1DVZcUzs#v=onepage&q=Bathe%20finite%20element%20procedures%20book&f=false)  
 %md

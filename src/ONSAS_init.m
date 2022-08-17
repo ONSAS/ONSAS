@@ -35,7 +35,6 @@ create_outputDir( otherParams )
 BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename );
 % =================================================================
 
-
 % =================================================================
 %md construct modelProperties struct
 modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, analysisSettings, otherParams ) ;
@@ -70,11 +69,11 @@ Stress = [] ;
 matFint = [] ;
 %[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
 
- [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] ) ;
-currLoadFactorsVals
-stop
+ [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] )  ;
 
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, 0, nextLoadFactorsVals ) ;
+nextTime = currTime + analysisSettings.deltaT ;
+
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [] ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
@@ -82,12 +81,8 @@ modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress
 
 
 %md prints headers for solver output file
-printSolverOutput( outputDir, otherParams.problemName, 0                  ) ;
-printSolverOutput( outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
-
-
-stop
-
+printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  ) ;
+printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
 %md writes vtk file
 if strcmp( modelProperties.plotsFormat, 'vtk' )
