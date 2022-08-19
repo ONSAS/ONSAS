@@ -16,16 +16,20 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau  )
+function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex  )
 
   convDeltau = redConvDeltau ;
 
   if strcmp( analysisSettings.methodName, 'arcLength' )
 
     aux = systemDeltauMatrix \ systemDeltauRHS ;
-
-    incremArcLen = analysisSettings.incremArcLen ;
-
+		global userIncrementsAL
+			if length(userIncrementsAL) > 0
+				incremArcLen = userIncrementsAL(timeIndex) ;
+			else	
+				incremArcLen = analysisSettings.incremArcLen ;
+			end
+			
     deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
 
     posVariableLoadBC = analysisSettings.posVariableLoadBC ;
