@@ -71,15 +71,6 @@ while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
-	
-% 	dispIters
-
-%   if modelCurrSol.timeIndex > 1
-% systemDeltauRHS,
-% systemDeltauMatrix
-% stop
-% end
-
 
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau ) ;
@@ -94,12 +85,6 @@ while  booleanConverged == 0
   % --- assemble system of equations ---
   [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
 
-% deltaured
-% systemDeltauMatrix
-% systemDeltauRHS
-% if dispIters >2
-% stop  
-% end
   % --- check convergence ---
   [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
