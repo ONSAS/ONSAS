@@ -25,13 +25,13 @@ loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
 userLoadsFilename   = BCsData.userLoadsFilename ;
 analysisSettings    = modelProperties.analysisSettings ;
 
+generateFactorsFlag = isempty( vecLoadFactors ) ;
+
 for i=1:length( factorLoadsFextCell )
   if ~isempty( factorLoadsFextCell{i} )
-
-    if isempty( vecLoadFactors )
+    if generateFactorsFlag
       vecLoadFactors(i) = loadFactorsFuncCell{i}( evalTime ) ;
     end
-
     Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i} ;
   end
 end
@@ -39,3 +39,4 @@ end
 if ~isempty( userLoadsFilename )
   Fext = Fext + feval( userLoadsFilename, evalTime )  ;
 end
+
