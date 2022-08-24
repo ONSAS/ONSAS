@@ -70,7 +70,7 @@ function  [ fs, ks, stress, rotData ] = elementFrameInternForce( ...
   q  = ( q1 + q2 ) / 2     ;
 
   % deformed z local axis
-  e3 = cross (e1, q) ;
+  e3 = cross(e1, q) ;
   e3 = e3 / norm(e3) ; % normalization
 
   % deformed y local axis
