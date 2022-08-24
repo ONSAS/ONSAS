@@ -57,6 +57,7 @@ end
 otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1 ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []     ) ;
 otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
+otherParams       = checkOrSetDefault ( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
 
 global exportFirstMatrices;
 if isempty( exportFirstMatrices )

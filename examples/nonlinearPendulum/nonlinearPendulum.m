@@ -1,7 +1,7 @@
 %md# Non linear pendulum
 %md---
 %md
-%mdIn this tutorial, the nonlinear pendulum example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic HHT and Newmark methods to simple nonlinear pendulum using frame and truss submitted by its own weight.
+%mdIn this tutorial, the nonlinear pendulum example and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the $\alpha$-HHT and Newmark methods. The problem consists in a truss element with distributed mass submitted to its own weight.
 %md
 %mdThe examplpe is extracted from [(K.J Bathe 2006)](https://books.google.com.uy/books?hl=es&lr=&id=rWvefGICfO8C&oi=fnd&pg=PR13&dq=Bathe+finite+element+procedures+book&ots=gHFGuStsC0&sig=odG4LfWjFJ3CdkQxhnn1DVZcUzs#v=onepage&q=Bathe%20finite%20element%20procedures%20book&f=false)  
 %md
@@ -11,7 +11,7 @@
 %mdBefore defining the input structs all variables are cleaned, the open windows are closed and the source folder added to the workspace path:
 close all, clear all ;
 % add path
-addpath( genpath( [ pwd '/../../src'] ) );
+addpath( genpath( [ pwd '/../../src'] ) ); tic;
 % material scalar parameters
 %mdThe material and geometrical properties must comply certain equals:
 %md```math
@@ -165,7 +165,8 @@ verifBooleanCase2 =  ( abs( controlDispZCase2(end) / l0 ) <  tolVerifDisp ) ;
 verifBooleanCase3 =  ( abs( controlDispZCase3(end) / l0 ) <  tolVerifDisp ) ;
 %md all cases must be verifyed, so then:
 verifBoolean    = verifBooleanCase1 && verifBooleanCase2 && verifBooleanCase3;
-
+total_example_time = toc
+ 
 %md### Plots
 %md
 %mdPlot parameters

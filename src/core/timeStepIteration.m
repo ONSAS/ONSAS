@@ -79,14 +79,11 @@ while  booleanConverged == 0
   [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
-  % --- system matrix ---
-  systemDeltauMatrix = computeMatrix( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, modelProperties.analysisSettings, Utp1k, Udott, Udotdott, BCsData.neumDofs, modelProperties.nodalDispDamping ) ;
-  
-  % --- new rhs ---
-  [ systemDeltauRHS ] = computeRHS ( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
+  % --- assemble system of equations ---
+  [ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
   
   % --- check convergence ---
-  [booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
+  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
   % ---------------------------------------------------
 
   % --- prints iteration info in file ---
