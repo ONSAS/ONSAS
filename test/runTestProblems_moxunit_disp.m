@@ -25,7 +25,7 @@ function test_4
   assertEqual( verifBoolean, true );
 
 function test_5
-  onsasExample_nonlinearPendulum
+  nonlinearPendulum
   assertEqual( verifBoolean, true );
 
 function test_6
