@@ -35,9 +35,19 @@ create_outputDir( otherParams )
 BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename );
 % =================================================================
 
+
+nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % number of times (including t=0)
+% if length( otherParams.plotParamsVector ) > 1
+%   nplots = min( [ nTimes otherParams.plotParamsVector(2) ] ) ;
+% else
+%   % default value: all
+   nplots = nTimes ;
+% end
+timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
+
 % =================================================================
 %md construct modelProperties struct
-modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, analysisSettings, otherParams ) ;
+modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, analysisSettings, otherParams, timesPlotsVec ) ;
 % =================================================================
 
 

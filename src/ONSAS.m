@@ -20,7 +20,12 @@ function [ matUs, loadFactorsMat, cellFint ] = ONSAS( materials, elements, bound
 
 %mdFirst the input structs are converted to structs with the model information
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
- 
+
+modelCurrSol
+modelProperties
+BCsData
+
+stop
 %mdAfter that the structs are used to perform the numerical time analysis
 [ matUs, loadFactorsMat, cellFint ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 

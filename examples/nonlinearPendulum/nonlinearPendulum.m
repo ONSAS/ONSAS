@@ -89,7 +89,7 @@ analysisSettings.finalTime     = 1* T  ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
-otherParams.plotsFormat        = '' ;
+otherParams.plotsFormat        = 'vtk' ;
 
 %md### Analysis case 1: Solution using Newmark with truss element and mass lumped and the weight force is included by external force according to Bathe problem
 analysisSettings.methodName = 'newmark'     ;

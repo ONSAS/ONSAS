@@ -53,9 +53,13 @@ else
   nextLoadFactorsVals = [] ;
 end
 
-[ systemDeltauRHS, FextG, ~, ~, nextLoadFactorsVals ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals  ) ;
+%[ systemDeltauRHS, FextG, ~, ~, nextLoadFactorsVals ]  = computeRHS( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals  ) ;
 
-booleanConverged = 0                              ;
+systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
+systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
+
+
+booleanConverged = false                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
@@ -80,7 +84,7 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
+  [ systemDeltauMatrix, systemDeltauRHS, FextG ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
   
   % --- check convergence ---
   [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
@@ -163,9 +167,10 @@ timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
 
-modelNextSol  = modelCompress( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, systemDeltauMatrix, timeStepStopCrit, timeStepIters, BCsData.factorLoadsFextCell, BCsData.loadFactorsFuncCell, BCsData.neumDofs, BCsData.KS, BCsData.userLoadsFilename, modelProperties.Nodes, modelProperties.Conec, modelProperties.materials, modelProperties.elements, modelProperties.analysisSettings, modelProperties.outputDir, nextLoadFactorsVals, modelProperties.problemName, modelProperties.plotsFormat, modelProperties.timesPlotsVec, modelProperties.nodalDispDamping, matFint );
-% -------------------------------------
-
+modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
+                                            Udotdot, Stress, convDeltau, ...
+                                            nextLoadFactorsVals, systemDeltauMatrix, ...
+                                            systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
 
 % ==============================================================================
 %
