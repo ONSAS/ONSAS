@@ -35,7 +35,7 @@ cellFint = {};
 %md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
 %mdand starts the iteration
-fprintf('Starting time analysis. Time index: ')
+fprintf('| Starting analysis.\n  Time index: ')
 while finalTimeReachedBoolean == false
 
  
@@ -69,6 +69,7 @@ while finalTimeReachedBoolean == false
   end % if vtk output format
 
 end %while time
+fprintf(' done.\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%

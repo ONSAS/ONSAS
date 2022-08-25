@@ -15,14 +15,13 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
 
-% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements, Nodes )
+function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements )
 
   % Extract mesh parameters
   Conec  = myCell2Mat( mesh.conecCell ) ;
+  Nodes  = mesh.nodesCoords ;
   nNodes = size( Nodes,1) ;
 
   % Create kinematic vectors
@@ -63,6 +62,7 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
     end %for types of IC
   
   end %if disp IC
+
   % Process velocity initial condition 
   % displacements initial conditions
   if isfield( initialConds, 'nonHomogeneousUdotVals' )
