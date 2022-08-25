@@ -233,7 +233,7 @@ function fagElem = hydroFrameForces( elemCoords,...
                                                            VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
-  fagElem = Cambio_Base( fagElem ) ;
+  fagElem = swtichToONSASBase( fagElem ) ;
 end
 
 function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...

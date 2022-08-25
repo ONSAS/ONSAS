@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function B = switchToONSASBaseMat(A)
+function B = swtichToONSASBase(A)
 
 %---------------- Change of basis Le and Battini 2014 -> ONSAS matrix  -------------------
 Pch = sparse (6,6);
