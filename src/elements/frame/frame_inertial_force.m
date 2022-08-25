@@ -1,21 +1,21 @@
 % Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% J. Bruno Bazzano, Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify 
-% it under the terms of the GNU General Public License as published by 
-% the Free Software Foundation, either version 3 of the License, or 
-% (at your option) any later version. 
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% ONSAS is distributed in the hope that it will be useful, 
+% ONSAS is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-function  [ fs, ks ]= elementFrameMassForce( elemCoords, ...
+function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
                         elemCrossSecParams, elemConstitutiveParams, ...
                         Ue, Udote, Udotdote, elemrho, massMatType ) ;
 
@@ -268,8 +268,7 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interE
 
     rElem = [ [-1 0 0]   O1  [1 0 0] O1]; %Ec B10
 
-    % Could be worng
-    F1    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']'; %Chequear con los nodales
+    F1    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']' ;
 
     C3    = -skew(h1) * G'  + (N7 / l^2) * A1 *(ddotg * rElem)...
                   +skewWdoter * P1 * P + H1 * F1 * G'; % B13
