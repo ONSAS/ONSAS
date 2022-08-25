@@ -15,8 +15,9 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-function  [ fs, ks ]= elementFrameMassForce( ...
-  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho, massMatType ) ;
+function  [ fs, ks ]= elementFrameMassForce( elemCoords, ...
+                        elemCrossSecParams, elemConstitutiveParams, ...
+                        Ue, Udote, Udotdote, elemrho, massMatType ) ;
 
   % element coordinates
   xs = elemCoords(:) ;
