@@ -15,25 +15,13 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-function B = Cambio_Base(A)
-
-%---------------- Cambio de base matrix  -------------------
 
 
-Pch = sparse (6,6);
-Pch (1,1) = 1;
-Pch (3,2) = 1;
-Pch (5,3) = 1;
-Pch (2,4) = 1;
-Pch (4,5) = 1;
-Pch (6,6) = 1;
+function BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename )
 
-P = [Pch sparse(6,6);sparse(6,6) Pch];
+BCsData.factorLoadsFextCell = factorLoadsFextCell ;
+BCsData.loadFactorsFuncCell = loadFactorsFuncCell ;
+BCsData.neumDofs            = neumDofs            ;
+BCsData.KS                  = KS                  ;
+BCsData.userLoadsFilename   = userLoadsFilename   ;
 
-    if size(A,2)>1
-		B = P*A*P';
-	 else
-		B = P*A;
-	end
-end

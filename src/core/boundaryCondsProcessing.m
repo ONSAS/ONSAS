@@ -22,10 +22,9 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         materials, ...     % M
                         elements, ...      % E
                         boundaryConds, ... % B
-                        initialConds,...   % I
                         analysisSettings  )
 
-global Conec
+%global Conec
 
 Conec  = myCell2Mat( mesh.conecCell ) ;
 Nodes  = mesh.nodesCoords ;
