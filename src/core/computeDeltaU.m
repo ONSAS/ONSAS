@@ -23,9 +23,9 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, 
   if strcmp( analysisSettings.methodName, 'arcLength' )
 
     aux = systemDeltauMatrix \ systemDeltauRHS ;
-		global userIncrementsAL
-			if length(userIncrementsAL) > 0
-				incremArcLen = userIncrementsAL(timeIndex) ;
+		
+			if length(analysisSettings.incremArcLen) > 1
+				incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
 			else	
 				incremArcLen = analysisSettings.incremArcLen ;
 			end

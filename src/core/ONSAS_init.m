@@ -29,6 +29,7 @@ create_outputDir( otherParams )
 
 % =================================================================
 %md process boundary conds information and construct BCsData struct
+global Conec
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] ...
   = boundaryCondsProcessing( mesh, materials, elements, boundaryConds, analysisSettings ) ;
 

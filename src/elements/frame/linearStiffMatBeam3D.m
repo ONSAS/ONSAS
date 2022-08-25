@@ -19,7 +19,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, boolPlas, matFintBool, elem)
+function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, boolMatNonLin, matFintBool, elem)
   
   ndofpnode = 6 ;
   
@@ -77,8 +77,11 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   else
     KbendXY = zeros(4,4) ;
   end
-	
-	if boolPlas == 0
+  
+	% ====================================================================  
+	% Material non Linearity 
+	% ====================================================================
+	if boolMatNonLin == 0
 		% bending XZ
 		RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
 
@@ -92,13 +95,13 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 			KbendXZ = zeros(4,4) ;
 		end
 		
-	elseif boolPlas == 1
-		
-		
+	elseif boolMatNonLin == 1
+
 		elemCrossSecParamsVec = elemCrossSecParams{2} ;
+		
 		quadv_userInt
 		
-	end % endif hyperElasModel
+	end % endif mat non linearity
 	
   Ktorsn = G*J/l * [  1 -1  ; ...
                      -1  1  ] ;
@@ -115,10 +118,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   %~ KbendXZ
 	%~ KbendXZ2 = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ 
   
-  
-  
-  
-  if boolPlas == 1
+  if boolMatNonLin == 1
 		Finte(LocBendXZdofs) = R(LocBendXZdofs,LocBendXZdofs)*finte ;
   end
 
@@ -210,17 +210,3 @@ end
 
 %~ end
 % ==============================================================================
-
-%~ function sec = f( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel, matFintBool, elem, elemAux, xge, maxXge )
-		
-	%~ % Strain
-	%~ epsk = -z*B*R*Ut ;
-	%~ % Section width
-	%~ t = secWidth(z, 2, ty, tz ) ;
-	%~ % stress & slope
-	%~ [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk, matFintBool, elem, elemAux, xge, maxXge ) ;
-	 
-	%~ sec = t * -B' * z * sigma ;
-
-%~ end
-
