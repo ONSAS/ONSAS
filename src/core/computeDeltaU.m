@@ -18,53 +18,50 @@
  
 function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex  )
 
-  convDeltau = redConvDeltau ;
+convDeltau = redConvDeltau ;
 
-  if strcmp( analysisSettings.methodName, 'arcLength' )
+if strcmp( analysisSettings.methodName, 'arcLength' )
 
-    aux = systemDeltauMatrix \ systemDeltauRHS ;
-		
-			if length(analysisSettings.incremArcLen) > 1
-				incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-			else	
-				incremArcLen = analysisSettings.incremArcLen ;
-			end
-			
-    deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
+  aux = systemDeltauMatrix \ systemDeltauRHS ;
+  
+  if length( analysisSettings.incremArcLen ) > 1
+    incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+  else	
+    incremArcLen = analysisSettings.incremArcLen ;
+  end
+    
+  deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
 
-    posVariableLoadBC = analysisSettings.posVariableLoadBC ;
+  posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 
-    if dispIter == 1 % predictor solution
-      if norm(convDeltau)==0
-        deltalambda = analysisSettings.iniDeltaLamb ;
-      else
-        deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
-      end
-
-    else % cylindrical constraint equation
-      ca =    deltaubar' * deltaubar ;
-      cb = 2*(currDeltau + deltauast)' * deltaubar ;
-      cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ;
-      disc = cb^2 - 4 * ca * cc ;
-      if disc < 0
-        disc, error( 'negative discriminant');
-      end
-      sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
-
-      % compute the scalar product
-      vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
-               ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
-      % choose lambda that maximices that scalar product
-      deltalambda = sols( find( vals == max(vals) ) ) ;
+  if dispIter == 1 % predictor solution
+    if norm(convDeltau)==0
+      deltalambda = analysisSettings.iniDeltaLamb ;
+    else
+      deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
     end
 
-    nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
+  else % cylindrical constraint equation
+    ca =    deltaubar' * deltaubar ;
+    cb = 2*(currDeltau + deltauast)' * deltaubar ;
+    cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ;
+    disc = cb^2 - 4 * ca * cc ;
+    if disc < 0
+      disc, error( 'negative discriminant');
+    end
+    sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
 
-    deltaured = deltauast + deltalambda(1) * deltaubar ;
-
-  else   % incremental displacement
-		%~ systemDeltauRHS
-		%~ systemDeltauMatrix
-    deltaured = systemDeltauMatrix \ systemDeltauRHS ;
-
+    % compute the scalar product
+    vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
+              ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
+    % choose lambda that maximices that scalar product
+    deltalambda = sols( find( vals == max(vals) ) ) ;
   end
+
+  nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
+
+  deltaured = deltauast + deltalambda(1) * deltaubar ;
+
+else   % incremental displacement
+  deltaured = systemDeltauMatrix \ systemDeltauRHS ;
+end
