@@ -15,7 +15,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-function  [ fs, ks, stress, rotData ] = elementFrameInternForce( ...
+function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue ) ;
   
   % element coordinates

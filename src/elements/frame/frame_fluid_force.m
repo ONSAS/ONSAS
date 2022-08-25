@@ -17,15 +17,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function fagElem = hydroFrameForces( elemCoords,... 
+function fagElem = frame_fluid_forces( elemCoords,... 
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
                                      nextTime, currElem ) 
+
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
   assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
   assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
-
 
   % Declare booleans for VIV phenomenon 
   % set boolean to set constant lift direction in VIV problems
