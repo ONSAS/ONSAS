@@ -97,7 +97,7 @@ for elem = 1:nElems
   aeroBool = ~isempty(analysisSettings.fluidProps) || ...
              ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
   
-  %md obtain elemeny info
+  %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
@@ -172,14 +172,24 @@ for elem = 1:nElems
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut, dofselem ) , ...
-                                               u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) , ...
-                                               density, massMatType ) ;
+      [ fs, ks, stress, rotData ] = elementFrameInternForce( elemNodesxyzRefCoords , ...
+                                                             elemCrossSecParams    , ...
+                                                             [ 1 hyperElasParams ] , ...
+                                                             u2ElemDisps( Ut, dofselem ) ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-        Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
+
+        [ fs, ks  ] = elementFrameMassForce( elemNodesxyzRefCoords               , ...
+                                            elemCrossSecParams                  , ...
+                                            [ 1 hyperElasParams ]               , ...
+                                            u2ElemDisps( Ut, dofselem )         , ...
+                                            u2ElemDisps( Udott    , dofselem )  , ...
+                                            u2ElemDisps( Udotdott , dofselem )  , ...
+                                            density, massMatType  ) ;
+
+
+        Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
       error('wrong hyperElasModel for frame element.')
@@ -325,12 +335,6 @@ if tangBool
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
-	%~ length(indsIK)
-	%~ length(indsJK)
-	%~ length(valsK)
-	%~ find(valsK(1:end)~=0)
-	%~ length(find(valsK(1:end)~=0))
-	%~ valsK([40 41 46 47 52 53 58 59])
   tangMatsCell{1} = K ;
 
   if dynamicProblemBool

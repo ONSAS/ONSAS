@@ -1,5 +1,5 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
-% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% J. Bruno Bazzano, Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
 %
 % This file is part of ONSAS.
 %
@@ -15,25 +15,5 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-function B = Cambio_Base(A)
 
-%---------------- Cambio de base matrix  -------------------
-
-
-Pch = sparse (6,6);
-Pch (1,1) = 1;
-Pch (3,2) = 1;
-Pch (5,3) = 1;
-Pch (2,4) = 1;
-Pch (4,5) = 1;
-Pch (6,6) = 1;
-
-P = [Pch sparse(6,6);sparse(6,6) Pch];
-
-    if size(A,2)>1
-		B = P*A*P';
-	 else
-		B = P*A;
-	end
-end
+function [] corotQs( Rg, R0 )
