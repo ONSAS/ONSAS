@@ -15,7 +15,6 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
 function  [ fs, ks ]= elementFrameMassForce( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue, Udote, Udotdote, elemrho, massMatType ) ;
 
@@ -70,7 +69,7 @@ function  [ fs, ks ]= elementFrameMassForce( ...
   e3 = e3 / norm( e3 ) ; % normalization
 
   % deformed y local axis
-  e2 = cross (e3, e1);
+  e2 = cross(e3, e1);
 
   % rotation matrix
   Rr = [ e1 e2 e3 ] ;
@@ -159,9 +158,9 @@ if strcmp( massMatType, 'consistent' )
     % MassMatrix = MassMatrix * Bt ;
     % GyroMatrix = GyroMatrix * Bt ;
 
-    Fine       = Cambio_Base(Fine); % En formato [f1 m1 ...];
-    GyroMatrix = Cambio_Base(GyroMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
-    MassMatrix = Cambio_Base(MassMatrix); % En formato [u1 theta1 u2 theta2 u3 theta3];
+    Fine       = swtichToONSASBase(Fine); % Format [f1 m1 ...];
+    GyroMatrix = swtichToONSASBase(GyroMatrix); % Format [u1 theta1 u2 theta2 u3 theta3];
+    MassMatrix = swtichToONSASBase(MassMatrix); % Format [u1 theta1 u2 theta2 u3 theta3];
 
     %~ Fine
     fs{3} = Fine ;
