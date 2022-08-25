@@ -15,56 +15,59 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-function  [ R0, Rr, locDisp ] = elementBeamRotData( xs, Ue ) ;
 
-  assert( iscolumn( xs ), 'the coordinates must be provided in a column vector.' )
+function [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices(Ue, elemCoords ) 
 
+  
+  % element coordinates
+  xs = elemCoords(:) ;
+  
+
+  % extract displacements and write them using Battini's nomenclature 
+  permutIndxs = [ 1:2:5 2:2:6 ([1:2:5] + 6) ([2:2:6] + 6) ] ;
+  dg          = Ue( permutIndxs ) ;
+    
+
+  % -------- global rotation matrices Rgs ------------  
   % global thetas
-  tg1 = Ue( 2:2:6  ) ;
-  tg2 = Ue( 8:2:12 ) ;
+  tg1 = dg(  4:6  ) ;
+  tg2 = dg( 10:12 ) ;
 
   % rotation matrices
   Rg1 = expon( tg1 ) ;
   Rg2 = expon( tg2 ) ;
+  % --------------------------------------------------
 
-  x21 = xs(4:6)    - xs(1:3)   ;
-  d21 = Ue(7:2:11) - Ue(1:2:5) ;
 
-  refLength = norm( x21       ) ;
-  defLength = norm( x21 + d21 ) ;
-
+  % - coordinates and reference rotation Matrix R0 ---
+  [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
   % rotation matrix to reference configuration
   R0 = beamRefConfRotMat( x21 ) ;
+  % ---------------------------------------------------
 
+
+  % -------------- rigid rotation matrix Rr ------------
   % deformed x axis
-  e1 = ( x21 + d21 ) / defLength   ;
-
-  q1 = Rg1 * R0 * [0 1 0]'  ;
-  q2 = Rg2 * R0 * [0 1 0]'  ;
-  q  = ( q1 + q2 ) / 2      ;
+  e1 = ( x21 + d21 ) / l   ;
+  % auxiliary vectors q
+  q1 = Rg1 * R0 * [0 1 0]' ;
+  q2 = Rg2 * R0 * [0 1 0]' ;
+  q  = ( q1 + q2 ) / 2     ;
 
   % deformed z local axis
-  e3 = cross ( e1, q ) ;
+  e3 = cross(e1, q)    ;
   e3 = e3 / norm( e3 ) ; % normalization
 
   % deformed y local axis
-  e2 = cross ( e3, e1 );
+  e2 = cross (e3, e1) ;
 
   % rotation matrix
   Rr = [ e1 e2 e3 ] ;
-  % -------------------
+  % ---------------------------------------------------
 
-  % --- local displacements ---
-  % axial displacement
-  ul  = defLength - refLength ;
-
-  % local rotations
+  % ---------- local rotation matrix Rroof ------------
   % Rr * Re1 * u = Rg1 * R0 * u
-  Re1 = Rr' * Rg1 * R0 ;
-  Re2 = Rr' * Rg2 * R0 ;
+  Rroof1 = Rr' * Rg1 * R0 ;
+  Rroof2 = Rr' * Rg2 * R0 ;
+  % ---------------------------------------------------
 
-  tl1 = logar( Re1 ) ;
-  tl2 = logar( Re2 ) ;
-
-  locDisp = [ ul tl1' tl2' ] ;

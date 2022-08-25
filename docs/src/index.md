@@ -74,11 +74,11 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**Mauricio Vanzulli**](https://github.com/mvanzulli) (**2**) co-developed the Newmark's method functions and scripts, developed input files for the dynamic analysis examples. Developed the nonlinear dynamic co-rotational frame element function, its validation and integration with the VIV function. 
 
-* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
+* [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
 
 * [**Joaquín Viera**](https://exportcvuy.anii.org.uy/cv/?b6b1cd2fe90a9c29279eedb0d3cc4c4d) (**1**), leaded the development of the Linear Analysis module and input files, collaborated in the design and development of the input reading and output generation modules, leaded the development of a GUI.
 
-* [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
+* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
 
 * [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
 

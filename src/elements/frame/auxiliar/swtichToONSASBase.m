@@ -15,14 +15,23 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-% Function that converts a vector of nodes indices to a vector of the
-% corresponding degrees of freedom.
 
-function [dofs] = nodes2dofs( nodes , degreespernode )
-nodes= nodes(:) ;
-n    = length(nodes);
-dofs = zeros( n*degreespernode , 1 ) ;
-for i=1:n
-  dofs( (i-1)*degreespernode + (1:degreespernode) ) = [ (degreespernode*(nodes(i)-1))+(1:degreespernode) ]' ;
+function B = swtichToONSASBase(A)
+
+%---------------- Change of basis Le and Battini 2014 -> ONSAS matrix  -------------------
+Pch = sparse (6,6);
+Pch (1,1) = 1;
+Pch (3,2) = 1;
+Pch (5,3) = 1;
+Pch (2,4) = 1;
+Pch (4,5) = 1;
+Pch (6,6) = 1;
+
+P = [Pch sparse(6,6);sparse(6,6) Pch];
+
+    if size(A,2)>1
+		B = P*A*P';
+	 else
+		B = P*A;
+	end
 end

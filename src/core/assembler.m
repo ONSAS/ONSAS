@@ -1,14 +1,14 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
-% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify 
-% it under the terms of the GNU General Public License as published by 
-% the Free Software Foundation, either version 3 of the License, or 
-% (at your option) any later version. 
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% ONSAS is distributed in the hope that it will be useful, 
+% ONSAS is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
@@ -97,7 +97,7 @@ for elem = 1:nElems
   aeroBool = ~isempty(analysisSettings.fluidProps) || ...
              ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
   
-  %md obtain elemeny info
+  %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
@@ -172,14 +172,24 @@ for elem = 1:nElems
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut, dofselem ) , ...
-                                               u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) , ...
-                                               density, massMatType ) ;
+      [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
+                                                             elemCrossSecParams    , ...
+                                                             [ 1 hyperElasParams ] , ...
+                                                             u2ElemDisps( Ut, dofselem ) ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-        Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
+
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
+                                            elemCrossSecParams                  , ...
+                                            [ 1 hyperElasParams ]               , ...
+                                            u2ElemDisps( Ut, dofselem )         , ...
+                                            u2ElemDisps( Udott    , dofselem )  , ...
+                                            u2ElemDisps( Udotdott , dofselem )  , ...
+                                            density, massMatType  ) ;
+
+
+        Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
       error('wrong hyperElasModel for frame element.')
@@ -188,7 +198,7 @@ for elem = 1:nElems
     %md compute hydrodynamic force of the element}
     if aeroBool && fsBool
 
-      [ FaeroElem ]= hydroFrameForces( elemNodesxyzRefCoords              , ...
+      FaeroElem = frame_fluid_force( elemNodesxyzRefCoords              , ...
                                        u2ElemDisps( Ut       , dofselem ) , ...
                                        u2ElemDisps( Udott    , dofselem ) , ...
                                        u2ElemDisps( Udotdott , dofselem ) , ...
@@ -325,12 +335,6 @@ if tangBool
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
-	%~ length(indsIK)
-	%~ length(indsJK)
-	%~ length(valsK)
-	%~ find(valsK(1:end)~=0)
-	%~ length(find(valsK(1:end)~=0))
-	%~ valsK([40 41 46 47 52 53 58 59])
   tangMatsCell{1} = K ;
 
   if dynamicProblemBool
