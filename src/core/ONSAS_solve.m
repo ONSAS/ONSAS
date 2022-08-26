@@ -1,14 +1,14 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
-% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify 
-% it under the terms of the GNU General Public License as published by 
-% the Free Software Foundation, either version 3 of the License, or 
-% (at your option) any later version. 
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% ONSAS is distributed in the hope that it will be useful, 
+% ONSAS is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
@@ -19,19 +19,23 @@
 %md### ONSAS_solve
 %md Function that performs the time analysis with the model structs as input.
 %md
-function [ matUs, loadFactorsMat ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
+function [ matUs, loadFactorsMat, cellFint ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 %md
 %md init structures to store solutions
 matUs          = modelCurrSol.U              ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot           ;
 cellStress     = { modelCurrSol.Stress }     ;
+
+cellFint = {};
+
+
 %md
 %md#### Incremental time analysis
 %md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
 %mdand starts the iteration
-fprintf('Starting time analysis. Time index: ')
+fprintf('| Starting analysis.\n  Time index: ')
 while finalTimeReachedBoolean == false
 
  
@@ -47,16 +51,25 @@ while finalTimeReachedBoolean == false
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
 
   % store results and update structs
-  modelCurrSol   =   modelNextSol ;
-  matUs          = [ matUs          modelCurrSol.U                   ] ;
-  loadFactorsMat = [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
-
+  modelCurrSol   	=  	modelNextSol ;
+  matUs          	= [ matUs          modelCurrSol.U                   ] ;
+  loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
+	
+	if length(cellFint) == 0
+		cellFint{1} = zeros(size(modelCurrSol.matFint)) ;
+	end
+		
+	cellFint{end+1}	= modelCurrSol.matFint ;
+	
+	 	
+	
   % generate vtk file for the new state
   if strcmp( modelProperties.plotsFormat, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );
   end % if vtk output format
 
 end %while time
+fprintf(' done.\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%

@@ -25,7 +25,7 @@ function test_4
   assertEqual( verifBoolean, true );
 
 function test_5
-  onsasExample_nonlinearPendulum
+  nonlinearPendulum
   assertEqual( verifBoolean, true );
 
 function test_6
@@ -51,3 +51,6 @@ function test_10
 function test_11
   beamLinearVibration
   assertEqual( verifBoolean, true );
+
+function test_12
+  assertEqual( gaussIntegrationTest, true);

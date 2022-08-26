@@ -1,14 +1,14 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
-% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify 
-% it under the terms of the GNU General Public License as published by 
-% the Free Software Foundation, either version 3 of the License, or 
-% (at your option) any later version. 
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% ONSAS is distributed in the hope that it will be useful, 
+% ONSAS is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
@@ -17,12 +17,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell ] = assembler ( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar )
- 
-fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ;
+
+fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
 nElems     = size(Conec, 1) ;
 nNodes     = size(Nodes, 1) ;
@@ -59,6 +59,14 @@ if stressBool
 else
   stressMat = [] ;
 end
+
+% -------  matrix with internal forces per element -------------------
+if matFintBool
+	matFint = zeros( nElems, 6*4 ) ;
+else
+	matFint = [] ;
+end
+
 % ====================================================================
 
 
@@ -89,7 +97,7 @@ for elem = 1:nElems
   aeroBool = ~isempty(analysisSettings.fluidProps) || ...
              ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
   
-  %md obtain elemeny info
+  %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
@@ -141,27 +149,47 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
-
-		if strcmp(hyperElasModel, 'linearElastic')
-
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
+  
+		if strcmp(hyperElasModel, 'linearElastic') 
+			boolLinear = 1 ;
+			boolPlas = 0 ;
+		elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') || strcmp(hyperElasModel, 'linearHardening') || strcmp(hyperElasModel, 'userFunc')
+			boolLinear = 1 ;
+			boolPlas = 1 ;
+		else
+			boolLinear = 0 ;	
+		end
+		
+		if  boolLinear == 1
+			
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
-
+			
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
 		elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
-      [ fs, ks, stressElem ] = elementBeamForces( elemNodesxyzRefCoords, elemCrossSecParams, [ 1 hyperElasParams ], u2ElemDisps( Ut, dofselem ) , ...
-                                               u2ElemDisps( Udott    , dofselem ) , ...
-                                               u2ElemDisps( Udotdott , dofselem ) , ...
-                                               density, massMatType ) ;
+      [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
+                                                             elemCrossSecParams    , ...
+                                                             [ 1 hyperElasParams ] , ...
+                                                             u2ElemDisps( Ut, dofselem ) ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-        Fmase = fs{3} ;Ce = ks{2} ; Mmase = ks{3} ;
+
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
+                                            elemCrossSecParams                  , ...
+                                            [ 1 hyperElasParams ]               , ...
+                                            u2ElemDisps( Ut, dofselem )         , ...
+                                            u2ElemDisps( Udott    , dofselem )  , ...
+                                            u2ElemDisps( Udotdott , dofselem )  , ...
+                                            density, massMatType  ) ;
+
+
+        Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
       error('wrong hyperElasModel for frame element.')
@@ -170,7 +198,7 @@ for elem = 1:nElems
     %md compute hydrodynamic force of the element}
     if aeroBool && fsBool
 
-      [ FaeroElem ]= hydroFrameForces( elemNodesxyzRefCoords              , ...
+      FaeroElem = frame_fluid_force( elemNodesxyzRefCoords              , ...
                                        u2ElemDisps( Ut       , dofselem ) , ...
                                        u2ElemDisps( Udott    , dofselem ) , ...
                                        u2ElemDisps( Udotdott , dofselem ) , ...
@@ -244,7 +272,7 @@ for elem = 1:nElems
 
   if tangBool
     for indRow = 1:length( dofselemRed )
-
+			
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
 
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
@@ -266,9 +294,12 @@ for elem = 1:nElems
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
   end % if stress
-
+	
+	if matFintBool
+		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
+	end
+	
 end % for elements ----
-
 
 % ============================================================================
 %  --- 3 global additions and output ---
@@ -304,7 +335,6 @@ if tangBool
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
-
   tangMatsCell{1} = K ;
 
   if dynamicProblemBool

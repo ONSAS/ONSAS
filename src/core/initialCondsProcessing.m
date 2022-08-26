@@ -1,28 +1,27 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
-% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify 
-% it under the terms of the GNU General Public License as published by 
-% the Free Software Foundation, either version 3 of the License, or 
-% (at your option) any later version. 
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 %
-% ONSAS is distributed in the hope that it will be useful, 
+% ONSAS is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
 
-% This script declares several matrices and vectors required for the analysis. In this script, the value of important magnitudes, such as internal and external forces, displacements, and velocities are computed for step/time 0.
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements, Nodes )
+function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements )
 
   % Extract mesh parameters
   Conec  = myCell2Mat( mesh.conecCell ) ;
+  Nodes  = mesh.nodesCoords ;
   nNodes = size( Nodes,1) ;
 
   % Create kinematic vectors
@@ -63,6 +62,7 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elem
     end %for types of IC
   
   end %if disp IC
+
   % Process velocity initial condition 
   % displacements initial conditions
   if isfield( initialConds, 'nonHomogeneousUdotVals' )
