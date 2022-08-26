@@ -3,17 +3,16 @@
 function resultBoolean = gaussIntegrationTest()
 
   plots_boolean = true ;
-close all
+
   point_nums_to_test = [ 1:10 12 14 16 28  ] ;
 %  point_nums_to_test = [ 1:10    ]
   int_values = zeros( size(point_nums_to_test) ) ;
 
-  a = -2e-3 ;  b =  1.5e-3 ;
+  a = -1.5 ;  b =  1 ;
   %analyInt = -50*.5 + -50*1*.5 + 100*.5*.5 + 100*.5  ;
-  %~ analyInt = 20 * ( b^5/5 - a^5/5 )  ;
-  analyInt = 0  ;
+  analyInt = 20 * ( b^5/5 - a^5/5 )  ;
 
-  xs = a:1e-5:b;
+  xs = -1.5:.02:1;
   ys = 0;
   for i=1:length(xs)
     ys(i) = test_fun_to_integrate(xs(i));
@@ -42,29 +41,9 @@ close all
     plot(point_nums_to_test, analyInt*ones(size(point_nums_to_test)),'r-o')
   end
 
-  %~ resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
-	
+  resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
+
 % ========================================================================================
 % ========================================================================================
 function ys = test_fun_to_integrate( xinput )
-  %~ ys = 20 * xinput .^ 4 ;
-
-	E 			= 200e6 ; % kN/m2 
-
-	epsk = xinput ;
-	
-		sigmaY = 250e3 ;
-		sigma_tr = abs( E*epsk ) ;
-		epsY = sigmaY/E ;
-		
-		if abs(epsk) >= (epsY)
-			K = 210e5 ;	
-			%~ sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ;
-			sigma=0;
-			dsigdeps = E*K / (E+K) ; 
-		else
-			sigma = sigma_tr * sign(epsk) ;
-			dsigdeps = E ;
-		end
-	
-	ys = sigma ;
+  ys = 20 * xinput .^ 4 ;
