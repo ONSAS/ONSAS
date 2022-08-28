@@ -24,8 +24,6 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
                         boundaryConds, ... % B
                         analysisSettings  )
 
-%global Conec
-
 Conec  = myCell2Mat( mesh.conecCell ) ;
 Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
