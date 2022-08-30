@@ -59,14 +59,9 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   % auxiliary q base 
   q1g = Rg1 * R0 * [0 1 0]' ;
   q2g = Rg2 * R0 * [0 1 0]' ;
-  qg  = ( q1g + q2g ) / 2     ;
+  qg  = ( q1g + q2g ) / 2   ;
 
-  % rigid base 
-  e1 = Rr(:, 1) ;
-  e2 = Rr(:, 2) ;
-  e3 = Rr(:, 3) ;
-
-  [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAux(...
+  [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAuxStatic(...
                                                                 R0, Rr, Rg1, Rg2, l, II, O3, O1);
   % -------------------------------
 

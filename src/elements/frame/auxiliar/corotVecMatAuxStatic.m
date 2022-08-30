@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAux(R0, Rr, Rg1, Rg2, l, II, O3, O1)
+function [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAuxStatic(R0, Rr, Rg1, Rg2, l, II, O3, O1)
 
   % global coords
   q1g = Rg1 * R0 * [0 1 0]' ;
