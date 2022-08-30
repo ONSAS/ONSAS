@@ -67,8 +67,8 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   qg  = ( q1g + q2g ) / 2   ;
 
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAuxStatic(...
-                                                                R0, Rr, Rg1, Rg2, l, II, O3, O1);
-               
+                                                                  R0, Rr, Rg1, Rg2, l, II, O3, O1);
+                
 
 if strcmp( massMatType, 'consistent' )
     sumInterForce  = zeros (12, 1 ) ;
@@ -147,8 +147,7 @@ x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Ar
     thethaRoof  = P2 * [tl1 ; tl2] ; % Eq. 39 Le, Battini 2014
     % local Rroof rotation matrix is
     Rroofx      = expon( thethaRoof ) ; 
-    % local displacements
-    ul  = P1 * [ tl1; tl2 ] ; % Eq. 38 local disp
+    % rigid velocity
     wdoter  = Gaux' * EE' * ddotg ;% Eq. 65
 
     H1  = N + P1 * P - 1 * skew( ul ) * Gaux' ;

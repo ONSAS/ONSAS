@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function fagElem = frame_fluid_forces( elemCoords,... 
+function fagElem = frame_fluid_force( elemCoords,... 
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
                                      nextTime, currElem ) 
@@ -69,56 +69,31 @@ function fagElem = frame_fluid_forces( elemCoords,...
   % length of the chord vector 
   dimCharacteristic = norm( vecChordUndef ) ; 
 
-  % Change indexes according to Battini's nomenclature ( ONSAS uses for each node [u1 theta1 u2 theta2 u3 theta3] and Battini [u1 u2 u3 theta1 theta2 theta3] )
-  permutIndxs = [ 1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ];
-  dg       = Ue      ( permutIndxs ) ;
-  ddotg    = Udote   ( permutIndxs ) ;
-  ddotdotg = Udote   ( permutIndxs ) ;
-  
-  % The rotations matrixes according to Le, Battini 2002 and Le 2014:
-  % rotation global matrices
-  % select thetas
-  tg1 = dg(  4:6  ) ;
-  tg2 = dg( 10:12 ) ;
-  
-  % compute matrices with exp Rodrigue's formula
-  Rg1 = expon( tg1 ) ;% Eq(5) J.-M. Battini 2002
-  Rg2 = expon( tg2 ) ;% Eq(5) J.-M. Battini 2002
+  % compute corotational rotation matrices  
+  [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
 
-  % rotation reference configuration matrix 
-  % element director vector in the reference configuration
-  x21 = xs( 4:6 ) - xs( 1:3 ) ;
-  % element director vector of the displacements of displacements vector of the element
-  d21 = dg( 7:9 ) - dg( 1:3 ) ;
-  % reference length of the element
-  lo = sqrt( ( x21       )' * ( x21       ) ) ; 
-  % deformed length of the element
-  l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; 
-  % the function computes RO with e3 such that E3ref maximize the scalar product with E3glob (unless E1ref is E3glob in that case set E1ref = E3glob)
-  R0 = beamRefConfRotMat( x21 ) ;
+  % --- global kinematics ---
+  % permut indexes according to Battini's nomenclature
+  dg = switchToBattiniNom( Ue ) ;
+  ddotg    = switchToBattiniNom( Udote ) ;
+  ddotdotg = switchToBattiniNom( Udotdote ) ;
+  % -------------------------------
 
-  % rigid rotation matrix:
-  % deformed x axis
-  e1 = ( x21 + d21 ) / l  ;% Eq(25) J.-M. Battini 2002
-  q1 = Rg1 * R0 * [0 1 0]';% Eq(27) J.-M. Battini 2002
-  q2 = Rg2 * R0 * [0 1 0]';% Eq(27) J.-M. Battini 2002
-  q  = ( q1 + q2 ) / 2    ;% Eq(27) J.-M. Battini 2002 
-  % deformed z local axis
-  e3 = cross( e1, q )     ;% Eq(28) J.-M. Battini 2002
-  e3 = e3 / norm( e3 )    ;% Eq(28) J.-M. Battini 2002
-  % deformed y local axis
-  e2 = cross ( e3, e1 )   ;% Eq(28) J.-M. Battini 2002
-  Rr = [ e1 e2 e3 ]       ;% Eq(24) J.-M. Battini 2002
-  
-  % Auxiliary matrices computation 
-  % compute auxiliary q vectors and nu in rigid coordinates
-  q  = Rr' *  q           ;
-  q1 = Rr' * q1           ;
-  nu = q( 1 ) / q( 2 )    ;% Eq(58) J.-M. Battini 2002
-  nu11 = q1( 1 ) / q( 2 ) ;% Eq(58) J.-M. Battini 2002
-  nu12 = q1( 2 ) / q( 2 ) ;% Eq(58) J.-M. Battini 2002
-  nu21 = 2 * nu - nu11    ;% Eq(58) J.-M. Battini 2002
-  nu22 = 2 - nu12         ;% Eq(58) J.-M. Battini 2002
+  % length and coords of the element  
+  [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
+
+  % --- auxiliary vector and matrices  ---
+  % aux zero matrices 
+  [I3, O3, O1, II] = corotZeros() ;
+
+  % auxiliary q base 
+  q1g = Rg1 * R0 * [0 1 0]' ;
+  q2g = Rg2 * R0 * [0 1 0]' ;
+  qg  = ( q1g + q2g ) / 2   ;
+
+  [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, G, P, EE ] = corotVecMatAuxStatic(...
+                                                                  R0, Rr, Rg1, Rg2, l, II, O3, O1);
+  % -------------------------------
 
   % local rotations
   if ~baseBool ;
@@ -128,27 +103,11 @@ function fagElem = frame_fluid_forces( elemCoords,...
     Rroof1 = Rr' * R0 * Rg1 ;
     Rroof2 = Rr' * R0 * Rg2 ;
   end
+  
   tl1 = logar( Rroof1 ) ; % Eq(31) J.-M. Battini 2002
   tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
   
-  % identity and null auxiliary matrices
-  I3 = eye( 3 )   ;
-  O3 = zeros( 3 ) ;
-  
-  II=[ O3 I3 O3 O3
-       O3 O3 O3 I3 ];
-
-  G=[ 0   0    nu/l  nu12/2  -nu11/2  0  0  0    -nu/l  nu22/2  -nu21/2  0
-      0   0    1/l     0        0     0  0  0    -1/l     0        0     0
-      0  -1/l  0       0        0     0  0  1/l   0       0        0     0 ]' ;% Eq(58) J.-M. Battini 2002     
-
-  P = II - [G'; G'] ; % Eq(55) J.-M. Battini 2002
-  % tensor to rotate magnitudes from rigid to global configuration
-  EE=[ Rr O3 O3 O3
-       O3 Rr O3 O3
-       O3 O3 Rr O3
-       O3 O3 O3 Rr ] ;% Eq.(30)  T-N Le J.-M. Battini et al 2014
-  
+ 
   % auxiliary matrix created to project transversal velocity
   L2 = [ 0 0 0  
          0 1 0 
@@ -159,8 +118,10 @@ function fagElem = frame_fluid_forces( elemCoords,...
   % Extract points and weights for numGausspoints selected
   numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
+
   % WOM computation call for cases with VIVbool equal to true
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
+
     if VIVBool
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
@@ -172,9 +133,11 @@ function fagElem = frame_fluid_forces( elemCoords,...
 
       % projected velocities at nodes 1 and 2 in deformed coordinates 
       %node 1 
-      [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, udotFrame1, Rroof1, Rr, L2, L3 ) ;
+      [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, udotFrame1,...
+                                                                             Rroof1, Rr, L2, L3 ) ;
       %node 2 
-      [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, udotFrame2, Rroof2, Rr, L2, L3 ) ;
+      [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, udotFrame2,...
+                                                                             Rroof2, Rr, L2, L3 ) ;
       
       % transform them into global coordinates
       %node 1 
@@ -203,8 +166,8 @@ function fagElem = frame_fluid_forces( elemCoords,...
         % Compute the direction of the axial vector on the initial configuration in global coordinates
         e1 = R0 * [1 0 0]';
         % Transform axial vector in the initial configuration to global cooridantes
-        tlift1 = cross( e1,udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
-        tlift2 = cross( e1,udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
+        tlift1 = cross(e1, udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
+        tlift2 = cross(e1, udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
       q = WOMV3( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
@@ -219,15 +182,16 @@ function fagElem = frame_fluid_forces( elemCoords,...
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
     tlift1 = [] ; tlift2 = [] ;
   end
+
   % Compute the element fluid force by the equivalent virtual work theory
   fagElem = zeros(12,1) ;
   for ind = 1 : length( xIntPoints )
     %The Gauss integration coordinate is:
-    xGauss = lo/2 * ( xIntPoints( ind ) + 1 ) ;
+    xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element   
     fagElem =  fagElem ...
-               +lo/2 * wIntPoints( ind ) * integAeroForce( xGauss, ddotg, udotFlowElem,... 
-                                                           lo, tl1, tl2, Rr,... 
+               +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,... 
+                                                           l0, tl1, tl2, Rr,... 
                                                            vecChordUndef, dimCharacteristic,...
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
@@ -237,44 +201,29 @@ function fagElem = frame_fluid_forces( elemCoords,...
   fagElem = swtichToONSASBase( fagElem ) ;
 end
 
-function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
-                                          lo, tl1, tl2, Rr,... 
-                                          vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
-                                          aeroCoefs, densityFluid, viscosityFluid,...
-                                          VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
+function integFluidForce = integFluidForce( x, ddotg, udotFlowElem,...
+                                            l0, tl1, tl2, Rr,... 
+                                            vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
+                                            aeroCoefs, densityFluid, viscosityFluid,...
+                                            VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
   
-  % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
-  % linear
-  N1 = 1 -x / lo                           ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N2 = x / lo                              ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  % cubic
-  N3 = x * ( 1 - x / lo )^2                ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N4 = - ( 1 - x / lo ) * ( x^2 ) / lo     ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N5 = ( 1 - 3 * x / lo) * ( 1 - x / lo )  ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N6 = ( 3 * x / lo - 2 ) * ( x / lo )	   ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  % Bernoulli weight function
+  [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
+  % Auxiliary matrices 
+  [P1, P2, N, N1, N2] = corotVecMatAuxDyn( N1, N2, N3, N4, N5, N6, N7, N8, tl1, tl2, G, I3, O3, P ) ;
 
-  % Auxiliary shape function matrices variables for the cross section:
-  P1 = [  0   0   0   0   0    0  ; ...
-          0   0   N3  0   0    N4 ; ...
-          0  -N3  0   0   -N4  0  ] ; % Eq.(38)  T-N Le J.-M. Battini et al 2014
-
-  P2 = [  N1  0   0   N2  0    0  ; ...
-           0  N5  0   0   N6   0  ; ...
-           0  0   N5  0   0    N6 ] ; % Eq.(39)  T-N Le J.-M. Battini et al 2014
-
-  N  = [ N1 * I3   O3   N2 * I3    O3 ] ; % Eq.(51)  T-N Le J.-M. Battini et al 2014
-
-  ul = P1 * [ tl1; tl2 ]                ; % Eq.(38)  T-N Le J.-M. Battini et al 2014
-  H1 = N + P1 * P - 1 * skew( ul ) * G' ; % Eq.(59)  T-N Le J.-M. Battini et al 2014
-  H2 = P2 * P + G'                      ; % Eq.(72)  T-N Le J.-M. Battini et al 2014
-  
-  % Rotations matrices to compute the flow velocity projection of the for the cross section:
+  % --- Local displacements of a generic cross section ---
+  ul = P1 * [ tl1; tl2 ]                   ; % Eq.(38)  T-N Le J.-M. Battini et al 2014
+  % Auxiliary matrices H
+  H1  = N + P1 * P - 1 * skew( ul ) * G' ;
+  H2      = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
   % angular local rotation
   thethaRoof  = P2 * [tl1 ; tl2] ; % Eq. 39 Le, Battini 2014
   % local Rroof rotation matrix is
   Rroofx      = expon( thethaRoof ) ; 
- 
-  % Kinematic velocities for the generic cross section
+  %---------------------------------------------------------
+
+  % ---------Kinematic velocities for the generic cross section------
   % cross section centroid rigid velocity in global coordinates:
   % if uniform 
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
@@ -286,13 +235,15 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
     else
       udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
   end
+
   % cross section absolute fluid flow velocity in global coordinates interpolated with linear shape functions:
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
   
   % Relative, perpendicular and projected  flow velocity of the cross section to compute drag lift and moment:
   [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
-  
-  % Compute relative incidence angle
+  %-----------------------------------------------------------------
+
+  % ------------ Compute relative incidence angle  ------------
   % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
   tch = (vecChordUndef / norm( vecChordUndef )) ;
 
@@ -302,10 +253,12 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   else % the drag direction at a generic cross section in deformed coordinates is:
       td = VpiRelG / norm( VpiRelG ) ;
   end
+
   cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
   sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
   betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
-  
+  %-----------------------------------------------------------------
+
   % Delete spaces
   userDragCoef   = aeroCoefs{1} ;
   userLiftCoef   = aeroCoefs{2} ;
@@ -314,6 +267,7 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   % Computation of Renynolds number
   Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
   
+  % ------------ Read Cd, Cl, Cm  ------------
   % Check fluid coefficients existence and the load it values if not set 0:  
   if ~isempty( userDragCoef )
     c_d = feval( userDragCoef, betaRelG, Re  ) ;
@@ -331,11 +285,15 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
   else
     c_m = 0 ;
   end
+  %-----------------------------------------------------------------
+
+  % ------------ Compute drag, lift and moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
   fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ; 
   % lift cross section force vector in deformed coordinates
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
+  
     if constantLiftDir % lift direction is constant
       %prom the lift direction in global coordinates
       tlift = (tlift1 + tlift2) / 2 ;
@@ -346,19 +304,26 @@ function integAeroForce = integAeroForce( x, ddotg, udotFlowElem,...
     else % lift direction is variable
       fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
     end
+  
   else % no WOM and a variable lift direction
+  
     fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+  
   end
+  
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll ;
   % torsional moment fluid load in deformed coordinates
   ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
+  
   % Compute the element fluid load forces vector in global coordinates
   % compute the integral term of the current cross section in rigid coordinates
   integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;  
   % rotate to global coordinates with EE matrix for rigid configuration formulation
-  integAeroForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
+  integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
+  %-----------------------------------------------------------------
 end
+
 % This function return the relative projected velocity in local cooridantes
 function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroof, Rr, L2, L3 )
   % the relative velocity in global cooridantes is:
