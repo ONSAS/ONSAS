@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %Integration Gauss Points based on https://keisan.casio.com/exec/system/1329114617
-function [xIntPoints, wIntPoints] = GaussPointsAndWeights ( numGaussPoints )
+function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
   if numGaussPoints == 1    
     xIntPoints = 0;
     wIntPoints = 2;

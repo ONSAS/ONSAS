@@ -26,7 +26,7 @@ KTe = zeros(4,4) ;
 finte = zeros(4,1) ;
 
 % Elem Gauss points
-[xge, we] = GaussPointsAndWeights (ne) ;
+[xge, we] = gaussPointsAndWeights (ne) ;
 
 a 	= 0 ;
 b 	= l ;

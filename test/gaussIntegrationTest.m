@@ -25,7 +25,7 @@ function resultBoolean = gaussIntegrationTest()
   end
 
   for j=1:length( point_nums_to_test)
-    [xIntPoints, wIntPoints] = GaussPointsAndWeights ( point_nums_to_test(j) ) ;
+    [xIntPoints, wIntPoints] = gaussPointsAndWeights ( point_nums_to_test(j) ) ;
 
     for k=1:length(xIntPoints)
       int_values(j) = int_values(j) + ...

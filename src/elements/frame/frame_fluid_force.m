@@ -158,7 +158,7 @@ function fagElem = frame_fluid_forces( elemCoords,...
 
   % Extract points and weights for numGausspoints selected
   numGaussPoints = elemTypeAero(4);
-  [xIntPoints, wIntPoints] = GaussPointsAndWeights( numGaussPoints ) ;
+  [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
   % WOM computation call for cases with VIVbool equal to true
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     if VIVBool
