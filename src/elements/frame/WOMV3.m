@@ -17,11 +17,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function qelem = WOMV3(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2,tl1, tl2, D, tnp1, dt,Kelem)
-% Computes the value of q for the element K 
-% In WOMV2 we solve only one VdP equation with the averages values of the
-% nodal vpr and Udotdot.
+% Computes the value of q for the element Kelem
 % vpr1, vpr2: relative velocities at nodes 1 and 2 (vpr = Ucos(theta0))
-global qvect; % To be removed!
+% D: diameter
+% tnp1: tn+dt
+% Kelem: element id
+global qvect; 
 n = uint16(tnp1/dt - 1); % Current time
 K = Kelem-1;
 if n == 0 % First call
@@ -41,7 +42,6 @@ else
     % Calls computeq for the element
     qn = qvect(1+K*2,n);
     dqn = qvect(2+K*2,n);
-    %[qnp1elem dqnp1elem ] = computeq(ddY2, D, tnp1, dt, vprelem, qn, dqn);
     [qnp1elem dqnp1elem ] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn);
     qelem = qnp1elem;
     % Updating qvect
@@ -56,9 +56,9 @@ function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn)% at nod
     % WOM constants from Facchinetti et al
     A = 12; epsilon = 0.3; St = 0.2;%0.16;
     % VdP oscillator constants
-    B = 2*pi*St*vprelem/D;
-    cq = epsilon*B;
-    kq = B^2;
+    omegaf = 2*pi*St*vprelem/D; % Shedding pulsation
+    cq = epsilon*omegaf;
+    kq = omegaf^2;
     [t,qode] = ode45(@(t, q) funcvanderpol(t,q, cq, kq, ddYelem, D, A),t,[qn,dqn]);
     qnp1 = qode(end,1); 
     dqnp1 = qode(end,2);
