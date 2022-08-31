@@ -16,10 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk, matFintBool, elem, elemAux, xgej,maxxge)
-
-	% user function
-	global userFuncBool
+function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk)
 
 	E = hyperElasParams(1) ;
 			
@@ -35,7 +32,7 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 			sigma = sigmaY * sign(epsk) ;
 			dsigdeps = 0 ;
 		else
-			sigma = sigma_tr * sign(epsk) ;
+			sigma = sigma_tr .* sign(epsk) ;
 			dsigdeps = E ;
 		end	
 	% Linear hardening	
@@ -45,14 +42,14 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 		if sigma_tr >= sigmaY
 			K = hyperElasParams(4) ;
 			epsY = sigmaY/E ;
-			sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ;
-			dsigdeps = E*K / (E+K) ; 
+			sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ; 
+			dsigdeps = K ; 
 		else
 			sigma = sigma_tr * sign(epsk) ;
 			dsigdeps = E ;
 		end
 	elseif strcmp(hyperElasModel, 'userFunc')
-		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk, matFintBool, elem, elemAux, xgej,maxxge) ;
+		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk) ;
 	end
 	
 end

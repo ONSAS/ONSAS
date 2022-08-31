@@ -16,4 +16,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [] corotQs( Rg, R0 )
+function epsk = epsVal(z, B, R, Ut)
+
+	epsk = -z'.* B * R * Ut ;
+
+end
