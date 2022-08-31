@@ -135,7 +135,7 @@ end%endFunction
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interElementBeamForces (...
 x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux )
 
-    % Bernoulli wight function
+    % Bernoulli weight function
     [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
 
     % Auxiliary matrices 
