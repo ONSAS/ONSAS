@@ -95,8 +95,6 @@ uz = matUs(5:6:end, :) ; % Z for all nodes
 % Comparison with results 
 load('testSolution')
 uz
-size(uz)
-size(uzTest)
 if length(uz) == length(uzTest)
     VIVtestvect = (uz == uzTest) ;
     verifBoolean = isempty(find(VIVtestvect==0));

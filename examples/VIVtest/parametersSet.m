@@ -10,7 +10,7 @@ addpath( genpath( [ accDir '/../source'] ) );
 %--------
 % Numerical parameters
 %
-dt = 0.0028 ; finalTime = 100*dt; numElements = 3;
+dt = 0.0028 ; finalTime = 10*dt; numElements = 3;
 %--------
 % Fluid properties
 %
