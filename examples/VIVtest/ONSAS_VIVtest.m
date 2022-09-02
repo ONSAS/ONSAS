@@ -35,7 +35,7 @@ elements(2).elemCrossSecParams{2,1} = d          ;
 numGaussPoints  = 4 ;
 elements(2).aeroCoefs   = {nameDragFunc; nameLiftFunc; [] }   ;
 %  chord vector and gauss points
-elements(2).elemTypeAero = [0 0 -d numGaussPoints ] ; % [chordVec1 chordVec2 chordVec3 numGauss  ]
+elements(2).elemTypeAero = [0 0 -d numGaussPoints ] ;
 % mass element formulation
 elements(2).massMatType = 'consistent' ; 
 %
@@ -86,7 +86,7 @@ otherParams.problemName      = strcat('VIVTest') ;
 %
 [ matUs, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
 % Extract numerical solution
-uz = matUs(5:6:end, :) ; % Z for all nodes
+uz = matUs(5:6:end, :) ;
 %save('testSolution', 'uzTest')
 % Comparison with results 
 load('testSolution')
