@@ -48,10 +48,10 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   % axial displacement
   u   = l - l0 ;
 
-  global pretension
-  if ~isempty( pretension )
+  global pretension_strain
+  if ~isempty( pretension_strain )
     % axial displacement
-    u   = u + pretension * l0;
+    u   = u + pretension_strain * l0;
   end
   
   % local rotations
