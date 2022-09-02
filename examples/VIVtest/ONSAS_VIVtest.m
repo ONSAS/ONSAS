@@ -99,7 +99,7 @@ norm(uz - uzsol)
 if length(uz) == length(uzsol)
     %VIVtestvect = (uz == uzsol) ;
     %verifBoolean = isempty(find(VIVtestvect==0));
-    verifBoolean = norm(uz - uzsol) < 1e-11
+    verifBoolean = norm(uz - uzsol) < 1.5e-11
 else 
     verifBoolean = 0;
 end
