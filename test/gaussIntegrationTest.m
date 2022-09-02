@@ -41,7 +41,7 @@ function resultBoolean = gaussIntegrationTest()
     plot(point_nums_to_test, analyInt*ones(size(point_nums_to_test)),'r-o')
   end
 
-  resultBoolean = max( abs( int_values(3:end) - analyInt ) ) / abs( analyInt ) < 1e-8 ;
+  resultBoolean = max( abs( int_values(3:end) - analyInt*ones(1,length(point_nums_to_test)-2) ) ) / abs( analyInt ) < 1e-8 ;
 
 % ========================================================================================
 % ========================================================================================
