@@ -88,13 +88,7 @@ otherParams.problemName      = strcat('VIVTest') ;
 % Extract numerical solution
 uz = matUs(5:6:end, :) ; % Z for all nodes
 %save('testSolution', 'uzTest')
-% Comparison with results 
-load('testSolution')
-uz - uzsol
-norm(uz - uzsol)
 if length(uz) == length(uzsol)
-    %VIVtestvect = (uz == uzsol) ;
-    %verifBoolean = isempty(find(VIVtestvect==0));
     verifBoolean = norm(uz - uzsol) < 1.5e-11
 else 
     verifBoolean = 0;
