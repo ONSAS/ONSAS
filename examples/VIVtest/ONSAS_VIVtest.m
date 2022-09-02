@@ -95,11 +95,11 @@ uz = matUs(5:6:end, :) ; % Z for all nodes
 % Comparison with results 
 load('testSolution')
 uz - uzsol
-VIVtestvect = (uz == uzsol)
+norm(uz - uzsol)
 if length(uz) == length(uzsol)
     %VIVtestvect = (uz == uzsol) ;
     %verifBoolean = isempty(find(VIVtestvect==0));
-    verifBoolean = norm(uz - uzsol) < 1e-12
+    verifBoolean = norm(uz - uzsol) < 1e-11
 else 
     verifBoolean = 0;
 end
