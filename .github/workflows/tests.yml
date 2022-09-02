@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run mechanical-work tests
-        uses: joergbrech/moxunit-action@v1.2
+        uses: joergbrech/moxunit-action@v1.2.0
         with:
           src: examples/staticVonMisesTruss examples/frameLinearAnalysis examples/springMass examples/linearCylinderPlaneStrain examples/uniformCurvatureCantilever examples/uniaxialExtension examples/VIVtest examples/nonlinearPendulum examples/beamTrussJoint examples/cantileverSelfWeight examples/simpleWindTurbine examples/linearAerodynamics examples/beamLinearVibration src src/elements src/core src/constructors src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh test
           tests: ./test/runTestProblems_moxunit_disp.m
