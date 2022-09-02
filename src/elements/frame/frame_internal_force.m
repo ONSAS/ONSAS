@@ -44,8 +44,16 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
 
   % --- local displacements ---
+
   % axial displacement
   u   = l - l0 ;
+
+  global pretension_strain
+  if ~isempty( pretension_strain )
+    % axial displacement
+    u   = u + pretension_strain * l0;
+  end
+  
   % local rotations
   tl1 = logar( Rroof1 ) ;
   tl2 = logar( Rroof2 ) ;  
