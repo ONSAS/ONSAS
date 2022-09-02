@@ -14,7 +14,7 @@ dt = 0.0028 ; finalTime = 10*dt; numElements = 3;
 nuFluid = 1e-6; va = 0.035;; rhoFluid = 1000;  
 %
 nameFuncVel = 'windVelUniform'; 
-nameLiftFunc = 'liftCoef'; % 0.3
+nameLiftFunc = 'liftCoefVIV'; % 0.3
 nameDragFunc = 'dragCoef'; % 1.2
 cL0 = feval(nameLiftFunc, 0, 1); cD0 = feval(nameDragFunc, 0, 1); 
 %--------   
