@@ -1,6 +1,7 @@
 %md# WOM VIV
 %
-%close all, clear all ;
+% add ONSAS path
+close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 %tic ;
 %
 % declare global variables
@@ -14,14 +15,9 @@ if VIVBool
   constantLiftDir = false; uniformUdot = false; 
 end
 %
-% add ONSAS path
-%
-accDir = pwd ;
-addpath( genpath( [ accDir '/../../../ONSAS.m'] ) );
-addpath( genpath( [ accDir '/../source'] ) );
-%
 % Load Parameters
 parametersSet
+%
 % materials
 %
 materials.hyperElasParams = [ E nu ] ;

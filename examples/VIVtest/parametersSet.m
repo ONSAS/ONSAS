@@ -1,8 +1,5 @@
 % This file contains the parameters fo the hydro_frame_force example
 % For Example 5
-accDir = pwd ;
-addpath( genpath( [ accDir '/../../../ONSAS.m/src'] ) );
-addpath( genpath( [ accDir '/../source'] ) );
 %
 % Time parameters
 %
