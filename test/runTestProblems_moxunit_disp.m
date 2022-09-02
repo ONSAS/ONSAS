@@ -53,4 +53,8 @@ function test_11
   assertEqual( verifBoolean, true );
 
 function test_12
+  ONSAS_VIVtest
+  assertEqual( verifBoolean, true );
+
+function test_13
   assertEqual( gaussIntegrationTest, true);

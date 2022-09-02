@@ -98,13 +98,13 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 The functions in `linearStiffMatPlate3D.m` and `assemblyUniform.m` use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/). Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es), provided functions for reading dxf files, which were part of ONSAS until version 0.2.6.
 
-Prof. Pérez Zerpa would like to thank: [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es),
+Prof. Pérez Zerpa would like to thank: Prof. [Frédérick Gosselin](https://fgosselin.meca.polymtl.ca/?lang=en) for his support during the initial contributions of Alexandre Villié, [**Pablo Blanco**](https://scholar.google.com/citations?user=X0382ScAAAAJ&hl=es),
  [**Gonzalo Ares**](https://scholar.google.com/citations?user=lCeQOH0AAAAJ&hl=en) and [**Gonzalo Maso Talou**](https://unidirectory.auckland.ac.nz/profile/g-masotalou) for their numerous and valuable comments and suggestions during early stages of the design of the code.
 
 The development of ONSAS has been partially supported by funds provided by the following agencies/projects:
  - Comisión de Investigación Científica (CSIC) (project: *Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama*, manager, Prof. Pérez Zerpa),
  - Comisión Sectorial de Enseñanza (project: *Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales*, manager, Prof. Pérez Zerpa),
- - Agencia Nacional de Investigación e Innovación (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. Gabriel Usera.
+ - Agencia Nacional de Investigación e Innovación (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. Gabriel Usera).
 
 
 ## Contact
