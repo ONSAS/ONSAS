@@ -100,7 +100,6 @@ time_solve = toc ;
 fprintf('|     |\n')
 
 
-
 % ---- print iteration statistics -----
 fprintf('| Time: %6.1f sec                                |\n',time_solve)
 fprintf('|                                                 |\n')

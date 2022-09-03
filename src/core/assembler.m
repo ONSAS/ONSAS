@@ -152,17 +152,17 @@ for elem = 1:nElems
   
 		if strcmp(hyperElasModel, 'linearElastic') 
 			boolLinear = 1 ;
-			boolPlas = 0 ;
-		elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') || strcmp(hyperElasModel, 'linearHardening') || strcmp(hyperElasModel, 'userFunc')
+			boolMatNonLin = 0 ;
+		elseif strcmp(hyperElasModel, 'biLinear') || strcmp(hyperElasModel, 'userFunc')
 			boolLinear = 1 ;
-			boolPlas = 1 ;
+			boolMatNonLin = 1 ;
 		else
 			boolLinear = 0 ;	
 		end
 		
 		if  boolLinear == 1
 			
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas, matFintBool, elem ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 			
