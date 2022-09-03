@@ -35,13 +35,20 @@ cellFint = {};
 %md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
 %mdand starts the iteration
-fprintf('| Starting analysis.\n  Time index: ')
+fprintf('| Starting analysis.   |0       50       100| %%   |\n')
+fprintf('|                      |')
+plotted_bars = 0 ;
+
 while finalTimeReachedBoolean == false
 
- 
-%  if mod(modelCurrSol.timeIndex,100)==0,
-%    fprintf(' %3i,', modelCurrSol.timeIndex),
-%  end
+  percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
+                       / modelProperties.analysisSettings.finalTime * 20 ) ;
+
+  while plotted_bars < percent_time,
+    fprintf('=')
+    plotted_bars = plotted_bars +1 ;
+    %fprintf(' %3i,', modelCurrSol.timeIndex),
+  end
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
@@ -69,7 +76,7 @@ while finalTimeReachedBoolean == false
   end % if vtk output format
 
 end %while time
-fprintf(' done.\n')
+fprintf('| end |\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%
