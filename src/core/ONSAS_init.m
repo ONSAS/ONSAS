@@ -94,8 +94,8 @@ printSolverOutput( otherParams.outputDir, otherParams.problemName, 0            
 printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
 %md writes vtk file
-if strcmp( modelProperties.plotsFormat, 'vtk' )
-  vtkMainWriter ( modelCurrSol, modelProperties )
+if strcmp( modelProperties.plots_format, 'vtk' )
+  vtkMainWriter( modelCurrSol, modelProperties )
 end
 
 if exist( 'controlDofs') ==0
