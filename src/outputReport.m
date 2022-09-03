@@ -27,7 +27,7 @@ problemNameWithoutUnderscores( find( problemNameWithoutUnderscores == '_') ) = [
 
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
-fprintf(  '  - writing report file ... ')
+fprintf(  '|  - writing report file ... ')
 fileReport = fopen( [ outputDir  problemName '_Report.tex' ] ,'w') ;
 
 fprintf(fileReport, [ '\\documentclass[a4paper,10pt]{article} \n'] ) ;
@@ -874,4 +874,5 @@ fclose(fileReport);
 	%~ end % endif nbeam
 %~ end
 
-fprintf(  ' done. \n');
+fprintf(  ' done.             |\n');
+fprintf(    '|=================================================|\n' )
