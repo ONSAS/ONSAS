@@ -874,5 +874,5 @@ fclose(fileReport);
 	%~ end % endif nbeam
 %~ end
 
-fprintf(  ' done.             |\n');
+fprintf(  ' done.               |\n');
 fprintf(    '|=================================================|\n' )
