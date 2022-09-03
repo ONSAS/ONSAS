@@ -48,11 +48,15 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   % axial displacement
   u   = l - l0 ;
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % temporary
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%
   global pretension_strain
   if ~isempty( pretension_strain )
     % axial displacement
     u   = u + pretension_strain * l0;
   end
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % local rotations
   tl1 = logar( Rroof1 ) ;
