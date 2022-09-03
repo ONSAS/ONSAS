@@ -9,7 +9,7 @@ function test_suite=runTestProblems_moxunit_disp
   initTestSuite;
 
 function test_1
-  onsasExample_staticVonMisesTruss
+  static_von_mises_truss
   assertEqual( verifBoolean, true );
 
 function test_2

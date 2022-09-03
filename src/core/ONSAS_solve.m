@@ -40,11 +40,13 @@ fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
 plotted_bars = 0 ;
 
+plots_counter = 0 ;
+
 iterations_average = 0 ;
 iterations_maximum = 0 ;
-
 iterations_strop_crit_vec = [ 0 0 0 ] ;
 
+tic
 while finalTimeReachedBoolean == false
 
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
@@ -87,21 +89,26 @@ while finalTimeReachedBoolean == false
 		
 	cellFint{end+1}	= modelCurrSol.matFint ;
 	
-	 	
-	
+		
   % generate vtk file for the new state
-  if strcmp( modelProperties.plotsFormat, 'vtk' )
+  if strcmp( modelProperties.plots_format, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );
   end % if vtk output format
 
 end %while time
-fprintf('| end |\n')
+time_solve = toc ;
+fprintf('|     |\n')
 
+
+
+% ---- print iteration statistics -----
+fprintf('| Time: %6.1f sec                                |\n',time_solve)
 fprintf('|                                                 |\n')
 fprintf('| Iters:  avg  max | Stop by: force  disp  iters  |\n')
 fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
   iterations_average, iterations_maximum, iterations_strop_crit_vec(1), ...
   iterations_strop_crit_vec(2), iterations_strop_crit_vec(3) )
+% -------------------------------------
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
