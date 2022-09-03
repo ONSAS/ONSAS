@@ -40,3 +40,6 @@ function bringONSASmFilesToONSASdocs
     fprintf([ '  - ' ONSASmFiles{i} '\n' ])
     m2md( [ dirONSASm ONSASmFiles{i} ] , [ dirONSASdocs MDFiles{i} ] , 1, 1 ) ;
   end
+
+
+  movefile('../../examples/springMass/output/springMassCheckU.png','./assets') 
