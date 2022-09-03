@@ -18,14 +18,8 @@
 
 function KTInt = secKT( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel )
 		
-	% Strain
 	epsk = epsVal(z, B, R, Ut) ;
-	% Section width
-	%~ t = secWidth(z', 2, ty, tz ) ;
-	t = ty ;
-	% stress & slope
 	[~, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
-	
-	KTInt = t * dsigdeps * z.^2  ;
+	KTInt = ty * dsigdeps * z.^2  ;
 
 end

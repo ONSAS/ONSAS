@@ -64,8 +64,8 @@ booleanConverged = false                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
-global timeInd
-	timeInd = modelCurrSol.timeIndex ;
+%global timeInd
+%	timeInd = modelCurrSol.timeIndex ;
 
 while  booleanConverged == 0
 

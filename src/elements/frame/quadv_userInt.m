@@ -22,18 +22,12 @@
 
 global ne
 
-KTe = zeros(4,4) ;
-finte = zeros(4,1) ;
+KbendXZ = zeros(4,4) ;
+finte 	= zeros(4,1) ;
 
 % Elem Gauss points
-[xge, we] = gaussPointsAndWeights (ne) ;
-
-a 	= 0 ;
-b 	= l ;
-p1 	= (b-a)/2 ;
-p2 	= (b+a)/2 ;
-
-pgeVec = (p1  * xge' + p2 ) ;	
+[xge, we] = gaussPointsAndWeights(ne) ;
+pgeVec = ( l/2  * xge' + l/2 ) ;	
 
 for j = 1:length(we)
 	secFint 	= 0 ;
@@ -48,24 +42,12 @@ for j = 1:length(we)
 		secKTe = quadv('secKT', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
 														 elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
 														 Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
-		KTe = p1*( B'*secKTe*B*we(j) ) + KTe ;	
+		KbendXZ = l/2*( B'*secKTe*B*we(j) ) + KbendXZ ;	
 	end
 	
 	secFint = quadv('secFint', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
 															elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
 															Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
-	finte = p1*secFint*we(j) + finte ;	
+	finte = l/2*secFint*we(j) + finte ;	
 													
 end % endfor we
-
-%~ if intBool == 1
-	%~ KTe = quadv('KTint', 0, l, [], [], elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), R(LocBendXZdofs,LocBendXZdofs), ...
-											 %~ Ut(LocBendXZdofs), hyperElasParams, hyperElasModel, l ) ;
-%~ end
-
-% quadv int in the elment and section 
-%~ finte = quadv('finteInt', 0, l, [], [], elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), ...
-													%~ R(LocBendXZdofs,LocBendXZdofs), Ut(LocBendXZdofs), hyperElasParams, ...
-													%~ hyperElasModel, l) ;
-						
-KbendXZ = KTe ;
