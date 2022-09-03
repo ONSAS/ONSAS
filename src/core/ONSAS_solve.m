@@ -35,10 +35,18 @@ cellFint = {};
 %md sets stopping boolean to false
 finalTimeReachedBoolean = false ;
 %mdand starts the iteration
-fprintf('| Starting analysis.   |0       50       100| %%   |\n')
+fprintf('|                                                 |\n')
+fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
 plotted_bars = 0 ;
 
+plots_counter = 0 ;
+
+iterations_average = 0 ;
+iterations_maximum = 0 ;
+iterations_strop_crit_vec = [ 0 0 0 ] ;
+
+tic
 while finalTimeReachedBoolean == false
 
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
@@ -47,16 +55,29 @@ while finalTimeReachedBoolean == false
   while plotted_bars < percent_time,
     fprintf('=')
     plotted_bars = plotted_bars +1 ;
-    %fprintf(' %3i,', modelCurrSol.timeIndex),
   end
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
+  % iterations statistics
+  iterations_average = ...
+    (   iterations_average* (modelNextSol.timeIndex-2) + modelNextSol.timeStepIters ) ...
+    / ( modelNextSol.timeIndex-1) ;
+
+  iterations_maximum = max( iterations_maximum, modelNextSol.timeStepIters ) ;
+  iterations_strop_crit_vec( modelNextSol.timeStepStopCrit ) = ...
+    iterations_strop_crit_vec( modelNextSol.timeStepStopCrit ) + 1 ;
+  % ------------------------------
+
+
+
   % check if final time was reached
   finalTimeReachedBoolean = ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
 
+
+ 
   % store results and update structs
   modelCurrSol   	=  	modelNextSol ;
   matUs          	= [ matUs          modelCurrSol.U                   ] ;
@@ -68,15 +89,27 @@ while finalTimeReachedBoolean == false
 		
 	cellFint{end+1}	= modelCurrSol.matFint ;
 	
-	 	
-	
+		
   % generate vtk file for the new state
-  if strcmp( modelProperties.plotsFormat, 'vtk' )
+  if strcmp( modelProperties.plots_format, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );
   end % if vtk output format
 
 end %while time
-fprintf('| end |\n')
+time_solve = toc ;
+fprintf('|     |\n')
+
+
+
+% ---- print iteration statistics -----
+fprintf('| Time: %6.1f sec                                |\n',time_solve)
+fprintf('|                                                 |\n')
+fprintf('| Iters:  avg  max | Stop by: force  disp  iters  |\n')
+fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
+  iterations_average, iterations_maximum, iterations_strop_crit_vec(1), ...
+  iterations_strop_crit_vec(2), iterations_strop_crit_vec(3) )
+% -------------------------------------
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%

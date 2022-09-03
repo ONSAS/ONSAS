@@ -103,7 +103,8 @@ analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
 otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
+otherParams.plots_deltaTs_separation = 2 ;
 %md
 %md### Analysis case 1: Newton-Raphson with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
