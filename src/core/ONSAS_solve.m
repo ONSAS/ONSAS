@@ -76,7 +76,7 @@ while finalTimeReachedBoolean == false
   end % if vtk output format
 
 end %while time
-fprintf('| end |\n')
+fprintf('| end    |\n')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%
