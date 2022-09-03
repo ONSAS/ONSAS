@@ -96,11 +96,9 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
 		end
 		
 	elseif boolMatNonLin == 1
-
-		elemCrossSecParamsVec = elemCrossSecParams{2} ;
-		
-		quadv_userInt
-		
+	
+		finteKTe_int		
+	
 	end % endif mat non linearity
 	
   Ktorsn = G*J/l * [  1 -1  ; ...
@@ -115,7 +113,7 @@ function [ fs, ks ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massM
   Finte = KGelem * Ut ;
   
   %~ RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
-	%~ KbendXZ2 = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ 
+	%~ KbendXZ = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ 
   
   if boolMatNonLin == 1
 		Finte(LocBendXZdofs) = R(LocBendXZdofs,LocBendXZdofs)*finte ;

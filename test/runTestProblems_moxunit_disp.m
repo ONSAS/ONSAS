@@ -58,3 +58,7 @@ function test_12
 
 function test_13
   assertEqual( gaussIntegrationTest, true);
+  
+function test_14
+	cantileverLinearHardening
+  assertEqual( verifBoolean, true);

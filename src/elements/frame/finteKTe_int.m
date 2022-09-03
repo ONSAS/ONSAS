@@ -25,6 +25,8 @@ global ne
 KbendXZ = zeros(4,4) ;
 finte 	= zeros(4,1) ;
 
+elemCrossSecParamsVec = elemCrossSecParams{2} ;
+
 % Elem Gauss points
 [xge, we] = gaussPointsAndWeights(ne) ;
 pgeVec = ( l/2  * xge' + l/2 ) ;	

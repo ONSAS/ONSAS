@@ -22,31 +22,21 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 			
 	% Linear elastic 
 	if strcmp(hyperElasModel, 'linearElastic') 
-		sigma = E * epsk ;
 		dsigdeps = E ;
-	% Elastoplastic perfect
-	elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') 
-		sigmaY = hyperElasParams(3) ;
-		sigma_tr = abs( E*epsk ) ;
-		if sigma_tr >= sigmaY
-			sigma = sigmaY * sign(epsk) ;
-			dsigdeps = 0 ;
-		else
-			sigma = sigma_tr .* sign(epsk) ;
-			dsigdeps = E ;
-		end	
-	% Linear hardening	
-	elseif strcmp(hyperElasModel, 'linearHardening')
+		sigma = E * epsk ;
+	% Bi Linear	
+	elseif strcmp(hyperElasModel, 'biLinear')
 		sigmaY = hyperElasParams(3) ;
 		sigma_tr = abs( E*epsk ) ;
 		if sigma_tr >= sigmaY
 			K = hyperElasParams(4) ;
 			epsY = sigmaY/E ;
-			sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ; 
-			dsigdeps = K ; 
+			%~ sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ; 
+			dsigdeps = E*K / (E+K) ; 
+			sigma = sigmaY*sign(epsk) + dsigdeps * ( epsk - epsY*sign(epsk) ) ; 
 		else
-			sigma = sigma_tr * sign(epsk) ;
 			dsigdeps = E ;
+			sigma = sigma_tr * sign(epsk) ;
 		end
 	elseif strcmp(hyperElasModel, 'userFunc')
 		[sigma, dsigdeps] = userConsModel(hyperElasParams, epsk) ;
