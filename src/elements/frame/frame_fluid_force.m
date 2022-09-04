@@ -277,7 +277,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem,...
   if ~isempty( userLiftCoef )
     c_l = feval( userLiftCoef, betaRelG, Re  ) ; 
   else
-    assert(~VIVBool, 'The lift CL0 coef function must be defined for VIVBool problems ')
+    ~isempty( VIVBool ) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ') ;
     c_l = 0 ;
   end
   if ~isempty( userMomentCoef )
