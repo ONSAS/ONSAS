@@ -54,10 +54,11 @@ end
 % -----------------------------
 
 % otherParams
-otherParams       = checkOrSetDefault ( otherParams      , 'screenOutputBool', 1 ) ;
-otherParams       = checkOrSetDefault ( otherParams      , 'plotsFormat', []     ) ;
-otherParams       = checkOrSetDefault ( otherParams      , 'nodalDispDamping', 0 ) ;
-otherParams       = checkOrSetDefault ( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
+otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;
+otherParams       = checkOrSetDefault( otherParams      , 'plots_format', []    ) ;
+otherParams       = checkOrSetDefault( otherParams      , 'plots_deltaTs_separation', 1  ) ;
+otherParams       = checkOrSetDefault( otherParams      , 'nodalDispDamping', 0 ) ;
+otherParams       = checkOrSetDefault( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
 
 global exportFirstMatrices;
 if isempty( exportFirstMatrices )
