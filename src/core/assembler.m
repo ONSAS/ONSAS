@@ -198,12 +198,12 @@ for elem = 1:nElems
     %md compute hydrodynamic force of the element}
     if aeroBool && fsBool
 
-      FaeroElem = frame_fluid_force( elemNodesxyzRefCoords              , ...
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords              , ...
                                      u2ElemDisps( Ut       , dofselem ) , ...
                                      u2ElemDisps( Udott    , dofselem ) , ...
                                      u2ElemDisps( Udotdott , dofselem ) , ...
                                      elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
-                                     analysisSettings, timeVar, elem ) ;
+                                     analysisSettings, timeVar, elem, true ) ;
 
     end
   
@@ -277,7 +277,7 @@ for elem = 1:nElems
 
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
-      valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
+      valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' + MataeroEelem( indRow, : )' ;
 
       if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
