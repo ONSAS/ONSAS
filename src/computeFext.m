@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors )
+function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors,  U, Udot , Udotdot )
 
 Fext = zeros( lengthFext, 1 ) ;
 
@@ -37,6 +37,6 @@ for i=1:length( factorLoadsFextCell )
 end
 
 if ~isempty( userLoadsFilename )
-  Fext = Fext + feval( userLoadsFilename, evalTime )  ;
+  Fext = Fext + feval( userLoadsFilename, evalTime, U, Udot , Udotdot )  ;
 end
 
