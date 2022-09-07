@@ -26,14 +26,21 @@ function vtkMainWriter( modelCurrSol, modelProperties )
 %md if the current time index is not in the plot index vector, if so, ends the execution
 plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
 
-if length( plotInd ) == 0, return, end
+mod_plot = mod( modelCurrSol.currTime, ...
+                    modelProperties.plots_deltaTs_separation*modelProperties.analysisSettings.deltaT ) ;
 
-%md filname counter starts in zero
-filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
-%fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
+if mod_plot == 0,
 
-%md nodes and data conversion
-[ vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modelCurrSol, modelProperties ) ;
+  plotInd = modelCurrSol.currTime ...
+            / ( modelProperties.plots_deltaTs_separation*modelProperties.analysisSettings.deltaT ) ;
 
-%md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
-vtkFileWriter( filename, vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ) ;
+  %md filname counter starts in zero
+  filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
+
+  %fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
+  %md nodes and data conversion
+  [ vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modelCurrSol, modelProperties ) ;
+  %md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
+  vtkFileWriter( filename, vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ) ;
+
+end

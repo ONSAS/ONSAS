@@ -250,18 +250,11 @@ plot(times(1:spanPlot:end), valsNewmark(1:spanPlot:end) ,'ro', 'linewidth', lw,'
 plot(times(1:spanPlot:end), valsHHT(1:spanPlot:end)     ,'gs', 'linewidth', lw,'markersize', ms )
 plot(times(1:spanPlot:end), valsBending(1:spanPlot:end)     ,'yx', 'linewidth', lw,'markersize', ms )
 labx = xlabel('t [s]');   laby = ylabel('u(t) [m]') ;
-legend( 'analytic', 'truss-Newmark', 'nodalMass-HHT', 'Beam-model', 'location','southeast')
+legend( 'analytic', 'truss-Newmark', 'nodalMass-HHT', 'Beam-model', 'location','northeast')
 title( sprintf('dt = %.3d, m = %d, c = %d, k = %d, p0 = %d', analysisSettings.deltaT, m, c, k, p0 ) )
-
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-if exist('../../docs/src/assets/')==7
-  % printing plot also to docs directory
-  disp('printing plot also to docs directory')
-  print('../../docs/src/assets/springMassCheckU.png','-dpng')
-else
-  print('output/springMassCheckU.png','-dpng')
-end
+print('output/springMassCheckU.png', '-dpng' )
 %md
 %md```@raw html
 %md<img src="../../assets/springMassCheckU.png" alt="plot check" width="500"/>

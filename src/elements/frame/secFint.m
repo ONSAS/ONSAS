@@ -18,14 +18,8 @@
 
 function FintInt = secFint( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel)
 		
-	% Strain
 	epsk = epsVal(z, B, R, Ut) ;
-	% Section width
-	%~ t = secWidth(z', 2, ty, tz ) ;
-	t = ty ;
-	% Stress & slope
 	[sigma, ~] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
-	
-	FintInt = t * -B' * (z .* sigma)' ;
+	FintInt = ty * -B' * (z .* sigma)' ;
 
 end
