@@ -17,10 +17,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function [fagElem, matElem] = frame_fluid_force( elemCoords,... 
+function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,... 
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
-                                     nextTime, currElem, computeTangentMatrix ) 
+                                     nextTime, currElem, aeroTangBool ) 
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
@@ -200,23 +200,28 @@ function [fagElem, matElem] = frame_fluid_force( elemCoords,...
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
 
-  matElem = []
-  if computeTangentMatrix
-    matElem = zeros(12,12)
-    h = 1e-4 ;
-    for indexU = 1:12 
-      e_i = zeros(12,1)    ;
-      e_i(indexU) = 1      ;
-      UdeltaU = Ue + h*e_i ;
-      faero_i = frame_fluid_force( elemCoords,... 
-                         Ue, Udote, Udotdote,... 
+  % --- compute tangent matrix using Central Difference  ---
+  aeroMatElem = []             ;
+  if aeroTangBool
+    % initialize aerodynamic tangent matrix
+    aeroMatElem = zeros(12,12) ;
+    % numerical step to compute the tangets
+    h = 1e-10                  ;
+    for indexIncrementU = 1:12 
+      e_i = zeros(12,1)        ;
+      e_i(indexIncrementU) = 1 ;
+      % increment displacement 
+      UplusDeltaU = Ue + h * e_i   ;
+      % compute forces with u + hu at the index indexIncrementU
+      faero_incU = frame_fluid_force( elemCoords,... 
+                         UplusDeltaU, Udote, Udotdote,... 
                          aeroCoefs, elemTypeAero, analysisSettings,...
                          nextTime, currElem, false ) ;
       
-      matElem(:,indexU) = ( faero_i - fagElem ) / h
-
+      aeroMatElem(:,indexIncrementU) = ( faero_incU - fagElem ) / h ;
     end  
   end
+  % -------------------------------
 
 end
 
