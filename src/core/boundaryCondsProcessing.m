@@ -27,6 +27,7 @@ function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neu
 Conec  = myCell2Mat( mesh.conecCell ) ;
 Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
+KS     = sparse( 6*nnodes, 6*nnodes );
 
 
 %md Since we want to process the BCs, we keep only the nonzero BCs
@@ -50,7 +51,7 @@ for indBC = 1:length( boundaryTypes )
 
   % number of current BC processed
   BCnum = boundaryTypes(indBC) ;
-
+  
   %md loads verification
   %md is loadsCoordSys is not empty, then some load is applied in this BC
   if ~isempty( boundaryConds( indBC ).loadsCoordSys )
@@ -80,7 +81,35 @@ for indBC = 1:length( boundaryTypes )
   end % if: disp dofs
 
 
+
+  if ~isempty( boundaryConds(BCnum).springDofs ),
+    
+    %md find the elements with the current boundary condition
+    elemsWithBC = find( Conec(:,3) == indBC ) ;
+
+    for inde = 1:length( elemsWithBC )
+      %
+      if ~strcmp( elements( Conec( elemsWithBC(inde), 2 ) ).elemType, 'node' )    
+        error('springDofs can only be assigned to node elements, by the moment!')
+      else
+        nodes_with_spring = Conec( elemsWithBC(inde), 4+1 ) 
+        for indn = 1:length( nodes_with_spring )
+          nodedofs = nodes2dofs( nodes_with_spring(indn), 6 ) ;
+          locdofs  = boundaryConds(BCnum).springDofs ;
+          boundaryConds(BCnum).springVals
+          KS( nodedofs(locdofs), nodedofs(locdofs) ) = KS( nodedofs(locdofs), nodedofs(locdofs) ) ...
+            + spdiags( boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs) ) ;
+        end
+      end
+    end
+
+  end % if: springDofs
+
+
 end % for: elements with boundary condition assigned
+
+%full(KS)
+
 diriDofs = unique( diriDofs) ;
 
 %md remove element if no material is assigned
@@ -150,20 +179,6 @@ end
 % ----------------------------------------------------------------------
 
 
-% ----------------------
-KS        = sparse( 6*nnodes, 6*nnodes );
-
-%~ for i=1:size(nodalSprings,1)
-  %~ aux = nodes2dofs ( nodalSprings (i,1) , 6 ) ;
-  %~ for k=1:6
-    %~ %
-    %~ if nodalSprings(i,k+1) == inf,
-      %~ fixeddofs = [ fixeddofs; aux(k) ] ;
-    %~ elseif nodalSprings(i,k+1) > 0,
-      %~ KS( aux(k), aux(k) ) = KS( aux(k), aux(k) ) + nodalSprings(i,k+1) ;
-    %~ end
-  %~ end
-%~ end
 % ----------------------------------------------------------------------
 %md Loop for computing of gravity external force vector
 if analysisSettings.booleanSelfWeight == true

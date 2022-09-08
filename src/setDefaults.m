@@ -32,6 +32,7 @@ elements          = checkOrSetDefault ( elements         , 'aeroCoefs'          
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
+boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
 
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;

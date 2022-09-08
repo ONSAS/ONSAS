@@ -342,6 +342,7 @@ if tangBool
   indsIK = indsIK(1:counterInds) ;
   indsJK = indsJK(1:counterInds) ;
   valsK  = valsK (1:counterInds) ;
+%  norm(KS)
   K      = sparse( indsIK, indsJK, valsK, size(KS,1), size(KS,1) ) + KS ;
   tangMatsCell{1} = K ;
 
