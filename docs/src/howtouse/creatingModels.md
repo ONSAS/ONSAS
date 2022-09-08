@@ -36,6 +36,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```
+ * `'isotropicHardening'`:  $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
 ### `materials.hyperElasParams`
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
