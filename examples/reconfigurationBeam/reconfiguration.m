@@ -1,7 +1,10 @@
-
+% #md Reconfiguration problem 
+%----------------------------
 close all, clear all ;
+% Store drag force 
+%----------------------------
 global FDrag
-FDrag = zeros(100,1)
+FDrag = zeros(100,1) ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ); tic;
 % General  problem parameters
@@ -37,7 +40,7 @@ elements(2).elemCrossSecParams{2,1} = [ A J Iy Ix ] ;% number of Gauass integrat
 % elements(2).elemCrossSecParams{1,1} = 'circle' ;
 % elements(2).elemCrossSecParams{2,1} = [ d ] ;% number of Gauass integration points and elemTypeAero field:
 numGaussPoints = 4 ;
-computeAeroTangentMatrix = true
+computeAeroTangentMatrix = true ;
 elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
 % The drag function name is:
 elements(2).aeroCoefs = {'dragCoefCircular'; []; [] } ;
@@ -59,8 +62,8 @@ analysisSettings.fluidProps = {rhoA; nuA; 'windVelRec'} ;
 %md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = true;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
-analysisSettings.deltaT        =   1            ;
-analysisSettings.finalTime     =   100            ;
+analysisSettings.deltaT        =   1            ; % needs to be 1
+analysisSettings.finalTime     =   500           ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md Next the maximum number of iterations per load(time) step, the residual force and the displacements tolerances are set to: 
 analysisSettings.stopTolDeltau =   0             ;
@@ -128,8 +131,7 @@ for windVelStep = 1:numLoadSteps - 1
 
     % numeric drag 
     % FDnum = dot(R1, dirWindVel)       ;
-    FDragi = FDrag(windVelStep) 
-    normWindVel
+    FDragi = FDrag(windVelStep)         ;
     R(windVelStep) =  FDragi/(1/2 * rhoA * normWindVel^2 * C_d * d * L);
 end
 
@@ -141,13 +143,13 @@ folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
 %md The R vs Cy* is: 
 fig1 = figure(1) ;
-hold on, grid on
-loglog(C_d * Cy      , ydefNum  , 'bo' , 'linewidth', lw, 'markersize', ms+5   );
+loglog(C_d * Cy      , R  , 'b-' , 'linewidth', lw, 'markersize', ms   );
 legend('ONSAS' )
 labx=xlabel(' Cy* ');    laby=ylabel('R');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+grid on
 namefig1 = strcat(folderPathFigs, 'CyR.png') ;
 
 
