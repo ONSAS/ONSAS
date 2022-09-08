@@ -33,9 +33,11 @@ elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = d          ;
 % hydro cross-section props
 numGaussPoints  = 4 ;
+computeAeroTangMatrix = false ;
 elements(2).aeroCoefs   = {nameDragFunc; nameLiftFunc; [] }   ;
 %  chord vector and gauss points
-elements(2).elemTypeAero = [0 0 -d numGaussPoints ] ; % [chordVec1 chordVec2 chordVec3 numGauss  ]
+
+elements(2).elemTypeAero = [0 0 -d numGaussPoints computeAeroTangMatrix ] ; % [chordVec1 chordVec2 chordVec3 numGauss  ]
 % mass element formulation
 elements(2).massMatType = 'consistent' ; 
 %
