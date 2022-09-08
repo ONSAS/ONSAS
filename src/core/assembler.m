@@ -334,6 +334,9 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
+
+  global FDrag
+  FDrag(timeVar) = sum(Faero(3:6:end)) ;
 end
 
 
