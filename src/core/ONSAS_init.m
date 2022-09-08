@@ -69,6 +69,8 @@ currTime  = 0 ; timeIndex = 1 ;
 % process initial conditions
 [ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
 
+acum_plas_strain = 0 ;
+
 convDeltau   = zeros( size(U) ) ; 
 
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;

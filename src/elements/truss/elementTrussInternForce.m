@@ -21,7 +21,7 @@
 
 
 function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A, plas_strain_n, acum_plas_strain_n )
+  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A, previous_state )
 
   Xe    = Xe'     ;
   Xedef = Xe + Ue ;
@@ -79,6 +79,10 @@ function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain
      
     else strcmp( hyperElasModel, 'isotropicHardening')
 
+      stress_n = previous_state(1);
+      plas_strain_n = previous_state(2) ;
+      acum_plas_strain_n =  previous_state(3) ;
+
       Kplas       = hyperElasParams(2) ;
       sigma_Y_0   = hyperElasParams(3) ;
   
@@ -87,14 +91,17 @@ function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain
 
       
       if phi_tr < 0 % elastic behavior
-        stress = stress_Elas ;
-        dstressdeps = E ;
+        stress           = stress_Elas ;
+        dstressdeps      = E ;
         acum_plas_strain = acum_plas_strain_n ; 
         
       else % elasto-plastic behavior
         delta_gamma = phi_tr / ( E + Kplas )
-      
-      
+
+        stress           = stress_Elas - E*delta_gamma * sign( stress_Elas ) ;
+        dstressdeps      = E*Kplas / ( E + Kplas ) ;
+        acum_plas_strain = acum_plas_strain_n + delta_gamma ; 
+
       end
     end
       
