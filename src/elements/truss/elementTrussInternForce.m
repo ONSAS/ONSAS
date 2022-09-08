@@ -20,7 +20,7 @@
 % of 3D truss elements using engineering strain.
 
 
-function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain ] = ...
+function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
   elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A, previous_state )
 
   Xe    = Xe'     ;
@@ -82,6 +82,7 @@ function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain
       stress_n = previous_state(1);
       plas_strain_n = previous_state(2) ;
       acum_plas_strain_n =  previous_state(3) ;
+      strain_n = previous_state(4);
 
       Kplas       = hyperElasParams(2) ;
       sigma_Y_0   = hyperElasParams(3) ;
