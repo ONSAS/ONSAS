@@ -20,8 +20,8 @@
 % of 3D truss elements using engineering strain.
 
 
-function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A )
+function [Finte, KTe, stress, dstressdeps, strain, plas_strain, acum_plas_strain ] = ...
+  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A, plas_strain_n, acum_plas_strain_n )
 
   Xe    = Xe'     ;
   Xedef = Xe + Ue ;
@@ -67,13 +67,31 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
     KTe   =   stress      * A / lini * Ge  ...
             + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
 
-  elseif strcmp( hyperElasModel, '1DrotEngStrain')
+  elseif strcmp( hyperElasModel, '1DrotEngStrain') || strcmp( hyperElasModel, 'isotropicHardening')
+
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
     E           = hyperElasParams(1) ;
-    stress      = E * strain ;
-    dstressdeps = E ;
 
+    if strcmp( hyperElasModel, '1DrotEngStrain')
+      stress      = E * strain ;
+      dstressdeps = E ;
+     
+    else strcmp( hyperElasModel, 'isotropicHardening')
+      stress_Elas = stress_n + E * (strain - strain_n)
+      phi_tr = abs( stress_Elas ) - sigma_Y(acum_plas_strain_n)
+    
+      if phi_tr < 0
+        stress = stress_Elas ;
+        dstressdeps = E ;
+        acum_plas_strain = acum_plas_strain_n ; 
+        
+      else
+      
+      
+      end
+    end
+      
     Finte = stress * A * TTcl ;
 
     KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
