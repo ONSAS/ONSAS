@@ -71,9 +71,10 @@ elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 %md Now the parameters to include aerodynamic forces automatically on the frame element are defined. The drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _aeroCoefs_ field is a row cell defined as:
 elements(2).aeroCoefs   = {'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction'} ;
-%md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. All this information is added into _elemTypeAero_ field of `elements` struct such that:
+%md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. The aerodynamic tangent matrix is the last boolean element of the vector `elemTypeAero`, and in this case is set as false.  All this information is added into _elemTypeAero_ field of `elements` struct such that:
 numGaussPoints  = 4 ; 
-elements(2).elemTypeAero   = [0 dext 0 numGaussPoints];
+computeAeroTangMatrix = false ;
+elements(2).elemTypeAero   = [0 dext 0 numGaussPoints computeAeroTangMatrix];
 %md in which 4 Gauss integration points are employed to compute the aerodynamic force. This value is enough in most cases. 
 %md
 %md### boundaryConds
