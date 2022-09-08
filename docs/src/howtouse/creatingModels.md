@@ -125,10 +125,12 @@ cell with filenames of `.m` function file provided by the user that can be used 
 cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
 ### `boundaryConds.imposDispVals`
 cell with vectors of the values of displacements imposed.
-### `boundaryConds.springsDofs`
-cell with vectors of the local degrees of freedom with springs (integers from 1 to 6)
-### `boundaryConds.springsVals`
-cell with vectors of the values of the springs stiffnesses.
+
+### `boundaryConds.springDofs`
+vector with the local degrees of freedom of the node with springs (integers from 1 to 6)
+
+### `boundaryConds.springVals`
+vector with the values of the springs stiffnesses.
 
 ## The `initialConds` struct
 
