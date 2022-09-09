@@ -11,10 +11,17 @@ addpath( genpath( [ pwd '/../../src'] ) ); tic;
 %----------------------------
 % according to the given parameters we obtain:
 l = 1 ; d = l/100;%10 ; 
-J = pi * d ^ 4 / 64 ; Iyy = J / 2 ; Izz = J / 2 ;  B = E*Izz; % I added
-E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ;
+J = pi * d ^ 4 / 64 ; Iyy = J / 2 ; Izz = J / 2 ;  
+E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ; B = E*Izz; % I added
 % fluid properties
-rhoF = 1000 ; nuA = 1.6e-5 ; 
+rhoF = 1020 ; nuA = 1.6e-5 ; 
+
+vwindMax = 16
+
+q = 1/2 * rhoF* vwindMax^2 ;
+c_d = 1.2;
+CYCD = c_d*q*(l^3)*d/(2*B)
+
 %
 numElements = 10 ;
 %
@@ -39,13 +46,11 @@ numGaussPoints = 4 ;
 computeAeroTangentMatrix = true ;
 elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
 % The drag function name is:
-elements(2).aeroCoefs = {'dracCircle'; []; [] } ;
+elements(2).aeroCoefs = {'dragCircular'; []; [] } ;
 %
 % boundaryConds
 %----------------------------
 % The elements are submitted to only one different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
-% boundaryConds(1).imposDispDofs = [ 1 2 3 4 5  ] ;
-% boundaryConds(1).imposDispVals = [ 0 0 0 0 0  ] ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %
@@ -56,12 +61,12 @@ initialConds = struct() ;
 %
 % analysisSettings Static
 %----------------------------
-analysisSettings.fluidProps = {rhoF; nuA; 'windVelRecStatic'} ;
+analysisSettings.fluidProps = {rhoF; nuA; 'windVelCircStatic'} ;
 %md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = true;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
 analysisSettings.deltaT        =   1             ; % needs to be 1
-analysisSettings.finalTime     =   NR            ;
+analysisSettings.finalTime     =   100            ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md Next the maximum number of iterations per load(time) step, the residual force and the displacements tolerances are set to: 
 analysisSettings.stopTolDeltau =   0             ;
@@ -70,14 +75,14 @@ analysisSettings.stopTolIts    =   50            ;
 %
 % otherParams
 %----------------------------
-otherParams.problemName = 'staticReconfigurationRectangle';
+otherParams.problemName = 'staticReconfigurationCircle';
 otherParams.plots_format = 'vtk' ;
 %md
 %
 % meshParams
 %----------------------------
 %mdThe coordinates of the mesh nodes are given by the matrix:
-half_coords = [ (0:(numElements))' * (L/2) / numElements  zeros(numElements+1,2) ];
+half_coords = [ (0:(numElements))' * l / numElements  zeros(numElements+1,2) ];
 % mesh.nodesCoords = [ flip(-half_coords);...
                     %  half_coords(2:end,:) ] ;
 mesh.nodesCoords = [ half_coords ] ;
@@ -97,7 +102,7 @@ end
 %md### Declare a global variable to store drag 
 %md
 global FDrag
-FDrag = zeros(NR,1) ;
+FDrag = zeros(analysisSettings.finalTime, 1) ;
 %md
 %md### Run ONSAS 
 %md
@@ -115,22 +120,28 @@ for windVelStep = 1:numLoadSteps - 1
     windVel         = feval( analysisSettings.fluidProps{3,:}, 0, timeVec(windVelStep + 1 ) ) ;
     normWindVel     = norm( windVel )                                                         ;
     dirWindVel      = windVel / normWindVel                                                   ;
-    Cy(windVelStep) =  rhoF * normWindVel^2 * (L/2)^3 / (2 * EI)                              ;
+    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (2 * B)                              ;
 
     % numeric drag 
     FDragi = FDrag(windVelStep) ;
-    R(windVelStep) =  abs(FDragi)/(1/2 * rhoF * normWindVel^2 * C_d * w * L/2 )               ;
+    FDRef  = 1/2 * rhoF * normWindVel^2 * C_d * d * l    ;
+    R(windVelStep) =  abs(FDragi)/(FDRef )               ;
 
 end
+%md Extract the Gosselin Results
+resudrag = csvread('F_Gosselin2010.cvs');
+
 %md The plot parameters are:
-lw = 4 ; ms = 12 ;
+lw = 4 ; ms = 5 ;
 axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
 folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
 %md The R vs Cy* is: 
 fig1 = figure(1) ;
-loglog(Cy, R  , 'b-' , 'linewidth', lw, 'markersize', ms   );
-legend('ONSAS' )
+hold on
+loglog(C_d*Cy, R  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
+loglog(resudrag(:,1), resudrag(:,2)  , 'k-' , 'linewidth', lw, 'markersize', ms   );
+legend('ONSAS', 'Gosselin')
 labx=xlabel(' Cy* ');    laby=ylabel('R');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
