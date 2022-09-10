@@ -23,16 +23,14 @@
 
 function vtkMainWriter( modelCurrSol, modelProperties )
 
-%md if the current time index is not in the plot index vector, if so, ends the execution
-plotInd = find( modelProperties.timesPlotsVec == modelCurrSol.timeIndex ) ;
-
-mod_plot = mod( modelCurrSol.currTime, ...
-                    modelProperties.plots_deltaTs_separation*modelProperties.analysisSettings.deltaT ) ;
-
-if mod_plot == 0,
-
-  plotInd = modelCurrSol.currTime ...
+plot_ind_float = modelCurrSol.currTime ...
             / ( modelProperties.plots_deltaTs_separation*modelProperties.analysisSettings.deltaT ) ;
+
+plot_ind_round = round( plot_ind_float ) ;
+
+if abs( plot_ind_float-plot_ind_round) < 1e-10,
+
+  plotInd = plot_ind_round ;
 
   %md filname counter starts in zero
   filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
