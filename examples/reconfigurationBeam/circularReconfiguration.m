@@ -9,19 +9,8 @@ close all, clear all ;
 addpath( genpath( [ pwd '/../../src'] ) ); tic;
 % General  problem parameters
 %----------------------------
-% according to the given parameters we obtain:
-l = 1 ; d = l/100;%10 ; 
-J = pi * d ^ 4 / 32 ; Iyy = J / 2 ; Izz = J / 2 ;  
-E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ; B = E*Izz; % I added
-% fluid properties
-rhoF = 1020 ; nuA = 1.6e-5 ; 
-
-vwindMax = 16
-
-q = 1/2 * rhoF* vwindMax^2 ;
-c_d = 1.2;
-CYCD = c_d*q*(l^3)*d/(2*B)
-
+% we load the given parameters:
+[l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParamtetersCirc()
 %
 numElements = 10 ;
 %
@@ -29,8 +18,8 @@ numElements = 10 ;
 %----------------------------
 % Since the example contains only one material and co-rotational strain element so then `materials` struct is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ]        ;
-materials.density         = rho              ;
+materials.hyperElasParams = [ E nu ]         ;
+materials.density         = rhoS             ;
 %
 % elements
 %----------------------------
@@ -46,7 +35,7 @@ numGaussPoints = 4 ;
 computeAeroTangentMatrix = true ;
 elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
 % The drag function name is:
-elements(2).aeroCoefs = {'dragCircular'; []; [] } ;
+elements(2).aeroCoefs = {dragCoefFunction; []; [] } ;
 %
 % boundaryConds
 %----------------------------
@@ -61,12 +50,12 @@ initialConds = struct() ;
 %
 % analysisSettings Static
 %----------------------------
-analysisSettings.fluidProps = {rhoF; nuA; 'windVelCircStatic'} ;
+analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircStatic'} ;
 %md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = true;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
 analysisSettings.deltaT        =   1             ; % needs to be 1
-analysisSettings.finalTime     =   100            ;
+analysisSettings.finalTime     =   NR            ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md Next the maximum number of iterations per load(time) step, the residual force and the displacements tolerances are set to: 
 analysisSettings.stopTolDeltau =   0             ;
@@ -82,31 +71,29 @@ otherParams.plots_format = 'vtk' ;
 % meshParams
 %----------------------------
 %mdThe coordinates of the mesh nodes are given by the matrix:
-half_coords = [ (0:(numElements))' * l / numElements  zeros(numElements+1,2) ];
-% mesh.nodesCoords = [ flip(-half_coords);...
-                    %  half_coords(2:end,:) ] ;
-mesh.nodesCoords = [ half_coords ] ;
+mesh.nodesCoords = [ (0:(numElements))' * l / numElements  zeros(numElements+1,2) ];
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. For (I) no non-homogeneous initial condition is considered (then zero is used) and finally the node is assigned:
-% mesh.conecCell{ 1, 1 } = [ 0 1 1 0  floor(numElements/2) + 1] ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1] ;
 %md Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and no IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
-% for i=1:2*numElements,
-  % mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
-% end
 for i=1:numElements,
   mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
 end
+%md 
+%md## Global variables
+%md---------------------
 %md
 %md### Declare a global variable to store drag 
 %md
 global globalFDrag
+global globalNIter
 globalFDrag = zeros(analysisSettings.finalTime, 1) ;
+globalNIter = zeros(analysisSettings.finalTime + 1, 1) ;
 %md
 %md### Run ONSAS 
 %md
-[matUsCase, loads, cellFint] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUsCase] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md 
 %md## Verification
 %md---------------------
@@ -120,7 +107,7 @@ for windVelStep = 1:numLoadSteps - 1
     windVel         = feval( analysisSettings.fluidProps{3,:}, 0, timeVec(windVelStep + 1 ) ) ;
     normWindVel     = norm( windVel )                                                         ;
     dirWindVel      = windVel / normWindVel                                                   ;
-    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (B)                              ;
+    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (E*Izz)                            ;
 
     % numeric drag 
     FDragi = globalFDrag(windVelStep) ;
@@ -136,7 +123,8 @@ lw = 4 ; ms = 5 ;
 axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
 folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
-%md The R vs Cy* is: 
+%
+%md The R vs Cy* plot is: 
 fig1 = figure(1) ;
 hold on
 loglog(C_d*Cy, R  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
@@ -148,4 +136,16 @@ set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
 namefig1 = strcat(folderPathFigs, 'CyR.png') ;
+%
+%md The Iter vs Cy* plot is: 
+fig2 = figure(2) ;
+hold on
+semilogx(C_d*Cy, globalNIter(2:end)  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
+legend('ONSAS', 'Gosselin')
+labx=xlabel(' Cy* ');    laby=ylabel('Number of iteration');
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
+set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
+set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+grid on
+namefig2 = strcat(folderPathFigs, 'CyNiter.png') ;
 
