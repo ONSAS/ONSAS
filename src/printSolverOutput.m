@@ -61,8 +61,8 @@ if lineData(1) == 1 % iteration information
 elseif lineData(1) == 2 %end of iteration information
   % global vaiable to store iteration convergence at each time step
   global globalNIter
-  if ~isempty(globalNIter)
-    globalNIter(lineData(3) + 1) = lineData(4) ;
+  if ~isempty(globalNIter) 
+    globalNIter(lineData(2) + 1) = lineData(4) ;
   end
 
   if lineData(5)==1
