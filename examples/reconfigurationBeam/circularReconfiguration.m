@@ -11,7 +11,7 @@ addpath( genpath( [ pwd '/../../src'] ) ); tic;
 %----------------------------
 % according to the given parameters we obtain:
 l = 1 ; d = l/100;%10 ; 
-J = pi * d ^ 4 / 64 ; Iyy = J / 2 ; Izz = J / 2 ;  
+J = pi * d ^ 4 / 32 ; Iyy = J / 2 ; Izz = J / 2 ;  
 E = 3e7 ;  nu = 0.3 ; rho = 700 ; G = E / (2 * (1+nu)) ; B = E*Izz; % I added
 % fluid properties
 rhoF = 1020 ; nuA = 1.6e-5 ; 
@@ -101,8 +101,8 @@ end
 %md
 %md### Declare a global variable to store drag 
 %md
-global FDrag
-FDrag = zeros(analysisSettings.finalTime, 1) ;
+global globalFDrag
+globalFDrag = zeros(analysisSettings.finalTime, 1) ;
 %md
 %md### Run ONSAS 
 %md
@@ -120,10 +120,10 @@ for windVelStep = 1:numLoadSteps - 1
     windVel         = feval( analysisSettings.fluidProps{3,:}, 0, timeVec(windVelStep + 1 ) ) ;
     normWindVel     = norm( windVel )                                                         ;
     dirWindVel      = windVel / normWindVel                                                   ;
-    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (2 * B)                              ;
+    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (B)                              ;
 
     % numeric drag 
-    FDragi = FDrag(windVelStep) ;
+    FDragi = globalFDrag(windVelStep) ;
     FDRef  = 1/2 * rhoF * normWindVel^2 * C_d * d * l    ;
     R(windVelStep) =  abs(FDragi)/(FDRef )               ;
 
