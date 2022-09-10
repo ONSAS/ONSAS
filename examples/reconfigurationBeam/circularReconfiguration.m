@@ -10,7 +10,7 @@ addpath( genpath( [ pwd '/../../src'] ) ); tic;
 % General  problem parameters
 %----------------------------
 % we load the given parameters:
-[l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParamtetersCirc()
+[l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParamtetersCirc();
 %
 numElements = 10 ;
 %

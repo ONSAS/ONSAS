@@ -21,6 +21,6 @@ function [l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_
     for cy_index = cycdvec_indexes
         cycd = 10^cy_index          ;   
         cycd_vec = [cycd_vec, cycd]   ;
-        uy_vec =[uy_vec, sqrt(cycd * 4 * B / (c_d * l^3 * d * rhoF))];
+        uy_vec =[uy_vec, sqrt(cycd * 2 * B / (c_d * l^3 * d * rhoF))];
     end
 end
