@@ -1,6 +1,6 @@
 function windVel = windVelCircStatic(x,t)
 
-[_, _, _, _, _, _, _, _, _, _, _, uy_vec ]  = loadParamtetersCirc() ;
+[~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, uy_vec ]  = loadParamtetersCirc() ;
 
 
 % compute the wind vel vector according to the cy vector
