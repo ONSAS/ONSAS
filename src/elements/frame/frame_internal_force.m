@@ -18,6 +18,7 @@
 function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue ) ;
   
+  global epsilon_pretension;
   % element coordinates
   xs = elemCoords(:) ;
 
@@ -45,7 +46,8 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
 
   % --- local displacements ---
   % axial displacement
-  u   = l - l0 ;
+%  u   = l - l0 ;
+  u   = l - l0 + epsilon_pretension*l0;
   % local rotations
   tl1 = logar( Rroof1 ) ;
   tl2 = logar( Rroof2 ) ;  
