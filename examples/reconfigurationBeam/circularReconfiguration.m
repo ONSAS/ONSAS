@@ -12,7 +12,7 @@ addpath( genpath( [ pwd '/../../src'] ) ); tic;
 % we load the given parameters:
 [l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParamtetersCirc();
 %
-numElements = 12 ;
+numElements = 10 ;
 %
 % materials
 %----------------------------
@@ -127,10 +127,8 @@ end
 %
 %### Gosselin et.Al 2010 solution
 %
-% CyvsCD
-resudrag = csvread('cycdGosselin2010.cvs');
-% Deformed configurations
-load('defGosselin2010.mat')
+% resudrag (cycd, R) and def wich contains de deformed configuration for 10^i cycyd values: 
+load('Gosselin2010_data.mat')
 %md
 %md### Validation plots
 %md
@@ -156,7 +154,7 @@ set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
 % save figure
 namefig1 = strcat(folderPathFigs, 'CyR.png') ;
-print(namefig1,'-dpng')
+% print(namefig1,'-dpng')
 %
 %md The number of iterations vs Cauchy number is then plotted:  
 %
@@ -212,8 +210,8 @@ namefig3 = strcat(folderPathFigs, 'xy.png') ;
 %
 % The verification boolean is computed as for the deformed configurations and the cycd curve
 % deformed coordinates dif norm
-vecDifDeform =  [ norm( ydef - ydefG(1:10:end)') ;...
-                  norm( xdef - xdefG(1:10:end)') ] ;
+vecDifDeform =  [ norm( ydef - ydefG(1:numElements:end)') ;...
+                  norm( xdef - xdefG(1:numElements:end)') ] ;
 
 % verification boolean deformed 
 verifBooleanDef =  vecDifDeform <=  2e-2 * l ;
