@@ -29,8 +29,6 @@ elements(2).elemType = 'frame' ;
 % for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a circular section with $d$ diameter
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;% number of Gauass integration points and elemTypeAero field:
-% elements(2).elemCrossSecParams{1,1} = 'circle' ;
-% elements(2).elemCrossSecParams{2,1} = [ d ] ;% number of Gauass integration points and elemTypeAero field:
 numGaussPoints = 4 ;
 computeAeroTangentMatrix = true ;
 elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
@@ -107,8 +105,8 @@ zref = mesh.nodesCoords(:,3) ;
 numLoadSteps = size(matUs, 2) ;
 timeVec = linspace(0,analysisSettings.finalTime, numLoadSteps) ;
 % initialize vectors
-Cy = zeros(numLoadSteps-1, 1) ;
-R  = zeros(numLoadSteps-1, 1) ;
+Cy = zeros(numLoadSteps-1, 1)                 ;
+R  = zeros(numLoadSteps-1, 1)                 ;
 C_d = feval( elements(2).aeroCoefs{1}, 0 , 0) ;
 % fill them
 for windVelStep = 1:numLoadSteps - 1
@@ -116,21 +114,21 @@ for windVelStep = 1:numLoadSteps - 1
     windVel         = feval( analysisSettings.fluidProps{3,:}, 0, timeVec(windVelStep + 1 ) ) ;
     normWindVel     = norm( windVel )                                                         ;
     dirWindVel      = windVel / normWindVel                                                   ;
-    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (E*Izz)                            ;
+    Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (E*Izz)                        ;
 
     % numeric drag 
-    FDragi = globalFDrag(windVelStep) ;
-    FDRef  = 1/2 * rhoF * normWindVel^2 * C_d * d * l    ;
-    R(windVelStep) =  abs(FDragi)/(FDRef )               ;
+    FDragi = globalFDrag(windVelStep)                 ;
+    FDRef  = 1/2 * rhoF * normWindVel^2 * C_d * d * l ;
+    R(windVelStep) =  abs(FDragi)/(FDRef )            ;
 
 end
 %
 %### Gosselin et.Al 2010 solution
 %
 % resudrag (cycd, R) and def wich contains de deformed configuration for 10^i cycyd values: 
-% path_data = strcat(pwd,'/Gosselin2010_data.mat' )
-path_data = strcat('.','/Gosselin2010_data.mat' )
-load(path_data)
+path_data = strcat(pwd,'/Gosselin2010_data.mat' )
+% path_data = strcat('.','/Gosselin2010_data.mat' )
+load(path_data, 'def', 'resudrag')
 %md
 %md### Validation plots
 %md
@@ -189,8 +187,8 @@ for nr = 1:NR
   thetaYdef = matUs(4:6:end,nr+1)   ;
   thetaZdef = matUs(6:6:end,nr+1)   ;
   % Gosselin deformed coordinates solution
-  xdefG = def(1,:,nr) ;
-  ydefG = -def(2,:,nr) ;
+  xdefG = def(1,:,nr)               ;
+  ydefG = -def(2,:,nr)              ;
   % Plot 
   plot(xdef ,  ydef,  ONSASline, 'linewidth', lw, 'markersize', ms );
   plot(xdefG, ydefG,  Gline    , 'linewidth', lw, 'markersize', ms );
