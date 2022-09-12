@@ -4,7 +4,8 @@
 *.css
 /src/*.txt
 /src/*.oct
-*.mat
+/src/*.mat
+/test/*.mat
 *.vtk
 *.dat
 /examples/strings.txt

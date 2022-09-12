@@ -93,11 +93,18 @@ globalNIter = zeros(analysisSettings.finalTime + 1, 1) ;
 %md
 %md### Run ONSAS 
 %md
-[matUsCase] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUs] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%md### Numeric solution
+%md
+%md The numerical solution is extracted:
+xref    = mesh.nodesCoords(:,1)     ;
+yref    = mesh.nodesCoords(:,2)     ;
+zref    = mesh.nodesCoords(:,3)     ;
 %md 
-%md## Verification
+%md## Validation results
 %md---------------------
-numLoadSteps = size(matUsCase, 2)
+numLoadSteps = size(matUs, 2)
 timeVec = linspace(0,analysisSettings.finalTime, numLoadSteps) ;
 Cy = zeros(numLoadSteps-1, 1) ;
 R  = zeros(numLoadSteps-1, 1) ;
@@ -117,7 +124,7 @@ for windVelStep = 1:numLoadSteps - 1
 end
 %md Extract the Gosselin Results
 resudrag = csvread('F_Gosselin2010.cvs');
-
+load('def.mat')
 %md The plot parameters are:
 lw = 4 ; ms = 5 ;
 axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;    
@@ -125,9 +132,10 @@ folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
 %
 %md The R vs Cy* plot is: 
+%md---------------------
 fig1 = figure(1) ;
 hold on
-loglog(C_d*Cy, R  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
+loglog(C_d*Cy, R  , 'bo' , 'linewidth', lw, 'markersize', ms   );
 loglog(resudrag(:,1), resudrag(:,2)  , 'k-' , 'linewidth', lw, 'markersize', ms   );
 legend('ONSAS', 'Gosselin')
 labx=xlabel(' Cy* ');    laby=ylabel('R');
@@ -136,16 +144,45 @@ set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
 namefig1 = strcat(folderPathFigs, 'CyR.png') ;
+print(namefig1,'-dpng')
 %
 %md The Iter vs Cy* plot is: 
+%md---------------------
 fig2 = figure(2) ;
 hold on
-semilogx(C_d*Cy, globalNIter(2:end)  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
-legend('ONSAS', 'Gosselin')
+semilogx(C_d*Cy, globalNIter(3:end)  , 'b-o' , 'linewidth', lw, 'markersize', ms   );
+legend('iters')
 labx=xlabel(' Cy* ');    laby=ylabel('Number of iteration');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
 namefig2 = strcat(folderPathFigs, 'CyNiter.png') ;
+%
+%md x-y def plot is: 
+%md---------------------
+fig3 = figure(3) ;
+hold on
+plot(xref, yref  , 'k--' , 'linewidth', lw, 'markersize', ms   );
+for nr = 1:NR 
+  % Numerical solution case 1
+  xdef = xref + matUs(1:6:end,nr+1) ;
+  ydef = yref + matUs(3:6:end,nr+1) ;
+  zdef = zref + matUs(5:6:end,nr+1) ;
+  thetaXdef = matUs(2:6:end,nr+1)   ;
+  thetaYdef = matUs(4:6:end,nr+1)   ;
+  thetaZdef = matUs(6:6:end,nr+1)   ;
+
+  plot(xdef, ydef, 'bo'  , 'linewidth', lw, 'markersize', ms   );
+  plot(def(1,:,nr), -def(2,:,nr),  'k-', 'linewidth', lw, 'markersize', ms   );
+end
+legend('Gosselin2010.', 'ONSAS')
+labx=xlabel('x [m]');    laby=ylabel('y [m]');
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
+set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
+set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+grid on
+axis equal
+namefig3 = strcat(folderPathFigs, 'xy.png') ;
+print(namefig3,'-dpng')
 
