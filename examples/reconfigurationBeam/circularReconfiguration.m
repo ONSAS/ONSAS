@@ -126,11 +126,6 @@ end
 %### Gosselin et.Al 2010 solution
 %
 % resudrag (cycd, R) and def wich contains de deformed configuration for 10^i cycyd values: 
-disp('pwd is ')
-pwd
-disp('path data is ')
-path_data = strcat('/github/workspace/examples/reconfigurationBeam/','/Gosselin2010_data.mat' )
-% path_data = strcat('.','/Gosselin2010_data.mat' )
 load( 'Gosselin2010_data.mat', 'def', 'resudrag')
 %md
 %md### Validation plots
