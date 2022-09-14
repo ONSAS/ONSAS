@@ -131,7 +131,7 @@ pwd
 disp('path data is ')
 path_data = strcat('/github/workspace/examples/reconfigurationBeam/','/Gosselin2010_data.mat' )
 % path_data = strcat('.','/Gosselin2010_data.mat' )
-load(path_data, 'def', 'resudrag')
+load( 'Gosselin2010_data.mat', 'def', 'resudrag')
 %md
 %md### Validation plots
 %md
