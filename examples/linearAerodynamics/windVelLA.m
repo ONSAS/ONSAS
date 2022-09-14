@@ -1,4 +1,4 @@
-function windVel = windVel (x, t)
+function windVel = windVelLA (x, t)
   windy = 0;
   windz = 10*t ;
   
