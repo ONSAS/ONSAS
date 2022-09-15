@@ -2,10 +2,9 @@
 
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
-E = 210e9 ;  A = 2.5e-3 ; ang1 = 10 ; L = 2 ;
-%E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ;
-Kplas = E*0 ;
-sigma_Y_0 = 250e6 ;
+E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ;
+Kplas = E*.1 ;
+sigma_Y_0 = 25e6 ;
 
 % x and z coordinates of node 2
 x2 = cos( ang1*pi/180 ) * L ;
@@ -40,16 +39,14 @@ mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
 mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
 mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
 
-analysisSettings.methodName    = 'arcLength' ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        =   2e-5  ;
+analysisSettings.finalTime     =   1e-3    ;
 
-analysisSettings.deltaT        =   0.1  ;
-analysisSettings.finalTime     =   2    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
-analysisSettings.incremArcLen = [ 0.003*ones(1, 4) 0.002*ones(1,20) ]                           ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 otherParams.problemName = 'static_plastic_von_mises_truss';
@@ -64,10 +61,38 @@ eles = sqrt( x2^2 + (z2-deltas).^2 ) ;
 
 valsLin = -2*E*A * (z2-deltas ) ./ eles .* (eles - L) ./ L ;
 
-valsFlu = 2*sigma_Y_0 * A * ( z2 - deltas ) ./ eles  ;
+Etan = E*Kplas / ( E + Kplas) ;
+sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
+
+valsFlu = 2*( sigmas_hard * A ) .* ( ( z2 - deltas ) ./ eles )  ;
+valsP = min( valsLin, valsFlu) ;
+
+
+Kplas = -E*.05 ;
+materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
+
+analysisSettings.methodName    = 'arcLength' ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
+analysisSettings.incremArcLen = 4e-5;
+
+[matUsB, loadFactorsMatB ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+deltasB = -matUsB(6+5,:)' ;
+
+eles = sqrt( x2^2 + (z2-deltasB).^2 ) ;
+
+valsLin = -2*E*A * (z2-deltas ) ./ eles .* (eles - L) ./ L ;
+
+Etan = E*Kplas / ( E + Kplas) ;
+sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
+
+valsFlu = 2*( sigmas_hard * A ) .* ( ( z2 - deltasB ) ./ eles )  ;
+valsPB = min( valsLin, valsFlu) ;
+
 
 figure
-plot( deltas , valsLin, 'b-x' )
+plot( deltas , valsP, 'b-x' )
 grid on, hold on
-plot( deltas , valsFlu, 'r-o' )
-plot( deltas , loadFactorsMat(:,2), 'g-s' )
+plot( deltas , loadFactorsMat(:,2), 'r-o' )
+plot( deltasB , loadFactorsMatB(:,2), 'g-o' )
+plot( deltasB , valsPB, 'k-*' )
+legend('analytic','numeric', 'analytic-soft','numeric-soft')
