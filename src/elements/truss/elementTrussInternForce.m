@@ -77,26 +77,25 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
       stress      = E * strain ;
       dstressdeps = E ;
      
-    else strcmp( hyperElasModel, 'isotropicHardening')
+    elseif strcmp( hyperElasModel, 'isotropicHardening')
 
-      stress_n           = previous_state(:,1);
-      strain_n           = previous_state(:,2);
-      acum_plas_strain_n =  previous_state(:,3) ;
+      stress_n           = previous_state(1);
+      strain_n           = previous_state(2);
+      acum_plas_strain_n =  previous_state(3) ;
       
       Kplas       = hyperElasParams(2) ;
       sigma_Y_0   = hyperElasParams(3) ;
   
-      stress_Elas = stress_n + E * (strain - strain_n)
-      phi_tr = abs( stress_Elas ) - ( sigma_Y_0 + Kplas*acum_plas_strain_n )
+      stress_Elas = stress_n + E * (strain - strain_n) ;
+      phi_tr = abs( stress_Elas ) - ( sigma_Y_0 + Kplas*acum_plas_strain_n ) ;
 
-      
       if phi_tr < 0 % elastic behavior
         stress           = stress_Elas ;
         dstressdeps      = E ;
         acum_plas_strain = acum_plas_strain_n ; 
         
       else % elasto-plastic behavior
-        delta_gamma = phi_tr / ( E + Kplas )
+        delta_gamma = phi_tr / ( E + Kplas ) ;
 
         stress           = stress_Elas - E*delta_gamma * sign( stress_Elas ) ;
         dstressdeps      = E*Kplas / ( E + Kplas ) ;

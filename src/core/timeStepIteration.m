@@ -103,8 +103,14 @@ Udotdottp1 = Udotdottp1k ;
 % computes KTred at converged Uk
 KTtp1red = systemDeltauMatrix ;
 
+
+Utp1
 % compute stress at converged state
-[~, Stresstp1, ~, matFint ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previous_state_mat ) ;
+[~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previous_state_mat ) ;
+
+Stresstp1
+strain_vec
+
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
@@ -166,6 +172,9 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
+strain_vec
+
+previous_state_mat = [ Stress(:,1) strain_vec acum_plas_strain_vec ] ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...

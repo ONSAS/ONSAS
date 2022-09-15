@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previous_state_mat )
@@ -67,6 +67,14 @@ else
 	matFint = [] ;
 end
 
+stress_n_vec =  previous_state_mat(:,1) ;
+strain_n_vec = previous_state_mat(:,2) 
+acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
+
+strain_vec = zeros(size( strain_n_vec )) ;
+acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
+
+
 % ====================================================================
 
 
@@ -77,6 +85,9 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 % ====================================================================
 
 for elem = 1:nElems
+
+fprintf('ensamblo:  ')
+elem
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
@@ -108,12 +119,6 @@ for elem = 1:nElems
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
 
-
-  stress_n_vec =  previous_state_mat(:,1) ;
-  strain_n_vec = previous_state_mat(:,2) ;
-  acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
-
-
   %md dotdotdispsElem contains the accelerations corresponding to the dofs of the element
   if dynamicProblemBool
     dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
@@ -140,9 +145,12 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
-    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
+    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ]
     
-    [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
+    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
+
+    acum_plas_strain
+    strain
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -308,6 +316,9 @@ for elem = 1:nElems
 
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
+elem
+    strain_vec( elem )           = strain 
+    acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
   end % if stress
 	
 	if matFintBool
