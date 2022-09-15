@@ -16,13 +16,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors )
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previous_state_mat )
 
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
   neumdofs = BCsData.neumDofs ;
 	
-  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime ) ;
+  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previous_state_mat  ) ;
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; 
   
@@ -105,8 +105,10 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
+    if norm(previous_state_mat ) >0, error('warning. HHT method with plastic analysis not validated yet'); end
+    
     fs = assembler ( ...
-      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT ) ;
+      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previous_state_mat  ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 

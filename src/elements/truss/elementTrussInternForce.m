@@ -79,11 +79,10 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
      
     else strcmp( hyperElasModel, 'isotropicHardening')
 
-      stress_n = previous_state(1);
-      plas_strain_n = previous_state(2) ;
-      acum_plas_strain_n =  previous_state(3) ;
-      strain_n = previous_state(4);
-
+      stress_n           = previous_state(:,1);
+      strain_n           = previous_state(:,2);
+      acum_plas_strain_n =  previous_state(:,3) ;
+      
       Kplas       = hyperElasParams(2) ;
       sigma_Y_0   = hyperElasParams(3) ;
   

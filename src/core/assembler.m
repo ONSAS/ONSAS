@@ -20,7 +20,7 @@
 function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar )
+                                                           timeVar, previous_state_mat )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
@@ -108,6 +108,12 @@ for elem = 1:nElems
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
 
+
+  stress_n_vec =  previous_state_mat(:,1) ;
+  strain_n_vec = previous_state_mat(:,2) ;
+  acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
+
+
   %md dotdotdispsElem contains the accelerations corresponding to the dofs of the element
   if dynamicProblemBool
     dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
@@ -134,8 +140,9 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
-
-    [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
+    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
+    
+    [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 

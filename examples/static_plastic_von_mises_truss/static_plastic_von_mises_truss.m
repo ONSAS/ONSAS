@@ -20,7 +20,7 @@ elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 
-boundaryConds(2).imposDispDofs =  3 ;
+boundaryConds(2).imposDispDofs =   3 ;
 boundaryConds(2).imposDispVals =  0 ;
 boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsTimeFact = @(t) 3.0e8*t     ;

@@ -69,7 +69,7 @@ currTime  = 0 ; timeIndex = 1 ;
 % process initial conditions
 [ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
 
-acum_plas_strain = 0 ;
+previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 
 convDeltau   = zeros( size(U) ) ; 
 
@@ -85,10 +85,10 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [] ) ;
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previous_state_mat ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
 % =================================================================
 
 %md prints headers for solver output file

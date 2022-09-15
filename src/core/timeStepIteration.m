@@ -53,12 +53,13 @@ else
   nextLoadFactorsVals = [] ;
 end
 
+previous_state_mat = modelCurrSol.previous_state_mat ;
 
 systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 
 % --- assemble system of equations ---
-[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
+[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
 
 booleanConverged = false                              ;
 dispIters        = 0                              ;
@@ -83,7 +84,7 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals ) ;
+  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
 
   % --- check convergence ---
   [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
@@ -103,7 +104,7 @@ Udotdottp1 = Udotdottp1k ;
 KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
-[~, Stresstp1, ~, matFint ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime ) ;
+[~, Stresstp1, ~, matFint ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previous_state_mat ) ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
@@ -169,7 +170,7 @@ timeStepIters = dispIters ;
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
 
 
 
