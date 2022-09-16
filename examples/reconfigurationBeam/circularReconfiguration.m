@@ -208,12 +208,12 @@ namefig3 = strcat(folderPathFigs, 'xy.png') ;
 %
 % The verification boolean is computed as for the deformed configurations and the cycd curve
 % deformed coordinates dif norm
-vecDifDeform =  [ norm( ydef - ydefG(1:numElements:end)') ;...
-                  norm( xdef - xdefG(1:numElements:end)') ] ;
+vecDifDeform =  [ norm( ydef - ydefG(1:numElements*10:end)') ;...
+                  norm( xdef - xdefG(1:numElements*10:end)') ] ;
 
 % verification boolean deformed 
 verifBooleanDef =  vecDifDeform <=  2e-2 * l ;
 % cycd vs R verification boolean is: 
 verifBooleanR = abs(R(end) - resudrag(end,2) ) <  5e-3 ;
 % The example verifboolean is:
-verifBoolean = verifBooleanR && verifBooleanDef 
+verifBoolean = verifBooleanR && all(verifBooleanDef)
