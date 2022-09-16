@@ -261,7 +261,7 @@ title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('output/linearDispAero.png','-dpng')
+% print('output/linearDispAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
 close(1)    
 %md
@@ -309,7 +309,7 @@ set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
 set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
 set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
-print('output/defaAero.png','-dpng')
+% print('output/defaAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
 close(3)    
 %md
