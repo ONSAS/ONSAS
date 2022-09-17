@@ -31,9 +31,13 @@ function [sigma, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, 
 		if sigma_tr >= sigmaY
 			K = hyperElasParams(4) ;
 			epsY = sigmaY/E ;
-			%~ sigma = sigmaY*sign(epsk) + K * ( epsk - epsY*sign(epsk) ) ; 
-			dsigdeps = E*K / (E+K) ; 
-			sigma = sigmaY*sign(epsk) + dsigdeps * ( epsk - epsY*sign(epsk) ) ; 
+			dsigdeps = E*K / (E+K) ;
+			 
+			sigma = sigmaY * sign(epsk) + dsigdeps * ( epsk - epsY*sign(epsk) ) ; 
+			if dsigdeps < 0 && ( sign(sigma) ~= sign( sigmaY * sign(epsk) ) ) 
+				sigma = 0 ;
+				dsigdeps = 0 ;
+			end
 		else
 			dsigdeps = E ;
 			sigma = sigma_tr * sign(epsk) ;
