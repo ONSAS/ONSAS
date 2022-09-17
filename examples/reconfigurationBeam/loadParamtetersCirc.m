@@ -14,7 +14,7 @@ function [l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_
     E = 3e7 ;  nu = 0.3 ; rhoS = 700 ; B = E*Izz;
     % Fluid properties
     dragCoefFunction = 'dragCircular';
-    rhoF = 1020 ; nuF = 1.6e-5 ; c_d = feval(dragCoefFunction, 0, 0) ;
+    rhoF = 1.225 ; nuF = 1.6e-5 ; c_d = feval(dragCoefFunction, 0, 0) ;
     % fill U vector for each cy 
     uy_vec = [] ;
     cycd_vec = [] ;

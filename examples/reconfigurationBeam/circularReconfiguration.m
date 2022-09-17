@@ -6,7 +6,8 @@
 %----------------------------
 close all, clear all ;
 % add path
-addpath( genpath( [ pwd '/../..'] ) ); tic;
+addpath( genpath( [ pwd '/../../src'] ) ); 
+addpath( genpath( [ pwd ] ) ); 
 % General  problem parameters
 %----------------------------
 % we load the given parameters:
