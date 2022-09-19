@@ -1,6 +1,6 @@
 % #md Reconfiguration problem validation (Drag reduction of flexible plates by reconfiguration, Gosselin, etAl 2010)
 %----------------------------
-function [l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParamtetersCirc()
+function [l, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParametersCirc()
     % values extracted from https://github.com/lm2-poly/Reconfiguration-Beam/blob/master/reconfiguration.m
     NR      =10;  %NUMBER OF CYCD POINTS
     cycdmin =-2 ;  %SMALLEST VALUE OF CYCD = 10^cymin
