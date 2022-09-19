@@ -1,8 +1,7 @@
 %% Add in assembler at 338
-
 %  global FDrag
 % FDrag(timeVar) = sum(Faero(1:6:end)) ;
-% # Reconfiguration problem validation (Drag reduction of flexible plates by reconfiguration, Gosselin, etAl 2010)
+% # Reconfiguration cantilever beam example 
 %----------------------------
 close all, clear all ;
 % add path
