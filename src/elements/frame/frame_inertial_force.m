@@ -25,10 +25,10 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   % ----- material and geometric params ------
   E   = elemConstitutiveParams(2) ;
   nu  = elemConstitutiveParams(3) ;
-  G   = E/(2*(1+nu)) ;
-  rho = elemrho ;
+  G   = E/(2*(1+nu))              ;
+  rho = elemrho                   ;
   % ----- extract cross section properties ---
-  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, 0 ) ; % select a ficticious elemrho 
+  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ; % select a ficticious elemrho 
   % ------------------------------------------
 
   % compute corotational matrices rotation 
@@ -195,8 +195,8 @@ x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Ar
     % Compute dyadic tensor
     Irho  = Rgx * Ro * Jrho * (Rgx*Ro)' ; %Ec 45
     Irhoe = Rr' * Irho * Rr             ; %Ec 80
-
-     % Calculate integral Force
+    
+    % Calculate integral Force
     IntegrandoForce  =      H1'* Rr' * Area * rho * udotdot ...
                             + H2' * Rr' * ( Irho*wdotdot + skew(wdot) * Irho * wdot ) ;  %Eq 78
 
