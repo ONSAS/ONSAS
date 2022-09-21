@@ -28,7 +28,7 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   G   = E/(2*(1+nu))              ;
   rho = elemrho                   ;
   % ----- extract cross section properties ---
-  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ; % select a ficticious elemrho 
+  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ;
   % ------------------------------------------
 
   % compute corotational matrices rotation 
