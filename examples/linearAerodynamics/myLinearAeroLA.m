@@ -1,5 +1,5 @@
 %md This functions computes manually the aerodynamic loads submitted to the hole beam
-function f = myLinearAero(t)
+function f = myLinearAeroLA(t)
 global numElements
 %geometric parameers
 l = 20 ; d = .5 ; 
@@ -8,13 +8,13 @@ rhoA = 1.225 ;
 % inititialize external force
 f = zeros( (numElements + 1)*6, 1) ;
 % read the wnd velocity
-windVel = feval('windVel', 0, t) ;
+windVel = feval('windVelLA', 0, t) ;
 % the angle of incidence is 
 betaRel = acos(dot([0 1 0] , [0 0 1] ));
 % the drag, lift and moment coefficients are:
-c_d = feval('dragCoefFunction'  , betaRel );
-c_l = feval('liftCoefFunction'  , betaRel );
-c_m = feval('momentCoefFunction',-betaRel );
+c_d = feval('dragCoefFunctionLA'  , betaRel );
+c_l = feval('liftCoefFunctionLA'  , betaRel );
+c_m = feval('momentCoefFunctionLA',-betaRel );
 %md Then the dynamic pressures $q_0$ defined above are expressed such that: 
 q = 1/2 * rhoA * (windVel(3)^2 + windVel(2)^2) ;
 %md next the loads per unit of length are  

@@ -70,7 +70,7 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'generic' ;
 elements(2).elemCrossSecParams{2,1} = [ A J Iyy Izz ] ;
 %md Now the parameters to include aerodynamic forces automatically on the frame element are defined. The drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the _aeroCoefs_ field is a row cell defined as:
-elements(2).aeroCoefs   = {'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction'} ;
+elements(2).aeroCoefs   = {'dragCoefFunctionLA'; 'liftCoefFunctionLA'; 'momentCoefFunctionLA'} ;
 %md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. The aerodynamic tangent matrix is the last boolean element of the vector `elemTypeAero`, and in this case is set as false.  All this information is added into _elemTypeAero_ field of `elements` struct such that:
 numGaussPoints  = 4 ; 
 computeAeroTangMatrix = false ;
@@ -102,7 +102,7 @@ end
 %md### analysisSettings
 %md
 %md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with _elemTypeAero_ field into the `elements` struct. The name of the wind velocity function located on the same example path is introduced as a string 'windVel': 
-analysisSettings.fluidProps = {rhoA; nuA; 'windVel'} ;
+analysisSettings.fluidProps = {rhoA; nuA; 'windVelLA'} ;
 %md The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = false;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
@@ -132,7 +132,7 @@ otherParams.plotsFormat = 'vtk' ;
 analysisSettingsCase2 = analysisSettings ; elementsCase2 = elements ;
 analysisSettingsCase2.fluidProps = [] ; elementsCase2(2).elemTypeAero = [] ; elementsCase2(2).aeroCoefs = [] ;
 %md now the boundary condition with the name of the user load function is declared into the `boundaryConds` struct
-boundaryConds(2).userLoadsFilename = 'myLinearAero' ;
+boundaryConds(2).userLoadsFilename = 'myLinearAeroLA' ;
 %md and finally is assigned to all cantilever beam nodes:
 for i=1:numElements + 1,
   mesh.conecCell{ i+numElements+1,1 } = [ 0 1 2 0  i ] ;
@@ -261,7 +261,7 @@ title (labelTitle)
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('output/linearDispAero.png','-dpng')
+% print('output/linearDispAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
 close(1)    
 %md
@@ -309,7 +309,7 @@ set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
 set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
 set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
 view([0.5 +0.5 -1])
-print('output/defaAero.png','-dpng')
+% print('output/defaAero.png','-dpng')
 % print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
 close(3)    
 %md
