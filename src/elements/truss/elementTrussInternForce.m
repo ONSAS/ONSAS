@@ -41,6 +41,8 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
 
   TTcl              = Bdif' * e1def ;
 
+  acum_plas_strain =  previous_state(3) ;
+
   % --- strain ---
   if strcmp( hyperElasModel, 'linearElastic')
 

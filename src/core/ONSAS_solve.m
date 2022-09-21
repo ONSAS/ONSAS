@@ -48,7 +48,7 @@ iterations_strop_crit_vec = [ 0 0 0 ] ;
 
 tic
 while finalTimeReachedBoolean == false
-modelCurrSol.timeIndex
+
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
                        / modelProperties.analysisSettings.finalTime * 20 ) ;
 

@@ -316,8 +316,8 @@ elem
 
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
-elem
-    strain_vec( elem )           = strain 
+      
+    strain_vec( elem )           = strain ;
     acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
   end % if stress
 	

@@ -55,11 +55,10 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-
 deltas = -matUs(6+5,:)' ;
 eles = sqrt( x2^2 + (z2-deltas).^2 ) ;
 
-valsLin = -2*E*A * (z2-deltas ) ./ eles .* (eles - L) ./ L ;
+valsLin = -2* ( E * (eles - L) ./ L ) * A .* (z2-deltas ) ./ eles  ;
 
 Etan = E*Kplas / ( E + Kplas) ;
 sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
@@ -68,19 +67,20 @@ valsFlu = 2*( sigmas_hard * A ) .* ( ( z2 - deltas ) ./ eles )  ;
 valsP = min( valsLin, valsFlu) ;
 
 
+% softening
 Kplas = -E*.05 ;
 materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
 
 analysisSettings.methodName    = 'arcLength' ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
-analysisSettings.incremArcLen = 4e-5;
+analysisSettings.incremArcLen = [ 2e-4 4e-5*ones(1,100)];
 
 [matUsB, loadFactorsMatB ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 deltasB = -matUsB(6+5,:)' ;
 
 eles = sqrt( x2^2 + (z2-deltasB).^2 ) ;
 
-valsLin = -2*E*A * (z2-deltas ) ./ eles .* (eles - L) ./ L ;
+valsLin = -2*E*A * (z2-deltasB ) ./ eles .* (eles - L) ./ L ;
 
 Etan = E*Kplas / ( E + Kplas) ;
 sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
@@ -88,11 +88,10 @@ sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
 valsFlu = 2*( sigmas_hard * A ) .* ( ( z2 - deltasB ) ./ eles )  ;
 valsPB = min( valsLin, valsFlu) ;
 
-
 figure
 plot( deltas , valsP, 'b-x' )
 grid on, hold on
 plot( deltas , loadFactorsMat(:,2), 'r-o' )
 plot( deltasB , loadFactorsMatB(:,2), 'g-o' )
 plot( deltasB , valsPB, 'k-*' )
-legend('analytic','numeric', 'analytic-soft','numeric-soft')
+legend('analytic-hard','numeric-hard', 'analytic-soft','numeric-soft')
