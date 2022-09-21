@@ -16,9 +16,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [deltaured, nextLoadFactorVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIter, redConvDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex  )
+function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
+  systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs )
 
-convDeltau = redConvDeltau ;
+arcLengthNorm = zeros( size( convDeltau ) ) ;
+arcLengthNorm(1:2:end) = 1 ;
+arcLengthNorm = arcLengthNorm(neumDofs) ;
+
+% keep reduced converged delta u
+convDeltau = convDeltau( neumDofs ) ;
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
 
@@ -35,7 +41,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 
   if dispIter == 1 % predictor solution
-    if norm(convDeltau)==0
+    if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
     else
       deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
