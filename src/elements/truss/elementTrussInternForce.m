@@ -52,6 +52,7 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
     stress = E * strain ;
     Finte  =  A * stress * lini * b1' ;
     KTe    = E * A * lini * b1' * b1 ;
+    dstressdeps = E ;
 
   elseif strcmp( hyperElasModel, 'SVK')
     strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;  % green-lagrange
