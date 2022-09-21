@@ -166,8 +166,6 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
-strain_vec
-
 previous_state_mat = [ Stress(:,1) strain_vec acum_plas_strain_vec ] ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...

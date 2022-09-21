@@ -67,8 +67,8 @@ else
 	matFint = [] ;
 end
 
-stress_n_vec =  previous_state_mat(:,1) ;
-strain_n_vec = previous_state_mat(:,2) 
+stress_n_vec           =  previous_state_mat(:,1) ;
+strain_n_vec           = previous_state_mat(:,2)  ;
 acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
 
 strain_vec = zeros(size( strain_n_vec )) ;
@@ -86,8 +86,6 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 
 for elem = 1:nElems
 
-fprintf('ensamblo:  ')
-elem
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
@@ -145,12 +143,9 @@ elem
   elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
-    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ]
+    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
     
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
-
-    acum_plas_strain
-    strain
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -316,9 +311,11 @@ elem
 
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
-      
-    strain_vec( elem )           = strain ;
-    acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
+    
+    if exist('strain')==1
+      strain_vec( elem )           = strain ;
+      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
+    end
   end % if stress
 	
 	if matFintBool
