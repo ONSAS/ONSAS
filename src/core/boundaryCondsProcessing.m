@@ -92,11 +92,10 @@ for indBC = 1:length( boundaryTypes )
       if ~strcmp( elements( Conec( elemsWithBC(inde), 2 ) ).elemType, 'node' )    
         error('springDofs can only be assigned to node elements, by the moment!')
       else
-        nodes_with_spring = Conec( elemsWithBC(inde), 4+1 ) 
+        nodes_with_spring = Conec( elemsWithBC(inde), 4+1 )  ;
         for indn = 1:length( nodes_with_spring )
           nodedofs = nodes2dofs( nodes_with_spring(indn), 6 ) ;
           locdofs  = boundaryConds(BCnum).springDofs ;
-          boundaryConds(BCnum).springVals
           KS( nodedofs(locdofs), nodedofs(locdofs) ) = KS( nodedofs(locdofs), nodedofs(locdofs) ) ...
             + spdiags( boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs) ) ;
         end
