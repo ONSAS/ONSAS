@@ -11,7 +11,7 @@ E  = 200e3 ;   nu = 0.3   ;
 % geometrical scalar parameters
 R = 120   ;  ty = .6 ;   tz = 6 ;
 % the number of elements of the mesh
-Nelem = 2*20 ;
+Nelem = 2*21 ;
 
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ] ;
@@ -28,7 +28,7 @@ boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 
 boundaryConds(2).loadsCoordSys = 'global'        ;
-boundaryConds(2).loadsTimeFact = @(t) 1e3*t ;
+boundaryConds(2).loadsTimeFact = @(t) 1e2*t ;
 boundaryConds(2).loadsBaseVals = [ 0 1 0 0 0 0 ] ;
 boundaryConds(2).imposDispDofs = [ 3 4 5 6 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 0 ] ;
@@ -49,16 +49,17 @@ end
 mesh.conecCell{ end+1, 1} = [ 1 2 0 0  Nelem 1 ] ; % last element of the circle
 
 analysisSettings.methodName    = 'arcLength' ;
-analysisSettings.incremArcLen = 4          ;
+analysisSettings.incremArcLen = 1.5           ;
 analysisSettings.posVariableLoadBC = 2 ;
-analysisSettings.deltaT        =   .1  ;
-analysisSettings.finalTime     =   30    ;
+analysisSettings.deltaT        =   1  ;
+analysisSettings.finalTime     =   1400    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(analysisSettings.deltaT)/100 ;
 
 otherParams.plots_format = 'vtk' ;
+otherParams.plots_deltaTs_separation = 5 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

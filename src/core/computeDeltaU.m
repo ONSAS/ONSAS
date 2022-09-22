@@ -44,22 +44,42 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
     else
-      deltalambda = sign( convDeltau' * deltaubar ) * incremArcLen / sqrt( deltaubar' * deltaubar ) ;
+      deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     end
 
   else % cylindrical constraint equation
-    ca =    deltaubar' * deltaubar ;
-    cb = 2*(currDeltau + deltauast)' * deltaubar ;
-    cc =   (currDeltau + deltauast)' * (currDeltau + deltauast) - incremArcLen^2 ;
-    disc = cb^2 - 4 * ca * cc ;
+
+    discriminant_not_accepted = true ;
+    num_reductions = 0 ;
+
+    while discriminant_not_accepted && num_reductions < 10
+
+      ca =    deltaubar' * ( arcLengthNorm .* deltaubar) ;
+      cb = 2*(currDeltau + deltauast)' * ( arcLengthNorm .* deltaubar ) ;
+      cc =   (currDeltau + deltauast)' * ( arcLengthNorm .* (currDeltau + deltauast) ) - incremArcLen^2 ;
+      disc = cb^2 - 4 * ca * cc ;
+
+      if disc < 0
+        cc
+        disc
+        num_reductions = num_reductions + 1 ;
+        incremArcLen = incremArcLen * .5 ;
+        warning( 'negative discriminant, reducing arc length time : %3i', num_reductions );
+      else
+        discriminant_not_accepted = false ;
+      end
+
+    end
+
     if disc < 0
       disc, error( 'negative discriminant');
     end
+
     sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
 
     % compute the scalar product
-    vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * currDeltau   ;
-              ( currDeltau + deltauast + deltaubar * sols(2) )' * currDeltau ] ;
+    vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * ( arcLengthNorm .* currDeltau )   ;
+              ( currDeltau + deltauast + deltaubar * sols(2) )' * ( arcLengthNorm .* currDeltau ) ] ;
     % choose lambda that maximices that scalar product
     deltalambda = sols( find( vals == max(vals) ) ) ;
   end

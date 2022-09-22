@@ -13,7 +13,7 @@ function test_1
   assertEqual( verifBoolean, true );
 
 function test_2
-  onsasExample_uniformCurvatureCantilever
+  uniformCurvatureCantilever
   assertEqual( verifBoolean, true );
 
 function test_3
