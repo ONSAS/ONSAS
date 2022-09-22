@@ -3,7 +3,7 @@
 %
 % Previous definitions
 
-close all, clear all ; clc ;
+close all, clear all
 
 onsasPath = '/../../src' ;
 addpath( genpath( [ pwd onsasPath ] ) ) ; % add ONSAS directory to path
