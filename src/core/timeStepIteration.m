@@ -74,7 +74,7 @@ while  booleanConverged == 0
   dispIters = dispIters + 1 ;
 
   % solve system
-  [ deltaured, nextLoadFactorsVals ] = computeDeltaU ( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex ) ;
+  [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau, modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs ) ;
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
@@ -213,7 +213,7 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
   oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
   evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
 
-  Uk ( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured (oddNeumDofsInds ) ;
+  Uk( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured(oddNeumDofsInds ) ;
 
   nNodes = length( Uk) / 6 ;
 
