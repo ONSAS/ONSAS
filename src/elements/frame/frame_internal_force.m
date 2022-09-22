@@ -56,6 +56,7 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
     u   = u + pretension_strain * l0;
   end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
   % local rotations
   tl1 = logar( Rroof1 ) ;
   tl2 = logar( Rroof2 ) ;  

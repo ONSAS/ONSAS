@@ -35,6 +35,7 @@ elements(2).elemCrossSecParams{2,1} = d          ;
 numGaussPoints  = 4 ;
 elements(2).aeroCoefs   = {nameDragFunc; nameLiftFunc; [] }   ;
 %  chord vector and gauss points
+
 elements(2).elemTypeAero = [0 0 -d numGaussPoints computeAeroTangMatrix ] ; % [chordVec1 chordVec2 chordVec3 numGauss  ]
 % mass element formulation
 elements(2).massMatType = 'consistent' ; 
