@@ -89,6 +89,13 @@ otherParams.problemName      = strcat('VIVTest') ;
 [ matUs, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
 % Extract numerical solution
 uz = matUs(5:6:end, :) ;
+
+uz 
+uzsol
+figure, hold on
+plot(uz,'b-x')
+plot(uzsol,'r-s')
+title('comparison uz VIV test')
 %save('testSolution', 'uzTest')
 if length(uz) == length(uzsol)
     verifBoolean = norm(uz - uzsol) < 1.5e-11
