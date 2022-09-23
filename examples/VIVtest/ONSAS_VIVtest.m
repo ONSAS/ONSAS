@@ -93,7 +93,7 @@ uz - uzsol
 norm(uz - uzsol)
 %save('testSolution', 'uzTest')
 if length(uz) == length(uzsol)
-    verifBoolean = norm(uz - uzsol) < 1.5e-11
+    verifBoolean = norm(uz - uzsol) < 3.7e-08
 else 
     verifBoolean = 0;
 end
