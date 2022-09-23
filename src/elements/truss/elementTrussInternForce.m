@@ -20,8 +20,8 @@
 % of 3D truss elements using engineering strain.
 
 
-function [Finte, KTe, stress, dstressdeps, strain ] = ...
-  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A )
+function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
+  elementTrussInternForce( Xe, Ue, hyperElasModel, hyperElasParams, A, previous_state )
 
   Xe    = Xe'     ;
   Xedef = Xe + Ue ;
@@ -41,6 +41,8 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
 
   TTcl              = Bdif' * e1def ;
 
+  acum_plas_strain =  previous_state(3) ;
+
   % --- strain ---
   if strcmp( hyperElasModel, 'linearElastic')
 
@@ -50,6 +52,7 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
     stress = E * strain ;
     Finte  =  A * stress * lini * b1' ;
     KTe    = E * A * lini * b1' * b1 ;
+    dstressdeps = E ;
 
   elseif strcmp( hyperElasModel, 'SVK')
     strain = 0.5 * ( ldef^2 - lini^2 ) / ( lini^2 ) ;  % green-lagrange
@@ -67,13 +70,43 @@ function [Finte, KTe, stress, dstressdeps, strain ] = ...
     KTe   =   stress      * A / lini * Ge  ...
             + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
 
-  elseif strcmp( hyperElasModel, '1DrotEngStrain')
+  elseif strcmp( hyperElasModel, '1DrotEngStrain') || strcmp( hyperElasModel, 'isotropicHardening')
+
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
     E           = hyperElasParams(1) ;
-    stress      = E * strain ;
-    dstressdeps = E ;
 
+    if strcmp( hyperElasModel, '1DrotEngStrain')
+      stress      = E * strain ;
+      dstressdeps = E ;
+     
+    elseif strcmp( hyperElasModel, 'isotropicHardening')
+
+      stress_n           = previous_state(1)  ;
+      strain_n           = previous_state(2)  ;
+      acum_plas_strain_n =  previous_state(3) ;
+      
+      Kplas       = hyperElasParams(2) ;
+      sigma_Y_0   = hyperElasParams(3) ;
+  
+      stress_Elas = stress_n + E * (strain - strain_n) ;
+      phi_tr = abs( stress_Elas ) - ( sigma_Y_0 + Kplas*acum_plas_strain_n ) ;
+
+      if phi_tr < 0 % elastic behavior
+        stress           = stress_Elas ;
+        dstressdeps      = E ;
+        acum_plas_strain = acum_plas_strain_n ; 
+        
+      else % elasto-plastic behavior
+        delta_gamma = phi_tr / ( E + Kplas ) ;
+
+        stress           = stress_Elas - E*delta_gamma * sign( stress_Elas ) ;
+        dstressdeps      = E*Kplas / ( E + Kplas ) ;
+        acum_plas_strain = acum_plas_strain_n + delta_gamma ; 
+
+      end
+    end
+      
     Finte = stress * A * TTcl ;
 
     KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;

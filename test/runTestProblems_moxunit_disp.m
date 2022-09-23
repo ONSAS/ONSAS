@@ -9,11 +9,11 @@ function test_suite=runTestProblems_moxunit_disp
   initTestSuite;
 
 function test_1
-  onsasExample_staticVonMisesTruss
+  static_von_mises_truss
   assertEqual( verifBoolean, true );
 
 function test_2
-  onsasExample_uniformCurvatureCantilever
+  uniformCurvatureCantilever
   assertEqual( verifBoolean, true );
 
 function test_3
@@ -57,4 +57,12 @@ function test_12
   assertEqual( verifBoolean, true );
 
 function test_13
+  circularReconfiguration
+  assertEqual( verifBoolean, true );
+
+function test_14
+	cantileverLinearHardening
+  assertEqual( verifBoolean, true);
+
+function test_15
   assertEqual( gaussIntegrationTest, true);

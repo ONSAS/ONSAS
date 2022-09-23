@@ -2,7 +2,7 @@
 # ONSAS.m: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab
 
 
-![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
+![tests](https://github.com/ONSAS/ONSAS.m/workflows/octave_moxunit_tests/badge.svg)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
@@ -18,14 +18,14 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/)/Matlab code for st
 
 ## Some examples
 
+### A deployable ring
+![ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)
+
 ### A wind turbine model
 ![wind](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true)
 
 ### A truss tower model
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
-
-### A chain model
-![chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
 ## License
 
