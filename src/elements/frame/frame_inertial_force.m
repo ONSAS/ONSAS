@@ -18,14 +18,18 @@
 function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
                         elemCrossSecParams, elemConstitutiveParams, ...
                         Ue, Udote, Udotdote, elemrho, massMatType ) ;
+  global massratio;
   % element coordinates
   xs = elemCoords(:) ;
 
   % ----- material and geometric params ------
   E   = elemConstitutiveParams(2) ;
   nu  = elemConstitutiveParams(3) ;
-  G   = E/(2*(1+nu))              ;
-  rho = elemrho                   ;
+  G   = E/(2*(1+nu)) ;
+  rho = elemrho ;
+  if ~isempty( massratio )
+    rho = rho * (1+massratio) ;
+  end
   % ----- extract cross section properties ---
   [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ;
   % ------------------------------------------
