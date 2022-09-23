@@ -17,10 +17,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint ] = assembler( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar )
+                                                           timeVar, previous_state_mat )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
@@ -67,6 +67,14 @@ else
 	matFint = [] ;
 end
 
+stress_n_vec           =  previous_state_mat(:,1) ;
+strain_n_vec           = previous_state_mat(:,2)  ;
+acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
+
+strain_vec = zeros(size( strain_n_vec )) ;
+acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
+
+
 % ====================================================================
 
 
@@ -77,6 +85,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 % ====================================================================
 
 for elem = 1:nElems
+
   mebiVec = Conec( elem, 1:4) ;
 
   %md extract element properties
@@ -134,8 +143,9 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
-
-    [ fs, ks, stressElem ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A ) ;
+    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
+    
+    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -152,17 +162,17 @@ for elem = 1:nElems
   
 		if strcmp(hyperElasModel, 'linearElastic') 
 			boolLinear = 1 ;
-			boolPlas = 0 ;
-		elseif strcmp(hyperElasModel, 'elastoPlasticPerfect') || strcmp(hyperElasModel, 'linearHardening') || strcmp(hyperElasModel, 'userFunc')
+			boolMatNonLin = 0 ;
+		elseif strcmp(hyperElasModel, 'biLinear') || strcmp(hyperElasModel, 'userFunc')
 			boolLinear = 1 ;
-			boolPlas = 1 ;
+			boolMatNonLin = 1 ;
 		else
 			boolLinear = 0 ;	
 		end
 		
 		if  boolLinear == 1
 			
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolPlas, matFintBool, elem ) ;
+			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 			
@@ -196,15 +206,16 @@ for elem = 1:nElems
     end
 
     %md compute hydrodynamic force of the element}
-    if aeroBool && fsBool
+    if aeroBool && fsBool 
+      % extract boolean to compute aerodyinamic displacements tangnet matrix
+      aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
 
-      FaeroElem = frame_fluid_force( elemNodesxyzRefCoords              , ...
-                                     u2ElemDisps( Ut       , dofselem ) , ...
-                                     u2ElemDisps( Udott    , dofselem ) , ...
-                                     u2ElemDisps( Udotdott , dofselem ) , ...
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
+                                     u2ElemDisps( Ut       , dofselem )   , ...
+                                     u2ElemDisps( Udott    , dofselem )   , ...
+                                     u2ElemDisps( Udotdott , dofselem )   , ...
                                      elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
-                                     analysisSettings, timeVar, elem ) ;
-
+                                     analysisSettings, timeVar, elem, aeroTangBool ) ;
     end
   
   % ---------  triangle solid element -----------------------------
@@ -271,13 +282,20 @@ for elem = 1:nElems
   end
 
   if tangBool
+
     for indRow = 1:length( dofselemRed )
 			
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
 
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
-      valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
+
+      if aeroBool && exist('aeroTangBool') && aeroTangBool
+        % add displacements minus since is an external force
+        valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ; 
+      else 
+        valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
+      end
 
       if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
@@ -293,6 +311,11 @@ for elem = 1:nElems
 
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
+    
+    if exist('strain')==1
+      strain_vec( elem )           = strain ;
+      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
+    end
   end % if stress
 	
 	if matFintBool
@@ -326,6 +349,12 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
+
+
+  global globalFDrag
+  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0) 
+    globalFDrag(timeVar) = sum(Faero(3:6:end)) ;
+  end
 end
 
 

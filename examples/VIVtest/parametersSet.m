@@ -12,12 +12,11 @@ nameDragFunc = 'dragCoef';
 cL0 = feval(nameLiftFunc, 0, 1); cD0 = feval(nameDragFunc, 0, 1); 
 %--------   
 %
-% Material and geometric properties
 % material
 E = 5e10;
 rho = 2*rhoFluid; 
 nu = .3; 
-cu = 0; % structure damping
+cu = 0; 
 %
 l = 1 ; d = 0.001; I = pi * d^4 / 64 ;
 %

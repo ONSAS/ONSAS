@@ -18,8 +18,6 @@
 
 function [ matUs, loadFactorsMat, cellFint ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-version
-
 %mdFirst the input structs are converted to structs with the model information
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

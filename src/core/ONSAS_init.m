@@ -69,6 +69,8 @@ currTime  = 0 ; timeIndex = 1 ;
 % process initial conditions
 [ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
 
+previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
+
 convDeltau   = zeros( size(U) ) ; 
 
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
@@ -83,10 +85,10 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [] ) ;
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previous_state_mat ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
 % =================================================================
 
 %md prints headers for solver output file
@@ -94,8 +96,8 @@ printSolverOutput( otherParams.outputDir, otherParams.problemName, 0            
 printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
 
 %md writes vtk file
-if strcmp( modelProperties.plotsFormat, 'vtk' )
-  vtkMainWriter ( modelCurrSol, modelProperties )
+if strcmp( modelProperties.plots_format, 'vtk' )
+  vtkMainWriter( modelCurrSol, modelProperties )
 end
 
 if exist( 'controlDofs') ==0
