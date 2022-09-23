@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function qelem = WOMV3(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2,tl1, tl2, D, tnp1, dt,Kelem)
+function qelem = WOMV4(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2,tl1, tl2, D, tnp1, dt,Kelem)
 % Computes the value of q for the element Kelem with random initial
 % conditions for q
 % vpr1, vpr2: relative velocities at nodes 1 and 2 (vpr = Ucos(theta0))
