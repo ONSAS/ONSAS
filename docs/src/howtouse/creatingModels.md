@@ -69,9 +69,9 @@ cell structure with auxiliar params information, required for some element types
  The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
 
  ### `elements.elemTypeAero`
-The `elementTypeAero` field is a vector that sets for frame aerodynamic co-rotational element the chord vector in total-deformed coordinates $t$ (which initially are equal to reference $e$), and the number of gauss points $numGauss$:
+The `elementTypeAero` field is a vector that sets for frame aerodynamic co-rotational element the chord vector in total-deformed coordinates $t$ (which initially must be expressed in the coordinates of system $e$): Also the number of gauss points $numGauss$ and the $computeAeroBool$ (which computes the tangent matrix of the aerodynamic force vector) are set:
 ```math
-\{ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\}
+\{ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool\}
 ```
  ### `elements.aeroCoefs`
 
