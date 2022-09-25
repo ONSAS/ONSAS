@@ -237,10 +237,10 @@ if ~testBool
   %
   % analysisSettings Dynamic
   %----------------------------
-  analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'}              ;
-  analysisSettings.finalTime     =   13                                       ;
-  analysisSettings.deltaT        =   0.001
-                                       ;
+  analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'}             ;
+  analysisSettings.finalTime     =   4                                        ;
+  analysisSettings.deltaT        =   0.0025                                   ;
+                                       
   numTimeSteps  = round(analysisSettings.finalTime / analysisSettings.deltaT) ;
   analysisSettings.methodName    = 'newmark'                                  ;
   analysisSettings.stopTolDeltau =   1e-11                                    ;
