@@ -71,7 +71,7 @@ cell structure with auxiliar params information, required for some element types
  ### `elements.elemTypeAero`
 The field  `elementTypeAero` should contain first, a vector with the three coordinates of the aerodynamic chord vector. The system of coordinates considered for this is the local reference system at the undeformed configuration. Second, the number of Gauss integration points $numGauss$ and finally $computeAeroBool$ (which computes the tangent matrix of the aerodynamic force vector) as follows:
 ```math
-\{ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool\}
+[ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
 ```
  ### `elements.aeroCoefs`
 
