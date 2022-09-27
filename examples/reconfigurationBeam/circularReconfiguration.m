@@ -4,6 +4,10 @@
 % # Reconfiguration cantilever beam example 
 %----------------------------
 close all, clear all ;
+%----------------------------
+% add dynamic case boolean for non test executions: 
+testBool = true; 
+%----------------------------
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ); 
 addpath( genpath( [ pwd ] ) ); 
@@ -217,3 +221,38 @@ verifBooleanDef =  vecDifDeform <=  2e-2 * l ;
 verifBooleanR = abs(R(end) - resudrag(end,2) ) <  5e-3 ;
 % The example verifboolean is:
 verifBoolean = verifBooleanR && all(verifBooleanDef)
+if ~testBool
+  %
+  % Dynamic Case
+  %----------------------------
+  %
+  % since this case is highly dynamic the tangent matrix of the aerodynamic force 
+  % vector is not necessary 
+  %
+  % elements
+  %----------------------------
+  elements(2).massMatType = 'consistent'                                        ;
+  computeAeroTangentMatrix = false                                              ;
+  elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
+  %
+  % analysisSettings Dynamic
+  %----------------------------
+  analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'}             ;
+  analysisSettings.finalTime     =   4                                        ;
+  analysisSettings.deltaT        =   0.0025                                   ;
+                                       
+  numTimeSteps  = round(analysisSettings.finalTime / analysisSettings.deltaT) ;
+  analysisSettings.methodName    = 'newmark'                                  ;
+  analysisSettings.stopTolDeltau =   1e-11                                    ;
+  analysisSettings.stopTolForces =   1e-6                                     ;
+  analysisSettings.stopTolIts    =   15                                       ;
+  %
+  % otherParams
+  %----------------------------
+  otherParams.problemName = 'dynamicReconfigurationCircle';
+  %
+  % Run ONSAS 
+  %
+  [matUs] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+end
