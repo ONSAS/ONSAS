@@ -36,6 +36,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```
+ * `'isotropicHardening'`:  $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
 ### `materials.hyperElasParams`
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
@@ -125,10 +126,12 @@ cell with filenames of `.m` function file provided by the user that can be used 
 cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
 ### `boundaryConds.imposDispVals`
 cell with vectors of the values of displacements imposed.
-### `boundaryConds.springsDofs`
-cell with vectors of the local degrees of freedom with springs (integers from 1 to 6)
-### `boundaryConds.springsVals`
-cell with vectors of the values of the springs stiffnesses.
+
+### `boundaryConds.springDofs`
+vector with the local degrees of freedom of the node with springs (integers from 1 to 6)
+
+### `boundaryConds.springVals`
+vector with the values of the springs stiffnesses.
 
 ## The `initialConds` struct
 

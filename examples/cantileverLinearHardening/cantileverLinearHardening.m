@@ -3,7 +3,7 @@
 %
 % Previous definitions
 
-close all, clear all ; clc ;
+close all, clear all
 
 onsasPath = '/../../src' ;
 addpath( genpath( [ pwd onsasPath ] ) ) ; % add ONSAS directory to path
@@ -131,7 +131,7 @@ elem 	= 1 ;
 
 kappaVec = abs(kappaHistElem(elem,1:end)) ;
 aux  = cell2mat(matFint) ;
-mVec = abs(aux(elem,:))
+mVec = abs(aux(elem,:)) ;
 mVec = mVec(4:24:end) ;
 
 % Analytical solution

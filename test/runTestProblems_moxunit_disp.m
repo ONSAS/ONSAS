@@ -13,7 +13,7 @@ function test_1
   assertEqual( verifBoolean, true );
 
 function test_2
-  onsasExample_uniformCurvatureCantilever
+  uniformCurvatureCantilever
   assertEqual( verifBoolean, true );
 
 function test_3
@@ -57,8 +57,12 @@ function test_12
   assertEqual( verifBoolean, true );
 
 function test_13
+  circularReconfiguration
+  assertEqual( verifBoolean, true );
+
+function test_14
 	cantileverLinearHardening
   assertEqual( verifBoolean, true);
 
-function test_14
+function test_15
   assertEqual( gaussIntegrationTest, true);

@@ -53,7 +53,7 @@ elements(2).aeroCoefs   = {'dragCoefCircular'; []; [] }   ;
 %md in which the second and third components of the vectors are considered empty since no lift and torsional moment is considered.
 %md Next the _elemTypeAero_ field contains the information of the chord vector. This vector is defined first considering the orientation of the cross section set up for drag experiments. According to the revolution symmetry of the problem the chord vector orientation has no impact into drag force vector, since $c_d$ is constant any angle of incidence. However the characteristic dimension of the circular cross section is declared into the norm of the chord vector ( first three entries of _elemTypeAero_ field into `elements` struct ) as: 
 numGaussPoints           = 4 ;
-elements(2).elemTypeAero = [0 d 0 numGaussPoints ] ;
+elements(2).elemTypeAero = [0 d 0 numGaussPoints true ] ;
 %md also 4 number of integration Gauss points are employed to compute each element aerodynamic force vector.
 %md
 %md### boundaryConds
@@ -98,7 +98,7 @@ analysisSettings.stopTolIts    =   40            ;
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
 otherParams.problemName = 'nonLinearCantileverSD2D';
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md
 %md ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved into matUsSD matrix:
 [matUsSD, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -109,11 +109,11 @@ otherParams.plotsFormat = 'vtk' ;
 %md### DifferentialEquations.jl (reconfiguration) solution.
 %md
 %md DiffEq.jl solves the third order ordinary differential equation for this case by executing [DiffEq.jl script](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/DiffEq.jl). Then  [`assembleJuliaSol.m` script](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/assembleJuliaSol.m) function is executed to build the julia solution with `mesh` and `elements` struct as:
-[dSolJulia] = assembleJuliaSol(elements,mesh) ;
+% [dSolJulia] = assembleJuliaSol(elements,mesh) ;
 %md Then the the relevance linear and angular displacements are extracted using:
-ydefJulia = dSolJulia(3:6:end)              ;
-thetaZdefJulia = dSolJulia(6:6:end)         ;
-xdefJulia = linspace(0,l,length(ydefJulia)) ;
+% ydefJulia = dSolJulia(3:6:end)              ;
+% thetaZdefJulia = dSolJulia(6:6:end)         ;
+% xdefJulia = linspace(0,l,length(ydefJulia)) ;
 %md
 %md### Numeric solution
 %md
@@ -137,7 +137,7 @@ mkdir(folderPathFigs) ;
 fig1 = figure(1) ;
 hold on, grid on
 plot(xref      , ydefNum  , 'bo' , 'linewidth', lw, 'markersize', ms+5   );
-plot(xdefJulia , ydefJulia, 'b-' , 'linewidth', lw, 'markersize', ms     );
+% plot(xdefJulia , ydefJulia, 'b-' , 'linewidth', lw, 'markersize', ms     );
 legend('y numeric SD', 'y semi-analytic SD' )
 labx=xlabel(' x[m] ');    laby=ylabel('y[m]');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northWest' ) ;
@@ -154,7 +154,7 @@ print(fig1, namefig1,'-dpng') ;
 fig2 = figure(2) ;
 hold on, grid on
 plot(xref,      thetaZdefNum,      'bo' , 'linewidth', lw,'markersize', ms+5   );
-plot(xdefJulia, thetaZdefJulia,    'b-' , 'linewidth', lw, 'markersize', ms    );
+% plot(xdefJulia, thetaZdefJulia,    'b-' , 'linewidth', lw, 'markersize', ms    );
 legend('\theta_z numeric SD', '\theta_z semi-analyitc SD')
 labx=xlabel(' x[m] ');    laby=ylabel('Angle[rad]');
 % title (labelTitle)
@@ -179,7 +179,7 @@ print(fig2, namefig2,'-dpng')
 %md### materials
 %md In order to reproduce large displacements results the `materials` struct is then changed to: 
 materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ 1e8 nu ]       ;
+materials.hyperElasParams = [ 1e6 nu ]       ;
 materials.density         = rho              ;
 %md
 %md### elements
