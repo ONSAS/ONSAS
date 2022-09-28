@@ -55,8 +55,8 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   end
   
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  udotFlowNode1 = feval( userFlowVel, elemCoords(1) + Ue(1:2:6), nextTime ) ; 
-  udotFlowNode2 = feval( userFlowVel, elemCoords(4) + Ue(7:2:12), nextTime ) ;
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ; 
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   % compact them into a single vector for the element 
   udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
   
@@ -155,13 +155,13 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
         % Compute fluid mean velocity at the nodes on the initial configuration
         % find the first veloctiy direction unitll is not null
         t0 = 0; timeStepNotNullVel = 0;
-        udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-        udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+        udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+        udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         while norm( udotFlowNode10 ) == 0 && norm( udotFlowNode20 ) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
           t0 = timeStepNotNullVel*analysisSettings.deltaT ;
-          udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-          udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+          udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+          udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         end
         % Compute the direction of the axial vector on the initial configuration in global coordinates
         e1 = R0 * [1 0 0]';
