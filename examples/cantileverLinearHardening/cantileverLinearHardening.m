@@ -88,7 +88,7 @@ analysisSettings.stopTolIts = 15 ;
 % Other parameters
 % ----------------------------------------------------------------------
 otherParams.problemName = 'cantileverLinearHardening' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 
 % Auxiliar variables
 % ----------------------------------------------------------------------
