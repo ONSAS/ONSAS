@@ -88,7 +88,7 @@ analysisSettings.stopTolIts = 15 ;
 % Other parameters
 % ----------------------------------------------------------------------
 otherParams.problemName = 'cantileverLinearHardening' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 
 % Auxiliar variables
 % ----------------------------------------------------------------------
@@ -111,7 +111,7 @@ global ne
 % Post process
 % ----------------------------------------------------------------------
 kappaHistElem = zeros(nelems,analysisSettings.finalTime+1) ;
-
+RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
 for j=1:nelems
 	nodeselem   = Conec( j, (4+1):(4+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , ndofs )        ;
@@ -121,7 +121,7 @@ for j=1:nelems
 	R = RotationMatrix(ndofs, loc) ;
 	R = R(LocBendXZdofs,LocBendXZdofs) ;
 	Uke = R'*matUs(dofselem(LocBendXZdofs),1:end) ;  
-	Be = bendingInterFuns (0 , l, 2 ) ;
+	Be = bendingInterFuns (0 , l, 2 ) * RXYXZ ;
 	kappae = Be*Uke ;
 	kappaHistElem(j,:) = kappae ;
 end

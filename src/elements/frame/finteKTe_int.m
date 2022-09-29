@@ -27,6 +27,8 @@ finte 	= zeros(4,1) ;
 
 elemCrossSecParamsVec = elemCrossSecParams{2} ;
 
+RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
+
 % Elem Gauss points
 [xge, we] = gaussPointsAndWeights(ne) ;
 pgeVec = ( l/2  * xge' + l/2 ) ;	
@@ -37,7 +39,7 @@ for j = 1:length(we)
 	pge 			= pgeVec(j) ; 
 	
 	% Bending intern functions second derivative
-	B = bendingInterFuns(pge, l, 2) ;
+	B = bendingInterFuns(pge, l, 2)*RXYXZ ;
 	
 	if intBool == 1
 		% Tangent stiffness matrix
