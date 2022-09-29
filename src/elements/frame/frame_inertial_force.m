@@ -27,8 +27,8 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   nu  = elemConstitutiveParams(3) ;
   G   = E/(2*(1+nu)) ;
   rho = elemrho ;
-  if ~isempty( massratio )
-    rho = rho * (1+massratio) ;
+  if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
+    rho = rho * (1+(1/massratio)) ;
   end
   % ----- extract cross section properties ---
   [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ;
