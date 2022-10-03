@@ -122,7 +122,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   % WOM computation call for cases with VIVbool equal to true
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 
-    if VIVBool && norm(udotFlowNode2)> 0 
+    if VIVBool && norm(udotFlowNode1)> 0 && norm(udotFlowNode2)> 0 
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
       udotFrame1    = Udote( 1:2:6 )      ;
