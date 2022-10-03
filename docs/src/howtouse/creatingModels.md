@@ -96,6 +96,7 @@ with $n$ being the number of parameters of the cross section type, and `crossSec
  - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
  - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
  - `circle` : circular sections where diameter is provided.
+ - `pipe` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
 
 For `edge` elements the thickness is expected (for 2D load computations).
 
