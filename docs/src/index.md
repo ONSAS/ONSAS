@@ -27,7 +27,7 @@ Theses using ONSAS:
 ### A deployable ring
 
 ```@raw html
-<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif" alt="deployable ring">
+<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true">
 ```
 
 [ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)

@@ -69,9 +69,9 @@ cell structure with auxiliar params information, required for some element types
  The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
 
  ### `elements.elemTypeAero`
-The `elementTypeAero` field is a vector that sets for frame aerodynamic co-rotational element the chord vector in total-deformed coordinates $t$ (which initially are equal to reference $e$), and the number of gauss points $numGauss$:
+The field  `elementTypeAero` should contain first, a vector with the three coordinates of the aerodynamic chord vector. The system of coordinates considered for this is the local reference system at the undeformed configuration. Second, the number of Gauss integration points $numGauss$ and finally $computeAeroBool$ (which computes the tangent matrix of the aerodynamic force vector) as follows:
 ```math
-\{ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\}
+[ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
 ```
  ### `elements.aeroCoefs`
 
@@ -96,6 +96,7 @@ with $n$ being the number of parameters of the cross section type, and `crossSec
  - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
  - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
  - `circle` : circular sections where diameter is provided.
+ - `pipe` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
 
 For `edge` elements the thickness is expected (for 2D load computations).
 

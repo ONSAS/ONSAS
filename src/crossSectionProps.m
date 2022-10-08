@@ -53,6 +53,16 @@ elseif strcmp( elemCrossSecParams{1}, 'circle' )
     Izz  = Iyy                         ;
     J    = Iyy + Izz                   ;
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
+    
+elseif strcmp( elemCrossSecParams{1}, 'pipe' )
+    elemCrossSecParamsVec = elemCrossSecParams{2} ;
+    dext = elemCrossSecParamsVec(1)    ;
+    dint = elemCrossSecParamsVec(2)    ;
+    Area = pi*(dext^2 - dint^2)/4      ;
+    Iyy  = pi *(dext^4 - dint^4) / 64  ;
+    Izz  = Iyy                         ;
+    J    = Iyy + Izz                   ;
+    Jrho = rho * diag( [ J Iyy Izz ] ) ;
 else
   error(' section type not implemented yet, please create an issue')
 end
