@@ -173,7 +173,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
       q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
-      q = 2 ;
+      q = 0 ; % No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
       tlift1 = [] ; tlift2 = [] ;
     end
