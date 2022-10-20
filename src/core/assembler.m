@@ -21,6 +21,10 @@ function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strai
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previous_state_mat )
+global timeInd ;
+global Rstress ;
+global Rstrain ;
+global Rstrainacum ;
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
@@ -146,6 +150,11 @@ for elem = 1:nElems
     previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
     
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
+    
+    % register of the results
+    Rstress(timeInd,elem) = stressElem ;
+    Rstrain(timeInd,elem) = strain ;
+    Rstrainacum(timeInd,elem) = acum_plas_strain ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
