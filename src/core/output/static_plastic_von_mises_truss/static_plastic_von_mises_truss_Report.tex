@@ -1,0 +1,38 @@
+\documentclass[a4paper,10pt]{article} 
+\usepackage[a4paper,margin=20mm]{geometry} 
+\usepackage{longtable} 
+\usepackage{float} 
+\usepackage{adjustbox} 
+\usepackage{graphicx} 
+\usepackage{color} 
+\usepackage{booktabs} 
+\aboverulesep=0ex 
+\belowrulesep=0ex 
+\usepackage{array} 
+\newcolumntype{?}{!{\vrule width 1pt}}
+\usepackage{fancyhdr} 
+\pagestyle{fancy} 
+\fancyhf{} 
+\rhead{Problem: staticplasticvonmisestruss } 
+\lfoot{Date: \today} 
+\rfoot{Page \thepage} 
+\renewcommand{\footrulewidth}{1pt} 
+\renewcommand{\headrulewidth}{1.5pt} 
+\setlength{\parindent}{0pt} 
+\usepackage[T1]{fontenc} 
+\usepackage{libertine} 
+\usepackage{arydshln} 
+\definecolor{miblue}{rgb}{0,0.1,0.38} 
+\usepackage{titlesec} 
+\titleformat{\section}{\normalfont\Large\color{miblue}\bfseries}{\color{miblue}\sectionmark\thesection}{0.5em}{}[{\color{miblue}\titlerule[0.5pt]}] 
+
+\begin{document} 
+This is an ONSAS automatically-generated report with part of the results obtained after the analysis. The user can access other magnitudes and results through the GNU-Octave/MATLAB console. The code is provided AS IS \textbf{WITHOUT WARRANTY of any kind}, express or implied.
+
+\section{Analysis results}
+
+\begin{longtable}{cccccc} 
+\input{static_plastic_von_mises_truss_iterations.tex} 
+\end{longtable}
+
+\end{document}
