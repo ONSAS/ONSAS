@@ -122,14 +122,14 @@ deltas = [-matUs(6+1,:)' -matUs(6+5,:)'] ;
     end
         figure(4);
         plot(x1,y1,'b','LineWidth',1.5);
-        title('Deformación Plástica Acumulada / Barra 1 --algoritmo de retorno-- \sigma(\epsilon)');
-        ylabel('Deformación acumulada\epsilon');
+        title('Deformación Plástica Acumulada / Barra 1 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
         xlabel('Tiempo');
         hold on;
         figure(5);
         plot(x2,y2,'r','LineWidth',1.5);
-        title('Deformación Plástica Acumulada / Barra 2 --algoritmo de retorno-- \sigma(\epsilon)');
-        ylabel('Deformación acumulada\epsilon');
+        title('Deformación Plástica Acumulada / Barra 2 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
         xlabel('Tiempo');
         hold on;
 
