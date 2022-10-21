@@ -58,7 +58,7 @@ boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsTimeFact = @(t) 2.8e4*t     ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ]  ;
 
-initialConds                = struct() ;
+initialConds = struct() ;
 
 mesh.nodesCoords = [   0  0   0 ; ...
                       x2  0  z2 ; ...
