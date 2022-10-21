@@ -7,9 +7,7 @@ A = 7.854e-05 ; ang1 = 65 ;
 Kplas = 21e8;
 sigma_Y_0 = 250e6 ;
 
-global Rstress ;
-global Rstrain ;
-global Rstrainacum ;
+global Rstress Rstrain Rstrainacum ;
 
 x = [0 1 2];
 y = [0 1 0];

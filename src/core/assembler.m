@@ -21,10 +21,7 @@ function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strai
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previous_state_mat )
-global timeInd ;
-global Rstress ;
-global Rstrain ;
-global Rstrainacum ;
+global timeInd Rstress Rstrain Rstrainacum ;
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
