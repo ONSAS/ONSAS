@@ -1,4 +1,4 @@
-%md# Static Von-Mises Truss example
+%md# Static von Mises Truss example
 
 close all; clear all; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
