@@ -98,13 +98,13 @@ deltas = [-matUs(6+1,:)' -matUs(6+5,:)'] ;
         y2(t)=Rstress(t,2);
     end
         figure(2);
-        plot(x1,y1,'b','LineWidth',1.5);
+        plot(x1,y1,'LineWidth',1.5);
         title('Plasticidad / Barra 1 --algoritmo de retorno-- \sigma(\epsilon)');
         ylabel('Tensión \sigma');
         xlabel('Deformación \epsilon');
         hold on;
         figure(3);
-        plot(x2,y2,'r','LineWidth',1.5);
+        plot(x2,y2,'LineWidth',1.5);
         title('Plasticidad / Barra 2 --algoritmo de retorno-- \sigma(\epsilon)');
         ylabel('Tensión \sigma');
         xlabel('Deformación \epsilon');
@@ -119,13 +119,204 @@ deltas = [-matUs(6+1,:)' -matUs(6+5,:)'] ;
         y2(t)=Rstrainacum(t,2);
     end
         figure(4);
-        plot(x1,y1,'b','LineWidth',1.5);
+        plot(x1,y1,'LineWidth',1.5);
         title('Deformación Plástica Acumulada / Barra 1 \epsilon_p acumulada');
         ylabel('Deformación acumulada\epsilon_p');
         xlabel('Tiempo');
         hold on;
         figure(5);
-        plot(x2,y2,'r','LineWidth',1.5);
+        plot(x2,y2,'LineWidth',1.5);
+        title('Deformación Plástica Acumulada / Barra 2 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
+        xlabel('Tiempo');
+        hold on;
+
+fprintf('Desplazamiento vertical:\n');
+fprintf('\n');
+disp(deltas(length(deltas),2));
+fprintf('\n');
+
+x = [0 (1-deltas(length(deltas),1))/1.05 2]; % se amplifica el desplazamiento
+y = [0 (1-deltas(length(deltas),2))/1.05 0]; % para su visualización
+z = [0 0 0];        
+s = [1 3];
+t = [2 2];
+weights = [2 2];
+G = graph(s,t,weights);
+figure(1);
+p=plot(G,'XData',x,'YData',y,'linewidth',2,'EdgeColor','r');
+p.NodeColor = 'r';
+p.MarkerSize = 5;
+p.LineStyle = '--';
+title('Plasticidad / Reticulado de von Mises');
+hold on;
+
+%{
+x = [0 (1+deltas(length(deltas),1))/1.05 2]; % se amplifica el desplazamiento
+y = [0 (1+deltas(length(deltas),2))/1.05 0]; % para su visualización
+z = [0 0 0];       
+figure(1);
+plot(x,y,'ro--','markersize',4,'markerfacecolor','b','linewidth',2);
+title('Plasticidad / Reticulado de von Mises');
+hold on;
+%}
+
+pause ;
+
+boundaryConds(2).loadsTimeFact = @(t) 2.8e4 - 5.6e4*t     ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ]  ;
+
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        =   2e-2 ;
+analysisSettings.finalTime     =   1 ;
+
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
+
+analysisSettings.posVariableLoadBC = 2 ;
+
+otherParams.problemName = 'static_plastic_von_mises_truss';
+otherParams.plots_format = 'vtk' ;
+otherParams.plots_deltaTs_separation = 2 ;
+
+[matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+deltas = [-matUs(6+1,:)' -matUs(6+5,:)'] ;
+
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x1(t)=Rstrain(t,1);
+        y1(t)=Rstress(t,1);
+    end
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x2(t)=Rstrain(t,2);
+        y2(t)=Rstress(t,2);
+    end
+        figure(2);
+        plot(x1,y1,'LineWidth',1.5);
+        title('Plasticidad / Barra 1 --algoritmo de retorno-- \sigma(\epsilon)');
+        ylabel('Tensión \sigma');
+        xlabel('Deformación \epsilon');
+        hold on;
+        figure(3);
+        plot(x2,y2,'LineWidth',1.5);
+        title('Plasticidad / Barra 2 --algoritmo de retorno-- \sigma(\epsilon)');
+        ylabel('Tensión \sigma');
+        xlabel('Deformación \epsilon');
+        hold on;
+        
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x1(t)=t;
+        y1(t)=Rstrainacum(t,1);
+    end
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x2(t)=t;
+        y2(t)=Rstrainacum(t,2);
+    end
+        figure(4);
+        plot(x1,y1,'LineWidth',1.5);
+        title('Deformación Plástica Acumulada / Barra 1 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
+        xlabel('Tiempo');
+        hold on;
+        figure(5);
+        plot(x2,y2,'LineWidth',1.5);
+        title('Deformación Plástica Acumulada / Barra 2 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
+        xlabel('Tiempo');
+        hold on;
+
+fprintf('Desplazamiento vertical:\n');
+fprintf('\n');
+disp(deltas(length(deltas),2));
+fprintf('\n');
+
+x = [0 (1-deltas(length(deltas),1))/1.05 2]; % se amplifica el desplazamiento
+y = [0 (1-deltas(length(deltas),2))/1.05 0]; % para su visualización
+z = [0 0 0];        
+s = [1 3];
+t = [2 2];
+weights = [2 2];
+G = graph(s,t,weights);
+figure(1);
+p=plot(G,'XData',x,'YData',y,'linewidth',2,'EdgeColor','r');
+p.NodeColor = 'r';
+p.MarkerSize = 5;
+p.LineStyle = '--';
+title('Plasticidad / Reticulado de von Mises');
+hold on;
+
+%{
+x = [0 (1+deltas(length(deltas),1))/1.05 2]; % se amplifica el desplazamiento
+y = [0 (1+deltas(length(deltas),2))/1.05 0]; % para su visualización
+z = [0 0 0];       
+figure(1);
+plot(x,y,'ro--','markersize',4,'markerfacecolor','b','linewidth',2);
+title('Plasticidad / Reticulado de von Mises');
+hold on;
+%}
+
+
+pause ;
+
+boundaryConds(2).loadsTimeFact = @(t) -2.8e4 - 8.4e4*t     ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ]  ;
+
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        =   2e-2 ;
+analysisSettings.finalTime     =   1 ;
+
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
+
+analysisSettings.posVariableLoadBC = 2 ;
+
+otherParams.problemName = 'static_plastic_von_mises_truss';
+otherParams.plots_format = 'vtk' ;
+otherParams.plots_deltaTs_separation = 2 ;
+
+[matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+deltas = [-matUs(6+1,:)' -matUs(6+5,:)'] ;
+
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x1(t)=Rstrain(t,1);
+        y1(t)=Rstress(t,1);
+    end
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x2(t)=Rstrain(t,2);
+        y2(t)=Rstress(t,2);
+    end
+        figure(2);
+        plot(x1,y1,'LineWidth',1.5);
+        title('Plasticidad / Barra 1 --algoritmo de retorno-- \sigma(\epsilon)');
+        ylabel('Tensión \sigma');
+        xlabel('Deformación \epsilon');
+        hold on;
+        figure(3);
+        plot(x2,y2,'LineWidth',1.5);
+        title('Plasticidad / Barra 2 --algoritmo de retorno-- \sigma(\epsilon)');
+        ylabel('Tensión \sigma');
+        xlabel('Deformación \epsilon');
+        hold on;
+        
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x1(t)=t;
+        y1(t)=Rstrainacum(t,1);
+    end
+    for t = 1:(analysisSettings.finalTime/analysisSettings.deltaT)
+        x2(t)=t;
+        y2(t)=Rstrainacum(t,2);
+    end
+        figure(4);
+        plot(x1,y1,'LineWidth',1.5);
+        title('Deformación Plástica Acumulada / Barra 1 \epsilon_p acumulada');
+        ylabel('Deformación acumulada\epsilon_p');
+        xlabel('Tiempo');
+        hold on;
+        figure(5);
+        plot(x2,y2,'LineWidth',1.5);
         title('Deformación Plástica Acumulada / Barra 2 \epsilon_p acumulada');
         ylabel('Deformación acumulada\epsilon_p');
         xlabel('Tiempo');
