@@ -75,7 +75,7 @@ The field  `elementTypeAero` should contain first, a vector with the three coord
 ```
  ### `elements.aeroCoefs`
 
-The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are: (1) the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. The aeroCoefs field is: 
+The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are: (1) the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. The aeroCoefs field is:
 
 ```math
 \{ 'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction' \} ;
@@ -87,20 +87,21 @@ This is a cell structure with the information of the geometry of the element.
 
 #### 1D elements
 
-For `truss` or `frame` elements, this cell contains the cross-section properties:
+For `truss` or `frame` elements, this cell has two entries, first a string with a name of the type of cross section, and in the second entry a vector of real parameters setting the shape of that section:
 ```math
-\{ crossSectionTypeString, \,\, crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n}\}
+\{ crossSectionTypeString, \,\, [ crossSectionParam_{1}, \,\,\dots,\,\, crossSectionParam_{n} ] \}
 ```
-with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross-section and its properties are:
+with $n$ being the number of parameters of the cross section type, and `crossSectionTypeString` the type of cross section. The possible cross section strings and their corresponding properties are:
 
  - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
- - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided
+ - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided as the vector $[t_y, t_z]$
  - `circle` : circular sections where diameter is provided.
  - `pipe` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
 
 For `edge` elements the thickness is expected (for 2D load computations).
 
 See the `crossSectionProps.m` function for more details.
+
 #### 2D elements
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   

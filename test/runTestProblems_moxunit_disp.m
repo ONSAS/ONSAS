@@ -19,7 +19,7 @@ function test_2
 function test_3
   linearCylinderPlaneStrain
   assertEqual( verifBoolean, true );
-  
+
 function test_4
   uniaxialExtension
   assertEqual( verifBoolean, true );
@@ -65,4 +65,8 @@ function test_14
   assertEqual( verifBoolean, true);
 
 function test_15
+  	eulerColumn
+    assertEqual( verifBoolean, true);
+
+function test_16
   assertEqual( gaussIntegrationTest, true);
