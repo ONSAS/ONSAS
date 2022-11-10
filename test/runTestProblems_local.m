@@ -30,7 +30,7 @@ while (current <= num_tests) && (verifBoolean == 1)
   % run current example
   fprintf([' === running script: ' keyfiles{current} '\n' ]);
 
-  aux_time = time();
+  aux_time = cputime();
 
   % save key files data to avoid clear all commands
   save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir', 'aux_time' );
@@ -46,7 +46,7 @@ while (current <= num_tests) && (verifBoolean == 1)
   % reload key files data and increment current
   load('exData.mat') ; num_tests = length(keyfiles) ;
 
-  aux_time = time() - aux_time ; keyfiles{current,2} = aux_time ;
+  aux_time = cputime() - aux_time ; keyfiles{current,2} = aux_time ;
 
   fprintf([' === test problem %2i:  %s in %8.1e s === \n\n'], current, status, aux_time );
 
