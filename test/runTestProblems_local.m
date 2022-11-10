@@ -24,13 +24,16 @@ keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;
 
-while current <= length(keyfiles) && verifBoolean == 1
+num_tests = length(keyfiles) ;
+while (current <= num_tests) && (verifBoolean == 1)
 
   % run current example
   fprintf([' === running script: ' keyfiles{current} '\n' ]);
 
+  aux_time = time();
+
   % save key files data to avoid clear all commands
-  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir' );
+  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir', 'aux_time' );
 
   run( [ pwd dirSep '..' dirSep 'examples' dirSep keyfiles{current} ] ) ;
 
@@ -41,9 +44,11 @@ while current <= length(keyfiles) && verifBoolean == 1
   end
 
   % reload key files data and increment current
-  load('exData.mat') ;
+  load('exData.mat') ; num_tests = length(keyfiles) ;
 
-  fprintf([' === test problem %2i:  %s === \n\n'], current, status );
+  aux_time = time() - aux_time ; keyfiles{current,2} = aux_time ;
+
+  fprintf([' === test problem %2i:  %s in %8.1e s === \n\n'], current, status, aux_time );
 
   current = current + 1 ;
   delete('exData.mat');
