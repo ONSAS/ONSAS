@@ -1,4 +1,4 @@
-function C_d = dragCoefFunction ( betaRel, Re )
+function C_d = dragCoefFunctionLA( betaRel, Re )
     % Aeroelastic stability of a 3DOF system based on quasi-steady theory with reference to inertial coupling
     % Emulation of drag extrated from the reference above
     if 0<betaRel< deg2rad(210)

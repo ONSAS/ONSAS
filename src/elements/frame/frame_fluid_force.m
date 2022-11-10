@@ -17,10 +17,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 % This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function fagElem = frame_fluid_force( elemCoords,... 
+function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,... 
                                      Ue, Udote, Udotdote,... 
                                      aeroCoefs, elemTypeAero, analysisSettings,...
-                                     nextTime, currElem ) 
+                                     nextTime, currElem, aeroTangBool ) 
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
@@ -55,8 +55,8 @@ function fagElem = frame_fluid_force( elemCoords,...
   end
   
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  udotFlowNode1 = feval( userFlowVel, elemCoords(1) + Ue(1:2:6), nextTime ) ; 
-  udotFlowNode2 = feval( userFlowVel, elemCoords(4) + Ue(7:2:12), nextTime ) ;
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ; 
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   % compact them into a single vector for the element 
   udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
   
@@ -122,7 +122,7 @@ function fagElem = frame_fluid_force( elemCoords,...
   % WOM computation call for cases with VIVbool equal to true
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 
-    if VIVBool
+    if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0 
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
       udotFrame1    = Udote( 1:2:6 )      ;
@@ -155,13 +155,13 @@ function fagElem = frame_fluid_force( elemCoords,...
         % Compute fluid mean velocity at the nodes on the initial configuration
         % find the first veloctiy direction unitll is not null
         t0 = 0; timeStepNotNullVel = 0;
-        udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-        udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+        udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+        udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         while norm( udotFlowNode10 ) == 0 && norm( udotFlowNode20 ) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
           t0 = timeStepNotNullVel*analysisSettings.deltaT ;
-          udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-          udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+          udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+          udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         end
         % Compute the direction of the axial vector on the initial configuration in global coordinates
         e1 = R0 * [1 0 0]';
@@ -170,10 +170,10 @@ function fagElem = frame_fluid_force( elemCoords,...
         tlift2 = cross(e1, udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
       % compute van der pol solution for current element
-      q = WOMV3( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
+      q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
-      q = 2 ;
+      q = 0 ; % No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
       tlift1 = [] ; tlift2 = [] ;
     end
@@ -199,6 +199,30 @@ function fagElem = frame_fluid_force( elemCoords,...
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
+
+  % --- compute tangent matrix using Central Difference  ---
+  aeroMatElem = []             ;
+  if aeroTangBool
+    % initialize aerodynamic tangent matrix
+    aeroMatElem = zeros(12,12) ;
+    % numerical step to compute the tangets
+    h = 1e-10                  ;
+    for indexIncrementU = 1:12 
+      e_i = zeros(12,1)        ;
+      e_i(indexIncrementU) = 1 ;
+      % increment displacement 
+      UplusDeltaU = Ue + h * e_i   ;
+      % compute forces with u + hu at the index indexIncrementU
+      faero_incU = frame_fluid_force( elemCoords,... 
+                         UplusDeltaU, Udote, Udotdote,... 
+                         aeroCoefs, elemTypeAero, analysisSettings,...
+                         nextTime, currElem, false ) ;
+      
+      aeroMatElem(:,indexIncrementU) = ( faero_incU - fagElem ) / h ;
+    end  
+  end
+  % -------------------------------
+
 end
 
 function integFluidForce = integFluidForce( x, ddotg, udotFlowElem,...
@@ -277,7 +301,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem,...
   if ~isempty( userLiftCoef )
     c_l = feval( userLiftCoef, betaRelG, Re  ) ; 
   else
-    assert(~VIVBool, 'The lift CL0 coef function must be defined for VIVBool problems ')
+    ~isempty( VIVBool ) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ') ;
     c_l = 0 ;
   end
   if ~isempty( userMomentCoef )

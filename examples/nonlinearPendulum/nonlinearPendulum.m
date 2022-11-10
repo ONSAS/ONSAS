@@ -11,7 +11,7 @@
 %mdBefore defining the input structs all variables are cleaned, the open windows are closed and the source folder added to the workspace path:
 close all, clear all ;
 % add path
-addpath( genpath( [ pwd '/../../src'] ) ); tic;
+addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 %mdThe material and geometrical properties must comply certain equals:
 %md```math
@@ -89,7 +89,7 @@ analysisSettings.finalTime     = 1* T  ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
-otherParams.plotsFormat        = 'vtk' ;
+otherParams.plots_format       = 'vtk' ;
 
 %md### Analysis case 1: Solution using Newmark with truss element and mass lumped and the weight force is included by external force according to Bathe problem
 analysisSettings.methodName = 'newmark'     ;
@@ -135,6 +135,17 @@ otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------
 [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+otherParams.problemName     = 'nonlinearPendulumHHTFrameWithSpring';
+boundaryConds(1).springDofs = [ 4 ] ;
+boundaryConds(1).springVals = [ 1e2 ] ;
+
+[matUsCase4, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+figure
+plot(matUsCase3(4,:))
+grid on, hold on
+plot(matUsCase4(4,:),'r')
+
 %md### extract control displacements
 %mdThe mass displacement in z are:
 controlDofDispUz = 6 + 5 ;
@@ -165,7 +176,6 @@ verifBooleanCase2 =  ( abs( controlDispZCase2(end) / l0 ) <  tolVerifDisp ) ;
 verifBooleanCase3 =  ( abs( controlDispZCase3(end) / l0 ) <  tolVerifDisp ) ;
 %md all cases must be verifyed, so then:
 verifBoolean    = verifBooleanCase1 && verifBooleanCase2 && verifBooleanCase3;
-total_example_time = toc
  
 %md### Plots
 %md
@@ -182,7 +192,7 @@ plot( timesVec12, -controlDispZCase3, 'rx','markersize', MS,'linewidth', LW)
 xlabel('time (s)'), ylabel('mass displacement u_z (m)')
 legend( legendCase1, legendCase2, legendCase3, 'location','NorthEast')
 title("U_z solution Bathe")
-print('./output/dispPlot.png','-dpng')
+%print('./output/dispPlot.png','-dpng')
 
 %mdPlot a ngle solution
 figure, hold on, grid on
@@ -192,5 +202,5 @@ plot( timesVec12, -angleThetaCase3, 'rx','markersize', MS,'linewidth', LW)
 xlabel('time (s)'), ylabel('\theta displacement (º)')
 legend( legendCase1, legendCase2, legendCase3, 'location','NorthEast')
 title("Θ solution Bathe")
-print('./output/thetaPlot.png','-dpng')
+%print('./output/thetaPlot.png','-dpng')
 

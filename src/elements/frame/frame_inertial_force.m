@@ -18,7 +18,7 @@
 function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
                         elemCrossSecParams, elemConstitutiveParams, ...
                         Ue, Udote, Udotdote, elemrho, massMatType ) ;
-
+  global massratio;
   % element coordinates
   xs = elemCoords(:) ;
 
@@ -27,8 +27,11 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   nu  = elemConstitutiveParams(3) ;
   G   = E/(2*(1+nu)) ;
   rho = elemrho ;
+  if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
+    rho = rho * (1+(1/massratio)) ;
+  end
   % ----- extract cross section properties ---
-  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, 0 ) ; % select a ficticious elemrho 
+  [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ;
   % ------------------------------------------
 
   % compute corotational matrices rotation 
@@ -134,7 +137,6 @@ end%endFunction
 
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interElementBeamForces (...
 x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux )
-
     % Bernoulli weight function
     [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
 
@@ -195,12 +197,12 @@ x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Ar
     % Compute dyadic tensor
     Irho  = Rgx * Ro * Jrho * (Rgx*Ro)' ; %Ec 45
     Irhoe = Rr' * Irho * Rr             ; %Ec 80
-
-     % Calculate integral Force
+    
+    % Calculate integral Force
     IntegrandoForce  =      H1'* Rr' * Area * rho * udotdot ...
                             + H2' * Rr' * ( Irho*wdotdot + skew(wdot) * Irho * wdot ) ;  %Eq 78
 
-    IntegrandoMassMatrix  = H1' * Area * rho * H1 + H2' * Irhoe * H2 ;
+    IntegrandoMassMatrix  = H1' * Area *rho * H1 + H2' * Irhoe * H2 ;
 
     % Compute C3 and C4
     h1 = H1 * ddotg ; %Eq B6
@@ -217,6 +219,6 @@ x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Ar
 
     % Compute Gyroscopic Matrix
     IntegrandoGyroMatrix  = H2' * ( ( skewWdoter * Irhoe ) - skew( Irhoe * wdoter) ) * H2 ...
-                            + H1' * Area*rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88
+                            + H1' * Area * rho*(C1 + C3)  + H2'*Irhoe*(C2+C4) ; %Ec88
 
 end
