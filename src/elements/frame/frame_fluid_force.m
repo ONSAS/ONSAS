@@ -198,15 +198,14 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
                                                            VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
   % --- compute hydrodynamic mass force of a frame element ---
-  Udotdotflow = zeros(12, 1);
-  ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords);
-  Udotdotflow(1:2:12) = ddUf(1:6);
-  madded = 1*pi* dimCharacteristic^2 /4 * l* densityFluid; % Ca * Volume * density
-  fam = madded * Udotdotflow(1:12); 
-  variableToPrint(floor(nextTime/dt)+1, 1) = fAM(1);
-  variableToPrint(floor(nextTime/dt)+1, 2) = Udotdotflow(1);
-  variableToPrint(floor(nextTime/dt)+1, 3) = Udotdotflow(1)-Udotdote(1);
-  fagElem =  fagElem + fam;
+  if ~isempty( AMBool ) && AMBool
+    Udotdotflow = zeros(12, 1);
+    ddUf = computeddUf(nextTime, analysisSettings.deltaT, userFlowVel,  elemCoords);
+    Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
+    madded = 1*pi* dimCharacteristic^2 /4 * l* densityFluid; % Ca * Volume * density
+    fam = madded * Udotdotflow(1:12); 
+    fagElem =  fagElem + fam;
+  end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
 
