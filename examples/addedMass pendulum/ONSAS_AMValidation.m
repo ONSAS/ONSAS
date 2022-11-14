@@ -12,6 +12,7 @@ m   = 10     ; g = 9.80 ;
 %md
 rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
+massratio = 1;
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ] ;
@@ -100,7 +101,7 @@ figure(), hold on, grid on
 plot( times, angleTheta, 'rx')
 hold on
 plot( times, theta_ana, 'ko')
-xlabel('time (s)'), ylabel('\theta(บ)')
+xlabel('time (s)'), ylabel('\theta(ยบ)')
 title("Angle of the pendulum")
 %title(sprintf('Angle of the pendulum, 1 +1/massratio=%d', AMcoef))
 legend('ONSAS', 'analytical')
