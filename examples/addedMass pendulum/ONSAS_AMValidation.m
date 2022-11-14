@@ -99,7 +99,8 @@ hold on
 plot( times, theta_ana, 'ko')
 xlabel('time (s)'), ylabel('\theta(บ)')
 title(sprintf('Pendulum angle, massratio=%d', massratio))
-%title(sprintf('Angle of the pendulum, 1 +1/massratio=%d', AMcoef))
+xlabel('time (s)'), ylabel('\theta(ยบ)')
+title("Angle of the pendulum")
 legend('ONSAS', 'analytical')
 
 fftsig (angleTheta, dt)
