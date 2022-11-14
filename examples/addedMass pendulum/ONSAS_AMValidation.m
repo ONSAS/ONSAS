@@ -1,6 +1,6 @@
 % ONSAS pnonlinear pendulum
 
-%close all, clear all ;
+close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 global massratio;
@@ -12,6 +12,7 @@ m   = 10     ; g = 9.80 ;
 %md
 rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
+massratio = 1;
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ] ;
@@ -46,8 +47,7 @@ mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 %md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
-%md A similar approach is used for node $3$,
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 0 0  2   ] ;
 %md and for node $2$ only the boundary condition is changed, because it is lodaded.
 %md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.
 mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
@@ -69,17 +69,15 @@ analysisSettings.alphaHHT   =  0        ;
 otherParams.problemName     = 'AMVal_nonlinearPendulum';
 % ------------------------------------
 [matUspnedulum, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%%
 %md### extract control displacements
 %mdThe mass displacement in z are:
 controlDofDispZ = 6 + 5 ;
 controlDispZ = matUspnedulum( controlDofDispZ , : ) + (l0-cosd(angle_init)*l0);
 %mdanalogously the mass dipslacement in x are:
 controlDofDispX = 6 + 1 ;
-controlDispX = matUspnedulum( controlDofDispX , : ) + sind(angle_init)*l0; %(l0-cosd(angle_init)*l0);
+controlDispX = matUspnedulum( controlDofDispX , : ) + sind(angle_init)*l0; 
 
 %mdIn order to contrast the solution with the literature refrence the bounce angle measured from the vertical is computed:
-%angleTheta= rad2deg( atan2( ( l0 + controlDispX ), -controlDispZ ) ) ;
 angleTheta= rad2deg( atan2( controlDispX, l0 - controlDispZ ) ) ;
 
 %mdTo plot diplsacements against $t$ the time vector is:
@@ -94,14 +92,13 @@ end
 T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g))); 
 f_ana_lim  = 1/T_ana_lim;
 theta_ana = angle_init*cos(2*pi*f_ana_lim.*times);
-xana = ( sind(angle_init)*l0)*cos(2*pi*f_ana_lim.*times);
 %md Plot angle solution
 figure(), hold on, grid on
 plot( times, angleTheta, 'rx')
 hold on
 plot( times, theta_ana, 'ko')
 xlabel('time (s)'), ylabel('\theta(º)')
-title("Angle of the pendulum")
+title(sprintf('Pendulum angle, massratio=%d', massratio))
 %title(sprintf('Angle of the pendulum, 1 +1/massratio=%d', AMcoef))
 legend('ONSAS', 'analytical')
 
