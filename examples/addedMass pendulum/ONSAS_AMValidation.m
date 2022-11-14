@@ -4,6 +4,11 @@ close all, clear all ;
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 global massratio;
+global AMBool;
+%md Case 1: the fluid is still: it is only modelled by an added inertia of the solid, the fluid propertiies are opnly defined by the massratio = rho_structure/rho_fluid
+otherParams.problemName     = 'AMCase1';
+%md AMBool = false because the fluid is not defined here(see case 2)
+AMBool = false;
 % material scalar parameters
 EA = 1e8     ; A = 0.1  ; d = 2*sqrt(A/pi);
 E   = EA / A ; nu = 0   ;
@@ -12,6 +17,7 @@ m   = 10     ; g = 9.80 ;
 %md
 rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
+%md Fluid inertia is only defined by the mass ratio: 
 massratio = 1;
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
@@ -23,14 +29,13 @@ materials.hyperElasParams = [ E nu ] ;
 elements(1).elemType = 'node' ;
 elements(2).elemType     = 'frame';
 %mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemCrossSecParams` field is:
-elements(2).elemCrossSecParams{1,1} = 'circle' ;% 'rectangle' ;
+elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ; 
-%mdand the according to the literature example the element include conssitent mass matrix
 elements(2).massMatType  = 'consistent';
 %md
 %md### boundaryConds
 %md
-%mdThe elements are submitted to two different BC settings. The first BC corresponds to a simple fixed condition (all 3 dipslacments dofs of the node are equal to zero during all time span) then the `boundaryConds(1)` set is:
+%mdThe elements are submitted to a hinged condition where onnly rotation along y is allowed. then the `boundaryConds(1)` set is:
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 6] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0] ;
 %md### initial Conditions
@@ -38,7 +43,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0] ;
 initialConds                = struct() ;
 %md
 %md### mesh parameters
-%mdThe coordinates conisdering a mesh of two nodes is:
+%mdThe coordinates considering a mesh of two nodes is:
 angle_init = 25; % degrees
 mesh.nodesCoords = [   0                    0    l0 ; ...
                    sind(angle_init)*l0  0  l0-cosd(angle_init)*l0  ] ;
@@ -66,24 +71,61 @@ analysisSettings.booleanSelfWeight = true ;
 %mdIn order to validate HHT numerical method this is executed with $alphaHHT = 0$ which necessary implies that numerical results must be identical to CASE 1, since HHT is equivalent to Newmark if AplhaHHT = 0,
 analysisSettings.methodName = 'alphaHHT';
 analysisSettings.alphaHHT   =  0        ;        
-otherParams.problemName     = 'AMVal_nonlinearPendulum';
+analysisSettings.stopTolDeltau = 1e-12 ;
+analysisSettings.stopTolForces = 1e-12 ;
 % ------------------------------------
-[matUspnedulum, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+% ------------------------------------
+%md Case 2: the fluid has an acceeration
+otherParams.problemName     = 'AMCase2';
+%md AMBool is turned to true to consider fluid acceleration
+AMBool = true;
+%md Mesh is now a vertical pendulum
+%mdThe coordinates conisdering a mesh of two nodes is:
+mesh.nodesCoords = [   0   0    l0 ;...
+                       l0  0    0  ] ;
+mesh.conecCell = { } ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 0 0  2   ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
+% Fluid parameters
+rhoFluid = rho/massratio; nuFluid = 1e-6; 
+AeroBoolmat = false;
+%md Initially straight, motion is only driven by the added mass force with no weight
+% angle_init = 0; 
+nameFuncVel = 'windUniform';  
+%md Drag and lift are ignored in this idealized example
+elements(2).aeroCoefs   = {[]; []; [] }   ;
+% hydro cross-section props
+numGaussPoints  = 4 ;
+elements(2).elemTypeAero = [0 0 -d numGaussPoints AeroBoolmat] ;
+%md Analysis Settings
+analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
+analysisSettings.geometricNonLinearAero = true;
+analysisSettings.booleanSelfWeight = false ;
+analysisSettings.stopTolDeltau = 1e-8 ;
+analysisSettings.stopTolForces = 1e-8 ;
+% ------------------------------------
+[matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+% ------------------------------------------------------------------------------
 %md### extract control displacements
 %mdThe mass displacement in z are:
 controlDofDispZ = 6 + 5 ;
-controlDispZ = matUspnedulum( controlDofDispZ , : ) + (l0-cosd(angle_init)*l0);
+controlDispZCase1 = matUspendulumCase1( controlDofDispZ , : ) + (l0-cosd(angle_init)*l0);
+controlDispZCase2 = matUspendulumCase2( controlDofDispZ , : ) ;
 %mdanalogously the mass dipslacement in x are:
 controlDofDispX = 6 + 1 ;
-controlDispX = matUspnedulum( controlDofDispX , : ) + sind(angle_init)*l0; 
-
+controlDispXCase1 = matUspendulumCase1( controlDofDispX , : ) + sind(angle_init)*l0; 
+controlDispXCase2 = matUspendulumCase2( controlDofDispX , : ) ; 
+%
 %mdIn order to contrast the solution with the literature refrence the bounce angle measured from the vertical is computed:
-angleTheta= rad2deg( atan2( controlDispX, l0 - controlDispZ ) ) ;
-
+angleThetaCase1= rad2deg( atan2( controlDispXCase1, l0 - controlDispZCase1 ) ) ;
+angleThetaCase2= rad2deg( atan2( controlDispXCase2, l0 - controlDispZCase2 ) ) ;
+%
 %mdTo plot diplsacements against $t$ the time vector is:
 dt = analysisSettings.deltaT;
-times  = (0:length(controlDispZ)-1) * dt ;
-% Analytical solution
+times  = (0:length(controlDispZCase1)-1) * dt ;
+% Analytical solution for Case 1
 d = 2*sqrt(A/pi);
 if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
     AMcoef =  1+(1/massratio) ;
@@ -92,9 +134,9 @@ end
 T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g))); 
 f_ana_lim  = 1/T_ana_lim;
 theta_ana = angle_init*cos(2*pi*f_ana_lim.*times);
-%md Plot angle solution
+%md Plot angle solution for case 1
 figure(), hold on, grid on
-plot( times, angleTheta, 'rx')
+plot( times, angleThetaCase1, 'rx')
 hold on
 plot( times, theta_ana, 'ko')
 xlabel('time (s)'), ylabel('\theta(บ)')
@@ -103,11 +145,20 @@ xlabel('time (s)'), ylabel('\theta(ยบ)')
 title("Angle of the pendulum")
 legend('ONSAS', 'analytical')
 
-fftsig (angleTheta, dt)
+fftsig (angleThetaCase1, dt)
 fftsig (theta_ana, dt)
-title(sprintf('FFT of the pendulum angle, massratio=%d', massratio))
+title(sprintf('FFT of the pendulum angle,Case 1, massratio=%d', massratio))
 legend('ONSAS', 'analytical')
-%%  FFT and signal     
+
+%md Plot angle solution
+figure(), hold on, grid on
+yyaxis right
+plot( times, angleThetaCase2, 'bx')
+xlabel('time (s)'), ylabel('\theta(บ)')
+hold on 
+%md Plot fluid load and pendulum angle for Case 2 
+plotFluidLoad(times, nameFuncVel, d, l0, rhoFluid)
+%  FFT and acceleration function
 function fftsig (xdefNumlast, dt)
     Ns = length(xdefNumlast);
     xhat = fft(xdefNumlast(1:end),Ns); %same as xhat = fft(zmid(1:end));
@@ -118,4 +169,22 @@ function fftsig (xdefNumlast, dt)
     plot(freq(L), PSD(L))
     title('FFT'); xlabel('f(Hz)')
     hold on
+end
+%
+function plotFluidLoad(times, userFlowVel, d, l0, rhoFluid)
+    a = times; f = times; 
+    dt = times(2) - times(1);
+    madded = 1*pi* d^2/4 * l0* rhoFluid; % Ca * Volume * density
+    for t = 1: length(times)-1
+        acc = (feval(userFlowVel, 0, times(t+1)) - feval(userFlowVel, 0, times(t)))/dt ;
+        a(t) = acc(1);
+        f(t) = madded * acc(1);
+    end
+    yyaxis left
+    ylabel('fluid load x component');
+%     plot(times(1:end-1), u(1:end-1), 'b-')
+%     hold on 
+    plot(times(1:end-2), f(1:end-2), 'r-')
+    title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
+    legend('added mass force', 'pendulum angle (ฐ)')
 end
