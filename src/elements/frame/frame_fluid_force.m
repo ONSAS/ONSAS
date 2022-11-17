@@ -204,6 +204,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
     Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
     madded = (1+1)/2*pi* dimCharacteristic^2 /4 * l* densityFluid; % (1+Ca) * Volume * density /2
     fam = madded * Udotdotflow(1:12); 
+  else fam = zeros(12, 1);
   end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
