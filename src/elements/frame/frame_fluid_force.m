@@ -202,7 +202,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
     Udotdotflow = zeros(12, 1);
     ddUf = computeddUf(nextTime, analysisSettings.deltaT, userFlowVel,  elemCoords);
     Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
-    madded = 1*pi* dimCharacteristic^2 /4 * l* densityFluid; % Ca * Volume * density
+    madded = (1+1)*pi* dimCharacteristic^2 /4 * l* densityFluid; % (1+Ca) * Volume * density
     fam = madded * Udotdotflow(1:12); 
     fagElem =  fagElem + fam;
   end
