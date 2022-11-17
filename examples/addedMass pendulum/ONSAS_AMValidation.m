@@ -144,47 +144,24 @@ title(sprintf('Pendulum angle, massratio=%d', massratio))
 xlabel('time (s)'), ylabel('\theta (degrees)')
 title('Angle of the pendulum')
 legend('ONSAS', 'analytical')
-
-fftsig ( angleThetaCase1, dt)
-fftsig (theta_ana, dt)
-title(sprintf('FFT of the pendulum angle,Case 1, massratio=%d', massratio))
-legend('ONSAS', 'analytical')
-
-%md Plot angle solution
+%md
+%md Plot angle solution for case 2
 figure(), hold on, grid on
 yyaxis right
 plot( times, angleThetaCase2, 'bx')
 xlabel('time (s)'), ylabel('\theta (degrees)')
 hold on
 %md Plot fluid load and pendulum angle for Case 2
-plotFluidLoad(times, nameFuncVel, d, l0, rhoFluid)
-%  FFT and acceleration function
-function fftsig (xdefNumlast, dt)
-    Ns = length(xdefNumlast);
-    xhat = fft(xdefNumlast(1:end),Ns); %same as xhat = fft(zmid(1:end));
-    PSD = xhat.*conj(xhat)/Ns ;
-    freq = 1/(dt*Ns)*(0:Ns);
-    L = 1:floor(Ns/10); % Only plot 1/10th of frequencies
-    figure(20)
-    plot(freq(L), PSD(L))
-    title('FFT'); xlabel('f(Hz)')
-    hold on
+a = times; f = times;
+dt = times(2) - times(1);
+madded = (1+1)*pi* d^2/4 * l0* rhoFluid/2; % (1+Ca) * Volume * density /2
+for t = 1: length(times)-1
+    acc = (feval(nameFuncVel, 0, times(t+1)) - feval(nameFuncVel, 0, times(t)))/dt ;
+    a(t) = acc(1);
+    f(t) = madded * acc(1);
 end
-%
-function plotFluidLoad(times, userFlowVel, d, l0, rhoFluid)
-    a = times; f = times;
-    dt = times(2) - times(1);
-    madded = 1*pi* d^2/4 * l0* rhoFluid; % Ca * Volume * density
-    for t = 1: length(times)-1
-        acc = (feval(userFlowVel, 0, times(t+1)) - feval(userFlowVel, 0, times(t)))/dt ;
-        a(t) = acc(1);
-        f(t) = madded * acc(1);
-    end
-    yyaxis left
-    ylabel('fluid load x component');
-%     plot(times(1:end-1), u(1:end-1), 'b-')
-%     hold on
-    plot(times(1:end-2), f(1:end-2), 'r-')
-    title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
-    legend('added mass force', 'pendulum angle (degrees)')
-end
+yyaxis left
+ylabel('fluid load x component');
+plot(times(1:end-2), f(1:end-2), 'r-')
+title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
+legend('added mass force', 'pendulum angle (degrees)')
