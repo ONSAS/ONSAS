@@ -33,7 +33,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   global VIVBool
   global constantLiftDir 
   global uniformUdot 
-  
+  global AMBool 
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
   
@@ -197,9 +197,18 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
+  % --- compute hydrodynamic mass force of a frame element ---
+  if ~isempty( AMBool ) && AMBool
+    Udotdotflow = zeros(12, 1);
+    ddUf = computeddUf(nextTime, analysisSettings.deltaT, userFlowVel,  elemCoords);
+    Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
+    madded = (1+1)/2*pi* dimCharacteristic^2 /4 * l* densityFluid; % (1+Ca) * Volume * density /2
+    fam = madded * Udotdotflow(1:12); 
+  else fam = zeros(12, 1);
+  end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
-
+  fagElem =  fagElem + fam;
   % --- compute tangent matrix using Central Difference  ---
   aeroMatElem = []             ;
   if aeroTangBool
@@ -356,4 +365,12 @@ function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroo
   VpiRel = L2 * Rroof' * Rr' * VrelG ;
   % the perpendicular flow relative velocity projection in deformed coordinates is:
   VpiRelPerp = L3 * VpiRel ;
+end
+% This function returns the fluid acceleration in global coordinates
+function ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords)
+   t0 = (nextTime-dt);
+   t1 = nextTime;
+   udotdotFlowNode1 = (feval(userFlowVel, elemCoords(1:3)', t1) - feval(userFlowVel,  elemCoords(1:3)', t0))/dt ;
+   udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0))/dt ;
+   ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
 end
