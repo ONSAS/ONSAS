@@ -17,7 +17,7 @@ m   = 10     ; g = 9.80 ;
 %md
 rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
-%md Fluid inertia is only defined by the mass ratio: 
+%md Fluid inertia is only defined by the mass ratio:
 massratio = 1;
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
@@ -30,7 +30,7 @@ elements(1).elemType = 'node' ;
 elements(2).elemType     = 'frame';
 %mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemCrossSecParams` field is:
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = [ d ] ; 
+elements(2).elemCrossSecParams{2,1} = [ d ] ;
 elements(2).massMatType  = 'consistent';
 %md
 %md### boundaryConds
@@ -70,7 +70,7 @@ analysisSettings.stopTolIts    = 30    ;
 analysisSettings.booleanSelfWeight = true ;
 %mdIn order to validate HHT numerical method this is executed with $alphaHHT = 0$ which necessary implies that numerical results must be identical to CASE 1, since HHT is equivalent to Newmark if AplhaHHT = 0,
 analysisSettings.methodName = 'alphaHHT';
-analysisSettings.alphaHHT   =  0        ;        
+analysisSettings.alphaHHT   =  0        ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 % ------------------------------------
@@ -89,11 +89,11 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
 mesh.conecCell{ 2, 1 } = [ 0 1 0 0  2   ] ;
 mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
 % Fluid parameters
-rhoFluid = rho/massratio; nuFluid = 1e-6; 
+rhoFluid = rho/massratio; nuFluid = 1e-6;
 AeroBoolmat = false;
 %md Initially straight, motion is only driven by the added mass force with no weight
-% angle_init = 0; 
-nameFuncVel = 'windUniform';  
+% angle_init = 0;
+nameFuncVel = 'windUniform';
 %md Drag and lift are ignored in this idealized example
 elements(2).aeroCoefs   = {[]; []; [] }   ;
 % hydro cross-section props
@@ -115,8 +115,8 @@ controlDispZCase1 = matUspendulumCase1( controlDofDispZ , : ) + (l0-cosd(angle_i
 controlDispZCase2 = matUspendulumCase2( controlDofDispZ , : ) ;
 %mdanalogously the mass dipslacement in x are:
 controlDofDispX = 6 + 1 ;
-controlDispXCase1 = matUspendulumCase1( controlDofDispX , : ) + sind(angle_init)*l0; 
-controlDispXCase2 = matUspendulumCase2( controlDofDispX , : ) ; 
+controlDispXCase1 = matUspendulumCase1( controlDofDispX , : ) + sind(angle_init)*l0;
+controlDispXCase2 = matUspendulumCase2( controlDofDispX , : ) ;
 %
 %mdIn order to contrast the solution with the literature refrence the bounce angle measured from the vertical is computed:
 angleThetaCase1= rad2deg( atan2( controlDispXCase1, l0 - controlDispZCase1 ) ) ;
@@ -131,7 +131,7 @@ if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
     AMcoef =  1+(1/massratio) ;
 else AMcoef = 1;
 end
-T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g))); 
+T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g)));
 f_ana_lim  = 1/T_ana_lim;
 theta_ana = angle_init*cos(2*pi*f_ana_lim.*times);
 %md Plot angle solution for case 1
@@ -139,13 +139,13 @@ figure(), hold on, grid on
 plot( times, angleThetaCase1, 'rx')
 hold on
 plot( times, theta_ana, 'ko')
-xlabel('time (s)'), ylabel('\theta(บ)')
+xlabel('time (s)'), ylabel('\theta (degrees)')
 title(sprintf('Pendulum angle, massratio=%d', massratio))
-xlabel('time (s)'), ylabel('\theta(ยบ)')
-title("Angle of the pendulum")
+xlabel('time (s)'), ylabel('\theta (degrees)')
+title('Angle of the pendulum')
 legend('ONSAS', 'analytical')
 
-fftsig (angleThetaCase1, dt)
+fftsig ( angleThetaCase1, dt)
 fftsig (theta_ana, dt)
 title(sprintf('FFT of the pendulum angle,Case 1, massratio=%d', massratio))
 legend('ONSAS', 'analytical')
@@ -154,9 +154,9 @@ legend('ONSAS', 'analytical')
 figure(), hold on, grid on
 yyaxis right
 plot( times, angleThetaCase2, 'bx')
-xlabel('time (s)'), ylabel('\theta(บ)')
-hold on 
-%md Plot fluid load and pendulum angle for Case 2 
+xlabel('time (s)'), ylabel('\theta (degrees)')
+hold on
+%md Plot fluid load and pendulum angle for Case 2
 plotFluidLoad(times, nameFuncVel, d, l0, rhoFluid)
 %  FFT and acceleration function
 function fftsig (xdefNumlast, dt)
@@ -172,7 +172,7 @@ function fftsig (xdefNumlast, dt)
 end
 %
 function plotFluidLoad(times, userFlowVel, d, l0, rhoFluid)
-    a = times; f = times; 
+    a = times; f = times;
     dt = times(2) - times(1);
     madded = 1*pi* d^2/4 * l0* rhoFluid; % Ca * Volume * density
     for t = 1: length(times)-1
@@ -183,8 +183,8 @@ function plotFluidLoad(times, userFlowVel, d, l0, rhoFluid)
     yyaxis left
     ylabel('fluid load x component');
 %     plot(times(1:end-1), u(1:end-1), 'b-')
-%     hold on 
+%     hold on
     plot(times(1:end-2), f(1:end-2), 'r-')
     title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
-    legend('added mass force', 'pendulum angle (ฐ)')
+    legend('added mass force', 'pendulum angle (degrees)')
 end
