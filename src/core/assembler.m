@@ -101,11 +101,11 @@ for elem = 1:nElems
   %md extract aerodynamic properties
   elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
   aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
-  
+
   %md compute aerodynamic compute force booleans
   aeroBool = ~isempty(analysisSettings.fluidProps) || ...
              ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
-  
+
   %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
@@ -144,7 +144,7 @@ for elem = 1:nElems
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
-    
+
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
@@ -159,23 +159,23 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
-  
-		if strcmp(hyperElasModel, 'linearElastic') 
+
+		if strcmp(hyperElasModel, 'linearElastic')
 			boolLinear = 1 ;
 			boolMatNonLin = 0 ;
 		elseif strcmp(hyperElasModel, 'biLinear') || strcmp(hyperElasModel, 'userFunc')
 			boolLinear = 1 ;
 			boolMatNonLin = 1 ;
 		else
-			boolLinear = 0 ;	
+			boolLinear = 0 ;
 		end
-		
+
 		if  boolLinear == 1
-			
+
 			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
-			
+
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
@@ -206,18 +206,19 @@ for elem = 1:nElems
     end
 
     %md compute hydrodynamic force of the element}
-    if aeroBool && fsBool 
+    if aeroBool && fsBool
       % extract boolean to compute aerodyinamic displacements tangnet matrix
       aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
 
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
+                                     elemCrossSecParams                   , ...
                                      u2ElemDisps( Ut       , dofselem )   , ...
                                      u2ElemDisps( Udott    , dofselem )   , ...
                                      u2ElemDisps( Udotdott , dofselem )   , ...
                                      elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
                                      analysisSettings, timeVar, elem, aeroTangBool ) ;
     end
-  
+
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 
@@ -284,7 +285,7 @@ for elem = 1:nElems
   if tangBool
 
     for indRow = 1:length( dofselemRed )
-			
+
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
 
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
@@ -292,8 +293,8 @@ for elem = 1:nElems
 
       if aeroBool && exist('aeroTangBool') && aeroTangBool
         % add displacements minus since is an external force
-        valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ; 
-      else 
+        valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
+      else
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' ;
       end
 
@@ -311,17 +312,17 @@ for elem = 1:nElems
 
   if stressBool
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
-    
+
     if exist('strain')==1
       strain_vec( elem )           = strain ;
-      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ; 
+      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ;
     end
   end % if stress
-	
+
 	if matFintBool
 		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
 	end
-	
+
 end % for elements ----
 
 % ============================================================================
@@ -352,7 +353,7 @@ if fsBool
 
 
   global globalFDrag
-  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0) 
+  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0)
     globalFDrag(timeVar) = sum(Faero(3:6:end)) ;
   end
 end

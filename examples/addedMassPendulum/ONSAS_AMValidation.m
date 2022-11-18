@@ -147,8 +147,8 @@ legend('ONSAS', 'analytical')
 %md
 %md Plot angle solution for case 2
 figure(), hold on, grid on
-% yyaxis right # uncomment this for matlab
-plotyy( times, angleThetaCase2, 'bx')
+yyaxis right
+plot( times, angleThetaCase2, 'bx')
 xlabel('time (s)'), ylabel('\theta (degrees)')
 hold on
 %md Plot fluid load and pendulum angle for Case 2
@@ -162,6 +162,6 @@ for t = 1: length(times)-1
 end
 yyaxis left
 ylabel('fluid load x component');
-plotyy(times(1:end-2), f(1:end-2), 'r-')
+plot(times(1:end-2), f(1:end-2), 'r-')
 title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
 legend('added mass force', 'pendulum angle (degrees)')
