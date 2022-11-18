@@ -243,9 +243,11 @@ function fam = hydroMassForce( AMBool                                   ,...
     Udotdotflow = zeros(12, 1);
     % compute fluid element acceleration [udotdot_f_x_1, udotdot_f_y_1, udotdot_f_z_1, udotdot_f_x_2 ....]
     ddUf = computeddUf(nextTime, deltaT, userFlowVel,  elemCoords);
-    Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
+    Udotdotflow(1:2:12) = ddUf(1:6); % Irotationnal flow
 
-    % lumped add mass formlation by the momennt for circular cross section:
+    % lumped add mass formlation:
+    % circular cross section implementation
+    assert(elemCrossSecParams{1}(1:end) == 'circle')
     Ca            = 1          ;
     elementVolume = l0 * Aelem ;
     massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ; #
