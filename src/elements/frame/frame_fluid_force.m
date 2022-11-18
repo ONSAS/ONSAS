@@ -220,9 +220,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   if hydroTangBoolU
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
-                                    Udote, Udotdote                  ,...
+                                    Ue, Udote, Udotdote              ,...
                                     aeroCoefs, elemTypeAero          ,...
-                                    analysisSettings, nextTime, currElem )
+                                    analysisSettings, nextTime, currElem ) ;
   end
 
   % -------------------------------
@@ -406,28 +406,25 @@ end
 % employing a simple central difference alg.
 function dispTangMatElem = dispTangMatElem( fHydroElem                                ,...
                                             elemCoords, elemCrossSecParams            ,...
-                                            Udote, Udotdote                           ,...
+                                            Ue, Udote, Udotdote                       ,...
                                             aeroCoefs, elemTypeAero, analysisSettings ,...
                                             nextTime, currElem )
-  aeroMatElem = []             ;
-  if hydroTangBoolU
-    % initialize aerodynamic tangent matrix
-    dispTangMatElem = zeros(12,12) ;
-    % numerical step to compute the tangets
-    h = 1e-10                  ;
-    for indexIncrementU = 1:12
-      e_i = zeros(12,1)        ;
-      e_i(indexIncrementU) = 1 ;
-      % increment displacement
-      UplusDeltaU = Ue + h * e_i   ;
-      % compute forces with u + hu at the index indexIncrementU
-      fhydro_incU = frame_fluid_force( elemCoords                                ,...
-                                       elemCrossSecParams                        ,...
-                                       UplusDeltaU, Udote, Udotdote              ,...
-                                       aeroCoefs, elemTypeAero, analysisSettings ,...
-                                       nextTime, currElem, false ) ;
-      % central difference
-      dispTangMatElem(:,indexIncrementU) = ( fhydro_incU - fagElem ) / h ;
-    end % endfor
-  end% endif
+  % initialize aerodynamic tangent matrix
+  dispTangMatElem = zeros(12,12) ;
+  % numerical step to compute the tangets
+  h = 1e-10                  ;
+  for indexIncrementU = 1:12
+    e_i = zeros(12,1)        ;
+    e_i(indexIncrementU) = 1 ;
+    % increment displacement
+    UplusDeltaU = Ue + h * e_i   ;
+    % compute forces with u + hu at the index indexIncrementU
+    fhydro_incU = frame_fluid_force( elemCoords                                ,...
+                                      elemCrossSecParams                        ,...
+                                      UplusDeltaU, Udote, Udotdote              ,...
+                                      aeroCoefs, elemTypeAero, analysisSettings ,...
+                                      nextTime, currElem, false ) ;
+    % central difference
+    dispTangMatElem(:,indexIncrementU) = ( fhydro_incU - fHydroElem ) / h ;
+  end % endfor
 end % end function
