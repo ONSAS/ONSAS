@@ -250,7 +250,7 @@ function fam = hydroMassForce( AMBool                                   ,...
     assert(elemCrossSecParams{1}(1:end) == 'circle')
     Ca            = 1          ;
     elementVolume = l0 * Aelem ;
-    massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ; #
+    massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ;
     fam = massNodeAdded * Udotdotflow(1:12);
 
   else
