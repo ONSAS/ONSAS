@@ -236,7 +236,7 @@ function fam = hydroMassForce( AMBool                                   ,...
                                l0, elemCoords, elemCrossSecParams       ,...
                                deltaT, nextTime, userFlowVel, densityFluid ) ;
 
-  Aelem  = crossSectionProps( elemCrossSecParams, 0.0 ) ; #the 0.0 density does not affect A value
+  Aelem  = crossSectionProps( elemCrossSecParams, 0.0 ) ; % the 0.0 density does not affect A value
 
   if ~isempty( AMBool ) && AMBool     % linear(node1_x)  angular(node1_x)   % linear(node2_z)  angular(node2_z)
     % fill fluid acceleration vector [udotdot_f_x_1, wdotdot_f_x_1 .... udotdot_f_z_2, wdotdot_f_x_12 ]
