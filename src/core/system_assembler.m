@@ -35,7 +35,6 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
     global exportFirstMatrices;
     if exportFirstMatrices == true
       KTred      = KT( neumdofs, neumdofs );
-      neumdofs
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
       figure
