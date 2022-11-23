@@ -205,9 +205,9 @@ for elem = 1:nElems
       error('wrong hyperElasModel for frame element.')
     end
 
-    %md compute hydrodynamic force of the element}
+    %md compute fluid forces on the element
     if aeroBool && fsBool
-      % extract boolean to compute aerodyinamic displacements tangnet matrix
+      % extract boolean to compute aerodynamic displacements tangent matrix
       aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
 
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
@@ -226,18 +226,17 @@ for elem = 1:nElems
 
     if strcmp( hyperElasModel, 'linearElastic' )
 
-    % -----------   aerodynmamic force   ------------------------------------
       planeStateFlag = elemTypeParams ;
       dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
 
       [ fs, ks, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [1 hyperElasParams], 2, thickness, planeStateFlag, dotdotdispsElem, density ) ;
-        %
-        Finte = fs{1};
-        Ke    = ks{1};
-        Fmase = fs{3};
-        Mmase = ks{3};
-        Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
+
+      Finte = fs{1};
+      Ke    = ks{1};
+      Fmase = fs{3};
+      Mmase = ks{3};
+      Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
 
     end
 
