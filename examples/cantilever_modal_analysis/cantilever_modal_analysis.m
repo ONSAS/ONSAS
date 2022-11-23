@@ -17,7 +17,8 @@ global exportFirstMatrices
 exportFirstMatrices = true
 
 %md### materials
-materials.hyperElasModel  = '1DrotEngStrain' ;
+%materials.hyperElasModel  = '1DrotEngStrain' ;
+materials.hyperElasModel  = 'linearElastic' ;
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rho              ;
 %md
@@ -71,12 +72,14 @@ filename = './output/matrices.mat';
 load(filename);
 
 KTred = KT( neumdofs, neumdofs );
+Mred  = massMat( neumdofs, neumdofs );
+Mred = Mred + speye(size(Mred,1) )*1e-8 ;
 
-eigs(KTred,10,'sa')
+[a, b] = eig( full( KTred), full( Mred)) ;
 
+eigenvalues = diag(b)
 stop
 
-Mred = massMat( neumdofs, neumdofs );
 
 Mred = Mred + speye(size(Mred)(1));
 
