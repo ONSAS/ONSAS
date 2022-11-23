@@ -124,7 +124,7 @@ analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
-otherParams.plotsFormat = 'vtk' ;
+%otherParams.plots_format = 'vtk' ;
 %md ONSAS execution
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
