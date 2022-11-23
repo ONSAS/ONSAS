@@ -204,7 +204,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % -------------------------------
 
   % Compute the element fluid force by the equivalent virtual work theory
-  fAddedMassElem = hydroMassForce( AMBool                              ,...
+  fAddedMassElem = addedMassForce( AMBool                              ,...
                                 l0, elemCoords, elemCrossSecParams     ,...
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
@@ -230,161 +230,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
 end
 
-% This function return the hydrodinamic mass force of the element in global coordinates...
-% the following computation is done acccording to: (CITE FORMULATION)
-function fam = hydroMassForce( AMBool                                   ,...
-                               l0, elemCoords, elemCrossSecParams       ,...
-                               deltaT, nextTime, userFlowVel, densityFluid ) ;
 
-  Aelem  = crossSectionProps( elemCrossSecParams, 0.0 ) ; % the 0.0 density does not affect A value
 
-  if ~isempty( AMBool ) && AMBool     % linear(node1_x)  angular(node1_x)   % linear(node2_z)  angular(node2_z)
-    % fill fluid acceleration vector [udotdot_f_x_1, wdotdot_f_x_1 .... udotdot_f_z_2, wdotdot_f_x_12 ]
-    Udotdotflow = zeros(12, 1);
-    % compute fluid element acceleration [udotdot_f_x_1, udotdot_f_y_1, udotdot_f_z_1, udotdot_f_x_2 ....]
-    ddUf = computeddUf(nextTime, deltaT, userFlowVel,  elemCoords);
-    Udotdotflow(1:2:12) = ddUf(1:6); % Irotationnal flow
-
-    % lumped add mass formlation:
-    % circular cross section implementation
-    assert(elemCrossSecParams{1}(1:end) == 'circle')
-    Ca            = 1          ;
-    elementVolume = l0 * Aelem ;
-    massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ;
-    fam = massNodeAdded * Udotdotflow(1:12);
-
-  else
-    fam = zeros(12, 1);
-  end
-end
-
-% This function return Drag lift and pitch moment computation of an inner frame element ...
-% cross section in global coordinates.
-% the following computation is done acccording to: (M.C. Vanzilli, J.M. Perez Zerpa, 2022)
-function integFluidForce = integFluidForce( x, ddotg, udotFlowElem                                    ,...
-                                            l0, tl1, tl2, Rr                                          ,...
-                                            vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
-                                            aeroCoefs, densityFluid, viscosityFluid                   ,...
-                                            VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
-
-  % Bernoulli weight function
-  [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
-  % Auxiliary matrices
-  [P1, P2, N, N1, N2] = corotVecMatAuxDyn( N1, N2, N3, N4, N5, N6, N7, N8, tl1, tl2, G, I3, O3, P ) ;
-
-  % --- Local displacements of a generic cross section ---
-  ul = P1 * [ tl1; tl2 ]                   ; % Eq.(38)  T-N Le J.-M. Battini et al 2014
-  % Auxiliary matrices H
-  H1  = N + P1 * P - 1 * skew( ul ) * G' ;
-  H2      = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
-  % angular local rotation
-  thethaRoof  = P2 * [tl1 ; tl2] ; % Eq. 39 Le, Battini 2014
-  % local Rroof rotation matrix is
-  Rroofx      = expon( thethaRoof ) ;
-  %---------------------------------------------------------
-
-  % ---------Kinematic velocities for the generic cross section------
-  % cross section centroid rigid velocity in global coordinates:
-  % if uniform
-  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
-    if uniformUdot
-      udotG = (ddotg(1:3) + ddotg(7:9))/2;
-    else
-      udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
-    end
-    else
-      udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
-  end
-
-  % cross section absolute fluid flow velocity in global coordinates interpolated with linear shape functions:
-  udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
-
-  % Relative, perpendicular and projected  flow velocity of the cross section to compute drag lift and moment:
-  [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
-  %-----------------------------------------------------------------
-
-  % ------------ Compute relative incidence angle  ------------
-  % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
-  tch = (vecChordUndef / norm( vecChordUndef )) ;
-
-  % Calculate relative incidence angle in the deformed configuration
-  if( norm( VpiRelG ) == 0 )
-      td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
-  else % the drag direction at a generic cross section in deformed coordinates is:
-      td = VpiRelG / norm( VpiRelG ) ;
-  end
-
-  cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
-  sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
-  betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
-  %-----------------------------------------------------------------
-
-  % Delete spaces
-  userDragCoef   = aeroCoefs{1} ;
-  userLiftCoef   = aeroCoefs{2} ;
-  userMomentCoef = aeroCoefs{3} ;
-
-  % Computation of Renynolds number
-  Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
-
-  % ------------ Read Cd, Cl, Cm  ------------
-  % Check fluid coefficients existence and the load it values if not set 0:
-  if ~isempty( userDragCoef )
-    c_d = feval( userDragCoef, betaRelG, Re  ) ;
-  else
-    c_d = 0 ;
-  end
-  if ~isempty( userLiftCoef )
-    c_l = feval( userLiftCoef, betaRelG, Re  ) ;
-  else
-    ~isempty( VIVBool ) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ') ;
-    c_l = 0 ;
-  end
-  if ~isempty( userMomentCoef )
-    c_m = feval( userMomentCoef, betaRelG, Re ) ;
-  else
-    c_m = 0 ;
-  end
-  %-----------------------------------------------------------------
-
-  % ------------ Compute drag, lift and pitch moment forces  ------------
-  % The cross section fluid forces in deformed coordinates is:
-  % drag cross section force vector in deformed coordinates
-  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
-  % lift cross section force vector in deformed coordinates
-  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
-
-    if constantLiftDir % lift direction is constant
-      %prom the lift direction in global coordinates
-      tlift = (tlift1 + tlift2) / 2 ;
-      % transform the lift direction into deformed coordinates to re use the Eq in line 330
-      tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;
-      % compute the lift force in deformed coordinates
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
-    else % lift direction is variable
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
-    end
-
-  else % no WOM and a variable lift direction
-
-    fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
-
-  end
-
-  % drag + lift cross section force vector in deformed coordinates
-  fal =  fdl + fll ;
-  % torsional moment fluid load in deformed coordinates
-  ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
-
-  % Compute the element fluid load forces vector in global coordinates
-  % compute the integral term of the current cross section in rigid coordinates
-  integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;
-  % rotate to global coordinates with EE matrix for rigid configuration formulation
-  integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
-  %-----------------------------------------------------------------
-end
-
-% This function return the relative projected velocity in local cooridantes
+% This function return the relative projected velocity in local coordinates
 function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroof, Rr, L2, L3 )
   % the relative velocity in global cooridantes is:
   VrelG = udotFlow - udotFrame ;
@@ -402,7 +250,6 @@ function ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords)
    udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0))/dt ;
    ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
 end
-
 
 % This function returns the tangent matrix of the hydrodinamic force vector with respect to u
 % employing a simple central difference alg.
