@@ -232,24 +232,7 @@ end
 
 
 
-% This function return the relative projected velocity in local coordinates
-function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroof, Rr, L2, L3 )
-  % the relative velocity in global cooridantes is:
-  VrelG = udotFlow - udotFrame ;
-  % then the projection (in t2,t3 plane) of the relative flow velocity in deformed coordinates is:
-  VpiRel = L2 * Rroof' * Rr' * VrelG ;
-  % the perpendicular flow relative velocity projection in deformed coordinates is:
-  VpiRelPerp = L3 * VpiRel ;
-end
 
-% This function returns the fluid acceleration in global coordinates
-function ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords)
-   t0 = (nextTime-dt);
-   t1 = nextTime;
-   udotdotFlowNode1 = (feval(userFlowVel, elemCoords(1:3)', t1) - feval(userFlowVel,  elemCoords(1:3)', t0))/dt ;
-   udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0))/dt ;
-   ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
-end
 
 % This function returns the tangent matrix of the hydrodinamic force vector with respect to u
 % employing a simple central difference alg.
