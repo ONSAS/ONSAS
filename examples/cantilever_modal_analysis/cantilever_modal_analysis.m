@@ -14,10 +14,10 @@ deltat = 0.1   ; % s
 
 global exportFirstMatrices
 
-exportFirstMatrices = true
+exportFirstMatrices = true;
 
 %md### materials
-materials.hyperElasModel  = '1DrotEngStrain' ;
+materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rho              ;
 %md
@@ -34,7 +34,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md and the second corresponds to a time dependant external force
 boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 0 0 1 0 0 0 ] ;
 %md
 %md### initial Conditions
 %md homogeneous initial conditions are considered, then an empty struct is set:
@@ -65,20 +65,35 @@ otherParams.plots_format = 'vtk' ;
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 
-
+%%
 addpath('./output');
 filename = './output/matrices.mat';
 load(filename);
 
 KTred = KT( neumdofs, neumdofs );
+Mred  = massMat( neumdofs, neumdofs );
+Mred = Mred ; %+ speye(size(Mred,1) )*1e-8 
 
-eigs(KTred,10,'sa')
 
-stop
-
-Mred = massMat( neumdofs, neumdofs );
-
-Mred = Mred + speye(size(Mred)(1));
-
-%[PHI, OMEGA] = eigs(Mred^(-1)*Kred,10,'sm');
-
+%%
+s = linspace(0,l,numElements+1);
+[a, b] = eig( full( KTred), full( Mred)) ;
+eigenvalues = diag(b)';
+eigenvalues = fliplr(eigenvalues);
+a = fliplr(a);
+% add the first node Dofs
+ze = zeros(6, 6*(numElements));
+a = cat(1,ze,a);
+% Analytical solution 
+betavect = [1.8751 4.6941 7.8547 10.9955 14.13717]; sigvect = [0.73409 1.01846 0.9992 1.00003 1]; 
+modes = [1 2 3 4 5];
+for mode = modes 
+    figure(mode)
+    plot(s', a(5:6:end,mode), 'rx', 'linewidth', 1.0,'markersize',11)
+    hold on
+    %freqStruct = (betavect.^2)*sqrt(E*I/(ms+ma)/l^4)/(2*pi);
+    S1 = cosh(betavect(mode)*z/l) - cos(betavect(mode)*z/l) - sigvect(mode)*sinh(betavect(mode)*z/l) + sigvect(mode)*sin(betavect(mode)*z/l);
+    spanplot = 100;
+    plot(z(1:spanplot:end), S1(1:spanplot:end)./max(abs(S1)), 'b-o' , 'linewidth', 1.0,'markersize',11)
+end
+legend('extracted mode from ONSAS','analytical mode')
