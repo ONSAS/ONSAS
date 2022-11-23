@@ -6,6 +6,7 @@
 /src/*.oct
 *.mat
 *.vtk
+*.fig
 *.dat
 /examples/strings.txt
 Manifest.toml
@@ -18,7 +19,7 @@ docs/src/examples/
 # matlab autosave
 *.asv
 
-# macOS 
+# macOS
 *.DS_Store
 
 octave-workspace

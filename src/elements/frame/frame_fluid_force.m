@@ -33,7 +33,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   global VIVBool
   global constantLiftDir 
   global uniformUdot 
-  
+  global AMBool 
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
   
@@ -55,8 +55,8 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   end
   
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  udotFlowNode1 = feval( userFlowVel, elemCoords(1) + Ue(1:2:6), nextTime ) ; 
-  udotFlowNode2 = feval( userFlowVel, elemCoords(4) + Ue(7:2:12), nextTime ) ;
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ; 
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   % compact them into a single vector for the element 
   udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
   
@@ -122,7 +122,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
   % WOM computation call for cases with VIVbool equal to true
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 
-    if VIVBool
+    if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0 
       % extract the accelerations and the velocities of nodes in global coordinates 
       % node 1
       udotFrame1    = Udote( 1:2:6 )      ;
@@ -155,13 +155,13 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
         % Compute fluid mean velocity at the nodes on the initial configuration
         % find the first veloctiy direction unitll is not null
         t0 = 0; timeStepNotNullVel = 0;
-        udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-        udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+        udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+        udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         while norm( udotFlowNode10 ) == 0 && norm( udotFlowNode20 ) == 0
           timeStepNotNullVel = timeStepNotNullVel + 1;
           t0 = timeStepNotNullVel*analysisSettings.deltaT ;
-          udotFlowNode10 = feval( userFlowVel, elemCoords(1), t0 ) ;
-          udotFlowNode20 = feval( userFlowVel, elemCoords(2), t0 ) ;
+          udotFlowNode10 = feval( userFlowVel, elemCoords(1:3)', t0 ) ;
+          udotFlowNode20 = feval( userFlowVel, elemCoords(4:6)', t0 ) ;
         end
         % Compute the direction of the axial vector on the initial configuration in global coordinates
         e1 = R0 * [1 0 0]';
@@ -173,7 +173,7 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
       q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ; 
     else
-      q = 2 ;
+      q = 0 ; % No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated) 
       tlift1 = [] ; tlift2 = [] ;
     end
@@ -197,9 +197,18 @@ function [fagElem, aeroMatElem] = frame_fluid_force( elemCoords,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
   end
+  % --- compute hydrodynamic mass force of a frame element ---
+  if ~isempty( AMBool ) && AMBool
+    Udotdotflow = zeros(12, 1);
+    ddUf = computeddUf(nextTime, analysisSettings.deltaT, userFlowVel,  elemCoords);
+    Udotdotflow(1:2:12) = ddUf(1:6); % Irrotationnal flow
+    madded = (1+1)/2*pi* dimCharacteristic^2 /4 * l* densityFluid; % (1+Ca) * Volume * density /2
+    fam = madded * Udotdotflow(1:12); 
+  else fam = zeros(12, 1);
+  end
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fagElem = swtichToONSASBase( fagElem ) ;
-
+  fagElem =  fagElem + fam;
   % --- compute tangent matrix using Central Difference  ---
   aeroMatElem = []             ;
   if aeroTangBool
@@ -356,4 +365,12 @@ function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroo
   VpiRel = L2 * Rroof' * Rr' * VrelG ;
   % the perpendicular flow relative velocity projection in deformed coordinates is:
   VpiRelPerp = L3 * VpiRel ;
+end
+% This function returns the fluid acceleration in global coordinates
+function ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords)
+   t0 = (nextTime-dt);
+   t1 = nextTime;
+   udotdotFlowNode1 = (feval(userFlowVel, elemCoords(1:3)', t1) - feval(userFlowVel,  elemCoords(1:3)', t0))/dt ;
+   udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0))/dt ;
+   ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
 end
