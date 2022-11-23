@@ -69,4 +69,8 @@ function test_15
     assertEqual( verifBoolean, true);
 
 function test_16
+  	cantilever_modal_analysis
+    assertEqual( verifBoolean, true);
+
+function test_17
   assertEqual( gaussIntegrationTest, true);
