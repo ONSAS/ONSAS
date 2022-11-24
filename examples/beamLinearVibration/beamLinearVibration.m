@@ -4,7 +4,7 @@
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
 %md
-%mdThe problem consists in a beam with fixed nodes in both ends. In a selected position of the beam a forced load with time dependency $(F(t) = f_o \sin(wt))$ is applied in both perpendicular directions, as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
+%mdThe problem consists in a beam with fixed nodes in both ends. Two loads of magnitude $F(t) = f_o \sin(wt)$ are applied in the middle point as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
 %md
 %md```@raw html
 %md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
@@ -13,34 +13,34 @@
 %mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
 close all, clear all, addpath( genpath( [ pwd '/../../src'] ) );
 %md
-%mdExternal load parameters, time values, material and geometric parameters are defined to find both analytic and numerical solutions. The material scalar parameters are
+%mdThe material scalar parameters are set.
 E = 200e9 ; nu = 0.3;  rho = 700;
-%mdand the geometrical scalar parameters are
-l = 10 ; ty = .3 ;  tz = .1 ;
-Iyy = ty*tz^3/12 ;
-Izz = tz*ty^3/12 ;
+%mdThe cross-section of the beam is rectangular. The widths and other geometry scalar parameters are computed.
+l = 10 ; ty = .3 ;  tz = .1 ;                  % length of rectangular cross-section widths           
+Iyy = ty * tz^3 / 12 ;  Izz = tz * ty^3 / 12 ; % bending inertias
 numElements = 10 ; % Number of elements
 
 %md Time and applied force parameters are
-Fo     = 100   ; % N
-w      = 2     ; % rad/s
+Fo     = 100   ; % force magnitude (N)
+w      = 2     ; % force angular frequency (rad/s)
 tf     = 8     ; % s
-deltat = 0.1 ; % s
-%md The node of application of the external forces is assumed to be located at the mid-point of the beam  
+deltat = 0.1   ; % s
+%md The middle node is computed
 assert( rem( numElements, 2 ) == 0, 'the number of elements must be even.' )
 appNode    = ( numElements ) / 2 + 1       ;
 appNodePos = (appNode-1) * l / numElements ;
 %md
 %md## Analytic solution
 %md
-%md The governing equations for a beam with uniform cross-section, density and Young modulus with a transversal distributed applied load $q$ is given by
+%md The governing equations for the deflection $v$ of a beam with uniform cross-section, density and Young modulus with a transversal distributed applied load $q$ is given by
 %md```math
-%md EI \frac{\partial^4 w}{\partial x^4}(x,t) + \rho A \frac{\partial^2w}{\partial t^2}(x,t) = q(x,t)
+%md EI \frac{\partial^4 v}{\partial x^4}(x,t) + \rho A \frac{\partial^2 v}{\partial t^2}(x,t) = q(x,t)
 %md```
-%mdconsidering the time depdency load, $F(x, t)=fo sin(wt)$, and using a Fourier decomposition with defined initial and boundarie conditions following the mathematical process explained on chapter 10 of _Mechanical Vibrations_ (5th Edition; Rao Singiresu) we obtain the analytic solution for the vertical displacement of our problem 
+%mdand using a Fourier decomposition and following the process explained in chapter 10 of _Mechanical Vibrations_ (5th Edition; Rao Singiresu) we obtain the analytic solution for the displacement of our problem 
 %md```math
-%md w(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
+%md v(x,t) = \frac{2fo}{\rho A l} \sum_{n=1}^{\infty} \frac{1}{w_{n}^2 - w^2} \sin\left(\frac{n \pi a}{l} \right) \sin\left(\frac{n \pi x}{l} \right)\sin(wt)
 %md```
+%mdwhere $w_n$ are natural frequencies of the vibration for mode $n$ (computed for each transversal direction).
 %md
 %mdThe solution can be numerically computed setting a mesh of spatial poins and a vector of times
 %md
@@ -124,7 +124,7 @@ analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
-otherParams.plotsFormat = 'vtk' ;
+%otherParams.plots_format = 'vtk' ;
 %md ONSAS execution
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

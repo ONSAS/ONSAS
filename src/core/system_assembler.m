@@ -38,9 +38,9 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
       figure
-      spy(full(KT))
+      spy(full(KT)), title('stiffness')
       figure
-      spy(full(massMat))
+      spy(full(massMat)), title('mass')
       fprintf('matrices exported.\n--------\n')
       exportFirstMatrices = false;
     end
