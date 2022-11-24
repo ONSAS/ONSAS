@@ -119,18 +119,19 @@ if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   addpath( genpath( [ pwd '/output'] ) ); load( 'matrices.mat' ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
-  Mred = Mred + speye(size(Mred,1));
-  numModes = 10;
-  [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
-
+  %Mred = Mred + speye(size(Mred,1));
+  numModes = 5;
+  [PHI, OMEGA] = eig( full(Kred), full(Mred) ) ;
+  numer_modes = fliplr(PHI);
+  
   modelPropertiesModal = modelProperties ;
   modelCurrSolModal    = modelCurrSol    ;
 
-  for i = 1:4
+  for i = 1:numModes
     fprintf(' generating mode %2i vtk\n', i) ;
     modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
     modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
-    modelCurrSolModal.U( BCsData.neumDofs ) = PHI(:,i)  ;
+    modelCurrSolModal.U( BCsData.neumDofs ) = numer_modes(:,i)  ;
     vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
   end
 
