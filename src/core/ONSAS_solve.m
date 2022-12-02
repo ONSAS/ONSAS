@@ -100,7 +100,6 @@ end %while time
 time_solve = cputime() - aux_time ;
 fprintf('|     |\n')
 
-
 % ---- print iteration statistics -----
 fprintf('| Time: %6.1f sec                                |\n',time_solve)
 fprintf('|                                                 |\n')
@@ -110,14 +109,13 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
   iterations_strop_crit_vec(2), iterations_strop_crit_vec(3) )
 % -------------------------------------
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Experimental Modal Analysis Block %%%%%%
 global modalAnalysisBoolean
 if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
-  modal_output_folder = [ pwd dirSep 'output'] ;
+  modal_output_folder = [ pwd filesep 'output'] ;
   addpath( genpath( modal_output_folder ) );
-  load( [ modal_output_folder dirSep 'matrices.mat'] ) ;
+  load( [ modal_output_folder filesep 'matrices.mat'] ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   %Mred = Mred + speye(size(Mred,1));
@@ -156,6 +154,4 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
   modalAnalysisBoolean = false ;
 
 end %endif
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%md
