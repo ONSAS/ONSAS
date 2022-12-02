@@ -1,9 +1,7 @@
 
 close all, clear all;
 
-if isunix, dirSep = '/'; else dirSep = '\'; end
 addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
-
 
 keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
            ; 'uniformCurvatureCantilever/uniformCurvatureCantilever.m' ...
