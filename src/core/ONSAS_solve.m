@@ -114,13 +114,15 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Experimental Modal Analysis Block %%%%%%
 global modalAnalysisBoolean
-if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
-  modal_output_folder = genpath( [ pwd filesep 'output']) ;
-  addpath( modal_output_folder ); load( [ modal_output_folder filesep 'matrices.mat'] ) ;
+if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
+  modal_output_folder = [ pwd filesep 'output'] ;
+  addpath( genpath( modal_output_folder ) );
+  load( [ modal_output_folder filesep 'matrices.mat'] ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   %Mred = Mred + speye(size(Mred,1));
   numModes = 5 ;
+
   sparse_analysis = false ;
   if sparse_analysis % sparse analysis
     Mred = Mred + speye(size(Mred,1));
@@ -133,12 +135,20 @@ if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
   modelPropertiesModal = modelProperties ;
   modelCurrSolModal    = modelCurrSol    ;
 
+  modelPropertiesModal.plots_deltaTs_separation = 1 ;
+  modelPropertiesModal.analysisSettings.deltaT  = 1 ;
+
+  num_modal_times = 20 ;
   for i = 1:numModes
     fprintf(' generating mode %2i vtk\n', i) ;
-    modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
-    modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
-    modelCurrSolModal.U( BCsData.neumDofs ) = numer_modes(:,i)  ;
-    vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
+    for j = 1:num_modal_times
+      % fprintf('   time %2i \n', j) ;
+      modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
+      modelCurrSolModal.currTime = j ;
+      modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
+      modelCurrSolModal.U( BCsData.neumDofs ) = sin(2*pi*j/num_modal_times) * numer_modes(:,i)  ;
+      vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
+    end
   end
 
   save('-binary','Modal.mat','PHI','OMEGA')
