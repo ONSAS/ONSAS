@@ -1,7 +1,7 @@
 
 close all, clear all;
 
-addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
+addpath( [ pwd  filesep '..' filesep  'src' filesep ] ); octaveBoolean = isThisOctave ;
 
 keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
            ; 'uniformCurvatureCantilever/uniformCurvatureCantilever.m' ...
