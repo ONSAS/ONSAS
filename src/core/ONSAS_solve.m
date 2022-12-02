@@ -38,15 +38,16 @@ finalTimeReachedBoolean = false ;
 fprintf('|                                                 |\n')
 fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
-plotted_bars = 0 ;
 
-plots_counter = 0 ;
-
+% iteration variables
 iterations_average = 0 ;
 iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
 
-tic
+% progress bar variables
+plotted_bars = 0 ; plots_counter = 0 ;
+
+aux_time = cputime() ;
 while finalTimeReachedBoolean == false
 
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
@@ -96,7 +97,7 @@ while finalTimeReachedBoolean == false
   end % if vtk output format
 
 end %while time
-time_solve = toc ;
+time_solve = cputime() - aux_time ;
 fprintf('|     |\n')
 
 
@@ -110,20 +111,25 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
 % -------------------------------------
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% BLOQUE DE ANALISIS MODAL PROVISORIO %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Experimental Modal Analysis Block %%%%%%
 global modalAnalysisBoolean
 if ~isempty(modalAnalysisBoolean) && modalAnalysisBoolean
-  pwd
-  genpath( [ pwd '/output'])
-  addpath( genpath( [ pwd '/output'] ) ); load( 'matrices.mat' ) ;
+  modal_output_folder = genpath( [ pwd filesep 'output']) ;
+  addpath( modal_output_folder ); load( [ modal_output_folder filesep 'matrices.mat'] ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   %Mred = Mred + speye(size(Mred,1));
-  numModes = 5;
-  [PHI, OMEGA] = eig( full(Kred), full(Mred) ) ;
-  numer_modes = fliplr(PHI);
-  
+  numModes = 5 ;
+  sparse_analysis = false ;
+  if sparse_analysis % sparse analysis
+    Mred = Mred + speye(size(Mred,1));
+    [PHI, OMEGA] = eigs(Mred^(-1)*Kred,numModes,'sm');
+  else % dense analysis
+    [PHI, OMEGA] = eig( full(Kred), full(Mred) ) ;
+    numer_modes = fliplr(PHI);
+  end
+
   modelPropertiesModal = modelProperties ;
   modelCurrSolModal    = modelCurrSol    ;
 

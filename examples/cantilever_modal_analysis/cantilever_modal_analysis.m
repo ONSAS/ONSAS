@@ -14,8 +14,9 @@ deltat = 0.1   ; % s
 
 global exportFirstMatrices
 exportFirstMatrices = true;
-%md global modalAnalysisBoolean
-%md modalAnalysisBoolean = true;
+
+global modalAnalysisBoolean
+modalAnalysisBoolean = true;
 
 %md### materials
 materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
@@ -70,16 +71,15 @@ addpath('./output');
 filename = './output/matrices.mat';
 load(filename);
 
-KTred = KT( neumdofs, neumdofs );
-Mred  = massMat( neumdofs, neumdofs );
-% Mred = Mred + speye(size(Mred,1) )*1e-8 
-
+KTred = KT( neumdofs, neumdofs ) ;
+Mred  = massMat( neumdofs, neumdofs ) ;
 
 %%
 s = linspace(0,l,numElements+1)' ;
 z = linspace(0,l,numElements*10+1)' ;
 [a, b] = eig( full(KTred), full(Mred) ) ;
 eigenvalues = flipud( diag(b) ) ;
+
 numer_modes = [ zeros(6,(numElements)*6); fliplr(a) ] ;
 
 % Analytical solution 
