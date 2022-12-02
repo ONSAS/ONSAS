@@ -1,4 +1,4 @@
-function sep = dirSep
+function sep = dirSep()
 if isunix,
   sep = '/';
 else 
