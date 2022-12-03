@@ -145,6 +145,13 @@ xlabel('time (s)'), ylabel('\theta (degrees)')
 title('Angle of the pendulum')
 legend('ONSAS', 'analytical')
 %md
+
+if isThisOctave
+  figure(), hold on, grid on
+  plot( times, angleThetaCase2, 'bx')
+  xlabel('time (s)'), ylabel('\theta (degrees)')
+
+else
 %md Plot angle solution for case 2
 figure(), hold on, grid on
 yyaxis right
@@ -165,3 +172,4 @@ ylabel('fluid load x component');
 plot(times(1:end-2), f(1:end-2), 'r-')
 title(sprintf('Angle of a pendulum subected only to the added mass force of the swell'))
 legend('added mass force', 'pendulum angle (degrees)')
+end
