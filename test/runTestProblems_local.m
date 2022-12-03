@@ -34,9 +34,9 @@ while (current <= num_tests) && (verifBoolean == 1)
   % save key files data to avoid clear all commands
   save( '-mat', 'exData.mat', 'current', 'keyfiles', 'testDir', 'aux_time' );
 
-[ pwd, filesep, '..', filesep, 'examples', filesep, keyfiles{current} ]
+  name_script = [ pwd, filesep, '..', filesep, 'examples', filesep, keyfiles{current} ]
 
-  run( [ pwd, filesep, '..', filesep, 'examples', filesep, keyfiles{current} ] ) ;
+  run( name_script ) ;
 
   if verifBoolean
     status = 'PASSED';
