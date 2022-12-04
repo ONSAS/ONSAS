@@ -113,12 +113,11 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
 %%%%% Experimental Modal Analysis Block %%%%%%
 global modalAnalysisBoolean
 if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
-  dirSep = get_dir_sep();
 
-  modal_output_folder = [ pwd dirSep 'output']
+  modal_output_folder = [ pwd filesep 'output']
   
   addpath( genpath( modal_output_folder ) ) ;
-  load( [ modal_output_folder dirSep 'matrices.mat'] ) ;
+  load( [ modal_output_folder filesep 'matrices.mat'] ) ;
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   %Mred = Mred + speye(size(Mred,1));
