@@ -134,10 +134,11 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
   end
 
   modelPropertiesModal = modelProperties ;
-  modelCurrSolModal    = modelCurrSol    ;
-
   modelPropertiesModal.plots_deltaTs_separation = 1 ;
   modelPropertiesModal.analysisSettings.deltaT  = 1 ;
+
+  modelCurrSolModal   = modelCurrSol    ;
+  modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
 
   num_modal_times = 20 ;
   for i = 1:numModes
@@ -146,7 +147,6 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
       % fprintf('   time %2i \n', j) ;
       modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
       modelCurrSolModal.currTime = j ;
-      modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
       modelCurrSolModal.U( BCsData.neumDofs ) = sin(2*pi*j/num_modal_times) * numer_modes(:,i)  ;
       vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
     end

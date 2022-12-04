@@ -16,7 +16,7 @@ global exportFirstMatrices
 exportFirstMatrices = true;
 
 global modalAnalysisBoolean
-modalAnalysisBoolean = true;
+modalAnalysisBoolean = false;
 
 %md### materials
 materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
