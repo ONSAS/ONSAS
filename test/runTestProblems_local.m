@@ -1,7 +1,9 @@
 
 close all, clear all;
-addpath( [ pwd  filesep '..' filesep  'src' filesep ] );
-octaveBoolean = isThisOctave ;
+
+if isunix, dirSep = '/'; else dirSep = '\'; end
+addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
+
 
 keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
            ; 'uniformCurvatureCantilever/uniformCurvatureCantilever.m' ...
@@ -32,12 +34,9 @@ while (current <= num_tests) && (verifBoolean == 1)
   aux_time = cputime();
 
   % save key files data to avoid clear all commands
-  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'testDir', 'aux_time' );
+  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir', 'aux_time' );
 
-  % name_script = [ pwd, filesep, '..', filesep, 'examples', filesep, keyfiles{current} ]
-  name_script = [ pwd, '/', '..', '/', 'examples', '/', keyfiles{current} ]
-
-  run( name_script ) ;
+  run( [ pwd dirSep '..' dirSep 'examples' dirSep keyfiles{current} ] ) ;
 
   if verifBoolean
     status = 'PASSED';
