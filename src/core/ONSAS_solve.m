@@ -114,10 +114,10 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
 global modalAnalysisBoolean
 if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
 
-  modal_output_folder = [ pwd filesep 'output']
-  
+  modal_output_folder = [ pwd filesep 'output'] ;  
   addpath( genpath( modal_output_folder ) ) ;
   load( [ modal_output_folder filesep 'matrices.mat'] ) ;
+
   Kred = KT(BCsData.neumDofs,BCsData.neumDofs);
   Mred = massMat(BCsData.neumDofs,BCsData.neumDofs);
   %Mred = Mred + speye(size(Mred,1));
@@ -139,19 +139,20 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
   modelCurrSolModal   = modelCurrSol    ;
   modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
 
-  num_modal_times = 20 ;
+  num_modal_times = 15 ;
   for i = 1:numModes
     fprintf(' generating mode %2i vtk\n', i) ;
     for j = 1:num_modal_times
-      % fprintf('   time %2i \n', j) ;
-      modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
       modelCurrSolModal.currTime = j ;
+      modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
       modelCurrSolModal.U( BCsData.neumDofs ) = sin(2*pi*j/num_modal_times) * numer_modes(:,i)  ;
       vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
     end
   end
 
-  save('-binary','Modal.mat','PHI','OMEGA')
+  if isThisOctave
+    save('-binary','Modal.mat','PHI','OMEGA')
+  end
   fprintf(' MODAL ANALYSIS DONE. Setting modalAnalysisBoolean to false.\n')
   modalAnalysisBoolean = false ;
 

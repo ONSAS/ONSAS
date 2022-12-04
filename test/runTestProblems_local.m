@@ -1,7 +1,5 @@
 
 close all, clear all;
-
-%if isunix, dirSep = '/'; else dirSep = '\'; end
 addpath( [ pwd filesep '..' filesep  'src' filesep ] ); octaveBoolean = isThisOctave ;
 
 
