@@ -1,8 +1,6 @@
 
 close all, clear all;
-
-if isunix, dirSep = '/'; else dirSep = '\'; end
-addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
+addpath( [ pwd filesep '..' filesep  'src' filesep ] ); octaveBoolean = isThisOctave ;
 
 
 keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
@@ -19,20 +17,24 @@ keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
            ; 'reconfigurationBeam/circularReconfiguration.m'           ...
            ; 'beamLinearVibration/beamLinearVibration.m'               ...
            ; 'VIVtest/ONSAS_VIVtest.m'                                 ...
+           ; 'cantilever_modal_analysis/cantilever_modal_analysis.m'   ...
            ; 'cantileverLinearHardening/cantileverLinearHardening.m' 	 ...
            }
 
 current  = 1 ;   verifBoolean = 1 ;  testDir = pwd ;
 
-while current <= length(keyfiles) && verifBoolean == 1
+num_tests = length(keyfiles) ;
+while (current <= num_tests) && (verifBoolean == 1)
 
   % run current example
   fprintf([' === running script: ' keyfiles{current} '\n' ]);
 
-  % save key files data to avoid clear all commands
-  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir' );
+  aux_time = cputime();
 
-  run( [ pwd dirSep '..' dirSep 'examples' dirSep keyfiles{current} ] ) ;
+  % save key files data to avoid clear all commands
+  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'testDir', 'aux_time' );
+
+  run( [ pwd filesep '..' filesep 'examples' filesep keyfiles{current} ] ) ;
 
   if verifBoolean
     status = 'PASSED';
@@ -41,9 +43,11 @@ while current <= length(keyfiles) && verifBoolean == 1
   end
 
   % reload key files data and increment current
-  load('exData.mat') ;
+  load('exData.mat') ; num_tests = length(keyfiles) ;
 
-  fprintf([' === test problem %2i:  %s === \n\n'], current, status );
+  aux_time = cputime() - aux_time ; keyfiles{current,2} = aux_time ;
+
+  fprintf([' === test problem %2i:  %s in %8.1e s === \n\n'], current, status, aux_time );
 
   current = current + 1 ;
   delete('exData.mat');
