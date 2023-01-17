@@ -351,11 +351,12 @@ if fsBool
   fsCell{4} = Faero ;
 
   global globalReactionForces
-  global nodeReactionForces
+  global glboalNodeReactionForces
   if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
-    dofsRForces = (nodeReactionForces - 1) * 6 + 1 : nodeReactionForces * 6  ;
+    dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
     globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
   end
+
 end
 
 
