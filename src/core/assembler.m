@@ -350,11 +350,13 @@ if fsBool
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
 
-
-  global globalFDrag
-  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0)
-    globalFDrag(timeVar) = sum(Faero(3:6:end)) ;
+  global globalReactionForces
+  global glboalNodeReactionForces
+  if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
+    dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
+    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
   end
+
 end
 
 
