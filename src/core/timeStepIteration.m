@@ -65,9 +65,6 @@ booleanConverged = false                              ;
 dispIters        = 0                              ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
-%global timeInd
-%	timeInd = modelCurrSol.timeIndex ;
-
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
@@ -102,9 +99,28 @@ Udotdottp1 = Udotdottp1k ;
 
 % computes KTred at converged Uk
 KTtp1red = systemDeltauMatrix ;
-
+%~ "converged assembler"
 % compute stress at converged state
+%%
+	%~ a_stress = previous_state_mat(:,1) ;
+	%~ size(a_stress)
+	%~ b_strain = previous_state_mat(:,2) ;
+	%~ size(b_strain) 
+	%~ c_acum = previous_state_mat(:,3) ;
+	%~ size(c_acum)
+%%
+
 [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previous_state_mat ) ;
+
+
+%%
+	%~ a_stress = previous_state_mat(:,1) ;
+	%~ size(a_stress)
+	%~ b_strain = previous_state_mat(:,2) ;
+	%~ size(b_strain) 
+	%~ c_acum = previous_state_mat(:,3) ;
+	%~ size(c_acum)
+%%
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
@@ -166,12 +182,21 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
-previous_state_mat = [ Stress(:,1) strain_vec acum_plas_strain_vec ] ;
+
+%~ previous_state_mat = [ Stress(:,1) strain_vec acum_plas_strain_vec ] ;
+%~ size(Stress)
+%~ Stress
+
+for i = 1:size(Stress,1)
+	previous_state_mat(i,1) = Stress(i,1:3) ;
+end
+previous_state_mat(:,2) = strain_vec ;
+previous_state_mat(:,3) = acum_plas_strain_vec ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, {previous_state_mat} ) ;
 
 
 

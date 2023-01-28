@@ -38,7 +38,12 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
+Re = 200 ; 
+Ri = 100 ;
+L = .75 ;
+
+p = 0.01 ;
+E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ;
 %md
 %md
 %md### MEBI parameters
@@ -46,8 +51,9 @@ E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
 %md#### materials
 %md The constitutive behavior of the material considered is isotropic linear elastic.
 %md Since only one material is considered, the structs defined for the materials contain only one entry:
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams =  [ E nu ]       ;
+%~ materials.hyperElasModel  = 'linearElastic' ;
+materials.hyperElasModel  = 'isotropicHardening' ;
+materials.hyperElasParams =  [ E nu H sigmaY0 ] ;
 %md
 %md#### elements
 %md 
@@ -85,12 +91,11 @@ initialConds = struct();
 %md The element properties are set using labels into GMSH follwing the MEBI nomenclature. First `triangle` elements have linear elastic material so entry $1$ of the _materialṣ_ struct is assigned. Then for both `node` and `edge` elements any material is set. 
 %md Next displacement boundary conditions are assigned to the element, since the problem is modeled into $x-y$ plane, a constrain to avoid rotation along $z$ is necessary. This is done fixing $y$ and $x$ displacements (using `boundaryConds(1)` and `boundaryConds(2)` as labels) on points 2 3 4 5.
 %md Finally the internal pressure is applied on the `edge` elements linked with curves from one to four (Circles 1-4 in Figure). In accordance with the orientation of the curve set in GMSH, the normal vector obtained in local coordinates is $e_r$ so the internal pressure is assigned using `boundaryConds(3)`. Once the mesh is created is read using:
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' ) ;
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ringEPP.msh' ) ;
 
 Conec = myCell2Mat( mesh.conecCell ) ;
 
 size(Conec,1) 
-
 %md
 %md### Analysis parameters
 %md
@@ -99,12 +104,12 @@ analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
 analysisSettings.stopTolForces = 1.0e-12 ;
-analysisSettings.finalTime     = 1       ;
-analysisSettings.deltaT        = .5      ;
+analysisSettings.finalTime     = 5       ;
+analysisSettings.deltaT        = 1      ;
 %md
 %md### Output parameters
 %md
-otherParams.problemName = 'linearPlaneStrain' ;
+otherParams.problemName = 'EPPPlaneStrain' ;
 otherParams.plotsFormat = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
@@ -112,40 +117,76 @@ otherParams.plotsFormat = 'vtk' ;
 %md
 %md## Verification
 %mdThe numerical and analytic solutions are compared at the final load step for the internal and external surface (since all the elements on the same surface have the same analytic solution):
-% internal surface analytic solution
-A = ( p * (1+nu)*(1-2*nu)*Ri^2 ) / ( E*(Re^2-Ri^2) ) ;
-B = ( p * (1+nu)*Ri^2*Re^2 )   / ( E*(Re^2-Ri^2) ) ;
-analyticValRi = A*Ri + B/Ri ;
-% internal surface numerical solution
-dofXRi = 1 ;
-numericalRi = matUs( dofXRi, end ) ;
-% external surface analytic solution
-analyticValRe = A*Re + B/Re ;
-% external surface numerical solution
-dofXRe = (8-1)*6+3 ;
-numericalRe = matUs( dofXRe , end ) ;
+% radial displacement surface analytic solution
+Y = sigmaY0 / sqrt(3) ;
+
+p0 = Y/2 * (1-Ri^2/Re^2) ; % Yielding pressure
+
+
+pressure_vals = (0:analysisSettings.deltaT:analysisSettings.finalTime)*p ;
+cvals = zeros(length(pressure_vals),1) ;
+
+ubAna = zeros(length(pressure_vals),1) ;
+
+% Implicit function
+
+f1 = @(p, Y, Ri, Re, c) p/Y-( log(c/Ri)+1/2*(1 - c^2/Re^2) ) ;
+f2 = @(c) f1(p, Y, Ri, Re, c)
+%~ f = @(c) p / Y - ( log(c/Ri) + 1/2 * (1 - c^2/Re^2) ) ;
+
+
+%~ function [c] plastic_front(p, Y, Ri, Re, c)
+	%~ val = p / Y - ( log(c/Ri) + 1/2 * (1 - c^2/Re^2) ) ;
+%~ end 
+
+for i = 1:length(cvals)
+	p = pressure_vals(i)
+	val = fzero(f2, Ri) ;
+	cvals(i) = val ;
+end
+
+for i = 1:length(cvals)
+	p = pressure_vals(i) ;
+	if p < p0
+		ubAna(i) = 2*p*Re / ( E*( Re^2/Ri^2-1 ) ) * (1-nu^2) ;
+	else
+		c = cvals(i) ;
+		ubAna(i) = Y*c^2/(E*Re) * (1-nu^2) ;
+	end	
+end
+
 %md The numerical solution is verified: 
-analyticCheckTolerance = 1e-3 ;
-verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
-               ( ( numericalRe - analyticValRe ) < analyticCheckTolerance )
+%~ analyticCheckTolerance = 1e-3 ;
+%~ verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
+               %~ ( ( numericalRe - analyticValRe ) < analyticCheckTolerance )
 %md
 %md### Plot
 %md
 %md The numerical and analytical solution for the internal and external surface are plotted:
 %plot parameters
 lw = 2.0 ; ms = 11 ; plotfontsize = 10 ;
-figure, hold on, grid on
+fig = figure, hold on, grid on
+
+node = 5 ;
+dofX = node * 6 - 5 ;
+ubNum = matUs(dofX, :) ; 
+
+plot(ubNum, pressure_vals, 'b-o', 'linewidth', lw,'markersize',ms)
+plot(ubAna, pressure_vals, 'g-x', 'linewidth', lw,'markersize',ms)
+
+labx = xlabel('u_b'); laby = ylabel('p') ;
+
 %internal surface
-plot( matUs(dofXRi,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
-plot( linspace(0,analyticValRi,length(loadFactorsMat(:,3) ) )  , loadFactorsMat(:,3), 'k-', 'linewidth', lw,'markersize',ms )
+%~ plot( matUs(dofXRi,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
+%~ plot( linspace(0,analyticValRi,length(loadFactorsMat(:,3) ) )  , loadFactorsMat(:,3), 'k-', 'linewidth', lw,'markersize',ms )
 %internal surface
-plot( matUs(dofXRe,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
-plot( linspace(0,analyticValRe,length(loadFactorsMat(:,3)) ) , loadFactorsMat(:,3), 'k-', 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement [m]');   laby = ylabel('\lambda(t)') ;
-legend('Numeric','Analytic','location','East')
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/verifLinearCylinderPlaneStrain.png','-dpng')
+%~ plot( matUs(dofXRe,:), loadFactorsMat(:,3) , 'ro' , 'linewidth', lw,'markersize',ms )
+%~ plot( linspace(0,analyticValRe,length(loadFactorsMat(:,3)) ) , loadFactorsMat(:,3), 'k-', 'linewidth', lw,'markersize',ms )
+%~ labx = xlabel('Displacement [m]');   laby = ylabel('\lambda(t)') ;
+%~ legend('Numeric','Analytic','location','East')
+%~ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
+%~ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+%~ print('output/verifLinearCylinderPlaneStrain.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/verifLinearCylinderPlaneStrain.png" alt="verification plot" width="500"/>

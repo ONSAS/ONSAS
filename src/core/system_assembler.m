@@ -105,7 +105,15 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
-    if norm( previous_state_mat(:,3) ) >0, error('warning. HHT method with plastic analysis not validated yet'); end
+    %~ if norm( previous_state_mat(:,3) ) >0, error('warning. HHT method with plastic analysis not validated yet'); end
+    norm_val = 0 ;
+    for i = 1:size(previous_state_mat,1)
+			if norm( previous_state_mat{i,3} ) > 0
+				norm_val = norm( previous_state_mat{i,3} ) + norm_val ;
+			end	
+    end
+    
+    if norm_val >0, error('warning. HHT method with plastic analysis not validated yet'); end
     
     fs = assembler ( ...
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previous_state_mat  ) ;

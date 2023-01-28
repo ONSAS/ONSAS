@@ -68,12 +68,26 @@ else
 end
 
 stress_n_vec           =  previous_state_mat(:,1) ;
-strain_n_vec           = previous_state_mat(:,2)  ;
+strain_n_vec           =  previous_state_mat(:,2) ;
 acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
 
-strain_vec = zeros(size( strain_n_vec )) ;
-acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
+%~ disp("assembler")
+%~ size(previous_state_mat)
+%~ size(previous_state_mat(:,1))
+%~ size(previous_state_mat(:,2))
+%~ size(previous_state_mat(:,3))
+%~ size(stress_n_vec{elem})
+		%~ size(strain_n_vec{elem})
+		%~ size(acum_plas_strain_n_vec{elem})
+%~ size(stress_n_vec)
+%~ size(strain_n_vec)
+%~ size(acum_plas_strain_n_vec)
 
+%~ strain_vec = zeros(size( strain_n_vec )) ;
+strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
+
+%~ acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
+acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
 
 % ====================================================================
 
@@ -223,22 +237,39 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemCrossSecParams ;
-
-    if strcmp( hyperElasModel, 'linearElastic' )
-
-      planeStateFlag = elemTypeParams ;
-      dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
-
-      [ fs, ks, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [1 hyperElasParams], 2, thickness, planeStateFlag, dotdotdispsElem, density ) ;
-
-      Finte = fs{1};
-      Ke    = ks{1};
-      Fmase = fs{3};
-      Mmase = ks{3};
-      Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
-
+		planeStateFlag = elemTypeParams ;
+		
+		
+		dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
+		
+		
+		%% 
+		%~ size(stress_n_vec{elem})
+		%~ size(strain_n_vec{elem})
+		%~ size(acum_plas_strain_n_vec{elem})
+		
+		previous_state = { stress_n_vec{elem} ; strain_n_vec{elem} ; acum_plas_strain_n_vec{elem} } ;
+		
+		
+		%%
+      
+		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
+																										hyperElasModel, [1 hyperElasParams], 2, thickness, planeStateFlag, ...
+																										dotdotdispsElem, density, previous_state ) ;
+    if max(size(stressElem))>3
+    size(stressElem)
+    stop
     end
+    
+    
+		Finte = fs{1};
+		Ke    = ks{1};
+		
+		if dynamicProblemBool
+			Fmase = fs{3};
+			Mmase = ks{3};
+			Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
+		end
 
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
@@ -313,8 +344,9 @@ for elem = 1:nElems
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
 
     if exist('strain')==1
-      strain_vec( elem )           = strain ;
-      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ;
+      strain_vec( elem )           = strain' ;
+      %~ acum_plas_strain_vec( elem,1 ) = acum_plas_strain ;
+      acum_plas_strain_vec( elem ) = acum_plas_strain ;
     end
   end % if stress
 

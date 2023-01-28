@@ -19,14 +19,14 @@
 %md### ONSAS_solve
 %md Function that performs the time analysis with the model structs as input.
 %md
-function [ matUs, loadFactorsMat, cellFint ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
+function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 %md
 %md init structures to store solutions
 matUs          = modelCurrSol.U              ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot           ;
-cellStress     = { modelCurrSol.Stress }     ;
-
+%~ cellStress     = { modelCurrSol.Stress }     ;
+cellStress = {};
 cellFint = {};
 
 
@@ -86,10 +86,15 @@ while finalTimeReachedBoolean == false
 	
 	if length(cellFint) == 0
 		cellFint{1} = zeros(size(modelCurrSol.matFint)) ;
-	end
-		
+	end	
 	cellFint{end+1}	= modelCurrSol.matFint ;
 	
+	%%%
+	if length(cellStress) == 0
+		cellStress{1} = zeros(size(modelCurrSol.Stress)) ;
+	end	
+	cellStress{end+1}	= modelCurrSol.Stress ;
+	%%%	
 		
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )
