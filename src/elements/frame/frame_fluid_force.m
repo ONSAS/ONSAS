@@ -214,21 +214,14 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
-  tMatHydroElemU = [] ;
-  hydroTangBoolU = elemTypeAero(5) ;
-  if hydroTangBoolU
-    fprintf('I compute tangent\n')
+  if elemTypeAero(5)
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
                                     aeroCoefs, elemTypeAero          ,...
                                     analysisSettings, nextTime, currElem ) ;
-      tMatHydroElemU
-      stop
   else
-    fprintf('I DONT \n')
-    elemTypeAero
-
+    tMatHydroElemU = [] ;
   end
   % -------------------------------
 
@@ -250,10 +243,8 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
   dispTangMatElem = zeros(12,12) ;
   % numerical step to compute the tangets
   h = 1e-10           ;
-
   elemTypeAero(5) = 0 ; % set compute tangents to false
   for indexIncrementU = 1:12
-    indexIncrementU
     e_i = zeros(12,1) ;  e_i(indexIncrementU) = 1 ;
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;

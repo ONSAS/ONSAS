@@ -287,7 +287,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && exist('aeroTangBool') && aeroTangBool
+      if aeroBool && elemTypeAero(5)
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
