@@ -207,16 +207,13 @@ for elem = 1:nElems
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      % extract boolean to compute aerodynamic displacements tangent matrix
-      aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
-
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
                                      elemCrossSecParams                   , ...
                                      u2ElemDisps( Ut       , dofselem )   , ...
                                      u2ElemDisps( Udott    , dofselem )   , ...
                                      u2ElemDisps( Udotdott , dofselem )   , ...
-                                     elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
-                                     analysisSettings, timeVar, elem, aeroTangBool ) ;
+                                     aeroCoefs,        elemTypeAero, ...
+                                     analysisSettings, timeVar, elem ) ;
     end
 
   % ---------  triangle solid element -----------------------------
@@ -290,7 +287,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && exist('aeroTangBool') && aeroTangBool
+      if aeroBool && elemTypeAero(5)
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
