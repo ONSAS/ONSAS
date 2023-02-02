@@ -210,18 +210,25 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 
 
 
-  fHydroElem =  fDragLiftPitchElem + fAddedMassElem;
+  fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
   tMatHydroElemU = [] ;
   hydroTangBoolU = elemTypeAero(5) ;
   if hydroTangBoolU
+    fprintf('I compute tangent\n')
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
                                     aeroCoefs, elemTypeAero          ,...
                                     analysisSettings, nextTime, currElem ) ;
+      tMatHydroElemU
+      stop
+  else
+    fprintf('I DONT \n')
+    elemTypeAero
+
   end
   % -------------------------------
 
@@ -242,20 +249,21 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
   % numerical step to compute the tangets
-  h = 1e-10                  ;
-  elemTypeAero(5) = false ;
+  h = 1e-10           ;
+
+  elemTypeAero(5) = 0 ; % set compute tangents to false
   for indexIncrementU = 1:12
-    e_i = zeros(12,1)        ;
-    e_i(indexIncrementU) = 1 ;
+    indexIncrementU
+    e_i = zeros(12,1) ;  e_i(indexIncrementU) = 1 ;
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;
-    % compute forces with u + hu at the index indexIncrementU
+    % compute forces with u + h*ei at the index indexIncrementU
     fhydro_incU = frame_fluid_force( elemCoords                                ,...
                                       elemCrossSecParams                        ,...
                                       UplusDeltaU, Udote, Udotdote              ,...
                                       aeroCoefs, elemTypeAero, analysisSettings ,...
                                       nextTime, currElem ) ;
     % central difference
-    dispTangMatElem(:,indexIncrementU) = ( fhydro_incU - fHydroElem ) / h ;
+    dispTangMatElem(:, indexIncrementU ) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor
 end % end function
