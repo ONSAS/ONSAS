@@ -1,8 +1,6 @@
 
 close all, clear all;
-
-if isunix, dirSep = '/'; else dirSep = '\'; end
-addpath( [ pwd  dirSep '..' dirSep  'src' dirSep ] ); octaveBoolean = isThisOctave ;
+addpath( [ pwd filesep '..' filesep  'src' filesep ] ); octaveBoolean = isThisOctave ;
 
 
 keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
@@ -19,6 +17,7 @@ keyfiles = { 'static_von_mises_truss/static_von_mises_truss.m'   ...
            ; 'reconfigurationBeam/circularReconfiguration.m'           ...
            ; 'beamLinearVibration/beamLinearVibration.m'               ...
            ; 'VIVtest/ONSAS_VIVtest.m'                                 ...
+           ; 'cantilever_modal_analysis/cantilever_modal_analysis.m'   ...
            ; 'cantileverLinearHardening/cantileverLinearHardening.m' 	 ...
            }
 
@@ -33,9 +32,9 @@ while (current <= num_tests) && (verifBoolean == 1)
   aux_time = cputime();
 
   % save key files data to avoid clear all commands
-  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'dirSep', 'testDir', 'aux_time' );
+  save( '-mat', 'exData.mat', 'current', 'keyfiles', 'testDir', 'aux_time' );
 
-  run( [ pwd dirSep '..' dirSep 'examples' dirSep keyfiles{current} ] ) ;
+  run( [ pwd filesep '..' filesep 'examples' filesep keyfiles{current} ] ) ;
 
   if verifBoolean
     status = 'PASSED';
