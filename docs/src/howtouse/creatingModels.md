@@ -70,14 +70,14 @@ cell structure with auxiliar params information, required for some element types
 
 ### `elements.elemTypeAero`
 
-If a frame aerodynamic frame analysis is desired, the  `elementTypeAero` field should contain a vector with: in the first three entries: three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration), then in the fourth entry: the number of Gauss integration points $numGauss$ and in the fifth entry a boolean $computeAeroBool$ which indicates if the tangent matrix of the aerodynamic force vector is computed:
+If a frame aerodynamic analysis is desired, the  `elementTypeAero` field should contain a vector with: in the first three entries: three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration), then in the fourth entry: the number of Gauss integration points $numGauss$ and in the fifth entry a boolean $computeAeroBool$ which indicates if the tangent matrix of the aerodynamic force vector is computed:
 ```math
 [ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
 ```
 
 ### `elements.aeroCoefs`
 
-If a frame aerodynamic frame analysis is desired, the `aeroCoefs` field must contain a column cell with the names of the functions (as strings) considered to compute the aerodynamic forces, as follows:
+If a frame aerodynamic analysis is desired, the `aeroCoefs` field must contain a column cell with the names of the functions (as strings) considered to compute the aerodynamic forces, as follows:
 ```math
 \{ `dragCoefFunction`; `liftCoefFunction`; `momentCoefFunction` \}
 ```

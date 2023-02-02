@@ -21,7 +21,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                      elemCrossSecParams                       ,...
                                      Ue, Udote, Udotdote                      ,...
                                      aeroCoefs, elemTypeAero, analysisSettings,...
-                                     nextTime, currElem, hydroTangBoolU )
+                                     nextTime, currElem )
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
@@ -165,14 +165,17 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
         tlift1 = cross(e1, udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
         tlift2 = cross(e1, udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
-      % compute van der pol solution for current element
+
+      % computes van der pol solution for current element
       q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+
     else
       q = 0 ; % No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
     end
+
   else
     q = 2 ;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
@@ -212,6 +215,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
   tMatHydroElemU = [] ;
+  hydroTangBoolU = elemTypeAero(5) ;
   if hydroTangBoolU
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
@@ -246,11 +250,12 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;
     % compute forces with u + hu at the index indexIncrementU
+    elemTypeAero(5) = false ;
     fhydro_incU = frame_fluid_force( elemCoords                                ,...
                                       elemCrossSecParams                        ,...
                                       UplusDeltaU, Udote, Udotdote              ,...
                                       aeroCoefs, elemTypeAero, analysisSettings ,...
-                                      nextTime, currElem, false ) ;
+                                      nextTime, currElem ) ;
     % central difference
     dispTangMatElem(:,indexIncrementU) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor
