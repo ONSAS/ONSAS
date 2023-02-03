@@ -41,7 +41,7 @@
 %md```math
 %mdP_{xx}( \mu,K ) =
 %md2\alpha \left( 
-%md    \frac{\mu}{2} -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta \alpha^2 -1) 
+%md    \frac{\mu}{2} -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
 %md \right) = p
 %md```
 %md
@@ -172,7 +172,7 @@ loadFactorsCase2  = loadFactorsMat ;
 %md
 alphas         = (Lx + matUs(6*6+1,:)) / Lx ;
 betas          = (Ly + matUs(6*6+3,:)) / Ly ;
-analyticFunc      = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * alphas .* betas.^2 .* ( alphas .* betas.^2 -1) ./ alphas ;
+analyticFunc      = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
 analyticVals = analyticFunc( alphas, betas ) ;
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
