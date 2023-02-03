@@ -1,4 +1,11 @@
 %md# Uniaxial Compression example
+%md
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
+% In this tutorial example an hyper-elastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions and the compression $p$ is applied on the face $x=Lx$, as nominal traction.
+%md
+%md```@raw html
+%md<img src="../../assets/uniaxialCompression/diagramSolidUniaxialCompression.svg" alt="structure diagram" width="500"/>
+%md```
 %md---
 %md
 clear all, close all
@@ -11,11 +18,10 @@ E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md### MEBI parameters
 %md
 %md#### materials
-%md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
-lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+%md The material of the solid considered is the neo-Hookean model with $\lambda$, $\mu$ and bulk($K$):
+lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ; bulk = E / ( 3*(1-2*nu) ) ;
 %md since only one material is considered, a scalar struct is defined as follows
 materials.hyperElasModel = 'NHC' ;
-bulk = E / ( 3*(1-2*nu) ) ;
 materials.hyperElasParams = [ mu bulk ] ;
 %md
 %md#### elements
@@ -101,8 +107,11 @@ otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
 
 controlDispsValsCase1 = matUs(6*6+1,:) ;
 loadFactorsCase1 = loadFactorsMat ;
-
-
+%md
+%md## Numerical solution: case 2
+%mdIn this analysis case, the mesh information is read from a gmsh-generated
+%mdmesh file, the pressure is applied using local coordinates and the stiffness
+%md matrix is computed using the complex-step method.
 %md
 otherParams.problemName = 'uniaxialCompression_GMSH_ComplexStep' ;
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
@@ -111,15 +120,19 @@ boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+%md
+%md Displacements of node 7 are extracted:
+%md
 controlDispsValsCase2         = matUs(6*6+1,:) ;  ;
 loadFactorsCase2  = loadFactorsMat ;
+%md
+%md The values of $\beta$ and $\alpha$ for each load step are compted:
+%md
 
 alphas         = (Lx + matUs(6*6+1,:)) / Lx ;
 betas          = (Ly + matUs(6*6+3,:)) / Ly ;
-
 analyticFunc      = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * alphas .* betas.^2 .* ( alphas .* betas.^2 -1) ./ alphas ;
 analyticVals = analyticFunc( alphas, betas ) ;
-
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -133,5 +146,5 @@ set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifUniaxial.png" alt="plot check" width="500"/>
+%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifCompression.png" alt="plot check" width="500"/>
 %md```
