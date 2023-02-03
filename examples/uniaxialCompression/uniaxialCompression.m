@@ -2,7 +2,7 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
 %md
-%md In this tutorial example an hyper-elastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions and the compression $p$ is applied on the face $x=Lx$, as nominal traction.
+%mdIn this tutorial example an hyper-elastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions and the compression $p$ is applied on the face $x=Lx$, as nominal traction.
 %md
 %md```@raw html
 %md<img src="../../assets/uniaxialCompression/diagramSolidUniaxialCompression.svg" alt="structure diagram" width="500"/>
