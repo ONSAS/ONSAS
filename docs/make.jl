@@ -12,6 +12,7 @@ makedocs(
     "Learning by examples" => Any["Static Von-Mises Truss"  =>  "examples/staticVonMisesTruss.md",
                                   "Spring-mass system"      => "examples/springMass.md",
                                   "Uniaxial extension"      => "examples/uniaxialExtension.md",
+                                  "Uniaxial compression"      => "examples/uniaxialCompression.md",
                                   "Cantilever Beam"         => "examples/cantileverBeam.md",
                                   "Linear beam vibration"   => "examples/beamLinearVibration.md",
                                   "Linear elastic cylinder" => "examples/linearCylinderPlaneStrain.md",
