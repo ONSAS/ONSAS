@@ -153,7 +153,7 @@ loadFactorsCase1 = loadFactorsMat ;
 %md matrix is computed using the complex-step method.
 %md
 otherParams.problemName = 'uniaxialCompression_GMSH_ComplexStep' ;
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialExtension.msh' ) ;
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialCompression.msh' ) ;
 boundaryConds(1).loadsCoordSys = 'local';
 boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 
