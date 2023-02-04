@@ -85,7 +85,6 @@ boundaryConds(3).imposDispVals =  0  ;
 %
 boundaryConds(4).imposDispDofs = [5] ;
 boundaryConds(4).imposDispVals =  0  ;
-%
 %md
 %md#### initialConds
 %md since no initial non-homogeneous initial conditions are used, an empty struct is used .
@@ -135,7 +134,7 @@ analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30     ;
 analysisSettings.stopTolDeltau = 1.0e-8 ;
 analysisSettings.stopTolForces = 1.0e-8 ;
-analysisSettings.finalTime      = 1      ;
+analysisSettings.finalTime     = 1      ;
 analysisSettings.deltaT        = .1     ;
 %md
 %md### Output parameters
@@ -143,6 +142,8 @@ otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%md The displacement towards $x$ at the node 7 is computed:
 %md
 controlDispsValsCase1 = matUs(6*6+1,:) ;
 loadFactorsCase1 = loadFactorsMat ;
@@ -184,6 +185,7 @@ labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Numeric-1', 'Numeric-2', 'Analytic-NHC' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+% print( './../../docs/src/assets/verifCompression.png', '-dpng' )
 %md
 %md```@raw html
 %md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifCompression.png" alt="plot check" width="500"/>
