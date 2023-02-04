@@ -36,7 +36,7 @@
 %md2\beta \left( 
 %md    \frac{\mu}{2} -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 -\alpha) 
 %md \right) = 0
-%md```math
+%md```
 %mdthus, considering the axial displacement $u_x$ and $u_y$ at $\mathbf{X}=(L_x,L_y,L_z)$ and using the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$, we obtain the axial component of the nominal stress:
 %md```math
 %mdP_{xx}( \mu,K ) =
