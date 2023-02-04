@@ -185,7 +185,7 @@ labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Numeric-1', 'Numeric-2', 'Analytic-NHC' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-% print( './../../docs/src/assets/verifCompression.png', '-dpng' )
+% print( './../../docs/src/assets/uniaxialCompression/verifCompression.png', '-dpng' )
 %md
 %md```@raw html
 %md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/uniaxialCompression/verifCompression.png" alt="plot check" width="500"/>
