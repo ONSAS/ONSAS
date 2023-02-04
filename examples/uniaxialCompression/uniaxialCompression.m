@@ -24,7 +24,7 @@
 %md```math
 %md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -3) + K ( J^2 -1 )
 %md```math
-%mdwhere $I_1 = \mathrm{tr}(\mathbf{C})$ is the first invariant, $J = \sqrt{\det(\mathbf{C})}$ and $K$ and $\mu$ material parameters.
+%mdwhere $I_1 = \mathrm{tr}(\mathbf{C})$ is the first invariant, $J = \sqrt{\det(\mathbf{C})}$ and $K$ and $\mu$ are the bulk and shear material parameters, respectively.
 %md
 %mdThe second Piola-Kirchhoff tensor is given by:
 %md```math
