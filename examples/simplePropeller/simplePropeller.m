@@ -1,4 +1,4 @@
-%md# Simple wind turbine example
+%md# Simple Propeller example
 close all, clear all
 addpath( genpath( [ pwd '/../../src'] ) );
 %md
