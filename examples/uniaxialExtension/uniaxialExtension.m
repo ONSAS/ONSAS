@@ -217,5 +217,5 @@ else
 end
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifUniaxial.png" alt="plot check" width="500"/>
+%md<img src="../../assets/generated/verifUniaxial.png" alt="plot check" width="500"/>
 %md```
