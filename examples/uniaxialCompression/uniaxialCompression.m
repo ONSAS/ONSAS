@@ -168,7 +168,7 @@ boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 controlDispsValsCase2         = matUs(6*6+1,:) ;  ;
 loadFactorsCase2  = loadFactorsMat ;
 %md
-%md The values of $\beta$ and $\alpha$ for each load step are compted:
+%md The values of $\beta$ and $\alpha$ for each load step are computed:
 %md
 alphas         = (Lx + matUs(6*6+1,:)) / Lx ;
 betas          = (Ly + matUs(6*6+3,:)) / Ly ;
@@ -185,7 +185,9 @@ labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Numeric-1', 'Numeric-2', 'Analytic-NHC' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-% print( './../../docs/src/assets/uniaxialCompression/verifCompression.png', '-dpng' )
+if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+  print( './output/verifCompression.png', '-dpng' )
+end
 %md
 %md```@raw html
 %md<img src="../../assets/uniaxialCompression/verifCompression.png" alt="validation plot" width="500"/>
