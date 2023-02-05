@@ -133,7 +133,7 @@ otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md The displacement towards $x$ of node 7 is computed:
+%md The displacement in $x$ of node 7 is computed:
 %md
 controlDispsValsCase1 = matUs(6*6+1,:) ;
 loadFactorsCase1 = loadFactorsMat ;
