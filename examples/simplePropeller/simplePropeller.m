@@ -45,12 +45,14 @@ materials.density         = rho             ;
 elements(1).elemType = 'node'  ;
 %md blades
 elements(2).elemType = 'frame' ;
-elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} =  d       ;
+elements(2).elemCrossSecParams = {'circle' ; d };
 elements(2).massMatType =  'consistent'        ;
 elements(2).elemTypeAero  = [0 d 0 4 0 ] ;
 elements(2).aeroCoefs     = { []; 'liftCoef'; []  } ;
-%
+% auxiliar element
+elements(3).elemType = 'truss' ;
+elements(3).elemCrossSecParams = {'circle' ; 1.5*d };
+elements(3).massMatType =  'lumped'        ;
 %md 
 %md### boundary Conditions
 %md
@@ -68,8 +70,8 @@ mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
                      0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
                      0  l*sin( 4*pi/3 )   -l*cos( 4*pi/3 ); ...
-                     -d*.5 0 d ; ...
-                     -d*.5 0 -l*1.5 ] ;
+                     -d*.75 0 d ; ...
+                     -d*.75 0 -l*1.5 ] ;
 %md
 mesh.conecCell         = { } ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
@@ -79,16 +81,16 @@ mesh.conecCell{ 4, 1 } = [ 1 2 0 0   1 4 ] ;
 % auxiliar elements
 mesh.conecCell{ 5, 1 } = [ 0 1 1 0   5 ] ;
 mesh.conecCell{ 6, 1 } = [ 0 1 1 0   6 ] ;
-mesh.conecCell{ 7, 1 } = [ 1 2 0 0   5 6 ] ;
+mesh.conecCell{ 7, 1 } = [ 1 3 0 0   5 6 ] ;
 %md
 %md## analysisSettings
 %md
-analysisSettings.finalTime              =   450     ;
+analysisSettings.finalTime              =   400     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
 analysisSettings.stopTolIts             =   50      ;
 analysisSettings.geometricNonLinearAero = true      ;
-analysisSettings.booleanSelfWeight      = false     ;
+%analysisSettings.booleanSelfWeight      = false     ;
 analysisSettings.stopTolDeltau          =   0       ;
 analysisSettings.stopTolForces          =   1e-5    ;
 analysisSettings.fluidProps = { rhoA ; nuA ; 'windVel' } ;

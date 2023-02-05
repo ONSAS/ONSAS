@@ -37,7 +37,7 @@ function test_7
   assertEqual( verifBoolean, true );
 
 function test_8
-  simpleWindTurbine
+  simplePropeller
   assertEqual( verifBoolean, true );
 
 function test_9
