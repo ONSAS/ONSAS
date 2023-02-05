@@ -2,17 +2,17 @@
 close all, clear all
 addpath( genpath( [ pwd '/../../src'] ) );
 %md
-%md# General  problem parameters
+%md## problem parameters
 %md
-%md material scalar parameters are
+%mdThe material scalar parameters are
 %md```math
 E = 210e9 ;  nu = 0.3 ; rho = 6000 ; G = E / (2 * (1+nu)) ;
 %md```
-% geometrical scalar parameters
+%mdand the geometry scalar parameters are
 %md```math
 l = 3 ; d = 0.1; 
 %md```
-%md# analytical solution
+%md## analytical solution
 %mdcompute solution by the second carindal, first the wind parameters are loaded
 %md```math
 rhoA = 1.225 ; nuA = 1.6e-5;   c_l = feval('liftCoef', 0) ; vwind = feval('windVel', 0,0) ;
@@ -93,7 +93,7 @@ analysisSettings.stopTolForces          =   1e-5    ;
 %md### otherParams
 %md
 otherParams.problemName = strcat( 'onsasExample_simpleWindTurbine_nodalMoment' ) ;
-otherParams.plotsFormat = '' ;
+otherParams.plots_format = 'vtk' ;
 %
 %md# Execute ONSAS
 [ matUs_nodalMoment, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
@@ -141,8 +141,8 @@ analysisSettings.fluidProps = { rhoA ; nuA ; 'windVel' } ;
 %md### otherParams
 %md
 otherParams.problemName = strcat( 'onsasExample_simpleWindTurbine_aeroForce' ) ;
-otherParams.plotsFormat = 'vtk' ;
-%md# Execute ONSAS
+otherParams.plots_format = 'vtk' ;
+%md# Run ONSAS
 [ matUs_aeroForce, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
 %md
 %md## Verification
@@ -174,4 +174,3 @@ legend('analytic','nodal moment', 'aero force', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print(fig1, 'output/verifSimpleWindTurbine.png','-dpng')
-close(1)

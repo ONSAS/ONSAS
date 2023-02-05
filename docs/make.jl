@@ -17,6 +17,7 @@ makedocs(
                                   "Linear beam vibration"   => "examples/beamLinearVibration.md",
                                   "Linear elastic cylinder" => "examples/linearCylinderPlaneStrain.md",
                                   "Linear aerodynamics"     => "examples/linearAerodynamics.md",
+                                  "Wind Turbine model" => "examples/simpleWindTurbine.md",
                                   "Non-linear aerodynamics" => "examples/nonLinearAerodynamics.md"],
     "User guide" => Any["Installation" =>  "howtouse/install.md",
                         "Creating Models"  => "howtouse/creatingModels.md",
