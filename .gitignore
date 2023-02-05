@@ -13,15 +13,11 @@ Manifest.toml
 docs/build/
 docs/site/
 docs/src/examples/
+docs/src/assets/generated/
 
-*.vscode
-
-# matlab autosave
-*.asv
-
-# macOS
+# editors and OSs
 *.DS_Store
-
+*.vscode
 octave-workspace
 
 # LaTeX outputs

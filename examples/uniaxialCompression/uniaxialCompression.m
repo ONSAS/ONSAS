@@ -2,17 +2,16 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
 %md
-%mdIn this tutorial example an hyper-elastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions, and the compression $p$ is applied on the face $x=Lx$, as nominal tension.
+%mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. The compression $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
 %md
 %md```@raw html
 %md<img src="../../assets/uniaxialCompression/diagramSolidUniaxialCompression.svg" alt="structure diagram" width="500"/>
 %md```
-%md---
 %md
 %md
 %md ## Analytic solution
 %md
-%mdLet us consider that a uniform deformation is produced, with a nonzero axial stretch $\alpha$ and nonzero transversal stretch $\beta$. The corresponding deformation gradient and Green-Lagrange strain tensor are given by:
+%mdLet us consider that a uniform deformation is produced, with a nonzero axial stretch $\alpha$ and nonzero transversal stretch $\beta$. The corresponding deformation gradient and Green-Lagrange strain tensors are given by:
 %md
 %md```math
 %md\textbf{F} = \left[ \begin{matrix} \alpha & 0 & 0 \\ 0 & \beta & 0 \\ 0 & 0 & \beta \end{matrix} \right]
@@ -30,23 +29,15 @@
 %md```math
 %md\textbf{S}( \mathbf{C} ) = \mu (\textbf{I} - \mathbf{C}^{-1}) + K (J(J-1)\mathbf{C}^{-1}) 
 %md```
-%mdthen, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{yy}=P_{zz}$ component is computed: and set to zero (using the boundary conditions)
-%md```math
-%mdP_{yy}( \mu,K ) =
-%md2\beta \left( 
-%md    \frac{\mu}{2} -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 -\alpha) 
-%md \right) = 0
-%md```
-%mdthus, considering the axial displacement $u_x$ and $u_y$ at $\mathbf{X}=(L_x,L_y,L_z)$ and using the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$, we obtain the axial component of the nominal stress:
+%mdthen, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{xx}$ nominal stress component is obtained and equaled to the applied compression:
 %md```math
 %mdP_{xx}( \mu,K ) =
-%md2\alpha \left( 
-%md    \frac{\mu}{2} -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
-%md \right) = p
+%md \alpha \left( 
+%md    \mu -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
+%md \right) = - p
 %md```
 %md
-%md## Numerical solution: case 1
-%md---
+%md## Numerical solution
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 clear all, close all
 % add path
@@ -102,7 +93,7 @@ initialConds = struct();
 %md\input{solidCubeMeshPDF.pdf_tex}
 %md\end{center}
 %md```
-%md The node coordinates matrix is given by the following
+%md The node coordinates matrix is given by
 mesh.nodesCoords = [ 0    0    0 ; ...
                      0    0   Lz ; ...
                      0   Ly   Lz ; ...
@@ -138,55 +129,46 @@ analysisSettings.finalTime     = 1      ;
 analysisSettings.deltaT        = .1     ;
 %md
 %md### Output parameters
-otherParams.plotsFormat = 'vtk' ;
 otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md The displacement towards $x$ at the node 7 is computed:
+%md The displacement in $x$ of node 7 is computed:
 %md
 controlDispsValsCase1 = matUs(6*6+1,:) ;
 loadFactorsCase1 = loadFactorsMat ;
 %md
-%md## Numerical solution: case 2
-%mdIn this analysis case, the mesh information is read from a gmsh-generated
-%mdmesh file, the pressure is applied using local coordinates and the stiffness
-%md matrix is computed using the complex-step method.
-%md
-otherParams.problemName = 'uniaxialCompression_GMSH_ComplexStep' ;
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_uniaxialCompression.msh' ) ;
-boundaryConds(1).loadsCoordSys = 'local';
-boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
-
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
 %md
 %md### Analytic solution computation
 %md
-%md Displacements of node 7 are extracted:
-%md
-controlDispsValsCase2         = matUs(6*6+1,:) ;  ;
-loadFactorsCase2  = loadFactorsMat ;
-%md
-%md The values of $\beta$ and $\alpha$ for each load step are compted:
-%md
-alphas         = (Lx + matUs(6*6+1,:)) / Lx ;
-betas          = (Ly + matUs(6*6+3,:)) / Ly ;
-analyticFunc      = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
+%md The numerical values of $\beta$ and $\alpha$ for each load step can be computed using the displacements $u_x$ and $u_y$ at node $(L_x,L_y,L_z)$ and the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$.
+alphas       = (Lx + matUs(6*6+1,:)) / Lx ;
+betas        = (Ly + matUs(6*6+3,:)) / Ly ;
+%md and the corresponding analytic nominal tension is obtained 
+analyticFunc = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
 analyticVals = analyticFunc( alphas, betas ) ;
+%mdThe error and the verif boolean are computed 
+aux1 = loadFactorsCase1' - analyticVals ;
+verifBoolean = ( norm( aux1 ) / norm( analyticVals ) < 1e-6 )
+%md
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase2, loadFactorsCase2,  'k-o' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase2, analyticVals,  'g-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, analyticVals,  'g-s' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
-legend( 'Numeric-1', 'Numeric-2', 'Analytic-NHC' , 'location', 'SouthEast' )
+legend( 'Numeric', 'Analytic' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-% print( './../../docs/src/assets/uniaxialCompression/verifCompression.png', '-dpng' )
+title('uniaxial compression test')
+if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
+  print( './output/verifCompression.png', '-dpng' )
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
+end
 %md
 %md```@raw html
-%md<img src="../../assets/uniaxialCompression/verifCompression.png" alt="validation plot" width="500"/>
+%md<img src="../../assets/generated/verifCompression.png" alt="validation plot" width="500"/>
 %md```
