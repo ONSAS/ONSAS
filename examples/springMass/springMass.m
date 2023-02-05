@@ -257,6 +257,6 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/springMassCheckU.png', '-dpng' )
 %md
 %md```@raw html
-%md<img src="../../assets/springMassCheckU.png" alt="plot check" width="500"/>
+%md<img src="../../assets/generated/springMassCheckU.png" alt="plot check" width="500"/>
 %md```
 %md

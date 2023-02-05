@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create environment variable
-        run: export DOCSBUILD=yes
+        run: export DOCSBUILD=yes; echo $DOCSBUILD
       - uses: actions/checkout@v3
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1

@@ -141,19 +141,16 @@ loadFactorsCase1 = loadFactorsMat ;
 %md
 %md### Analytic solution computation
 %md
-%mdthus, considering the axial displacement $u_x$ and $u_y$ at $\mathbf{X}=(L_x,L_y,L_z)$ and using the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$, we obtain the axial component of the nominal stress:
-
-%md The numerical values of $\beta$ and $\alpha$ for each load step are computed:
+%md The numerical values of $\beta$ and $\alpha$ for each load step can be computed using the displacements $u_x$ and $u_y$ at node $(L_x,L_y,L_z)$ and the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$.
 alphas       = (Lx + matUs(6*6+1,:)) / Lx ;
 betas        = (Ly + matUs(6*6+3,:)) / Ly ;
 %md and the corresponding analytic nominal tension is obtained 
 analyticFunc = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
 analyticVals = analyticFunc( alphas, betas ) ;
-%mdThe error is computed
+%mdThe error and the verif boolean are computed 
 aux1 = loadFactorsCase1' - analyticVals ;
-
 verifBoolean = ( norm( aux1 ) / norm( analyticVals ) < 1e-6 )
-
+%md
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -166,9 +163,12 @@ set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('uniaxial compression test')
 if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
   print( './output/verifCompression.png', '-dpng' )
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
 end
 %md
 %md```@raw html
-%md<img src="../../assets/uniaxialCompression/verifCompression.png" alt="validation plot" width="500"/>
+%md<img src="../../assets/generated/verifCompression.png" alt="validation plot" width="500"/>
 %md```

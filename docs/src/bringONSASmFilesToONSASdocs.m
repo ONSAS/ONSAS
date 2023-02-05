@@ -43,5 +43,9 @@ function bringONSASmFilesToONSASdocs
     m2md( [ dirONSASm ONSASmFiles{i} ] , [ dirONSASdocs MDFiles{i} ] , 1, 1 ) ;
   end
 
-  movefile('../../examples/springMass/output/springMassCheckU.png', './assets') 
-  movefile('../../examples/uniaxialCompression/output/verifCompression.png', './assets/uniaxialCompression/') 
+  if exist( './assets/generated/' ) ~= 7
+    fprintf('creating generated figures dir...\n')
+    mkdir( './assets/generated/' );
+  end
+  movefile('../../examples/springMass/output/springMassCheckU.png', './assets/generated/')
+  movefile('../../examples/uniaxialCompression/output/verifCompression.png', './assets/generated/')
