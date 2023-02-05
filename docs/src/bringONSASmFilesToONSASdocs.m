@@ -47,5 +47,6 @@ function bringONSASmFilesToONSASdocs
     fprintf('creating generated figures dir...\n')
     mkdir( './assets/generated/' );
   end
+  movefile('../../examples/uniaxialExtension/output/verifUniaxial.png', './assets/generated/')
   movefile('../../examples/springMass/output/springMassCheckU.png', './assets/generated/')
   movefile('../../examples/uniaxialCompression/output/verifCompression.png', './assets/generated/')
