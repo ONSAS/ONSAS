@@ -33,15 +33,15 @@
 %mdthen, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{yy}=P_{zz}$ component is computed: and set to zero (using the boundary conditions)
 %md```math
 %mdP_{yy}( \mu,K ) =
-%md2\beta \left( 
-%md    \frac{\mu}{2} -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 -\alpha) 
+%md \beta \left( 
+%md    \mu -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 -\alpha) 
 %md \right) = 0
 %md```
 %mdthus, considering the axial displacement $u_x$ and $u_y$ at $\mathbf{X}=(L_x,L_y,L_z)$ and using the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$, we obtain the axial component of the nominal stress:
 %md```math
 %mdP_{xx}( \mu,K ) =
-%md2\alpha \left( 
-%md    \frac{\mu}{2} -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
+%md \alpha \left( 
+%md    \mu -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
 %md \right) = p
 %md```
 %md
