@@ -188,5 +188,5 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 % print( './../../docs/src/assets/uniaxialCompression/verifCompression.png', '-dpng' )
 %md
 %md```@raw html
-%md<img src="../../assets/uniaxialCompression/verifCompression.png" alt="validarion plot" width="500"/>
+%md<img src="../../assets/uniaxialCompression/verifCompression.png" alt="validation plot" width="500"/>
 %md```
