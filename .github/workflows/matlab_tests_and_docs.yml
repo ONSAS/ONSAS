@@ -7,15 +7,15 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - name: create environment variable
-        run: export DOCSBUILD=yes; echo $DOCSBUILD
       - uses: actions/checkout@v3
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
+      - name: create environment variable
+        run: export DOCSBUILD=yes; echo $DOCSBUILD     
       - name: run matlab test problems
         uses: matlab-actions/run-command@v1
         with:
-          command: cd test, runTestProblems_local
+          command: setenv('DOCSBUILD','yes'), cd test, runTestProblems_local
       - name: extract markdown from example scripts
         uses: matlab-actions/run-command@v1
         with:
