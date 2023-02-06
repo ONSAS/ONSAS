@@ -142,7 +142,7 @@ for elem = 1:nElems
   % -----------   truss element   ------------------------------
   elseif strcmp( elemType, 'truss')
 
-    A  = crossSectionProps ( elemCrossSecParams, density ) ;
+    A  = crossSectionProps( elemCrossSecParams, density ) ;
     previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
 
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
@@ -273,13 +273,12 @@ for elem = 1:nElems
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
-    if aeroBool
+    if aeroBool && strcmp(elemType,'frame')
       Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
   end
 
   if tangBool
-
     for indRow = 1:length( dofselemRed )
 
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
@@ -287,7 +286,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && elemTypeAero(5)
+      if aeroBool && strcmp(elemType,'frame') && elemTypeAero(5)
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
