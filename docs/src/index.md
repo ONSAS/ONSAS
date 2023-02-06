@@ -33,12 +33,13 @@ Theses using ONSAS:
 [ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)
 
 
-### A simple wind turbine model
+### A simple propeller model
 
 ```@raw html
-<img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true" alt="wind turbine animation">
+<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
 ```
-[wind turbine animation](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true)
+
+[propeller animation](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A tower model
 
