@@ -38,6 +38,7 @@ Theses using ONSAS:
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
 ```
+
 [propeller animation](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A tower model

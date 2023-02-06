@@ -134,3 +134,7 @@ end
 %md```@raw html
 %md<img src="../../assets/generated/verifPropeller.png" alt="plot check" width="500"/>
 %md```
+%md
+%md```@raw html
+%md<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
+%md```
