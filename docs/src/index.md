@@ -8,7 +8,7 @@
 
 ## What is ONSAS.m?
 
-ONSAS.m is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf). The current version allows to perform a diverse set of simulations and it's been used in specific research applications.
+[ONSAS.m](https://github.com/ONSAS/ONSAS.m) is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf). The current version allows to perform a diverse set of simulations and it's been used in specific research applications.
 
 ## Publications using ONSAS
 

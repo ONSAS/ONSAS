@@ -51,4 +51,5 @@ function bringONSASmFilesToONSASdocs
   end
   movefile('../../examples/uniaxialExtension/output/verifUniaxial.png', './assets/generated/')
   movefile('../../examples/springMass/output/springMassCheckU.png', './assets/generated/')
+  movefile('../../examples/simplePropeller/output/verifPropeller.png', './assets/generated/')
   movefile('../../examples/uniaxialCompression/output/verifCompression.png', './assets/generated/')

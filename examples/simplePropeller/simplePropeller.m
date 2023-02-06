@@ -24,26 +24,22 @@ fl = 1 / 2 * c_l * rhoA * norm(va) ^ 2 * d ;
 %md the total moment induced in node 1 in x direction for is the sum for three blades: 
 moment1x = 3 * fl * l * l / 2 ;
 %mdand then the angular moment is:
-%md```math
 bladeMass = rho * l * pi * d ^2 /4 ; 
 Jrho =  3 * 1/3 * bladeMass  * l ^ 2 ; 
 angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md
 %md## Numerical solution
 %md
-%md## problem parameters
-%md
-%mdThe material scalar parameters are
-%md
+%mdThe material parameters are
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]        ;
 materials.density         = rho             ;
 %md 
 %md### elements
-%md
-%md nodes
+%mdThe elements are
+% nodes
 elements(1).elemType = 'node'  ;
-%md blades
+% blades
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'circle' ; d };
 elements(2).massMatType =  'consistent'        ;
@@ -64,7 +60,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
 % homogeneous initial conditions are considered, then an empty struct is set:
 initialConds = struct() ;
 %md
-%md### mesh parameters
+%md### mesh
 %md
 mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
@@ -83,7 +79,7 @@ mesh.conecCell{ 5, 1 } = [ 0 1 1 0   5 ] ;
 mesh.conecCell{ 6, 1 } = [ 0 1 1 0   6 ] ;
 mesh.conecCell{ 7, 1 } = [ 1 3 0 0   5 6 ] ;
 %md
-%md## analysisSettings
+%md### analysisSettings
 %md
 analysisSettings.finalTime              =   400     ;
 analysisSettings.deltaT                 =   5       ;
@@ -99,18 +95,9 @@ analysisSettings.fluidProps = { rhoA ; nuA ; 'windVel' } ;
 %md
 otherParams.problemName =  'simplePropeller' ;
 otherParams.plots_format = 'vtk' ;
-%
+%md
 %md### Run ONSAS
 [ matUs, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
-%md
-%md
-%md ## boundary Conditions
-%md
-%md
-%md ## analysisSettings
-%md
-%md add wind velocity function into analysis settings struct:
-%md### otherParams
 %md
 %md## Verification
 %md
@@ -127,8 +114,7 @@ verifBoolean = norm( angleXnode1Numeric - angleXnode1Analytic )  ...
 %md
 %md## Plots
 %md
-lw = 2.0 ; ms = 10; plotfontsize = 22 ;
-spanPlotTime = 2 ;
+lw = 2.0 ; ms = 10; plotfontsize = 22 ; spanPlotTime = 2 ;
 fig1 = figure(1) ;
 plot( timeVec(1:spanPlotTime:end), angleXnode1Analytic(1:spanPlotTime:end) ,'b-x' , 'linewidth', lw,'markersize',ms )
 hold on, grid on
@@ -137,4 +123,14 @@ labx = xlabel('time(s)');   laby = ylabel('$\theta_x node 1$') ;
 legend('analytic','numeric', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print(fig1, 'output/verifSimpleWindTurbine.png','-dpng')
+title('simple propeller test')
+if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
+  print(fig1, 'output/verifPropeller.png','-dpng')
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
+end
+%md
+%md```@raw html
+%md<img src="../../assets/generated/verifPropeller.png" alt="plot check" width="500"/>
+%md```

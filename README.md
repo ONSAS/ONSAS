@@ -21,8 +21,8 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/)/Matlab code for st
 ### A deployable ring
 ![ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)
 
-### A wind turbine model
-![wind](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/wind.gif?raw=true)
+### A propeller model
+![propeller](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A truss tower model
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
