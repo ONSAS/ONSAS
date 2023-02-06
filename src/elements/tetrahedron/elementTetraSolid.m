@@ -22,10 +22,9 @@
 function [ Finte, KTe, stress ] = elementTetraSolid( ...
   elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag )
 
-  Finte = zeros(12,1) ;
   booleanKTAnalytic = 1 ;
 
-  [ funder, jacobianmat, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
+  [ funder, ~, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
 
   eleDispsMat = reshape( elemDisps, 3, 4) ;
   eleCoordSpa = tetCoordMat + eleDispsMat ;
