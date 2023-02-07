@@ -87,10 +87,12 @@ end
 %md---------------------
 %md Declare a global variable to store drag 
 %
-global globalFDrag
+global globalReactionForces
+global glboalNodeReactionForces
 global globalNIter
-globalFDrag = zeros(analysisSettings.finalTime, 1) ;
-globalNIter = zeros(analysisSettings.finalTime + 1, 1) ;
+globalReactionForces = zeros(6*analysisSettings.finalTime, 1) ;
+globalNIter = zeros(analysisSettings.finalTime + 1, 1)        ;
+glboalNodeReactionForces = 1                                  ;
 %
 % Run ONSAS 
 %
@@ -121,7 +123,8 @@ for windVelStep = 1:numLoadSteps - 1
     Cy(windVelStep) =  1/2 * rhoF * normWindVel^2 * (l)^3 *d / (E*Izz)                        ;
 
     % numeric drag 
-    FDragi = globalFDrag(windVelStep)                 ;
+    FReaction = globalReactionForces((windVelStep-1)*6 + 1: windVelStep*6)                 ;
+    FDragi = FReaction(3) ;
     FDRef  = 1/2 * rhoF * normWindVel^2 * C_d * d * l ;
     R(windVelStep) =  abs(FDragi)/(FDRef )            ;
 

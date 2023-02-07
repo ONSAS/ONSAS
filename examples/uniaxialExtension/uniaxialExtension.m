@@ -197,22 +197,6 @@ verifBoolean = ...
   && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ;
 %md
 %md
-
-otherParams.problemName = 'uniaxialExtension_NHC' ;
-materials.hyperElasModel = 'NHC' ;
-bulk = E / ( 3*(1-2*nu) ) ;
-materials.hyperElasParams = [ mu bulk ] ;
-
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-controlDispsValsCase4         = matUs(6*6+1,:) ;
-loadFactorNumericalValsCase4  = loadFactorsMat ;
-
-analyticFunc           = @(w) mu * (1 + w/Lx)    - mu * 1 ./ (1 + w/Lx).^2 + (mu^2)/bulk * (1 + w/Lx).^3 ;
-analyticValsCase5 = analyticFunc( controlDispsValsCase4 ) ;
-
-
-
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
@@ -220,14 +204,18 @@ figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase4, loadFactorNumericalValsCase4,  'c-^' , 'linewidth', lw,'markersize',ms )
-%plot( controlDispsValsCase4, analyticValsCase5,  'y-.' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/verifUniaxial.png','-dpng')
+title('uniaxial compression test')
+if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
+  print('output/verifUniaxial.png','-dpng')
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
+end
 %md
 %md```@raw html
-%md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/verifUniaxial.png" alt="plot check" width="500"/>
+%md<img src="../../assets/generated/verifUniaxial.png" alt="plot check" width="500"/>
 %md```

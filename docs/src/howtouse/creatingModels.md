@@ -68,18 +68,20 @@ cell structure with auxiliar params information, required for some element types
 
  The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
 
- ### `elements.elemTypeAero`
-The field  `elementTypeAero` should contain first, a vector with the three coordinates of the aerodynamic chord vector. The system of coordinates considered for this is the local reference system at the undeformed configuration. Second, the number of Gauss integration points $numGauss$ and finally $computeAeroBool$ (which computes the tangent matrix of the aerodynamic force vector) as follows:
+### `elements.elemTypeAero`
+
+If a frame aerodynamic analysis is desired, the  `elementTypeAero` field should contain a vector with: in the first three entries: three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration), then in the fourth entry: the number of Gauss integration points $numGauss$ and in the fifth entry a boolean $computeAeroBool$ which indicates if the aerodynamic stiffness matrix is computed:
 ```math
 [ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
 ```
- ### `elements.aeroCoefs`
 
-The `aeroCoefs`field is a column cell that sets the function names for the aerodynamic co-rotational frame element. The information is added into a cell of strings containing the drag, lift and torsional moment function names whose inputs are: (1) the relative angle of incidence and Reynolds number. If any of the coefficients is not considered then an empty `[]` should be added. The aeroCoefs field is:
+### `elements.aeroCoefs`
 
+If a frame aerodynamic analysis is desired, the `aeroCoefs` field must contain a column cell with the names of the functions (as strings) considered to compute the aerodynamic forces, as follows:
 ```math
-\{ 'dragCoefFunction'; 'liftCoefFunction'; 'momentCoefFunction' \} ;
+\{ `dragCoefFunction`; `liftCoefFunction`; `momentCoefFunction` \}
 ```
+Each function must recieve as arguments: first the relative angle of incidence and second the Reynolds number. If any of the coefficients is not considered then an empty `[]` can be used.
 
 ### `elements.elemCrossSecParams`
 

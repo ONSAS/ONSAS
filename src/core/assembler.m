@@ -142,7 +142,7 @@ for elem = 1:nElems
   % -----------   truss element   ------------------------------
   elseif strcmp( elemType, 'truss')
 
-    A  = crossSectionProps ( elemCrossSecParams, density ) ;
+    A  = crossSectionProps( elemCrossSecParams, density ) ;
     previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
 
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
@@ -207,16 +207,13 @@ for elem = 1:nElems
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      % extract boolean to compute aerodynamic displacements tangent matrix
-      aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
-
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
                                      elemCrossSecParams                   , ...
                                      u2ElemDisps( Ut       , dofselem )   , ...
                                      u2ElemDisps( Udott    , dofselem )   , ...
                                      u2ElemDisps( Udotdott , dofselem )   , ...
-                                     elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
-                                     analysisSettings, timeVar, elem, aeroTangBool ) ;
+                                     aeroCoefs,        elemTypeAero, ...
+                                     analysisSettings, timeVar, elem ) ;
     end
 
   % ---------  triangle solid element -----------------------------
@@ -276,13 +273,12 @@ for elem = 1:nElems
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
-    if aeroBool
+    if aeroBool && strcmp(elemType,'frame')
       Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
   end
 
   if tangBool
-
     for indRow = 1:length( dofselemRed )
 
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
@@ -290,7 +286,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && exist('aeroTangBool') && aeroTangBool
+      if aeroBool && strcmp(elemType,'frame') && elemTypeAero(5)
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
@@ -350,11 +346,13 @@ if fsBool
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
 
-
-  global globalFDrag
-  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0)
-    globalFDrag(timeVar) = sum(Faero(3:6:end)) ;
+  global globalReactionForces
+  global glboalNodeReactionForces
+  if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
+    dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
+    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
   end
+
 end
 
 

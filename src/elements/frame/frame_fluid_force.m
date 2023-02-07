@@ -16,21 +16,19 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-% This function computes the fluid loads within the quasi-steady theory for co-rotational dynamic frame elements proposed by Lee, Battini 2014
-function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords            ,...
-                                     elemCrossSecParams                       ,...
-                                     Ue, Udote, Udotdote                      ,...
-                                     aeroCoefs, elemTypeAero, analysisSettings,...
-                                     nextTime, currElem, hydroTangBoolU )
+% This function computes fluid forces as proposed in https://arxiv.org/abs/2204.10545
+function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , ...
+                                     elemCrossSecParams                       , ...
+                                     Ue, Udote, Udotdote                      , ...
+                                     aeroCoefs, elemTypeAero, analysisSettings, ...
+                                     nextTime, currElem )
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
   assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
   assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
 
-  % Declare booleans for VIV phenomenon
-  % set boolean to set constant lift direction in VIV problems
-  % set boolean to set unfirom u dot
+  % Declare booleans for VIV model
   global VIVBool
   global constantLiftDir
   global uniformUdot
@@ -108,12 +106,11 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   tl1 = logar( Rroof1 ) ; % Eq(31) J.-M. Battini 2002
   tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
 
-
   % auxiliary matrix created to project transversal velocity
-  L2 = [ 0 0 0
-         0 1 0
+  L2 = [ 0 0 0 ;
+         0 1 0 ;
          0 0 1 ] ;
-  % auxillary matrix created to rotate 90 degrees (this will define the lift force once the drag is computed)
+  % 90 degrees rotation matrix
   L3 = expon( [pi/2 0 0] ) ;
 
   % Extract points and weights for numGausspoints selected
@@ -124,19 +121,17 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 
     if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0
-      % extract the accelerations and the velocities of nodes in global coordinates
+      % extract accelerations and velocities (global coordinates) of the nodes
       % node 1
-      udotFrame1    = Udote( 1:2:6 )      ;
-      udotdotFrame1 = Udotdote( 1:2:6 )   ;
+      udotFrame1 = Udote( 1:2:6 )   ;   udotdotFrame1 = Udotdote( 1:2:6 )   ;
       % node 2
-      udotFrame2    = Udote( 7:2:end )    ;
-      udotdotFrame2 = Udotdote( 7:2:end ) ;
+      udotFrame2 = Udote( 7:2:end ) ;   udotdotFrame2 = Udotdote( 7:2:end ) ;
 
       % projected velocities at nodes 1 and 2 in deformed coordinates
-      %node 1
+      % node 1
       [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, udotFrame1,...
                                                                              Rroof1, Rr, L2, L3 ) ;
-      %node 2
+      % node 2
       [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, udotFrame2,...
                                                                              Rroof2, Rr, L2, L3 ) ;
 
@@ -170,14 +165,17 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
         tlift1 = cross(e1, udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
         tlift2 = cross(e1, udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
       end
-      % compute van der pol solution for current element
+
+      % computes van der pol solution for current element
       q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+
     else
       q = 0 ; % No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
     end
+
   else
     q = 2 ;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
@@ -212,19 +210,19 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
 
 
-  fHydroElem =  fDragLiftPitchElem + fAddedMassElem;
+  fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
-  tMatHydroElemU = [] ;
-  if hydroTangBoolU
+  if elemTypeAero(5)
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
                                     aeroCoefs, elemTypeAero          ,...
                                     analysisSettings, nextTime, currElem ) ;
+  else
+    tMatHydroElemU = [] ;
   end
-
   % -------------------------------
 
 
@@ -244,19 +242,19 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
   % numerical step to compute the tangets
-  h = 1e-10                  ;
+  h = 1e-10           ;
+  elemTypeAero(5) = 0 ; % set compute tangents to false
   for indexIncrementU = 1:12
-    e_i = zeros(12,1)        ;
-    e_i(indexIncrementU) = 1 ;
+    e_i = zeros(12,1) ;  e_i(indexIncrementU) = 1 ;
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;
-    % compute forces with u + hu at the index indexIncrementU
+    % compute forces with u + h*ei at the index indexIncrementU
     fhydro_incU = frame_fluid_force( elemCoords                                ,...
                                       elemCrossSecParams                        ,...
                                       UplusDeltaU, Udote, Udotdote              ,...
                                       aeroCoefs, elemTypeAero, analysisSettings ,...
-                                      nextTime, currElem, false ) ;
+                                      nextTime, currElem ) ;
     % central difference
-    dispTangMatElem(:,indexIncrementU) = ( fhydro_incU - fHydroElem ) / h ;
+    dispTangMatElem(:, indexIncrementU ) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor
 end % end function
