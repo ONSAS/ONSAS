@@ -19,6 +19,7 @@ test/aux.txt
 # editors and OSs
 *.DS_Store
 *.vscode
+*.asv
 octave-workspace
 
 # LaTeX outputs
