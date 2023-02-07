@@ -57,7 +57,7 @@ function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn)% at nod
     % WOM constants from Facchinetti et al
     A = 12; epsilon = 0.3; St = 0.2;
     % VdP oscillator constants
-    omegaf = 2*pi*St*vprelem/D; % Shedding pulsation
+    omegaf = 2*pi*St*vprelem/D;% Shedding pulsation
     cq = epsilon*omegaf;
     kq = omegaf^2;
     [t,qode] = ode45(@(t, q) funcvanderpol(t,q, cq, kq, ddYelem, D, A),t,[qn,dqn]);

@@ -69,6 +69,8 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % Calculate relative incidence angle in the deformed configuration
   if( norm( VpiRelG ) == 0 )
       td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+  elseif ~isempty( constantLiftDir ) && constantLiftDir 
+      td = [1 0 0]';
   else % the drag direction at a generic cross section in deformed coordinates is:
       td = VpiRelG / norm( VpiRelG ) ;
   end
@@ -109,7 +111,11 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % ------------ Compute drag, lift and pitch moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
+  if ~isempty( constantLiftDir ) && constantLiftDir 
+      fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) ^2 * td;
+  else
+      fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
+  end
   % lift cross section force vector in deformed coordinates
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 

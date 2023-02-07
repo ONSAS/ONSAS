@@ -33,7 +33,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   global constantLiftDir
   global uniformUdot
   global AMBool
-  global fluidFlowBool
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
 
@@ -168,13 +167,10 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       end
 
       % computes van der pol solution for current element
-      if ~isempty( fluidFlowBool ) && fluidFlowBool
-            q = WOMV4( udotFlowNode1, udotFlowNode2, udotdotFrame1, udotdotFrame2,...
+      q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-      else 
-          q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
-                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-      end
+     q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
+         tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
 
     else
       q = 0 ; % No lift with circular cross section!
