@@ -33,7 +33,7 @@ function fam = addedMassForce( AMBool                                   ,...
 
     % lumped add mass formlation:
     % circular cross section implementation
-    assert(elemCrossSecParams{1}(1:end) == 'circle')
+    assert(strcmp(elemCrossSecParams{1},'circle'))
     Ca            = 1          ;
     elementVolume = l0 * Aelem ;
     massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ;
