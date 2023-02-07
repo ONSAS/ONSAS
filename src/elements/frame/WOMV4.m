@@ -27,9 +27,7 @@ global qvect;
 n = uint16(tnp1/dt - 1); % Current time
 K = Kelem-1;
 if n == 0 % First call
-    qelem = (2*rand-1)*0.001;
-    % Initialize qvect 
-    qvect(1+K*2:2+K*2,1) = [qelem ; 0] ;  % qvect = [q0elem q1elem ...; dq0elem dq1elem ...;
+    qelem = qvect(1+K*2,1) ;  % qvect = [q0elem q1elem ...; dq0elem dq1elem ...;
 else
     vpr1 = norm(vprvect1);
     vpr2 = norm(vprvect2);
