@@ -119,9 +119,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
 
   % WOM computation call for cases with VIVbool equal to true
-  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
-
-    if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0
+  if ~isempty( VIVBool ) 
+    if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0 % VIV with non null flow
       % extract accelerations and velocities (global coordinates) of the nodes
       % node 1
       udotFrame1 = Udote( 1:2:6 )   ;   udotdotFrame1 = Udotdote( 1:2:6 )   ;
@@ -145,10 +144,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       VpiRelPerp2 =  Rr * Rroof2 * VpiRelPerp2_defCords  ;
 
       % directions of lift forces
-      if ~constantLiftDir
-        tlift1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
-        tlift2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
-      else
+
+      if  ~isempty( constantLiftDir ) && constantLiftDir 
         % Compute fluid mean velocity at the nodes on the initial configuration
         % find the first veloctiy direction unitll is not null
         t0 = 0; timeStepNotNullVel = 0;
@@ -165,12 +162,23 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
         % Transform axial vector in the initial configuration to global cooridantes
         tlift1 = cross(e1, udotFlowNode10 ) / norm( cross(e1,udotFlowNode10) ) ;
         tlift2 = cross(e1, udotFlowNode20 ) / norm( cross(e1,udotFlowNode20) ) ;
+      else 
+        tlift1 = VpiRelPerp1 / norm( VpiRelPerp1 ) ;
+        tlift2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
       end
 
       % computes van der pol solution for current element
       if ~isempty( fluidFlowBool ) && fluidFlowBool
-            q = WOMV4( udotFlowNode1, udotFlowNode2, udotdotFrame1, udotdotFrame2,...
-                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+          % node 1
+          [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
+                                                                                 Rroof1, Rr, L2, L3 ) ;
+          % node 2
+          [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
+                                                                                 Rroof2, Rr, L2, L3 ) ;
+          VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
+          VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
+          q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
+                     tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
       else 
           q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
