@@ -18,6 +18,8 @@
 %md\qquad
 %md\textbf{E} = \frac{1}{2}(\textbf{C} - \textbf{I}) = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix}
 %md\right]
+%md 
+%md where $\alpha = (1+u_x/L_x)$ and $\beta = (1+u_y/L_y)$, with $u_x$ and $u_y$ the linear displacements at $\textbf{X}=(L_x,L_y,L_z=L_y)$.
 %md```
 %mdThe neo-Hookean elastic strain energy potential $\Psi$ is given by:
 %md```math
@@ -147,7 +149,7 @@ loadFactorsCase1 = loadFactorsMat ;
 %md
 %md### Analytic solution computation
 %md
-%md The numerical values of $\beta$ and $\alpha$ for each load step can be computed using the displacements $u_x$ and $u_y$ at node $(L_x,L_y,L_z)$ and the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$.
+%md The numerical values of $\beta$ and $\alpha$ for each load step are:
 alphas       = (Lx + matUs(6*6+1,:)) / Lx ;
 betas        = (Ly + matUs(6*6+3,:)) / Ly ;
 %md and the corresponding analytic nominal tension is obtained 
