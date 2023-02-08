@@ -24,7 +24,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             l0, tl1, tl2, Rr                                          ,...
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
-                                            VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2 )
+                                            VIVBool, q, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool)
 
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
@@ -59,6 +59,11 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
 
   % Relative, perpendicular and projected  flow velocity of the cross section to compute drag lift and moment:
+  if ~isempty( fluidFlowBool ) && fluidFlowBool
+    % node 1
+    [VpiRelGflow, VpiRelGperpflow, VrelGflow] = computeVpiRels( udotFlowG, [0 0 0]', Rroofx, Rr, L2, L3 ) ;
+  end
+  % Computes the projected flow velocity (Vprel without the cross section motion)
   [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
   %-----------------------------------------------------------------
 
@@ -69,8 +74,6 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % Calculate relative incidence angle in the deformed configuration
   if( norm( VpiRelG ) == 0 )
       td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
-  elseif ~isempty( constantLiftDir ) && constantLiftDir 
-      td = [1 0 0]';
   else % the drag direction at a generic cross section in deformed coordinates is:
       td = VpiRelG / norm( VpiRelG ) ;
   end
@@ -111,11 +114,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % ------------ Compute drag, lift and pitch moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  if ~isempty( constantLiftDir ) && constantLiftDir 
-      fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) ^2 * td;
-  else
-      fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
-  end
+  fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
   % lift cross section force vector in deformed coordinates
   if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
 
@@ -125,8 +124,12 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
       % transform the lift direction into deformed coordinates to re use the Eq in line 330
       tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;
       % compute the lift force in deformed coordinates
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
-    else % lift direction is variable
+      if ~isempty( fluidFlowBool ) && fluidFlowBool
+        fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow )^2 * tlift_defCoords ;
+      else
+        fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
+      end
+          else % lift direction is variable
       fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
     end
 
