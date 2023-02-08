@@ -42,7 +42,7 @@
 %md```math
 %mdP_{yy}( \mu,K ) =
 %md \beta \left( 
-%md    \mu -  \frac{\mu}{\beta^2} + \frac{K} (\alpha^2\beta^2 - \alpha) 
+%md    \mu -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 - \alpha) 
 %md \right) = 0
 %md```
 %md
