@@ -18,9 +18,9 @@
 %md\qquad
 %md\textbf{E} = \frac{1}{2}(\textbf{C} - \textbf{I}) = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix}
 %md\right]
-%md 
-%md where $\alpha = (1+u_x/L_x)$ and $\beta = (1+u_y/L_y)$, with $u_x$ and $u_y$ the linear displacements at $\textbf{X}=(L_x,L_y,L_z=L_y)$.
 %md```
+%md where $\alpha = (1+u_x/L_x)$ and $\beta = (1+u_y/L_y)$, with $u_x$ and $u_y$ the linear displacements at $X=(L_x,L_y,L_z=L_y)$.
+%md
 %mdThe neo-Hookean elastic strain energy potential $\Psi$ is given by:
 %md```math
 %md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -ln(J)) + K ( J^2 -1 )
