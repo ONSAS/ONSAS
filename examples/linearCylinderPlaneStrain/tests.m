@@ -41,7 +41,7 @@ De = E * (1-nu) / ( (1+nu)*(1-2*nu) ) * ...
 %~ strain= [47.375   39.933  -10.014]
 						 
 
-%%
+%~ %%
 strain=[
   -0.0105703
    0.0216760
@@ -83,9 +83,52 @@ dev_st = 2*G*DevStrainVec
 %~ hyd = trace(aa)/2*eye(2)
 %~ dev = aa - hyd
 
-Is = eye(3) ;
+Is = eye(3)*0.5 ;
 Is(3,3) = 1/2 ;
 
-Id = Is - 1/3*Is*trace(Is) ;
+Is(1,2) = 1/3 ;
+Is(2,1) = 1/3 ;
 
-De2 = 2*G*Id + K*eye(3) ;
+IxI = eye(3) ;
+IxI(3,3)=0 ;
+
+IxI(1,2) = 1/3 ;
+IxI(2,1) = 1/3 ;
+
+
+Id = Is - 1/3*IxI ;
+Id = Is  ;
+
+De2 = 2*G*Id + K*IxI ;
+
+
+
+
+
+K = E/(3*(1-2*nu))
+
+Is = [ 1, 0, 0 ; ...
+			 0,	1, 0 ; ...
+			 0,	0,	0.5 ] ;
+			 
+Identity = [1, 1, 0]
+			 
+
+aux = zeros(3,3) ;
+
+for i = 1:3
+	for j=1:3
+		aux(i,j) = Is(i,j) - 1/3*Identity(i)*Identity(j) ;
+	end
+end
+
+IoI = zeros(3,3)
+
+for i = 1:3
+	for j=1:3
+		IoI(i,j) = Identity(i)*Identity(j) ;
+	end
+end
+
+
+

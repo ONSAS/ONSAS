@@ -102,9 +102,9 @@ size(Conec,1)
 %md The Newton-Raphson method is employed to solve 2 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30      ;
-analysisSettings.stopTolDeltau = 1.0e-12 ;
-analysisSettings.stopTolForces = 1.0e-12 ;
-analysisSettings.finalTime     = 5       ;
+analysisSettings.stopTolDeltau = 1.0e-8 ;
+analysisSettings.stopTolForces = 1.0e-6 ;
+analysisSettings.finalTime     = 17       ;
 analysisSettings.deltaT        = 1      ;
 %md
 %md### Output parameters
@@ -118,40 +118,42 @@ otherParams.plotsFormat = 'vtk' ;
 %md## Verification
 %mdThe numerical and analytic solutions are compared at the final load step for the internal and external surface (since all the elements on the same surface have the same analytic solution):
 % radial displacement surface analytic solution
-Y = sigmaY0 / sqrt(3) ;
+global Y = 2*sigmaY0 / sqrt(3) ;
 
 p0 = Y/2 * (1-Ri^2/Re^2) ; % Yielding pressure
 
+global a = Ri
+global b = Re
 
 pressure_vals = (0:analysisSettings.deltaT:analysisSettings.finalTime)*p ;
 cvals = zeros(length(pressure_vals),1) ;
-
 ubAna = zeros(length(pressure_vals),1) ;
 
 % Implicit function
+function val = c_val(c,p,Y,a,b)
 
-f1 = @(p, Y, Ri, Re, c) p/Y-( log(c/Ri)+1/2*(1 - c^2/Re^2) ) ;
-f2 = @(c) f1(p, Y, Ri, Re, c)
-%~ f = @(c) p / Y - ( log(c/Ri) + 1/2 * (1 - c^2/Re^2) ) ;
-
-
-%~ function [c] plastic_front(p, Y, Ri, Re, c)
-	%~ val = p / Y - ( log(c/Ri) + 1/2 * (1 - c^2/Re^2) ) ;
-%~ end 
+	val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
+	
+end
 
 for i = 1:length(cvals)
 	p = pressure_vals(i)
-	val = fzero(f2, Ri) ;
+	if i == 1  
+		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
+	else
+		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
+	end
+	c_val(val,p,Y,a,b)
 	cvals(i) = val ;
 end
 
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
 	if p < p0
-		ubAna(i) = 2*p*Re / ( E*( Re^2/Ri^2-1 ) ) * (1-nu^2) ;
+		ubAna(i) = 2*p*b / ( E*( b^2/a^2-1 ) ) * (1-nu^2) ;
 	else
 		c = cvals(i) ;
-		ubAna(i) = Y*c^2/(E*Re) * (1-nu^2) ;
+		ubAna(i) = Y*c^2/(E*b) * (1-nu^2) ;
 	end	
 end
 

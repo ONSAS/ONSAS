@@ -65,10 +65,15 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		%~ size(stress_n)
 		
 	elseif strcmp( hyperElasModel, 'isotropicHardening') 
+		
+		G = E/(2*(1+nu)) 					; % Shear modulus
+		%~ K = E/(3*(1-2*nu)) + G/3 	; % Bulk modulus
+		K = E/(3*(1-2*nu)) 	; % Bulk modulus
+		
 		% Previous vals
 		stress_n           = previous_state{1,:}  ;
 		strain_n           = previous_state{2,:}  ;
-		acum_plas_strain_n =  previous_state{3} ;
+		acum_plas_strain_n =  previous_state{3} 	;
 		
 		% Isotropic Hardening variables
 		%~ H       = elemConstitutiveParams(4) ;
@@ -79,72 +84,88 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		stress_tr = stress_n + (De * (strain - strain_n'))' ; % Eq 7.81 
 		sigma_Y_tr = sigma_Y_0 + H*acum_plas_strain_n ; % Eq 7.83
 		
-		%~ s_tr = stress_tr - 1/3*trace(stress_tr)*eye(3) ; % deviator tensor
-		s_tr = stress_tr - 1/2*sum(stress_tr(1:2))*[1,1,0] ; % deviator tensor as a vector
 		
-		J2_tr = 1/2 * norm(s_tr)^2 ; % Invariant J2
+		% Hydrostatic stress
+		p = 1/3*sum(stress_tr(1:2)) ;
+		% Deviatoric stress
+		s_tr = stress_tr - p*[1,1,0] ;
 		
-		phi_tr = sqrt(3*J2_tr) - sigma_Y_tr ; % Trial
+		% J2 invariant
+		norm_str = sqrt(s_tr(1)*s_tr(1) + s_tr(2)*s_tr(2) + 2*s_tr(3)*s_tr(3) ) ;
+		%~ J2_tr = 1/2 * norm(s_tr)^2 ; % Invariant J2
+		J2_tr = 1/2 * norm_str^2 ; % Invariant J2
 		
+		% Yielding function
+		q_tr = sqrt(3*J2_tr) ;
+		phi_tr = q_tr - sigma_Y_tr ; % Trial
 		
-		%%%%
-		G = E/(2*(1+nu)) ; % Shear modulus
-		K = E/(3*(1-2*nu)) + G/3 ; % Bulk modulus
+		% Trial strain
+		%~ strain_e_tr = De\stress_tr' 
+		strain_e_tr = De\stress_n' + (strain-strain_n') ; % Eq 7.92 
 		
-		strain_e_tr = De\stress_tr' ;
-		%~ strain_e_tr2 = De\stress'  
-		strain;
-		
-		%~ De\ stress_tr' 
-		%~ De\ De*strain 
-		%~ strain
-		
-		strain_e_v_tr = 1/2*sum(strain_e_tr(1:2))*[1;1;0]; % volumetric component
+
+
+		% Volumetric and deviatoric split 
+		strain_e_v_tr = 1/3*sum(strain_e_tr(1:2))*[1;1;0] ; % volumetric component
 		strain_e_d_tr = strain_e_tr - strain_e_v_tr; % deviatoric component
-		
-		
-		st_hyd = sum(strain_e_v_tr) * K * [1;1;0];
 		strain_e_d_tr(3) = strain_e_d_tr(3)/2 ;
 		
-		st_dev = 2*G*strain_e_d_tr;
+		% Volumetric and deviatoric stress
+		st_hyd = sum(strain_e_v_tr) * K * [1;1;0] ;
+		st_dev = 2*G*strain_e_d_tr ;
 		
-		stress_tr;
-		st_hyd+st_dev;
-		
-		s_tr2 = 2*G*strain_e_d_tr ;
-		
-		s_tr;
-		s_tr2;
-		
-		%~ phi_tr2 = sqrt(3/2) * 2 * G * norm ( strain_e_d_tr ) - sigma_Y_tr
-		%~ phi_tr
-		
-		q_tr = sqrt(3/2) * 2 * G * norm ( strain_e_d_tr ) ;
+		%~ q_tr = sqrt(3/2) * 2 * G * norm ( strain_e_d_tr ) ; % revisar dividido 2. pag 251 de libro 
 		
 		if phi_tr < 0 % elastic behavior
 
-			stress           	= stress_tr ;
-			dstressdeps       					= De ;
+			stress           	= stress_tr' ;
+			dstressdeps       = De ;
 			acum_plas_strain 	= acum_plas_strain_n ; 
 			
 		else % elasto-plastic behavior phi_tr == 0
-
-			%~ strain_e_d_tr = stress_tr \ De ; %%%% no del todo seguro
-			%~ s_tr = 2*G*strain_e_d_tr ;
 			
-			delta_gamma = phi_tr / ( 3*G + H ) ; % 
-			
+			delta_gamma = phi_tr / ( 3*G + H ) ; % 			
 			
 			Nhat = strain_e_d_tr / norm(strain_e_d_tr) ;
 			
-			Is = eye(3) ;
-			Is(3) = 1/2 ;
 			
-			Id = Is - 1/3*eye(3) ;
+			%~ Id = eye(3)*0.5 ;
+			%~ Id(1,2) = 1/3 ;
+			%~ Id(2,1) = 1/3 ;
 			
-			stress           = ( De - delta_gamma*6*G^2 / q_tr * Id ) * strain ;
 			
-			dstressdeps      = 2*G*( 1 - delta_gamma*3*G/q_tr ) * Id + 6*G^2*( delta_gamma/q_tr - 1/(3*G+H) ) * kron( Nhat, Nhat') + K * eye(3) ;
+			%~ IxI = eye(3) ;
+			%~ IxI(3,3)=0 ;
+
+			%~ IxI(1,2) = 1/3 ;
+			%~ IxI(2,1) = 1/3 ;
+			
+			
+			
+			Id = eye(3)*2/3 ;
+			Id(1,2) = -1/3 ;
+			Id(2,1) = -1/3 ;
+			Id(3,3) =  0.5 ;
+
+			IxI = eye(3) ;
+			IxI(3,3) = 0 ;
+			IxI(1,2) = 1 ;
+			IxI(2,1) = 1 ;
+			
+			stress           = ( De - delta_gamma*6*G^2 / q_tr * Id ) * strain_e_tr ; % eq 7.93
+
+			%~ dstressdeps      = 2*G*( 1 - delta_gamma*3*G/q_tr ) * Id + 6*G^2*( delta_gamma/q_tr - 1/(3*G+H) ) * kron( Nhat, Nhat') + K * IxI  % Eq 7.120
+			%~ dstressdeps = zeros(3,3) ;
+			%~ for i = 1: 3
+				%~ for j =1:3
+					%~ dstressdeps(i,j) = 2*G*( 1 - delta_gamma*3*G/q_tr ) * Id(i,j) + 6*G^2*( delta_gamma/q_tr - 1/(3*G+H) ) * s_tr(i)*s_tr(j) / norm(s_tr) + K * IxI(i,j) ;
+				%~ end
+			%~ end
+			
+			%~ dstressdeps      = 2*G*( 1 - delta_gamma*3*G/q_tr ) * Id + 6*G^2*( delta_gamma/q_tr - 1/(3*G+H) ) * (s_tr'*s_tr) / (norm(s_tr)^2) + K * IxI ; % Eq 7.120
+			dstressdeps      = 2*G*( 1 - delta_gamma*3*G/q_tr ) * Id + 6*G^2*( delta_gamma/q_tr - 1/(3*G+H) ) * (s_tr'*s_tr) / (norm_str^2) + K * IxI ; % Eq 7.120
+					
+					
 			
 			acum_plas_strain = acum_plas_strain_n + delta_gamma ; 
 
@@ -157,7 +178,10 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 	% Compute Tangent Stiffness Matrix
 	KTe = B' * dstressdeps * B * A * t ;
 	% Internal force
-	Finte = KTe * elemDisps ;
+	
+	%~ Finte = KTe * elemDisps 
+
+	Finte = B' * stress * A * t ;
 
 	%md### compute inertial loads and mass matrix
 	Mmase = density*A/3.0 * speye(9,9);
