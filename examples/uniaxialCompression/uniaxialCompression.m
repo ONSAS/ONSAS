@@ -21,7 +21,7 @@
 %md```
 %mdThe neo-Hookean elastic strain energy potential $\Psi$ is given by:
 %md```math
-%md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -3) + K ( J^2 -1 )
+%md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -ln(J)) + K ( J^2 -1 )
 %md```
 %mdwhere $I_1 = \mathrm{tr}(\mathbf{C})$ is the first invariant, $J = \sqrt{\det(\mathbf{C})}$ and $K$ and $\mu$ are the bulk and shear material parameters, respectively.
 %md
@@ -29,13 +29,18 @@
 %md```math
 %md\textbf{S}( \mathbf{C} ) = \mu (\textbf{I} - \mathbf{C}^{-1}) + K (J(J-1)\mathbf{C}^{-1}) 
 %md```
-%mdthen, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{xx}$ nominal stress component is obtained and equaled to the applied compression:
+%mdthen, on the one hand, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{xx}$ nominal stress component is obtained and equaled to the applied compression:
 %md```math
 %mdP_{xx}( \mu,K ) =
 %md \alpha \left( 
 %md    \mu -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
 %md \right) = - p
 %md```
+%md and on the other hand, the $P_{yy}$ and $P_{zz}$ components are obtained and equaled to zero:
+%mdP_{yy}( \mu,K ) =
+%md \beta \left( 
+%md    \mu -  \frac{\mu}{\beta^2} + \frac{K} (\alpha^2\beta^2 - \alpha) 
+%md \right) = 0
 %md
 %md## Numerical solution
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
@@ -43,7 +48,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 40 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
 %md### MEBI parameters
@@ -130,6 +135,7 @@ analysisSettings.deltaT        = .1     ;
 %md
 %md### Output parameters
 otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
+otherParams.plots_format = 'vtk' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
@@ -145,18 +151,21 @@ loadFactorsCase1 = loadFactorsMat ;
 alphas       = (Lx + matUs(6*6+1,:)) / Lx ;
 betas        = (Ly + matUs(6*6+3,:)) / Ly ;
 %md and the corresponding analytic nominal tension is obtained 
-analyticFunc = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
-analyticVals = analyticFunc( alphas, betas ) ;
+analyticFuncPxx = @(alphas,betas) mu * alphas - mu * 1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
+analyticFuncPyy = @(alphas,betas) betas .* mu  - mu * 1./betas + bulk * betas .* ( alphas.^2 .* betas.^2 - alphas) ;
+analyticPxx = analyticFuncPxx( alphas, betas ) ;
+analyticPyy = analyticFuncPyy( alphas, betas ) ;
 %mdThe error and the verif boolean are computed 
-aux1 = loadFactorsCase1' - analyticVals ;
-verifBoolean = ( norm( aux1 ) / norm( analyticVals ) < 1e-6 )
+aux1 = loadFactorsCase1' - analyticPxx ;
+tolerance = 1e-6 ;
+verifBoolean = ( norm( aux1 ) / norm( analyticPxx ) < 1e-6 ) && ( norm( analyticPyy ) < tolerance ) ;
 %md
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase1, analyticVals,  'g-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, analyticPxx,  'g-s' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Numeric', 'Analytic' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
