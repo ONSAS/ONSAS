@@ -39,10 +39,12 @@
 %md \right) = - p
 %md```
 %md and on the other hand, the $P_{yy}$ and $P_{zz}$ components are obtained and equaled to zero:
+%md```math
 %mdP_{yy}( \mu,K ) =
 %md \beta \left( 
 %md    \mu -  \frac{\mu}{\beta^2} + \frac{K} (\alpha^2\beta^2 - \alpha) 
 %md \right) = 0
+%md```
 %md
 %md## Numerical solution
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
@@ -50,7 +52,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 40 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 4 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
 %md### MEBI parameters
