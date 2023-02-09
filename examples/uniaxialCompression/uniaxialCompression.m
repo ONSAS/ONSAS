@@ -2,7 +2,7 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
 %md
-%mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. The compression $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
+%mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. A nominal compression tension $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
 %md
 %md```@raw html
 %md<img src="../../assets/uniaxialCompression/diagramSolidUniaxialCompression.svg" alt="structure diagram" width="500"/>
@@ -19,9 +19,11 @@
 %md\textbf{E} = \frac{1}{2}(\textbf{C} - \textbf{I}) = \left[  \begin{matrix} \frac{1}{2} \left(\alpha^2 -1\right) & 0 & 0 \\ 0 &  \frac{1}{2} \left(\beta^2 -1\right) & 0 \\ 0 & 0 &  \frac{1}{2} \left(\beta^2 -1\right) \end{matrix}
 %md\right]
 %md```
+%md where $\alpha = (1+u_x/L_x)$ and $\beta = (1+u_y/L_y)$, with $u_x$ and $u_y$ the linear displacements at $X=(L_x,L_y,L_z=L_y)$.
+%md
 %mdThe neo-Hookean elastic strain energy potential $\Psi$ is given by:
 %md```math
-%md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -3) + K ( J^2 -1 )
+%md\Psi(\mathbf{C=\textbf{F}^T\textbf{F}}) = \frac{\mu}{2}(I_1 -2ln(J)) + \frac{K}{2} ( J -1 )^2
 %md```
 %mdwhere $I_1 = \mathrm{tr}(\mathbf{C})$ is the first invariant, $J = \sqrt{\det(\mathbf{C})}$ and $K$ and $\mu$ are the bulk and shear material parameters, respectively.
 %md
@@ -29,12 +31,19 @@
 %md```math
 %md\textbf{S}( \mathbf{C} ) = \mu (\textbf{I} - \mathbf{C}^{-1}) + K (J(J-1)\mathbf{C}^{-1}) 
 %md```
-%mdthen, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{xx}$ nominal stress component is obtained and equaled to the applied compression:
+%mdthen, on the one hand, using the relation $\textbf{P}=\textbf{F}\textbf{S}$, the $P_{xx}$ nominal stress component is obtained and equaled to the applied compression:
 %md```math
 %mdP_{xx}( \mu,K ) =
 %md \alpha \left( 
 %md    \mu -  \frac{\mu}{\alpha^2} + \frac{K\beta^2}{\alpha} (\beta^2 \alpha -1) 
 %md \right) = - p
+%md```
+%md and on the other hand, the $P_{yy}$ and $P_{zz}$ components are obtained and equaled to zero:
+%md```math
+%mdP_{yy}( \mu,K ) =
+%md \beta \left( 
+%md    \mu -  \frac{\mu}{\beta^2} + K (\alpha^2\beta^2 - \alpha) 
+%md \right) = 0
 %md```
 %md
 %md## Numerical solution
@@ -130,6 +139,7 @@ analysisSettings.deltaT        = .1     ;
 %md
 %md### Output parameters
 otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
+otherParams.plots_format = 'vtk' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
@@ -141,22 +151,25 @@ loadFactorsCase1 = loadFactorsMat ;
 %md
 %md### Analytic solution computation
 %md
-%md The numerical values of $\beta$ and $\alpha$ for each load step can be computed using the displacements $u_x$ and $u_y$ at node $(L_x,L_y,L_z)$ and the stretch definitions $\alpha = (1+u_x/Lx)$ and $\beta = (1+u_y/Ly)$.
+%md The numerical values of $\beta$ and $\alpha$ for each load step are:
 alphas       = (Lx + matUs(6*6+1,:)) / Lx ;
 betas        = (Ly + matUs(6*6+3,:)) / Ly ;
 %md and the corresponding analytic nominal tension is obtained 
-analyticFunc = @(alphas,betas) mu * alphas - mu*1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
-analyticVals = analyticFunc( alphas, betas ) ;
+analyticFuncPxx = @(alphas,betas) mu * alphas - mu * 1./alphas + bulk * betas.^2 .* ( alphas .* betas.^2 -1) ;
+analyticFuncPyy = @(alphas,betas) betas .* mu  - mu * 1./betas + bulk * betas .* ( alphas.^2 .* betas.^2 - alphas) ;
+analyticPxx = analyticFuncPxx( alphas, betas ) ;
+analyticPyy = analyticFuncPyy( alphas, betas ) ;
 %mdThe error and the verif boolean are computed 
-aux1 = loadFactorsCase1' - analyticVals ;
-verifBoolean = ( norm( aux1 ) / norm( analyticVals ) < 1e-6 )
+aux1 = loadFactorsCase1' - analyticPxx ;
+tolerance = 1e-6 ;
+verifBoolean = ( norm( aux1 ) / norm( analyticPxx ) < 1e-6 ) && ( norm( analyticPyy ) < tolerance ) ;
 %md
 %md## Plot
 %mdThe numerical and analytic solutions are plotted.
 lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure, hold on, grid on
 plot( controlDispsValsCase1, loadFactorsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase1, analyticVals,  'g-s' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsValsCase1, analyticPxx,  'g-s' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Numeric', 'Analytic' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
