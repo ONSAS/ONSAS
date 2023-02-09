@@ -52,7 +52,7 @@ clear all, close all
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
-E = 4 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
 %md### MEBI parameters
