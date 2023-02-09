@@ -2,7 +2,7 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
 %md
-%mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. The compression $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
+%mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. A nominal compression tension $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
 %md
 %md```@raw html
 %md<img src="../../assets/uniaxialCompression/diagramSolidUniaxialCompression.svg" alt="structure diagram" width="500"/>
