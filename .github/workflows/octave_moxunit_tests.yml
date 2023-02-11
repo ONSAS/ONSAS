@@ -28,7 +28,7 @@ jobs:
                examples/beamLinearVibration |
                examples/cantileverModalAnalysis |
                examples/cantileverSelfWeight |
-               examples/dragReconfigurationBeam |
+               examples/dragBeamReconfiguration |
                examples/eulerColumn |
                examples/frameLinearAnalysis | 
                examples/linearAerodynamics |
@@ -39,5 +39,6 @@ jobs:
                examples/staticVonMisesTruss | 
                examples/uniaxialCompression | 
                examples/uniaxialExtension | 
-               examples/uniformCurvatureCantilever | examples/VIVCantilever
+               examples/uniformCurvatureCantilever |
+               examples/VIVCantilever
           tests: ./test/runTestProblems_moxunit_disp.m
