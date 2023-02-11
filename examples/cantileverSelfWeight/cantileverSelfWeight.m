@@ -30,7 +30,7 @@ boundaryConds(1).imposDispVals = [0 0 0] ;
 %md
 %md#### initialConds
 %md since no initial non-homogeneous initial conditions are used, an empty struct is used .
-initialConds = struct();
+initialConds = struct() ;
 %md
 %md### Mesh
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_cantileverSelfWeight.msh' ) ;

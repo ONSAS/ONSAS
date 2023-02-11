@@ -137,20 +137,19 @@ vector with the local degrees of freedom of the node with springs (integers from
 ### `boundaryConds.springVals`
 vector with the values of the springs stiffnesses.
 
-## The `initialConds` struct
+## The `initialConds` cell
 
-It initial conditions are homogeneous, then an empty struct should be defined `initialConds = struct() ;`. Otherwise the fields to set are:
+If initial conditions are homogeneous, then an empty struct should be defined `initialConds = struct() ;`. Otherwise the fields that can be set are:
 
-### `initialConds.nonHomogeneousUDofs`
-cell with vectors of the local degrees of freedom initially imposed for displacements (integers from 1 to 6)
-### `initialConds.nonHomogeneousUVals`
-cell with vectors defining the displacement values for each initial condition linked to `nonHomogeneousUDofs` definition.
+### `initialConds.U`
+vector of the displacements at time 0.
 
-### `initialConds.nonHomogeneousUdotDofs`
-cell with vectors of the local degrees of freedom initially imposed for velocities (integers from 1 to 6) `initialConds.nonHomogeneousUVals`
+### `initialConds.Udot`
+vector of the velocities  at time 0.
 
-### `initialConds.nonHomogeneousUdotVals`
-cell with vectors defining the velocity values for each initial condition linked to `nonHomogeneousUdotDofs` definition.
+### `initialConds.Udotdot`
+vector of the accellerations at time 0.
+
 
 ## The `mesh` struct
 

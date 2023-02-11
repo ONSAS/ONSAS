@@ -58,8 +58,8 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
 %md
 %md
 %md### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                = struct() ;
+%md homogeneous initial conditions are considered, then an empty cell is set:
+initialConds = {} ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
