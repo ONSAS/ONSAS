@@ -17,24 +17,24 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 
-function [ U, Udot, Udotdot ] = initialCondsProcessing( mesh, initialConds, elements )
+function [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes )
 
-  % Extract mesh parameters
-  Conec  = myCell2Mat( mesh.conecCell ) ;
-  Nodes  = mesh.nodesCoords ;
-  nNodes = size( Nodes,1) ;
-
-  % Create kinematic vectors
-  U       = zeros( 6*nNodes, 1 ) ;
-  Udot    = zeros( 6*nNodes, 1 ) ;
-  Udotdot = zeros( 6*nNodes, 1 ) ;
-
-  if length( initialConds ) >0 && ~isempty( initialConds{1})
-    U = initialConds{1};
+  if isfield( initialConds, 'U' )
+    U = initialConds.U;
+  else
+    U = zeros( 6*nNodes, 1 ) ;
   end
-  if length( initialConds ) >0 && ~isempty( initialConds{2})
-    Udot    = initialConds{2} ;
-    Udotdot = initialConds{3} ;
+
+  if isfield( initialConds, 'Udot' )
+    U = initialConds.Udot;
+  else
+    Udot = zeros( 6*nNodes, 1 ) ;
+  end
+
+  if isfield( initialConds, 'Udotdot' )
+    U = initialConds.Udotdot;
+  else
+    Udotdot = zeros( 6*nNodes, 1 ) ;
   end
 
   % % displacements initial conditions
