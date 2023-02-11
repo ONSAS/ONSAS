@@ -19,22 +19,20 @@
 
 function [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes )
 
+  U       = zeros( 6*nNodes, 1 ) ;
+  Udot    = zeros( 6*nNodes, 1 ) ;
+  Udotdot = zeros( 6*nNodes, 1 ) ;
+
   if isfield( initialConds, 'U' )
-    U = initialConds.U;
-  else
-    U = zeros( 6*nNodes, 1 ) ;
+    U = initialConds.U ;
   end
 
   if isfield( initialConds, 'Udot' )
-    U = initialConds.Udot;
-  else
-    Udot = zeros( 6*nNodes, 1 ) ;
+    Udot = initialConds.Udot ;
   end
 
   if isfield( initialConds, 'Udotdot' )
-    U = initialConds.Udotdot;
-  else
-    Udotdot = zeros( 6*nNodes, 1 ) ;
+    Udotdot = initialConds.Udotdot;
   end
 
   % % displacements initial conditions

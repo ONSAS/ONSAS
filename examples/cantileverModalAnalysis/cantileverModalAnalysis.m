@@ -67,8 +67,8 @@ otherParams.problemName = 'cantilever_modal_analysis';
 %md
 
 %%
-addpath('./output');
-filename = './output/matrices.mat';
+%addpath('./output');
+filename = 'matrices.mat';
 load(filename);
 
 KTred = KT( neumdofs, neumdofs ) ;
@@ -105,6 +105,4 @@ for mode = modes
   legend('ONSAS','analytical')
 end
 
-modes_errors
-
-verifBoolean = ( modes_errors(1) < 1e-3 )  &&  ( modes_errors(2) < 1e-3 )
+verifBoolean = ( modes_errors(1) < 1e-3 )  &&  ( modes_errors(2) < 1e-3 ) ;

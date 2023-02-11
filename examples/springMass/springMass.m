@@ -107,10 +107,10 @@ boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ]            ;
 %md
 %md#### Initial conditions
 %md Initial displacement and velocity are set:
-initialConds(1).nonHomogeneousUDofs    = 1   ;
-initialConds(1).nonHomogeneousUVals    = u0  ;
-initialConds(1).nonHomogeneousUdotDofs = 1   ;
-initialConds(1).nonHomogeneousUdotVals = du0 ;
+aux = zeros(6*2,1) ;  aux(7) = u0 ;
+initialConds.U = aux ;
+aux(7) = du0 ;
+initialConds.Udot = aux ; 
 %md
 %md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
@@ -205,11 +205,10 @@ boundaryConds(2).loadsCoordSys = 'global'                  ;
 boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )        ;
 boundaryConds(2).loadsBaseVals = [0 0 1 0 0 0 ] ; %along Y axis
 %md An initial displacements $u_0$ is set in $y$ direction:
-initialConds = {} ;
-initialConds(1).nonHomogeneousUDofs    = 3   ; 
-initialConds(1).nonHomogeneousUVals    = u0  ;
-initialConds(1).nonHomogeneousUdotDofs = 3   ;
-initialConds(1).nonHomogeneousUdotVals = du0 ;
+aux = zeros(6*2,1) ;  aux(6+3) = u0 ;
+initialConds.U = aux ;
+aux(6+3) = du0 ;
+initialConds.Udot = aux ; 
 %md
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
