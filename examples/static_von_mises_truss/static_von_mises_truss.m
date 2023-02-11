@@ -67,8 +67,8 @@ boundaryConds(2).loadsTimeFact = @(t) 3.0e8*t     ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 %md
 %md#### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                = struct() ;
+%md homogeneous initial conditions are considered, then an empty cell is set:
+initialConds = {} ;
 %md
 %md### mesh parameters
 %md
