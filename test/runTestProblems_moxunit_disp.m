@@ -8,14 +8,12 @@ function test_suite=runTestProblems_moxunit_disp
   end
   initTestSuite;
 
-
-
 function test_1
   beamLinearVibration
   assertEqual( verifBoolean, true );
 
 function test_2
-	cantilever_ModalAnalysis
+	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
 
 function test_3
@@ -74,5 +72,5 @@ function test_16
   VIVCantilever
   assertEqual( verifBoolean, true );
 
-function test_18
+function test_17
   assertEqual( gaussIntegrationTest, true);
