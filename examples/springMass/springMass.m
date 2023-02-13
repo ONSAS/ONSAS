@@ -107,10 +107,10 @@ boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ]            ;
 %md
 %md#### Initial conditions
 %md Initial displacement and velocity are set:
-initialConds(1).nonHomogeneousUDofs    = 1   ;
-initialConds(1).nonHomogeneousUVals    = u0  ;
-initialConds(1).nonHomogeneousUdotDofs = 1   ;
-initialConds(1).nonHomogeneousUdotVals = du0 ;
+aux = zeros(6*2,1) ;  aux(7) = u0 ;
+initialConds.U = aux ;
+aux(7) = du0 ;
+initialConds.Udot = aux ; 
 %md
 %md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
@@ -134,11 +134,11 @@ mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
 mesh.conecCell = { } ;
 % The first node has no material, the first element of the _elements_ struct, which is `'node'` also the first boundary condition (fixed) and no initial condition is set.
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1    1   ] ;
 % The second node has no material, the first element of the _elements_ struct, which is `'node'` also the second boundary condition (x disp free) and the first initial condition ($u_0$) is set.
-mesh.conecCell{ 2, 1 } = [ 0 1 2 1   2   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2    2   ] ;
 % Only one element is considered with the first material and the second element setting
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0    1 2   ] ;
 %md
 %md Execute ONSAS and save the results:
 [matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -164,7 +164,7 @@ boundaryConds(3).userLoadsFilename = 'myLoadSpringMass' ;
 %md where inside the function 'myLoadSpringMass' the external force vector of the structure with 12 = (2x6) entries is computed.
 %md
 %md now the initial condition is added to the node $2$ with the second material:
-mesh.conecCell{ 2, 1 } = [ 2 1 2 1   2  ] ;
+mesh.conecCell{ 2, 1 } = [ 2 1 2   2  ] ;
 %md
 %md The $\alpha_{HHT}$ method with $\alpha=0$ is equivalent to Newmark, this is employed to validate results of both methods, then:
 analysisSettings.methodName    = 'alphaHHT' ;
@@ -204,19 +204,19 @@ boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0] ;
 boundaryConds(2).loadsCoordSys = 'global'                  ;
 boundaryConds(2).loadsTimeFact = @(t) p0*sin( omegaBar*t )        ;
 boundaryConds(2).loadsBaseVals = [0 0 1 0 0 0 ] ; %along Y axis
-%md An initial displacements $u_0$ is set in $y$ direction:
-initialConds = {} ;
-initialConds(1).nonHomogeneousUDofs    = 3   ; 
-initialConds(1).nonHomogeneousUVals    = u0  ;
-initialConds(1).nonHomogeneousUdotDofs = 3   ;
-initialConds(1).nonHomogeneousUdotVals = du0 ;
 %md
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
 mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 1   2   ] ;
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 2   ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1    1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2    2   ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0    1 2   ] ;
+%md
+%md An initial displacements $u_0$ is set in $y$ direction:
+aux = zeros(6*2,1) ;  aux(6+3) = u0 ;
+initialConds.U = aux ;
+aux(6+3) = du0 ;
+initialConds.Udot = aux ; 
 %md
 otherParams.problemName = 'springMass_case3'     ;
 %md

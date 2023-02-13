@@ -54,11 +54,6 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
 %mdsupport BC for node at the base of the truss:
 boundaryConds(3).imposDispDofs = [ 1 2 3 4 5 ] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 0 0 ] ;
-
-%md#### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds                = struct() ;
-
 %md
 %md### mesh parameters
 %md
@@ -69,25 +64,27 @@ mesh.nodesCoords = [(0:(numElemB))'*lb/numElemB zeros(numElemB+1,1) zeros(numEle
 
 %md The conectivity struct using MEBI nomenclature is defined by using the following auxiliar Element and Nodes matrix:
 %md Then the entry of node $1$ is introduced:
-mesh.conecCell{1,1} = [ 0 1 1 0  1 ];
-%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
+mesh.conecCell{1,1} = [ 0 1 1  1 ];
+%md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. 
 %md A similar approach is used for node where the beam ends $numNodesB$,
-mesh.conecCell{2,1} = [ 0 1 2 0  numNodesB ];
+mesh.conecCell{2,1} = [ 0 1 2  numNodesB ];
 %md analogosly for node $numNodesB + numElemT$ only the boundary condition is changed:
-mesh.conecCell{3,1} = [ 0 1 3 0  numNodesB + numElemT ];
-
+mesh.conecCell{3,1} = [ 0 1 3  numNodesB + numElemT ];
+%md
 %mdTo define the conecCell of elements a auxiliar auxConecElem matrix is defined using MEBI nomenclature:
-auxConecElem  = [   %MEBI frame elements
-                    [ (ones(numElemB,1)*2 )  (ones(numElemB,1)*3)   (zeros(numElemB,1))  (zeros(numElemB,1)) ...
+auxConecElem  = [ % MEB frame elements
+                  [ ones(numElemB,1)*2  ones(numElemB,1)*3  zeros(numElemB,1) ...
                     (1:(numElemB))'         (2:numElemB + 1)' ] ;...
-                    %MEBI truss elements
-                    [ (ones(numElemT,1)*1 )  (ones(numElemT,1)*2)   (zeros(numElemT,1))  (zeros(numElemT,1)) ... 
+                    %MEB truss elements
+                  [ ones(numElemT,1)*1  ones(numElemT,1)*2  zeros(numElemT,1) ... 
                     (numElemB + 1: numElemB + numElemT)'    (numElemB + 2:numElemB + numElemT + 1)'   ] ... 
                 ] ;  
-
 for i =  1:numElemB + numElemT
     mesh.conecCell{3 + i,1} = auxConecElem(i,:);
 end                                          
+%md### initial Conditions
+%md homogeneous initial conditions are considered, then an empty struct is set:
+initialConds                = struct() ;
 %md### analysisSettings
 %md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
 analysisSettings.methodName    = 'newtonRaphson' ;

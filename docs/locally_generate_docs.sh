@@ -3,9 +3,9 @@
 # create environment variable for docs generation
 export DOCSBUILD=yes
 
-cd test
+cd ../test
 octave --eval runTestProblems_local
-cd ..
+cd ../docs
 
 #Run the script to trsansform .m into .md
 cd src

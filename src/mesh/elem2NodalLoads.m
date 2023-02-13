@@ -44,7 +44,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
     if strcmp( elemType, 'node') % node
 
       if strcmp( loadCoordSys, 'global' )
-        nodes     = Conec( elem, 4+1 ) ;
+        nodes     = Conec( elem, 3+1 ) ;
       else
         error(' only global flag in load by now.');
       end
@@ -61,7 +61,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
     %md edge
     elseif strcmp( elemType , 'edge') ; %
-      nodes          = Conec( elem, 4+(1:2) ) ;
+      nodes          = Conec( elem, 3+(1:2) ) ;
       
       % vector from node 1 to node 2
       directionVector = Nodes( nodes(2),:) - Nodes( nodes(1),:) ;
@@ -101,7 +101,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
     %md triangle tension
     elseif strcmp( elemType , 'triangle') ; %
 
-      nodes = Conec( elem, 4+(1:3) ) ;
+      nodes = Conec( elem, 3+(1:3) ) ;
 
       areaElem = 0.5 * norm( cross( ...
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...

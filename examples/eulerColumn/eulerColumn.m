@@ -53,10 +53,10 @@ mesh.nodesCoords = [ zeros(numElements+1,2) (0:(numElements))'*l/numElements ] ;
 % Conec cell
 % ----------------------------------------------------------------------
 mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0 1 ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0 numElements+1 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2  numElements+1 ] ;
 for i=1:numElements
-  mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+2,1 } = [ 1 2 0  i i+1 ] ;
 end
 % Analysis settings
 

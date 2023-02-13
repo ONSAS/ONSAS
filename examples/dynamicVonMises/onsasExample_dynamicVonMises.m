@@ -66,22 +66,23 @@ boundaryConds(3).imposDispVals =  [ 0 0 ] ;
 boundaryConds(4).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(4).imposDispVals =  [ 0 0 0 ] ;
 
-initialConds                = struct() ;
-
 mesh.nodesCoords = [   0  0   0   ; ...
                       Lx  0  Lz   ; ...
                       Lx  0  Lz-Lz; ...
                       -L0  0  0    ] ;
 
 mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0   2   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 3 0   3   ] ;
-mesh.conecCell{ 4, 1 } = [ 0 1 4 0   4   ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2   2   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 3   3   ] ;
+mesh.conecCell{ 4, 1 } = [ 0 1 4   4   ] ;
 
-mesh.conecCell{ 4+1, 1 } = [ 1 2 0 0   1 2 ] ;
-mesh.conecCell{ 4+2, 1 } = [ 2 2 0 0   2 3 ] ;
-mesh.conecCell{ 4+3, 1 } = [ 3 2 0 0   1 4 ] ;
+mesh.conecCell{ 4+1, 1 } = [ 1 2 0   1 2 ] ;
+mesh.conecCell{ 4+2, 1 } = [ 2 2 0   2 3 ] ;
+mesh.conecCell{ 4+3, 1 } = [ 3 2 0   1 4 ] ;
+
+initialConds                = struct() ;
+
 
 analysisSettings.methodName    = 'newmark' ;
 %md and the following parameters correspond to the iterative numerical analysis settings

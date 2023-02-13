@@ -20,5 +20,25 @@ jobs:
       - name: run octave tests using moxunit
         uses: joergbrech/moxunit-action@v1.1
         with:
-          src: examples/static_von_mises_truss examples/cantilever_modal_analysis examples/eulerColumn examples/frameLinearAnalysis examples/springMass examples/linearCylinderPlaneStrain examples/cantileverLinearHardening examples/uniformCurvatureCantilever examples/uniaxialExtension examples/uniaxialCompression examples/VIVtest examples/nonlinearPendulum examples/cantileverSelfWeight examples/simplePropeller examples/linearAerodynamics examples/reconfigurationBeam examples/beamLinearVibration src src/elements src/core src/constructors src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh test
+          src: src | 
+               src/elements |
+               src/core |
+               src/constructors |
+               src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh test |
+               examples/beamLinearVibration |
+               examples/cantileverModalAnalysis |
+               examples/cantileverSelfWeight |
+               examples/dragBeamReconfiguration |
+               examples/eulerColumn |
+               examples/frameLinearAnalysis | 
+               examples/linearAerodynamics |
+               examples/linearCylinderPlaneStrain |
+               examples/nonlinearPendulum |
+               examples/simplePropeller |
+               examples/springMass |
+               examples/staticVonMisesTruss | 
+               examples/uniaxialCompression | 
+               examples/uniaxialExtension | 
+               examples/uniformCurvatureCantilever |
+               examples/VIVCantilever
           tests: ./test/runTestProblems_moxunit_disp.m
