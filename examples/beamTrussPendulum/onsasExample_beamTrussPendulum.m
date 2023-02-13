@@ -54,9 +54,6 @@ boundaryConds(2).loadsCoordSys = 'global'                       ;
 boundaryConds(2).loadsTimeFact = @(t) 1.0                       ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -massPendulum*g 0 ]  ;
 %md
-%md### initial Conditions
-%md
-initialConds                = struct() ;
 %md### mesh parameters
 %md
 %mdnodesCoords:
@@ -66,16 +63,16 @@ mesh.nodesCoords = [  ( 0:(lf/numElemF):lf)'        zeros(numElemF + 1, 1)  zero
 %mdConec matrix:
 %mdnodes conectivity:
 mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1                   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElemF+1+numElemT ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1                   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2  numElemF+1+numElemT ] ;
 %
 %mdelements conectivity:
 auxConecElem  = [ %MEBI frame elements
-                  [ (ones(numElemF,1)*2 )    (ones(numElemF,1)*3)      (zeros(numElemF,1))    (zeros(numElemF,1)) ...
+                  [ ones(numElemF,1)*2  ones(numElemF,1)*3  zeros(numElemF,1)  ...
                     %ElemNodes...
                     (1:(numElemF))'                         (2:numElemF+1)' ];
                     %MEBI truss elements
-                  [ (ones(numElemT,1)*1 )    (ones(numElemT,1)*2)      (zeros(numElemT,1))     (zeros(numElemT,1)) ...
+                  [ ones(numElemT,1)*1  ones(numElemT,1)*2  zeros(numElemT,1)  ...
                     %ElemNodes...
                     (numElemF + 1 : numElemF + numElemT)'	 	(numElemF + 2 : numElemF + numElemT + 1)'  ]
                 ] ;
@@ -85,10 +82,13 @@ for i =  1:numElemF + numElemT
     mesh.conecCell{2 + i,1} = auxConecElem(i,:);
 end
 %md
+%md### initial Conditions
+%md
+initialConds                = struct() ;
 %md### analysisSettings
 %md
 analysisSettings.deltaT        =   0.025 ;
-analysisSettings.finalTime      =   1.0 ;
+analysisSettings.finalTime     =   1.0 ;
 analysisSettings.methodName    = 'alphaHHT' ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
@@ -98,8 +98,8 @@ analysisSettings.stopTolIts    =   30   ;
 %md### otheParams
 %md
 otherParams.plotsFormat = 'vtk' ;
-
-%mdRun ONSAS
+%md
+%md### Run ONSAS
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %mdExtract numerical results:
@@ -124,7 +124,7 @@ labx = xlabel('time (s)');   laby = ylabel('uF_z (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 % print('output/rightAngleCantilever_uA_y.png','-dpng')
-
+%md
 figure
 plot( timeVec, dispZT ,'k-o' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('time (s)');   laby = ylabel('uT_z (m)') ;

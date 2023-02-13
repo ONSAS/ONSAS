@@ -78,9 +78,6 @@ if strncmp( X, '$Entiti',5)
     vecsPhysicalPropsPerEntity{i} = zeros( entNumsPerDim(i) , 2 ) ;
   end
 
-  %~ vecsPhysicalPropsPerEntity
-%~ entNumsPerDim
-  %~ stop
   for indDim = 1:4
     colNumTags  = 1+3+3*(indDim>1)+1 ;
     colTags     = 1+3+3*(indDim>1)+2 ;

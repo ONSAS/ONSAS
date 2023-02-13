@@ -92,7 +92,7 @@ for indBC = 1:length( boundaryTypes )
       if ~strcmp( elements( Conec( elemsWithBC(inde), 2 ) ).elemType, 'node' )    
         error('springDofs can only be assigned to node elements, by the moment!')
       else
-        nodes_with_spring = Conec( elemsWithBC(inde), 4+1 )  ;
+        nodes_with_spring = Conec( elemsWithBC(inde), 3 + 1 )  ;
         for indn = 1:length( nodes_with_spring )
           nodedofs = nodes2dofs( nodes_with_spring(indn), 6 ) ;
           locdofs  = boundaryConds(BCnum).springDofs ;
@@ -131,7 +131,6 @@ for elemNum = 1:length( elementTypes )
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0
-
     [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
     nodes    = Conec( elementsNums, (3+1):(3+numNodes) ) ;
     dofs     = nodes2dofs( nodes, 6)'       ;
@@ -220,7 +219,7 @@ if analysisSettings.booleanSelfWeight == true
         if strcmp( elemType, 'truss') || strcmp( elemType, 'frame') ;
 
           %md extract connectivity of element
-          conecElemsThisMat = Conec( elemntsSameMat, 5:6 );
+          conecElemsThisMat = Conec( elemntsSameMat, 4:5 );
           % final minus initial nodes coords matrices
           matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : );
           vecSquareDiff = sum( (matrixDiffs.^2)' )';
@@ -241,7 +240,7 @@ if analysisSettings.booleanSelfWeight == true
         elseif strcmp( elemType, 'tetrahedron')
 
           %md extract connectivity of element
-          conecElemsThisMat = Conec( elemntsSameMat, 5:8 );
+          conecElemsThisMat = Conec( elemntsSameMat, 3+(1:4) );
 
           %md compute the dofs where gravitiy is applied: and add loads
           for elem = 1: size(conecElemsThisMat, 1)
