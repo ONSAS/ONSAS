@@ -115,6 +115,6 @@ analysisSettings.booleanSelfWeight = true ;
 ### otherParams
 %mdA name problem and vtk output is introduced as:
 otherParams.problemName = 'trussChain'; 
-otherParams.plotsFormat = 'vtk'       ;
+otherParams.plots_format = 'vtk'       ;
 %mdONSAS code is executed for the input structs aforementioned explained
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
