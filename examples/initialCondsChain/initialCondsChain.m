@@ -24,7 +24,7 @@ E  = 210e3 ; nu  = 0 ; rho = 8050 ;
 % gemotric scalar parameters
 rotAng = deg2rad(20) ; L = 2 ; b = 0.05 ; % m - width of square section
 % the number of elements of the mesh
-numElements = 10  ; %must be greater than and a pair value 
+numElements = 4  ; %must be greater than and a pair value 
 %md
 %md## Numerical solution: truss case
 %md---
@@ -81,7 +81,7 @@ end
 %md a V-shape is considered for the initial conditions.
 yInitConfigCoordsMiddle = linspace(0, L, numElements)(1:end/2 +1 ) / cos(rotAng) ; 
 yInitConfigCoords = [ yInitConfigCoordsMiddle flip( yInitConfigCoordsMiddle(1:end-1) ) ] ;
-dofsYInitCond = ( 3:6:6*(numElements +1) );
+dofsYInitCond = ( 3:6:6*(numElements +1) ) ;
 % the number of different initial conditions imposed are:
 numDifInitialConds = floor(sum(dofsYInitCond>0) /2) ; 
 %md first create an empty `initialConds` struct
