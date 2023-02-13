@@ -41,11 +41,11 @@ mesh.nodesCoords = ...
 %md Conec Cell
 mesh.conecCell = { } ;
 %md nodes
-mesh.conecCell{1, 1 } = [ 0 1 1 0  1 ] ;
-mesh.conecCell{2, 1 } = [ 0 1 2 0  3 ] ;
+mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
+mesh.conecCell{2, 1 } = [ 0 1 2   3 ] ;
 %md and frame elements
-mesh.conecCell{3, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{4, 1 } = [ 1 2 0 0  2 3 ] ;
+mesh.conecCell{3, 1 } = [ 1 2 0   1 2 ] ;
+mesh.conecCell{4, 1 } = [ 1 2 0   2 3 ] ;
 %md
 %md Analysis settings
 analysisSettings = struct() ;

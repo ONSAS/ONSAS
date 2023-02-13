@@ -51,7 +51,6 @@ for indBC = 1:length( boundaryTypes )
 
   % number of current BC processed
   BCnum = boundaryTypes(indBC) ;
-  
   %md loads verification
   %md is loadsCoordSys is not empty, then some load is applied in this BC
   if ~isempty( boundaryConds( indBC ).loadsCoordSys )

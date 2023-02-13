@@ -43,10 +43,10 @@ initialConds                = struct() ;
 %md
 %md### mesh parameters
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  numElements+1 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2   numElements+1 ] ;
 for i=1:numElements,
-  mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+2,1 } = [ 1 2 0  i i+1 ] ;
 end
 %md
 %md### analysisSettings
@@ -56,7 +56,7 @@ analysisSettings.deltaT        =   Tbyy/100 ;
 analysisSettings.finalTime      =  Tbyy  ;
 analysisSettings.stopTolDeltau =   1e-12 ;
 analysisSettings.stopTolForces =   1e-12 ;
-analysisSettings.stopTolIts    =   10   ;
+analysisSettings.stopTolIts    =   20   ;
 %md
 %md## otherParams
 %md
