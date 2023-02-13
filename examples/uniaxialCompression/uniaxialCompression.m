@@ -55,7 +55,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md#### materials
 %md The material of the solid considered is a neo-Hookean model with $\lambda$, $\mu$ and bulk($K$) parameters:
@@ -86,9 +86,6 @@ boundaryConds(3).imposDispVals =  0  ;
 boundaryConds(4).imposDispDofs = [5] ;
 boundaryConds(4).imposDispVals =  0  ;
 %md
-%md#### initialConds
-%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
-initialConds = struct();
 %md
 %md### Mesh
 %md A simple hand-made 8-node mesh, with 6 tetrahedrons is considered
@@ -112,21 +109,25 @@ mesh.nodesCoords = [ 0    0    0 ; ...
                      Lx  Ly   Lz ; ...
                      Lx  Ly    0 ] ;
 %md and the connectivity cell is defined as follows with the four MEBI parameters for each element followed by the indexes of the nodes of each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid neo-Hookean material tetrahedrons.
-mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
-                  [ 0 1 1 0    6 8 7   ]; ... % loaded face
-                  [ 0 1 2 0    4 1 2   ]; ... % x=0 supp face
-                  [ 0 1 2 0    4 2 3   ]; ... % x=0 supp face
-                  [ 0 1 3 0    6 2 1   ]; ... % y=0 supp face
-                  [ 0 1 3 0    6 1 5   ]; ... % y=0 supp face
-                  [ 0 1 4 0    1 4 5   ]; ... % z=0 supp face
-                  [ 0 1 4 0    4 8 5   ]; ... % z=0 supp face
-                  [ 1 2 0 0    1 4 2 6 ]; ... % tetrahedron
-                  [ 1 2 0 0    6 2 3 4 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 3 6 7 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 1 5 6 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 6 5 8 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 7 6 8 ]  ... % tetrahedron
+mesh.conecCell = {[ 0 1 1     5 8 6   ]; ... % loaded face
+                  [ 0 1 1     6 8 7   ]; ... % loaded face
+                  [ 0 1 2     4 1 2   ]; ... % x=0 supp face
+                  [ 0 1 2     4 2 3   ]; ... % x=0 supp face
+                  [ 0 1 3     6 2 1   ]; ... % y=0 supp face
+                  [ 0 1 3     6 1 5   ]; ... % y=0 supp face
+                  [ 0 1 4     1 4 5   ]; ... % z=0 supp face
+                  [ 0 1 4     4 8 5   ]; ... % z=0 supp face
+                  [ 1 2 0     1 4 2 6 ]; ... % tetrahedron
+                  [ 1 2 0     6 2 3 4 ]; ... % tetrahedron
+                  [ 1 2 0     4 3 6 7 ]; ... % tetrahedron
+                  [ 1 2 0     4 1 5 6 ]; ... % tetrahedron
+                  [ 1 2 0     4 6 5 8 ]; ... % tetrahedron
+                  [ 1 2 0     4 7 6 8 ]  ... % tetrahedron
                 } ;
+%md
+%md#### initialConds
+%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
+initialConds = struct();
 %md
 %md### Analysis parameters
 %md

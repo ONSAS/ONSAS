@@ -55,11 +55,6 @@ elements(3).massMatType =  'lumped'        ;
 boundaryConds(1).imposDispDofs = [ 1 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
 %md 
-%md### initial Conditions
-%md
-% homogeneous initial conditions are considered, then an empty struct is set:
-initialConds = struct() ;
-%md
 %md### mesh
 %md
 mesh.nodesCoords = [ 0        0              0            ; ...
@@ -70,14 +65,19 @@ mesh.nodesCoords = [ 0        0              0            ; ...
                      -d*.75 0 -l*1.5 ] ;
 %md
 mesh.conecCell         = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0   1   ] ;
-mesh.conecCell{ 2, 1 } = [ 1 2 0 0   1 2 ] ;
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0   1 3 ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0   1 4 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
+mesh.conecCell{ 2, 1 } = [ 1 2 0   1 2 ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0   1 3 ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0   1 4 ] ;
 % auxiliar elements
-mesh.conecCell{ 5, 1 } = [ 0 1 1 0   5 ] ;
-mesh.conecCell{ 6, 1 } = [ 0 1 1 0   6 ] ;
-mesh.conecCell{ 7, 1 } = [ 1 3 0 0   5 6 ] ;
+mesh.conecCell{ 5, 1 } = [ 0 1 1   5 ] ;
+mesh.conecCell{ 6, 1 } = [ 0 1 1   6 ] ;
+mesh.conecCell{ 7, 1 } = [ 1 3 0   5 6 ] ;
+%md
+%md### initial Conditions
+%md
+% homogeneous initial conditions are considered, then an empty struct is set:
+initialConds = struct() ;
 %md
 %md### analysisSettings
 %md
