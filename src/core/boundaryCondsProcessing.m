@@ -133,7 +133,7 @@ for elemNum = 1:length( elementTypes )
   if length( elementsNums ) > 0
 
     [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
-    nodes    = Conec( elementsNums, (4+1):(4+numNodes) ) ;
+    nodes    = Conec( elementsNums, (3+1):(3+numNodes) ) ;
     dofs     = nodes2dofs( nodes, 6)'       ;
     dofs     = dofs(1:dofsStep:end)         ;
 

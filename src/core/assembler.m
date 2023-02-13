@@ -110,7 +110,7 @@ for elem = 1:nElems
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
-  nodeselem   = Conec( elem, (4+1):(4+numNodes) )' ;
+  nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )        ;
   dofselemRed = dofselem ( 1 : dofsStep : end )    ;
 
@@ -122,7 +122,7 @@ for elem = 1:nElems
     dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
   end
 
-  elemNodesxyzRefCoords  = reshape( Nodes( Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
+  elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
   stressElem = [] ;
 
