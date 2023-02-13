@@ -26,15 +26,13 @@ elements(2).elemType = 'tetrahedron' ;
 %md#### boundaryConds
 boundaryConds(1).imposDispDofs = [1 3 5] ;
 boundaryConds(1).imposDispVals = [0 0 0] ;
-%
 %md
-%md#### initialConds
-%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
-initialConds = struct() ;
 %md
 %md### Mesh
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_cantileverSelfWeight.msh' ) ;
-
+%md#### initialConds
+%md since no initial non-homogeneous initial conditions are used, an empty struct is used .
+initialConds = struct() ;
 %md### Analysis parameters
 %md
 analysisSettings.booleanSelfWeight = true  ;

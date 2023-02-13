@@ -137,20 +137,6 @@ vector with the local degrees of freedom of the node with springs (integers from
 ### `boundaryConds.springVals`
 vector with the values of the springs stiffnesses.
 
-## The `initialConds` cell
-
-If initial conditions are homogeneous, then an empty struct should be defined `initialConds = struct() ;`. Otherwise the fields that can be set are:
-
-### `initialConds.U`
-vector of the displacements at time 0.
-
-### `initialConds.Udot`
-vector of the velocities  at time 0.
-
-### `initialConds.Udotdot`
-vector of the accellerations at time 0.
-
-
 ## The `mesh` struct
 
 The mesh struct contains the finite element mesh information.
@@ -164,6 +150,16 @@ matrix with the coordinates of all the nodes of the mesh. The $i$-th row contain
  [ materialInd, \, elementInd, \, boundaryCondInd, \, initialCondInd, \, node_1 \dots node_{n} ]
 ```
 where the five indexes are natural numbers and $n$ is the number of nodes required by the type of element. If no property is assigned the $0$ index can be used, for instance, nodes used to introduced loads should be defined with `materialIndex = 0`.
+
+
+## The `initialConds` struct
+
+If initial conditions are homogeneous, then an empty struct should be defined using `initialConds = struct() ;`. Otherwise the fields that can be set are:
+
+ - `initialConds.U`: a vector of the displacements at time 0.
+ - `initialConds.Udot`: a vector of the velocities  at time 0.
+ - `initialConds.Udotdot`: a vector of the accelerations at time 0.
+
 
 ## The `analysisSettings` struct
 

@@ -25,9 +25,9 @@ if strcmp( fileExtension , 'msh' )
   [ nodesMatinp, conecMatinp, physicalNames ] = mshFormatReader( fileName ) ;
 
   %md converts strings to integers indexes matrix
-  matInds = zeros( length( physicalNames), 4 ) ;
+  matInds = zeros( length( physicalNames), 3 ) ;
   for i=1:size( matInds, 1)
-    for j=1:4
+    for j=1:3
       matInds(i, j) = str2num( physicalNames{i}( 1+(j-1)*3+(1:2)) ) ;
     end
   end
@@ -35,20 +35,13 @@ if strcmp( fileExtension , 'msh' )
   nodesMat = zeros( size( nodesMatinp, 1 ), 3 ) ;
   nodesMat(:,1:3) = nodesMatinp(:, 1:3) ;
 
-  % adds melcs parameters to nodes with params defined
-  %~ indsNZ = find( nodesMatinp(:,4) ) ;
-  %~ nodesMat(indsNZ,4:end) = matInds( nodesMatinp(indsNZ,4), :) ;
+  conecMat = zeros( size( conecMatinp, 1 ), 3+4 ) ;
+  conecMat( :, 3+(1:4)) = conecMatinp(:, 1:4) ;
 
-  conecMat = zeros( size( conecMatinp, 1 ), 4+4 ) ;
-  conecMat( :, 4+(1:4)) = conecMatinp(:, 1:4) ;
-
-  %md adds MEBI parameters to elements with params defined
+  %md adds MEB parameters to elements with params defined
   indsNZ = find( conecMatinp(:,5) ) ;
-  conecMat( indsNZ, 1:4 ) = matInds( conecMatinp( indsNZ, 5), :) ;
+  conecMat( indsNZ, 1:3 ) = matInds( conecMatinp( indsNZ, 5), :) ;
 
-elseif strcmp( fileExtension , 'dxf' )
-  [ nodesMat, conecMat ] = dxfReader( fileName ) ;
-%
 else
-  error('extension not implemented yet. Please report an issue.')
+  error('extension not implemented. Please report an issue.')
 end

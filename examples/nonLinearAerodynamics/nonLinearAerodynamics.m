@@ -32,7 +32,7 @@ l = 10 ; d = l/100 ; J = pi * d ^ 4 / 32 ; Iyy = J / 2 ; Izz = Iyy ;
 rhoA = 1.225 ; nuA = 1.6e-5;
 %md next the number of frame elements for all cases is set:
 numElements = 10 ;
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md### materials
 %md Since the example contains only one linear Euler Bernoulli element the fields of the `materials` struct will have only one entry. Although, the constitutive behavior law selected is Saint-Venant-Kirchhoff:
@@ -62,21 +62,21 @@ elements(2).elemTypeAero = [0 d 0 numGaussPoints true ] ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md
-%md### initial Conditions
-%md Any non-homogeneous initial conditions are considered, then an empty struct is set:
-initialConds = struct() ;
-%md
 %md### mesh parameters
 %mdThe coordinates of the mesh nodes are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. For (I) no non-homogeneous initial condition is considered (then zero is used) and finally the node is assigned:
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
-%md Next the frame elements MEBI parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC and no IC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1 ] ;
+%md Next the frame elements MEB parameters are set. The frame material is the first material of `materials` struct, then $1$ is assigned. The second entry of the `elements` struct correspond to the frame element employed, so $2$ is set. Finally no BC is required for this element, then $0$ is used.  Consecutive nodes build the element so then the `mesh.conecCell` is:
 for i=1:numElements,
-  mesh.conecCell{ i+1,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+1,1 } = [ 1 2 0  i i+1 ] ;
 end
+%md
+%md### initial Conditions
+%md Any non-homogeneous initial conditions are considered, then an empty struct is set:
+initialConds = struct() ;
 %md
 %md### analysisSettings
 %md

@@ -1,6 +1,6 @@
 %md# Static Von-Mises Truss example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/onsasExample_staticVonMisesTruss.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/staticVonMisesTruss.m)
 %md
 %mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
 %md
@@ -22,15 +22,15 @@
 %mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
-E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ; nu = 0 ;
-
+E = 210e9  ; nu = 0 ;
+A = 2.5e-3 ; ang1 = 65 ; L = 2 ; 
 % x and z coordinates of node 2
 x2 = cos( ang1*pi/180 ) * L ;
 z2 = sin( ang1*pi/180 ) * L ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
-%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
+%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 %md
 %md#### materials
 %md Since both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is the Rotated Engineering strain, then the field `hyperElasModel` is set to:
@@ -66,10 +66,6 @@ boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsTimeFact = @(t) 3.0e8*t     ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 %md
-%md#### initial Conditions
-%md homogeneous initial conditions are considered, then an empty cell is set:
-initialConds = {} ;
-%md
 %md### mesh parameters
 %md
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
@@ -81,15 +77,19 @@ mesh.nodesCoords = [   0  0   0 ; ...
 %mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = cell(5,1) ;
 %md Then the entry of node $1$ is introduced:
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
+%md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. Finally, at the end of the vector the number of the node is included (1).
 %md A similar approach is used for node $3$,
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  3   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1  3   ] ;
 %md and for node $2$ only the boundary condition is changed.
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2  2   ] ;
 %md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0   1 2 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 2 0   2 3 ] ;
+%md
+%md#### initial Conditions
+%md homogeneous initial conditions are considered, then an empty cell is set:
+initialConds = {} ;
 %md
 %md### analysisSettings
 %md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:

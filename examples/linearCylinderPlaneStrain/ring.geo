@@ -32,9 +32,9 @@ Line Loop(1) = {1, 2, 3, 4, 5, 6, 7, 8};
 
 Plane Surface(1) = {1};
 
-Physical Point("00_01_01_00") = {3,5};
-Physical Point("00_01_02_00") = {2,4};
+Physical Point("00_01_01") = {3,5};
+Physical Point("00_01_02") = {2,4};
 
-Physical Line ("00_02_03_00") = {1,2,3,4};
+Physical Line ("00_02_03") = {1,2,3,4};
 
-Physical Surface("01_03_00_00") = {1};
+Physical Surface("01_03_00") = {1};

@@ -3,8 +3,8 @@ $MeshFormat
 $EndMeshFormat
 $PhysicalNames
 2
-2 1 "00_01_01_00"
-3 2 "01_02_00_00"
+2 1 "00_01_01"
+3 2 "01_02_00"
 $EndPhysicalNames
 $Entities
 8 12 6 1

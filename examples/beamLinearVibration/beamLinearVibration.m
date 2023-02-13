@@ -64,9 +64,9 @@ end
 analyticDisY = analyticDisY * (2*Fo/(rho*ty*tz*l) ) ;   analyticDisZ = analyticDisZ * (2*Fo/(rho*ty*tz*l) ) ;
 %md
 %md## Numerical solution
-%md### MEBI parameters
+%md### MEB parameters
 %md
-%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
+%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 %md
 %md### materials
 %md Since the example contains only one rod and no nodal masses are used, only one `materials` struct is defined. The first analysis is done using the co-rotational formulation
@@ -94,26 +94,26 @@ boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) Fo*sin(w*t) ;
 boundaryConds(2).loadsBaseVals = [ 0 0 1 0 1 0 ] ;
 %md
-%md### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
-initialConds = struct() ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
-%md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. No non-homogeneous initial condition is considered (then zero is used) and finally the node index is included.
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
+%md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. Finally the node index is included.
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
 %md the following case only differs in the boundary condition and the node number
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  numElements+1 ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1  numElements+1 ] ;
 %md the following case only differs in the boundary condition and the node number
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  appNode ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2  appNode ] ;
 %md the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
 for i=1:numElements
-  mesh.conecCell{ i+3,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+3,1 } = [ 1 2 0   i i+1 ] ;
 end
 %md
+%md### initial Conditions
+%md homogeneous initial conditions are considered, then an empty struct is set:
+initialConds = struct() ;
 %md### analysisSettings
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   deltat  ;
@@ -122,9 +122,8 @@ analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
-%md## otherParams
+%md### otherParams
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
-%otherParams.plots_format = 'vtk' ;
 %md ONSAS execution
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

@@ -127,20 +127,20 @@ mesh.nodesCoords = [ 0    0    0 ; ...
                      Lx  Ly   Lz ; ...
                      Lx  Ly    0 ] ;
 %md and the connectivity cell is defined as follows with the four MEBI parameters for each element followed by the indexes of the nodes of each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
-mesh.conecCell = {[ 0 1 1 0    5 8 6   ]; ... % loaded face
-                  [ 0 1 1 0    6 8 7   ]; ... % loaded face
-                  [ 0 1 2 0    4 1 2   ]; ... % x=0 supp face
-                  [ 0 1 2 0    4 2 3   ]; ... % x=0 supp face
-                  [ 0 1 3 0    6 2 1   ]; ... % y=0 supp face
-                  [ 0 1 3 0    6 1 5   ]; ... % y=0 supp face
-                  [ 0 1 4 0    1 4 5   ]; ... % z=0 supp face
-                  [ 0 1 4 0    4 8 5   ]; ... % z=0 supp face
-                  [ 1 2 0 0    1 4 2 6 ]; ... % tetrahedron
-                  [ 1 2 0 0    6 2 3 4 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 3 6 7 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 1 5 6 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 6 5 8 ]; ... % tetrahedron
-                  [ 1 2 0 0    4 7 6 8 ]  ... % tetrahedron
+mesh.conecCell = {[ 0 1 1     5 8 6   ]; ... % loaded face
+                  [ 0 1 1     6 8 7   ]; ... % loaded face
+                  [ 0 1 2     4 1 2   ]; ... % x=0 supp face
+                  [ 0 1 2     4 2 3   ]; ... % x=0 supp face
+                  [ 0 1 3     6 2 1   ]; ... % y=0 supp face
+                  [ 0 1 3     6 1 5   ]; ... % y=0 supp face
+                  [ 0 1 4     1 4 5   ]; ... % z=0 supp face
+                  [ 0 1 4     4 8 5   ]; ... % z=0 supp face
+                  [ 1 2 0     1 4 2 6 ]; ... % tetrahedron
+                  [ 1 2 0     6 2 3 4 ]; ... % tetrahedron
+                  [ 1 2 0     4 3 6 7 ]; ... % tetrahedron
+                  [ 1 2 0     4 1 5 6 ]; ... % tetrahedron
+                  [ 1 2 0     4 6 5 8 ]; ... % tetrahedron
+                  [ 1 2 0     4 7 6 8 ]  ... % tetrahedron
                 } ;
 %md
 %md### Analysis parameters
