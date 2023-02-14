@@ -62,9 +62,12 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   if ~isempty( fluidFlowBool ) && fluidFlowBool
     % node 1
     [VpiRelGflow, VpiRelGperpflow, VrelGflow] = computeVpiRels( udotFlowG, [0 0 0]', Rroofx, Rr, L2, L3 ) ;
+    [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, [0 0 udotG(3)]', Rroofx, Rr, L2, L3 )  ;
+  else
+      % Computes the projected flow velocity (Vprel without the cross section motion)
+    [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
   end
-  % Computes the projected flow velocity (Vprel without the cross section motion)
-  [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
+  
   %-----------------------------------------------------------------
 
   % ------------ Compute relative incidence angle  ------------
