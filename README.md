@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
 [![DOI](https://zenodo.org/badge/170120732.svg)](https://zenodo.org/badge/latestdoi/170120732)
 
-[![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://app.gitter.im/#/room/#onsas__community:gitter.im)
 [![zoom](https://img.shields.io/badge/zoom-meetings-red)](https://salavirtual-udelar.zoom.us/j/89574786968?pwd=S3c3c3hMVlR1N3E3Z2tSbVlCWW1QUT09)
 
 
@@ -49,4 +49,4 @@ The complete list of authors of code, contributions, affiliations and acknowledg
 
 ## Contact <a name="contact"></a>
 
-If you have any question you can send an e-mail to _jorgepz [AT] fing.edu.uy_ or join the chat at  <a href="https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge" target="_blank"><img alt="Gitter" src="https://img.shields.io/gitter/room/JuliaReach/Lobby?style=for-the-badge&logo=gitter&logoColor=white" /></a>
+If you have any question you can send an e-mail to _jorgepz [AT] fing.edu.uy_ or join the chat at  <a href="https://app.gitter.im/#/room/#onsas__community:gitter.im" target="_blank"> this gitter chat room </a>
