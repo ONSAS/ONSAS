@@ -3,7 +3,7 @@
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING.txt)
-[![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://app.gitter.im/#/room/#onsas__community:gitter.im)
 
 
 ## What is ONSAS.m?
@@ -119,4 +119,4 @@ The development of ONSAS has been partially supported by funds provided by the f
 
 ## Contact
 
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or join the chat in the gitter [chat room](https://gitter.im/onsas_/community).
+You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or join the chat in the gitter [chat room](https://app.gitter.im/#/room/#onsas__community:gitter.im).
