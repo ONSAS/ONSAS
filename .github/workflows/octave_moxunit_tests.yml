@@ -24,6 +24,6 @@ jobs:
           tests: ./test/runTestProblems_moxunit_disp.m
           with_coverage: true
           cover_xml_file: coverage.xml
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
