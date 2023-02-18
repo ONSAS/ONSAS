@@ -17,7 +17,7 @@ function test_2
   assertEqual( verifBoolean, true );
 
 function test_3
-  cantileverSelfWeight
+  uniaxialExtension
   assertEqual( verifBoolean, true );
 
 function test_4
@@ -61,7 +61,7 @@ function test_13
   assertEqual( verifBoolean, true );
 
 function test_14
-  uniaxialExtension
+  cantileverSelfWeight
   assertEqual( verifBoolean, true);
 
 function test_15
