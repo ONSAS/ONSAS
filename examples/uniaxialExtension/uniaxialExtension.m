@@ -153,7 +153,7 @@ analysisSettings.finalTime      = 1      ;
 analysisSettings.deltaT        = .125   ;
 %md
 %md### Output parameters
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

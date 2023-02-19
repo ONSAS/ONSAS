@@ -34,7 +34,7 @@
 %md  - maximum number of nodes per element: 4 (linear tetrahedron)
 %md
 function [ nodesMat, conecMat, physicalNames ] = mshFormatReader( mshFilename )
-
+mshFilename
 %md
 fid = fopen( mshFilename ,'r') ;
 maxLengthLine = 200 ;
