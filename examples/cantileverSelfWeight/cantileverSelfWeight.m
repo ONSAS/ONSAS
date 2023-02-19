@@ -4,7 +4,7 @@
 %mdExample intended to validate the self-weight for tetrahedron elements.
 clear all, close all
 % add path
-addpath( genpath( [ pwd '/../../src'] ) ) ;
+addpath( genpath( [ pwd '/../../src'] ) ) ;  addpath( genpath( [ pwd ] ) ); 
 % scalar parameters
 E = 200e9 ; nu = 0.3 ; Lx = 2 ; Ly = .02 ; Lz = .2 ; rho = 8e3 ;
 %md
