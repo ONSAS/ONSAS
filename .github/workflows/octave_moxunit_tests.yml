@@ -1,4 +1,4 @@
-Lo# This is the ONSAS.m coode testing continuous integration config file
+# This is the ONSAS.m coode testing continuous integration config file
 #
 name: octave_moxunit_tests
 
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run octave tests using moxunit
-        uses: joergbrech/moxunit-action@v1.2
+        uses: joergbrech/moxunit-action@v1.2.0
         with:
           src: .
           tests: ./test/runTestProblems_moxunit_disp.m
@@ -26,4 +26,4 @@ jobs:
           cover_xml_file: coverage.xml
       - uses: codecov/codecov-action@v3
         with:
-          file: coverage.xml
+          file: ./coverage.xml
