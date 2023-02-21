@@ -60,9 +60,9 @@ function test_1
 %   uniaxialCompression
 %   assertEqual( verifBoolean, true );
 
-% function test_14
-%   uniaxialExtension
-%   assertEqual( verifBoolean, true);
+function test_14
+  uniaxialExtension
+  assertEqual( verifBoolean, true);
 
 % function test_15
 %   uniformCurvatureCantilever
