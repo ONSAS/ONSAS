@@ -61,10 +61,10 @@ function test_1
 %   assertEqual( verifBoolean, true );
 
 function test_14
-  pwd
-  direx = [ '..' filesep 'examples' filesep 'uniaxialExtension' ]
-  % cd(direx)
-  uniaxialExtension
+  run( [ pwd filesep ...
+         'examples' filesep ...
+         'uniaxialExtension' filesep ...
+         'uniaxialExtension.m' ] );
   assertEqual( verifBoolean, true);
 
 % function test_15
