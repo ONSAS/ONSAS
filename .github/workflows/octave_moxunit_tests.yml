@@ -1,6 +1,6 @@
 # This is the ONSAS.m coode testing continuous integration config file
 #
-name: octave_moxunit_tests
+name: octave_tests
 
 # everytime
 #on: [push, pull_request]
