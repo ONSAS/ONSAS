@@ -7,15 +7,8 @@
 %md```@raw html
 %md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS.docs/master/docs/src/diagramChain.svg" alt="structure diagram" width="500"/>
 %md```
-%md## Analytic solution
-%md--------------------
 %md
 %md
-%md## Numerical solution
-%md---------------------
-%md
-%md
-%mdThe Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/chain/onsasExample_chain.m).
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliary parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
