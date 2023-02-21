@@ -24,8 +24,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             l0, tl1, tl2, Rr                                          ,...
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
-                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2 )
-global ILVIVBool
+                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2,fluidFlowBool, ILVIVBool )
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
   % Auxiliary matrices
