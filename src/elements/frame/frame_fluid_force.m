@@ -30,6 +30,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 
   % Declare booleans for VIV model
   global VIVBool
+  global ILVIVBool
   global constantLiftDir
   global uniformUdot
   global AMBool
@@ -179,19 +180,24 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
           VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
           q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
                      tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+          if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
+              p = WOM_IL( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
+                          dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+          else
+              p=0;
+          end
       else 
           q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
       end
 
     else
-      q = 0 ; % No lift with circular cross section!
+      q = 0 ; p = 0;% No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
-    end
-
+    end      
   else
-    q = 2 ;
+    q = 2 ; p = 0;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
     tlift1 = [] ; tlift2 = [] ;
   end
@@ -208,7 +214,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
                                                            vecChordUndef, dimCharacteristic,...
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool ) ;
+                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool,ILVIVBool ) ;
   end
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
