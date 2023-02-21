@@ -72,5 +72,5 @@ function test_1
 %   VIVCantilever
 %   assertEqual( verifBoolean, true );
 
-% function test_17
-%   assertEqual( gaussIntegrationTest, true);
+function test_17
+  assertEqual( gaussIntegrationTest, true);
