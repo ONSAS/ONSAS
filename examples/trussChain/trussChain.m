@@ -13,11 +13,11 @@
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar auxiliary parameters are defined.
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
-E  = 210e3 ; nu  = 0 ; rho = 8050 ;
+E  = 210e6 ; nu  = 0 ; rho = 8050 ;
 % gemotric scalar parameters
-rotAng = deg2rad(20) ; L = 2 ; b = 0.05 ; % m - width of square section
+rotAng = deg2rad(2) ; L = 2 ; b = 0.05 ; % m - width of square section
 % the number of elements of the mesh
-numElements = 4  ; %must be greater than and a pair value 
+numElements = 10  ; % must be even 
 %md
 %md## Numerical solution: truss case
 %md---
@@ -57,7 +57,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes in the reference configuration are given by the matrix:
-mesh.nodesCoords = [ ( 0:(numElements) )' * L / numElements  zeros(numElements+1,2) ] ;
+mesh.nodesCoords = [ (0:(numElements))'*L/numElements  zeros(numElements+1,2) ] ;
 %md where the columns 1,2 and 3 correspond to $x$ (a equally spaced vector form 0 to L), $y$ and $z$ null coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 %md
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is created
@@ -72,7 +72,7 @@ end
 %md
 %md#### initial Conditions
 %md a V-shape is considered for the initial conditions.
-yInitConfigCoordsMiddle = linspace(0, L, numElements)(1:end/2 +1 ) / cos(rotAng) ; 
+yInitConfigCoordsMiddle = linspace(0, L, numElements)(1:end/2 +1 ) * tan(rotAng) ; 
 yInitConfigCoords = [ yInitConfigCoordsMiddle flip( yInitConfigCoordsMiddle(1:end-1) ) ] ;
 dofsYInitCond = ( 3:6:6*(numElements +1) ) ;
 % the number of different initial conditions imposed are:
