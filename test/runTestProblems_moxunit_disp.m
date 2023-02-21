@@ -61,10 +61,9 @@ function test_1
 %   assertEqual( verifBoolean, true );
 
 function test_14
-  run( [ pwd filesep ...
-         'examples' filesep ...
-         'uniaxialExtension' filesep ...
-         'uniaxialExtension.m' ] );
+  cd( [ 'examples' filesep ...
+        'uniaxialExtension' ] );
+  uniaxialExtension
   assertEqual( verifBoolean, true);
 
 % function test_15
