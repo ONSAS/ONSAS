@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run octave tests using moxunit
-        uses: joergbrech/moxunit-action@v1.1
+        uses: joergbrech/moxunit-action@v1.2.0
         with:
           src: .
           tests: ./test/runTestProblems_moxunit_disp.m
