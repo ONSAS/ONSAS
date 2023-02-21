@@ -24,8 +24,8 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             l0, tl1, tl2, Rr                                          ,...
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
-                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool,ILVIVBool)
-
+                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool)
+global ILVIVBool
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
   % Auxiliary matrices
@@ -120,9 +120,9 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % ------------ Compute drag, lift and pitch moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
-  if ILVIVBool
+  if ~isempty(  ILVIVBool ) && ILVIVBool
       fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelGflow ) * VpiRelGflow     ;
-      fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td     % U^2 along VpiRelG
+      fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
   else
       fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
       fdl_il =  [0 0 0]' ;
