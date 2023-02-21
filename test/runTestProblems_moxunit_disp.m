@@ -61,7 +61,7 @@ function test_1
 %   assertEqual( verifBoolean, true );
 
 function test_14
-  direx = [ '..' filesep 'uniaxialExtension' ]; 
+  direx = [ '..' filesep 'examples' filesep 'uniaxialExtension' ]; 
   cd(direx)
   uniaxialExtension
   assertEqual( verifBoolean, true);
