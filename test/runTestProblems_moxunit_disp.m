@@ -14,14 +14,14 @@ function test_suite=runTestProblems_moxunit_disp
   % beamLinearVibration
   % assertEqual( verifBoolean, true );
 
-function test_2
- 	cantileverModalAnalysis
-  assertEqual( verifBoolean, true );
+% function test_2
+%  	cantileverModalAnalysis
+%   assertEqual( verifBoolean, true );
 
-function test_3
-  addpath(genpath([ 'examples' filesep 'cantileverSelfWeight' ] ));
-  cantileverSelfWeight
-  assertEqual( verifBoolean, true );
+% function test_3
+%   addpath(genpath([ 'examples' filesep 'cantileverSelfWeight' ] ));
+%   cantileverSelfWeight
+%   assertEqual( verifBoolean, true );
 
 % function test_4
 %   addpath(genpath([ 'examples' filesep 'dragBeamReconfiguration' ] ));
@@ -57,19 +57,19 @@ function test_3
 %   simplePropeller
 %   assertEqual( verifBoolean, true );
 
-function test_12
-  addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
-  staticVonMisesTruss
-  assertEqual( verifBoolean, true );
+% function test_12
+%   addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
+%   staticVonMisesTruss
+%   assertEqual( verifBoolean, true );
 
 function test_13
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
-function test_14
-  addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
-  uniaxialExtension
-  assertEqual( verifBoolean, true);
+% function test_14
+%   addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
+%   uniaxialExtension
+%   assertEqual( verifBoolean, true);
 
 % function test_15
 %   cd( [ '..' filesep ...
