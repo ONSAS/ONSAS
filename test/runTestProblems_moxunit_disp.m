@@ -65,10 +65,10 @@ function test_13
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
-% function test_14
-%   addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
-%   uniaxialExtension
-%   assertEqual( verifBoolean, true);
+function test_14
+  addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
+  uniaxialExtension
+  assertEqual( verifBoolean, true);
 
 % function test_15
 %   cd( [ '..' filesep ...
