@@ -169,26 +169,21 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       end
 
       % computes van der pol solution for current element
-      if ~isempty( fluidFlowBool ) && fluidFlowBool
-          % node 1
-          [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
-                                                                                 Rroof1, Rr, L2, L3 ) ;
-          % node 2
-          [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
-                                                                                 Rroof2, Rr, L2, L3 ) ;
-          VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
-          VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
-          q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                     tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-          if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
-              p = WOM_IL( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                          dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-          else
-              p=0;
-          end
-      else 
-          q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
+      % node 1
+      [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
+                                                                             Rroof1, Rr, L2, L3 ) ;
+      % node 2
+      [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
+                                                                             Rroof2, Rr, L2, L3 ) ;
+      VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
+      VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
+      q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
                  tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+      if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
+          p = WOM_IL( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
+                      dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+      else
+          p=0;
       end
 
     else
@@ -214,7 +209,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
                                                            vecChordUndef, dimCharacteristic,...
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool) ;
+                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
   end
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];

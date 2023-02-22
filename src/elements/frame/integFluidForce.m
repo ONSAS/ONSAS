@@ -24,8 +24,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             l0, tl1, tl2, Rr                                          ,...
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
-                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool)
-global ILVIVBool
+                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool)
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
   % Auxiliary matrices
@@ -59,12 +58,14 @@ global ILVIVBool
   udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
 
   % Relative, perpendicular and projected  flow velocity of the cross section to compute drag lift and moment:
-  if ~isempty( fluidFlowBool ) && fluidFlowBool
-    % node 1
+  if ~isempty( fluidFlowBool ) && fluidFlowBool % Leclercq validation
     [VpiRelGflow, VpiRelGperpflow, VrelGflow] = computeVpiRels( udotFlowG, [0 0 0]', Rroofx, Rr, L2, L3 ) ;
     [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, [0 udotG(2) 0]', Rroofx, Rr, L2, L3 )  ;
     % VpiRelG along z
     %[VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
+  elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
+    [VpiRelGflow, VpiRelGperpflow, VrelGflow] = computeVpiRels( udotFlowG, [0 0 0]', Rroofx, Rr, L2, L3 ) ;  
+    [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
   else
       % Computes the projected flow velocity (Vprel without the cross section motion)
     [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
@@ -121,7 +122,7 @@ global ILVIVBool
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
   if ~isempty(  ILVIVBool ) && ILVIVBool
-      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelGflow ) * VpiRelGflow     ;
+      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; % Test to include fluid damping
       fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
   else
       fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
@@ -141,8 +142,13 @@ global ILVIVBool
       else
         fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
       end
-          else % lift direction is variable
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+     else % lift direction is variable
+        if ~isempty( fluidFlowBool ) && fluidFlowBool
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow )^2 * VpiRelGperp ;
+        elseif ~isempty( ILVIVBool ) && ILVIVBool
+        else 
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+        end
     end
 
   else % no WOM and a variable lift direction
