@@ -8,8 +8,6 @@ function test_suite=runTestProblems_moxunit_disp
   end
   initTestSuite;
 
-  addpath(genpath([ 'examples' ] ));
-  
 % function test_1
   % cd( [ 'examples' filesep ...
   %       'beamLinearVibration' ] );
@@ -22,11 +20,10 @@ function test_2
  	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
 
-% function test_3
-%   cd( [ '..' filesep ...
-%         'cantileverSelfWeight' ] );
-%   cantileverSelfWeight
-%   assertEqual( verifBoolean, true );
+function test_3
+  addpath(genpath([ 'examples' filesep 'cantileverSelfWeight' ] ));
+  cantileverSelfWeight
+  assertEqual( verifBoolean, true );
 
 % function test_4
 %   cd( [ '..' filesep ...
@@ -89,10 +86,7 @@ function test_13
   assertEqual( verifBoolean, true );
 
 function test_14
-  % cd( [ '..' filesep ...
-  % cd( [ 'examples' filesep ...
-  %       'uniaxialExtension' ] );
-  % addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
+  addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
