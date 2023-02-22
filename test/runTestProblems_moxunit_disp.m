@@ -15,8 +15,6 @@ function test_suite=runTestProblems_moxunit_disp
   % assertEqual( verifBoolean, true );
 
 function test_2
-%   cd( [ '..' filesep ...
-%         'cantileverModalAnalysis' ] );
  	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
 
@@ -25,63 +23,46 @@ function test_3
   cantileverSelfWeight
   assertEqual( verifBoolean, true );
 
-% function test_4
-%   cd( [ '..' filesep ...
-%         'dragBeamReconfiguration' ] );
-%   dragBeamReconfiguration
-%   assertEqual( verifBoolean, true );
+function test_4
+  addpath(genpath([ 'examples' filesep 'dragBeamReconfiguration' ] ));
+  dragBeamReconfiguration
+  assertEqual( verifBoolean, true );
 
-% function test_5
-%   cd( [ '..' filesep ...
-%         'eulerColumn' ] );
-% 	eulerColumn
-%   assertEqual( verifBoolean, true );
+function test_5
+	eulerColumn
+  assertEqual( verifBoolean, true );
 
-% function test_6
-%   cd( [ '..' filesep ...
-%         'frameLinearAnalysis' ] );
-%   frameLinearAnalysis
-%   assertEqual( verifBoolean, true );
+function test_6
+  frameLinearAnalysis
+  assertEqual( verifBoolean, true );
 
-% function test_7
-%   cd( [ '..' filesep ...
-%         'linearAerodynamics' ] );
-%   linearAerodynamics
-%   assertEqual( verifBoolean, true );
+function test_7
+  linearAerodynamics
+  assertEqual( verifBoolean, true );
 
-% function test_8
-%   cd( [ '..' filesep ...
-%         'linearCylinderPlaneStrain' ] );
-%   linearCylinderPlaneStrain
-%   assertEqual( verifBoolean, true );
+function test_8
+  addpath(genpath([ 'examples' filesep 'linearCylinderPlaneStrain' ] ) ) ;
+  linearCylinderPlaneStrain
+  assertEqual( verifBoolean, true );
 
-% function test_9
-%   cd( [ '..' filesep ...
-%         'nonlinearPendulum' ] );
-%   nonlinearPendulum
-%   assertEqual( verifBoolean, true );
+function test_9
+  nonlinearPendulum
+  assertEqual( verifBoolean, true );
 
-% function test_10
-%   cd( [ '..' filesep ...
-%         'springMass' ] );
-%   springMass
-%   assertEqual( verifBoolean, true );
+function test_10
+  springMass
+  assertEqual( verifBoolean, true );
 
-% function test_11
-%   cd( [ '..' filesep ...
-%         'simplePropeller' ] );
-%   simplePropeller
-%   assertEqual( verifBoolean, true );
+function test_11
+  simplePropeller
+  assertEqual( verifBoolean, true );
 
-% function test_12
-%   cd( [ '..' filesep ...
-%         'staticVonMisesTruss' ] );
-%   staticVonMisesTruss
-%   assertEqual( verifBoolean, true );
+function test_12
+  addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
+  staticVonMisesTruss
+  assertEqual( verifBoolean, true );
 
 function test_13
-%   cd( [ '..' filesep ...
-%         'uniaxialCompression' ] );
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
@@ -90,19 +71,13 @@ function test_14
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
-% function test_15
-%   cd( [ '..' filesep ...
-%         'uniformCurvatureCantilever' ] );
-%   uniformCurvatureCantilever
-%   assertEqual( verifBoolean, true);
+function test_15
+  uniformCurvatureCantilever
+  assertEqual( verifBoolean, true);
 
-% function test_16
-%   cd( [ '..' filesep ...
-%         'VIVCantilever' ] );
-%   VIVCantilever
-%   assertEqual( verifBoolean, true );
+function test_16
+  VIVCantilever
+  assertEqual( verifBoolean, true );
 
 function test_17
-  % cd( [ '..' filesep '..' filesep 'test'] );
   assertEqual( gaussIntegrationTest, true);
-  % cd( [ '..' ] );
