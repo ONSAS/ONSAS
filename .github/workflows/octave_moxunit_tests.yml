@@ -1,6 +1,6 @@
 # This is the ONSAS.m coode testing continuous integration config file
 #
-name: octave_moxunit_tests
+name: octave_tests
 
 # everytime
 #on: [push, pull_request]
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run octave tests using moxunit
-        uses: joergbrech/moxunit-action@v1.1
+        uses: joergbrech/moxunit-action@v1.3.0
         with:
           src: .
           tests: ./test/runTestProblems_moxunit_disp.m
