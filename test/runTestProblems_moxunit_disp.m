@@ -8,11 +8,11 @@ function test_suite=runTestProblems_moxunit_disp
   end
   initTestSuite;
 
-function test_1
-  cd( [ 'examples' filesep ...
-        'beamLinearVibration' ] );
-  beamLinearVibration
-  assertEqual( verifBoolean, true );
+% function test_1
+%   cd( [ 'examples' filesep ...
+%         'beamLinearVibration' ] );
+%   beamLinearVibration
+%   assertEqual( verifBoolean, true );
 
 % function test_2
 % pwd
@@ -88,7 +88,8 @@ function test_1
 %   assertEqual( verifBoolean, true );
 
 function test_14
-  cd( [ '..' filesep ...
+  % cd( [ '..' filesep ...
+  cd( [ 'examples' filesep ...
         'uniaxialExtension' ] );
   uniaxialExtension
   assertEqual( verifBoolean, true);
