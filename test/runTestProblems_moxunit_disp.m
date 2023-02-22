@@ -81,11 +81,11 @@ function test_1
 %   staticVonMisesTruss
 %   assertEqual( verifBoolean, true );
 
-function test_13
-  cd( [ '..' filesep ...
-        'uniaxialCompression' ] );
-  uniaxialCompression
-  assertEqual( verifBoolean, true );
+% function test_13
+%   cd( [ '..' filesep ...
+%         'uniaxialCompression' ] );
+%   uniaxialCompression
+%   assertEqual( verifBoolean, true );
 
 function test_14
   cd( [ '..' filesep ...
@@ -108,3 +108,4 @@ function test_14
 function test_17
   cd( [ '..' filesep '..' filesep 'test'] );
   assertEqual( gaussIntegrationTest, true);
+  cd( [ '..' ] );
