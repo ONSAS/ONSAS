@@ -15,7 +15,8 @@ function test_1
   assertEqual( verifBoolean, true );
 
 function test_2
-  cd( [ 'examples' filesep ...
+pwd
+  cd( [ '..' filesep ...
         'cantileverModalAnalysis' ] );
 	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
