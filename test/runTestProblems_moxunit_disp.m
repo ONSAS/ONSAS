@@ -57,10 +57,9 @@ function test_suite=runTestProblems_moxunit_disp
 %   simplePropeller
 %   assertEqual( verifBoolean, true );
 
-% function test_12
-%   addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
-%   staticVonMisesTruss
-%   assertEqual( verifBoolean, true );
+function test_12
+  staticVonMisesTruss
+  assertEqual( verifBoolean, true );
 
 function test_13
   uniaxialCompression
