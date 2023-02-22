@@ -9,56 +9,82 @@ function test_suite=runTestProblems_moxunit_disp
   initTestSuite;
 
 function test_1
-  % beamLinearVibration
-  % assertEqual( verifBoolean, true );
-  assertEqual( true , true );
-% function test_2
-% 	cantileverModalAnalysis
-%   assertEqual( verifBoolean, true );
+  cd( [ 'examples' filesep ...
+        'beamLinearVibration' ] );
+  beamLinearVibration
+  assertEqual( verifBoolean, true );
 
-% function test_3
-%   cantileverSelfWeight
-%   assertEqual( verifBoolean, true );
+function test_2
+  cd( [ 'examples' filesep ...
+        'cantileverModalAnalysis' ] );
+	cantileverModalAnalysis
+  assertEqual( verifBoolean, true );
 
-% function test_4
-%   dragBeamReconfiguration
-%   assertEqual( verifBoolean, true );
+function test_3
+  cd( [ 'examples' filesep ...
+        'cantileverSelfWeight' ] );
+  cantileverSelfWeight
+  assertEqual( verifBoolean, true );
 
-% function test_5
-% 	eulerColumn
-%   assertEqual( verifBoolean, true );
+function test_4
+  cd( [ 'examples' filesep ...
+        'dragBeamReconfiguration' ] );
+  dragBeamReconfiguration
+  assertEqual( verifBoolean, true );
 
-% function test_6
-%   frameLinearAnalysis
-%   assertEqual( verifBoolean, true );
+function test_5
+  cd( [ 'examples' filesep ...
+        'eulerColumn' ] );
+	eulerColumn
+  assertEqual( verifBoolean, true );
 
-% function test_7
-%   linearAerodynamics
-%   assertEqual( verifBoolean, true );
+function test_6
+  cd( [ 'examples' filesep ...
+        'frameLinearAnalysis' ] );
+  frameLinearAnalysis
+  assertEqual( verifBoolean, true );
 
-% function test_8
-%   linearCylinderPlaneStrain
-%   assertEqual( verifBoolean, true );
+function test_7
+  cd( [ 'examples' filesep ...
+        'linearAerodynamics' ] );
+  linearAerodynamics
+  assertEqual( verifBoolean, true );
 
-% function test_9
-%   nonlinearPendulum
-%   assertEqual( verifBoolean, true );
+function test_8
+  cd( [ 'examples' filesep ...
+        'linearCylinderPlaneStrain' ] );
+  linearCylinderPlaneStrain
+  assertEqual( verifBoolean, true );
 
-% function test_10
-%   springMass
-%   assertEqual( verifBoolean, true );
+function test_9
+  cd( [ 'examples' filesep ...
+        'nonlinearPendulum' ] );
+  nonlinearPendulum
+  assertEqual( verifBoolean, true );
 
-% function test_11
-%   simplePropeller
-%   assertEqual( verifBoolean, true );
+function test_10
+  cd( [ 'examples' filesep ...
+        'springMass' ] );
+  springMass
+  assertEqual( verifBoolean, true );
 
-% function test_12
-%   staticVonMisesTruss
-%   assertEqual( verifBoolean, true );
+function test_11
+  cd( [ 'examples' filesep ...
+        'simplePropeller' ] );
+  simplePropeller
+  assertEqual( verifBoolean, true );
 
-% function test_13
-%   uniaxialCompression
-%   assertEqual( verifBoolean, true );
+function test_12
+  cd( [ 'examples' filesep ...
+        'staticVonMisesTruss' ] );
+  staticVonMisesTruss
+  assertEqual( verifBoolean, true );
+
+function test_13
+  cd( [ 'examples' filesep ...
+        'uniaxialCompression' ] );
+  uniaxialCompression
+  assertEqual( verifBoolean, true );
 
 function test_14
   cd( [ 'examples' filesep ...
@@ -66,13 +92,17 @@ function test_14
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
-% function test_15
-%   uniformCurvatureCantilever
-%   assertEqual( verifBoolean, true);
+function test_15
+  cd( [ 'examples' filesep ...
+        'uniformCurvatureCantilever' ] );
+  uniformCurvatureCantilever
+  assertEqual( verifBoolean, true);
 
-% function test_16
-%   VIVCantilever
-%   assertEqual( verifBoolean, true );
+function test_16
+  cd( [ 'examples' filesep ...
+        'VIVCantilever' ] );
+  VIVCantilever
+  assertEqual( verifBoolean, true );
 
 function test_17
   assertEqual( gaussIntegrationTest, true);
