@@ -22,88 +22,89 @@ pwd
   assertEqual( verifBoolean, true );
 
 function test_3
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'cantileverSelfWeight' ] );
   cantileverSelfWeight
   assertEqual( verifBoolean, true );
 
 function test_4
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'dragBeamReconfiguration' ] );
   dragBeamReconfiguration
   assertEqual( verifBoolean, true );
 
 function test_5
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'eulerColumn' ] );
 	eulerColumn
   assertEqual( verifBoolean, true );
 
 function test_6
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'frameLinearAnalysis' ] );
   frameLinearAnalysis
   assertEqual( verifBoolean, true );
 
 function test_7
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'linearAerodynamics' ] );
   linearAerodynamics
   assertEqual( verifBoolean, true );
 
 function test_8
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'linearCylinderPlaneStrain' ] );
   linearCylinderPlaneStrain
   assertEqual( verifBoolean, true );
 
 function test_9
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'nonlinearPendulum' ] );
   nonlinearPendulum
   assertEqual( verifBoolean, true );
 
 function test_10
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'springMass' ] );
   springMass
   assertEqual( verifBoolean, true );
 
 function test_11
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'simplePropeller' ] );
   simplePropeller
   assertEqual( verifBoolean, true );
 
 function test_12
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'staticVonMisesTruss' ] );
   staticVonMisesTruss
   assertEqual( verifBoolean, true );
 
 function test_13
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'uniaxialCompression' ] );
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
 function test_14
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'uniaxialExtension' ] );
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
 function test_15
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'uniformCurvatureCantilever' ] );
   uniformCurvatureCantilever
   assertEqual( verifBoolean, true);
 
 function test_16
-  cd( [ 'examples' filesep ...
+  cd( [ '..' filesep ...
         'VIVCantilever' ] );
   VIVCantilever
   assertEqual( verifBoolean, true );
 
 function test_17
+  cd( [ '..' filesep '..' filesep 'test'] );
   assertEqual( gaussIntegrationTest, true);
