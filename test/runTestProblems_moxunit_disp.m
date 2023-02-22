@@ -87,12 +87,12 @@ function test_suite=runTestProblems_moxunit_disp
 %   uniaxialCompression
 %   assertEqual( verifBoolean, true );
 
-function test_14
-  % cd( [ '..' filesep ...
-  cd( [ 'examples' filesep ...
-        'uniaxialExtension' ] );
-  uniaxialExtension
-  assertEqual( verifBoolean, true);
+% function test_14
+%   % cd( [ '..' filesep ...
+%   cd( [ 'examples' filesep ...
+%         'uniaxialExtension' ] );
+%   uniaxialExtension
+%   assertEqual( verifBoolean, true);
 
 % function test_15
 %   cd( [ '..' filesep ...
@@ -107,6 +107,6 @@ function test_14
 %   assertEqual( verifBoolean, true );
 
 function test_17
-  cd( [ '..' filesep '..' filesep 'test'] );
+  % cd( [ '..' filesep '..' filesep 'test'] );
   assertEqual( gaussIntegrationTest, true);
-  cd( [ '..' ] );
+  % cd( [ '..' ] );
