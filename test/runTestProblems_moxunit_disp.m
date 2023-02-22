@@ -91,6 +91,7 @@ function test_14
   % cd( [ '..' filesep ...
   % cd( [ 'examples' filesep ...
   %       'uniaxialExtension' ] );
+  addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
