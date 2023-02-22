@@ -87,12 +87,12 @@ function test_suite=runTestProblems_moxunit_disp
 %   uniaxialCompression
 %   assertEqual( verifBoolean, true );
 
-% function test_14
-%   % cd( [ '..' filesep ...
-%   cd( [ 'examples' filesep ...
-%         'uniaxialExtension' ] );
-%   uniaxialExtension
-%   assertEqual( verifBoolean, true);
+function test_14
+  % cd( [ '..' filesep ...
+  % cd( [ 'examples' filesep ...
+  %       'uniaxialExtension' ] );
+  uniaxialExtension
+  assertEqual( verifBoolean, true);
 
 % function test_15
 %   cd( [ '..' filesep ...
