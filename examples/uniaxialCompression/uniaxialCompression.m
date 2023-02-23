@@ -176,7 +176,7 @@ legend( 'Numeric', 'Analytic' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('uniaxial compression test')
-if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print( './output/verifCompression.png', '-dpng' )
 else
