@@ -1,13 +1,8 @@
 # This is the ONSAS.m coode testing continuous integration config file
 #
-name: octave_tests
+name: moxunit_code_coverage
 
-# everytime
-#on: [push, pull_request]
-
-# not so much
 on:
-  push:
   pull_request:
     branches:
     - master
