@@ -15,8 +15,6 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
-      - run: octave --eval "setenv('TESTS_RUN','yes')"
-      - uses: actions/checkout@v3
       - name: run octave tests using moxunit
         uses: joergbrech/moxunit-action@v1.3.0
         with:

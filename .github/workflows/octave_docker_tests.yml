@@ -10,4 +10,4 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           git clone https://github.com/ONSAS/ONSAS.m.git
-          octave --eval "setenv('TESTS_RUN','yes'), cd ONSAS.m/test, runTestProblems_local"
+          octave --eval "cd ONSAS.m/test, runTestProblems_local"
