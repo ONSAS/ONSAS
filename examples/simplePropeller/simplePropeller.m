@@ -1,6 +1,6 @@
 %md# Simple Propeller example
 %mdIn this example a simple propeller submitted to a constant uniform flow is considered. The geometry is given by three blades with circular cross section.
-if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes')), close all, clear all, end
+if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), close all, clear all, end
 %
 addpath( genpath( [ pwd '/../../src'] ) );
 %md## Problem definition
@@ -125,7 +125,7 @@ legend('analytic','numeric', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('simple propeller test')
-if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print(fig1, 'output/verifPropeller.png','-dpng')
 else
