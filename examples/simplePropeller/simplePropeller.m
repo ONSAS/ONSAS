@@ -32,6 +32,7 @@ angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md## Numerical solution
 %md
 %mdThe material parameters are
+materials                 = struct() ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]        ;
 materials.density         = rho             ;
@@ -39,6 +40,7 @@ materials.density         = rho             ;
 %md### elements
 %mdThe elements are
 % nodes
+elements             = struct() ;
 elements(1).elemType = 'node'  ;
 % blades
 elements(2).elemType = 'frame' ;
@@ -53,11 +55,13 @@ elements(3).massMatType =  'lumped'        ;
 %md 
 %md### boundary Conditions
 %md
+boundaryConditions             = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
 %md 
 %md### mesh
 %md
+mesh             = struct() ;
 mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
                      0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
@@ -82,8 +86,7 @@ initialConds = struct() ;
 %md
 %md### analysisSettings
 %md
-analysisSettings
-analysisSettings = struct() ;
+analysisSettings                        = struct() ;
 analysisSettings.finalTime              =   400     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
