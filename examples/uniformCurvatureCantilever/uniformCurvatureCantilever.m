@@ -10,7 +10,7 @@
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-close all, clear all ;
+if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes')), close all, clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters

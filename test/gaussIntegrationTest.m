@@ -3,7 +3,7 @@
 
 function resultBoolean = gaussIntegrationTest()
 
-  addpath( genpath( [ pwd '/../src'] ) );
+  addpath( genpath( [ pwd filesep '..' filesep 'src'] ));
 
   plots_boolean = true ;
 

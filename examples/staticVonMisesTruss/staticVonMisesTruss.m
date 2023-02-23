@@ -20,7 +20,9 @@
 %md## Numerical solutions
 %md
 %mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes')), close all, clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9  ; nu = 0 ;
 A = 2.5e-3 ; ang1 = 65 ; L = 2 ; 
