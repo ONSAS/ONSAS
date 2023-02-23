@@ -103,6 +103,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       nodes = Conec( elem, 3+(1:3) ) ;
 
+      % area of the element with direction
       areaElem = 0.5 * norm( cross( ...
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
@@ -122,11 +123,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         dofsaux = nodes2dofs( nodes , 6 ) ;
         dofs    = dofsaux(1:2:length(dofsaux)) ;
         % compute the normal vector of the element
-        normal  = cross( ...
-          Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
-          Nodes( nodes(3),:) - Nodes( nodes(1),: ) ) ;
-        % and normalize it
-        n = normal / norm( normal ) ;
+        n = areaElem / norm( areaElem ) ;
 
         Fx = n(1) * loadvals( 5 ) * areaElem / 3 ;
         Fy = n(2) * loadvals( 5 ) * areaElem / 3 ;
