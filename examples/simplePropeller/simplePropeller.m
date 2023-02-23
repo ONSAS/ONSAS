@@ -1,6 +1,6 @@
 %md# Simple Propeller example
 %mdIn this example a simple propeller submitted to a constant uniform flow is considered. The geometry is given by three blades with circular cross section.
-if length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes'), close all, clear all, end
+if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING')), 'yes'), close all, clear all, end
 %
 addpath( genpath( [ pwd '/../../src'] ) );
 %md## Problem definition
