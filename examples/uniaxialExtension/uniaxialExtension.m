@@ -63,7 +63,7 @@
 %md## Numerical solution: case 1
 %md---
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), close all, clear all, end
+close all, if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
@@ -76,17 +76,20 @@ E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 %md since only one material is considered, a scalar struct is defined as follows
-materials.hyperElasModel = 'SVK' ;
+materials                 = struct() ;
+materials.hyperElasModel  = 'SVK' ;
 materials.hyperElasParams = [ lambda mu ] ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:
+elements             = struct() ;
 elements(1).elemType = 'triangle' ;
 elements(2).elemType = 'tetrahedron' ;
 %md
 %md#### boundaryConds
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
 %md the first BC introduced is a load, then the coordinate system, loadfactor time function and base load vector are defined
+boundaryConditions             = struct() ;
 boundaryConds(1).loadsCoordSys = 'global';
 boundaryConds(1).loadsTimeFact = @(t) p*t ;
 boundaryConds(1).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
@@ -118,6 +121,7 @@ initialConds = struct();
 %md\end{center}
 %md```
 %md The node coordinates matrix is given by the following
+mesh             = struct() ;
 mesh.nodesCoords = [ 0    0    0 ; ...
                      0    0   Lz ; ...
                      0   Ly   Lz ; ...
@@ -145,6 +149,7 @@ mesh.conecCell = {[ 0 1 1     5 8 6   ]; ... % loaded face
 %md
 %md### Analysis parameters
 %md
+analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30     ;
 analysisSettings.stopTolDeltau = 1.0e-8 ;
@@ -153,8 +158,9 @@ analysisSettings.finalTime      = 1      ;
 analysisSettings.deltaT        = .125   ;
 %md
 %md### Output parameters
+otherParams              = struct() ;
 otherParams.plots_format = 'vtk' ;
-otherParams.problemName = 'uniaxialExtension_HandMadeMesh' ;
+otherParams.problemName  = 'uniaxialExtension_HandMadeMesh' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

@@ -10,7 +10,7 @@
 %md```
 %md
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes')), close all, clear all, end
+close all, if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
@@ -32,6 +32,7 @@ numElements = 10 ;
 %md
 %md### materials
 %md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
+materials                 = struct() ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ] ;
 %md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
@@ -39,6 +40,7 @@ materials.hyperElasParams = [ E nu ] ;
 %md### elements
 %md
 %mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
+elements             = struct() ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemCrossSecParams field is:
@@ -49,6 +51,7 @@ elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
 %md
 %md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
 Iy = ty*tz^3/12 ;
+boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %mdand the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam.
@@ -63,6 +66,7 @@ initialConds = {} ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
+mesh             = struct() ;
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
@@ -76,6 +80,7 @@ for i=1:numElements,
 end
 %md
 %md### analysisSettings
+analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   0.1  ;
 analysisSettings.finalTime      =   1    ;
@@ -84,9 +89,10 @@ analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
 %md
 %md## otherParams
+otherParams             = struct();
 otherParams.problemName = 'uniformCurvatureCantilever';
 otherParams.controlDofs = [ numElements+1  4 ] ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md## Analysis case 1: NR with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

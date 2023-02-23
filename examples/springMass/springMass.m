@@ -22,7 +22,9 @@
 %md
 %md We start as all models, clearing the workspace and adding the ONSAS path to the work path.
 % clear workspace and add path
-close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
 % scalar parameters for spring-mass system
 k    = 39.47 ; % spring constant

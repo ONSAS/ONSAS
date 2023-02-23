@@ -49,9 +49,10 @@ function test_suite=runTestProblems_moxunit_disp
 %   nonlinearPendulum
 %   assertEqual( verifBoolean, true );
 
-% function test_10
-%   springMass
-%   assertEqual( verifBoolean, true );
+function test_10
+  setenv('TESTS_RUN', 'yes')
+  springMass
+  assertEqual( verifBoolean, true );
 
 function test_11
   % addpath(genpath([ 'examples' filesep 'simplePropeller' ] ) ) ;
