@@ -3,7 +3,7 @@ name: octave_tests
 on: [push, pull_request]
 
 jobs:
-  tests_latest_octave:
+  octave_tests:
     runs-on: ubuntu-latest
     container: gnuoctave/octave:latest
     steps:

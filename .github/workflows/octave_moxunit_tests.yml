@@ -2,10 +2,7 @@
 #
 name: moxunit_code_coverage
 
-on:
-  pull_request:
-    branches:
-    - master
+on: [push, pull_request]
 
 jobs:
   tests:
