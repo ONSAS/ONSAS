@@ -13,7 +13,7 @@ jobs:
       - name: run matlab test problems
         uses: matlab-actions/run-command@v1
         with:
-          command: setenv('TESTS_RUN','yes'), cd test, runTestProblems_local
+          command: cd test, runTestProblems_local
       - name: extract markdown from example scripts
         uses: matlab-actions/run-command@v1
         with:

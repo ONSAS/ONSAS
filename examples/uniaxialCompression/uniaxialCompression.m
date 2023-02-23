@@ -48,7 +48,7 @@
 %md
 %md## Numerical solution
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-if ~(length(getenv('TESTING')) > 0 && strcmp( getenv('TESTING'), 'yes')), close all, clear all, end
+if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), close all, clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
@@ -61,11 +61,13 @@ E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md The material of the solid considered is a neo-Hookean model with $\lambda$, $\mu$ and bulk($K$) parameters:
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ; bulk = E / ( 3*(1-2*nu) ) ;
 %md since only one material is considered, a scalar struct is defined as follows
-materials.hyperElasModel = 'NHC' ;
+materials                 = struct() ;
+materials.hyperElasModel  = 'NHC' ;
 materials.hyperElasParams = [ mu bulk ] ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:
+elements             = struct() ;
 elements(1).elemType = 'triangle' ;
 elements(2).elemType = 'tetrahedron' ;
 elements(2).elemTypeParams = [ 2 ] ;
@@ -73,6 +75,7 @@ elements(2).elemTypeParams = [ 2 ] ;
 %md#### boundaryConds
 %md in this case four BCs are considered, one corresponding to a load and three to displacements.
 %md the first BC introduced is a load, then the coordinate system, loadfactor time function and base load vector are defined
+boundaryConds                  = struct() ;
 boundaryConds(1).loadsCoordSys = 'global';
 boundaryConds(1).loadsTimeFact = @(t) p*t ;
 boundaryConds(1).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
@@ -100,6 +103,7 @@ boundaryConds(4).imposDispVals =  0  ;
 %md\end{center}
 %md```
 %md The node coordinates matrix is given by
+mesh             = struct() ;
 mesh.nodesCoords = [ 0    0    0 ; ...
                      0    0   Lz ; ...
                      0   Ly   Lz ; ...
@@ -131,6 +135,7 @@ initialConds = struct();
 %md
 %md### Analysis parameters
 %md
+analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30     ;
 analysisSettings.stopTolDeltau = 1.0e-8 ;
@@ -139,6 +144,7 @@ analysisSettings.finalTime     = 1      ;
 analysisSettings.deltaT        = .1     ;
 %md
 %md### Output parameters
+otherParams             = struct() ;
 otherParams.problemName = 'uniaxialCompression_HandMadeMesh' ;
 otherParams.plots_format = 'vtk' ;
 %md
@@ -176,7 +182,7 @@ legend( 'Numeric', 'Analytic' , 'location', 'SouthEast' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('uniaxial compression test')
-if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print( './output/verifCompression.png', '-dpng' )
 else

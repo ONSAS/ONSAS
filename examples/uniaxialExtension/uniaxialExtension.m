@@ -63,7 +63,7 @@
 %md## Numerical solution: case 1
 %md---
 %mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-clear all, close all
+if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), close all, clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
@@ -209,7 +209,7 @@ legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('uniaxial compression test')
-if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print('output/verifUniaxial.png','-dpng')
 else

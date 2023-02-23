@@ -54,8 +54,8 @@ function test_suite=runTestProblems_moxunit_disp
 %   assertEqual( verifBoolean, true );
 
 function test_11
-  setenv('TESTING','yes')
   % addpath(genpath([ 'examples' filesep 'simplePropeller' ] ) ) ;
+  setenv('TESTS_RUN', 'yes')
   simplePropeller
   assertEqual( verifBoolean, true );
 
@@ -65,7 +65,7 @@ function test_11
 %   assertEqual( verifBoolean, true );
 
 function test_13
-  setenv('TESTING','yes')
+  setenv('TESTS_RUN', 'yes')
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
@@ -75,7 +75,7 @@ function test_13
 %   assertEqual( verifBoolean, true);
 
 function test_15  
-  setenv('TESTING','yes')
+  setenv('TESTS_RUN', 'yes')
   uniformCurvatureCantilever
   assertEqual( verifBoolean, true);
 
