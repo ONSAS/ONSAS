@@ -82,6 +82,7 @@ initialConds = struct() ;
 %md
 %md### analysisSettings
 %md
+analysisSettings = struct() ;
 analysisSettings.finalTime              =   400     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
