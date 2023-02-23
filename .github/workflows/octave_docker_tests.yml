@@ -1,0 +1,13 @@
+name: octave_tests
+
+on: [push, pull_request]
+
+jobs:
+  tests_latest_octave:
+    runs-on: ubuntu-latest
+    container: gnuoctave/octave:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          git clone https://github.com/ONSAS/ONSAS.m.git
+          octave --eval "setenv('TESTS_RUN','yes'), cd ONSAS.m/test, runTestProblems_local"

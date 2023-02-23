@@ -4,7 +4,7 @@ name: matlab_tests
 on: [push, pull_request]
 
 jobs:
-  docs:
+  matlab_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,7 +13,7 @@ jobs:
       - name: run matlab test problems
         uses: matlab-actions/run-command@v1
         with:
-          command: setenv('DOCSBUILD','yes'), cd test, runTestProblems_local
+          command: setenv('TESTS_RUN','yes'), cd test, runTestProblems_local
       - name: extract markdown from example scripts
         uses: matlab-actions/run-command@v1
         with:
