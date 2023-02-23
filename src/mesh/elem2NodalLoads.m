@@ -104,16 +104,17 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
       nodes = Conec( elem, 3+(1:3) ) ;
 
       % area of the element with direction
-      areaElem = 0.5 * norm( cross( ...
+      areaElem = 0.5 * cross( ...
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
-        ) ) ;
+        ) ;
+      normArea = norm(areaElem)
 
       if strcmp( loadCoordSys, 'global' )
 
-        Fx = loadvals( 1 ) * areaElem / 3 ;
-        Fy = loadvals( 3 ) * areaElem / 3 ;
-        Fz = loadvals( 5 ) * areaElem / 3 ;
+        Fx = loadvals( 1 ) * normArea / 3 ;
+        Fy = loadvals( 3 ) * normArea / 3 ;
+        Fz = loadvals( 5 ) * normArea / 3 ;
 
         assert( sum( loadvals( [ 2 4 6 ] ) == 0 ) == 3, ...
           'error only pressure loads, not moments, create an issue!' );
@@ -125,9 +126,10 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         % compute the normal vector of the element
         n = areaElem / norm( areaElem ) ;
 
-        Fx = n(1) * loadvals( 5 ) * areaElem / 3 ;
-        Fy = n(2) * loadvals( 5 ) * areaElem / 3 ;
-        Fz = n(3) * loadvals( 5 ) * areaElem / 3 ;
+        % area projectd in each x-y, y-z or z-x plane
+        Fx = areaElem(1) * loadvals( 5 ) / 3 ;
+        Fy = areaElem(2) * loadvals( 5 ) / 3 ;
+        Fz = areaElem(3) * loadvals( 5 ) / 3 ;
 
         assert( sum( loadvals( [ 1 2 3 4 6 ] ) == 0 ) == 5, ...
           'error only normal pressure loads in local coords, create an issue!' );
