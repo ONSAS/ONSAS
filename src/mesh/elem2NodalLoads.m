@@ -109,7 +109,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
         ) ;
       
-      areaElem = norm(crossVector) ;
+      areaElem = norm(crossVector) / 2 ;
 
       if strcmp( loadCoordSys, 'global' )
 
@@ -122,7 +122,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       elseif strcmp( loadCoordSys, 'local' ) % local coordinates load
 
-        normalVector = crossVector / areaElem ;
+        normalVector = crossVector / norm(crossVector) ;
 
         dofsaux = nodes2dofs( nodes , 6 ) ;
         dofs    = dofsaux(1:2:length(dofsaux)) ;
