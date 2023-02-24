@@ -28,8 +28,8 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
   [ funder, ~, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
 
   % Displacements and coordinates element matrix (3dofs (ux,uy,uz) and 4 nodes)
-  eleDispsMat = reshape( elemDisps, 3, 4) 
-  eleCoordSpa = tetCoordMat + eleDispsMat 
+  eleDispsMat = reshape( elemDisps, 3, 4) ;
+  eleCoordSpa = tetCoordMat + eleDispsMat ;
 
   % Computes the gradients of the deformation function 
   H = eleDispsMat * funder' ;
