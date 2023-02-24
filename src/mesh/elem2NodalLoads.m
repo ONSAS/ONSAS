@@ -108,7 +108,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
         ) ;
-      normArea = norm(areaElem)
+      normArea = norm(areaElem) ;
 
       if strcmp( loadCoordSys, 'global' )
 
