@@ -28,8 +28,13 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
   [ funder, ~, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
 
   % Displacements and coordinates element matrix (3dofs (ux,uy,uz) and 4 nodes)
-  eleDispsMat = reshape( elemDisps, 3, 4) ;
-  eleCoordSpa = tetCoordMat + eleDispsMat ;
+  eleDispsMat = reshape( elemDisps, 3, 4) 
+  eleCoordSpa = tetCoordMat + eleDispsMat 
+ 
+  eleDispsMat
+  tetCoordMat
+
+  
 
   % Computes the gradients of the deformation function 
   H = eleDispsMat * funder' ;
@@ -37,6 +42,12 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
 
   % Compute the Green-Lagrange strain tensor
   Egreen = 0.5 * ( H + transpose( H ) + transpose( H ) * H ) ;
+
+  H
+  F
+  Egreen
+  
+  stop
 
   if elemConstitutiveParams(1) == 2 % Saint-Venant-Kirchhoff compressible solid
 
