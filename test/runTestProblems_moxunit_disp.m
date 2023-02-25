@@ -67,14 +67,12 @@ function test_suite=runTestProblems_moxunit_disp
 %   assertEqual( verifBoolean, true );
 
 function test_13
-  % setenv('TESTS_RUN', 'yes')
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
-% function test_14
-%   addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
-%   uniaxialExtension
-%   assertEqual( verifBoolean, true);
+function test_14
+  uniaxialExtension
+  assertEqual( verifBoolean, true);
 
 function test_15  
   uniformCurvatureCantilever
