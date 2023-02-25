@@ -22,7 +22,9 @@
 %md
 %md We start as all models, clearing the workspace and adding the ONSAS path to the work path.
 % clear workspace and add path
-close all, clear all; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
 % scalar parameters for spring-mass system
 k    = 39.47 ; % spring constant
@@ -80,6 +82,7 @@ assert( u0 < l, 'this analytical solution is not valid for this u0 and l0');
 %md  
 %md#### Materials
 %md
+materials                    = {} ;
 materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E 0 ]          ;
 materials(1).density         = rho              ;
@@ -87,6 +90,7 @@ materials(1).density         = rho              ;
 %md#### Elements
 %md
 %md In this case only `'node'` and  `'truss'` elements are considered and the lumped inertial formulation is set for the truss element:
+elements             = {} ;
 elements(1).elemType = 'node'                                 ;
 elements(2).elemType = 'truss'                                ;
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
@@ -95,6 +99,7 @@ elements(2).massMatType = 'lumped'                            ;
 %md#### Boundary conditions
 %md
 %md The node $1$ is fixed, so the boundary condition set is:
+boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 %md The node $2$ allows the truss to move in $x$ so the boundary condition set is:
@@ -114,6 +119,7 @@ initialConds.Udot = aux ;
 %md
 %md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
+analysisSettings               = {} ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   0.005   ;
 analysisSettings.finalTime     =   2.5*TN  ;
@@ -123,13 +129,15 @@ analysisSettings.stopTolIts    =   10      ;
 %md
 %md#### OtherParams
 %md The nodalDispDamping is added into the model using:
-otherParams.nodalDispDamping =   c    ;
+otherParams                  = {} ;
+otherParams.nodalDispDamping = c    ;
 %md The name of the problem is:
 %md
 otherParams.problemName = 'springMass_case1'     ;
 %md
 %md### mesh
 %md Only two nodes are considered so the nodes matrix is:
+mesh             = {} ;
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
 mesh.conecCell = { } ;
@@ -153,7 +161,7 @@ materials(2).nodalMass = [m m m] ;
 %md#### Boundary conditions
 %md the boundary conditions struct is entirely re-written.
 % repeat the BCs for node 1
-boundaryConds = { } ;
+boundaryConds                  = { } ;
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 % repeat the BCs for node 2
@@ -167,8 +175,8 @@ boundaryConds(3).userLoadsFilename = 'myLoadSpringMass' ;
 mesh.conecCell{ 2, 1 } = [ 2 1 2   2  ] ;
 %md
 %md The $\alpha_{HHT}$ method with $\alpha=0$ is equivalent to Newmark, this is employed to validate results of both methods, then:
-analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   0        ;
+analysisSettings.methodName = 'alphaHHT' ;
+analysisSettings.alphaHHT   =   0        ;
 %md
 otherParams.problemName = 'springMass_case2'     ;
 %md
@@ -184,12 +192,11 @@ Izz = pi * d^4 / 64 ;
 E   = k* l^3 / ( 3 * Izz ) ; % delta = P L3/(3EI)  =>  k = P/delta = 3EI/L3  => E = kL3/(3I)
 rho = 2*m/(A*l) ; 
 %md
-materials = {};
 materials(1).hyperElasParams = [ E 0 ] ;
 materials(1).density  = rho ;
 materials(1).hyperElasModel  = 'linearElastic' ; % 1DrotEngStrain should work as well
 %md
-elements = {} ;
+elements             = {} ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'frame'; %and not truss
 elements(2).massMatType = 'lumped' ;
@@ -224,7 +231,7 @@ analysisSettings.methodName    = 'newmark' ;
 %md
 [matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 valsBending = matUsBending(6+3,:) ;
-
+%md
 %md## Verification
 %md The numerical displacements of the node $2$ is extracted for both study cases:
 valsNewmark = matUsNewmark(6+1,:) ;

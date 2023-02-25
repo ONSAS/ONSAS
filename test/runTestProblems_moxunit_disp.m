@@ -6,6 +6,7 @@ function test_suite=runTestProblems_moxunit_disp
     test_functions=localfunctions()
   catch
   end
+  setenv('TESTS_RUN', 'yes')
   initTestSuite;
 
 % function test_1
@@ -49,41 +50,34 @@ function test_suite=runTestProblems_moxunit_disp
 %   nonlinearPendulum
 %   assertEqual( verifBoolean, true );
 
-% function test_10
-%   springMass
-%   assertEqual( verifBoolean, true );
+%function test_10
+  % setenv('TESTS_RUN', 'yes')
+  % springMass
+ % assertEqual( verifBoolean, true );
 
 function test_11
-  % addpath(genpath([ 'examples' filesep 'simplePropeller' ] ) ) ;
-  setenv('TESTS_RUN', 'yes')
   simplePropeller
   assertEqual( verifBoolean, true );
 
-% function test_12
-%   addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
-%   staticVonMisesTruss
-%   assertEqual( verifBoolean, true );
+function test_12
+  staticVonMisesTruss
+  assertEqual( verifBoolean, true );
 
 function test_13
-  setenv('TESTS_RUN', 'yes')
   uniaxialCompression
   assertEqual( verifBoolean, true );
 
-% function test_14
-%   addpath(genpath([ 'examples' filesep 'uniaxialExtension' ] ) ) ;
-%   uniaxialExtension
-%   assertEqual( verifBoolean, true);
+function test_14
+  uniaxialExtension
+  assertEqual( verifBoolean, true);
 
 function test_15  
-  setenv('TESTS_RUN', 'yes')
   uniformCurvatureCantilever
   assertEqual( verifBoolean, true);
 
-% function test_16
-%   cd( [ '..' filesep ...
-%         'VIVCantilever' ] );
-%   VIVCantilever
-%   assertEqual( verifBoolean, true );
+function test_16
+  VIVCantilever
+  assertEqual( verifBoolean, true );
 
 function test_17
   assertEqual( gaussIntegrationTest, true);
