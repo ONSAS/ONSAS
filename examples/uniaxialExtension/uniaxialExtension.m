@@ -185,7 +185,7 @@ otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 %md this auxiliar line sets the right path to the testing environment
 base_msh=[];
 if strcmp( getenv('TESTS_RUN'),'yes'),
-  base_msh=['.' filesep 'examples' filsep 'uniaxialExtension' filesep];
+  base_msh=['.' filesep 'examples' filesep 'uniaxialExtension' filesep];
 end
 %
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'geometry_uniaxialExtension.msh'] ) ;
