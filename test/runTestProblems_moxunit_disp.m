@@ -55,16 +55,13 @@ function test_suite=runTestProblems_moxunit_disp
   % springMass
  % assertEqual( verifBoolean, true );
 
-%function test_11
-  % addpath(genpath([ 'examples' filesep 'simplePropeller' ] ) ) ;
-  % setenv('TESTS_RUN', 'yes')
-  % simplePropeller
- % assertEqual( verifBoolean, true );
+function test_11
+  simplePropeller
+  assertEqual( verifBoolean, true );
 
-% function test_12
-%   addpath(genpath([ 'examples' filesep 'staticVonMisesTruss' ] ) ) ;
-%   staticVonMisesTruss
-%   assertEqual( verifBoolean, true );
+function test_12
+  staticVonMisesTruss
+  assertEqual( verifBoolean, true );
 
 function test_13
   uniaxialCompression
@@ -78,11 +75,9 @@ function test_15
   uniformCurvatureCantilever
   assertEqual( verifBoolean, true);
 
-% function test_16
-%   cd( [ '..' filesep ...
-%         'VIVCantilever' ] );
-%   VIVCantilever
-%   assertEqual( verifBoolean, true );
+function test_16
+  VIVCantilever
+  assertEqual( verifBoolean, true );
 
 function test_17
   assertEqual( gaussIntegrationTest, true);
