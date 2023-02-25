@@ -1,7 +1,8 @@
 %md# Cantilever Modal Analysis
 %md
 %mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
-close all, clear all, addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+addpath( genpath( [ pwd '/../../src'] ) );
 %md
 %mdThe material scalar parameters are set.
 E = 200e9 ; nu = 0.3;  rho = 700;
@@ -19,11 +20,13 @@ global modalAnalysisBoolean
 modalAnalysisBoolean = true;
 
 %md### materials
+materials                 = struct()         ;
 materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rho              ;
 %md
 %md### elements
+elements = struct() ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
@@ -31,6 +34,7 @@ elements(2).elemCrossSecParams = { 'circle' , diam } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
 %md
+boundaryConditions             = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md and the second corresponds to a time dependant external force
@@ -42,6 +46,7 @@ boundaryConds(2).loadsBaseVals = [ 0 0 1 0 0 0 ] ;
 %md homogeneous initial conditions are considered, then an empty struct is set:
 initialConds = struct() ;
 %md
+mesh = struct() ;
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 
 mesh.conecCell = { } ;
@@ -53,6 +58,7 @@ for i=1:numElements
 end
 
 %md### analysisSettings
+analysisSettings = struct() ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   deltat  ;
 analysisSettings.finalTime     =   tf   ;
@@ -61,13 +67,13 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
 %md
 %md## otherParams
+otherParams = struct() ;
 otherParams.problemName = 'cantilever_modal_analysis';
 %md ONSAS execution
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 % load matrices file
-filename = [ pwd filesep 'output' filesep 'matrices.mat'];
-load(filename);
+load( [ pwd filesep 'output' filesep 'matrices.mat'] );
 
 KTred = KT( neumdofs, neumdofs ) ;
 Mred  = massMat( neumdofs, neumdofs ) ;
