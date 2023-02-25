@@ -17,19 +17,17 @@ function test_2
  	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
 
-% function test_3
-%   addpath(genpath([ 'examples' filesep 'cantileverSelfWeight' ] ));
-%   cantileverSelfWeight
-%   assertEqual( verifBoolean, true );
+function test_3
+  cantileverSelfWeight
+  assertEqual( verifBoolean, true );
 
-% function test_4
-%   addpath(genpath([ 'examples' filesep 'dragBeamReconfiguration' ] ));
-%   dragBeamReconfiguration
-%   assertEqual( verifBoolean, true );
+function test_4
+  dragBeamReconfiguration
+  assertEqual( verifBoolean, true );
 
-% function test_5
-% 	eulerColumn
-%   assertEqual( verifBoolean, true );
+function test_5
+	eulerColumn
+  assertEqual( verifBoolean, true );
 
 % function test_6
 %   frameLinearAnalysis
