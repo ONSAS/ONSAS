@@ -183,8 +183,8 @@ loadFactorNumericalValsCase1  = loadFactorsMat ;
 %md
 otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
 %md this auxiliar line sets the right path to the testing environment
-base_msh=[];
-if strcmp( getenv('TESTS_RUN'),'yes'),
+base_msh='';
+if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
   base_msh=['.' filesep 'examples' filesep 'uniaxialExtension' filesep];
 end
 %
