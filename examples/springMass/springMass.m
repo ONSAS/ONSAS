@@ -22,7 +22,7 @@
 %md
 %md We start as all models, clearing the workspace and adding the ONSAS path to the work path.
 % clear workspace and add path
-close all, if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), clear all, end
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 %
 addpath( genpath( [ pwd '/../../src'] ) );
 %md The following numeric parameters are considered.
@@ -137,6 +137,7 @@ otherParams.problemName = 'springMass_case1'     ;
 %md
 %md### mesh
 %md Only two nodes are considered so the nodes matrix is:
+mesh             = {} ;
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
 mesh.conecCell = { } ;
@@ -160,7 +161,7 @@ materials(2).nodalMass = [m m m] ;
 %md#### Boundary conditions
 %md the boundary conditions struct is entirely re-written.
 % repeat the BCs for node 1
-boundaryConds = { } ;
+boundaryConds                  = { } ;
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 % repeat the BCs for node 2
@@ -174,8 +175,8 @@ boundaryConds(3).userLoadsFilename = 'myLoadSpringMass' ;
 mesh.conecCell{ 2, 1 } = [ 2 1 2   2  ] ;
 %md
 %md The $\alpha_{HHT}$ method with $\alpha=0$ is equivalent to Newmark, this is employed to validate results of both methods, then:
-analysisSettings.methodName    = 'alphaHHT' ;
-analysisSettings.alphaHHT      =   0        ;
+analysisSettings.methodName = 'alphaHHT' ;
+analysisSettings.alphaHHT   =   0        ;
 %md
 otherParams.problemName = 'springMass_case2'     ;
 %md
@@ -195,6 +196,7 @@ materials(1).hyperElasParams = [ E 0 ] ;
 materials(1).density  = rho ;
 materials(1).hyperElasModel  = 'linearElastic' ; % 1DrotEngStrain should work as well
 %md
+elements             = {} ;
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'frame'; %and not truss
 elements(2).massMatType = 'lumped' ;
@@ -202,6 +204,7 @@ elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [d] ;
 elements(2).elemTypeParams = 0 ;
 %md
+boundaryConds = {} ;
 boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0] ;
 %md
@@ -228,7 +231,7 @@ analysisSettings.methodName    = 'newmark' ;
 %md
 [matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 valsBending = matUsBending(6+3,:) ;
-
+%md
 %md## Verification
 %md The numerical displacements of the node $2$ is extracted for both study cases:
 valsNewmark = matUsNewmark(6+1,:) ;
