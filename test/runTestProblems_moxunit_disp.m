@@ -9,15 +9,13 @@ function test_suite=runTestProblems_moxunit_disp
   setenv('TESTS_RUN', 'yes')
   initTestSuite;
 
-% function test_1
-  % cd( [ 'examples' filesep ...
-  %       'beamLinearVibration' ] );
-  % beamLinearVibration
-  % assertEqual( verifBoolean, true );
+function test_1
+  beamLinearVibration
+  assertEqual( verifBoolean, true );
 
-% function test_2
-%  	cantileverModalAnalysis
-%   assertEqual( verifBoolean, true );
+function test_2
+ 	cantileverModalAnalysis
+  assertEqual( verifBoolean, true );
 
 % function test_3
 %   addpath(genpath([ 'examples' filesep 'cantileverSelfWeight' ] ));
