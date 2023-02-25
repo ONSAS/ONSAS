@@ -1,5 +1,5 @@
 % EulerColumn
-close all, clear all
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
@@ -15,11 +15,13 @@ numElements = 8 ;
 % MEBI parameters
 % Materials
 % ----------------------------------------------------------------------
+materials  = struct();
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ] ;
 % Elements
 % ----------------------------------------------------------------------
 % Types
+elements  = struct();
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 % Sections
@@ -29,6 +31,7 @@ elements(2).massMatType   = 'consistent'       ;
 % Boundary conditions
 % ----------------------------------------------------------------------
 % Pinned support
+boundaryConds  = struct();
 boundaryConds(1).imposDispDofs = [ 1 3 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 ] ;
 % Roller support
@@ -49,6 +52,7 @@ initialConds                = struct() ;
 % Mesh
 % Nodes coords
 % ----------------------------------------------------------------------
+mesh  = struct();
 mesh.nodesCoords = [ zeros(numElements+1,2) (0:(numElements))'*l/numElements ] ;
 % Conec cell
 % ----------------------------------------------------------------------
@@ -62,13 +66,15 @@ end
 
 % Parameters
 % ----------------------------------------------------------------------
+analysisSettings  = struct();
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   2.5    ;
 analysisSettings.finalTime     =   125    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
-
+%md
+otherParams  = struct();
 otherParams.problemName = 'EulerColumn';
 otherParams.controlDofs = [ numElements+1  5 ] ;
 %otherParams.plots_format = 'vtk' ;
@@ -91,4 +97,4 @@ plot( controlDisps, loadFactors, 'k-o' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
 
 
-verifBoolean = ( abs(controlDisps(end) - 1.7406)/1.7406 ) < 1e-3
+verifBoolean = ( abs(controlDisps(end) - 1.7406)/1.7406 ) < 1e-3 ;
