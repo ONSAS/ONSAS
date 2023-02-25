@@ -127,7 +127,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         dofsaux = nodes2dofs( nodes , 6 ) ;
         dofs    = dofsaux(1:2:length(dofsaux)) ;
 
-        % area projectd in each x-y, y-z or z-x plane
+        %  x, y and z components of the normal tension
         Fx = normalVector(1) * loadvals( 5 ) / 3  * areaElem ;
         Fy = normalVector(2) * loadvals( 5 ) / 3  * areaElem ;
         Fz = normalVector(3) * loadvals( 5 ) / 3  * areaElem ;
