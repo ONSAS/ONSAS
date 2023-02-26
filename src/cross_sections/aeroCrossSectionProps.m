@@ -28,7 +28,7 @@ function [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams
     if strcmp( elemCrossSecParams{1}, 'circle' ) || strcmp( elemCrossSecParams{1}, 'pipe' )
 
         if ~chordVecIsDefiend chordVector = [ 0 0 d ] end ;
-        % if ~dragIsDefiend dragF = 'circularDrag' ; end ;
+        % if ~dragIsDefiend dragF = 'dragCoefCircular' ; end ;
         % if ~liftIsDefiend liftF = 'circularLift' ; end ;
         % if ~pitchIsDefiend pitchF = inline("0")  ; end ;
         if ~dragIsDefiend dragF = "dragCoefFunctionLA"  ; end ;

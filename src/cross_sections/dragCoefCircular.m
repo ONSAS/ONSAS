@@ -21,7 +21,7 @@
 % https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722
 % The function is suggetes by Frederick Gosselin in #issue 617 
 
-function C_d = dragCoefFunctionLA( betaRel, Re )
+function C_d = dragCoefCircular( betaRel, Re )
 
     C_d = 11 * Re^(-0.75) + 0.9 * (1- exp(- 1000 / Re) ) + 1.2 * (1 - exp(-(Re/4500)^(0.7)));
 
