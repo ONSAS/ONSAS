@@ -20,13 +20,16 @@
 function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , ...
                                      elemCrossSecParams                       , ...
                                      Ue, Udote, Udotdote                      , ...
-                                     aeroCoefs, elemTypeAero, analysisSettings, ...
-                                     nextTime, currElem )
+                                     aeroCoefs, chordVector,aeroNumericalParams,...
+                                    analysisSettings,nextTime, currElem )
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
-  assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
   assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
+  assert( ~isempty( chordVector), ' empty elements.elemTypeAero.' )
+  assert( ~isempty( aeroNumericalParams), ' empty elements.elemTypeAero.' )
+
+  [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs);
 
   % Declare booleans for VIV model
   global VIVBool
@@ -46,7 +49,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
-  geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
+  numGaussPoints = aeroNumericalParams{1};
+  computeAeroTangMatrix = aeroNumericalParams{2};
+  geometricNonLinearAero = aeroNumericalParams{3} ;
 
   % Boolean to compute the fluid force with ut = 0, this should be used if the fluid loads are computed in the reference
   % configuration and nonlinear effects are not considered.
@@ -64,10 +69,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   xs = elemCoords(:) ;
 
   % Load element properties to fluid loads
-  % chord vector
-  vecChordUndef    = elemTypeAero( 1:3 )'  ;
   % length of the chord vector
-  dimCharacteristic = norm( vecChordUndef ) ;
+  dimCharacteristic = norm( chordVector ) ;
 
   % compute corotational rotation matrices
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
@@ -115,7 +118,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   L3 = expon( [pi/2 0 0] ) ;
 
   % Extract points and weights for numGausspoints selected
-  numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
 
   % WOM computation call for cases with VIVbool equal to true
@@ -205,7 +207,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
     fDragLiftPitchElem =  fDragLiftPitchElem ...
                +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,...
                                                            l0, tl1, tl2, Rr,...
-                                                           vecChordUndef, dimCharacteristic,...
+                                                           chordVector', dimCharacteristic,...
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q,  constantLiftDir, uniformUdot, tlift1, tlift2 ) ;
@@ -228,7 +230,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
-  if elemTypeAero(5)
+  if computeAeroTangMatrix
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
@@ -241,9 +243,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 
 
 end
-
-
-
 
 
 % This function returns the tangent matrix of the hydrodinamic force vector with respect to u
