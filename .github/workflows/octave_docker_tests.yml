@@ -9,5 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          git clone https://github.com/ONSAS/ONSAS.m.git
+          ls |
+          pwd |
           octave --eval "cd ONSAS.m/test, runTestProblems_local"
