@@ -8,7 +8,6 @@ jobs:
     container: gnuoctave/octave:latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          ls |
+      - run: ls |
           pwd |
-          octave --eval "cd ONSAS.m/test, runTestProblems_local"
+          octave --eval "cd ./test, runTestProblems_local"
