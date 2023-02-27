@@ -78,13 +78,14 @@ verifDisps = ( abs( numerThetax1 - analyThetax1 ) < 1e-8 ) && ...
                ( abs( numerDeflz     - analyDeflz     ) < 1e-8 )
 
 analyFintElem1 = [ 0  Pz*L2 -Py -L1*Pz  Pz -Py*L1 ...
-              0 -Pz*L2 +Py      0 -Pz      0 ] 
-numerFintElem1 = cellFint{2}(1,1:12) 
+              0 -Pz*L2 +Py      0 -Pz      0 ]  ;
+numerFintElem1 = cellFint{2}(1,1:12) ;
 
 analyFintElem2 = [ -Py 0 0 -Pz*L2  Pz 0 ...
-                    Py 0 0      0 -Pz 0 ]
-numerFintElem2 = cellFint{2}(2,1:12) 
+                    Py 0 0      0 -Pz 0 ];
+numerFintElem2 = cellFint{2}(2,1:12) ;
 
 verifFints = ( norm( numerFintElem1 - analyFintElem1 ) < ( 1e-8 * norm(analyFintElem1) ) ) && ...
              ( norm( numerFintElem2 - analyFintElem2 ) < ( 1e-8 * norm(analyFintElem2) ) ) ;
    
+verifBoolean = verifDisps && verifFints
