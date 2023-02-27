@@ -86,6 +86,6 @@ analyFintElem2 = [ -Py 0 0 -Pz*L2  Pz 0 ...
 numerFintElem2 = cellFint{2}(2,1:12) ;
 
 verifFints = ( norm( numerFintElem1 - analyFintElem1 ) < ( 1e-8 * norm(analyFintElem1) ) ) && ...
-             ( norm( numerFintElem2 - analyFintElem2 ) < ( 1e-8 * norm(analyFintElem2) ) ) ;
+             ( norm( numerFintElem2 - analyFintElem2 ) < ( 1e-8 * norm(analyFintElem2) ) ) 
    
 verifBoolean = verifDisps && verifFints
