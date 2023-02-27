@@ -112,8 +112,9 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
   if ~isempty(  ILVIVBool ) && ILVIVBool
-      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelGflow ) * VpiRelGflow     ;
-      fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
+      famp = 3;
+      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ; % Test to include fluid damping
+      fdl_il =  1/2 * famp *densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
   else
       fdl =  1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG ) * VpiRelG     ;
       fdl_il =  [0 0 0]' ;
@@ -127,9 +128,19 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
       % transform the lift direction into deformed coordinates to re use the Eq in line 330
       tlift_defCoords = Rroofx' * Rr' * tlift / norm( Rroofx' * Rr' * tlift  ) ;
       % compute the lift force in deformed coordinates
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
-    else % lift direction is variable
-      fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+      if ~isempty( fluidFlowBool ) && fluidFlowBool
+        fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow )^2 * tlift_defCoords ;
+      else
+        fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlift_defCoords ;
+      end
+     else % lift direction is variable
+        if ~isempty( fluidFlowBool ) && fluidFlowBool % Leclercq validation
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow )^2 * VpiRelGperp ;
+        elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * VpiRelGperp ;
+        else 
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+        end
     end
 
   else % no WOM and a variable lift direction
