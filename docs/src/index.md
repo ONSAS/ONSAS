@@ -19,6 +19,7 @@ Journal articles using ONSAS:
 Theses using ONSAS:
 
  * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* [url](https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388)
+ * 2021, A. Teliz, *Optimización de torres de alta tensión y su análisis frente a vientos de alta intensidad* [url](https://hdl.handle.net/20.500.12008/35985)
 
 
 ## Some example applications

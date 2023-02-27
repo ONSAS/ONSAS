@@ -20,7 +20,9 @@
 %md## Numerical solutions
 %md
 %mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9  ; nu = 0 ;
 A = 2.5e-3 ; ang1 = 65 ; L = 2 ; 
@@ -34,6 +36,7 @@ z2 = sin( ang1*pi/180 ) * L ;
 %md
 %md#### materials
 %md Since both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is the Rotated Engineering strain, then the field `hyperElasModel` is set to:
+materials                 = {} ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 %md and in the field `hyperElasParams` a vector with the parameters of the Engineering Strain model is set
 materials.hyperElasParams = [ E nu ] ;
@@ -43,6 +46,7 @@ materials.hyperElasParams = [ E nu ] ;
 %md#### elements
 %md
 %mdTwo different types of elements are required to create the model: `node` and `truss`, thus, the `elements` struct will have two entries. The type of the first entry is
+elements             = {} ;
 elements(1).elemType = 'node' ;
 %md and the second entry is
 elements(2).elemType = 'truss';
@@ -55,6 +59,7 @@ elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
 %md The nodes $1$ and $3$ are fixed, without loads applied (this is the first BC), and node $2$ has a constraint in displacement and an applied load (second BC).
 %md For the displacements, the first BC corresponds to a xyz-fixed displacement,
 %md
+boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 %mdand the second BC corresponds to a zero displacement only in the $y$ direction.
@@ -69,6 +74,7 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 %md### mesh parameters
 %md
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
+mesh             = {} ;
 mesh.nodesCoords = [   0  0   0 ; ...
                       x2  0  z2 ; ...
                     2*x2  0   0 ] ;
@@ -93,6 +99,7 @@ initialConds = {} ;
 %md
 %md### analysisSettings
 %md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
+analysisSettings               = {};
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        =   0.1  ;
@@ -102,7 +109,8 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
-otherParams.problemName = 'staticVonMisesTruss_NR_RotEng';
+otherParams              = {};
+otherParams.problemName  = 'staticVonMisesTruss_NR_RotEng';
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;
 %md

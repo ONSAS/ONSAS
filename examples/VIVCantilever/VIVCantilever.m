@@ -1,7 +1,9 @@
 %md# WOM VIV
 %
 % add ONSAS path
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 %tic ;
 %
 % declare global variables

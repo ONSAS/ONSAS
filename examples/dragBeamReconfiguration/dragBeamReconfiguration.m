@@ -3,14 +3,13 @@
 % FDrag(timeVar) = sum(Faero(1:6:end)) ;
 % # Reconfiguration cantilever beam example 
 %----------------------------
-close all, clear all ;
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 %----------------------------
 % add dynamic case boolean for non test executions: 
 testBool = true; 
 %----------------------------
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ); 
-addpath( genpath( [ pwd ] ) ); 
 % General  problem parameters
 %----------------------------
 % we load the given parameters:
@@ -21,6 +20,7 @@ numElements = 10 ;
 % materials
 %----------------------------
 % Since the example contains only one material and co-rotational strain element so then `materials` struct is:
+materials  = struct();
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rhoS             ;
@@ -28,6 +28,7 @@ materials.density         = rhoS             ;
 % elements
 %----------------------------
 % Two different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
+elements  = struct();
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 % for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a circular section with $d$ diameter
@@ -42,6 +43,7 @@ elements(2).aeroCoefs = {dragCoefFunction; []; [] } ;
 % boundaryConds
 %----------------------------
 % The elements are submitted to only one different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
+boundaryConds  = struct();
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %
@@ -52,6 +54,7 @@ initialConds = struct() ;
 %
 % analysisSettings Static
 %----------------------------
+analysisSettings  = struct();
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircStatic'} ;
 % The geometrical non-linear effects are not considered in this case to compute the aerodynamic force. As consequence the wind load forces are computed on the reference configuration, and remains constant during the beam deformation. The field  _geometricNonLinearAero_ into  `analysisSettings` struct is then set to:
 analysisSettings.geometricNonLinearAero = true;
@@ -66,6 +69,7 @@ analysisSettings.stopTolIts    =   50            ;
 %
 % otherParams
 %----------------------------
+otherParams  = struct();
 otherParams.problemName = 'staticReconfigurationCircle';
 otherParams.plots_format = 'vtk' ;
 %
@@ -73,6 +77,7 @@ otherParams.plots_format = 'vtk' ;
 % meshParams
 %----------------------------
 %The coordinates of the mesh nodes are given by the matrix:
+mesh  = struct();
 mesh.nodesCoords = [ (0:(numElements))' * l / numElements  zeros(numElements+1,2) ];
 %The connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
@@ -133,7 +138,11 @@ end
 %### Gosselin et.Al 2010 solution
 %
 % resudrag (cycd, R) and def wich contains de deformed configuration for 10^i cycyd values: 
-load( 'Gosselin2010_data.mat', 'def', 'resudrag')
+base_dir='';
+if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
+  base_dir=['.' filesep 'examples' filesep 'dragBeamReconfiguration' filesep];
+end
+load( [base_dir 'Gosselin2010_data.mat'], 'def', 'resudrag')
 %md
 %md### Validation plots
 %md
