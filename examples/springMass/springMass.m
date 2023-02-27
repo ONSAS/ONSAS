@@ -82,7 +82,7 @@ assert( u0 < l, 'this analytical solution is not valid for this u0 and l0');
 %md  
 %md#### Materials
 %md
-materials                    = {} ;
+materials                    = struct() ;
 materials(1).hyperElasModel  = '1DrotEngStrain' ;
 materials(1).hyperElasParams = [ E 0 ]          ;
 materials(1).density         = rho              ;
@@ -90,7 +90,7 @@ materials(1).density         = rho              ;
 %md#### Elements
 %md
 %md In this case only `'node'` and  `'truss'` elements are considered and the lumped inertial formulation is set for the truss element:
-elements             = {} ;
+elements             = struct() ;
 elements(1).elemType = 'node'                                 ;
 elements(2).elemType = 'truss'                                ;
 elements(2).elemCrossSecParams = {'circle', [sqrt(4*A/pi) ] } ;
@@ -99,7 +99,7 @@ elements(2).massMatType = 'lumped'                            ;
 %md#### Boundary conditions
 %md
 %md The node $1$ is fixed, so the boundary condition set is:
-boundaryConds                  = {} ;
+boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 %md The node $2$ allows the truss to move in $x$ so the boundary condition set is:
@@ -119,7 +119,7 @@ initialConds.Udot = aux ;
 %md
 %md#### Analysis settings
 %md The following parameters correspond to the iterative trapezoidal Newmark method with the following tolerances, time step, tolerances and final time
-analysisSettings               = {} ;
+analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   0.005   ;
 analysisSettings.finalTime     =   2.5*TN  ;
@@ -129,7 +129,7 @@ analysisSettings.stopTolIts    =   10      ;
 %md
 %md#### OtherParams
 %md The nodalDispDamping is added into the model using:
-otherParams                  = {} ;
+otherParams                  = struct() ;
 otherParams.nodalDispDamping = c    ;
 %md The name of the problem is:
 %md
@@ -137,7 +137,7 @@ otherParams.problemName = 'springMass_case1'     ;
 %md
 %md### mesh
 %md Only two nodes are considered so the nodes matrix is:
-mesh             = {} ;
+mesh             = struct() ;
 mesh.nodesCoords = [  0  0  0 ; ...
                       l  0  0 ] ;
 mesh.conecCell = { } ;
