@@ -92,6 +92,7 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
 
   fe = H' * fl ;
 
+
   Dh1 = dinvTs( tl1, fl(2:4) ) * De1 ;
   Dh2 = dinvTs( tl2, fl(5:7) ) * De2 ;
 
