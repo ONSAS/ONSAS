@@ -93,7 +93,7 @@ if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
   base_msh=['.' filesep 'examples' filesep 'linearCylinderPlaneStrain' filesep];
 end
 mesh = struct();
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' ) ;
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'ring.msh'] ) ;
 %md
 %md### Analysis parameters
 %md
