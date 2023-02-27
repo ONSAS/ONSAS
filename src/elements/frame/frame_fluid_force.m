@@ -169,7 +169,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       end
 
       % computes van der pol solution for current element
-      if ~isempty( fluidFlowBool ) && fluidFlowBool
           % node 1
           [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
                                                                                  Rroof1, Rr, L2, L3 ) ;
@@ -186,11 +185,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
           else
               p=0;
           end
-      else 
-          q = WOMV4( VpiRel1, VpiRel2, udotdotFrame1, udotdotFrame2,...
-                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-          p=0;
-      end
 
     else
       q = 0 ; % No lift with circular cross section!
