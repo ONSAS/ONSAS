@@ -37,19 +37,17 @@ function test_5
 %   linearAerodynamics
 %   assertEqual( verifBoolean, true );
 
-% function test_8
-%   addpath(genpath([ 'examples' filesep 'linearCylinderPlaneStrain' ] ) ) ;
-%   linearCylinderPlaneStrain
-%   assertEqual( verifBoolean, true );
+function test_8
+  linearCylinderPlaneStrain
+  assertEqual( verifBoolean, true );
 
 % function test_9
 %   nonlinearPendulum
 %   assertEqual( verifBoolean, true );
 
-%function test_10
-  % setenv('TESTS_RUN', 'yes')
-  % springMass
- % assertEqual( verifBoolean, true );
+function test_10
+  springMass
+  assertEqual( verifBoolean, true );
 
 function test_11
   simplePropeller

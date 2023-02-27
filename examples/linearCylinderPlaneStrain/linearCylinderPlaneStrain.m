@@ -34,7 +34,7 @@
 %md```
 %md### Numerical solution
 %md Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined:
-clear all, close all
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
@@ -46,12 +46,14 @@ E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
 %md#### materials
 %md The constitutive behavior of the material considered is isotropic linear elastic.
 %md Since only one material is considered, the structs defined for the materials contain only one entry:
+materials = struct() ;
 materials.hyperElasModel  = 'linearElastic' ;
 materials.hyperElasParams =  [ E nu ]       ;
 %md
 %md#### elements
 %md 
 %md In this plane model, three kinds of elements are used: `triangle` for the solid, `edges` to add pressure loads and `nodes` to set additional boundary conditions for the numerical resolution. Since three kinds of elements are used, the struct has length 3: 
+elements = struct() ;
 elements(1).elemType           = 'node'    ;
 elements(2).elemType           = 'edge'    ;
 elements(2).elemCrossSecParams = L         ;
@@ -63,6 +65,7 @@ elements(3).elemCrossSecParams = L         ;
 %md#### boundaryConds
 %md Three BCs are considered, one corresponding to a load and two for displacements.
 %md The first two BCs constrain displacements in $x$ and $y$ global directions respectively:
+boundaryConds = struct() ;
 boundaryConds(1).imposDispDofs = [1] ;
 boundaryConds(1).imposDispVals = [0] ;
 boundaryConds(2).imposDispDofs = [3] ;
@@ -85,11 +88,17 @@ initialConds = struct();
 %md The element properties are set using labels into GMSH follwing the MEBI nomenclature. First `triangle` elements have linear elastic material so entry $1$ of the _materialṣ_ struct is assigned. Then for both `node` and `edge` elements any material is set. 
 %md Next displacement boundary conditions are assigned to the element, since the problem is modeled into $x-y$ plane, a constrain to avoid rotation along $z$ is necessary. This is done fixing $y$ and $x$ displacements (using `boundaryConds(1)` and `boundaryConds(2)` as labels) on points 2 3 4 5.
 %md Finally the internal pressure is applied on the `edge` elements linked with curves from one to four (Circles 1-4 in Figure). In accordance with the orientation of the curve set in GMSH, the normal vector obtained in local coordinates is $e_r$ so the internal pressure is assigned using `boundaryConds(3)`. Once the mesh is created is read using:
+base_msh='';
+if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
+  base_msh=['.' filesep 'examples' filesep 'linearCylinderPlaneStrain' filesep];
+end
+mesh = struct();
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ring.msh' ) ;
 %md
 %md### Analysis parameters
 %md
 %md The Newton-Raphson method is employed to solve 2 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
+analysisSettings = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.stopTolIts    = 30      ;
 analysisSettings.stopTolDeltau = 1.0e-12 ;
@@ -99,8 +108,9 @@ analysisSettings.deltaT        = .5      ;
 %md
 %md### Output parameters
 %md
+otherParams = struct() ;
 otherParams.problemName = 'linearPlaneStrain' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
