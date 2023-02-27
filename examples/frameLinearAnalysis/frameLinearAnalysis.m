@@ -5,7 +5,7 @@ close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 %md
 %md scalar auxiliar parameters
-E  = 210e12 ; nu = 0.3 ; %
+E  = 210e9 ; nu = 0.3 ; %
 ty = 0.1   ; tz = 0.2 ; % cross-section widths
 L1 = 2     ; L2 = 1.5 ; %
 Pz = 2e3   ; Py = 1e3 ; % applied nodal loads
