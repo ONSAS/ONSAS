@@ -125,6 +125,7 @@ for elem = 1:nElems
   elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
   stressElem = [] ;
+  fintLocCoord = [] ;
 
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
@@ -172,7 +173,7 @@ for elem = 1:nElems
 
 		if  boolLinear == 1
 
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -314,8 +315,8 @@ for elem = 1:nElems
     end
   end % if stress
 
-	if matFintBool
-		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
+	if matFintBool && ~isempty(fintLocCoord)
+		matFint(elem,1:dofsStep:numNodes*6) = fintLocCoord' ;
 	end
 
 end % for elements ----
