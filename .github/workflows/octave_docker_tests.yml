@@ -8,6 +8,4 @@ jobs:
     container: gnuoctave/octave:latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          git clone https://github.com/ONSAS/ONSAS.m.git
-          octave --eval "cd ONSAS.m/test, runTestProblems_local"
+      - run: octave --eval "cd ./test, runTestProblems_local"
