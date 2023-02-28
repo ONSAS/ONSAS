@@ -6,7 +6,11 @@ function test_suite=runTestProblems_moxunit_disp
     test_functions=localfunctions()
   catch
   end
-  setenv('TESTS_RUN', 'yes')
+
+  % set auxiliar environment variable
+  setenv('TESTS_RUN', 'yes') 
+
+  % initialize the MOxUnit test suite
   initTestSuite;
 
 function test_1
@@ -29,9 +33,9 @@ function test_5
 	eulerColumn
   assertEqual( verifBoolean, true );
 
-% function test_6
-%   frameLinearAnalysis
-%   assertEqual( verifBoolean, true );
+function test_6
+  frameLinearAnalysis
+  assertEqual( verifBoolean, true );
 
 % function test_7
 %   linearAerodynamics
