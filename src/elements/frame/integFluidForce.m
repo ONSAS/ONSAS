@@ -135,9 +135,9 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
       end
      else % lift direction is variable
         if ~isempty( fluidFlowBool ) && fluidFlowBool % Leclercq validation
-          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow )^2 * VpiRelGperp ;
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow ) * VpiRelGperp ;
         elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
-          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * VpiRelGperp ;
+          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ;
         else 
           fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
         end
