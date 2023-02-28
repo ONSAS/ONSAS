@@ -250,6 +250,7 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
                                             Ue, Udote, Udotdote                       ,...
                                             aeroCoefs, chordVector, aeroNumericalParams ,... 
                                             analysisSettings , nextTime, currElem )
+  % disp("entre")
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
   % numerical step to compute the tangets

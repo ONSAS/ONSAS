@@ -49,12 +49,6 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = d        ;
 %md Now the element aerodynamic properties are defined. First the drag coefficient function located at the folder's example is declared into _userDragCoef_ field as:
-elements(2).aeroCoefs   = {'dragCoefCircular'; []; [] }   ;
-%md in which the second and third components of the vectors are considered empty since no lift and torsional moment is considered.
-%md Next the _elemTypeAero_ field contains the information of the chord vector. This vector is defined first considering the orientation of the cross section set up for drag experiments. According to the revolution symmetry of the problem the chord vector orientation has no impact into drag force vector, since $c_d$ is constant any angle of incidence. However the characteristic dimension of the circular cross section is declared into the norm of the chord vector ( first three entries of _elemTypeAero_ field into `elements` struct ) as: 
-numGaussPoints           = 4 ;
-elements(2).elemTypeAero = [0 d 0 numGaussPoints true ] ;
-%md also 4 number of integration Gauss points are employed to compute each element aerodynamic force vector.
 %md
 %md### boundaryConds
 %md
