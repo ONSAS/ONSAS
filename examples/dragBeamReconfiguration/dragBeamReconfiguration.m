@@ -22,7 +22,6 @@
 %md## Numerical solution
 %md---------------------
 %md Before the workspace is cleaned and the ONSAS directory is added:
-clear all
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 % add dynamic case boolean for non test executions: 
 testBool = true; 
@@ -42,7 +41,7 @@ numElements = 10 ;
 %md
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
-materials  = struct();
+materials  = struct() ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rhoS             ;
@@ -66,6 +65,7 @@ elements(2).aeroNumericalParams = {numGaussPoints, computeAeroTangMatrix, geomet
 %md### boundaryConds
 %md
 %md Only one welded (6 degrees of freedom are set to zero) boundary condition (BC) is considered:
+boundaryConds = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md
@@ -75,6 +75,7 @@ initialConds = struct() ;
 %md
 %md### mesh parameters
 %mdThe coordinates of the mesh nodes are given by the matrix:
+mesh = struct() ;
 mesh.nodesCoords = [ (0:(numElements))' * L/numElements  zeros(numElements+1,2) ] ;
 %mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
@@ -88,6 +89,7 @@ end
 %md### analysisSettings
 %md
 %md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with aerodynamic coefficients fields into the `elements` struct. The name of the fluid velocity function located on the same example path is introduced as a string 'windVelCircStatic': 
+analysisSettings = struct() ;
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircStatic'} ;
 %md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
 analysisSettings.deltaT        =   1            ;
@@ -101,7 +103,7 @@ analysisSettings.stopTolIts    =   50            ;
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
 otherParams  = struct();
-otherParams.problemName = 'staticReconfigurationCircle';
+otherParams.problemName = 'staticReconfigurationCircleUserDefinedDrag';
 otherParams.plots_format = 'vtk' ;
 %md
 %md### Case 1: validation case with constant $c_d = 1.2$
@@ -115,13 +117,10 @@ globalReactionForces = zeros(6*analysisSettings.finalTime, 1) ;
 %md The node index where the reaction are computed is:
 global glboalNodeReactionForces
 glboalNodeReactionForces = 1 ;
-%
-% Run ONSAS 
-%
-[matUs] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-%
-%### Numeric solution
-%
+%md
+%md### Numeric solution
+%md
+[matUsCase1] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 % The numerical solution is extracted. First the reference coordinaes
 xref = mesh.nodesCoords(:,1) ;
 yref = mesh.nodesCoords(:,2) ;
@@ -130,7 +129,7 @@ zref = mesh.nodesCoords(:,3) ;
 %md## Verification
 %md---------------------
 % Compute the values of R and CyCd:
-numLoadSteps = size(matUs, 2) ;
+numLoadSteps = size(matUsCase1, 2) ;
 timeVec = linspace(0,analysisSettings.finalTime, numLoadSteps) ;
 % initialize vectors
 Cy = zeros(numLoadSteps-1, 1)                 ;
@@ -151,15 +150,6 @@ for windVelStep = 1:numLoadSteps - 1
     R(windVelStep) =  abs(FDragi)/(FDRef )            ;
 
 end
-%md
-%md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) 
-%
-%### Plots
-%
-
-
-
-
 %
 %### Gosselin et.Al 2010 solution
 %
@@ -175,10 +165,12 @@ load( [base_dir 'Gosselin2010_data.mat'], 'def', 'resudrag')
 %md The plot parameters are:
 lw = 4 ; ms = 5 ;
 axislw = 1  ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;
-Gline = 'k-'; ONSASline = 'bo'  ;     
+Gline = 'k-'; ONSASline = 'bo'  ;  ONSASlineBuiltInDrag = 'rx' ;   
 folderPathFigs = './output/figs/' ;
 mkdir(folderPathFigs) ;
+%md
 %md The modified Cauchy number vs R is plotted:  
+%md
 fig1 = figure(1) ;
 hold on
 loglog(C_d*Cy       , R             , ONSASline , 'linewidth', lw, 'markersize', ms ) ;
@@ -192,23 +184,25 @@ set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEa
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
-% save figure
-namefig1 = strcat(folderPathFigs, 'CyR.png') ;
-% print(namefig1,'-dpng')
-%
-%md The modified Cauchy number vs R is plotted:  
-%
+%md
+%md Deformed configurations for different cauchy numbers  
+%md
 fig3 = figure(3) ;
 hold on
+% plot reference configuration
 plot(xref, yref  , 'k--' , 'linewidth', lw, 'markersize', ms   );
-for nr = 1:NR 
+% add ficitcius plots for the legend
+plot(0, 0,  ONSASline    , 'linewidth', lw, 'markersize', ms );
+plot(0, 0,  ONSASlineBuiltInDrag    , 'linewidth', lw, 'markersize', ms );
+% plot deformed configurations for different fluid load steps
+for nr = 1:analysisSettings.finalTime 
   % Numerical deformed coordinates solution
-  xdef = xref + matUs(1:6:end,nr+1) ;
-  ydef = yref + matUs(3:6:end,nr+1) ;
-  zdef = zref + matUs(5:6:end,nr+1) ;
-  thetaXdef = matUs(2:6:end,nr+1)   ;
-  thetaYdef = matUs(4:6:end,nr+1)   ;
-  thetaZdef = matUs(6:6:end,nr+1)   ;
+  xdef = xref + matUsCase1(1:6:end,nr+1) ;
+  ydef = yref + matUsCase1(3:6:end,nr+1) ;
+  zdef = zref + matUsCase1(5:6:end,nr+1) ;
+  thetaXdef = matUsCase1(2:6:end,nr+1)   ;
+  thetaYdef = matUsCase1(4:6:end,nr+1)   ;
+  thetaZdef = matUsCase1(6:6:end,nr+1)   ;
   % Gosselin deformed coordinates solution
   xdefG = def(1,:,nr)               ;
   ydefG = -def(2,:,nr)              ;
@@ -217,17 +211,6 @@ for nr = 1:NR
   plot(xdefG, ydefG,  Gline    , 'linewidth', lw, 'markersize', ms );
 end
 % add legend
-legend('Gosselin2010', 'ONSAS')
-labx=xlabel('x [m]');    laby=ylabel('y [m]');
-% set fonts
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
-set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
-set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-grid on
-axis equal
-% save fig
-namefig3 = strcat(folderPathFigs, 'xy.png') ;
-% print(namefig3,'-dpng')
 %
 %### Verification boolean
 %
@@ -242,38 +225,45 @@ verifBooleanDef =  vecDifDeform <=  2e-2 * L ;
 verifBooleanR = abs(R(end) - resudrag(end,2) ) <  5e-3 ;
 % The example verifboolean is:
 verifBoolean = verifBooleanR && all(verifBooleanDef)
-if ~testBool
-  %
-  % Dynamic Case
-  %----------------------------
-  %
-  % since this case is highly dynamic the tangent matrix of the aerodynamic force 
-  % vector is not necessary 
-  %
-  % elements
-  %----------------------------
-  elements(2).massMatType = 'consistent'                                        ;
-  computeAeroTangentMatrix = false                                              ;
-  elements(2).elemTypeAero   = [0 d 0 numGaussPoints computeAeroTangentMatrix ] ;
-  %
-  % analysisSettings Dynamic
-  %----------------------------
-  analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'}             ;
-  analysisSettings.finalTime     =   4                                        ;
-  analysisSettings.deltaT        =   0.0025                                   ;
-                                       
-  numTimeSteps  = round(analysisSettings.finalTime / analysisSettings.deltaT) ;
-  analysisSettings.methodName    = 'newmark'                                  ;
-  analysisSettings.stopTolDeltau =   1e-11                                    ;
-  analysisSettings.stopTolForces =   1e-6                                     ;
-  analysisSettings.stopTolIts    =   15                                       ;
-  %
-  % otherParams
-  %----------------------------
-  otherParams.problemName = 'dynamicReconfigurationCircle';
-  %
-  % Run ONSAS 
-  %
-  [matUs] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
+%md
+%md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) 
+%md
+%md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
+elements(2).dragCoefFunction = [];
+%md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2x$10^5$$. Then the final load step, which is equivalent to the index in the velocity vector `uy_vec`, is set to 5: 
+analysisSettings.finalTime = NR - 2 ;
+%md
+%md### otherParams
+%md The name of the problem and vtk format output are selected: 
+otherParams  = struct();
+otherParams.problemName = 'staticReconfigurationCircleUserDefinedDrag';
+%md
+%md### Numeric solution
+%md
+[matUsCase2] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%md Deformed configurations for different cauchy numbers  
+%md
+for nr = 1:analysisSettings.finalTime 
+  % Numerical deformed coordinates solution
+  xdefCase2 = xref + matUsCase2(1:6:end,nr+1) ;
+  ydefCase2 = yref + matUsCase2(3:6:end,nr+1) ;
+  zdefCase2 = zref + matUsCase2(5:6:end,nr+1) ;
+  thetaXdefCase2 = matUsCase2(2:6:end,nr+1)   ;
+  thetaYdefCase2 = matUsCase2(4:6:end,nr+1)   ;
+  thetaZdefCase2 = matUsCase2(6:6:end,nr+1)   ;
+  % Plot 
+  plot(xdefCase2 ,  ydefCase2,  ONSASlineBuiltInDrag, 'linewidth', lw, 'markersize', ms );
 end
+% add legend
+legend('Gosselin2010(cd = 1.2)', 'ONSAS(cd = 1.2)','ONSAS(Built-in c_d)')
+% add legends and labels
+labx=xlabel('x [m]');    laby=ylabel('y [m]');
+% set fonts
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
+set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
+set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+grid on
+axis equal
+% save fig
+namefig3 = strcat(folderPathFigs, 'xy.png') ;

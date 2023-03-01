@@ -24,10 +24,6 @@ function [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams
     liftIsDefiend     = ~isempty( aeroCoefs{2}) ; 
     pitchIsDefiend    = ~isempty( aeroCoefs{3}) ; 
 
-
-
-
-
     if strcmp( elemCrossSecParams{1}, 'circle' ) || strcmp( elemCrossSecParams{1}, 'pipe' )
 
         d_ext = elemCrossSecParams{2} ;

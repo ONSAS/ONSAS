@@ -39,6 +39,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  * `'isotropicHardening'`:  $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
 ### `materials.hyperElasParams`
+
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
 ```math
 [ p_1 \dots p_{n_P} ]
@@ -58,35 +59,31 @@ This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is a
 The elements struct contains the information about the type of finite elements used and their corresponding parameters.
 
 ### `elements.elemType`
-cell structure with the string-names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
+
+A cell structure with the string-names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
 
 ### `elements.elemTypeParams`
-cell structure with auxiliar params information, required for some element types:
+A cell structure with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
+
 ### `elements.massMatType`
-
- The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
-
-### `elements.elemTypeAero`
-
-If a frame aerodynamic analysis is desired, the  `elementTypeAero` field should contain a vector with: in the first three entries: three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration), then in the fourth entry: the number of Gauss integration points $numGauss$ and in the fifth entry a boolean $computeAeroBool$ which indicates if the aerodynamic stiffness matrix is computed:
-```math
-[ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
-```
-
-### `elements.aeroCoefs`
-
-If a frame aerodynamic analysis is desired, the `aeroCoefs` field must contain a column cell with the names of the functions (as strings) considered to compute the aerodynamic forces, as follows:
-```math
-\{ `dragCoefFunction`; `liftCoefFunction`; `momentCoefFunction` \}
-```
-Each function must recieve as arguments: first the relative angle of incidence and second the Reynolds number. If any of the coefficients is not considered then an empty `[]` can be used.
-
+The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
+ 
 ### `elements.elemCrossSecParams`
-
 This is a cell structure with the information of the geometry of the element.
 
+### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
+If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
+
+### `elements.chordVector`
+A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
+
+### `elements.aeroNumericalParams`
+A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration)  '  aeroNumericalParams', {4, false, true}
+```math
+\{  numGauss \,\,computeStiffnessAeroTangent\, \,geometricNonLinearAero \}
+```
 #### 1D elements
 
 For `truss` or `frame` elements, this cell has two entries, first a string with a name of the type of cross section, and in the second entry a vector of real parameters setting the shape of that section:
@@ -98,7 +95,7 @@ with $n$ being the number of parameters of the cross section type, and `crossSec
  - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
  - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided as the vector $[t_y, t_z]$
  - `circle` : circular sections where diameter is provided.
- - `pipe` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
+ - `ww` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
 
 For `edge` elements the thickness is expected (for 2D load computations).
 
