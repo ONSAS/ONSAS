@@ -2,9 +2,9 @@
 %md
 %md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/dragBeamReconfiguration/dragBeamReconfiguration.m)
 %md
-%md In this tutorial, a cantilever beam submitted to a flow producing drag forces is considered. The main goal is to validate drag forces considering reconfiguration in a problem with large displacements. The example is based on one of the problems considered in [this reference](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/drag-reduction-of-flexible-plates-by-reconfiguration/A3A066DE3886C40B1463508C92D1C81D), where a reference solution is presented and validated with experimental data. The reference solution was generated with the code publicly available in [this repository](https://github.com/lm2-poly/Reconfiguration-Beam/blob/master/reconfiguration.m)
+%md In this tutorial, a cantilever beam submitted to a flow producing drag forces is considered. The main goal is to validate the drag forces computation considering reconfiguration in a problem with large displacements. The example is based on one of the problems considered in [this reference](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/drag-reduction-of-flexible-plates-by-reconfiguration/A3A066DE3886C40B1463508C92D1C81D), where a reference solution is presented and validated with experimental data. The reference solution was generated with the code publicly available in [this repository](https://github.com/lm2-poly/Reconfiguration-Beam/blob/master/reconfiguration.m)
 %md
-%md The problem consists in a cantilever beam submitted to a fluid flow with uniform velocity $\bfv_a(\bfx,t) = v_a(t) \bfc_2$, as shown int he Figure bellow. The beam is clamped on the boundary at $x=0$ m, and the span length is $L$. The cross-section of the beam is circular with diameter $d$, and the chord length used to compute the aerodynamic forces is $d_c=d$. For the material of the beam a linear elastic isotropic model is considered, with Young modulus $E$ density $\rho$ 
+%md The problem consists in a cantilever beam submitted to a fluid flow with uniform velocity $v_a$($x$,$t$) = $v_a$(t) $c_2$, as shown int he Figure bellow. The beam is clamped on the boundary at $x=0$ m, and the span length is $L$. The cross-section of the beam is circular with diameter $d$. For the material of the beam a linear elastic isotropic model is considered, with Young modulus $E$ density $\rho$.
 %md
 %md```@raw html
 %md<img src="../../assets/dragBeamReconfiguration/ilus.svg" alt="general sketch" width="700"/>
@@ -12,13 +12,12 @@
 %md## Dimensionless analysis
 %md--------------------
 %md
-%
 %mdThe problem can be studied through the following dimensionless numbers: 
 %md
 %md```math 
 %md c_y = \frac{\rho_f L^3 v_a^2}{16 E I_{zz}}, \qquad \mathcal{R} = \frac{F}{\frac{1}{2}\rho_f L d c_d v_a^2}
 %md```
-%md where  $F$ is the global drag force towards $\bfc_2$, $c_y$ is the Cauchy number that describes the ratio between the stiffness of the beam and the flow load and the reconfiguration number $\mathcal{R}$ reflects the geometric nonlinear effect by dividing the drag of the flexible beam to that of a rigid one of the same geometry
+%md where  $F$ is the global drag force towards $c_2$, $c_y$ is the Cauchy number that describes the ratio between the stiffness of the beam and the flow load and the reconfiguration number $\mathcal{R}$ reflects the geometric nonlinear effect by dividing the drag of the flexible beam to that of a rigid one of the same geometry
 %md## Numerical solution
 %md---------------------
 %md Before the workspace is cleaned and the ONSAS directory is added:
@@ -27,21 +26,20 @@ close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 testBool = true; 
 % add path
 addpath( genpath( [ pwd '/../../src'] ) ); 
-%----------------------------
 %md
-%md Geometrical dimensions sketched in Fig 1 are loaded:
-[L, d, Izz, E, nu, rhoS, rhoF, nuF, dragCoefFunction, NR, cycd_vec, uy_vec ] = loadParametersCirc();
-%md where $rho_f$ and $rho_s$ are the fluid and solid densities respectively, $nu$ is the fluid kinematic viscosity, $dragCoefFunction$ is the user-defined drag coefficient function to compute the drag forces, $NR$ is the number of load steps (or velocity cases solved)
+%md The problem parameters are loaded:
+[L, d, Izz, E, nu, rhoS, rhoF, nuF, ~, NR, cycd_vec, uydot_vec ] = loadParametersCirc();
+%md where $\rho_f$ and $\rho_s$ are the fluid and solid densities respectively, $\nu$ is the fluid kinematic viscosity, and  $NR$ is the number of load steps (or velocity cases solved):
 %md
 %md
-%md the number of elements employed to discretize the beam is:
+%md The number of elements employed to discretize the beam is:
 numElements = 10 ;
 %md
 %md### MEBI parameters
 %md
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
-materials  = struct() ;
+materials                 = struct()         ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]         ;
 materials.density         = rhoS             ;
@@ -54,13 +52,10 @@ elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and frame elements will be set as a circular section with $d$ diameter.
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;
-%md where the aerodynamic coefficents and the chord vector are set by default for circular cross sections. In the first case we want to consider a different drag function so:   
-elements(2).dragCoefFunction = dragCoefFunction
-%md The geometrical non-linear effects are considered in this case to compute the aerodynamic force:
-geometricNonLinearAero = true ;
-numGaussPoints = 4 ;
-computeAeroTangMatrix = true ;
-elements(2).aeroNumericalParams = {numGaussPoints, computeAeroTangMatrix, geometricNonLinearAero} ;
+%md where the aerodynamic coefficents and the chord vector are set by default for `'circle'` cross sections type. For the validation case a constant drag coefficients $c_d =1.2" is used, this is defined in the `'dragCircular'` function:   
+elements(2).dragCoefFunction = 'dragCircular'
+%md The geometrical non-linear effects and the aerodynamic stiffness matrix are considered in this case to compute the aerodynamic force vector:
+elements(2).aeroNumericalParams = {4, true, true} ;
 %md
 %md### boundaryConds
 %md
@@ -88,11 +83,11 @@ end
 %md
 %md### analysisSettings
 %md
-%md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with aerodynamic coefficients fields into the `elements` struct. The name of the fluid velocity function located on the same example path is introduced as a string 'windVelCircStatic': 
+%md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with aerodynamic coefficients fields into the `elements` struct. The name of the fluid velocity function located on the same example path is introduced as a string `'windVelCircStatic'`: 
 analysisSettings = struct() ;
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircStatic'} ;
-%md since this problem is static, then a N-R method is employed. The convergence of the method is accomplish with ten equal load steps. The time variable for static cases is a load factor parameter that must be configured into the `windVel.m` function. A linear profile is considered for ten equal velocity load steps as:
-analysisSettings.deltaT        =   1            ;
+%md since this problem is static, then a N-R method is employed. The time step `deltaT` is 1 since the time here is an index in the fluid velocity vector `uydot_vec` untile the length of this vector `NR` is reached:
+analysisSettings.deltaT        =   1             ;
 analysisSettings.finalTime     =   NR            ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md Next the maximum number of iterations per load(time) step, the residual force and the displacements tolerances are set to (if null tolerance is set the criterion is not considered): 
@@ -114,21 +109,21 @@ otherParams.plots_format = 'vtk' ;
 global globalReactionForces
 globalReactionForces = zeros(6*analysisSettings.finalTime, 1) ;
 %md 
-%md The node index where the reaction are computed is:
+%md The node index where the reaction forces are computed is:
 global glboalNodeReactionForces
 glboalNodeReactionForces = 1 ;
 %md
 %md### Numeric solution
 %md
 [matUsCase1] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-% The numerical solution is extracted. First the reference coordinaes
-xref = mesh.nodesCoords(:,1) ;
-yref = mesh.nodesCoords(:,2) ;
-zref = mesh.nodesCoords(:,3) ;
 %md 
 %md## Verification
 %md---------------------
-% Compute the values of R and CyCd:
+%md The numerical solution is extracted. First the reference coordinaes
+xref = mesh.nodesCoords(:,1) ;
+yref = mesh.nodesCoords(:,2) ;
+zref = mesh.nodesCoords(:,3) ;
+%md Then the values of $R$ and $C_y C_d$ are computed :
 numLoadSteps = size(matUsCase1, 2) ;
 timeVec = linspace(0,analysisSettings.finalTime, numLoadSteps) ;
 % initialize vectors
@@ -178,7 +173,7 @@ loglog(resudrag(:,1), resudrag(:,2) , Gline     , 'linewidth', lw, 'markersize',
 % add legend
 legend('ONSAS', 'Gosselin2010')
 % set labels legend
-labx=xlabel(' Cy* ');    laby=ylabel('R');
+labx=xlabel(' c_y*c_d ');    laby=ylabel('R');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
 % set fonts
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
@@ -210,10 +205,9 @@ for nr = 1:analysisSettings.finalTime
   plot(xdef ,  ydef,  ONSASline, 'linewidth', lw, 'markersize', ms );
   plot(xdefG, ydefG,  Gline    , 'linewidth', lw, 'markersize', ms );
 end
-% add legend
-%
-%### Verification boolean
-%
+%md
+%md### Verification boolean
+%md
 % The verification boolean is computed as for the deformed configurations and the cycd curve
 % deformed coordinates dif norm
 vecDifDeform =  [ norm( ydef - ydefG(1:numElements*10:end)') ;...
@@ -230,7 +224,7 @@ verifBoolean = verifBooleanR && all(verifBooleanDef)
 %md
 %md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
 elements(2).dragCoefFunction = [];
-%md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2x$10^5$$. Then the final load step, which is equivalent to the index in the velocity vector `uy_vec`, is set to 5: 
+%md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2$ x $10^5$. Then the final load step, which is equivalent to the index in the velocity vector `uydot_vec`, is set to 5: 
 analysisSettings.finalTime = NR - 2 ;
 %md
 %md### otherParams
@@ -267,3 +261,21 @@ grid on
 axis equal
 % save fig
 namefig3 = strcat(folderPathFigs, 'xy.png') ;
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
+  figure(1)
+  print('output/RvsCyCd.png','-dpng')
+  figure(3)
+  print('output/defPlots.png','-dpng')
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
+end
+%md
+%md```@raw html
+%md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
+%md```
+%md
+%md```@raw html
+%md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
+%md```
+%md
