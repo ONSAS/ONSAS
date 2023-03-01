@@ -22,6 +22,7 @@
 %md## Numerical solution
 %md---------------------
 %md Before the workspace is cleaned and the ONSAS directory is added:
+clear all
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 % add dynamic case boolean for non test executions: 
 testBool = true; 
@@ -55,7 +56,7 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;
 %md where the aerodynamic coefficents and the chord vector are set by default for circular cross sections. In the first case we want to consider a different drag function so:   
-elements(2).dragCoefFunction = "dragCircular"
+elements(2).dragCoefFunction = dragCoefFunction
 %md The geometrical non-linear effects are considered in this case to compute the aerodynamic force:
 geometricNonLinearAero = true ;
 numGaussPoints = 4 ;
