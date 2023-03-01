@@ -7,7 +7,7 @@
 %md The problem consists in a cantilever beam submitted to a fluid flow with uniform velocity $v_a$($x$,$t$) = $v_a$(t) $c_2$, as shown int he Figure bellow. The beam is clamped on the boundary at $x=0$ m, and the span length is $L$. The cross-section of the beam is circular with diameter $d$. For the material of the beam a linear elastic isotropic model is considered, with Young modulus $E$ density $\rho$.
 %md
 %md```@raw html
-%md<img src="../../assets/dragBeamReconfiguration/ilus.svg" alt="general sketch" width="700"/>
+%md<img src="../../assets/dragBeamReconfiguration/ilus.svg" alt="general sketch" width="300"/>
 %md```
 %md## Dimensionless analysis
 %md--------------------
