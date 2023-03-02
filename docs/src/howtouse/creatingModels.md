@@ -80,10 +80,11 @@ If a frame aerodynamic analysis is desired, the drag, lift and pitch moment shou
 A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
 
 ### `elements.aeroNumericalParams`
-A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration)  '  aeroNumericalParams', {4, false, true}
+A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
 ```math
-\{  numGauss \,\,computeStiffnessAeroTangent\, \,geometricNonLinearAero \}
+\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
 ```
+where the default cell is `{4, false, true}`
 #### 1D elements
 
 For `truss` or `frame` elements, this cell has two entries, first a string with a name of the type of cross section, and in the second entry a vector of real parameters setting the shape of that section:
@@ -95,7 +96,7 @@ with $n$ being the number of parameters of the cross section type, and `crossSec
  - `generic`  :general sections, where areas and inertias are provided as parameters according to the vector: $[A \,\, J \,\, I_{yy} \,\, I_{zz} \,\, I_{\rho}(1,1) \,\, I_{\rho}(2,2) \,\, I_{\rho}(3,3) ] $ where $A$ is the area, $I_{ii}$ is the second moment of inertia of the cross-section respect to $i$ direction, $J$ is the polar moment of inertia and $I_{\rho}$ is the inertia tensor.
  - `rectangle`: rectangular sections where thicknesses ``t_y`` and ``t_z`` are provided as the vector $[t_y, t_z]$
  - `circle` : circular sections where diameter is provided.
- - `ww` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
+ - `pipe` : circular hollow section where external and internal diameters are provided as first and second entries of the vector of elementCrossSecParams.
 
 For `edge` elements the thickness is expected (for 2D load computations).
 

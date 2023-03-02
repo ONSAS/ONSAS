@@ -77,9 +77,9 @@ computeAeroTangMatrix  = false;
 geometricNonLinearAero = false;
 elements(2).aeroNumericalParams = {numGaussPoints, computeAeroTangMatrix, geometricNonLinearAero}
 %md in which 4 Gauss integration points are employed to compute the aerodynamic force neglecting the stifness aerodynamic matrix in the numerical procedure. This value is enough in most cases. 
-elements(2).dragCoefFunction  = "dragCoefFunctionLA"
-elements(2).liftCoefFunction  = "liftCoefFunctionLA"
-elements(2).pitchCoefFunction = "momentCoefFunctionLA"
+elements(2).dragCoefFunction  = 'dragCoefFunctionLA'
+elements(2).liftCoefFunction  = 'liftCoefFunctionLA'
+elements(2).pitchCoefFunction = 'momentCoefFunctionLA'
 %md Next the _elemTypeAero_ field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$. The aerodynamic tangent matrix is the last boolean element of the vector `elemTypeAero`, and in this case is set as false.  All this information is added into _elemTypeAero_ field of `elements` struct such that:
 %md
 %md### boundaryConds
@@ -158,9 +158,9 @@ betaRel = acos(dot(elements(2).chordVector , [0 0 1] ));
 % the wind velocity is:
 windVel = feval(analysisSettings.fluidProps{3,:}, betaRel, analysisSettings.finalTime) ;
 % Extract the aerodynamic coefficients 
-userDragCoef   = "dragCoefFunctionLA"; 
-userLiftCoef   = "liftCoefFunctionLA" ; 
-userMomentCoef = "momentCoefFunctionLA" ; 
+userDragCoef   = 'dragCoefFunctionLA'; 
+userLiftCoef   = 'liftCoefFunctionLA' ; 
+userMomentCoef = 'momentCoefFunctionLA' ; 
 % Delete spaces
 userDragCoef   = strrep(userDragCoef,' ','')   ;
 userLiftCoef   = strrep(userLiftCoef,' ','')   ;
