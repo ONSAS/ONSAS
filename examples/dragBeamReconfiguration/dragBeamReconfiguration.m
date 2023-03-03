@@ -158,7 +158,7 @@ load( [base_dir 'Gosselin2010_data.mat'], 'def', 'resudrag')
 %md### Validation plots
 %md
 %md The plot parameters are:
-lw = 4 ; ms = 5 ;
+lw = 4 ; ms = 8 ;
 axislw = 1  ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;
 Gline = 'k-'; ONSASline = 'bo'  ;  ONSASlineBuiltInDrag = 'rx' ;   
 folderPathFigs = './output/figs/' ;
@@ -167,18 +167,25 @@ mkdir(folderPathFigs) ;
 %md The modified Cauchy number vs R is plotted:  
 %md
 fig1 = figure(1) ;
-hold on
 loglog(C_d*Cy       , R             , ONSASline , 'linewidth', lw, 'markersize', ms ) ;
+hold on
 loglog(resudrag(:,1), resudrag(:,2) , Gline     , 'linewidth', lw, 'markersize', ms ) ;
 % add legend
 legend('ONSAS', 'Gosselin2010')
 % set labels legend
 labx=xlabel(' c_y*c_d ');    laby=ylabel('R');
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','eastOutside' ) ;
 % set fonts
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
+  fprintf('\ngenerating output png for docs.\n')
+  figure(1)
+  print('output/RvsCyCd.png','-dpng')
+else
+  fprintf('\n === NOT in docs workflow. ===\n')
+end
 %md
 %md Deformed configurations for different cauchy numbers  
 %md
@@ -254,7 +261,7 @@ legend('Gosselin2010(cd = 1.2)', 'ONSAS(cd = 1.2)','ONSAS(Built-in c_d)')
 % add legends and labels
 labx=xlabel('x [m]');    laby=ylabel('y [m]');
 % set fonts
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','northEast' ) ;
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','eastOutside' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
 grid on
@@ -263,8 +270,6 @@ axis equal
 namefig3 = strcat(folderPathFigs, 'xy.png') ;
 if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
-  figure(1)
-  print('output/RvsCyCd.png','-dpng')
   figure(3)
   print('output/defPlots.png','-dpng')
 else
