@@ -227,6 +227,10 @@ verifBooleanR = abs(R(end) - resudrag(end,2) ) <  5e-3 ;
 % The example verifboolean is:
 verifBoolean = verifBooleanR && all(verifBooleanDef)
 %md
+%md```@raw html
+%md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
+%md```
+%md
 %md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) 
 %md
 %md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
@@ -275,10 +279,6 @@ if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
 else
   fprintf('\n === NOT in docs workflow. ===\n')
 end
-%md
-%md```@raw html
-%md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
-%md```
 %md
 %md```@raw html
 %md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
