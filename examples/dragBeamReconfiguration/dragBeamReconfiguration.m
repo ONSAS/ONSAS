@@ -145,9 +145,9 @@ for windVelStep = 1:numLoadSteps - 1
     R(windVelStep) =  abs(FDragi)/(FDRef )            ;
 
 end
-%
-%### Gosselin et.Al 2010 solution
-%
+%md
+%md### Gosselin et.Al 2010 solution
+%md
 % resudrag (cycd, R) and def wich contains de deformed configuration for 10^i cycyd values: 
 base_dir='';
 if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
