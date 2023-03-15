@@ -75,7 +75,7 @@ elements(2).chordVector = [0 dext 0]
 numGaussPoints         = 4    ;
 computeAeroTangMatrix  = false;
 geometricNonLinearAero = false;
-elements(2).aeroNumericalParams = {numGaussPoints, computeAeroTangMatrix, geometricNonLinearAero}
+elements(2).aeroNumericalParams = {4, false, false}
 %md in which 4 Gauss integration points are employed to compute the aerodynamic force neglecting the stifness aerodynamic matrix in the numerical procedure. This value is enough in most cases. 
 elements(2).dragCoefFunction  = 'dragCoefFunctionLA'
 elements(2).liftCoefFunction  = 'liftCoefFunctionLA'
