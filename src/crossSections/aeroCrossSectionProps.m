@@ -27,7 +27,7 @@ function [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams
 
         d_ext = elemCrossSecParams{2} ;
         if ~chordVecIsDefined chordVector = [ 0 0 d_ext ] ; end ;
-        if ~dragIsDefined dragF = "innerDragCoefCircular"; else dragF = aeroCoefs{1};  end ;
+        if ~dragIsDefined dragF = 'innerDragCoefCircular'; else dragF = aeroCoefs{1};  end ;
         anonymus_null = @(beta,Re) 0 ;
         if ~liftIsDefined liftF = anonymus_null ; else liftF = aeroCoefs{2}; end ;
         if ~pitchIsDefined pitchF = anonymus_null  ; else pitchF = aeroCoefs{3};  end ;
