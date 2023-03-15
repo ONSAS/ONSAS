@@ -46,8 +46,9 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'circle' ; d };
 elements(2).massMatType =  'consistent'        ;
-elements(2).elemTypeAero  = [0 d 0 4 0 ] ;
-elements(2).aeroCoefs     = { []; 'liftCoef'; []  } ;
+elements(2).dragCoefFunction = @(beta,Re) 0;
+elements(2).liftCoefFunction ='liftCoef';
+elements(2).momentCoefFunction = @(beta,Re) 0;
 % auxiliar element
 elements(3).elemType = 'truss' ;
 elements(3).elemCrossSecParams = {'circle' ; 1.5*d };

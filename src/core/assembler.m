@@ -99,12 +99,15 @@ for elem = 1:nElems
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodynamic properties
-  elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
-  aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
+  dragFunction        = elements( mebiVec( 2 ) ).dragCoefFunction    ;
+  liftFunction        = elements( mebiVec( 2 ) ).liftCoefFunction    ;
+  pitchCoefFunction   = elements( mebiVec( 2 ) ).pitchCoefFunction   ;
+  aeroCoefs = {dragFunction, liftFunction, pitchCoefFunction }       ;
+  chordVector         = elements( mebiVec( 2 ) ).chordVector         ;
+  aeroNumericalParams = elements( mebiVec( 2 ) ).aeroNumericalParams ;
 
   %md compute aerodynamic compute force booleans
-  aeroBool = ~isempty(analysisSettings.fluidProps) || ...
-             ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
+  aeroBool = ~isempty(analysisSettings.fluidProps) ;
 
   %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
@@ -208,13 +211,14 @@ for elem = 1:nElems
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
-                                     elemCrossSecParams                   , ...
-                                     u2ElemDisps( Ut       , dofselem )   , ...
-                                     u2ElemDisps( Udott    , dofselem )   , ...
-                                     u2ElemDisps( Udotdott , dofselem )   , ...
-                                     aeroCoefs,        elemTypeAero, ...
-                                     analysisSettings, timeVar, elem ) ;
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
+                                     elemCrossSecParams                   ,        ...
+                                     u2ElemDisps( Ut       , dofselem )   ,        ...
+                                     u2ElemDisps( Udott    , dofselem )   ,        ...
+                                     u2ElemDisps( Udotdott , dofselem )   ,        ...
+                                     aeroCoefs, chordVector, aeroNumericalParams,  ...
+                                     analysisSettings, timeVar, elem, ...
+                                     aeroNumericalParams{2}  ) ;
     end
 
   % ---------  triangle solid element -----------------------------
@@ -287,7 +291,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && strcmp(elemType,'frame') && elemTypeAero(5)
+      if aeroBool && strcmp(elemType,'frame') && aeroNumericalParams{2}
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
