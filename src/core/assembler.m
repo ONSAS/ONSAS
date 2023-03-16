@@ -37,6 +37,7 @@ if fsBool
   Fmas  = zeros( nNodes*6 , 1 ) ;
   Fvis  = zeros( nNodes*6 , 1 ) ;
   Faero = zeros( nNodes*6 , 1 ) ;
+  Fther = zeros( nNodes*6 , 1 ) ;
 end
 
 % -------  tangent matrix        -------------------------------------
@@ -159,7 +160,14 @@ for elem = 1:nElems
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
-
+    
+    global temperature
+    if ~isempty( 'temperature' )
+      timeVar
+      thermalExpansion = materials( mebiVec( 1 ) ).thermalExpansion
+      temperatureVal = temperature( timeVar) 
+      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
+    end
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
@@ -281,6 +289,10 @@ for elem = 1:nElems
     if aeroBool && strcmp(elemType,'frame')
       Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
+
+    if exist('Fthere')==1 && ( norm( Fthere ) > 0.0 )
+      Fther( dofselemRed ) = Fther( dofselemRed ) + Fthere ;
+    end
   end
 
   if tangBool
@@ -350,12 +362,13 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
+  fsCell{5} = Fther ;
 
   global globalReactionForces
   global glboalNodeReactionForces
   if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
     dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
-    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
+    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) + Fther(dofsRForces) ;
   end
 
 end
