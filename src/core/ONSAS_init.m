@@ -82,7 +82,7 @@ Stress = [] ;
 matFint = [] ;
 %[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
 
- [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] )  ;
+ [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
