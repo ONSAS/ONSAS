@@ -86,7 +86,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 
 for elem = 1:nElems
 
-  mebiVec = Conec( elem, 1:4) ;
+  mebiVec = Conec( elem, 1:3) ;
 
   %md extract element properties
   hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel   ;
@@ -99,18 +99,21 @@ for elem = 1:nElems
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodynamic properties
-  elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
-  aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
+  dragFunction        = elements( mebiVec( 2 ) ).dragCoefFunction    ;
+  liftFunction        = elements( mebiVec( 2 ) ).liftCoefFunction    ;
+  pitchCoefFunction   = elements( mebiVec( 2 ) ).pitchCoefFunction   ;
+  aeroCoefs = {dragFunction, liftFunction, pitchCoefFunction }       ;
+  chordVector         = elements( mebiVec( 2 ) ).chordVector         ;
+  aeroNumericalParams = elements( mebiVec( 2 ) ).aeroNumericalParams ;
 
   %md compute aerodynamic compute force booleans
-  aeroBool = ~isempty(analysisSettings.fluidProps) || ...
-             ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
+  aeroBool = ~isempty(analysisSettings.fluidProps) ;
 
   %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
 
   %md obtains nodes and dofs of element
-  nodeselem   = Conec( elem, (4+1):(4+numNodes) )' ;
+  nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )        ;
   dofselemRed = dofselem ( 1 : dofsStep : end )    ;
 
@@ -122,9 +125,10 @@ for elem = 1:nElems
     dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
   end
 
-  elemNodesxyzRefCoords  = reshape( Nodes( Conec( elem, (4+1):(4+numNodes) )' , : )',1,3*numNodes) ;
+  elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
   stressElem = [] ;
+  fintLocCoord = [] ;
 
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
@@ -142,7 +146,7 @@ for elem = 1:nElems
   % -----------   truss element   ------------------------------
   elseif strcmp( elemType, 'truss')
 
-    A  = crossSectionProps ( elemCrossSecParams, density ) ;
+    A  = crossSectionProps( elemCrossSecParams, density ) ;
     previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
 
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
@@ -172,7 +176,7 @@ for elem = 1:nElems
 
 		if  boolLinear == 1
 
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -207,16 +211,14 @@ for elem = 1:nElems
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      % extract boolean to compute aerodynamic displacements tangent matrix
-      aeroTangBool = elements( mebiVec( 2 ) ).elemTypeAero(5) ;
-
-      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
-                                     elemCrossSecParams                   , ...
-                                     u2ElemDisps( Ut       , dofselem )   , ...
-                                     u2ElemDisps( Udott    , dofselem )   , ...
-                                     u2ElemDisps( Udotdott , dofselem )   , ...
-                                     elements( mebiVec( 2 ) ).aeroCoefs, elements( mebiVec( 2 ) ).elemTypeAero,...
-                                     analysisSettings, timeVar, elem, aeroTangBool ) ;
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
+                                     elemCrossSecParams                   ,        ...
+                                     u2ElemDisps( Ut       , dofselem )   ,        ...
+                                     u2ElemDisps( Udott    , dofselem )   ,        ...
+                                     u2ElemDisps( Udotdott , dofselem )   ,        ...
+                                     aeroCoefs, chordVector, aeroNumericalParams,  ...
+                                     analysisSettings, timeVar, elem, ...
+                                     aeroNumericalParams{2}  ) ;
     end
 
   % ---------  triangle solid element -----------------------------
@@ -276,13 +278,12 @@ for elem = 1:nElems
     if dynamicProblemBool
       Fmas ( dofselemRed ) = Fmas( dofselemRed ) + Fmase ;
     end
-    if aeroBool
+    if aeroBool && strcmp(elemType,'frame')
       Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
   end
 
   if tangBool
-
     for indRow = 1:length( dofselemRed )
 
       entriesSparseStorVecs = counterInds + (1:length( dofselemRed) ) ;
@@ -290,7 +291,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && exist('aeroTangBool') && aeroTangBool
+      if aeroBool && strcmp(elemType,'frame') && aeroNumericalParams{2}
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
@@ -318,8 +319,8 @@ for elem = 1:nElems
     end
   end % if stress
 
-	if matFintBool
-		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
+	if matFintBool && ~isempty(fintLocCoord)
+		matFint(elem,1:dofsStep:numNodes*6) = fintLocCoord' ;
 	end
 
 end % for elements ----
@@ -350,11 +351,13 @@ if fsBool
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
 
-
-  global globalFDrag
-  if ~isempty(globalFDrag) && (round(timeVar) == timeVar) && (timeVar ~= 0)
-    globalFDrag(timeVar) = sum(Faero(3:6:end)) ;
+  global globalReactionForces
+  global glboalNodeReactionForces
+  if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
+    dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
+    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
   end
+
 end
 
 

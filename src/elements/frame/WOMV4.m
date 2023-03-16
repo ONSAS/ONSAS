@@ -27,9 +27,7 @@ global qvect;
 n = uint16(tnp1/dt - 1); % Current time
 K = Kelem-1;
 if n == 0 % First call
-    qelem = (2*rand-1)*0.001;
-    % Initialize qvect 
-    qvect(1+K*2:2+K*2,1) = [qelem ; 0] ;  % qvect = [q0elem q1elem ...; dq0elem dq1elem ...;
+    qelem = qvect(1+K*2,1) ;  % qvect = [q0elem q1elem ...; dq0elem dq1elem ...;
 else
     vpr1 = norm(vprvect1);
     vpr2 = norm(vprvect2);
@@ -57,7 +55,7 @@ function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn)% at nod
     % WOM constants from Facchinetti et al
     A = 12; epsilon = 0.3; St = 0.2;
     % VdP oscillator constants
-    omegaf = 2*pi*St*vprelem/D; % Shedding pulsation
+    omegaf = 2*pi*St*vprelem/D;% Shedding pulsation
     cq = epsilon*omegaf;
     kq = omegaf^2;
     [t,qode] = ode45(@(t, q) funcvanderpol(t,q, cq, kq, ddYelem, D, A),t,[qn,dqn]);

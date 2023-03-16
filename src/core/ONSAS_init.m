@@ -67,7 +67,8 @@ end
 currTime  = 0 ; timeIndex = 1 ; 
 
 % process initial conditions
-[ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
+nNodes = size( mesh.nodesCoords, 1 ) ;
+[ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
 previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 
