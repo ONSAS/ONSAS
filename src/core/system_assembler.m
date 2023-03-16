@@ -114,7 +114,8 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
 
-    FextGt = FextG ;
+    %FextGt = FextG ;
+    [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), [] ) ;  % Evaulate external force in previous step
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
