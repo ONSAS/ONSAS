@@ -162,7 +162,7 @@ for elem = 1:nElems
     end
     
     global temperature
-    if ~isempty( 'temperature' )
+    if length( temperature )>0
       timeVar
       thermalExpansion = materials( mebiVec( 1 ) ).thermalExpansion
       temperatureVal = temperature( timeVar) 
