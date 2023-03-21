@@ -241,7 +241,7 @@ analysisSettings.finalTime = NR - 2 ;
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
 otherParams  = struct();
-otherParams.problemName = 'staticReconfigurationCircleUserDefinedDrag';
+otherParams.problemName = 'staticReconfigurationCircleBuiltInDrag';
 %md
 %md### Numeric solution
 %md
