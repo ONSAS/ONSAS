@@ -21,7 +21,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
   neumdofs = BCsData.neumDofs ;
-	
+	Utp1
   [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previous_state_mat  ) ;
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
@@ -53,8 +53,13 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
                 - Fther( BCsData.neumDofs ) ;
-    
+
+                Fint ( BCsData.neumDofs ) 
+  FextG( BCsData.neumDofs ) 
+   Fther( BCsData.neumDofs )
+    rhat
     systemDeltauRHS = - rhat ;
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
@@ -78,6 +83,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
                 - Fther( BCsData.neumDofs ) ;
 
     systemDeltauRHS = [ -rhat   BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
