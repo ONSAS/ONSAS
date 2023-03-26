@@ -71,9 +71,9 @@ currTime  = 0 ; timeIndex = 1 ;
 
 %~ previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 previous_state_mat = cell( size(Conec,1), 3) ;
-previous_state_mat(:,1) = zeros( 1, 3 ) ;
-previous_state_mat(:,2) = zeros( 1, 3 ) ;
-previous_state_mat(:,3) = 0 ;
+previous_state_mat(:,1) = {zeros( 1, 3 )} ;
+previous_state_mat(:,2) = {zeros( 1, 3 )} ;
+previous_state_mat(:,3) = {0} ;
 stop
 %~ disp("init")
 %~ size(previous_state_mat)
