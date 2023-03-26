@@ -32,7 +32,7 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
   for elemInd = 1:length( elemsWithBC );
 
     elem        = elemsWithBC( elemInd )             ;
-    nodesElem   = nonzeros( Conec(elem, 5:end ) )    ;
+    nodesElem   = nonzeros( Conec(elem, 4:end ) )    ;
     elemType    = elements( Conec(elem,2) ).elemType ;
 
     %md compute an auxiliar column vector with the global degrees of freedom of the nodes of the current element

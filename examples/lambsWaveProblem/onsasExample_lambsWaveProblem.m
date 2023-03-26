@@ -73,7 +73,7 @@ analysisSettings.deltaT        = dt      ;
 %md
 %md### Output parameters
 otherParams.problemName = 'lambsProblem' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

@@ -53,13 +53,13 @@ end
 
 %Conectivity Definitions
 mesh.conecCell = cell(5,1) ;
-					   %M E B I / Node
-mesh.conecCell{ 1 } = [ 0 1 1 0  1   ] ; 	% Node at coord (0,0,0)
-mesh.conecCell{ 2 } = [ 0 1 1 0  2*m+1 ] ;	% Node at coord (L,0,L)
-mesh.conecCell{ 3 } = [ 0 1 2 0  m+1   ] ;	% Corner Node   (0,0,L)
+					   %M E B / Node
+mesh.conecCell{ 1 } = [ 0 1 1   1   ] ; 	% Node at coord (0,0,0)
+mesh.conecCell{ 2 } = [ 0 1 1   2*m+1 ] ;	% Node at coord (L,0,L)
+mesh.conecCell{ 3 } = [ 0 1 2   m+1   ] ;	% Corner Node   (0,0,L)
 
-for j=1:2*m					   %M E B I / Nodes
-	mesh.conecCell{ 4+j-1 } = [ 1 2 0 0  j j+1 ] ; % frame finite elements
+for j=1:2*m					   %M E B / Nodes
+	mesh.conecCell{ 4+j-1 } = [ 1 2 0  j j+1 ] ; % frame finite elements
 end
 
 initialConds = [];	% no initial conditions for static analysis

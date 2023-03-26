@@ -4,7 +4,7 @@
 close all, clear all;
 addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 %md
-%md## MEBI parameters: Material-Element-BoundaryConditions-InitialConditions
+%md## MEB parameters: Material-Element-BoundaryConditions
 %md
 %md### Materials
 %md Constitutive model parameters
@@ -29,9 +29,6 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 P = 1 ; % applied nodal load
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -P 0 ] ;
-%md### InitialConditions
-%md empty struct
-initialConds = struct() ;
 %md
 %md## Mesh
 %md Mesh nodes
@@ -40,11 +37,9 @@ nnodesMesh = 21 ;
 xcoords = linspace(0,L,nnodesMesh)' ;
 ycoords = zeros(length(xcoords),1) ;
 zcoords = zeros(length(xcoords),1) ;
- 
 mesh.nodesCoords = [ xcoords ycoords zcoords ] ;
-
 %md
-%md Conec Cell
+%md#### conecCell
 mesh.conecCell = { } ;
 % Auxiliar
 vec1 = (1:1:(length(xcoords)-1))' ;
@@ -52,18 +47,21 @@ vec2 = (2:1:(length(xcoords)))' ;
 vec3 = ones(length(vec1),1) ;
 loadedNode = length(xcoords) ;
 %md nodes
-mesh.conecCell{1, 1 } = [ 0 1 1 0  1 ] ;
-mesh.conecCell{2, 1 } = [ 0 1 2 0  loadedNode ] ;
+mesh.conecCell{1, 1 } = [ 0 1 1  1 ] ;
+mesh.conecCell{2, 1 } = [ 0 1 2  loadedNode ] ;
 %md and frame elements
 for i=1:(nnodesMesh-1) 
-	mesh.conecCell{i+2,1} = [ 1 2 0 0 i i+1 ] ;
+	mesh.conecCell{i+2,1} = [ 1 2 0 i i+1 ] ;
 end
 %md
+%md### InitialConditions
+%md empty struct
+initialConds = struct() ;
 %md Analysis settings
 analysisSettings = struct() ;
 
 otherParams.problemName = 'cantileverEP' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

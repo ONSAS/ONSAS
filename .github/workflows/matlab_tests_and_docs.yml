@@ -1,10 +1,10 @@
 # This is the ONSAS.m documentation continuous integration config file
 #
-name: matlab_tests_and_docs
+name: matlab_tests
 on: [push, pull_request]
 
 jobs:
-  docs:
+  matlab_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
