@@ -116,13 +116,13 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		
 		%~ q_tr = sqrt(3/2) * 2 * G * norm ( strain_e_d_tr ) ; % revisar dividido 2. pag 251 de libro 
 		
-		if phi_tr < 0 % elastic behavior
+		if phi_tr <= 0 % elastic behavior
 
 			stress           	= stress_tr' ;
 			dstressdeps       = De ;
 			acum_plas_strain 	= acum_plas_strain_n ; 
 			
-		else % elasto-plastic behavior phi_tr == 0
+		else % elasto-plastic behavior
 			
 			delta_gamma = phi_tr / ( 3*G + H ) ; % 			
 			

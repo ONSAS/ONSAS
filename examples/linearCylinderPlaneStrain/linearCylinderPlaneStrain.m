@@ -105,7 +105,7 @@ analysisSettings.deltaT        = .5      ;
 %md### Output parameters
 %md
 otherParams.problemName = 'linearPlaneStrain' ;
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
 [matUs, loadFactorsMat, ~, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
