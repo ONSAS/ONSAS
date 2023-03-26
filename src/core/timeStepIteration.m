@@ -187,15 +187,23 @@ timeStepIters = dispIters ;
 %~ size(Stress)
 %~ Stress
 
+%~ if timeIndex == 2
+%~ timeIndex
+	%~ previous_state_mat(1,1)
+	%~ previous_state_mat(1,2)
+	%~ previous_state_mat(1,3)
+	%~ strain_vec(1,:)
+	%~ acum_plas_strain_vec(1,:)
+	%~ Stress(1,:)
+%~ end
+
 for i = 1:size(Stress,1)
 
-	previous_state_mat(i,1) = Stress(i,:) ;
+	previous_state_mat(i,1) = {Stress(i,:)} ;
 	
 end
 
-if timeIndex == 2
-	stop
-end
+
 previous_state_mat(:,2) = strain_vec ;
 previous_state_mat(:,3) = acum_plas_strain_vec ;
 
