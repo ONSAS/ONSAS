@@ -60,7 +60,7 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		dstressdeps = De ;
 		stress = dstressdeps * strain ;
 		
-		stress_n           = previous_state{1,:}  ;
+		stress_n           = previous_state{1,:}(1:3)  ;
 		%~ disp("stressSize")
 		%~ size(stress_n)
 		
@@ -71,8 +71,8 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		K = E/(3*(1-2*nu)) 	; % Bulk modulus
 		
 		% Previous vals
-		stress_n           = previous_state{1,:}  ;
-		strain_n           = previous_state{2,:}  ;
+		stress_n           = previous_state{1,:}(1:3)  ;
+		strain_n           = previous_state{2,:}(1:3)  ;
 		acum_plas_strain_n =  previous_state{3} 	;
 		
 		% Isotropic Hardening variables
