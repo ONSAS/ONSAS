@@ -104,11 +104,11 @@ end
 
 % Plastic front value
 for i = 1:length(cvals)
-	p = pressure_vals(i) 
+	p = pressure_vals(i) ;
 	if i == 1  
 		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
 	else
-		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) 
+		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
 	end
 	cvals(i) = val ;
 end
@@ -126,7 +126,8 @@ end
 
 % Plot parameters
 lw = 2.0 ; ms = 11 ; plotFontSize = 10 ;
-fig = figure, hold on, grid on
+fig = figure;
+hold on, grid on
 
 node = 5 ;
 dofX = node * 6 - 5 ;
@@ -147,7 +148,8 @@ set(laby, 'fontsize', plotFontSize*.8);
 set(tit, 'fontsize', plotFontSize);
 
 
-fig2 = figure, hold on, grid on
+fig2 = figure;
+hold on, grid on
 
 
 cvals(1:11) = a ;
@@ -156,7 +158,8 @@ plot(cvals,pressure_vals, 'r-s', 'linewidth', lw,'markersize', ms)
 legend ({ 'Plastic front'}, 'location', 'east');
 
 
-fig3 = figure, hold on, grid on
+fig3 = figure;
+hold on, grid on
 
 theta = [0:0.01:2*pi] ;
 aux = zeros(length(cvals)) ;

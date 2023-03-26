@@ -188,7 +188,8 @@ timeStepIters = dispIters ;
 %~ Stress
 
 for i = 1:size(Stress,1)
-	previous_state_mat(i,1) = Stress(i,1:3) ;
+%~ Stress
+	previous_state_mat(i,1) = Stress(i,:) ;
 end
 previous_state_mat(:,2) = strain_vec ;
 previous_state_mat(:,3) = acum_plas_strain_vec ;
