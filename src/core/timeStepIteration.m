@@ -188,10 +188,10 @@ timeStepIters = dispIters ;
 %~ Stress
 
 for i = 1:size(Stress,1)
-	previous_state_mat(i,1) = {Stress(i,1:3)} ;
+	previous_state_mat(i,1) = Stress(i,1:3) ;
 end
-previous_state_mat(:,2) = {strain_vec} ;
-previous_state_mat(:,3) = {acum_plas_strain_vec} ;
+previous_state_mat(:,2) = strain_vec ;
+previous_state_mat(:,3) = acum_plas_strain_vec ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...

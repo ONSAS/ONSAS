@@ -145,11 +145,10 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'truss')
 
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
-    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
+    previous_state = { stress_n_vec{elem} strain_n_vec{elem} acum_plas_strain_n_vec{elem} } ;
 
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
-	%~ strain
-	%~ acum_plas_strain
+
     Finte = fs{1} ;  Ke = ks{1} ;
 
     if dynamicProblemBool
