@@ -107,12 +107,18 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     %~ if norm( previous_state_mat(:,3) ) >0, error('warning. HHT method with plastic analysis not validated yet'); end
     norm_val = 0 ;
+    previous_state_mat
+    size(previous_state_mat,1)
+    previous_state_mat(1,3)
+    previous_state_mat{1,3}
     for i = 1:size(previous_state_mat,1)
+    %~ i
+			%~ norm( previous_state_mat{i,3} )
 			if norm( previous_state_mat{i,3} ) > 0
 				norm_val = norm( previous_state_mat{i,3} ) + norm_val ;
 			end	
     end
-    
+    %~ stop
     if norm_val >0, error('warning. HHT method with plastic analysis not validated yet'); end
     
     fs = assembler ( ...
