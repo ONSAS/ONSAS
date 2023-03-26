@@ -66,12 +66,12 @@ vec3 = ones(length(vec1),1) ;
 loadedNode = length(xcoords) ;
 
 % Node elements
-mesh.conecCell{1, 1 } = [ 0 1 1 0  1 ] ;
-mesh.conecCell{2, 1 } = [ 0 1 2 0  loadedNode ] ;
+mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
+mesh.conecCell{2, 1 } = [ 0 1 2   loadedNode ] ;
 
 % Frame elements
 for i=1:(nnodesMesh-1) 
-	mesh.conecCell{i+2,1} = [ 1 2 0 0 i i+1 ] ;
+	mesh.conecCell{i+2,1} = [ 1 2 0  i i+1 ] ;
 end
 
 % Call ONSAS Function
@@ -113,10 +113,9 @@ global ne
 kappaHistElem = zeros(nelems,analysisSettings.finalTime+1) ;
 RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
 for j=1:nelems
-	nodeselem   = Conec( j, (4+1):(4+numNodes) )' ;
-  dofselem    = nodes2dofs( nodeselem , ndofs )        ;
-	elemCoords  = reshape( mesh.nodesCoords( Conec( j, (4+1):(4+numNodes) )' , : )', 1, 3*numNodes) ;
-	
+	nodeselem   = Conec( j, (3+1):(3+numNodes) )' ;
+    dofselem    = nodes2dofs( nodeselem , ndofs )        ;
+	elemCoords  = reshape( mesh.nodesCoords( nodeselem, : )', 1, 3*numNodes) ;	
 	[ loc, l ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofs, loc) ;
 	R = R(LocBendXZdofs,LocBendXZdofs) ;

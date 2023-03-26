@@ -64,10 +64,6 @@ constF = 50 ;
 boundaryConds(2).loadsTimeFact = @(t) constF*t*(t<1) + (2*constF - constF*(t))*(t>=1)*(t<2);
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
 %md
-%md### initial Conditions
-%mdNon homogeneous initial conditions are not considered in this example, consequently the `initialConds`  struct is set empty:
-initialConds                = struct() ;
-%md
 %md### mesh parameters
 %mdThe coordinates of the nodes are computed by using auxiliary coordinate vector that represents the local nodes coordinate, if the origin axis where fixed at the origin of each member. Thereafter the mesh is given by the following node's matrix:
 auxCoords     = linspace( 0, L, nElemsPerBeam+1 )' ;
@@ -77,13 +73,17 @@ mesh.nodesCoords = [ zeros(nElemsPerBeam+1,1)       auxCoords               zero
 %mdThe connectivity is introduced using the `conecCell`. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of each element (defined in node connectivity). First an empty cell is initialized:
 mesh.conecCell = { } ;
 %mdthen the nodes with BC conditions are defined, both with material zero (since nodes dont have material). Node _1_ is a node element type so the first dimenssion of the 'elements' struct [0 1< ...] is assigned. This node has null displacemnt and no load imposed, this is the first dimensions of the `boundaryConds` struct [0 1 1< ...], where each array of this dimension contain the loads and displacement BC. Also any non-homogeneous initial condition is considered (then zero is used) [0 1 1 0< ...]. This node attributes are loaded in the first entry {1<,..} of _conecCell_ inside first dimension of `mesh` struct {1,1<}, finally the node is assigned:
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1 ] ;
 %mdthe following node only differs in the boundary condition (not displacement and load imposed) this BC is located at dimension 2 of `boundaryConds` struct [0 1 2<...], so the node _2_ is set in the second cell entry {2,...} of the first dimension mesh struct {2,1}:
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  nElemsPerBeam+1 ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2  nElemsPerBeam+1 ] ;
 %mdthe beam elements are formed by the first material [ 1< ...], the second type of element[ 1 2<...] and no boundary and non homogeneous initial conditions are applied   [ 1 2 0< 0<  ...] are applied to any element. Also each element connect consecutive nodes [ 1 2 0 0 i< i+1< ]
 for i = 1 : 2*nElemsPerBeam,
-  mesh.conecCell{ i+2,1 } = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ i+2,1 } = [ 1 2 0  i i+1 ] ;
 end
+%md
+%md### initial Conditions
+%mdNon homogeneous initial conditions are not considered in this example, consequently the `initialConds`  struct is set empty:
+initialConds                = struct() ;
 %md
 %md### analysisSettings
 %mdA aplha-HHT algorithm is used to solve this problem with the following parameters during $30$ s: 
@@ -99,7 +99,7 @@ analysisSettings.methodName    = 'alphaHHT' ;
 ### otherParams
 %mdA name problem and vtk output is set:
 otherParams.problemName = 'rightAngleCantilever'; 
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %mdONSAS code is run for the input structs stated above
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

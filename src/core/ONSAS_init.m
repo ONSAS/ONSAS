@@ -67,7 +67,8 @@ end
 currTime  = 0 ; timeIndex = 1 ; 
 
 % process initial conditions
-[ U, Udot, Udotdot ] = initialCondsProcessing(  mesh, initialConds, elements ) ;
+nNodes = size( mesh.nodesCoords, 1 ) ;
+[ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
 %~ previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 previous_state_mat = cell( size(Conec,1), 3) ;
@@ -91,7 +92,7 @@ Stress = [] ;
 matFint = [] ;
 %[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
 
- [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] )  ;
+ [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 

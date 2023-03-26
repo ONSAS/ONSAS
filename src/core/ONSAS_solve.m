@@ -21,15 +21,15 @@
 %md
 function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 %md
-%md init structures to store solutions
+%md initialize structures to store solutions
 matUs          = modelCurrSol.U              ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot           ;
 %~ cellStress     = { modelCurrSol.Stress }     ;
 cellStress = {};
+% cell with matFint matrices
 cellFint = {};
-
-
+%
 %md
 %md#### Incremental time analysis
 %md sets stopping boolean to false
@@ -38,28 +38,28 @@ finalTimeReachedBoolean = false ;
 fprintf('|                                                 |\n')
 fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
-
+%
 % iteration variables
 iterations_average = 0 ;
 iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
-
 % progress bar variables
 plotted_bars = 0 ; plots_counter = 0 ;
-
+%
 aux_time = cputime() ;
 while finalTimeReachedBoolean == false
 
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
                        / modelProperties.analysisSettings.finalTime * 20 ) ;
-
   while plotted_bars < percent_time,
     fprintf('=')
     plotted_bars = plotted_bars +1 ;
   end
 
+  % -------------------------------------
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+  % -------------------------------------
 
   % iterations statistics
   iterations_average = ...
@@ -71,19 +71,16 @@ while finalTimeReachedBoolean == false
     iterations_strop_crit_vec( modelNextSol.timeStepStopCrit ) + 1 ;
   % ------------------------------
 
-
-
   % check if final time was reached
   finalTimeReachedBoolean = ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
                         >= ( -(modelProperties.analysisSettings.finalTime) * 1e-8 ) ;
-
-
  
   % store results and update structs
   modelCurrSol   	=  	modelNextSol ;
-  matUs          	= [ matUs          modelCurrSol.U                   ] ;
+  matUs          	= [ matUs          modelCurrSol.U                     ] ;
   loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
 	
+  % assumes no internal forces at initial time (TO IMPROVE)
 	if length(cellFint) == 0
 		cellFint{1} = zeros(size(modelCurrSol.matFint)) ;
 	end	
@@ -95,7 +92,7 @@ while finalTimeReachedBoolean == false
 	end	
 	cellStress{end+1}	= modelCurrSol.Stress ;
 	%%%	
-		
+
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );

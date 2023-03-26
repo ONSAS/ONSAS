@@ -53,6 +53,6 @@ Surface Loop(1) = {5, 6, 2, 1, 4, 3};
 Volume(1) = {1};
 
 //+
-Physical Surface ("00_01_01_00") = {5};
+Physical Surface ("00_01_01") = {5};
 //+
-Physical Volume  ("01_02_00_00") = {1};
+Physical Volume  ("01_02_00") = {1};

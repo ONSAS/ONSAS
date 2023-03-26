@@ -71,16 +71,15 @@ initialConds                = struct() ;
 %mdThe coordinates conisdering a mesh of two nodes is:
 mesh.nodesCoords = [   0  0   l0 ; ...
                       l0  0  l0  ] ;
-%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEB parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used. Finally, no specific initial conditions are set for the node (0) and at the end of the vector the number of the node is included (1).
-%md A similar approach is used for node $3$,
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  2   ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
+%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used.
+mesh.conecCell{ 2, 1 } = [ 0 1 2  2   ] ;
 %md and for node $2$ only the boundary condition is changed, because it is lodaded.
 %md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.
-mesh.conecCell{ 3, 1 } = [ 1 2 0 0  1 2 ] ;
+mesh.conecCell{ 3, 1 } = [ 1 2 0  1 2 ] ;
 %md
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during one period $T$:
@@ -119,8 +118,8 @@ lumpedParam = 0.01 ;
 mesh.nodesCoords = [   0                    0    l0 ; ...
                        (1-lumpedParam)*l0   0    l0 ; ... 
                        l0                   0    l0 ] ;
-%mdA conec cell row is added for the last element whith the second material, second element, boundary condition and no initial condition:
-mesh.conecCell{ 4, 1 } = [ 2 2 0 0  2 3 ] ;
+%mdA conec cell row is added for the last element whith the second material, second element, boundary condition:
+mesh.conecCell{ 4, 1 } = [ 2 2 0   2 3 ] ;
 %mdA new torsional constraint must be added beacuse the torsional spin of the frame element: 
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 ] ;

@@ -19,7 +19,7 @@ Line Loop(1) = {11, 12, 13, 14, 15};
 
 Plane Surface(1) = {1};
 
-Physical Point   ("00_01_01_00") = {1}; // fixed x and y
-Physical Line    ("00_02_02_00") = {12}; // supported in x
-Physical Point   ("00_01_03_00") = {3}; // loaded in y
-Physical Surface ("01_03_00_00") = {1};
+Physical Point   ("00_01_01") = {1}; // fixed x and y
+Physical Line    ("00_02_02") = {12}; // supported in x
+Physical Point   ("00_01_03") = {3}; // loaded in y
+Physical Surface ("01_03_00") = {1};

@@ -24,7 +24,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 	
   [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previous_state_mat  ) ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; 
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
   
   KT   = mats{1} ; 
 
@@ -49,9 +49,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ,  {} ) ;
 
-    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) - Faero( BCsData.neumDofs ) ) ;
+    rhat      =   Fint ( BCsData.neumDofs ) ...
+                - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs ) ;
+
+    systemDeltauRHS = - rhat ;
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 	
@@ -60,7 +65,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors  , {} ) ;
 
     foundLoadCase = false ;
     loadCase = 1 ;
@@ -72,8 +77,12 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
       end
     end
 
-    systemDeltauRHS = [ -(Fint(BCsData.neumDofs)-FextG(BCsData.neumDofs)) ...
-                        BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
+    rhat      =   Fint ( BCsData.neumDofs ) ...
+                - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs ) ;
+
+    systemDeltauRHS = [ -rhat   BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 
@@ -82,13 +91,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), []  , {} ) ;
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 + Fvis ( BCsData.neumDofs ) ...
                 + Fmas ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
-                - Faero(BCsData.neumDofs  );
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs );
 
     systemDeltauRHS = -rhat ;
 
@@ -126,9 +136,10 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
 
-    FextGt = FextG ;
+    %FextGt = FextG ;
+    [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
