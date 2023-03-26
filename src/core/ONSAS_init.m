@@ -76,12 +76,6 @@ previous_state_mat(:,1) = {zeros( 1, 3 )} ;
 previous_state_mat(:,2) = {zeros( 1, 3 )} ;
 previous_state_mat(:,3) = {0} ;
 
-%~ disp("init")
-%~ size(previous_state_mat)
-%~ size(previous_state_mat(:,1))
-%~ size(previous_state_mat(:,2))
-%~ size(previous_state_mat(:,3))
-
 convDeltau   = zeros( size(U) ) ; 
 
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;

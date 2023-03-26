@@ -72,10 +72,7 @@ stress_n_vec           =  previous_state_mat(:,1) ;
 strain_n_vec           =  previous_state_mat(:,2) ;
 acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
 
-%~ strain_vec = zeros(size( strain_n_vec )) ;
 strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
-
-%~ acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
 acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
 
 % ====================================================================
@@ -331,7 +328,6 @@ for elem = 1:nElems
 
     if exist('strain')==1
       strain_vec{ elem }           = strain' ;
-      %~ acum_plas_strain_vec( elem,1 ) = acum_plas_strain ;
       acum_plas_strain_vec{ elem } = acum_plas_strain ;
     end
   end % if stress
