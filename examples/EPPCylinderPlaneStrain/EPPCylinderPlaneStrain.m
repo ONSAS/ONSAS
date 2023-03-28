@@ -176,7 +176,7 @@ axis("equal")
 
 
 analyticCheckTolerance = 1e-2 ;
-verifBoolean = ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ;
+verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
 
 %~ % 2nd run
 %~ [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ringEPP_2.msh' ) ;
