@@ -17,7 +17,7 @@ p = 0.01 ;
 E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ;
 %md
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md#### materials
 %md The constitutive behavior of the material considered is isotropic hardening.
