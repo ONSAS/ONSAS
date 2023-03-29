@@ -92,7 +92,8 @@ otherParams.plots_format = 'vtk' ;
 %md## Verification
 %mdThe numerical and analytic solutions are compared for the external surface (since all the elements on the same surface have the same analytic solution):
 
-global Y = 2*sigmaY0 / sqrt(3) ;
+global Y
+Y = 2*sigmaY0 / sqrt(3) ;
 
 p0 = Y/2 * (1-a^2/b^2) ; % Yielding pressure
 
