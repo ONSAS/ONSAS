@@ -91,7 +91,7 @@ otherParams.plots_format = 'vtk' ;
 %md
 %md## Verification
 %mdThe numerical and analytic solutions are compared for the external surface (since all the elements on the same surface have the same analytic solution):
-
+stop
 global Y
 
 Y = 2*sigmaY0 / sqrt(3) ;
