@@ -91,7 +91,7 @@ otherParams.plots_format = 'vtk' ;
 %md
 %md## Verification
 %mdThe numerical and analytic solutions are compared for the external surface (since all the elements on the same surface have the same analytic solution):
-stop
+
 global Y
 
 Y = 2*sigmaY0 / sqrt(3) ;
@@ -109,7 +109,6 @@ for i = 1:length(cvals)
 	cvals(i) = val ;
 end
 
-%~ pressure_vals2 = (0:analysisSettings.deltaT:analysisSettings.finalTime)*p ;
 pressure_vals = loadFactorsMat(:,3)*p ;
 
 cvals = zeros(length(pressure_vals),1) ;
@@ -138,21 +137,17 @@ ubNum = matUs(dofX, :) ;
 plot(ubNum, pressure_vals, 'b-o', 'linewidth', lw,'markersize', ms)
 plot(ubAna, pressure_vals, 'g-x', 'linewidth', lw,'markersize', ms)
 
-
 legend ({'FEM', 'Analytic',}, 'location', 'east');
-
-
 labx = xlabel('u_b'); laby = ylabel('p') ;
-
 tit = title('p-u_b');
 set(labx, 'fontsize', plotFontSize*.8);
 set(laby, 'fontsize', plotFontSize*.8);
 set(tit, 'fontsize', plotFontSize);
 
 
+% Plastic front
 fig2 = figure;
 hold on, grid on
-
 
 cvals(1:11) = a ;
 plot(cvals,pressure_vals, 'r-s', 'linewidth', lw,'markersize', ms)
@@ -160,6 +155,7 @@ plot(cvals,pressure_vals, 'r-s', 'linewidth', lw,'markersize', ms)
 legend ({ 'Plastic front'}, 'location', 'east');
 
 
+% Plastic front - cylinder
 fig3 = figure;
 hold on, grid on
 
@@ -177,6 +173,7 @@ legend ({ 'Cylinder' , 'Plastic front'}, 'location', 'northeast');
 axis("equal")
 
 
+% Check solution
 analyticCheckTolerance = 1e-2 ;
 verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
 
