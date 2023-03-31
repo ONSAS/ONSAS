@@ -103,6 +103,12 @@ pressure_vals = loadFactorsMat(:,3)*p ;
 cvals = zeros(length(pressure_vals),1) ;
 ubAna = zeros(length(pressure_vals),1) ;
 
+if exist('OCTAVE_VERSION', 'builtin') ~= 0 ;
+	function val = c_val(c,p,Y,a,b)
+		val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
+	end
+end
+
 % Plastic front value
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
