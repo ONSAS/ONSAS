@@ -98,6 +98,11 @@ Y = 2*sigmaY0 / sqrt(3) ;
 
 p0 = Y/2 * (1-a^2/b^2) ; % Yielding pressure
 
+pressure_vals = loadFactorsMat(:,3)*p ;
+
+cvals = zeros(length(pressure_vals),1) ;
+ubAna = zeros(length(pressure_vals),1) ;
+
 % Plastic front value
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
@@ -108,11 +113,6 @@ for i = 1:length(cvals)
 	end
 	cvals(i) = val ;
 end
-
-pressure_vals = loadFactorsMat(:,3)*p ;
-
-cvals = zeros(length(pressure_vals),1) ;
-ubAna = zeros(length(pressure_vals),1) ;
 
 % Analytic radial displacement at outer surface
 for i = 1:length(cvals)
