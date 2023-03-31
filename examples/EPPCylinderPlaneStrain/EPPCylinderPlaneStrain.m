@@ -104,22 +104,6 @@ pressure_vals = loadFactorsMat(:,3)*p ;
 cvals = zeros(length(pressure_vals),1) ;
 ubAna = zeros(length(pressure_vals),1) ;
 
-% Implicit function
-function val = c_val(c,p,Y,a,b)
-	val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
-end
-
-% Plastic front value
-for i = 1:length(cvals)
-	p = pressure_vals(i) ;
-	if i == 1  
-		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
-	else
-		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
-	end
-	cvals(i) = val ;
-end
-
 % Analytic radial displacement at outer surface
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
@@ -212,3 +196,22 @@ verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
 %~ ubNumVec = [ubNum(end), ubNum_2(end)]
 
 %~ errVec = (ubNumVec-ubAna(end)) / ubAna(end) *100 
+
+%%
+%%
+
+% Implicit function
+function val = c_val(c,p,Y,a,b)
+	val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
+end
+
+% Plastic front value
+for i = 1:length(cvals)
+	p = pressure_vals(i) ;
+	if i == 1  
+		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
+	else
+		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
+	end
+	cvals(i) = val ;
+end
