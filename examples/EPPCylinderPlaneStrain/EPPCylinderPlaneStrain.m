@@ -1,4 +1,4 @@
-%md# Elastplastic perfect cylinder plane strain  example  
+%md# Elastoplastic perfect cylinder plane strain  example  
 
 %md### Numerical solution
 %md Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined:
