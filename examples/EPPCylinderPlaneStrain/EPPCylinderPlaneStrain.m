@@ -98,6 +98,17 @@ Y = 2*sigmaY0 / sqrt(3) ;
 
 p0 = Y/2 * (1-a^2/b^2) ; % Yielding pressure
 
+% Plastic front value
+for i = 1:length(cvals)
+	p = pressure_vals(i) ;
+	if i == 1  
+		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
+	else
+		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
+	end
+	cvals(i) = val ;
+end
+
 %~ pressure_vals2 = (0:analysisSettings.deltaT:analysisSettings.finalTime)*p ;
 pressure_vals = loadFactorsMat(:,3)*p ;
 
@@ -197,21 +208,12 @@ verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
 
 %~ errVec = (ubNumVec-ubAna(end)) / ubAna(end) *100 
 
+
+
 %%
 %%
 
 % Implicit function
 function val = c_val(c,p,Y,a,b)
 	val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
-end
-
-% Plastic front value
-for i = 1:length(cvals)
-	p = pressure_vals(i) ;
-	if i == 1  
-		val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
-	else
-		val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
-	end
-	cvals(i) = val ;
 end
