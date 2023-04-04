@@ -20,7 +20,7 @@
 function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previous_state_mat )
+                                                           timeVar, previousStateCell )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
 
@@ -67,10 +67,10 @@ if matFintBool
 else
 	matFint = [] ;
 end
-
-stress_n_vec           =  previous_state_mat(:,1) ;
-strain_n_vec           =  previous_state_mat(:,2) ;
-acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
+% size(previousStateCell)
+stress_n_vec           =  previousStateCell(:,1) ;
+strain_n_vec           =  previousStateCell(:,2) ;
+acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
 strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
 acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
