@@ -70,11 +70,10 @@ currTime  = 0 ; timeIndex = 1 ;
 nNodes = size( mesh.nodesCoords, 1 ) ;
 [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
-%~ previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-previous_state_mat = cell( size(Conec,1), 3) ;
-previous_state_mat(:,1) = {zeros( 1, 3 )} ;
-previous_state_mat(:,2) = {zeros( 1, 3 )} ;
-previous_state_mat(:,3) = {0} ;
+previousStateCell      = cell( size(Conec,1), 3) ;
+previousStateCell(:,1) = zeros( 1, 3 ) ;
+previousStateCell(:,2) = zeros( 1, 3 ) ;
+previousStateCell(:,3) = 0 ;
 
 convDeltau   = zeros( size(U) ) ; 
 
@@ -90,10 +89,10 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previous_state_mat ) ;
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, {previous_state_mat} ) ;
+  currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 % =================================================================
 
 %md prints headers for solver output file
