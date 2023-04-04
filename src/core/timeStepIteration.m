@@ -33,9 +33,9 @@ currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 % update time and set candidate displacements and derivatives
 % -----------------------------------------------------------
 if isempty( modelProperties.analysisSettings.Utp10 )
-  Utp1k       = Ut       ;
+  Utp1k = Ut ;
 else
-  error('add case for several times')
+  error('Add case for several times.')
 end
 
 [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
@@ -47,7 +47,7 @@ systemDeltauMatrix = KTtred ;
 
 % compute RHS for initial guess Utp1 and in next time step
 % --------------------------------------------------------
-if strcmp( modelProperties.analysisSettings.methodName, 'arcLength')==1
+if strcmp( modelProperties.analysisSettings.methodName, 'arcLength') == 1
   nextLoadFactorsVals = currLoadFactorsVals ;
 else
   nextLoadFactorsVals = [] ;
@@ -61,8 +61,8 @@ systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 % --- assemble system of equations ---
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
-booleanConverged = false                              ;
-dispIters        = 0                              ;
+booleanConverged = false ;
+dispIters        = 0     ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
 while  booleanConverged == 0
@@ -165,9 +165,11 @@ timeStepIters = dispIters ;
 
 
 
-for i = 1:size(Stress,1)
-	previousStateCell(i,1) = {Stress(i,:)} ;
-end
+% for i = 1:size(Stress,1)
+% 	previousStateCell(i,1) = {Stress(i,:)} ;
+% end
+
+previousStateCell(:,1) = {Stress(:,:)} ;
 
 previousStateCell(:,2) = strain_vec ;
 previousStateCell(:,3) = acum_plas_strain_vec ;

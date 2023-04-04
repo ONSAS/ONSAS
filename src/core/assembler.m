@@ -23,14 +23,14 @@ function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strai
                                                            timeVar, previousStateCell )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
-
+%
 nElems     = size(Conec, 1) ;
 nNodes     = size(Nodes, 1) ;
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
 
-% -------  residual forces vector ------------------------------------
+% -------  forces vector ---------------------------------------------
 if fsBool
   % --- creates Fint vector ---
   Fint  = zeros( nNodes*6 , 1 ) ;
@@ -67,16 +67,15 @@ if matFintBool
 else
 	matFint = [] ;
 end
-% size(previousStateCell)
+
+% Previous state 
 stress_n_vec           =  previousStateCell(:,1) ;
 strain_n_vec           =  previousStateCell(:,2) ;
 acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
 strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
 acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
-
 % ====================================================================
-
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
 
@@ -242,7 +241,8 @@ for elem = 1:nElems
 		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
 																										hyperElasModel, [1 hyperElasParams], 2, thickness, planeStateFlag, ...
 																										dotdotdispsElem, density, previous_state ) ;
-		Finte = fs{1};
+		%
+    Finte = fs{1};
 		Ke    = ks{1};
 		
 		if dynamicProblemBool
@@ -273,9 +273,8 @@ for elem = 1:nElems
    [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
-  end   % case in typee of element ----
+  end   % case in type of element ----
   % -------------------------------------------
-
 
   %md### Assembly
   %md

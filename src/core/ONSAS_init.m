@@ -94,12 +94,6 @@ nextTime = currTime + analysisSettings.deltaT ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
-
-size(modelCurrSol.previousStateCell)
-
-size(previousStateCell)
-
-% stop
 % =================================================================
 
 %md prints headers for solver output file
