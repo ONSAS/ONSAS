@@ -36,7 +36,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```
- * `'isotropicHardening'`:  $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
+ * `'isotropicHardening'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: REVISAR!! $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
 ### `materials.hyperElasParams`
 

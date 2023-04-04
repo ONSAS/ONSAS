@@ -1,7 +1,7 @@
 
 
 // sizes for another case: rInt = 0.05 ; rExt = 0.15 ;
-rInt = 0.10 ; rExt = 0.15 ;
+rInt = 100 ; rExt = 200 ;
 
 msExt = 0.012*(rExt*2.0*3.14) ;  //
 msInt = 0.012*(rInt*2.0*3.14) ;  //

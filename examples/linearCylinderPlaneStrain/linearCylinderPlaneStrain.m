@@ -1,6 +1,7 @@
-%md# Linear cylinder plane strain  example  
+%md# Plane strain ring example  
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearPlaneStrain/onsasExample_linearPlaneStrain.m)
+%md REVISAR link!!!
 %md
 %md In this example a hollow cylinder submitted to an internal pressure $p_i$ as shown in diagram depicted below is considered. The length of the cylinder is $L_z $ m and the internal and external radious are $R_i$ and $R_e$, respectively. 
 %md
@@ -8,17 +9,27 @@
 %md<img src="../../assets/linearCylinderPlaneStrain/ilusCylinderPlaneStrain.svg" alt="linear cylinder diagram" width="500"/>
 %md```
 %md
-%md A cylindrical system of coordinates is defined considering the unitary vectors ($e_r$, $e_\theta$, $e_z$). 
-%md The material employed is isotropic and homogeneous with elasticity modulus $E$ MPa and Poisson's ratio $\nu$. The boundary condition on the stress tensor $\textbf{T}$ is given by the radial pressure on the internal surface:
-%md```math 
-%md\textbf{T}(r=R_i, \theta, z)\left[-e_r\right] =p_i e_r\;\;\quad\forall\; (\theta,z) \\
-%md\textbf{T}(r=R_e, \theta, z)\left[e_r\right]=\textbf{0} \;\;\quad\forall\; (\theta,z)
-%md```
-%md and the plane strain boundary conditions imposed to the displacement field are:
-%md```math 
-%md \mathbf{\mathit{u}}_z(r, \theta, z=0)=0\;\;\quad\forall\; (r,\theta) \\
-%md u_z(r, \theta, z=L_z)=0\;\;\quad\forall\ (r,\theta) \\
-%md```
+
+%md## Linear analysis
+
+%md### Analytic solution
+
+%md### Numerical solution
+
+%md### Verification
+
+
+%md## Elastoplastic analysis
+
+%md### Semi-analytic solution
+
+%md### Numerical solution
+
+%md### Verification
+
+% verifboolean de ambos analisis
+
+
 %md
 %md## Analytic solution
 %md
@@ -41,16 +52,16 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
 %md
 %md
-%md### MEBI parameters
+%md#### MEB parameters
 %md
-%md#### materials
+%md##### materials
 %md The constitutive behavior of the material considered is isotropic linear elastic.
 %md Since only one material is considered, the structs defined for the materials contain only one entry:
 materials = struct() ;
 materials.hyperElasModel  = 'linearElastic' ;
 materials.hyperElasParams =  [ E nu ]       ;
 %md
-%md#### elements
+%md##### elements
 %md 
 %md In this plane model, three kinds of elements are used: `triangle` for the solid, `edges` to add pressure loads and `nodes` to set additional boundary conditions for the numerical resolution. Since three kinds of elements are used, the struct has length 3: 
 elements = struct() ;
@@ -62,7 +73,7 @@ elements(3).elemTypeParams     = 2         ;
 elements(3).elemCrossSecParams = L         ;
 %md where `elemCrossSecParams` field sets the thickness of the edge and `elemTypeParams` sets the plane strain triangle element.  
 %md
-%md#### boundaryConds
+%md##### boundaryConds
 %md Three BCs are considered, one corresponding to a load and two for displacements.
 %md The first two BCs constrain displacements in $x$ and $y$ global directions respectively:
 boundaryConds = struct() ;
@@ -75,11 +86,8 @@ boundaryConds(3).loadsCoordSys = 'local' ;
 boundaryConds(3).loadsTimeFact = @(t) t  ;
 boundaryConds(3).loadsBaseVals = [ 0 p ]  ;
 %md
-%md#### initialConds
-%md Any non-homogeneous initial conditions are considered, thereafter an empty struct is set:
-initialConds = struct();
 %md
-%md### Mesh
+%md#### Mesh
 %md The mesh can be read from the msh file. However, if any changes to the mesh are desired, the .geo file can be edited and the msh file can be re-generated using GMSH.
 %md
 %md```@raw html
@@ -95,7 +103,10 @@ end
 mesh = struct();
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'ring.msh'] ) ;
 %md
-%md### Analysis parameters
+%md#### initialConds
+%md Any non-homogeneous initial conditions are considered, thereafter an empty struct is set:
+initialConds = struct();
+%md#### Analysis parameters
 %md
 %md The Newton-Raphson method is employed to solve 2 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
 analysisSettings = struct() ;
@@ -106,7 +117,7 @@ analysisSettings.stopTolForces = 1.0e-12 ;
 analysisSettings.finalTime     = 1       ;
 analysisSettings.deltaT        = .5      ;
 %md
-%md### Output parameters
+%md#### Output parameters
 %md
 otherParams = struct() ;
 otherParams.problemName = 'linearPlaneStrain' ;
@@ -115,7 +126,7 @@ otherParams.plots_format = 'vtk' ;
 %md
 [matUs, loadFactorsMat, ~, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
-%md## Verification
+%md### Verification
 %mdThe numerical and analytic solutions are compared at the final load step for the internal and external surface (since all the elements on the same surface have the same analytic solution):
 % internal surface analytic solution
 A = ( p * (1+nu)*(1-2*nu)*Ri^2 ) / ( E*(Re^2-Ri^2) ) ;
@@ -134,7 +145,6 @@ analyticCheckTolerance = 1e-3 ;
 verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
                ( ( numericalRe - analyticValRe ) < analyticCheckTolerance )
 %md
-%md### Plot
 %md
 %md The numerical and analytical solution for the internal and external surface are plotted:
 %plot parameters
