@@ -33,20 +33,20 @@ boundaryConds(2).loadsBaseVals = [ 0 1 0 0 0 0 ] ;
 boundaryConds(2).imposDispDofs = [ 3 4 5 6 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 0 ] ;
 
-initialConds                = struct() ;
-
 Np = Nelem +1;
 angles = linspace(0, 2*pi, Np )' -pi*.5 ; angles(end) = [] ;
 
 mesh.nodesCoords = [ R*(1+sin( angles )) -R*cos(angles) zeros(Np-1,1) ] ;
 
 mesh.conecCell = {};
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 2 0  Nelem/2+1 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 2  Nelem/2+1 ] ;
 for i=1:(Nelem-1),
-  mesh.conecCell{ end+1, 1} = [ 1 2 0 0  i i+1 ] ;
+  mesh.conecCell{ end+1, 1} = [ 1 2 0  i i+1 ] ;
 end
-mesh.conecCell{ end+1, 1} = [ 1 2 0 0  Nelem 1 ] ; % last element of the circle
+mesh.conecCell{ end+1, 1} = [ 1 2 0  Nelem 1 ] ; % last element of the circle
+
+initialConds                = struct() ;
 
 analysisSettings.methodName    = 'arcLength' ;
 analysisSettings.incremArcLen = 1.5           ;

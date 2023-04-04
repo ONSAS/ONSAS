@@ -1,24 +1,27 @@
 # This is the ONSAS.m coode testing continuous integration config file
 #
-name: octave_moxunit_tests
+name: moxunit_code_coverage
 
-# everytime
-#on: [push, pull_request]
-
-# not so much
 on:
   push:
+    branches:
+      - master
   pull_request:
     branches:
-    - master
+      - master
 
 jobs:
   tests:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: run octave tests using moxunit
-        uses: joergbrech/moxunit-action@v1.1
+        uses: joergbrech/moxunit-action@v1.3.0
         with:
-          src: examples/static_von_mises_truss examples/frameLinearAnalysis examples/springMass examples/linearCylinderPlaneStrain examples/cantileverLinearHardening examples/uniformCurvatureCantilever examples/uniaxialExtension examples/VIVtest examples/nonlinearPendulum examples/cantileverSelfWeight examples/simpleWindTurbine examples/linearAerodynamics examples/reconfigurationBeam examples/beamLinearVibration src src/elements src/core src/constructors src/elements/frame src/elements/frame/auxiliar src/elements/truss src/elements/triangle src/elements/tetrahedron src/elements/tetrahedron/auxiliar src/vtk src/materials src/mesh test
+          src: .
           tests: ./test/runTestProblems_moxunit_disp.m
+          with_coverage: true
+          cover_xml_file: coverage.xml
+      - uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml

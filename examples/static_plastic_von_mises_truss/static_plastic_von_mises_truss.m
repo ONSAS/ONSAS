@@ -26,18 +26,18 @@ boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsTimeFact = @(t) 3.0e8*t     ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 
-initialConds                = struct() ;
-
 mesh.nodesCoords = [   0  0   0 ; ...
                       x2  0  z2 ; ...
                     2*x2  0   0 ] ;
 
 mesh.conecCell = cell(5,1) ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  3   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{ 5, 1 } = [ 1 2 0 0  2 3 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1  3   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2  2   ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0  1 2 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 2 0  2 3 ] ;
+
+initialConds                = struct() ;
 
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   2e-5  ;

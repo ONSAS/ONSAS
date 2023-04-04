@@ -1,13 +1,13 @@
 # This is the ONSAS.m documentation continuous integration config file
 #
-name: matlab_tests_and_docs
+name: matlab_tests
 on: [push, pull_request]
 
 jobs:
-  docs:
+  matlab_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
       - name: run matlab test problems
@@ -20,7 +20,7 @@ jobs:
           command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
         with:
-          version: 1.7
+          version: 1.8
       - name: Install julia dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.add("Documenter")'
       - name: Build and deploy
