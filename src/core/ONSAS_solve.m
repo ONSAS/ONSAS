@@ -22,13 +22,11 @@
 function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 %md
 %md initialize structures to store solutions
-matUs          = modelCurrSol.U              ;
+matUs          = modelCurrSol.U                   ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
-matUdots       = modelCurrSol.Udot           ;
-%~ cellStress     = { modelCurrSol.Stress }     ;
-cellStress = {};
-% cell with matFint matrices
-cellFint = {};
+matUdots       = modelCurrSol.Udot                ;
+cellStress     = {} ; % cell with stresses
+cellFint       = {} ; % cell with internal forces matrices
 %
 %md
 %md#### Incremental time analysis
@@ -86,12 +84,11 @@ while finalTimeReachedBoolean == false
 	end	
 	cellFint{end+1}	= modelCurrSol.matFint ;
 	
-	%%%
 	if length(cellStress) == 0
 		cellStress{1} = zeros(size(modelCurrSol.Stress)) ;
 	end	
 	cellStress{end+1}	= modelCurrSol.Stress ;
-	%%%	
+		
 
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )
