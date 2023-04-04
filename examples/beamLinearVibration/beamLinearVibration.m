@@ -2,9 +2,9 @@
 %md
 %md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m)
 %md
-%mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and corotational formulations. The aim of this example is to validate the numerical implementations using the analytic solution.
+%mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and the co-rotational formulations. The aim of this example is to verify the numerical implementations using an analytic solution.
 %md
-%mdThe problem consists in a beam with fixed nodes in both ends. Two loads of magnitude $F(t) = f_o \sin(wt)$ are applied in the middle point as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
+%mdThe problem consists in a beam with pinned nodes in both ends. Two loads of magnitude $F(t) = f_o \sin(wt)$ are applied in the middle point as it is shown in the figure, where $f_o$ is the force magnitude amplitude and $\omega$ is the force angular frequency.
 %md
 %md```@raw html
 %md<img src="../../assets/beamDynamicVibration.svg" alt="structure diagram" width="500"/>
