@@ -34,23 +34,13 @@ convDeltau = convDeltau( neumDofs ) ;
     
     posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 		
-		if length(analysisSettings.incremArcLen) > 1
-			incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-		else	
-			incremArcLen = analysisSettings.incremArcLen ;
-		end
+	if length(analysisSettings.incremArcLen) > 1
+		incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+	else	
+		incremArcLen = analysisSettings.incremArcLen ;
+	end
 		
-		ndofs = 6 ;
-		
-		%~ relDeltas = zeros(length(convDeltau)) ;
-		%~ % relative disp
-		%~ for i =1:( length(convDeltau)/ndofs -1 )
-			%~ dofsElem = ( (i-1)*ndofs+1:i*ndofs ) ;  
-			%~ redDeltaElem = currDeltau( (i*ndofs+1):(i+1)*ndofs ) - currDeltau( ((i-1)*ndofs+1):i*ndofs ) ;
-			%~ relDeltas(dofsElem) = abs(redDeltaElem) ;
-			%~ relDeltas(dofsElem) = redDeltaElem ;
-		%~ end
-		%~ relDeltas = relDeltas(neumDofs) ;
+	ndofs = 6 ;
 		
 		
 		% =========================
