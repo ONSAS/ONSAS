@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
-  analysisSettings, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS )
+  analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS )
 
   stopTolDeltau = analysisSettings.stopTolDeltau ;
   stopTolForces = analysisSettings.stopTolForces ;

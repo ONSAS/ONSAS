@@ -86,7 +86,7 @@ while  booleanConverged == 0
   [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
 
   % --- check convergence ---
-  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS(:,1) ) ;
+  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
   % ---------------------------------------------------
 
   % --- prints iteration info in file ---
