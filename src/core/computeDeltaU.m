@@ -21,14 +21,22 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
 
 arcLengthNorm = zeros( size( convDeltau ) ) ;
 arcLengthNorm(1:2:end) = 1 ;
-arcLengthNormAux = arcLengthNorm ;
 arcLengthNorm = arcLengthNorm(neumDofs) ;
+
+% =========================
+cylindricalConstraintBool = 1 ;
+JirasekBool = 0 ;
+% =========================
+
+if JirasekBool == 1	
+	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+end
 
 % keep reduced converged delta u
 convDeltau = convDeltau( neumDofs ) ;
 
   if strcmp( analysisSettings.methodName, 'arcLength' )
-		
+					
     aux = systemDeltauMatrix \ systemDeltauRHS ;
     deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
     
@@ -38,81 +46,25 @@ convDeltau = convDeltau( neumDofs ) ;
 			incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
 		else	
 			incremArcLen = analysisSettings.incremArcLen ;
-		end
-		
-		ndofs = 6 ;
-		
-		%~ relDeltas = zeros(length(convDeltau)) ;
-		%~ % relative disp
-		%~ for i =1:( length(convDeltau)/ndofs -1 )
-			%~ dofsElem = ( (i-1)*ndofs+1:i*ndofs ) ;  
-			%~ redDeltaElem = currDeltau( (i*ndofs+1):(i+1)*ndofs ) - currDeltau( ((i-1)*ndofs+1):i*ndofs ) ;
-			%~ relDeltas(dofsElem) = abs(redDeltaElem) ;
-			%~ relDeltas(dofsElem) = redDeltaElem ;
-		%~ end
-		%~ relDeltas = relDeltas(neumDofs) ;
-		
-		
-		% =========================
-		MayDuanBool = 0 ;
-		cylindricalConstraintBool = 0 ;
-		JirasekBool = 1 ;
-		% =========================
-		
-		if MayDuanBool == 1
-			reluast = cell(length(convDeltau)/ndofs - 1,1) ;
-			relubar = cell(length(convDeltau)/ndofs - 1,1) ;
-			relDeltas = cell(length(convDeltau)/ndofs - 1,1) ;
-			
-			auxuast = zeros(length(convDeltau)) ;
-			auxubar = zeros(length(convDeltau)) ;
-			
-			auxuast(neumDofs) = deltauast ;
-			auxubar(neumDofs) = deltaubar ;
-			
-			auxNormAst 	= zeros(nelems,1) ;
-			auxNum 			= zeros(nelems,1) ;
-			
-			for i = 1:( length(convDeltau)/ndofs - 1 ) % for nelems
-				dofsElem = ( (i-1)*ndofs+1:i*ndofs ) ;  
-				relDeltaElem = auxuast( (i*ndofs+1):(i+1)*ndofs ) - auxuast( ((i-1)*ndofs+1):i*ndofs ) ;
-				reluast(1,:) = relDeltaElem ;
-				auxNormAst(i) = relDeltaElem' * relDeltaElem ;
-				%
-				relDeltaElem = auxubar( (i*ndofs+1):(i+1)*ndofs ) - auxubar( ((i-1)*ndofs+1):i*ndofs ) ;
-				relubar(1,:) = relDeltaElem ;
-				%~ auxNormBar(i) = relDeltaElem' * relDeltaElem ;
-				%
-				relDeltaElem = currDeltau( (i*ndofs+1):(i+1)*ndofs ) - currDeltau( ((i-1)*ndofs+1):i*ndofs ) ;
-				relDeltas(i) = relDeltaElem ;
-				%
-				auxNum(i) = reluast(i)' * ( relDeltas(i) + relubar(i) ) ;
-			end	
-		
-		end
-		
+		end		
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
-    elseif cylindricalConstraintBool == 1 || JirasekBool == 1
+    else 
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
-    elseif MayDuanBool == 1
-			deltalambda = incremArcLen / sqrt( sum(auxNormAst) ) ;
-			deltalambda1 = deltalambda ;
     end
-	elseif JirasekBool == 1 % Jirasek approach
-		%~ timeIndex
-		%~ dispIter
-		arcLengthNorm = arcLengthNormAux ;
-		%~ arcLengthNorm(end-1) = -1 ;
-		arcLengthNorm(1:2:end) = -1 ;
-		arcLengthNorm = arcLengthNorm(neumDofs) ;
-		cMatrix = arcLengthNorm ;
-		%~ cMatrix = relDeltas ;
+  elseif JirasekBool == 1 % Jirasek approach
+		
+		% Variables to be defined by user
+		global dominantDofs
+		global scalingProjection
+		% Projection matrix
+		cMatrix(dominantDofs) = scalingProjection ;
+		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
+	
 		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
-	elseif MayDuanBool == 1 % May & Duan approach
-		deltalambda	= deltalambda1 - sum(auxNum) / sqrt( sum(auxNormAst) ) ;
+  
   elseif cylindricalConstraintBool == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
     num_reductions = 0 ;
