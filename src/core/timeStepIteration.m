@@ -218,26 +218,30 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
 
   Uk( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured(oddNeumDofsInds ) ;
 
-  nNodes = length( Uk) / 6 ;
+  % nNodes = length( Uk) / 6 ;
 
-  deltauComplete = zeros( size( Uk)) ;
-  deltauComplete( neumdofs ) = deltaured ;
+  % deltauComplete = zeros( size( Uk)) ;
+  % deltauComplete( neumdofs ) = deltaured ;
+  nodeAngDofs=2:2:length(Uk)
+  
+  Uk(nodeAngDofs) = deltaured(nodeAngDofs) + Uk(nodeAngDofs) ;
 
-  for i=1:nNodes
-    nodeDofs = nodes2dofs( i , 6 ) ;
-    nodeAngDofs = nodeDofs(2:2:6)  ;
+%%%%%%%%% old
+  % for i=1:nNodes
+  %   nodeDofs = nodes2dofs( i , 6 ) ;
+  %   nodeAngDofs = nodeDofs(2:2:6)  ;
 
-    %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
-                                         %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
-                                       %~ ) ) ;
-    updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
-    %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
-                                %~ expon( Uk             ( nodeAngDofs ) ) ) ;
+  %   %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
+  %                                        %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
+  %                                      %~ ) ) ;
+  %   updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
+  %   %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
+  %                               %~ expon( Uk             ( nodeAngDofs ) ) ) ;
 
-    Uk ( nodeAngDofs ) = updateB ;
+  %   Uk ( nodeAngDofs ) = updateB ;
 
-  end
-
+  % end
+%%%%%%%%
   currDeltau      = currDeltau    + deltaured ;
 
 function vec = antiSkew( mat )

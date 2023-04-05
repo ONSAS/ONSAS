@@ -128,7 +128,7 @@ for elem = 1:nElems
 
   elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
-  
+  stressElem = [] ;
   fintLocCoord = [] ;
 
   % -----------   node element   ------------------------------
@@ -144,7 +144,6 @@ for elem = 1:nElems
       Fmase = Mmase * dotdotdispsElem        ;
     end
 
-  stressElem = [] ;
   % -----------   truss element   ------------------------------
   elseif strcmp( elemType, 'truss')
 
@@ -229,8 +228,6 @@ for elem = 1:nElems
                                      analysisSettings, timeVar, elem, ...
                                      aeroNumericalParams{2}  ) ;
     end
-  
-  stressElem = [] ;
 
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
