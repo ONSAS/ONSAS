@@ -29,12 +29,11 @@ Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSo
 convDeltau = modelCurrSol.convDeltau ;
 currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 
-% %%%%%%%%%%%%%%%%
-%~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 stabilityAnalysisFlag = 0 ;
-% %%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if stabilityAnalysisFlag == 2 || stabilityAnalysisFlag == 1
-  KTtred     = modelCurrSol.systemDeltauMatrix ;
+  KTtred = modelCurrSol.systemDeltauMatrix ;
 end
 
 % update time and set candidate displacements and derivatives
@@ -52,7 +51,9 @@ end
 % --------------------------------------------------------
 if strcmp( modelProperties.analysisSettings.methodName, 'arcLength') == 1
   nextLoadFactorsVals = currLoadFactorsVals ;
+  args = sets(modelProperties.analysisSettings, length(convDeltau), BCsData.neumDofs, modelCurrSol.timeIndex) ;
 else
+  args = [] ;
   nextLoadFactorsVals = [] ;
 end
 
@@ -60,7 +61,7 @@ end
 % ----------------------
 systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
-previousStateCell  = modelCurrSol.previousStateCell ;
+previousStateCell  = modelCurrSol.previousStateCell  ;
 
 % --- assemble system of equations ---
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
@@ -75,7 +76,7 @@ while  booleanConverged == 0
   dispIters = dispIters + 1 ;
 
   % solve system
-  [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau, modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs ) ;
+  [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
@@ -248,3 +249,14 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
 
 function vec = antiSkew( mat )
   vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
+
+function [args] = sets(analysisSettings, len, neumDofs, timeIndex)
+  arcLengthNorm = zeros( len ) ;
+  arcLengthNorm(1:2:end) = 1 ;
+  arcLengthNorm = arcLengthNorm(neumDofs) ;
+  if length( analysisSettings.incremArcLen ) > 1
+    incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+  else	
+    incremArcLen = analysisSettings.incremArcLen ;
+  end
+  args = {arcLengthNorm; incremArcLen} ;

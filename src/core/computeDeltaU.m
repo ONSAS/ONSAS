@@ -17,24 +17,27 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
-  systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs )
+  systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDof, args )
 
-arcLengthNorm = zeros( size( convDeltau ) ) ;
-arcLengthNorm(1:2:end) = 1 ;
-arcLengthNorm = arcLengthNorm(neumDofs) ;
+% arcLengthNorm = zeros( size( convDeltau ) ) ;
+% arcLengthNorm(1:2:end) = 1 ;
+% arcLengthNorm = arcLengthNorm(neumDofs) ;
 
 % keep reduced converged delta u
-convDeltau = convDeltau( neumDofs ) ;
+% convDeltau = convDeltau( neumDofs ) ;
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
 
+  arcLengthNorm = args{1} ;
+  incremArcLen = args{2} ;
+
   aux = systemDeltauMatrix \ systemDeltauRHS ;
   
-  if length( analysisSettings.incremArcLen ) > 1
-    incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-  else	
-    incremArcLen = analysisSettings.incremArcLen ;
-  end
+  % if length( analysisSettings.incremArcLen ) > 1
+  %   incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+  % else	
+  %   incremArcLen = analysisSettings.incremArcLen ;
+  % end
     
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
 
