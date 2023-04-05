@@ -220,11 +220,12 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
 
   % nNodes = length( Uk) / 6 ;
 
-  % deltauComplete = zeros( size( Uk)) ;
-  % deltauComplete( neumdofs ) = deltaured ;
-  nodeAngDofs=2:2:length(Uk)
-  
-  Uk(nodeAngDofs) = deltaured(nodeAngDofs) + Uk(nodeAngDofs) ;
+  deltauComplete = zeros( size( Uk)) ;
+  deltauComplete( neumdofs ) = deltaured ;
+  nodeAngDofs=2:2:length(Uk);
+
+neumdofs(evenNeumDofsInds) 
+  Uk(nodeAngDofs) = deltauComplete(nodeAngDofs) + Uk(nodeAngDofs) ;
 
 %%%%%%%%% old
   % for i=1:nNodes
