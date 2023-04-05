@@ -26,9 +26,16 @@ function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsDa
 % assign current time (t) variables
 % ---------------------------------
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
-KTtred     = modelCurrSol.systemDeltauMatrix ;
 convDeltau = modelCurrSol.convDeltau ;
 currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
+
+% %%%%%%%%%%%%%%%%
+%~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
+stabilityAnalysisFlag = 0 ;
+% %%%%%%%%%%%%%%%%
+if stabilityAnalysisFlag == 2 || stabilityAnalysisFlag == 1
+  KTtred     = modelCurrSol.systemDeltauMatrix ;
+end
 
 % update time and set candidate displacements and derivatives
 % -----------------------------------------------------------
@@ -136,10 +143,7 @@ printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (
 % --------------------------------------------------------------------
 
 
-% %%%%%%%%%%%%%%%%
-%~ stabilityAnalysisFlag = stabilityAnalysisBoolean ;
-stabilityAnalysisFlag = 0 ;
-% %%%%%%%%%%%%%%%%
+
 
 if stabilityAnalysisFlag == 2
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
