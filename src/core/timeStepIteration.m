@@ -60,7 +60,7 @@ end
 % ----------------------
 systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
-previousStateCell = modelCurrSol.previousStateCell ;
+previousStateCell  = modelCurrSol.previousStateCell ;
 
 % --- assemble system of equations ---
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
