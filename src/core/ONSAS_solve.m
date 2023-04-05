@@ -44,7 +44,7 @@ iterations_average = 0 ;
 iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
 % progress bar variables
-plotted_bars = 0 ; plots_counter = 0 ;
+plotted_bars = 0 ;
 %
 aux_time = cputime() ;
 while finalTimeReachedBoolean == false

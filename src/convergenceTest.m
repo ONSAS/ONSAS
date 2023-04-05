@@ -26,9 +26,9 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
 
-  if strcmp( analysisSettings.methodName, 'arcLength')
-    systemDeltauRHS = systemDeltauRHS(:,1);
-  end
+  % if strcmp( analysisSettings.methodName, 'arcLength')
+  %   systemDeltauRHS = systemDeltauRHS(:,1);
+  % end
 
   deltaErrLoad  = norm( systemDeltauRHS )     ;
   normFext      = norm( redFext         )     ;

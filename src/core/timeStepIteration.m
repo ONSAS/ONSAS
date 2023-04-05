@@ -41,10 +41,6 @@ end
 [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
   Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
-% current tangent matrix
-% ----------------------
-systemDeltauMatrix = KTtred ;
-
 % compute RHS for initial guess Utp1 and in next time step
 % --------------------------------------------------------
 if strcmp( modelProperties.analysisSettings.methodName, 'arcLength')==1
@@ -53,10 +49,13 @@ else
   nextLoadFactorsVals = [] ;
 end
 
-previous_state_mat = modelCurrSol.previous_state_mat ;
 
+% current system variables
+% ----------------------
 systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
+previous_state_mat = modelCurrSol.previous_state_mat ;
+
 
 % --- assemble system of equations ---
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
@@ -87,7 +86,7 @@ while  booleanConverged == 0
   [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
 
   % --- check convergence ---
-  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS ) ;
+  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, [], FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, [], systemDeltauRHS(:,1) ) ;
   % ---------------------------------------------------
 
   % --- prints iteration info in file ---
