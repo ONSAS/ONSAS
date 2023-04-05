@@ -16,13 +16,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [ matUs, loadFactorsMat, cellFint ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
+function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 %mdFirst the input structs are converted to structs with the model information
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 %mdAfter that the structs are used to perform the numerical time analysis
-[ matUs, loadFactorsMat, cellFint ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 %md Finally the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
