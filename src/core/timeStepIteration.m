@@ -224,7 +224,6 @@ function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
   deltauComplete( neumdofs ) = deltaured ;
   nodeAngDofs=2:2:length(Uk);
 
-neumdofs(evenNeumDofsInds) 
   Uk(nodeAngDofs) = deltauComplete(nodeAngDofs) + Uk(nodeAngDofs) ;
 
 %%%%%%%%% old
