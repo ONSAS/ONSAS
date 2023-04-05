@@ -40,9 +40,9 @@ end
 % update time and set candidate displacements and derivatives
 % -----------------------------------------------------------
 if isempty( modelProperties.analysisSettings.Utp10 )
-  Utp1k       = Ut       ;
+  Utp1k = Ut ;
 else
-  error('add case for several times')
+  error('Add case for several times.')
 end
 
 [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
@@ -50,29 +50,24 @@ end
 
 % compute RHS for initial guess Utp1 and in next time step
 % --------------------------------------------------------
-if strcmp( modelProperties.analysisSettings.methodName, 'arcLength')==1
+if strcmp( modelProperties.analysisSettings.methodName, 'arcLength') == 1
   nextLoadFactorsVals = currLoadFactorsVals ;
 else
   nextLoadFactorsVals = [] ;
 end
 
-
 % current system variables
 % ----------------------
 systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
-previous_state_mat = modelCurrSol.previous_state_mat ;
-
+previousStateCell = modelCurrSol.previousStateCell ;
 
 % --- assemble system of equations ---
-[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
+[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
-booleanConverged = false                              ;
-dispIters        = 0                              ;
+booleanConverged = false ;
+dispIters        = 0     ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
-
-%global timeInd
-%	timeInd = modelCurrSol.timeIndex ;
 
 while  booleanConverged == 0
 
@@ -90,7 +85,7 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previous_state_mat ) ;
+  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
   % --- check convergence ---
   [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
@@ -110,7 +105,7 @@ Udotdottp1 = Udotdottp1k ;
 KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
-[~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previous_state_mat ) ;
+[~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
@@ -169,12 +164,19 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
-previous_state_mat = [ Stress(:,1) strain_vec acum_plas_strain_vec ] ;
+
+
+for i = 1:size(Stress,1)
+	previousStateCell(i,1) = {Stress(i,:)} ;
+end
+
+previousStateCell(:,2) = strain_vec ;
+previousStateCell(:,3) = acum_plas_strain_vec ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 
 
 
