@@ -1,9 +1,9 @@
 
 
 // sizes for another case: rInt = 0.05 ; rExt = 0.15 ;
-rInt = 0.10 ; rExt = 0.15 ;
+rInt = 100 ; rExt = 200 ;
 
-msExt = 0.012*(rExt*2.0*3.14) ;  //
+msExt = 0.015*(rExt*2.0*3.14) ;  //
 msInt = 0.012*(rInt*2.0*3.14) ;  //
 
 Point(1)  = {0   , 0, 0};
@@ -32,9 +32,9 @@ Line Loop(1) = {1, 2, 3, 4, 5, 6, 7, 8};
 
 Plane Surface(1) = {1};
 
-Physical Point("00_01_01") = {3,5};
-Physical Point("00_01_02") = {2,4};
+Physical Point("00_01_01_00") = {3,5};
+Physical Point("00_01_02_00") = {2,4};
 
-Physical Line ("00_02_03") = {1,2,3,4};
+Physical Line ("00_02_03_00") = {1,2,3,4};
 
-Physical Surface("01_03_00") = {1};
+Physical Surface("01_03_00_00") = {1};
