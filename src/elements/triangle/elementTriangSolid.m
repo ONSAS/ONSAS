@@ -16,7 +16,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-%md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with linearElastic behavior. The dofs are assumed to be on x-y.
+%md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with linearElastic and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
 %md
 
 function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
@@ -63,13 +63,13 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		
 	elseif strcmp( hyperElasModel, 'isotropicHardening') 
 		
-		G = E/(2*(1+nu)) 		; % Shear modulus
+		G = E/(2*(1+nu)) 	; % Shear modulus
 		K = E/(3*(1-2*nu)) 	; % Bulk modulus
 		
 		% Previous vals
 		stress_n           = previous_state{1,:}(1:3)  ;
 		strain_n           = previous_state{2,:}(1:3)  ;
-		acum_plas_strain_n =  previous_state{3} 	;
+		acum_plas_strain_n =  previous_state{3} 	   ;
 		
 		% Isotropic Hardening variables
 		H       = elemConstitutiveParams(4) ;
@@ -90,30 +90,30 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 		J2_tr = 1/2 * norm_str^2 ; % Invariant J2
 		
 		% Yielding function
-		q_tr = sqrt(3*J2_tr) ;
-		phi_tr = q_tr - sigma_Y_tr ; % Trial
+		q_tr = sqrt(3*J2_tr) 		;
+		phi_tr = q_tr - sigma_Y_tr 	; % Trial
 		
 		% Trial strain
 		strain_e_tr = De\stress_n' + (strain-strain_n') ; % Eq 7.92 
 		
 		% Volumetric and deviatoric split 
-		strain_e_v_tr = 1/3*sum(strain_e_tr(1:2))*[1;1;0] ; % volumetric component
-		strain_e_d_tr = strain_e_tr - strain_e_v_tr; % deviatoric component
-		strain_e_d_tr(3) = strain_e_d_tr(3)/2 ;
+		strain_e_v_tr = 1/3*sum(strain_e_tr(1:2))*[1;1;0] 	; % volumetric component
+		strain_e_d_tr = strain_e_tr - strain_e_v_tr			; % deviatoric component
+		strain_e_d_tr(3) = strain_e_d_tr(3)/2 				;
 		
 		% Volumetric and deviatoric stress
-		st_hyd = sum(strain_e_v_tr) * K * [1;1;0] ;
-		st_dev = 2*G*strain_e_d_tr ;
+		st_hyd = sum(strain_e_v_tr) * K * [1;1;0] 	;
+		st_dev = 2*G*strain_e_d_tr 					;
 		
 		if phi_tr <= 0 % elastic behavior
 
-			stress           	= stress_tr' ;
-			dstressdeps       = De ;
-			acum_plas_strain 	= acum_plas_strain_n ; 
+			stress           	= stress_tr' 			;
+			dstressdeps       = De 						;
+			acum_plas_strain 	= acum_plas_strain_n 	; 
 			
 		else % elasto-plastic behavior
 			
-			delta_gamma = phi_tr / ( 3*G + H ) ; % 			
+			delta_gamma = phi_tr / ( 3*G + H ) ; % Plastic multiplier			
 			Nhat = strain_e_d_tr / norm(strain_e_d_tr) ;
 			
 			Id = eye(3)*2/3 ;

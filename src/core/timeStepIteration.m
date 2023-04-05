@@ -165,11 +165,9 @@ timeStepIters = dispIters ;
 
 
 
-% for i = 1:size(Stress,1)
-% 	previousStateCell(i,1) = {Stress(i,:)} ;
-% end
-
-previousStateCell(:,1) = {Stress(:,:)} ;
+for i = 1:size(Stress,1)
+	previousStateCell(i,1) = {Stress(i,:)} ;
+end
 
 previousStateCell(:,2) = strain_vec ;
 previousStateCell(:,3) = acum_plas_strain_vec ;

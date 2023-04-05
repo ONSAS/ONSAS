@@ -95,19 +95,12 @@ otherParams.plots_format = 'vtk' ;
 global Y
 
 Y = 2*sigmaY0 / sqrt(3) ;
-
-p0 = Y/2 * (1-a^2/b^2) ; % Yielding pressure
+p0 = Y/2 * (1-a^2/b^2)  ; % Yielding pressure
 
 pressure_vals = loadFactorsMat(:,3)*p ;
 
 cvals = zeros(length(pressure_vals),1) ;
 ubAna = zeros(length(pressure_vals),1) ;
-
-%~ if exist('OCTAVE_VERSION', 'builtin') ~= 0 ;
-	%~ function val = c_val(c,p,Y,a,b)
-	%~ val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
-	%~ end
-%~ end
 
 % Plastic front value
 for i = 1:length(cvals)
@@ -150,7 +143,6 @@ set(labx, 'fontsize', plotFontSize*.8);
 set(laby, 'fontsize', plotFontSize*.8);
 set(tit, 'fontsize', plotFontSize);
 
-
 % Plastic front
 fig2 = figure;
 hold on, grid on
@@ -159,7 +151,6 @@ cvals(1:11) = a ;
 plot(cvals,pressure_vals, 'r-s', 'linewidth', lw,'markersize', ms)
 
 legend ({ 'Plastic front'}, 'location', 'east');
-
 
 % Plastic front - cylinder
 fig3 = figure;
@@ -178,45 +169,6 @@ end
 legend ({ 'Cylinder' , 'Plastic front'}, 'location', 'northeast');
 axis("equal")
 
-
 % Check solution
 analyticCheckTolerance = 1e-2 ;
 verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
-
-%~ % 2nd run
-%~ [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'ringEPP_2.msh' ) ;
-
-%~ Conec = myCell2Mat( mesh.conecCell ) ;
-%~ elems = size(Conec,1) 
-
-%~ [matUs2, loadFactorsMat, ~, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-%~ ubNum_2 = matUs2(dofX, :) ; 
-
-%~ fig2 = figure, hold on, grid on
-%~ plot(ubNum_2, pressure_vals, 'b-o', 'linewidth', lw,'markersize', ms)
-%~ plot(ubAna, pressure_vals, 'g-x', 'linewidth', lw,'markersize', ms)
-
-%~ legend ({'FEM', 'Analytic'}, 'location', 'east');
-
-%~ labx = xlabel('u_b'); laby = ylabel('p') ;
-
-%~ tit = title('p-u_b');
-%~ set(labx, 'fontsize', plotFontSize*.8);
-%~ set(laby, 'fontsize', plotFontSize*.8);
-%~ set(tit, 'fontsize', plotFontSize);
-
-
-%~ ubNumVec = [ubNum(end), ubNum_2(end)]
-
-%~ errVec = (ubNumVec-ubAna(end)) / ubAna(end) *100 
-
-
-
-%%
-%%
-
-% Implicit function
-%~ function val = c_val(c,p,Y,a,b)
-	%~ val = p/Y-( log(c/a)+1/2*(1 - c^2/b^2) ) ;
-%~ end
