@@ -82,7 +82,7 @@ boundaryConds(3).loadsBaseVals = [ 0 p ]  ;
 %md Finally the internal pressure is applied on the `edge` elements linked with curves from one to four (Circles 1-4 in Figure). In accordance with the orientation of the curve set in GMSH, the normal vector obtained in local coordinates is $e_r$ so the internal pressure is assigned using `boundaryConds(3)`. Once the mesh is created is read using:
 base_msh='';
 if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
-  base_msh=['.' filesep 'examples' filesep 'linearCylinderPlaneStrain' filesep];
+  base_msh=['.' filesep 'examples' filesep 'ringPlaneStrain' filesep];
 end
 mesh = struct();
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'ring.msh'] ) ;
@@ -104,7 +104,7 @@ analysisSettings.deltaT        = .5      ;
 %md#### Output parameters
 %md
 otherParams = struct() ;
-otherParams.problemName = 'linearPlaneStrain' ;
+otherParams.problemName = 'linear_PlaneStrain' ;
 otherParams.plots_format = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
@@ -139,7 +139,7 @@ labx = xlabel('Displacement [m]');   laby = ylabel('\lambda(t)') ;
 legend('Numeric','Analytic','location','East')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/verifLinearCylinderPlaneStrain.png','-dpng')
+print('output/verifLinearRingPlaneStrain.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/verifLinearCylinderPlaneStrain.png" alt="verification plot" width="500"/>
@@ -170,15 +170,7 @@ print('output/verifLinearCylinderPlaneStrain.png','-dpng')
 %md```
 %md### Numerical solution
 % scalar parameters
-% global a
-% global b
-
-% b = 200 ; 
-% a = 100 ;
-L = .75 ;
-
-p = 0.01 ;
-E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ;
+E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ; L = .75 ; p = 0.01 ;
 %md
 %md
 %md### MEB parameters
@@ -218,7 +210,7 @@ analysisSettings.deltaT        = 1        ;
 %md
 %md### Output parameters
 %md
-otherParams.problemName = 'EPPPlaneStrain' ;
+otherParams.problemName = 'EPP_PlaneStrain' ;
 otherParams.plots_format = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md

@@ -42,7 +42,7 @@ function test_6
 %   assertEqual( verifBoolean, true );
 
 function test_8
-  linearCylinderPlaneStrain
+  ringPlaneStrain
   assertEqual( verifBoolean, true );
 
 % function test_9
