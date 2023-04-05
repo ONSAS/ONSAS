@@ -151,7 +151,6 @@ print('output/verifLinearRingPlaneStrain.png','-dpng')
 %md```
 %md
 %md## Elastoplastic analysis
-
 %md### Semi-analytic solution
 %md The solution is extracted from Hill (The mathematical theroy of plasticity, 1950). 
 %md The yielding pressure $p_0$ is defined as,
