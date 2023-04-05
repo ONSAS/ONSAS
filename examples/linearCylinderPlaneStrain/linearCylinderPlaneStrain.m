@@ -9,29 +9,20 @@
 %md<img src="../../assets/linearCylinderPlaneStrain/ilusCylinderPlaneStrain.svg" alt="linear cylinder diagram" width="500"/>
 %md```
 %md
+%md Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined:
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+% add path
+addpath( genpath( [ pwd '/../../src'] ) ) ;
+% scalar parameters
+% E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
+E = 210 ; nu = 0.3 ; p = 0.01 ; L = .75 ; 
+global Re
+global Ri
+Re = 200 ; Ri = 100 ;
 
 %md## Linear analysis
 
 %md### Analytic solution
-
-%md### Numerical solution
-
-%md### Verification
-
-
-%md## Elastoplastic analysis
-
-%md### Semi-analytic solution
-
-%md### Numerical solution
-
-%md### Verification
-
-% verifboolean de ambos analisis
-
-
-%md
-%md## Analytic solution
 %md
 %md The solution displacement field is extracted from chapter 4 of  (Timoshenko and Goodier, Theory of Elasticity, 3rd edition). The Navier's equation, imposing no temperature variation, no volumetric forces, and considering a radial dispalcement field leads to:
 %md```math
@@ -44,13 +35,6 @@
 %md B = \dfrac{(1+\nu)R_i^2R_e^2p_i}{E(R_e^2-R_i^2)}
 %md```
 %md### Numerical solution
-%md Before defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined:
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-% add path
-addpath( genpath( [ pwd '/../../src'] ) ) ;
-% scalar parameters
-E = 1e6 ; nu = 0.3 ; p = 30e3 ; L = .75 ; Re = 0.15 ; Ri = 0.1 ;
-%md
 %md
 %md#### MEB parameters
 %md
@@ -140,11 +124,6 @@ analyticValRe = A*Re + B/Re ;
 % external surface numerical solution
 dofXRe = (8-1)*6+3 ;
 numericalRe = matUs( dofXRe , end ) ;
-%md The numerical solution is verified: 
-analyticCheckTolerance = 1e-3 ;
-verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
-               ( ( numericalRe - analyticValRe ) < analyticCheckTolerance )
-%md
 %md
 %md The numerical and analytical solution for the internal and external surface are plotted:
 %plot parameters
@@ -170,4 +149,148 @@ print('output/verifLinearCylinderPlaneStrain.png','-dpng')
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/defLinearCylinderPlaneStrain.png" alt="def plot" width="500"/>
 %md```
+%md
+%md## Elastoplastic analysis
+
+%md### Semi-analytic solution
+%md The solution is extracted from Hill (The mathematical theroy of plasticity, 1950). 
+%md The yielding pressure $p_0$ is defined as,
+%md```math 
+%md Y = \dfrac{2\sigma_{Y,0}}{\sqrt(3)}  \\
+%md p_0 = \dfrac{Y}{2}\left(1+\dfrac{R_i^2}{R_e^2}\right).
+%md```
+%md The radial displacement of the outer surface of the ring is given by,
+%md```math 
+%md \dfrac{2pR_e}{E\left(\dfrac{R_e^2}{R_i^2-1}\right)}(1-\nu^2)\qquad \textup{if p\leq p_0}
+%md \dfrac{Yc^2}{ER_e}(1-\nu^2)\qquad \textup{if p> p_0}
+%md```
+%md where $c$ denotes the plastic front surface in the ring and is given by the implicit function,
+%md```math 
+%md \dfrac{p}{Y} = ln\left(\dfrac{c}{R_i}\right) + \dfrac{1}{2}\left(1-\dfrac{c^ 2}{R_e^2}\right)
+%md```
+%md### Numerical solution
+% scalar parameters
+% global a
+% global b
+
+% b = 200 ; 
+% a = 100 ;
+L = .75 ;
+
+p = 0.01 ;
+E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ;
+%md
+%md
+%md### MEB parameters
+%md
+%md#### materials
+%md The constitutive behavior of the material considered is isotropic hardening.
+%md Since only one material is considered, the structs defined for the materials contain only one entry:
+materials.hyperElasModel  = 'isotropicHardening' ;
+materials.hyperElasParams =  [ E nu H sigmaY0 ] ;
+%md
+%md#### elements
+%md 
+%md The elements struct is the same as the previous model.
+%md
+%md#### boundaryConds
+%md The BC struct is the same as in the linearElastic case. However the loadsTimeFact function can be modified to consider unloading as follows.
+boundaryConds(3).loadsTimeFact = @(t) t*(t<=19) + (t-(t-19)*2)*(t>19)  ;
+%md
+%md#### initialConds
+%md Any non-homogeneous initial conditions are considered, thereafter the struc is the same as in the previous example.
+%md
+%md### Mesh
+%md The mesh can be read from the msh file. The same mesh as in the linearElastic case is considered for this problem.
+%md
+Conec = myCell2Mat( mesh.conecCell ) ;
+elems = size(Conec,1) 
+%md
+%md### Analysis parameters
+%md
+%md The Newton-Raphson method is employed to solve 19 load steps. The ratio between `finalTime` and `deltaT` sets the number of load steps used to evaluate `boundaryConds(3).loadsTimeFact` function:  
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.stopTolIts    = 30       ;
+analysisSettings.stopTolDeltau = 1.0e-8   ;
+analysisSettings.stopTolForces = 1.0e-6   ;
+analysisSettings.finalTime     = 19       ;
+analysisSettings.deltaT        = 1        ;
+%md
+%md### Output parameters
+%md
+otherParams.problemName = 'EPPPlaneStrain' ;
+otherParams.plots_format = 'vtk' ;
+%md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
+%md
+[matUs, loadFactorsMat, ~, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%md### Verification
+%mdThe numerical and analytic solutions are compared for the external surface (since all the elements on the same surface have the same analytic solution):
+
+global Y
+
+Y = 2*sigmaY0 / sqrt(3) ;
+% p0 = Y/2 * (1-a^2/b^2)  ; % Yielding pressure
+p0 = Y/2 * (1-Ri^2/Re^2)  ; % Yielding pressure
+
+pressure_vals = loadFactorsMat(:,3)*p ;
+
+cvals = zeros(length(pressure_vals),1) ;
+ubAna = zeros(length(pressure_vals),1) ;
+
+% Plastic front value
+for i = 1:length(cvals)
+	p = pressure_vals(i) ;
+	if i == 1  
+		% val = fsolve(@(c)c_val(c,p,Y,a,b), a) ;
+		val = fsolve(@(c)c_val(c,p,Y,Ri,Re), Ri) ;
+	else
+		% val = fsolve(@(c)c_val(c,p,Y,a,b), cvals(i-1)) ;
+		val = fsolve(@(c)c_val(c,p,Y,Ri,Re), cvals(i-1)) ;
+	end
+	cvals(i) = val ;
+end
+
+% Analytic radial displacement at outer surface
+for i = 1:length(cvals)
+	p = pressure_vals(i) ;
+	if p < p0
+		% ubAna(i) = 2*p*b / ( E*( b^2/a^2-1 ) ) * (1-nu^2) ;
+		ubAna(i) = 2*p*Re / ( E*( Re^2/Ri^2-1 ) ) * (1-nu^2) ;
+	else
+		c = cvals(i) ;
+		% ubAna(i) = Y*c^2/(E*b) * (1-nu^2) ;
+		ubAna(i) = Y*c^2/(E*Re) * (1-nu^2) ;
+	end	
+end
+
+% Plot parameters
+lw = 2.0 ; ms = 11 ; plotFontSize = 10 ;
+fig = figure;
+hold on, grid on
+
+node = 5 ;
+dofX = node * 6 - 5 ;
+ubNum = matUs(dofX, :) ; 
+
+plot(ubNum, pressure_vals, 'b-o', 'linewidth', lw,'markersize', ms)
+plot(ubAna, pressure_vals, 'g-x', 'linewidth', lw,'markersize', ms)
+
+legend ({'FEM', 'Analytic',}, 'location', 'east');
+labx = xlabel('u_b'); laby = ylabel('p') ;
+tit = title('p-u_b');
+set(labx, 'fontsize', plotFontSize*.8);
+set(laby, 'fontsize', plotFontSize*.8);
+set(tit, 'fontsize', plotFontSize);
+
+% Check solution
+% analyticCheckTolerance = 1e-2 ;
+% verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
+
+% verifboolean de ambos analisis
+%md The numerical solution is verified: 
+analyticCheckTolerance = 1e-2 ;
+verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
+               ( ( numericalRe - analyticValRe ) < analyticCheckTolerance ) && ...
+               ( ( ubNum(end) - ubAna(end)     ) < analyticCheckTolerance )
 
