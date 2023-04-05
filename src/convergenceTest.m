@@ -43,5 +43,5 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   elseif ( dispIter >= stopTolIts )
     stopCritPar = 3 ;      booleanConverged = 1 ;
   else
-    stopCritPar = [];      booleanConverged = 0 ;
+    stopCritPar = 0 ;      booleanConverged = 0 ;
   end
