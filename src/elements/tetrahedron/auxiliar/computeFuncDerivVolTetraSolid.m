@@ -15,22 +15,20 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function [ funder, jacobianmat, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords )
 
-tetCoordMat        = reshape( elemCoords', 3, 4 ) ;
+tetCoordMat = reshape( elemCoords', 3, 4 ) ;
 
-eleCoordMat = tetCoordMat               ;
-
+% Compute the derivatives of the shape functions in a matrix at x = xi
+% point to evaluate 
 xi = 0.25 ;  wi = 1/6  ;
-
-% matriz de derivadas de fun forma respecto a coordenadas isoparametricas
 deriv = shapeFuns( xi, xi , xi , 1 ) ;
  
-% jacobiano que relaciona coordenadas materiales con isoparametricas
-jacobianmat = eleCoordMat * deriv'  ;
+% Jacobian linking material and isoparametric coordinates
+jacobianmat = tetCoordMat * deriv'  ;
 
+% tetrahedron volume
 vol = analyDet( jacobianmat ) / 6.0 ;
 
 if vol<0,  vol, error('Element with negative volume, check connectivity.'), end

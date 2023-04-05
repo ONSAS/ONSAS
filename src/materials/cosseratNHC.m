@@ -16,7 +16,11 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
+% Cosserat tensor considering a new Neo-Hookean with the following strain energy:
+%  phi(J) = (I1 - ln(J)) + K/2 (J-1)^2 
 
+% This function returns the cosserat stress tensor S and its derivatives respecto 
+% to the tensor Egreen, which is the Green-Lagrange strain tensor.
 function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
 
 shear    = consParams(1) ;
