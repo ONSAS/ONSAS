@@ -15,7 +15,7 @@ makedocs(
       "Uniaxial compression"=>"examples/uniaxialCompression.md",
       "Cantilever Beam"=>"examples/cantileverBeam.md",
       "Linear beam vibration"=>"examples/beamLinearVibration.md",
-      "Elastic ring"=>"examples/ringPlaneStrain.md",
+      "Plane strain ring"=>"examples/ringPlaneStrain.md",
       # "Linear aerodynamics"     => "examples/linearAerodynamics.md",
       "Reconfiguration beam"=>"examples/dragBeamReconfiguration.md",
       "Propeller model"=>"examples/simplePropeller.md",
