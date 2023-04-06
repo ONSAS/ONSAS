@@ -15,13 +15,11 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
  
-%% This functions performs the iteration for the computations of the state in
+% This functions performs the iteration for the computations of the state in
 % the next time step using the numerical method and parameters provided by the
 % user.
-
-function  modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
 % assign current time (t) variables
 % ---------------------------------
@@ -29,10 +27,12 @@ Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSo
 convDeltau = modelCurrSol.convDeltau ;
 currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-stabilityAnalysisFlag = 0 ;
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if stabilityAnalysisFlag == 2 || stabilityAnalysisFlag == 1
+% stability analysis
+% -----------------------------------------------------------
+stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
+if ~(stabilityAnalysisFlag==0)
+  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS.m/issues/351');  
+  % reduced tangent matrix of previous time for nonlinear buckling analysis
   KTtred = modelCurrSol.systemDeltauMatrix ;
 end
 

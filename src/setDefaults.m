@@ -55,6 +55,7 @@ end
 if strcmp( analysisSettings.methodName, 'alphaHHT' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
 end
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag'  , 0              ) ;
 % -----------------------------
 
 % otherParams
