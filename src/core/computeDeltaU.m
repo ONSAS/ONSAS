@@ -23,13 +23,9 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
 % arcLengthNorm(1:2:end) = 1 ;
 % arcLengthNorm = arcLengthNorm(neumDofs) ;
 
-% =========================
-cylindricalConstraintBool = 1 ;
-JirasekBool = 0 ;
-% =========================
-
-if JirasekBool == 1	
-	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+global arcLengthFlag % 1: cylindrical 2: jirasek
+if isempty( arcLengthFlag )
+  arcLengthFlag = 1 ;
 end
 
 % keep reduced converged delta u
@@ -47,17 +43,16 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   % else	
   %   incremArcLen = analysisSettings.incremArcLen ;
   % end
-
 					
-%    deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
+  deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
     
-    posVariableLoadBC = analysisSettings.posVariableLoadBC ;
+  posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 		
-		if length(analysisSettings.incremArcLen) > 1
-			incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-		else	
-			incremArcLen = analysisSettings.incremArcLen ;
-		end		
+  if length(analysisSettings.incremArcLen) > 1
+		incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+	else	
+		incremArcLen = analysisSettings.incremArcLen ;
+	end		
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
@@ -65,8 +60,11 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     else 
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     end
-  elseif JirasekBool == 1 % Jirasek approach
+  
+  elseif arcLengthFlag == 2 % Jirasek approach
 		
+  	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+
 		% Variables to be defined by user
 		global dominantDofs
 		global scalingProjection
@@ -76,7 +74,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 	
 		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
   
-  elseif cylindricalConstraintBool == 1  % Cylindrical constraint equation
+  elseif arcLengthFlag == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
     num_reductions = 0 ;
 
@@ -108,7 +106,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     % compute the scalar product
     vals = [ ( currDeltau + deltauast + deltaubar * sols(1) )' * ( arcLengthNorm .* currDeltau )   ;
               ( currDeltau + deltauast + deltaubar * sols(2) )' * ( arcLengthNorm .* currDeltau ) ] ;
-    % choose lambda that maximices that scalar product
+    % choose lambda that maximizes that scalar product
     deltalambda = sols( find( vals == max(vals) ) ) ;
   end
   
