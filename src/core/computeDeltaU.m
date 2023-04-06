@@ -1,14 +1,14 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, J. Bruno Bazzano,
+% Joaquin Viera, Marcelo Forets, Jean-Marc Battini. 
 %
 % This file is part of ONSAS.
 %
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% ONSAS is free software: you can redistribute it and/or modify 
+% it under the terms of the GNU General Public License as published by 
+% the Free Software Foundation, either version 3 of the License, or 
+% (at your option) any later version. 
 %
-% ONSAS is distributed in the hope that it will be useful,
+% ONSAS is distributed in the hope that it will be useful, 
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
@@ -22,6 +22,15 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
 % arcLengthNorm = zeros( size( convDeltau ) ) ;
 % arcLengthNorm(1:2:end) = 1 ;
 % arcLengthNorm = arcLengthNorm(neumDofs) ;
+
+% =========================
+cylindricalConstraintBool = 1 ;
+JirasekBool = 0 ;
+% =========================
+
+if JirasekBool == 1	
+	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+end
 
 % keep reduced converged delta u
 % convDeltau = convDeltau( neumDofs ) ;
@@ -38,20 +47,36 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   % else	
   %   incremArcLen = analysisSettings.incremArcLen ;
   % end
-    
-  deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
 
-  posVariableLoadBC = analysisSettings.posVariableLoadBC ;
+					
+%    deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
+    
+    posVariableLoadBC = analysisSettings.posVariableLoadBC ;
+		
+		if length(analysisSettings.incremArcLen) > 1
+			incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+		else	
+			incremArcLen = analysisSettings.incremArcLen ;
+		end		
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
-    else
+    else 
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     end
-
-  else % cylindrical constraint equation
-
+  elseif JirasekBool == 1 % Jirasek approach
+		
+		% Variables to be defined by user
+		global dominantDofs
+		global scalingProjection
+		% Projection matrix
+		cMatrix(dominantDofs) = scalingProjection ;
+		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
+	
+		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
+  
+  elseif cylindricalConstraintBool == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
     num_reductions = 0 ;
 
@@ -86,11 +111,11 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     % choose lambda that maximices that scalar product
     deltalambda = sols( find( vals == max(vals) ) ) ;
   end
-
+  
   nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
 
   deltaured = deltauast + deltalambda(1) * deltaubar ;
 
-else   % incremental displacement
-  deltaured = systemDeltauMatrix \ systemDeltauRHS ;
-end
+  else   % incremental displacement
+    deltaured = systemDeltauMatrix \ systemDeltauRHS ;
+  end
