@@ -51,7 +51,7 @@ end
 % --------------------------------------------------------
 if strcmp( modelProperties.analysisSettings.methodName, 'arcLength') == 1
   nextLoadFactorsVals = currLoadFactorsVals ;
-  args = sets(modelProperties.analysisSettings, length(convDeltau), BCsData.neumDofs, modelCurrSol.timeIndex) ;
+  args = argsAL(modelProperties.analysisSettings, length(convDeltau), BCsData.neumDofs, modelCurrSol.timeIndex) ;
 else
   args = [] ;
   nextLoadFactorsVals = [] ;
@@ -110,37 +110,6 @@ KTtp1red = systemDeltauMatrix ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
 
-
-% --- (temporary) computation and storage of separated assembled matrices ---
-%~ mats  = assembler(  Conec, crossSecsParamsMat, coordsElemsMat, materialsParamsMat, KS, Utp1,   2, Udott, Udotdott, nodalDispDamping, solutionMethod, elementsParamsMat ) ;
-%~ ktout = mats{1};
-
-%~ if isunix
-  %~ save  'Ktp1.dat' ktout ;
-  %~ status = system('tail -n +7 Ktp1.dat > aux.dat' );
-  %~ status = system(['mv aux.dat Ktp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
-%~ end
-
-%~ if solutionMethod > 2
-  %~ dampingMat = mats{2} ;
-  %~ massMat    = mats{3} ;
-
-  %~ if isunix
-    %~ save  'dampingMattp1.dat' dampingMat ;
-    %~ status = system('tail -n +7 dampingMattp1.dat > aux.dat' );
-    %~ status = system( ['mv aux.dat dampingMattp1_' sprintf('%04i', timeIndex) '.dat'] ) ;
-
-    %~ save  'massMattp1.dat' massMat ;
-    %~ status = system('tail -n +7 massMattp1.dat > aux.dat' );
-    %~ status = system( [ 'mv aux.dat massMattp1_' sprintf('%04i', timeIndex) '.dat' ] ) ;
-  %~ end
-
-%~ end
-% --------------------------------------------------------------------
-
-
-
-
 if stabilityAnalysisFlag == 2
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
 elseif stabilityAnalysisFlag == 1
@@ -165,8 +134,6 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
-
-
 for i = 1:size(Stress,1)
 	previousStateCell(i,1) = {Stress(i,:)} ;
 end
@@ -179,10 +146,7 @@ modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
                                    systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 
-
-
 % ==============================================================================
-%
 % ==============================================================================
 function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, analysisSettings, currTime )
 
@@ -215,42 +179,13 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
 %
 % ==============================================================================
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
-
-  oddNeumDofsInds  = find( mod ( neumdofs , 2)==1 ) ;
-  evenNeumDofsInds = find( mod ( neumdofs , 2)==0 ) ;
-
-  Uk( neumdofs(oddNeumDofsInds ) ) = Uk( neumdofs(oddNeumDofsInds ) ) + deltaured(oddNeumDofsInds ) ;
-
-  % nNodes = length( Uk) / 6 ;
-
-  deltauComplete = zeros( size( Uk)) ;
-  deltauComplete( neumdofs ) = deltaured ;
-  nodeAngDofs=2:2:length(Uk);
-
-  Uk(nodeAngDofs) = deltauComplete(nodeAngDofs) + Uk(nodeAngDofs) ;
-
-%%%%%%%%% old
-  % for i=1:nNodes
-  %   nodeDofs = nodes2dofs( i , 6 ) ;
-  %   nodeAngDofs = nodeDofs(2:2:6)  ;
-
-  %   %~ updateA = antiSkew( logm( expm( skew( deltauComplete ( nodeAngDofs ) ) ) * ...
-  %                                        %~ expm( skew( Uk             ( nodeAngDofs ) ) ) ...
-  %                                      %~ ) ) ;
-  %   updateB = deltauComplete ( nodeAngDofs ) + Uk             ( nodeAngDofs ) ;
-  %   %~ updateC = logar( expon( deltauComplete ( nodeAngDofs ) ) * ...
-  %                               %~ expon( Uk             ( nodeAngDofs ) ) ) ;
-
-  %   Uk ( nodeAngDofs ) = updateB ;
-
-  % end
-%%%%%%%%
-  currDeltau      = currDeltau    + deltaured ;
+  Uk( neumdofs ) = Uk( neumdofs ) + deltaured ;
+  currDeltau     = currDeltau     + deltaured ;
 
 function vec = antiSkew( mat )
   vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
 
-function [args] = sets(analysisSettings, len, neumDofs, timeIndex)
+function args = argsAL(analysisSettings, len, neumDofs, timeIndex)
   arcLengthNorm = zeros( len ) ;
   arcLengthNorm(1:2:end) = 1 ;
   arcLengthNorm = arcLengthNorm(neumDofs) ;
