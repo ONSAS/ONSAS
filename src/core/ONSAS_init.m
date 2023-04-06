@@ -80,10 +80,9 @@ previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
 
-Stress = [] ;
-matFint = [] ;
-
-%[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
+% TO DO  https://github.com/ONSAS/ONSAS.m/issues/649 compute intial stress and internal forces
+Stress = [] ; 
+matFint = [] ; 
 
 [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
