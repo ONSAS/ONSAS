@@ -16,58 +16,50 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%md### ONSAS_solve
-%md Function that performs the time analysis with the model structs as input.
-%md
+% Function that performs the time analysis with the model structs as input.
 function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
-%md
-%md initialize structures to store solutions
+
+% initialize structures to store solutions
 matUs          = modelCurrSol.U                   ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot                ;
-cellStress     = {} ; % cell with stresses
-cellFint       = {} ; % cell with internal forces matrices
-%
-%md
-%md#### Incremental time analysis
-%md sets stopping boolean to false
+cellFint       = {modelCurrSol.matFint} ; % cell with a matrix with all elements stresses at each time 
+cellStress     = {modelCurrSol.Stress}  ; % cell with a matrix with all elements stresses at each time
+
+% Incremental time analysis
+% sets stopping boolean to false
 finalTimeReachedBoolean = false ;
-%mdand starts the iteration
+% and starts the iteration
 fprintf('|                                                 |\n')
 fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
 %
 % iteration variables
-iterations_average = 0 ;
-iterations_maximum = 0 ;
+iterations_average = 0 ;  iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
 % progress bar variables
-plotted_bars = 0 ; plots_counter = 0 ;
-%
+plotted_bars = 0 ;
 aux_time = cputime() ;
 while finalTimeReachedBoolean == false
 
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
                        / modelProperties.analysisSettings.finalTime * 20 ) ;
   while plotted_bars < percent_time,
-    fprintf('=')
-    plotted_bars = plotted_bars +1 ;
+    fprintf('=');   plotted_bars = plotted_bars +1 ;
   end
 
-  % -------------------------------------
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
-  % -------------------------------------
 
-  % iterations statistics
+  % iterations average
   iterations_average = ...
     (   iterations_average* (modelNextSol.timeIndex-2) + modelNextSol.timeStepIters ) ...
     / ( modelNextSol.timeIndex-1) ;
 
+  % iterations max
   iterations_maximum = max( iterations_maximum, modelNextSol.timeStepIters ) ;
   iterations_strop_crit_vec( modelNextSol.timeStepStopCrit ) = ...
     iterations_strop_crit_vec( modelNextSol.timeStepStopCrit ) + 1 ;
-  % ------------------------------
 
   % check if final time was reached
   finalTimeReachedBoolean = ( modelNextSol.currTime - modelProperties.analysisSettings.finalTime ) ...
@@ -76,20 +68,10 @@ while finalTimeReachedBoolean == false
   % store results and update structs
   modelCurrSol   	=  	modelNextSol ;
   matUs          	= [ matUs          modelCurrSol.U                     ] ;
-  loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;
-	
-  % assumes no internal forces at initial time (TO IMPROVE)
-	if length(cellFint) == 0
-		cellFint{1} = zeros(size(modelCurrSol.matFint)) ;
-	end	
-	cellFint{end+1}	= modelCurrSol.matFint ;
-	
-	if length(cellStress) == 0
-		cellStress{1} = zeros(size(modelCurrSol.Stress)) ;
-	end	
+  loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;	
+	cellFint{end+1}  	= modelCurrSol.matFint ;
 	cellStress{end+1}	= modelCurrSol.Stress ;
 		
-
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )
     vtkMainWriter( modelCurrSol, modelProperties );

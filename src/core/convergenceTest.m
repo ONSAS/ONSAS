@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
-  analysisSettings, redFint, redFext, redDeltaU, redUk, dispIter, redFinet, systemDeltauRHS )
+  analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS )
 
   stopTolDeltau = analysisSettings.stopTolDeltau ;
   stopTolForces = analysisSettings.stopTolForces ;
@@ -25,10 +25,6 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
 
   normaUk       = norm( redUk )               ;
   normadeltau   = norm( redDeltaU         )   ;
-
-  if strcmp( analysisSettings.methodName, 'arcLength')
-    systemDeltauRHS = systemDeltauRHS(:,1);
-  end
 
   deltaErrLoad  = norm( systemDeltauRHS )     ;
   normFext      = norm( redFext         )     ;
@@ -43,5 +39,5 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
   elseif ( dispIter >= stopTolIts )
     stopCritPar = 3 ;      booleanConverged = 1 ;
   else
-    stopCritPar = [];      booleanConverged = 0 ;
+    stopCritPar = 0 ;      booleanConverged = 0 ;
   end
