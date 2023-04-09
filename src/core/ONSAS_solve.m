@@ -113,6 +113,12 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
     numer_modes = fliplr(PHI);
   end
 
+  s = size(OMEGA) ;
+  index = 1:s(1)+1:s(1)*s(2) ;
+  [elem_diag, ind] = sort(diag(OMEGA)) ;
+  OMEGA(index) = elem_diag ;
+  PHI = PHI(:,ind) ;
+
   modelPropertiesModal = modelProperties ;
   modelPropertiesModal.plots_deltaTs_separation = 1 ;
   modelPropertiesModal.analysisSettings.deltaT  = 1 ;
