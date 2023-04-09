@@ -176,12 +176,38 @@ controlDispsNRALGreen =  -matUs(11,:) ;
 loadFactorsNRALGreen  =  loadFactorsMat(:,2) ;
 analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
 difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
+%md
+%md### Analysis case 4: NR-AL Jirasek with Green Strain
+%md
+otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
+analysisSettings.methodName   = 'arcLength'                      ;
+analysisSettings.finalTime    = 1                               ;
+analysisSettings.incremArcLen = 0.15                             ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
+analysisSettings.posVariableLoadBC = 2 ;
+%md Jirasek variant - Dominant dof
+%md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
+global arcLengthFlag
+arcLengthFlag = 2 ;
+%md The dominant dof selected for this problem correpsonds with the displacement uz of node 2.
+global dominantDofs
+dominantDofs = 11 ;
+%md The scaling projection for the Jirasek method and for this selected dof is set as follows.
+global scalingProjection
+scalingProjection = -1 ;
+%md
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
+loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;
+analyticLoadFactorsNRAL_Jirasek_Green = analyticLoadFactorsGreen(controlDispsNRAL_Jirasek_Green);
+difLoadGreenNRAL_Jirasek = analyticLoadFactorsNRAL_Jirasek_Green' - loadFactorsNRAL_Jirasek_Green ;
 %md## Verification
 %md the numerical resolution is validated for both strain measures.
 %md
-verifBoolean =  ( ( norm( difLoadEngRot    ) / norm( loadFactorsNREngRot  ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreen     ) / norm( loadFactorsNRGreen   ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreenNRAL ) / norm( loadFactorsNRALGreen ) ) <  1e-4 ) ;
+verifBoolean =  ( ( norm( difLoadEngRot            ) / norm( loadFactorsNREngRot           ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreen             ) / norm( loadFactorsNRGreen            ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreenNRAL         ) / norm( loadFactorsNRALGreen          ) ) <  1e-4 ) ...
+             && ( ( norm( difLoadGreenNRAL_Jirasek ) / norm( loadFactorsNRAL_Jirasek_Green ) ) <  1e-4 ) ;
 %md
 %md### Plots
 %md and solutions are plotted.
@@ -193,13 +219,14 @@ plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'marker
 plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'y-*' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green','LinearElastic', 'location','northoutside')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','LinearElastic', 'location','northoutside')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
-%print('../../docs/src/assets/vonMisesTrussCheck.png','-dpng')
+print('../../docs/src/assets/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
 %md<img src="../../assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>

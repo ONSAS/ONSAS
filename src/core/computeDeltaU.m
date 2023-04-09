@@ -17,19 +17,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
-  systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDof, args )
-
-% arcLengthNorm = zeros( size( convDeltau ) ) ;
-% arcLengthNorm(1:2:end) = 1 ;
-% arcLengthNorm = arcLengthNorm(neumDofs) ;
+  systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
 global arcLengthFlag % 1: cylindrical 2: jirasek
 if isempty( arcLengthFlag )
   arcLengthFlag = 1 ;
 end
-
-% keep reduced converged delta u
-% convDeltau = convDeltau( neumDofs ) ;
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
 
@@ -37,22 +30,10 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   incremArcLen = args{2} ;
 
   aux = systemDeltauMatrix \ systemDeltauRHS ;
-  
-  % if length( analysisSettings.incremArcLen ) > 1
-  %   incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-  % else	
-  %   incremArcLen = analysisSettings.incremArcLen ;
-  % end
 					
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
     
   posVariableLoadBC = analysisSettings.posVariableLoadBC ;
-		
-  if length(analysisSettings.incremArcLen) > 1
-		incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-	else	
-		incremArcLen = analysisSettings.incremArcLen ;
-	end		
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
