@@ -186,6 +186,8 @@ analysisSettings.incremArcLen = 0.15                             ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md Jirasek variant - Dominant dof
+%md Extracted from Jirásek & Bazant book Inelastic Analysis of Structures, 2002
+%md Chapter 22, Numerical Methods in Plasticity
 %md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
 global arcLengthFlag
 arcLengthFlag = 2 ;
