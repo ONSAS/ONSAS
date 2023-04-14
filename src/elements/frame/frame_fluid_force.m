@@ -178,9 +178,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
       VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
       q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, ILVIVBool) ;
       if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
-          p = WOM_IL( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
+          p = WOM_IL( VprojRel1, VprojRel2, udotdotFrame1,udotdotFrame2,...
                       dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
       else
           p=0;
