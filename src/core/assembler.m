@@ -20,23 +20,24 @@
 function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previous_state_mat )
+                                                           timeVar, previousStateCell )
 
 fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
-
+%
 nElems     = size(Conec, 1) ;
 nNodes     = size(Nodes, 1) ;
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
 
-% -------  residual forces vector ------------------------------------
+% -------  forces vector ---------------------------------------------
 if fsBool
   % --- creates Fint vector ---
   Fint  = zeros( nNodes*6 , 1 ) ;
   Fmas  = zeros( nNodes*6 , 1 ) ;
   Fvis  = zeros( nNodes*6 , 1 ) ;
   Faero = zeros( nNodes*6 , 1 ) ;
+  Fther = zeros( nNodes*6 , 1 ) ;
 end
 
 % -------  tangent matrix        -------------------------------------
@@ -67,16 +68,14 @@ else
 	matFint = [] ;
 end
 
-stress_n_vec           =  previous_state_mat(:,1) ;
-strain_n_vec           = previous_state_mat(:,2)  ;
-acum_plas_strain_n_vec =  previous_state_mat(:,3) ;
+% Previous state 
+stress_n_vec           =  previousStateCell(:,1) ;
+strain_n_vec           =  previousStateCell(:,2) ;
+acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
-strain_vec = zeros(size( strain_n_vec )) ;
-acum_plas_strain_vec = zeros(size(acum_plas_strain_n_vec)) ;
-
-
+strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
+acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
 % ====================================================================
-
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
 
@@ -86,7 +85,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 
 for elem = 1:nElems
 
-  mebiVec = Conec( elem, 1:4) ;
+  mebiVec = Conec( elem, 1:3) ;
 
   %md extract element properties
   hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel   ;
@@ -99,12 +98,15 @@ for elem = 1:nElems
   elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodynamic properties
-  elemTypeAero       = elements( mebiVec( 2 ) ).elemTypeAero      ;
-  aeroCoefs          = elements( mebiVec( 2 ) ).aeroCoefs         ;
+  dragFunction        = elements( mebiVec( 2 ) ).dragCoefFunction    ;
+  liftFunction        = elements( mebiVec( 2 ) ).liftCoefFunction    ;
+  pitchCoefFunction   = elements( mebiVec( 2 ) ).pitchCoefFunction   ;
+  aeroCoefs = {dragFunction, liftFunction, pitchCoefFunction }       ;
+  chordVector         = elements( mebiVec( 2 ) ).chordVector         ;
+  aeroNumericalParams = elements( mebiVec( 2 ) ).aeroNumericalParams ;
 
   %md compute aerodynamic compute force booleans
-  aeroBool = ~isempty(analysisSettings.fluidProps) || ...
-             ~isempty( elemTypeAero ) || ~isempty( aeroCoefs ) ;
+  aeroBool = ~isempty(analysisSettings.fluidProps) ;
 
   %md obtain element info
   [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
@@ -125,6 +127,7 @@ for elem = 1:nElems
   elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
   stressElem = [] ;
+  fintLocCoord = [] ;
 
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
@@ -142,8 +145,9 @@ for elem = 1:nElems
   % -----------   truss element   ------------------------------
   elseif strcmp( elemType, 'truss')
 
-    A  = crossSectionProps( elemCrossSecParams, density ) ;
-    previous_state = [ stress_n_vec(elem) strain_n_vec(elem) acum_plas_strain_n_vec(elem) ] ;
+    A  = crossSectionProps ( elemCrossSecParams, density ) ;
+    previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
+
 
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
 
@@ -155,7 +159,14 @@ for elem = 1:nElems
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
-
+    
+    global temperature
+    if length( temperature )>0
+      timeVar
+      thermalExpansion = materials( mebiVec( 1 ) ).thermalExpansion
+      temperatureVal = temperature( timeVar) 
+      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
+    end
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
@@ -172,7 +183,7 @@ for elem = 1:nElems
 
 		if  boolLinear == 1
 
-			[ fs, ks ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, boolMatNonLin, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -207,35 +218,38 @@ for elem = 1:nElems
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords, ...
-                                     elemCrossSecParams                   , ...
-                                     u2ElemDisps( Ut       , dofselem )   , ...
-                                     u2ElemDisps( Udott    , dofselem )   , ...
-                                     u2ElemDisps( Udotdott , dofselem )   , ...
-                                     aeroCoefs,        elemTypeAero, ...
-                                     analysisSettings, timeVar, elem ) ;
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
+                                     elemCrossSecParams                   ,        ...
+                                     u2ElemDisps( Ut       , dofselem )   ,        ...
+                                     u2ElemDisps( Udott    , dofselem )   ,        ...
+                                     u2ElemDisps( Udotdott , dofselem )   ,        ...
+                                     aeroCoefs, chordVector, aeroNumericalParams,  ...
+                                     analysisSettings, timeVar, elem, ...
+                                     aeroNumericalParams{2}  ) ;
     end
 
   % ---------  triangle solid element -----------------------------
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemCrossSecParams ;
-
-    if strcmp( hyperElasModel, 'linearElastic' )
-
-      planeStateFlag = elemTypeParams ;
-      dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
-
-      [ fs, ks, stress ] = elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [1 hyperElasParams], 2, thickness, planeStateFlag, dotdotdispsElem, density ) ;
-
-      Finte = fs{1};
-      Ke    = ks{1};
-      Fmase = fs{3};
-      Mmase = ks{3};
-      Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
-
-    end
+		planeStateFlag = elemTypeParams ;
+		
+		dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
+		
+		previous_state = { stress_n_vec{elem} ; strain_n_vec{elem} ; acum_plas_strain_n_vec{elem} } ;
+		  
+		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
+																										hyperElasModel, [1 hyperElasParams], 2, thickness, planeStateFlag, ...
+																										dotdotdispsElem, density, previous_state ) ;
+		%
+    Finte = fs{1};
+		Ke    = ks{1};
+		
+		if dynamicProblemBool
+			Fmase = fs{3};
+			Mmase = ks{3};
+			Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
+		end
 
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
@@ -259,9 +273,8 @@ for elem = 1:nElems
    [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
                             [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
 
-  end   % case in typee of element ----
+  end   % case in type of element ----
   % -------------------------------------------
-
 
   %md### Assembly
   %md
@@ -276,6 +289,10 @@ for elem = 1:nElems
     if aeroBool && strcmp(elemType,'frame')
       Faero( dofselemRed ) = Faero( dofselemRed ) + FaeroElem ;
     end
+
+    if exist('Fthere')==1 && ( norm( Fthere ) > 0.0 )
+      Fther( dofselemRed ) = Fther( dofselemRed ) + Fthere ;
+    end
   end
 
   if tangBool
@@ -286,7 +303,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && strcmp(elemType,'frame') && elemTypeAero(5)
+      if aeroBool && strcmp(elemType,'frame') && aeroNumericalParams{2}
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else
@@ -295,7 +312,7 @@ for elem = 1:nElems
 
       if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
-        if exist('Ce')~=0
+        if exist('Ce')==1
           valsC( entriesSparseStorVecs ) = Ce( indRow, : )' ;
         end
       end
@@ -309,13 +326,13 @@ for elem = 1:nElems
     stressMat( elem, (1:length(stressElem) ) ) = stressElem ;
 
     if exist('strain')==1
-      strain_vec( elem )           = strain ;
-      acum_plas_strain_vec( elem,1 ) = acum_plas_strain ;
+      strain_vec{ elem }           = strain' ;
+      acum_plas_strain_vec{ elem } = acum_plas_strain ;
     end
   end % if stress
 
-	if matFintBool
-		matFint(elem,1:dofsStep:numNodes*6) = Finte' ;
+	if matFintBool && ~isempty(fintLocCoord)
+		matFint(elem,1:dofsStep:numNodes*6) = fintLocCoord' ;
 	end
 
 end % for elements ----
@@ -345,12 +362,13 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
+  fsCell{5} = Fther ;
 
   global globalReactionForces
   global glboalNodeReactionForces
   if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
     dofsRForces = (glboalNodeReactionForces - 1) * 6 + 1 : glboalNodeReactionForces * 6  ;
-    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) ;
+    globalReactionForces((timeVar -1)*6 + 1: (timeVar)*6) = Faero(dofsRForces) - Fint(dofsRForces) - Fmas(dofsRForces) - Fvis(dofsRForces) + Fther(dofsRForces) ;
   end
 
 end

@@ -17,16 +17,17 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
 % This function computes fluid forces as proposed in https://arxiv.org/abs/2204.10545
-function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , ...
-                                     elemCrossSecParams                       , ...
-                                     Ue, Udote, Udotdote                      , ...
-                                     aeroCoefs, elemTypeAero, analysisSettings, ...
-                                     nextTime, currElem )
+function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           , ...
+                                     elemCrossSecParams                         , ...
+                                     Ue, Udote, Udotdote                        , ...
+                                     aeroCoefs, chordVector,aeroNumericalParams ,...
+                                    analysisSettings, nextTime, currElem         ,...
+                                    computeAeroStiffnessMatrix)
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
-  assert( ~isempty( elemTypeAero), ' empty elements.elemTypeAero.' )
-  assert( ~isempty( aeroCoefs )  , ' empty elements.aeroCoefs '    )
+
+  [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs);
 
   % Declare booleans for VIV model
   global VIVBool
@@ -47,7 +48,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
-  geometricNonLinearAero = analysisSettings.geometricNonLinearAero ;
+  numGaussPoints = aeroNumericalParams{1};
+  geometricNonLinearAero = aeroNumericalParams{3} ;
 
   % Boolean to compute the fluid force with ut = 0, this should be used if the fluid loads are computed in the reference
   % configuration and nonlinear effects are not considered.
@@ -65,10 +67,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   xs = elemCoords(:) ;
 
   % Load element properties to fluid loads
-  % chord vector
-  vecChordUndef    = elemTypeAero( 1:3 )'  ;
   % length of the chord vector
-  dimCharacteristic = norm( vecChordUndef ) ;
+  dimCharacteristic = norm( chordVector ) ;
 
   % compute corotational rotation matrices
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
@@ -116,7 +116,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
   L3 = expon( [pi/2 0 0] ) ;
 
   % Extract points and weights for numGausspoints selected
-  numGaussPoints = elemTypeAero(4);
   [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
 
   % WOM computation call for cases with VIVbool equal to true
@@ -206,7 +205,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
     fDragLiftPitchElem =  fDragLiftPitchElem ...
                +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,...
                                                            l0, tl1, tl2, Rr,...
-                                                           vecChordUndef, dimCharacteristic,...
+                                                           chordVector', dimCharacteristic,...
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
@@ -223,17 +222,15 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
                                 userFlowVel, densityFluid ) ;
   % -------------------------------
 
-
-
   fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
-  if elemTypeAero(5)
+  if computeAeroStiffnessMatrix
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
-                                    aeroCoefs, elemTypeAero          ,...
+                                    aeroCoefs, chordVector, aeroNumericalParams ,...
                                     analysisSettings, nextTime, currElem ) ;
   else
     tMatHydroElemU = [] ;
@@ -244,16 +241,14 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
 end
 
 
-
-
-
 % This function returns the tangent matrix of the hydrodinamic force vector with respect to u
 % employing a simple central difference alg.
 function dispTangMatElem = dispTangMatElem( fHydroElem                                ,...
                                             elemCoords, elemCrossSecParams            ,...
                                             Ue, Udote, Udotdote                       ,...
-                                            aeroCoefs, elemTypeAero, analysisSettings ,...
-                                            nextTime, currElem )
+                                            aeroCoefs, chordVector, aeroNumericalParams ,... 
+                                            analysisSettings , nextTime, currElem )
+  % disp("entre")
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
   % numerical step to compute the tangets
@@ -263,12 +258,13 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
     e_i = zeros(12,1) ;  e_i(indexIncrementU) = 1 ;
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;
-    % compute forces with u + h*ei at the index indexIncrementU
+    % compute forces with u + h*ei at the index indexIncrementU}
     fhydro_incU = frame_fluid_force( elemCoords                                ,...
                                       elemCrossSecParams                        ,...
                                       UplusDeltaU, Udote, Udotdote              ,...
-                                      aeroCoefs, elemTypeAero, analysisSettings ,...
-                                      nextTime, currElem ) ;
+                                      aeroCoefs, chordVector, aeroNumericalParams ,...
+                                      analysisSettings,nextTime, currElem,...
+                                      false ) ;
     % central difference
     dispTangMatElem(:, indexIncrementU ) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor

@@ -26,8 +26,11 @@ materials         = checkOrSetDefault ( materials        , 'density'       , 0  
 elements          = checkOrSetDefault ( elements         , 'massMatType'        , 'lumped' ) ;
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeAero'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'aeroCoefs'          , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'chordVector'       , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'dragCoefFunction'   , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'liftCoefFunction'   , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'pitchCoefFunction'  , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'aeroNumericalParams', {4, false, true} ) ;
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
@@ -52,6 +55,7 @@ end
 if strcmp( analysisSettings.methodName, 'alphaHHT' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
 end
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag'  , 0              ) ;
 % -----------------------------
 
 % otherParams

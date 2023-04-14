@@ -103,10 +103,13 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       nodes = Conec( elem, 3+(1:3) ) ;
 
-      areaElem = 0.5 * norm( cross( ...
+      % area of the element with direction
+      crossVector = cross( ...
         Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
         Nodes( nodes(3),:) - Nodes( nodes(1),:) ...
-        ) ) ;
+        ) ;
+      
+      areaElem = norm(crossVector) / 2 ;
 
       if strcmp( loadCoordSys, 'global' )
 
@@ -119,18 +122,15 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       elseif strcmp( loadCoordSys, 'local' ) % local coordinates load
 
+        normalVector = crossVector / norm(crossVector) ;
+
         dofsaux = nodes2dofs( nodes , 6 ) ;
         dofs    = dofsaux(1:2:length(dofsaux)) ;
-        % compute the normal vector of the element
-        normal  = cross( ...
-          Nodes( nodes(2),:) - Nodes( nodes(1),:) , ...
-          Nodes( nodes(3),:) - Nodes( nodes(1),: ) ) ;
-        % and normalize it
-        n = normal / norm( normal ) ;
 
-        Fx = n(1) * loadvals( 5 ) * areaElem / 3 ;
-        Fy = n(2) * loadvals( 5 ) * areaElem / 3 ;
-        Fz = n(3) * loadvals( 5 ) * areaElem / 3 ;
+        %  x, y and z components of the normal tension
+        Fx = normalVector(1) * loadvals( 5 ) / 3  * areaElem ;
+        Fy = normalVector(2) * loadvals( 5 ) / 3  * areaElem ;
+        Fz = normalVector(3) * loadvals( 5 ) / 3  * areaElem ;
 
         assert( sum( loadvals( [ 1 2 3 4 6 ] ) == 0 ) == 5, ...
           'error only normal pressure loads in local coords, create an issue!' );

@@ -1,6 +1,7 @@
 %md# Simple Propeller example
 %mdIn this example a simple propeller submitted to a constant uniform flow is considered. The geometry is given by three blades with circular cross section.
-close all, clear all
+if ~(length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')), close all, clear all, end
+%
 addpath( genpath( [ pwd '/../../src'] ) );
 %md## Problem definition
 %mdThe blades are considered considerable stiff and only lift is considered, thus a rigid rotation analytic solution can be used to verify the numerical solution. 
@@ -31,6 +32,7 @@ angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md## Numerical solution
 %md
 %mdThe material parameters are
+materials                 = struct() ;
 materials.hyperElasModel  = '1DrotEngStrain' ;
 materials.hyperElasParams = [ E nu ]        ;
 materials.density         = rho             ;
@@ -38,13 +40,15 @@ materials.density         = rho             ;
 %md### elements
 %mdThe elements are
 % nodes
+elements             = struct() ;
 elements(1).elemType = 'node'  ;
 % blades
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'circle' ; d };
 elements(2).massMatType =  'consistent'        ;
-elements(2).elemTypeAero  = [0 d 0 4 0 ] ;
-elements(2).aeroCoefs     = { []; 'liftCoef'; []  } ;
+elements(2).dragCoefFunction = @(beta,Re) 0;
+elements(2).liftCoefFunction ='liftCoef';
+elements(2).momentCoefFunction = @(beta,Re) 0;
 % auxiliar element
 elements(3).elemType = 'truss' ;
 elements(3).elemCrossSecParams = {'circle' ; 1.5*d };
@@ -52,11 +56,13 @@ elements(3).massMatType =  'lumped'        ;
 %md 
 %md### boundary Conditions
 %md
+boundaryConditions             = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
 %md 
 %md### mesh
 %md
+mesh             = struct() ;
 mesh.nodesCoords = [ 0        0              0            ; ...
                      0  l*sin( pi )        l*cos( pi )    ; ...
                      0  l*sin( pi/3  )     l*cos( pi/3 )  ; ... 
@@ -81,6 +87,7 @@ initialConds = struct() ;
 %md
 %md### analysisSettings
 %md
+analysisSettings                        = struct() ;
 analysisSettings.finalTime              =   400     ;
 analysisSettings.deltaT                 =   5       ;
 analysisSettings.methodName             = 'alphaHHT';
@@ -124,7 +131,7 @@ legend('analytic','numeric', 'location','North')
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('simple propeller test')
-if length(getenv('DOCSBUILD')) > 0 && strcmp( getenv('DOCSBUILD'), 'yes')
+if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print(fig1, 'output/verifPropeller.png','-dpng')
 else

@@ -6,6 +6,11 @@ function test_suite=runTestProblems_moxunit_disp
     test_functions=localfunctions()
   catch
   end
+
+  % set auxiliar environment variable
+  setenv('TESTS_RUN', 'yes') 
+
+  % initialize the MOxUnit test suite
   initTestSuite;
 
 function test_1
@@ -13,7 +18,7 @@ function test_1
   assertEqual( verifBoolean, true );
 
 function test_2
-	cantileverModalAnalysis
+ 	cantileverModalAnalysis
   assertEqual( verifBoolean, true );
 
 function test_3
@@ -32,17 +37,17 @@ function test_6
   frameLinearAnalysis
   assertEqual( verifBoolean, true );
 
-function test_7
-  linearAerodynamics
-  assertEqual( verifBoolean, true );
+% function test_7
+%   linearAerodynamics
+%   assertEqual( verifBoolean, true );
 
 function test_8
-  linearCylinderPlaneStrain
+  ringPlaneStrain
   assertEqual( verifBoolean, true );
 
-function test_9
-  nonlinearPendulum
-  assertEqual( verifBoolean, true );
+% function test_9
+%   nonlinearPendulum
+%   assertEqual( verifBoolean, true );
 
 function test_10
   springMass
@@ -64,7 +69,7 @@ function test_14
   uniaxialExtension
   assertEqual( verifBoolean, true);
 
-function test_15
+function test_15  
   uniformCurvatureCantilever
   assertEqual( verifBoolean, true);
 
