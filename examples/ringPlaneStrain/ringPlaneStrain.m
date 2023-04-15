@@ -272,8 +272,8 @@ set(labx, 'fontsize', plotFontSize*.8);
 set(laby, 'fontsize', plotFontSize*.8);
 set(tit, 'fontsize', plotFontSize);
 %md
-%md### Verificaation
 %md The numerical solution is verified for both cases: 
+%md
 analyticCheckTolerance = 1e-2 ;
 verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
                ( ( numericalRe - analyticValRe ) < analyticCheckTolerance ) && ...
