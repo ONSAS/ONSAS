@@ -1,7 +1,6 @@
 %md# Plane strain ring example  
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearPlaneStrain/onsasExample_linearPlaneStrain.m)
-%md REVISAR link!!!
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/ringPlaneStrain/ringPlaneStrain.m)
 %md
 %md In this example a hollow cylinder submitted to an internal pressure $p_i$ as shown in diagram depicted below is considered. The length of the cylinder is $L_z $ m and the internal and external radious are $R_i$ and $R_e$, respectively. 
 %md
@@ -19,9 +18,7 @@ E = 210 ; nu = 0.3 ; p = 0.01 ; L = .75 ;
 global Re
 global Ri
 Re = 200 ; Ri = 100 ;
-
 %md## Linear analysis
-
 %md### Analytic solution
 %md
 %md The solution displacement field is extracted from chapter 4 of  (Timoshenko and Goodier, Theory of Elasticity, 3rd edition). The Navier's equation, imposing no temperature variation, no volumetric forces, and considering a radial dispalcement field leads to:
@@ -155,13 +152,15 @@ print('output/verifLinearRingPlaneStrain.png','-dpng')
 %md The solution is extracted from Hill (The mathematical theroy of plasticity, 1950). 
 %md The yielding pressure $p_0$ is defined as,
 %md```math 
-%md Y = \dfrac{2\sigma_{Y,0}}{\sqrt(3)}  \\
+%md Y = \dfrac{2\sigma_{Y,0}}{\sqrt{3}}  \\
 %md p_0 = \dfrac{Y}{2}\left(1+\dfrac{R_i^2}{R_e^2}\right).
 %md```
 %md The radial displacement of the outer surface of the ring is given by,
-%md```math 
-%md \dfrac{2pR_e}{E\left(\dfrac{R_e^2}{R_i^2-1}\right)}(1-\nu^2)\qquad \textup{if p\leq p_0}
-%md \dfrac{Yc^2}{ER_e}(1-\nu^2)\qquad \textup{if p> p_0}
+%md```math
+%md u_r(R_e) = \text{if}~~ p \leq p_0 \\
+%md \dfrac{2 p R_e}{E \left( \dfrac{R_e^2}{R_i^2-1}\right) }( 1-\nu^2 ) \\
+%md \text{else} \\ 
+%md \dfrac{2pR_e}{E\left(\dfrac{R_e^2}{R_i^2-1}\right)}(1-\nu^2)
 %md```
 %md where $c$ denotes the plastic front surface in the ring and is given by the implicit function,
 %md```math 
@@ -217,18 +216,18 @@ otherParams.plots_format = 'vtk' ;
 %md
 %md### Verification
 %mdThe numerical and analytic solutions are compared for the external surface (since all the elements on the same surface have the same analytic solution):
-
+%
 global Y
-
-Y = 2*sigmaY0 / sqrt(3) ;
-% p0 = Y/2 * (1-a^2/b^2)  ; % Yielding pressure
-p0 = Y/2 * (1-Ri^2/Re^2)  ; % Yielding pressure
-
-pressure_vals = loadFactorsMat(:,3)*p ;
-
-cvals = zeros(length(pressure_vals),1) ;
-ubAna = zeros(length(pressure_vals),1) ;
-
+%
+Y = 2 * sigmaY0 / sqrt(3) 				;
+% p0 = Y/2 * (1-a^2/b^2)
+p0 = Y / 2 * (1 - Ri^2 / Re^2)  		; % Yielding pressure
+%
+pressure_vals = loadFactorsMat(:,3) * p ;
+%
+cvals = zeros(length(pressure_vals),1) 	;
+ubAna = zeros(length(pressure_vals),1) 	;
+%
 % Plastic front value
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
@@ -241,7 +240,7 @@ for i = 1:length(cvals)
 	end
 	cvals(i) = val ;
 end
-
+%
 % Analytic radial displacement at outer surface
 for i = 1:length(cvals)
 	p = pressure_vals(i) ;
@@ -254,34 +253,32 @@ for i = 1:length(cvals)
 		ubAna(i) = Y*c^2/(E*Re) * (1-nu^2) ;
 	end	
 end
-
-% Plot parameters
+%md
+%md### Plots
+% plot parameters
 lw = 2.0 ; ms = 11 ; plotFontSize = 10 ;
 fig = figure;
 hold on, grid on
-
+% node to plot the solution
 node = 5 ;
 dofX = node * 6 - 5 ;
 ubNum = matUs(dofX, :) ; 
-
+%
 plot(ubNum, pressure_vals, 'b-o', 'linewidth', lw,'markersize', ms)
 plot(ubAna, pressure_vals, 'g-x', 'linewidth', lw,'markersize', ms)
-
+%
 legend ({'FEM', 'Analytic',}, 'location', 'east');
 labx = xlabel('u_b'); laby = ylabel('p') ;
 tit = title('p-u_b');
 set(labx, 'fontsize', plotFontSize*.8);
 set(laby, 'fontsize', plotFontSize*.8);
 set(tit, 'fontsize', plotFontSize);
-
-% Check solution
-% analyticCheckTolerance = 1e-2 ;
-% verifBoolean = ( ( ubNum(end) - ubAna(end) ) < analyticCheckTolerance ) ;
-
-% verifboolean de ambos analisis
-%md The numerical solution is verified: 
+%md
+%md The numerical solution is verified for both cases: 
+%md
 analyticCheckTolerance = 1e-2 ;
 verifBoolean = ( ( numericalRi - analyticValRi ) < analyticCheckTolerance ) && ...
                ( ( numericalRe - analyticValRe ) < analyticCheckTolerance ) && ...
-               ( ( ubNum(end) - ubAna(end)     ) < analyticCheckTolerance )
+               ( ( ubNum(end) - ubAna(end)     ) < analyticCheckTolerance ) ;
+%md
 
