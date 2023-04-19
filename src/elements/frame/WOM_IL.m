@@ -36,8 +36,8 @@ else
     %project Udotdottp1k1 and Udotdottp1k2 on tl1 and tl2 to have the
     tdrag = Uprvect1/Upr1; % constant along X
     %transverse acceleration
-    ddX1 = dot(Udotdottp1k1, tdrag); % Ydotdott of node 1 at time n
-    ddX2 = dot(Udotdottp1k2, tdrag); % Ydotdott of node 2 at time n
+    ddX1 = dot(Udotdottp1k1, tdrag); % Xdotdott of node 1 at time n
+    ddX2 = dot(Udotdottp1k2, tdrag); % Xdotdott of node 2 at time n
     ddXelem = (ddX1 + ddX2)/2;
     % Calls computep for the element
     pn = pvect(1+K*2,n);
