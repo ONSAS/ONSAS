@@ -3,7 +3,6 @@
 
 ![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING.txt)
-[![Join the chat at https://gitter.im/onsas_/community](https://badges.gitter.im/onsas_/community.svg)](https://gitter.im/onsas_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 ## What is ONSAS.m?
@@ -20,6 +19,7 @@ Journal articles using ONSAS:
 Theses using ONSAS:
 
  * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* [url](https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388)
+ * 2021, A. Teliz, *Optimización de torres de alta tensión y su análisis frente a vientos de alta intensidad* [url](https://hdl.handle.net/20.500.12008/35985)
 
 
 ## Some example applications
@@ -70,6 +70,23 @@ Theses using ONSAS:
 [chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
 
+
+
+## Connect <a name="connect"></a>
+
+### Open discussions chat
+
+If you have a question of want to discuss any topic you can write in the ONSAS.m [github's dicussions](https://github.com/ONSAS/ONSAS.m/discussions) tab.
+
+### Direct contact
+You can also send an e-mail to _jorgepz [AT] fing.edu.uy_ .
+
+### Zoom meetings
+
+Weekly zoom meetings are also open for anyone to join via [![this zoom room](https://img.shields.io/badge/zoom-meetings-red)](https://salavirtual-udelar.zoom.us/j/89574786968?pwd=S3c3c3hMVlR1N3E3Z2tSbVlCWW1QUT09)
+
+
+
 ## Contributors and License
 
 ### License
@@ -116,7 +133,3 @@ The development of ONSAS has been partially supported by funds provided by the f
  - Comisión Sectorial de Enseñanza (project: *Rediseño de prácticas de enseñanza y evaluación en Resistencia de Materiales*, manager, Prof. Pérez Zerpa),
  - Agencia Nacional de Investigación e Innovación (project VIOLETA, code `FSE_1_2016_1_131837`, manager, Prof. Gabriel Usera).
 
-
-## Contact
-
-You can send an e-mail to _jorgepz[AT]fing.edu.uy_ or join the chat in the gitter [chat room](https://gitter.im/onsas_/community).

@@ -41,7 +41,7 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
 
   TTcl              = Bdif' * e1def ;
 
-  acum_plas_strain =  previous_state(3) ;
+  acum_plas_strain =  previous_state{3} ;
 
   % --- strain ---
   if strcmp( hyperElasModel, 'linearElastic')
@@ -82,9 +82,9 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
      
     elseif strcmp( hyperElasModel, 'isotropicHardening')
 
-      stress_n           = previous_state(1)  ;
-      strain_n           = previous_state(2)  ;
-      acum_plas_strain_n =  previous_state(3) ;
+      stress_n           = previous_state{1,:}(1)  ;
+      strain_n           = previous_state{2,:}(1)  ;
+      acum_plas_strain_n =  previous_state{3} ;
       
       Kplas       = hyperElasParams(2) ;
       sigma_Y_0   = hyperElasParams(3) ;
@@ -106,7 +106,7 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
 
       end
     end
-      
+
     Finte = stress * A * TTcl ;
 
     KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;

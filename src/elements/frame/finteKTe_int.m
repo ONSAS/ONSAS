@@ -21,6 +21,8 @@
 % ======================================================================
 
 global ne
+global secFinteVec
+global elemFuncs
 
 KbendXZ = zeros(4,4) ;
 finte 	= zeros(4,1) ;
@@ -53,5 +55,17 @@ for j = 1:length(we)
 															elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
 															Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
 	finte = l/2*secFint*we(j) + finte ;	
+	
+	% ==============================
+	if matFintBool == 1 && ( elem == elemFuncs || elem == elemFuncs+1 )
+		if elem == elemFuncs
+			secFinteVec(1,end+1) = secFint(4) ;
+		else
+			secFinteVec(2, (size(secFinteVec,2)-ne)+j ) = secFint(4) ;
+		end	
+	end
+		
+		
+	% ==============================
 													
 end % endfor we

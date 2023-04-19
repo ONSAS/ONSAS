@@ -1,7 +1,9 @@
 %md# WOM VIV
 %
 % add ONSAS path
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+%
+addpath( genpath( [ pwd '/../../src'] ) );
 %tic ;
 %
 % declare global variables
@@ -34,7 +36,8 @@ elements(2).elemCrossSecParams{2,1} = d          ;
 % hydro cross-section props
 numGaussPoints  = 4 ;
 computeAeroTangMatrix = false ;
-elements(2).aeroCoefs   = {nameDragFunc; nameLiftFunc; [] }   ;
+elements(2).dragCoefFunction   = nameDragFunc
+elements(2).liftCoefFunction   = nameLiftFunc
 %  chord vector and gauss points
 
 elements(2).elemTypeAero = [0 0 -d numGaussPoints computeAeroTangMatrix ] ; % [chordVec1 chordVec2 chordVec3 numGauss  ]

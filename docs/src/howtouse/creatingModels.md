@@ -36,9 +36,10 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```
- * `'isotropicHardening'`:  $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
+ * `'isotropicHardening'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: REVISAR!! $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
 ### `materials.hyperElasParams`
+
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
 ```math
 [ p_1 \dots p_{n_P} ]
@@ -58,34 +59,32 @@ This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is a
 The elements struct contains the information about the type of finite elements used and their corresponding parameters.
 
 ### `elements.elemType`
-cell structure with the string-names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
+
+A cell structure with the string-names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
 
 ### `elements.elemTypeParams`
-cell structure with auxiliar params information, required for some element types:
+A cell structure with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
+
 ### `elements.massMatType`
-
- The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
-
-### `elements.elemTypeAero`
-
-If a frame aerodynamic analysis is desired, the  `elementTypeAero` field should contain a vector with: in the first three entries: three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration), then in the fourth entry: the number of Gauss integration points $numGauss$ and in the fifth entry a boolean $computeAeroBool$ which indicates if the aerodynamic stiffness matrix is computed:
-```math
-[ vch_{t1} \,\, vch_{t2} \,\, vch_{t3} \,\,numGauss\, \,computeAeroBool ]
-```
-
-### `elements.aeroCoefs`
-
-If a frame aerodynamic analysis is desired, the `aeroCoefs` field must contain a column cell with the names of the functions (as strings) considered to compute the aerodynamic forces, as follows:
-```math
-\{ `dragCoefFunction`; `liftCoefFunction`; `momentCoefFunction` \}
-```
-Each function must recieve as arguments: first the relative angle of incidence and second the Reynolds number. If any of the coefficients is not considered then an empty `[]` can be used.
-
+The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
+ 
 ### `elements.elemCrossSecParams`
-
 This is a cell structure with the information of the geometry of the element.
+
+### `elements.aeroNumericalParams`
+A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
+```math
+\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
+```
+where the default cell is `{4, false, true}`
+
+### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
+If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
+
+### `elements.chordVector`
+A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
 
 #### 1D elements
 
@@ -145,11 +144,11 @@ The mesh struct contains the finite element mesh information.
 matrix with the coordinates of all the nodes of the mesh. The $i$-th row contains the three coordinates of the node $i$: $[x_i , \, y_i ,\, z_i]$,
 
 ### `mesh.conecCell`
-[cell array](https://octave.org/doc/v5.2.0/Cell-Arrays.html) with the elements and node-connectivity information. The $\{i,1\}$ entry contains the vector with the MEBI (Material, Element, boundaryConds and initialConds) indexes and the nodes of the $i$-th element. The structure of the vector at each entry of the cell is:
+[cell array](https://octave.org/doc/v5.2.0/Cell-Arrays.html) with the elements and node-connectivity information. The $\{i,1\}$ entry contains the vector with the MEB (Material, Element, boundaryConds) indexes and the nodes of the $i$-th element. The structure of the vector at each entry of the cell is:
 ```math
- [ materialInd, \, elementInd, \, boundaryCondInd, \, initialCondInd, \, node_1 \dots node_{n} ]
+ [ materialInd, \, elementInd, \, boundaryCondInd, \, node_1 \dots node_{n} ]
 ```
-where the five indexes are natural numbers and $n$ is the number of nodes required by the type of element. If no property is assigned the $0$ index can be used, for instance, nodes used to introduced loads should be defined with `materialIndex = 0`.
+where the first three indexes are natural numbers and $n$ is the number of nodes required by the type of element. If no property is assigned the $0$ index can be used, for instance, nodes used to introduced loads should be defined with `materialIndex = 0`.
 
 
 ## The `initialConds` struct

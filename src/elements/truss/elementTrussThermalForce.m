@@ -16,27 +16,29 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors  , UsCell)
+% function for computation of the normal force and tanget matrix
+% of 3D truss elements using engineering strain.
 
-Fext = zeros( lengthFext, 1 ) ;
 
-factorLoadsFextCell = BCsData.factorLoadsFextCell ; 
-loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
-userLoadsFilename   = BCsData.userLoadsFilename ;
-analysisSettings    = modelProperties.analysisSettings ;
+function Fther = elementTrussThermalForce( Xe, Ue, E, A, thermalExpansion, temperature )
 
-generateFactorsFlag = isempty( vecLoadFactors ) ;
+  Xe    = Xe'     ;
+  Xedef = Xe + Ue ;
 
-for i=1:length( factorLoadsFextCell )
-  if ~isempty( factorLoadsFextCell{i} )
-    if generateFactorsFlag
-      vecLoadFactors(i) = loadFactorsFuncCell{i}( evalTime ) ;
-    end
-    Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i} ;
-  end
-end
+  Bdif = [ -eye(3) eye(3) ] ;
+  Ge   = Bdif' * Bdif       ;
 
-if ~isempty( userLoadsFilename )
-  Fext = Fext + feval( userLoadsFilename, evalTime , UsCell)  ;
-end
+  % initial/deformed lengths
+  lini = sqrt( sum( ( Bdif * Xe    ).^2 ) ) ;
+  ldef = sqrt( sum( ( Bdif * Xedef ).^2 ) ) ;
+
+  % normalized reference and deformed co-rotational vector
+  e1ref = Bdif * Xe    / lini ;
+  e1def = Bdif * Xedef / ldef ;
+
+  b1 = 1/(lini^2) * Xe' * Ge ;
+
+  TTcl              = Bdif' * e1def ;
+
+  Fther  =  thermalExpansion * temperature * E * A * TTcl ;
 

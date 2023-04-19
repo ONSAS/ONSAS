@@ -66,30 +66,33 @@ end
 %md process initial conds and construct modelSol struct
 currTime  = 0 ; timeIndex = 1 ; 
 
+timeStepIters    = 0 ; timeStepStopCrit = 0 ;
+
 % process initial conditions
 nNodes = size( mesh.nodesCoords, 1 ) ;
 [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
-previous_state_mat = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-
 convDeltau   = zeros( size(U) ) ; 
 
-timeStepIters    = 0 ; timeStepStopCrit = 0 ;
-Stress = [] ;
+%~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
+previousStateCell = cell( size(Conec,1), 3) ;
+previousStateCell(:,1) = {zeros( 1, 3 )} ;
+previousStateCell(:,2) = {zeros( 1, 3 )} ;
+previousStateCell(:,3) = {0} ;
 
-%md call assembler
+% TO DO  https://github.com/ONSAS/ONSAS.m/issues/649 compute intial stress and internal forces
+Stress = [] ; 
+matFint = [] ; 
 
-matFint = [] ;
-%[ Fext, vecLoadFactors ] = computeFext( factorLoadsFextCell, loadFactorsFuncCell, analysisSettings, 0, length(U), userLoadsFilename, [] ) ;
-
- [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] )  ;
+[FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previous_state_mat ) ;
+%md call assembler
+[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previous_state_mat ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 % =================================================================
 
 %md prints headers for solver output file
@@ -115,11 +118,6 @@ if length( controlDofs ) > 0
     controlDofsAndFactors(i,:) = [ aux( controlDofs(i, 2) ) controlDofs(i,3) ] ;
   end
 end
-
-
-
-
-
 
 % =========================================
 % function for creation of output directory

@@ -16,15 +16,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previous_state_mat )
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell )
 
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
   neumdofs = BCsData.neumDofs ;
 	
-  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previous_state_mat  ) ;
+  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell  ) ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; 
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
   
   KT   = mats{1} ; 
 
@@ -49,9 +49,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ,  {} ) ;
 
-    systemDeltauRHS = - ( Fint( BCsData.neumDofs ) - FextG( BCsData.neumDofs ) - Faero( BCsData.neumDofs ) ) ;
+    rhat      =   Fint ( BCsData.neumDofs ) ...
+                - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs ) ;
+
+    systemDeltauRHS = - rhat ;
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 	
@@ -60,7 +65,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors  , {} ) ;
 
     foundLoadCase = false ;
     loadCase = 1 ;
@@ -72,8 +77,12 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
       end
     end
 
-    systemDeltauRHS = [ -(Fint(BCsData.neumDofs)-FextG(BCsData.neumDofs)) ...
-                        BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
+    rhat      =   Fint ( BCsData.neumDofs ) ...
+                - FextG( BCsData.neumDofs ) ...
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs ) ;
+
+    systemDeltauRHS = [ -rhat   BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 
     systemDeltauMatrix = KT ( neumdofs, neumdofs ) ;
 
@@ -82,13 +91,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'newmark' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), []  , {} ) ;
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 + Fvis ( BCsData.neumDofs ) ...
                 + Fmas ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
-                - Faero(BCsData.neumDofs  );
+                - Faero( BCsData.neumDofs ) ...
+                - Fther( BCsData.neumDofs );
 
     systemDeltauRHS = -rhat ;
 
@@ -105,16 +115,22 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'alphaHHT' )
 
-    if norm( previous_state_mat(:,3) ) >0, error('warning. HHT method with plastic analysis not validated yet'); end
-    
+    for i = 1:size(previousStateCell,1)
+			if norm( previousStateCell{i,3} ) > 0
+				%~ norm_val = norm( previousStateCell{i,3} ) + norm_val ;
+				error('warning. HHT method with plastic analysis not validated yet');
+			end	
+    end
+
     fs = assembler ( ...
-      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previous_state_mat  ) ;
+      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previousStateCell  ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
 
-    FextGt = FextG ;
+    %FextGt = FextG ;
+    [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
