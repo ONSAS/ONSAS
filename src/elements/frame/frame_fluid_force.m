@@ -175,10 +175,12 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords         , 
       % node 2
       [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
                                                                              Rroof2, Rr, L2, L3 ) ;
-      VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
-      VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
+      VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ; % Do NOT depend on section velocity
+      VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;% Do NOT depend on section velocity
+      tlflow1 = VpiRelPerp1_defCords/norm(VpiRelPerp1_defCords);
+      tlflow2 = VpiRelPerp2_defCords/norm(VpiRelPerp2_defCords);
       q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                 tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, ILVIVBool) ;
+                 tlflow1, tlflow2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, ILVIVBool) ;
       if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
           p = WOM_IL( VprojRel1, VprojRel2, udotdotFrame1,udotdotFrame2,...
                       dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
