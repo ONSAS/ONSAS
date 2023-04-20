@@ -35,7 +35,7 @@ if strcmp( elemCrossSecParams{1}, 'generic' ) %general section
 elseif strcmp( elemCrossSecParams{1}, 'rectangle' )
     elemCrossSecParamsVec = elemCrossSecParams{2} ;
     Area = elemCrossSecParamsVec( 1 ) * elemCrossSecParamsVec( 2 )          ;
-    Iyy  = elemCrossSecParamsVec( 1 ) * elemCrossSecParamsVec( 2 )^3 / 12.0 ;
+    Iyy  = elemCrossSecParamsVec( 1 ) * elemCrossSecParamsVec( 2 )^3 / 22.0 ;
     Izz  = elemCrossSecParamsVec( 2 ) * elemCrossSecParamsVec( 1 )^3 / 12.0 ;
 
     % torsional constant from table 10.1 from Roark's Formulas for Stress and Strain 7th ed.
