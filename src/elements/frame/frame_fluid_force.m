@@ -168,32 +168,32 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       end
 
       % computes van der pol solution for current element
-          % node 1
-          [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
-                                                                                 Rroof1, Rr, L2, L3 ) ;
-          % node 2
-          [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
-                                                                                 Rroof2, Rr, L2, L3 ) ;
-          VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ;
-          VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;
-          q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                     tlift1, tlift2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-          if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
-              p = WOM_IL( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
-                          dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
-          else
-              p=0;
-          end
+      % node 1
+      [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
+                                                                             Rroof1, Rr, L2, L3 ) ;
+      % node 2
+      [VpiRel2_defCords, VpiRelPerp2_defCords, Vrel2_glob] = computeVpiRels( udotFlowNode2, [0 0 0]',...
+                                                                             Rroof2, Rr, L2, L3 ) ;
+      VprojRel1     =  Rr * Rroof1 * VpiRel1_defCords      ; % Do NOT depend on section velocity
+      VprojRel2     =  Rr * Rroof2 * VpiRel2_defCords      ;% Do NOT depend on section velocity
+      tlflow1 = VpiRelPerp1_defCords/norm(VpiRelPerp1_defCords);
+      tlflow2 = VpiRelPerp2_defCords/norm(VpiRelPerp2_defCords);
+      q = WOMV4( VprojRel1, VprojRel2,  udotdotFrame1,udotdotFrame2,...
+                 tlflow1, tlflow2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, ILVIVBool) ;
+      if ~isempty( ILVIVBool ) && ILVIVBool % In line VIV
+          p = WOM_IL( VprojRel1, VprojRel2, udotdotFrame1,udotdotFrame2,...
+                      dimCharacteristic, nextTime, analysisSettings.deltaT, currElem ) ;
+      else
+          p=0;
+      end
 
     else
-      q = 0 ; % No lift with circular cross section!
-      p=0;
+      q = 0 ; p = 0;% No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
-    end
-
+    end      
   else
-    q = 2 ; p=0;
+    q = 2 ; p = 0;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
     tlift1 = [] ; tlift2 = [] ;
   end

@@ -312,7 +312,7 @@ for elem = 1:nElems
 
       if dynamicProblemBool
         valsM( entriesSparseStorVecs ) = Mmase( indRow, : )' ;
-        if exist('Ce')~=0
+        if exist('Ce')==1
           valsC( entriesSparseStorVecs ) = Ce( indRow, : )' ;
         end
       end
