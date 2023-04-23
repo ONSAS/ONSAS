@@ -37,9 +37,9 @@ function test_6
   frameLinearAnalysis
   assertEqual( verifBoolean, true );
 
-% function test_7
-%   linearAerodynamics
-%   assertEqual( verifBoolean, true );
+function test_7
+  linearAerodynamics
+  assertEqual( verifBoolean, true );
 
 function test_8
   ringPlaneStrain
