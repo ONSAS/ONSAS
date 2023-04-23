@@ -214,7 +214,7 @@ thetaZdefNumCase1 = matUsCase1(6:6:end,end)   ;
 % zdefNumCase2 = zref + matUsCase2(5:6:end,end) ;
 % thetaXdefNumCase2 = matUsCase2(2:6:end,end)   ;
 % thetaYdefNumCase2 = matUsCase2(4:6:end,end)   ;
-thetaZdefNumCase2 = matUsCase2(6:6:end,end)   ;
+% thetaZdefNumCase2 = matUsCase2(6:6:end,end)   ;
 %md
 %md### Verification boolean
 %md
