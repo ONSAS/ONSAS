@@ -70,9 +70,7 @@ Theses using ONSAS:
 [chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
 
 
-
-
-## Connect <a name="connect"></a>
+## Connect
 
 ### Open discussions chat
 

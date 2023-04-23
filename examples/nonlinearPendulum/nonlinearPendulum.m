@@ -8,9 +8,8 @@
 %md```@raw html
 %md<img src="https://raw.githubusercontent.com/ONSAS/ONSAS_docs/master/docs/src/nonLinearPendulum_.svg" alt="structure diagram" width="500"/>
 %md```
-%mdBefore defining the input structs all variables are cleaned, the open windows are closed and the source folder added to the workspace path:
-close all, clear all ;
-% add path
+%mdBefore defining the input structs all variables are cleaned, the open windows are closed and the source folder is added to the workspace:
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 %mdThe material and geometrical properties must comply certain equals:

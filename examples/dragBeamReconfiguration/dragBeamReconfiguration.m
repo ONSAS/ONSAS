@@ -20,11 +20,8 @@
 %md where  $F$ is the global drag force towards $c_2$, $c_y$ is the Cauchy number that describes the ratio between the stiffness of the beam and the flow load and the reconfiguration number $\mathcal{R}$ reflects the geometric nonlinear effect by dividing the drag of the flexible beam to that of a rigid one of the same geometry
 %md## Numerical solution
 %md---------------------
-%md Before the workspace is cleaned and the ONSAS directory is added:
+%md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-% add dynamic case boolean for non test executions: 
-testBool = true; 
-% add path
 addpath( genpath( [ pwd '/../../src'] ) ); 
 %md
 %md The problem parameters are loaded:

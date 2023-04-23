@@ -38,7 +38,8 @@
 %md---------------------
 %md
 %md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+addpath( genpath( [ pwd '/../../src'] ) );
 %md The material parameters, Young $E$ and shear $G$ moduli and the Poisson's ratio $\nu$ are:
 E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 %md
