@@ -73,19 +73,6 @@ The `massMatType` field sets, for frame or truss elements, whether consistent or
 ### `elements.elemCrossSecParams`
 This is a cell structure with the information of the geometry of the element.
 
-### `elements.aeroNumericalParams`
-A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
-```math
-\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
-```
-where the default cell is `{4, false, true}`
-
-### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
-If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
-
-### `elements.chordVector`
-A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
-
 #### 1D elements
 
 For `truss` or `frame` elements, this cell has two entries, first a string with a name of the type of cross section, and in the second entry a vector of real parameters setting the shape of that section:
@@ -106,6 +93,21 @@ See the `crossSectionProps.m` function for more details.
 #### 2D elements
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
+
+
+### `elements.aeroNumericalParams`
+A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
+```math
+\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
+```
+where the default cell is `{4, false, true}`
+
+### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
+If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
+
+### `elements.chordVector`
+A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
+
 
 ## The `boundaryConds` struct
 

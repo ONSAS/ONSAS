@@ -4,7 +4,7 @@
 %md
 %mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
 %md
-%mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with node $2$ submitted to a nodal load $P$ and restrained to move in the $x-z$ plane, and nodes $1$ and $3$ fixed.
+%mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with nodes $1$ and $3$ fixed, and node $2$ submitted to a nodal load $P$ and constrained to move only in the $x-z$ plane.
 %md
 %md```@raw html
 %md<img src="../../assets/vonMisesTruss.svg" alt="von-mises truss structure diagram" width="500"/>
@@ -13,16 +13,16 @@
 %md## Analytic solutions
 %md
 %mdThe solutions for the nonlinear cases are developed in section 2.3 of [(Bazzano and Pérez Zerpa, 2017)](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf#section.2.3). The expressions obtained for different strain measures are:
-%md * Rotated-Engineering: $P = \frac{EA_o(z_2+w)\left(\sqrt{(w+z_2)^2+x_2^2}-l_o\right)}{l_o\sqrt{(w+z_2)^2+x_2^2}}$
-%md * SVK: $P = \frac{EA_o (z_2+w)\left( 2 z_2 w + w^2 \right) }{ 2 l_o^3 }$
-%md where $x_2$ and $z_2$ are the coordinates of node 2 and $w$ is the vertical displacement, measured positive as $z$.
+%md * Rotated-Engineering: $P = \dfrac{EA_o(z_2+w)\left(\sqrt{(w+z_2)^2+x_2^2}-l_o\right)}{l_o\sqrt{(w+z_2)^2+x_2^2}}$
+%md * SVK: $P = \dfrac{EA_o (z_2+w)\left( 2 z_2 w + w^2 \right) }{ 2 l_o^3 }$
+%md where $x_2$ and $z_2$ are the coordinates of node 2 in the reference configuration and $w$ is the vertical displacement in the $z$ direction.
 %md
 %md## Numerical solutions
 %md
-%mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path and scalar auxiliar parameters are defined.
+%mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-%
 addpath( genpath( [ pwd '/../../src'] ) );
+%md some scalar parameters are defined and computed
 % scalar parameters
 E = 210e9  ; nu = 0 ;
 A = 2.5e-3 ; ang1 = 65 ; L = 2 ; 
@@ -35,22 +35,23 @@ z2 = sin( ang1*pi/180 ) * L ;
 %mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 %md
 %md#### materials
-%md Since both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is the Rotated Engineering strain, then the field `hyperElasModel` is set to:
+%mdThe `materials` struct is initialized as empty.
 materials                 = {} ;
+%md Since for each model both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is the Rotated Engineering strain, then the field `hyperElasModel` is set to:
 materials.hyperElasModel  = '1DrotEngStrain' ;
 %md and in the field `hyperElasParams` a vector with the parameters of the Engineering Strain model is set
 materials.hyperElasParams = [ E nu ] ;
-%md which in the case of this model are the Young modulus and the Poisson ratio.
+%md which in the case of this material model are the Young modulus and the Poisson ratio.
 %md The field `density` is not set, then the default $\rho = 0$ value is considered by ONSAS.
 %md
 %md#### elements
-%md
-%mdTwo different types of elements are required to create the model: `node` and `truss`, thus, the `elements` struct will have two entries. The type of the first entry is
+%md The `elements` struct is initialized as empty
 elements             = {} ;
+%mdTwo different types of elements are required to create the model: `node` and `truss`, thus, the `elements` struct will have two entries. The type of the first entry is
 elements(1).elemType = 'node' ;
 %md and the second entry is
 elements(2).elemType = 'truss';
-%md for the geometries, the node has no geometry to assign, and the truss elements will be set as a circle cross-section, then the elemCrossSecParams field is:
+%md for the geometries, the node has no geometry to assign, and the truss elements will be set as the native `circle` cross-section, then the elemCrossSecParams field is:
 elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
 %md
 %md#### boundaryConds
