@@ -228,9 +228,9 @@ legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green'
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')
-print('../../docs/src/assets/vonMisesTrussCheck.png','-dpng')
+print('../../docs/src/assets/generated/vonMisesTrussCheck.png','-dpng')
 %md
 %md```@raw html
-%md<img src="../../assets/vonMisesTrussCheck.png" alt="plot check" width="500"/>
+%md<img src="../../assets/generated/vonMisesTrussCheck.png" alt="plot check" width="500"/>
 %md```
 %md

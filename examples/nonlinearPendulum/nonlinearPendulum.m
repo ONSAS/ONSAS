@@ -34,6 +34,7 @@ rho = 2*m / ( A * l0 )  ;
 %md
 %md### materials
 %mdSince the first case contains only one type of material the fields of the `materials` struct will have only one entry.
+materials  = struct();
 materials.density = rho ;
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
 materials.hyperElasModel  = '1DrotEngStrain' ;
@@ -42,6 +43,7 @@ materials.hyperElasParams = [ E nu ] ;
 %md### elements
 %md
 %mdTwo different types of elements are considered, node and truss. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The `elemType` field is then:
+elements  = struct();
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 %mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemCrossSecParams` field is:
@@ -53,6 +55,7 @@ elements(2).massMatType = 'lumped' ;
 %md### boundaryConds
 %md
 %mdThe elements are submitted to two different BC settings. The first BC corresponds to a simple fixed condition (all 3 dipslacments dofs of the node are equal to zero during all time span) then the `boundaryConds(1)` set is:
+boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 %mdthen, since for the first case no boolean self weight is considered, the weight force load is applied at the end node adding a second boundary condition `boundaryConds(2)`:
@@ -63,11 +66,12 @@ boundaryConds(2).loadsTimeFact = @(t) 1.0 ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
 %md
 %md### initial Conditions
-%mdNon homogeneous initial conditions are not considered in this example, consequently the `initialConds`  struct is set empty:
+%md Homogeneous initial conditions are considered in this example, then the `initialConds` struct is set as empty:
 initialConds                = struct() ;
 %md
 %md### mesh parameters
 %mdThe coordinates conisdering a mesh of two nodes is:
+mesh = struct() ;
 mesh.nodesCoords = [   0  0   l0 ; ...
                       l0  0  l0  ] ;
 %mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEB parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
@@ -82,13 +86,15 @@ mesh.conecCell{ 3, 1 } = [ 1 2 0  1 2 ] ;
 %md
 %md### analysisSettings
 %mdA Newmark algorithm is used to solve this problem with the following parameters during one period $T$:
+analysisSettings = struct() ;
 analysisSettings.deltaT        = 0.05  ;
 analysisSettings.finalTime     = 1* T  ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
+%md
+otherParams = struct();
 otherParams.plots_format       = 'vtk' ;
-
 %md### Analysis case 1: Solution using Newmark with truss element and mass lumped and the weight force is included by external force according to Bathe problem
 analysisSettings.methodName = 'newmark'     ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
