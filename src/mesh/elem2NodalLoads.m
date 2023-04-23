@@ -144,6 +144,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
     end %if elemTypes
     %mdadd loads to matrix of loaded nodes
+    loadedNodes
     loadedNodes = [ loadedNodes ; ...
                     nodes'  elemNodeLoadsMatrix ] ;
   end % for elements

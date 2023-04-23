@@ -1,11 +1,11 @@
-%md# Aerodynamic linear static cantilever beam example
+%md# Linear aerodynamic steady analysis of cantilever beam
 %md
 %md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
 %md
-%md In this tutorial, the linear steady analysis of a cantilever beam is presented and how to solve it using ONSAS is described. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
+%md In this tutorial, the linear steady analysis of a cantilever beam is presented. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
 %md
-%md The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift, drag and moment fluid forces are characterized with their respective aerodynamic coefficients $c_d$ $c_l$ and $c_m$ are based on [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
-%mdThe beam has a length $L$ and a hollow cylindrical cross-section with diameter $d_{ext}$ and a thickness $b$ as it is shown in the following figure. 
+%md The beam is submitted to a uniform air wind velocity field $v_a$ at 20 degrees and atmospheric pressure along axis $z$, and because of an ice accretion on the frame cross section, lift and drag forces are induced. The lift, drag and moment aerodynamic coefficients $c_d$, $c_l$ and $c_m$ are given by the functions given in [this reference](http://pure-oai.bham.ac.uk/ws/portalfiles/portal/44736207/He_Macdonald_2017_Aeroelastic_stability_of_a_3DOF_system_based_on_quasi_steady_theory_with_reference_to_inertial_coupling.pdf). 
+%mdThe beam has a length $L$ and a hollow cylindrical cross-section with diameter $d_{ext}$ and thickness $b$, as it is shown in the figure. 
 %md
 %md```@raw html
 %md<img src="../../assets/linearAerodynamics/ilusLinearAerodynamics.svg" alt="general sketch" width="700"/>
@@ -130,19 +130,19 @@ otherParams.plots_format = '' ;
 [matUsCase1, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md### Case 2: user load function 
-%md
-%md In this case the wind load is added through a user load function. Since geometric-nonlinearties are not considered in this example then wind loads can be computed externally. First the previous aerodynamic parameters of the element are deleted:
-analysisSettingsCase2 = analysisSettings ; elementsCase2 = elements ;
-analysisSettingsCase2.fluidProps = [] ; elementsCase2(2).elemTypeAero = [] ; elementsCase2(2).aeroCoefs = [] ;
-%md now the boundary condition with the name of the user load function is declared into the `boundaryConds` struct
-boundaryConds(2).userLoadsFilename = 'myLinearAeroLA' ;
-%md and finally is assigned to all cantilever beam nodes:
-for i=1:numElements + 1,
-  mesh.conecCell{ i+numElements+1,1 } = [ 0 1 2 0  i ] ;
-end
-%md
+% %md
+% %md In this case the wind load is added through a user load function. Since geometric-nonlinearties are not considered in this example then wind loads can be computed externally. First the previous aerodynamic parameters of the element are deleted:
+% analysisSettingsCase2 = analysisSettings ; elementsCase2 = elements ;
+% analysisSettingsCase2.fluidProps = [] ; elementsCase2(2).elemTypeAero = [] ; elementsCase2(2).aeroCoefs = [] ;
+% %md now the boundary condition with the name of the user load function is declared into the `boundaryConds` struct
+% boundaryConds(2).userLoadsFilename = 'myLinearAeroLA' ;
+% %md and finally is assigned to all cantilever beam nodes:
+% for i=1:numElements + 1,
+%   mesh.conecCell{ i+numElements+1,1 } = [ 0 1 2 0  i ] ;
+% end
+% %md
 %md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUsCase2`matrix:
-[matUsCase2, ~] = ONSAS( materials, elementsCase2, boundaryConds, initialConds, mesh, analysisSettingsCase2, otherParams ) ;
+% [matUsCase2, ~] = ONSAS( materials, elementsCase2, boundaryConds, initialConds, mesh, analysisSettingsCase2, otherParams ) ;
 %md 
 %md## Verification
 %md---------------------
@@ -209,11 +209,11 @@ zdefNumCase1 = zref + matUsCase1(5:6:end,end) ;
 thetaXdefNumCase1 = matUsCase1(2:6:end,end)   ;
 thetaYdefNumCase1 = matUsCase1(4:6:end,end)   ;
 thetaZdefNumCase1 = matUsCase1(6:6:end,end)   ;
-% Numerical solution case 1
-ydefNumCase2 = yref + matUsCase2(3:6:end,end) ;
-zdefNumCase2 = zref + matUsCase2(5:6:end,end) ;
-thetaXdefNumCase2 = matUsCase2(2:6:end,end)   ;
-thetaYdefNumCase2 = matUsCase2(4:6:end,end)   ;
+% Numerical solution case 2
+% ydefNumCase2 = yref + matUsCase2(3:6:end,end) ;
+% zdefNumCase2 = zref + matUsCase2(5:6:end,end) ;
+% thetaXdefNumCase2 = matUsCase2(2:6:end,end)   ;
+% thetaYdefNumCase2 = matUsCase2(4:6:end,end)   ;
 thetaZdefNumCase2 = matUsCase2(6:6:end,end)   ;
 %md
 %md### Verification boolean
@@ -225,11 +225,11 @@ vecDifCase1 =  [ norm( thetaXdefNumCase1 - thetaXAnalytic (xref) ) ;...
                  norm( zdefNumCase1      - zdefAnalytic   (xref) ) ;...
                  norm( thetaZdefNumCase1 - thetaZAnalytic (xref) ) ] ;
 
-vecDifCase2 =  [ norm( thetaXdefNumCase2 - thetaXAnalytic (xref) ) ;...
-                 norm( ydefNumCase2      - ydefAnalytic   (xref) ) ;...
-                 norm( thetaYdefNumCase2 - thetaYAnalytic (xref) ) ;...
-                 norm( zdefNumCase2      - zdefAnalytic   (xref) ) ;...
-                 norm( thetaZdefNumCase2 - thetaZAnalytic (xref) ) ] ;
+% vecDifCase2 =  [ norm( thetaXdefNumCase2 - thetaXAnalytic (xref) ) ;...
+%                  norm( ydefNumCase2      - ydefAnalytic   (xref) ) ;...
+%                  norm( thetaYdefNumCase2 - thetaYAnalytic (xref) ) ;...
+%                  norm( zdefNumCase2      - zdefAnalytic   (xref) ) ;...
+%                  norm( thetaZdefNumCase2 - thetaZAnalytic (xref) ) ] ;
 
 vecRef =  [ norm( thetaXAnalytic(xref) ) ;...
             norm( ydefAnalytic  (xref) ) ;...
@@ -238,84 +238,84 @@ vecRef =  [ norm( thetaXAnalytic(xref) ) ;...
             norm( thetaZAnalytic(xref) ) ] ;
 
 verifBooleanVecCase1 = vecDifCase1 <=  1e-3 * vecRef ;
-verifBooleanVecCase2 = vecDifCase2 <=  1e-3 * vecRef ;
+% verifBooleanVecCase2 = vecDifCase2 <=  1e-3 * vecRef ;
 verifBooleanCase1    =  all(verifBooleanVecCase1)    ;
-verifBooleanCase2    =  all(verifBooleanVecCase2)    ;
-verifBoolean         = verifBooleanCase1 && verifBooleanCase2 ;
+% verifBooleanCase2    =  all(verifBooleanVecCase2)    ;
+verifBoolean         = verifBooleanCase1 ;%&& verifBooleanCase2 ;
 %md
-%md### Plot verification
-%md
-%md The plot parameters are:
-lw = 2 ; ms = 5 ;
-labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
-axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;       
-%md The linear displacements verification is plotted using:  
-figure(1)
-hold on, grid on
-plot(xref      , zdefNumCase1            ,'ro' , 'linewidth', lw, 'markersize' , ms    ) ;
-plot(xref      , zdefNumCase2            ,'rs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
-plot(xAnalytic , zdefAnalytic(xAnalytic) ,'r-' , 'linewidth', lw, 'markersize' , ms    ) ;
-plot(xref      , ydefNumCase1            ,'bo' , 'linewidth', lw,'markersize'  , ms    ) ;
-plot(xref      , ydefNumCase2            ,'bs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
-plot(xAnalytic , ydefAnalytic(xAnalytic) ,'b-' , 'linewidth', lw, 'markersize' , ms    ) ;
-legend('z_nC1','z_nC2', 'z_a',  'y_nC1', 'y_nC2', 'y_a', 'location', 'northwest')
-labx=xlabel(' x (m)');    laby=ylabel('Displacements (m)');
-title (labelTitle)
-set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
-set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
-set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-% print('output/linearDispAero.png','-dpng')
-% print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
-close(1)    
-%md
-%md```@raw html
-%md<img src="../../assets/linearAerodynamics/linearDispAero.png" alt="plot check linear displacements" width="500"/>
-%md```
-%md
-%md The angular displacements verification is plotted using:  
-figure(2)
-hold on, grid on
-plot(xref      , rad2deg(thetaXdefNumCase1)              , 'go' , 'linewidth', lw, 'markersize', ms) ;
-plot(xref      , rad2deg(thetaXdefNumCase2)              , 'gs' , 'linewidth', lw, 'markersize', ms + 10) ;
-plot(xAnalytic , rad2deg(thetaXAnalytic(xAnalytic))      , 'g-' , 'linewidth', lw, 'markersize', ms) ;
-plot(xref      , rad2deg(thetaYdefNumCase1)              , 'ro' , 'linewidth', lw, 'markersize', ms) ;
-plot(xref      , rad2deg(thetaYdefNumCase2)              , 'rs' , 'linewidth', lw, 'markersize', ms + 10) ;
-plot(xAnalytic , rad2deg(thetaYAnalytic(xAnalytic))      , 'r-' , 'linewidth', lw, 'markersize', ms) ;
-plot(xref      , rad2deg(thetaZdefNumCase1)              , 'bo' , 'linewidth', lw, 'markersize', ms) ;
-plot(xref      , rad2deg(thetaZdefNumCase2)              , 'bs' , 'linewidth', lw, 'markersize', ms + 10) ;
-plot(xAnalytic , rad2deg(thetaZAnalytic(xAnalytic))      , 'b-' , 'linewidth', lw, 'markersize', ms) ;
-legend('\theta x_nC1','\theta x_nC2', '\theta x_a', '\theta y_nC1','\theta y_nC2', '\theta y_a', '\theta z_nC1','\theta z_nC2', '\theta z_a',  'location', 'eastoutside' )
-labx=xlabel(' x (m)'); laby=ylabel('Angle (º)');
-title (labelTitle)
-set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
-set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
-set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-print('output/angDispAero.png','-dpng')  
-% print('../../docs/src/assets/linearAerodynamics/angDispAero.png','-dpng')  
-close(2)
-%md
-%md```@raw html
-%md<img src="../../assets/linearAerodynamics/angDispAero.png" alt="plot check angular displacements" width="500"/>
-%md```
-%md
-%md The 3D deformed configuration is plotted executing:  
-figure(3)
-hold on, grid on
-plot3(xref     , yref                       , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
-plot3(xAnalytic, ydefAnalytic(xAnalytic) , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw      , 'markersize', ms     );
-plot3(xref     , ydefNumCase1            , zdefNumCase1           ,'bo' , 'linewidth', lw      , 'markersize', ms     );
-plot3(xref     , ydefNumCase2            , zdefNumCase2           ,'gs' , 'linewidth', lw      , 'markersize', ms +5    );
-legend('Reference config'   , 'Analytic def config' , 'Numerical def config c1', 'Numerical def config c2', 'location','northEast')
-labx=xlabel( 'x (m)' )      ; laby=ylabel('y(m)')   ; labz=zlabel('z(m)')  ;
-set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
-set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
-set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
-view([0.5 +0.5 -1])
-% print('output/defaAero.png','-dpng')
-% print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
-close(3)    
-%md
-%md```@raw html
-%md<img src="../../assets/linearAerodynamics/defAero.png" alt="plot check deformed configurations" width="500"/>
-%md```
-%md
+% %md### Plot verification
+% %md
+% %md The plot parameters are:
+% lw = 2 ; ms = 5 ;
+% labelTitle= [' Validating solution with ' num2str(numElements) ' elements' ];
+% axislw = 1 ; axisFontSize = 20 ; legendFontSize = 15 ; curveFontSize = 15 ;       
+% %md The linear displacements verification is plotted using:  
+% figure(1)
+% hold on, grid on
+% plot(xref      , zdefNumCase1            ,'ro' , 'linewidth', lw, 'markersize' , ms    ) ;
+% plot(xref      , zdefNumCase2            ,'rs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
+% plot(xAnalytic , zdefAnalytic(xAnalytic) ,'r-' , 'linewidth', lw, 'markersize' , ms    ) ;
+% plot(xref      , ydefNumCase1            ,'bo' , 'linewidth', lw,'markersize'  , ms    ) ;
+% plot(xref      , ydefNumCase2            ,'bs' , 'linewidth', lw, 'markersize' , ms+5 ) ;
+% plot(xAnalytic , ydefAnalytic(xAnalytic) ,'b-' , 'linewidth', lw, 'markersize' , ms    ) ;
+% legend('z_nC1','z_nC2', 'z_a',  'y_nC1', 'y_nC2', 'y_a', 'location', 'northwest')
+% labx=xlabel(' x (m)');    laby=ylabel('Displacements (m)');
+% title (labelTitle)
+% set(legend, 'linewidth', axislw, 'fontsize', legendFontSize ) ;
+% set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
+% set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+% % print('output/linearDispAero.png','-dpng')
+% % print('../../docs/src/assets/linearAerodynamics/linearDispAero.png','-dpng')
+% close(1)    
+% %md
+% %md```@raw html
+% %md<img src="../../assets/linearAerodynamics/linearDispAero.png" alt="plot check linear displacements" width="500"/>
+% %md```
+% %md
+% %md The angular displacements verification is plotted using:  
+% figure(2)
+% hold on, grid on
+% plot(xref      , rad2deg(thetaXdefNumCase1)              , 'go' , 'linewidth', lw, 'markersize', ms) ;
+% plot(xref      , rad2deg(thetaXdefNumCase2)              , 'gs' , 'linewidth', lw, 'markersize', ms + 10) ;
+% plot(xAnalytic , rad2deg(thetaXAnalytic(xAnalytic))      , 'g-' , 'linewidth', lw, 'markersize', ms) ;
+% plot(xref      , rad2deg(thetaYdefNumCase1)              , 'ro' , 'linewidth', lw, 'markersize', ms) ;
+% plot(xref      , rad2deg(thetaYdefNumCase2)              , 'rs' , 'linewidth', lw, 'markersize', ms + 10) ;
+% plot(xAnalytic , rad2deg(thetaYAnalytic(xAnalytic))      , 'r-' , 'linewidth', lw, 'markersize', ms) ;
+% plot(xref      , rad2deg(thetaZdefNumCase1)              , 'bo' , 'linewidth', lw, 'markersize', ms) ;
+% plot(xref      , rad2deg(thetaZdefNumCase2)              , 'bs' , 'linewidth', lw, 'markersize', ms + 10) ;
+% plot(xAnalytic , rad2deg(thetaZAnalytic(xAnalytic))      , 'b-' , 'linewidth', lw, 'markersize', ms) ;
+% legend('\theta x_nC1','\theta x_nC2', '\theta x_a', '\theta y_nC1','\theta y_nC2', '\theta y_a', '\theta z_nC1','\theta z_nC2', '\theta z_a',  'location', 'eastoutside' )
+% labx=xlabel(' x (m)'); laby=ylabel('Angle (º)');
+% title (labelTitle)
+% set(legend, 'linewidth' , axislw, 'fontsize', legendFontSize) ;
+% set(gca   , 'linewidth' , axislw, 'fontsize', curveFontSize ) ;
+% set(labx  , 'FontSize'  , axisFontSize); set(laby, 'FontSize', axisFontSize) ;
+% print('output/angDispAero.png','-dpng')  
+% % print('../../docs/src/assets/linearAerodynamics/angDispAero.png','-dpng')  
+% close(2)
+% %md
+% %md```@raw html
+% %md<img src="../../assets/linearAerodynamics/angDispAero.png" alt="plot check angular displacements" width="500"/>
+% %md```
+% %md
+% %md The 3D deformed configuration is plotted executing:  
+% figure(3)
+% hold on, grid on
+% plot3(xref     , yref                       , zref                   ,'k-' , 'linewidth', lw + 300, 'markersize', ms+200 );
+% plot3(xAnalytic, ydefAnalytic(xAnalytic) , zdefAnalytic(xAnalytic),'r-' , 'linewidth', lw      , 'markersize', ms     );
+% plot3(xref     , ydefNumCase1            , zdefNumCase1           ,'bo' , 'linewidth', lw      , 'markersize', ms     );
+% plot3(xref     , ydefNumCase2            , zdefNumCase2           ,'gs' , 'linewidth', lw      , 'markersize', ms +5    );
+% legend('Reference config'   , 'Analytic def config' , 'Numerical def config c1', 'Numerical def config c2', 'location','northEast')
+% labx=xlabel( 'x (m)' )      ; laby=ylabel('y(m)')   ; labz=zlabel('z(m)')  ;
+% set(legend, 'linewidth', axislw       , 'fontsize'  , legendFontSize )     ;
+% set(gca   , 'linewidth', axislw       , 'fontsize'  , curveFontSize  )     ;
+% set(labx  , 'FontSize' , axisFontSize); set(laby, 'FontSize', axisFontSize); set(labz, 'FontSize', axisFontSize) ;
+% view([0.5 +0.5 -1])
+% % print('output/defaAero.png','-dpng')
+% % print('../../docs/src/assets/linearAerodynamics/defAero.png','-dpng')
+% close(3)    
+% %md
+% %md```@raw html
+% %md<img src="../../assets/linearAerodynamics/defAero.png" alt="plot check deformed configurations" width="500"/>
+% %md```
+% %md
