@@ -192,7 +192,7 @@ then the aerodynamic-frame element parameters set are
 ## The `otherParams` struct
 
   * `problemName`: string with the name of the problem, to be used in outputs.
-  * `plots_format`: string indicating the format of the output. Use __'vtk'__ for vtk output.
+  * `plots_format`: string indicating the format of the output. Use `'vtk'` for vtk output. default: no output.
   * `plots_deltaTs_separation`: integer number __N__ such that the time between vtk plots is __N x deltaT__.
   * `controlDofs`: matrix with information of the degrees of freedom to compute and control. Each row should contain this form: `[ node localdof ]`.
   * `storeBoolean`: boolean to store the results of the current iteration such as the displacements, tangent matrices, normal forces and stresses. [default: 1]

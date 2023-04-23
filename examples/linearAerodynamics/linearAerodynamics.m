@@ -118,8 +118,9 @@ analysisSettings.stopTolForces =   1e-6          ;
 analysisSettings.stopTolIts    =   10            ;
 %md
 %md### otherParams
-%md The name of the problem: 
-otherParams.problemName = 'linearAerodynamics';
+%md The name of the problem and the plots format: 
+otherParams.problemName  = 'linearAerodynamics';
+otherParams.plots_format = '' ;
 %md
 %md### Case 1: hydrodynamic ONSAS element 
 %md
