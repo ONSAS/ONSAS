@@ -51,11 +51,10 @@ J = pi * (dext^4 - dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
 %md The fluid properties are:
 rhoA = 1.225 ; nuA = 1.6e-5;
 %md
-%md the number of elements employed to discretize the beam is declared as a global variable:
-global numElements
+%md the number of elements employed to discretize the beam:
 numElements = 10 ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md### materials
 %md Since the example contains only one linear Euler Bernoulli element the fields of the `materials` struct will have only one entry. Although, the constitutive behavior law selected is Saint-Venant-Kirchhoff:
@@ -121,7 +120,7 @@ analysisSettings.stopTolIts    =   10            ;
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
 otherParams.problemName = 'linearAerodynamics';
-otherParams.plotsFormat = 'vtk' ;
+otherParams.plots_format = 'vtk' ;
 %md
 %md### Case 1: hydrodynamic ONSAS element 
 %md

@@ -48,9 +48,9 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and frame elements will be set as a circular section with $d$ diameter.
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = [ d ] ;
+elements(2).elemCrossSecParams{2,1} = [ d ]    ;
 %md where the aerodynamic coefficents and the chord vector are set by default for `'circle'` cross sections type. For the validation case a constant drag coefficients $c_d =1.2" is used, this is defined in the `'dragCircular'` function:   
-elements(2).dragCoefFunction = 'dragCircular'
+elements(2).dragCoefFunction = 'dragCircular' ;
 %md The geometrical non-linear effects and the aerodynamic stiffness matrix are considered in this case to compute the aerodynamic force vector:
 elements(2).aeroNumericalParams = {4, true, true} ;
 %md
