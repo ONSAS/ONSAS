@@ -125,10 +125,11 @@ cell with the (row) vector of the components of the load case
 where $f_i$ are the components of forces and $m_i$ are the moments. Both forces or moments are considered per unit of length in the case of `truss`/`frame`/`edge` elements, or per unit of area in the case of `triangle`.
 
 ### `boundaryConds.userLoadsFileName`
-cell with filenames of `.m` function file provided by the user that can be used to apply other forces.
+cell with filenames of `.m` function file provided by the user that can be used to apply other forces. The user can update the external nodal force of the system based on the real-time position, velocity, and acceleration of the elements, all in global coordinates.
 
 ### `boundaryConds.imposDispDofs`
 cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
+
 ### `boundaryConds.imposDispVals`
 cell with vectors of the values of displacements imposed.
 
