@@ -1,6 +1,5 @@
 %md# Beam truss joint example
-close all, clear all
-problemName = 'beamTrussJoint' ;
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
 
 %mdThe goal of this example is to provide a minimal validation of the integration between truss and frame elements in the same model. The structure considered is formed by two elements (one truss (t) and one beam (b)) and small displacements are considered.
@@ -94,11 +93,11 @@ analysisSettings.finalTime     =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;
-
+%md
 %md### otherParams
-otherParams.problemName = problemName   ;
-otherParams.plotsFormat = 'vtk'         ;
-
+otherParams.problemName = 'beamTrussJoint' ;
+otherParams.plotsFormat = 'vtk'            ;
+%md
 %md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint. 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

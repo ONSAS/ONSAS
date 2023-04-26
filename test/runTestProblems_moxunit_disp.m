@@ -78,4 +78,8 @@ function test_16
   assertEqual( verifBoolean, true );
 
 function test_17
+  beamTrussJoint
+  assertEqual( verifBoolean, true );
+
+function test_18
   assertEqual( gaussIntegrationTest, true);
