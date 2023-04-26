@@ -16,9 +16,6 @@ deltat = 0.1   ; % s
 global exportFirstMatrices
 exportFirstMatrices = true;
 
-global modalAnalysisBoolean
-modalAnalysisBoolean = true;
-
 %md### materials
 materials                 = struct()         ;
 materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
@@ -65,6 +62,7 @@ analysisSettings.finalTime     =   tf   ;
 analysisSettings.stopTolDeltau =   1e-10 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
+analysisSettings.modalAnalysisBoolean = true;
 %md
 %md## otherParams
 otherParams = struct() ;

@@ -92,9 +92,7 @@ fprintf('|        %4.1f  %3i |          %5i %5i  %5i  |\n', ...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Experimental Modal Analysis Block %%%%%%
-global modalAnalysisBoolean
-if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
-
+if modelProperties.analysisSettings.modalAnalysisBoolean
   modal_output_folder = [ pwd filesep 'output'] ;  
   addpath( genpath( modal_output_folder ) ) ;
   load( [ modal_output_folder filesep 'matrices.mat'] ) ;
@@ -130,12 +128,10 @@ if ~isempty( modalAnalysisBoolean ) && modalAnalysisBoolean
       vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
     end
   end
-
   if isThisOctave
     save('-binary','Modal.mat','PHI','OMEGA')
   end
   fprintf(' MODAL ANALYSIS DONE. Setting modalAnalysisBoolean to false.\n')
-  modalAnalysisBoolean = false ;
-
+  modelProperties.analysisSettings.modalAnalysisBoolean = false ;
 end %endif
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
