@@ -82,4 +82,8 @@ function test_17
   assertEqual( verifBoolean, true );
 
 function test_18
+  staticPlasticVonMisesTruss
+  assertEqual( verifBoolean, true );
+
+function test_19
   assertEqual( gaussIntegrationTest, true);

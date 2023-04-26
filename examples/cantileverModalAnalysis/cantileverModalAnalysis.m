@@ -31,7 +31,7 @@ elements(2).elemCrossSecParams = { 'circle' , diam } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
 %md
-boundaryConditions             = struct() ;
+boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md and the second corresponds to a time dependant external force

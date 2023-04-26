@@ -88,6 +88,9 @@ sigmas_hard = sigma_Y_0 + Etan * ( abs( (eles - L)) ./ L - sigma_Y_0/E ) ;
 valsFlu = 2*( sigmas_hard * A ) .* ( ( z2 - deltasB ) ./ eles )  ;
 valsPB = min( valsLin, valsFlu) ;
 
+verifBoolean = ( norm( valsP  - loadFactorsMat(:,2) ) < 1e-4*norm(valsP ) ) && ...
+               ( norm( valsPB - loadFactorsMatB(:,2)) < 1e-4*norm(valsPB) ) ;
+
 figure
 plot( deltas , valsP, 'b-x' )
 grid on, hold on
