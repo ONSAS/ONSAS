@@ -70,7 +70,7 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -m*g 0 ] ;
 initialConds                = struct() ;
 %md
 %md### mesh parameters
-%mdThe coordinates conisdering a mesh of two nodes is:
+%mdThe coordinates considering a mesh of two nodes is:
 mesh = struct() ;
 mesh.nodesCoords = [   0  0   l0 ; ...
                       l0  0  l0  ] ;
@@ -139,17 +139,6 @@ otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------
 [matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-otherParams.problemName     = 'nonlinearPendulumHHTFrameWithSpring';
-boundaryConds(1).springDofs = [ 4 ] ;
-boundaryConds(1).springVals = [ 1e2 ] ;
-
-[matUsCase4, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-figure
-plot(matUsCase3(4,:))
-grid on, hold on
-plot(matUsCase4(4,:),'r')
-
 %md### extract control displacements
 %mdThe mass displacement in z are:
 controlDofDispUz = 6 + 5 ;
@@ -163,15 +152,12 @@ controlDispXCase1 = matUsCase1( controlDofDispUx12 , : ) ;
 controlDispXCase2 = matUsCase2( controlDofDispUx12 , : ) ;
 controlDofDispX3 = 12 + 1 ;
 controlDispXCase3 = matUsCase3( controlDofDispX3 , : ) ;
-
 %mdIn order to contrast the solution with the literature refrence the bounce angle measured from the vertical is computed:
 angleThetaCase1 = rad2deg( atan2( ( l0 + controlDispXCase1 ), -controlDispZCase1 ) ) ;
 angleThetaCase2 = rad2deg( atan2( ( l0 + controlDispXCase2 ), -controlDispZCase2 ) ) ;
 angleThetaCase3 = rad2deg( atan2( ( l0 + controlDispXCase3 ), -controlDispZCase3 ) ) ;
-
 %mdTo plot diplsacements against $t$ the time vector is:
 timesVec12  = (0:length(controlDispZCase1)-1) * analysisSettings.deltaT ;
-
 %md## verification
 %mdFor all cases the displacment at t=T must be close to zero, so then the error is computed as $uN - 0$ / l0:
 tolVerifDisp = 1e-2 ;
@@ -180,7 +166,7 @@ verifBooleanCase2 =  ( abs( controlDispZCase2(end) / l0 ) <  tolVerifDisp ) ;
 verifBooleanCase3 =  ( abs( controlDispZCase3(end) / l0 ) <  tolVerifDisp ) ;
 %md all cases must be verifyed, so then:
 verifBoolean    = verifBooleanCase1 && verifBooleanCase2 && verifBooleanCase3;
- 
+%md
 %md### Plots
 %md
 %mdPlot parameters
@@ -195,16 +181,15 @@ plot( timesVec12, -controlDispZCase2, 'bo','markersize', MS,'linewidth', LW)
 plot( timesVec12, -controlDispZCase3, 'rx','markersize', MS,'linewidth', LW)
 xlabel('time (s)'), ylabel('mass displacement u_z (m)')
 legend( legendCase1, legendCase2, legendCase3, 'location','NorthEast')
-title("U_z solution Bathe")
+title('U_z solution Bathe')
 %print('./output/dispPlot.png','-dpng')
-
-%mdPlot a ngle solution
+%md
+%mdPlot a single solution
 figure, hold on, grid on
 plot( timesVec12, -angleThetaCase1, 'k-s' ,'markersize', MS,'linewidth', LW)
 plot( timesVec12, -angleThetaCase2, 'bo','markersize', MS,'linewidth', LW)
 plot( timesVec12, -angleThetaCase3, 'rx','markersize', MS,'linewidth', LW)
 xlabel('time (s)'), ylabel('\theta displacement (º)')
 legend( legendCase1, legendCase2, legendCase3, 'location','NorthEast')
-title("Θ solution Bathe")
+title('Θ solution Bathe')
 %print('./output/thetaPlot.png','-dpng')
-
