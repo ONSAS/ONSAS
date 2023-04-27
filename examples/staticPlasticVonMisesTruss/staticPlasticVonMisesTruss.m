@@ -1,6 +1,6 @@
 %md# Static Von-Mises Truss example
-
-close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters
 E = 210e9 ;  A = 2.5e-3 ; ang1 = 65 ; L = 2 ;
 Kplas = E*.1 ;
