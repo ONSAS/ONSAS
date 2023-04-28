@@ -58,6 +58,7 @@ boundaryConds(3).imposDispVals = [ 0 0 0 0 0 ] ;
 %md### mesh parameters
 %md
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
+mesh = struct();
 mesh.nodesCoords = [(0:(numElemB))'*lb/numElemB zeros(numElemB+1,1) zeros(numElemB+1,1) 	       ;	 
 		            lb*ones(numElemT,1) 	    zeros(numElemT,1)   -(1:(numElemT))'*lt/numElemT ] ;
 %md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
@@ -99,7 +100,7 @@ analysisSettings.stopTolIts    =   10   ;
 %md### otherParams
 otherParams = struct() ;
 otherParams.problemName = 'beamTrussJoint' ;
-otherParams.plotsFormat = 'vtk'            ;
+otherParams.plots_format = 'vtk'            ;
 %md
 %md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint. 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -117,8 +118,7 @@ verifBoolean    = ( ( norm( difLoadEngRot    ) / norm( loadFactorsMat(:,2)  ) ) 
 %md
 %md### Plots
 %mdOutput diplacments and load factor function are plotted:
-figure
-hold on, grid on
+figure, hold on, grid on
 lw = 2.0 ; lw2 = 1.0 ; ms = 11 ; plotfontsize = 18 ;
 plot( dispZnum, analyticFunc(dispZnum), 'b-x' , 'linewidth', lw,'markersize',ms)    ;
 plot( dispZnum, loadFactorsMat(:,2),    'r-s' , 'linewidth', lw,'markersize',ms )   ;
