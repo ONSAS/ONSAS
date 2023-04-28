@@ -125,10 +125,11 @@ cell with the (row) vector of the components of the load case
 where $f_i$ are the components of forces and $m_i$ are the moments. Both forces or moments are considered per unit of length in the case of `truss`/`frame`/`edge` elements, or per unit of area in the case of `triangle`.
 
 ### `boundaryConds.userLoadsFileName`
-cell with filenames of `.m` function file provided by the user that can be used to apply other forces.
+string with the filename of the `.m` function file provided by the user that can be used to apply forces not given by time-varying loadFactors. This function file should be placed in the example folder and it must receive two arguments:  t (the time) and UsCell (a cell with: {the current displacement, velocity and acceleration} ). The function should one forces vector with the size of all the degrees of freedom of the problem (in global coordinates).
 
 ### `boundaryConds.imposDispDofs`
 cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
+
 ### `boundaryConds.imposDispVals`
 cell with vectors of the values of displacements imposed.
 
