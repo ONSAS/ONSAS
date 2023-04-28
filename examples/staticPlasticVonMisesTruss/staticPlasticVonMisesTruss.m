@@ -10,13 +10,16 @@ sigma_Y_0 = 25e6 ;
 x2 = cos( ang1*pi/180 ) * L ;
 z2 = sin( ang1*pi/180 ) * L ;
 
+materials = struct();
 materials.hyperElasModel  = 'isotropicHardening' ;
 materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
 
+elements = struct();
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
 elements(2).elemCrossSecParams = { 'circle' , sqrt(A*4/pi) } ;
 
+boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 
@@ -26,6 +29,7 @@ boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsTimeFact = @(t) 3.0e8*t     ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 
+mesh = struct();
 mesh.nodesCoords = [   0  0   0 ; ...
                       x2  0  z2 ; ...
                     2*x2  0   0 ] ;
@@ -39,6 +43,7 @@ mesh.conecCell{ 5, 1 } = [ 1 2 0  2 3 ] ;
 
 initialConds                = struct() ;
 
+analysisSettings = struct();
 analysisSettings.methodName    = 'newtonRaphson' ;
 analysisSettings.deltaT        =   2e-5  ;
 analysisSettings.finalTime     =   1e-3    ;
@@ -49,6 +54,7 @@ analysisSettings.stopTolIts    =   15   ;
 
 analysisSettings.posVariableLoadBC = 2 ;
 
+otherParams = struct();
 otherParams.problemName = 'static_plastic_von_mises_truss';
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;
