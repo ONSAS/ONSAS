@@ -49,7 +49,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
   if strcmp( modelProperties.analysisSettings.methodName, 'newtonRaphson' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ,  {Utp1, Udottp1, Udotdottp1} ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] ,  {Utp1} ) ;
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
@@ -65,7 +65,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
   % -----------------------------------------------------------------------------------
   elseif strcmp( modelProperties.analysisSettings.methodName, 'arcLength' )
 
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors  , {Utp1, Udottp1, Udotdottp1} ) ;
+    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors  , {Utp1} ) ;
 
     foundLoadCase = false ;
     loadCase = 1 ;
@@ -129,7 +129,6 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
 
-    %FextGt = FextG ;
     [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
