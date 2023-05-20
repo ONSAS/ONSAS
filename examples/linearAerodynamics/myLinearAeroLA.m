@@ -1,6 +1,6 @@
 %md This functions computes manually the aerodynamic loads submitted to the hole beam
-function f = myLinearAeroLA(t)
-global numElements
+function f = myLinearAeroLA(t, UsCell)
+numElements = 10 ;
 %geometric parameers
 l = 20 ; d = .5 ; 
 %fluid parameters

@@ -1,4 +1,4 @@
-function f = myLoadSpringMass( t)
+function f = myLoadSpringMass( t, UsCell )
 
 %Force data
 k        = 39.47 ; % spring constant

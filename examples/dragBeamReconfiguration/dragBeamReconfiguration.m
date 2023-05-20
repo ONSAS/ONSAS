@@ -20,11 +20,8 @@
 %md where  $F$ is the global drag force towards $c_2$, $c_y$ is the Cauchy number that describes the ratio between the stiffness of the beam and the flow load and the reconfiguration number $\mathcal{R}$ reflects the geometric nonlinear effect by dividing the drag of the flexible beam to that of a rigid one of the same geometry
 %md## Numerical solution
 %md---------------------
-%md Before the workspace is cleaned and the ONSAS directory is added:
+%md Before defining the structs, the workspace is cleaned and the ONSAS directory is added:
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-% add dynamic case boolean for non test executions: 
-testBool = true; 
-% add path
 addpath( genpath( [ pwd '/../../src'] ) ); 
 %md
 %md The problem parameters are loaded:
@@ -51,9 +48,9 @@ elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %md for the geometries, the node has not geometry to assign (empty array), and frame elements will be set as a circular section with $d$ diameter.
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
-elements(2).elemCrossSecParams{2,1} = [ d ] ;
+elements(2).elemCrossSecParams{2,1} = [ d ]    ;
 %md where the aerodynamic coefficents and the chord vector are set by default for `'circle'` cross sections type. For the validation case a constant drag coefficients $c_d =1.2" is used, this is defined in the `'dragCircular'` function:   
-elements(2).dragCoefFunction = 'dragCircular'
+elements(2).dragCoefFunction = 'dragCircular' ;
 %md The geometrical non-linear effects and the aerodynamic stiffness matrix are considered in this case to compute the aerodynamic force vector:
 elements(2).aeroNumericalParams = {4, true, true} ;
 %md
@@ -241,7 +238,7 @@ analysisSettings.finalTime = NR - 2 ;
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
 otherParams  = struct();
-otherParams.problemName = 'staticReconfigurationCircleUserDefinedDrag';
+otherParams.problemName = 'staticReconfigurationCircleBuiltInDrag';
 %md
 %md### Numeric solution
 %md

@@ -15,14 +15,14 @@ makedocs(
       "Uniaxial compression"=>"examples/uniaxialCompression.md",
       "Cantilever Beam"=>"examples/cantileverBeam.md",
       "Linear beam vibration"=>"examples/beamLinearVibration.md",
-      "Linear elastic cylinder"=>"examples/linearCylinderPlaneStrain.md",
+      "Plane strain ring"=>"examples/ringPlaneStrain.md",
       # "Linear aerodynamics"     => "examples/linearAerodynamics.md",
       "Reconfiguration beam"=>"examples/dragBeamReconfiguration.md",
       "Propeller model"=>"examples/simplePropeller.md",
       "Non-linear aerodynamics"=>"examples/nonLinearAerodynamics.md"],
-    "User guide" => Any["Installation"=>"howtouse/install.md",
-      "Creating Models"=>"howtouse/creatingModels.md",
-      "References"=>"theory/references.md"]
+      "User guide" => Any["Installation"=>"install.md",
+      "Creating Models"=>"creatingModels.md",
+      "References"=>"references.md"]
     #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
   ],
   strict=false
