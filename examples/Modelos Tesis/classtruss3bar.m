@@ -69,8 +69,6 @@ otherParams = struct();
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;
 
-% an Eternal Golden Braid
-
 otherParams.problemName       = 'Newton-Raphson_Arc-Length_Logarithmic_Strain_Jirasek' ;
 analysisSettings.methodName   = 'arcLength' ;
 analysisSettings.finalTime    = 100 ;
