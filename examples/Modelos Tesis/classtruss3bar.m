@@ -13,6 +13,9 @@ z2 = -400 ;
 
 materials = struct();
 materials.hyperElasModel  = 'isotropicHardening' ;
+
+% /\ isotropic hardening include use of logarithmic strain /\
+
 materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
 
 elements = struct();
@@ -68,10 +71,10 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 % an Eternal Golden Braid
 
-otherParams.problemName       = 'NRAL_Jirasek' ;
+otherParams.problemName       = 'Newton-Raphson_Arc-Length_Logarithmic_Strain_Jirasek' ;
 analysisSettings.methodName   = 'arcLength' ;
 analysisSettings.finalTime    = 100 ;
-analysisSettings.incremArcLen = [0.2*ones(1,33) 0.99*ones(1,33) -0.65*ones(1,34)] ;
+analysisSettings.incremArcLen = [0.2*ones(1,25) 0.99*ones(1,25) -0.65*ones(1,25) 1*ones(1,25)] ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
@@ -85,11 +88,11 @@ global scalingProjection
 scalingProjection = -1 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-controlDispsNRAL_Jirasek_Green =  -matUs(6*3+5,:) ;
-loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;
+controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*3+5,:) ;
+loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
 
 figure
-plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'linewidth', 1.5)
+plot( controlDispsNRAL_Jirasek_logarithmic_strain, loadFactorsNRAL_Jirasek_logarithmic_strain, 'linewidth', 1.5)
 labx = xlabel('Displacement w(t)');
 laby = ylabel('\lambda(t)') ;
-legend('\fontsize{12} NRAL-Jirasek-Green','Location','southeast');
+legend('\fontsize{12} NRAL-Jirasek-Logarithmic Strain','Location','southeast');

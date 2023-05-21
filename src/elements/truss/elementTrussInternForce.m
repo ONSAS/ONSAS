@@ -70,17 +70,22 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
     KTe   =   stress      * A / lini * Ge  ...
             + dstressdeps * A * lini * ( (b1 + b2)' * (b1 + b2) ) ;
 
-  elseif strcmp( hyperElasModel, '1DrotEngStrain') || strcmp( hyperElasModel, 'isotropicHardening')
+   elseif strcmp( hyperElasModel, '1DrotEngStrain')
 
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
     E           = hyperElasParams(1) ;
 
-    if strcmp( hyperElasModel, '1DrotEngStrain')
       stress      = E * strain ;
       dstressdeps = E ;
      
     elseif strcmp( hyperElasModel, 'isotropicHardening')
+
+    % /\ isotropic hardening include use of logarithmic strain /\
+    
+    strain = log(ldef/lini) ; % logarithmic strain
+
+    E           = hyperElasParams(1) ;
 
       stress_n           = previous_state{1,:}(1)  ;
       strain_n           = previous_state{2,:}(1)  ;
@@ -105,7 +110,6 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
         acum_plas_strain = acum_plas_strain_n + delta_gamma ; 
 
       end
-    end
 
     Finte = stress * A * TTcl ;
 
@@ -114,7 +118,6 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
     KTe   = KMe + Ksige ;
 
   end
-
 
   % ----------------------------------
 
