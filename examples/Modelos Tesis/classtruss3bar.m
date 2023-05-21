@@ -1,4 +1,4 @@
-%md# classical truss / 3 rods
+%md# Plasticity | classical truss, 3 rods
 close all; clear;
 addpath( genpath( [ pwd '/../../src'] ) );
 % scalar parameters (N/cm2)
@@ -68,11 +68,11 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 % an Eternal Golden Braid
 
-otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green'    ;
-analysisSettings.methodName   = 'arcLength'                                 ;
-analysisSettings.finalTime    = 100                                         ;
-analysisSettings.incremArcLen = [0.65*ones(1,100)]                          ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100      ;
+otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
+analysisSettings.methodName   = 'arcLength' ;
+analysisSettings.finalTime    = 100 ;
+analysisSettings.incremArcLen = [0.65*ones(1,33) -0.65*ones(1,33) 0.65*ones(1,34)] ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 global arcLengthFlag
