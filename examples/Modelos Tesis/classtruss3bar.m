@@ -68,7 +68,7 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 % an Eternal Golden Braid
 
-otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
+otherParams.problemName       = 'NRAL_Jirasek' ;
 analysisSettings.methodName   = 'arcLength' ;
 analysisSettings.finalTime    = 100 ;
 analysisSettings.incremArcLen = [0.2*ones(1,33) 0.99*ones(1,33) -0.65*ones(1,34)] ;
