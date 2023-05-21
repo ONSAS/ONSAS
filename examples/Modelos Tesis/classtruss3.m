@@ -62,7 +62,7 @@ otherParams.plots_deltaTs_separation = 2 ;
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
 analysisSettings.finalTime    = 100                               ;
-analysisSettings.incremArcLen = [0.65]                     ;
+analysisSettings.incremArcLen = [0.65 1*ones(1,100)]                     ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
