@@ -44,8 +44,8 @@ mesh.conecCell{ 5, 1 } = [ 1 2 0  2 3 ] ;
 initialConds                = struct() ;
 
 analysisSettings = struct();
-analysisSettings.deltaT        =   2e-5  ;
-analysisSettings.finalTime     =   1e-3    ;
+analysisSettings.deltaT        =   1  ;
+analysisSettings.finalTime     =   100    ;
 
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
@@ -61,9 +61,9 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = [0.15]                     ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
+analysisSettings.finalTime    = 100                               ;
+analysisSettings.incremArcLen = [0.65]                     ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 global arcLengthFlag
@@ -78,29 +78,10 @@ scalingProjection = -1 ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
 loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;
-analyticLoadFactorsNRAL_Jirasek_Green = analyticLoadFactorsGreen(controlDispsNRAL_Jirasek_Green);
-difLoadGreenNRAL_Jirasek = analyticLoadFactorsNRAL_Jirasek_Green' - loadFactorsNRAL_Jirasek_Green ;
 
-verifBoolean =  ( ( norm( difLoadEngRot            ) / norm( loadFactorsNREngRot           ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreen             ) / norm( loadFactorsNRGreen            ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreenNRAL         ) / norm( loadFactorsNRALGreen          ) ) <  1e-4 ) ...
-             && ( ( norm( difLoadGreenNRAL_Jirasek ) / norm( loadFactorsNRAL_Jirasek_Green ) ) <  1e-4 ) ;
-
-lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
 figure
-plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
-hold on, grid on
-plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 'g-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'y-*' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','LinearElastic', 'location','northoutside')
-set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'linewidth', 1.5)
+labx = xlabel('Displacement w(t)');
+laby = ylabel('\lambda(t)') ;
+legend( 'NRAL-Jirasek-Green')
 print('output/vonMisesTrussCheck.png','-dpng')
-
-
-
