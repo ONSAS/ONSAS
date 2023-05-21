@@ -1,6 +1,7 @@
 %md# Plasticity | classical truss, 3 rods
 close all; clear;
 addpath( genpath( [ pwd '/../../src'] ) );
+
 % scalar parameters (N/cm2)
 E = 210e3 ;
 Kplas = 1093 ;
