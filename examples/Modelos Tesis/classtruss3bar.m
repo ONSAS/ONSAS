@@ -58,7 +58,7 @@ initialConds                = struct() ;
 
 analysisSettings = struct();
 analysisSettings.deltaT        =   1    ;
-analysisSettings.finalTime     =   100  ;
+analysisSettings.finalTime     =   120  ;
 
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
@@ -72,9 +72,9 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 otherParams.problemName       = 'Newton-Raphson_Arc-Length_Logarithmic_Strain_Jirasek' ;
 analysisSettings.methodName   = 'arcLength' ;
-analysisSettings.finalTime    = 100 ;
-analysisSettings.incremArcLen = [0.2*ones(1,25) 0.99*ones(1,25) -0.65*ones(1,25) 1*ones(1,25)] ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/100 ;
+analysisSettings.finalTime    = 120 ;
+analysisSettings.incremArcLen = [0.8/20*ones(1,20) -3*0.8/40*ones(1,40) 2*0.8/60*ones(1,60)] ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/120 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 global arcLengthFlag
