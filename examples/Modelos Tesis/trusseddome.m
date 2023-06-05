@@ -8,10 +8,6 @@ Kplas = 200 ;
 sigma_Y_0 = 250 ;
 Fu = 1 ;
 
-% x and z coordinates of node 4
-x2 = 300 ;
-z2 = -400 ;
-
 materials = struct();
 materials.hyperElasModel  = 'isotropicHardening' ;
 
@@ -22,37 +18,19 @@ materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
 elements = struct();
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
-elements(3).elemType = 'truss';
-elements(4).elemType = 'truss';
 elements(2).elemCrossSecParams = { 'circle' , sqrt(1*4/pi)} ;
-elements(3).elemCrossSecParams = { 'circle' , sqrt(1*4/pi)} ;
-elements(4).elemCrossSecParams = { 'circle' , sqrt(1*4/pi)} ;
 
 boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
-boundaryConds(2).imposDispDofs = 3 ;
-boundaryConds(2).imposDispVals = 0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) (t<=1)*(Fu)*t ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ]   ;
-
-mesh = struct();
-mesh.nodesCoords = [   0  0   0     ; ...
-                      x2  0   0     ; ...
-                    2*x2  0   0     ; ...
-                      x2  0   z2 ]  ;
+boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 
 % MEBI [Material Element Boundary_Conditions Initial_Conditions]
 
-mesh.conecCell = cell(7,1) ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1  2   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 1  3   ] ;
-mesh.conecCell{ 4, 1 } = [ 0 1 2  4   ] ;
-mesh.conecCell{ 5, 1 } = [ 1 2 0  1 4 ] ;
-mesh.conecCell{ 6, 1 } = [ 1 3 0  2 4 ] ;
-mesh.conecCell{ 7, 1 } = [ 1 4 0  3 4 ] ;
+mesh = struct();
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'TrussedDome.msh'] ) ;
 
 initialConds                = struct() ;
 
@@ -81,13 +59,13 @@ global arcLengthFlag
 arcLengthFlag = 2 ;
 
 global dominantDofs
-dominantDofs = 6*3+5 ;
+dominantDofs = 6*6+5 ;
 
 global scalingProjection
 scalingProjection = -1 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*3+5,:) ;
+controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*6+5,:) ;
 loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
 
 figure
