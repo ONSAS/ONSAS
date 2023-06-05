@@ -29,7 +29,9 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
 
 % MEBI [Material Element Boundary_Conditions Initial_Conditions]
 
-mesh = struct();
+base_msh='' ;
+
+mesh = struct() ;
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'TrussedDome.msh'] ) ;
 
 initialConds                = struct() ;
@@ -51,7 +53,7 @@ otherParams.plots_deltaTs_separation = 2 ;
 otherParams.problemName       = 'Newton-Raphson_Arc-Length_Logarithmic_Strain_Jirasek' ;
 analysisSettings.methodName   = 'arcLength' ;
 analysisSettings.finalTime    = 120 ;
-analysisSettings.incremArcLen = [0.8/20*ones(1,20) -3*0.8/40*ones(1,40) 2*0.8/60*ones(1,60)] ;
+analysisSettings.incremArcLen = [0.8/20*ones(1,40) -3*0.8/40*ones(1,40) 2*0.8/60*ones(1,60)] ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.1)/120 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
@@ -59,13 +61,13 @@ global arcLengthFlag
 arcLengthFlag = 2 ;
 
 global dominantDofs
-dominantDofs = 6*6+5 ;
+dominantDofs = 6*12+5 ;
 
 global scalingProjection
 scalingProjection = -1 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*6+5,:) ;
+controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*12+5,:) ;
 loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
 
 figure
