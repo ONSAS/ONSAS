@@ -2,7 +2,7 @@
 SetFactory("OpenCASCADE");
 Circle(1) = {0, 0, 0, 500, 0, 2*Pi};
 //+
-Circle(2) = {0, 0, 62.16, 250, 0, 2*Pi};
+Circle(2) = {0, 0, 42.16, 250, 0, 2*Pi};
 //+
 Rotate {{0, 0, 1}, {0, 0, 0}, Pi/3} {
   Duplicata { Point{2}; }
@@ -68,7 +68,7 @@ Rotate {{0, 0, 1}, {0, 0, 0}, Pi/6} {
   Duplicata { Point{17}; }
 }
 //+
-Point(19) = {0, 0, 82.16, 1};
+Point(19) = {0, 0, 72.16, 1};
 //+
 Line(3) = {19, 2};
 //+
