@@ -73,4 +73,4 @@ plot( controlDispsNRAL_Jirasek_logarithmic_strain, loadFactorsNRAL_Jirasek_logar
 labx = xlabel('Displacement w(t)');
 laby = ylabel('\lambda(t)') ;
 legend('\fontsize{12} NRAL-Jirasek-Logarithmic Strain','Location','southeast');
-holld  on;
+hold  on;
