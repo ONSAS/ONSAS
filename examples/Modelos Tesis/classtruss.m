@@ -1,7 +1,6 @@
 %md# Classical Truss
 
 close all; clear; addpath( genpath( [ pwd '/../../src'] ) );
-format long;
 % scalar parameters (N/cm2)
 E = 210e3 ;
 Kplas = 529.5 ;
@@ -28,7 +27,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).imposDispDofs = 3 ;
 boundaryConds(2).imposDispVals = 0 ;
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsTimeFact = @(t) (t<=1)*Fu*t ;
+boundaryConds(2).loadsTimeFact = @(t) Fu*t ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ]  ;
 
 initialConds = struct() ;
@@ -40,11 +39,11 @@ mesh.nodesCoords = [   0  0   0 ; ...
 % MEBI [Material Element Boundary_Conditions Initial_Conditions]
 
 mesh.conecCell = cell(5,1) ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  3   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{ 5, 1 } = [ 1 3 0 0  2 3 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1 3   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2 2   ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0 1 2 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 3 0 2 3 ] ;
 
 analysisSettings.deltaT        =       1 ;
 analysisSettings.finalTime     =    1000 ;
@@ -156,11 +155,11 @@ mesh.nodesCoords = [   0  0   0 ; ...
                     2*x2  0   0 ] ;
 
 mesh.conecCell = cell(5,1) ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  3   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{ 5, 1 } = [ 1 3 0 0  2 3 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1 3   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2 2   ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0 1 2 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 3 0 2 3 ] ;
 
 analysisSettings.deltaT        =       1 ;
 analysisSettings.finalTime     =    1000 ;
@@ -274,11 +273,11 @@ mesh.nodesCoords = [   0  0   0 ; ...
 % MEBI [Material Element Boundary_Conditions Initial_Conditions]
 
 mesh.conecCell = cell(5,1) ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1 0  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 1 0  3   ] ;
-mesh.conecCell{ 3, 1 } = [ 0 1 2 0  2   ] ;
-mesh.conecCell{ 4, 1 } = [ 1 2 0 0  1 2 ] ;
-mesh.conecCell{ 5, 1 } = [ 1 3 0 0  2 3 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1   ] ;
+mesh.conecCell{ 2, 1 } = [ 0 1 1 3   ] ;
+mesh.conecCell{ 3, 1 } = [ 0 1 2 2   ] ;
+mesh.conecCell{ 4, 1 } = [ 1 2 0 1 2 ] ;
+mesh.conecCell{ 5, 1 } = [ 1 3 0 2 3 ] ;
 
 analysisSettings.deltaT        =       1 ;
 analysisSettings.finalTime     =    1000 ;

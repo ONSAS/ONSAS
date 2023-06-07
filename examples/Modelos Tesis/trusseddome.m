@@ -68,8 +68,9 @@ scalingProjection = 1 ;
 controlDispsNRAL_Jirasek_logarithmic_strain =  matUs(6*12+5,:) ;
 loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
 
-figure
+figure(1)
 plot( controlDispsNRAL_Jirasek_logarithmic_strain, loadFactorsNRAL_Jirasek_logarithmic_strain, 'linewidth', 1.5)
 labx = xlabel('Displacement w(t)');
 laby = ylabel('\lambda(t)') ;
 legend('\fontsize{12} NRAL-Jirasek-Logarithmic Strain','Location','southeast');
+holld  on;
