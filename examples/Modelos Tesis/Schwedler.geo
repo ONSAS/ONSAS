@@ -594,9 +594,179 @@ Line(295) = {236, 246};
 Line(296) = {246, 256};
 //+
 Line(297) = {256, 266};
+//+
+Recursive Delete {
+  Curve{87}; 
+}
+//+
+Recursive Delete {
+  Curve{92}; 
+}
+//+
+Recursive Delete {
+  Curve{96}; 
+}
+//+
+Recursive Delete {
+  Curve{100}; 
+}
+//+
+Recursive Delete {
+  Curve{104}; 
+}
+//+
+Recursive Delete {
+  Curve{108}; 
+}
+//+
+Recursive Delete {
+  Curve{112}; 
+}
+//+
+Recursive Delete {
+  Curve{116}; 
+}
+//+
+Recursive Delete {
+  Curve{120}; 
+}
+//+
+Recursive Delete {
+  Curve{124}; 
+}
+//+
+Recursive Delete {
+  Curve{128}; 
+}
+//+
+Recursive Delete {
+  Curve{33}; 
+}
+//+
+Recursive Delete {
+  Curve{37}; 
+}
+//+
+Recursive Delete {
+  Curve{41}; 
+}
+//+
+Recursive Delete {
+  Curve{45}; 
+}
+//+
+Recursive Delete {
+  Curve{49}; 
+}
+//+
+Recursive Delete {
+  Curve{53}; 
+}
+//+
+Recursive Delete {
+  Curve{57}; 
+}
+//+
+Recursive Delete {
+  Curve{61}; 
+}
+//+
+Recursive Delete {
+  Curve{65}; 
+}
+//+
+Recursive Delete {
+  Curve{69}; 
+}
+//+
+Recursive Delete {
+  Curve{74}; 
+}
+//+
+Recursive Delete {
+  Curve{79}; 
+}
+//+
+Point(297) = {0, 0, 4.58, 1.0};
+//+
+Line(298) = {182, 297};
+//+
+Line(299) = {172, 297};
+//+
+Line(300) = {156, 297};
+//+
+Line(301) = {144, 297};
+//+
+Line(302) = {134, 297};
+//+
+Line(303) = {124, 297};
+//+
+Line(304) = {114, 297};
+//+
+Line(305) = {104, 297};
+//+
+Line(306) = {94, 297};
+//+
+Line(307) = {84, 297};
+//+
+Line(308) = {74, 297};
+//+
+Line(309) = {64, 297};
+//+
+Line(310) = {54, 297};
+//+
+Line(311) = {296, 297};
+//+
+Line(312) = {286, 297};
+//+
+Line(313) = {276, 297};
+//+
+Line(314) = {266, 297};
+//+
+Line(315) = {256, 297};
+//+
+Line(316) = {246, 297};
+//+
+Line(317) = {236, 297};
+//+
+Line(318) = {226, 297};
+//+
+Line(319) = {216, 183};
+//+
+Line(320) = {206, 183};
+//+
+Recursive Delete {
+  Curve{320}; 
+}
+//+
+Recursive Delete {
+  Curve{319}; 
+}
+//+
+Recursive Delete {
+  Curve{318}; 
+}
+//+
+Recursive Delete {
+  Curve{83}; 
+}
+//+
+Recursive Delete {
+  Curve{298}; 
+}
+//+
+Line(318) = {226, 297};
+//+
+Line(319) = {216, 297};
+//+
+Line(320) = {206, 297};
+//+
+Line(321) = {192, 297};
+//+
+Line(322) = {182, 297};
 
 Physical Point("00_01_01_00") = {1,61,71,81,91,101,111,121,131,141,153,169,179,189,203,213,223,233,243,253,263,273,283,293};
 
-Physical Point ("00_01_02_00") = {55};
+Physical Point ("00_01_02_00") = {297};
 
-Physical Line ("01_02_00_00") = {30:297};
+Physical Line ("01_02_00_00") = {30:322};

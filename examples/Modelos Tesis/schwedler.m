@@ -1,11 +1,11 @@
-%md# Plasticity | Schwedler Dome 120 nodes, 384 elements
+%md# Plasticity | Schwedler Dome 97 nodes, 361 elements
 close all; clear;
 addpath( genpath( [ pwd '/../../src'] ) );
 
-% scalar parameters (N/cm2)
-E = 210e3 ;
-Kplas = 529.5 ;
-sigma_Y_0 = 123.6 ;
+% scalar parameters (N,m)
+E = 2.0e11 ;
+Kplas = 0 ;
+sigma_Y_0 = 25000e3 ;
 Fu = 1 ;
 
 materials = struct();
@@ -18,7 +18,7 @@ materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
 elements = struct();
 elements(1).elemType = 'node' ;
 elements(2).elemType = 'truss';
-elements(2).elemCrossSecParams = { 'circle' , sqrt(1*4/pi)} ;
+elements(2).elemCrossSecParams = { 'circle' , sqrt(0.0032*4/pi)} ;
 
 boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 3 5 ] ;
@@ -51,7 +51,7 @@ otherParams.plots_deltaTs_separation = 2 ;
 otherParams.problemName       = 'Schwedler Dome' ;
 analysisSettings.methodName   = 'arcLength' ;
 analysisSettings.finalTime    = 100 ;
-analysisSettings.incremArcLen = [0.02/100*ones(1,100)] ;
+analysisSettings.incremArcLen = [0.8/100*ones(1,100)] ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
@@ -59,13 +59,13 @@ global arcLengthFlag
 arcLengthFlag = 2 ;
 
 global dominantDofs
-dominantDofs = 6*4+5 ;
+dominantDofs = 6*96+5 ;
 
 global scalingProjection
 scalingProjection = 1 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-controlDispsNRAL_Jirasek_logarithmic_strain =  matUs(6*4+5,:) ;
+controlDispsNRAL_Jirasek_logarithmic_strain =  matUs(6*96+5,:) ;
 loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
 
 figure(1)
