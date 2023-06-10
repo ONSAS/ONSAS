@@ -1,4 +1,4 @@
-%md# Plasticity | Schwedler Dome 97 nodes, 361 elements
+%md# Plasticity | Schwedler Dome (97 nodes, 264 finite elements)
 close all; clear;
 addpath( genpath( [ pwd '/../../src'] ) );
 
@@ -50,9 +50,9 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 otherParams.problemName       = 'Schwedler Dome' ;
 analysisSettings.methodName   = 'arcLength' ;
-analysisSettings.finalTime    = 8000 ;
-analysisSettings.incremArcLen = [0.01/8000*ones(1,8000)] ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/8000 ;
+analysisSettings.finalTime    = 100 ;
+analysisSettings.incremArcLen = [0.8/100*ones(1,100)] ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 global arcLengthFlag
@@ -62,11 +62,11 @@ global dominantDofs
 dominantDofs = 6*96+5 ;
 
 global scalingProjection
-scalingProjection = 1 ;
+scalingProjection = -1 ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-controlDispsNRAL_Jirasek_logarithmic_strain =  matUs(6*96+5,:) ;
-loadFactorsNRAL_Jirasek_logarithmic_strain  =  loadFactorsMat(:,2) ;
+controlDispsNRAL_Jirasek_logarithmic_strain =  -matUs(6*96+5,:) ;
+loadFactorsNRAL_Jirasek_logarithmic_strain  =  -loadFactorsMat(:,2)/1000 ;
 
 figure(1)
 plot( controlDispsNRAL_Jirasek_logarithmic_strain, loadFactorsNRAL_Jirasek_logarithmic_strain, 'linewidth', 1.5)
