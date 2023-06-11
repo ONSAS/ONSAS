@@ -50,9 +50,9 @@ otherParams.plots_deltaTs_separation = 2 ;
 
 otherParams.problemName       = 'Schwedler Dome' ;
 analysisSettings.methodName   = 'arcLength' ;
-analysisSettings.finalTime    = 100 ;
-analysisSettings.incremArcLen = [0.8/100*ones(1,100)] ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/100 ;
+analysisSettings.finalTime    = 300 ;
+analysisSettings.incremArcLen = [2/100*ones(1,100) 2/100*ones(1,100) 0.58/100*ones(1,100)] ;
+analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(1)/300 ;
 analysisSettings.posVariableLoadBC = 2 ;
 
 global arcLengthFlag
