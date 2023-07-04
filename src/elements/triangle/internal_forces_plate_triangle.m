@@ -1,39 +1,32 @@
 
 % implementation of the DKT plate triangle element based on https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620210709
 
-function [ fs, ks, stress, strain ] = internal_forces_plate_triangle( ...
-  elemCoords, elemDisps, hyperElasModel, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state )
+function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, hyperElasModel, hyperElasParams, thickness )
 
-E = 200e9;
-nu = .3;
-t = .01 ;
+% assertions
+assert( norm( elemCoords(3:3:end))==0,'only xy plates are considered' )
+assert( strcmp(hyperElasModel,'linearElastic'),' linear elastic model is implemented' )
 
-elemCoords = [0 0 0 1 .5 0 0 2 0];
+E = hyperElasParams(1)  ; 
+nu = hyperElasParams(2) ;
 
-  assert( norm( elemCoords(3:3:end))==0,'only xy plates are considered' )
+x1 = elemCoords(1);  y1 = elemCoords(2);
+x2 = elemCoords(4);  y2 = elemCoords(5);
+x3 = elemCoords(7);  y3 = elemCoords(8);
 
-  x1 = elemCoords(1);
-  y1 = elemCoords(2);
+mat_cross = [ x2-x3 x3-x1; y2-y3 y3-y1; 0 0 ] ;
 
-  x2 = elemCoords(4);
-  y2 = elemCoords(5);
+norm( cross( mat_cross(:,1), mat_cross(:,2)) );
 
-  x3 = elemCoords(7);
-  y3 = elemCoords(8);
-
-mat_cross = [ x2-x3 x3-x1; y2-y3 y3-y1; 0 0 ]
-
-norm( cross( mat_cross(:,1), mat_cross(:,2)) )
-
-det( mat_cross(1:2,:) )
+det( mat_cross(1:2,:) );
 
 B=[y2-y3; y3-y1; y1-y2];
 C=[x3-x2; x1-x3; x2-x1];
 
-DET = ( B(1) * C(2) - B(2) * C(1) ) * 24
+DET = ( B(1) * C(2) - B(2) * C(1) ) * 24 ;
 
 % isotropic
-D = t^3/12 * E/(1-nu^2) * [1 nu 0; nu 1 0; 0 0 (1-nu)*.5 ] ;
+D = thickness^3/12 * E/(1-nu^2) * [1 nu 0; nu 1 0; 0 0 (1-nu)*.5 ] ;
 
 PP = [ 12 4 4 ; 4 2 1; 4 1 2 ];
 
@@ -122,7 +115,7 @@ QQ(9,:) = C(2)*GG(4,:) + 2*C(3)*GG(5,:) ...
 
 K = QQ' * DD * QQ ;
 
+fint = K * elemDisps ;
 
-Kred = K(7:9,7:9) ;
-
-u = Kred \ [ -1e3 ; 0 ; 0]
+fs = {fint};
+ks = {K};

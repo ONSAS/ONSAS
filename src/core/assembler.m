@@ -114,7 +114,7 @@ for elem = 1:nElems
   %md obtains nodes and dofs of element
   nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )        ;
-  dofselemRed = dofselem ( 1 : dofsStep : end )    ;
+  dofselemRed = dofselem( 1 : dofsStep : end )    ;
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
@@ -250,6 +250,19 @@ for elem = 1:nElems
 			Mmase = ks{3};
 			Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
 		end
+
+  elseif strcmp( elemType, 'triangle-plate')
+
+    thickness = elemCrossSecParams{2};
+    
+    dofselemRed = dofselem( [5 2 4 5+6 2+6 4+6 5+12 2+12 4+12] ) ; % sorted as [ uz thetax thetay ]
+    elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
+
+    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, hyperElasModel, ...
+      hyperElasParams, thickness ) ;
+
+    Finte = fs{1};
+		Ke    = ks{1};
 
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')

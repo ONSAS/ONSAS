@@ -38,4 +38,8 @@ elseif strcmp( elemType, 'triangle')
   numNodes = 3 ;
   dofsStep = 2 ;
 
+elseif strcmp( elemType, 'triangle-plate')
+  numNodes = 3 ;
+  dofsStep = 1 ;
+
 end
