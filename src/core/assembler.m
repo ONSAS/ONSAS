@@ -22,15 +22,17 @@ function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strai
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
 
-fsBool     = outputBooleans(1) ; stressBool = outputBooleans(2) ; tangBool   = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
-%
-nElems     = size(Conec, 1) ;
-nNodes     = size(Nodes, 1) ;
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
 
-% -------  forces vector ---------------------------------------------
+fsBool   = outputBooleans(1) ; stressBool = outputBooleans(2) ;
+tangBool = outputBooleans(3) ; matFintBool = outputBooleans(4) ;
+
+nElems   = size(Conec, 1) ;
+nNodes   = size(Nodes, 1) ;
+
+% -------  forces vectors -------------------------------------------
 if fsBool
   % --- creates Fint vector ---
   Fint  = zeros( nNodes*6 , 1 ) ;
@@ -40,7 +42,7 @@ if fsBool
   Fther = zeros( nNodes*6 , 1 ) ;
 end
 
-% -------  tangent matrix        -------------------------------------
+% -------  tangent matrices   -------------------------------------
 if tangBool
 
   % "allocates" space for the bigest possible matrices (4 nodes per element)
@@ -68,16 +70,18 @@ else
 	matFint = [] ;
 end
 
-% Previous state 
+% Previous state
 stress_n_vec           =  previousStateCell(:,1) ;
 strain_n_vec           =  previousStateCell(:,2) ;
 acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
 strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
 acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
+
+dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
+                  || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
 % ====================================================================
 
-dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
 
 % ====================================================================
 %  --- 2 loop assembly ---
@@ -85,36 +89,36 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) || strcmp(
 
 for elem = 1:nElems
 
-  mebiVec = Conec( elem, 1:3) ;
+  mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties
-  hyperElasModel     = materials( mebiVec( 1 ) ).hyperElasModel   ;
-  hyperElasParams    = materials( mebiVec( 1 ) ).hyperElasParams  ;
-  density            = materials( mebiVec( 1 ) ).density          ;
+  hyperElasModel     = materials( mebVec( 1 ) ).hyperElasModel   ;
+  hyperElasParams    = materials( mebVec( 1 ) ).hyperElasParams  ;
+  density            = materials( mebVec( 1 ) ).density          ;
 
-  elemType           = elements( mebiVec( 2 ) ).elemType          ;
-  elemTypeParams     = elements( mebiVec( 2 ) ).elemTypeParams    ;
-  massMatType        = elements( mebiVec( 2 ) ).massMatType       ;
-  elemCrossSecParams = elements( mebiVec( 2 ) ).elemCrossSecParams;
+  elemType           = elements( mebVec( 2 ) ).elemType          ;
+  elemTypeParams     = elements( mebVec( 2 ) ).elemTypeParams    ;
+  massMatType        = elements( mebVec( 2 ) ).massMatType       ;
+  elemCrossSecParams = elements( mebVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodynamic properties
-  dragFunction        = elements( mebiVec( 2 ) ).dragCoefFunction    ;
-  liftFunction        = elements( mebiVec( 2 ) ).liftCoefFunction    ;
-  pitchCoefFunction   = elements( mebiVec( 2 ) ).pitchCoefFunction   ;
+  dragFunction        = elements( mebVec( 2 ) ).dragCoefFunction    ;
+  liftFunction        = elements( mebVec( 2 ) ).liftCoefFunction    ;
+  pitchCoefFunction   = elements( mebVec( 2 ) ).pitchCoefFunction   ;
   aeroCoefs = {dragFunction, liftFunction, pitchCoefFunction }       ;
-  chordVector         = elements( mebiVec( 2 ) ).chordVector         ;
-  aeroNumericalParams = elements( mebiVec( 2 ) ).aeroNumericalParams ;
+  chordVector         = elements( mebVec( 2 ) ).chordVector         ;
+  aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
 
-  %md compute aerodynamic compute force booleans
+  %md compute aerodynamic force booleans
   aeroBool = ~isempty(analysisSettings.fluidProps) ;
 
   %md obtain element info
-  [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
+  [numNodes, reducedDofsIndxs] = elementTypeDofs( elemType ) ;
 
   %md obtains nodes and dofs of element
   nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )        ;
-  dofselemRed = dofselem( 1 : dofsStep : end )    ;
+  dofselemRed = dofselem( reducedDofsIndxs )    ;
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
@@ -131,7 +135,7 @@ for elem = 1:nElems
 
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
-    nodalMass = materials( mebiVec( 1 ) ).nodalMass ;
+    nodalMass = materials( mebVec( 1 ) ).nodalMass ;
     (iscolumn(nodalMass)) && ( nodalMass == nodalMass' ) ;
 
     Finte = zeros(3,1) ;    Ke    = zeros(3,3) ;
@@ -163,7 +167,7 @@ for elem = 1:nElems
     global temperature
     if length( temperature )>0
       timeVar
-      thermalExpansion = materials( mebiVec( 1 ) ).thermalExpansion
+      thermalExpansion = materials( mebVec( 1 ) ).thermalExpansion
       temperatureVal = temperature( timeVar) 
       Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
     end

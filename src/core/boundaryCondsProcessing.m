@@ -130,10 +130,10 @@ for elemNum = 1:length( elementTypes )
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0
-    [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
+    [numNodes, reducedDofsIndxs] = elementTypeDofs( elemType ) ;
     nodes    = Conec( elementsNums, (3+1):(3+numNodes) ) ;
-    dofs     = nodes2dofs( nodes, 6)'       ;
-    dofs     = dofs(1:dofsStep:end)         ;
+    dofs     = nodes2dofs( nodes, 6)'     ;
+    dofs     = dofs( reducedDofsIndxs )   ;
 
     %md remove z displacement for triangles with material assigned (plane movement in x-y)
     if strcmp( elemType, 'triangle' );

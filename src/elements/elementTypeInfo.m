@@ -16,30 +16,40 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [numNodes, dofsStep] = elementTypeInfo ( elemType )
+% This function provides information regarding the degrees of freedom
+% of each element.
+% Inputs:
+%    - the elemType string
+% Output:
+%    - the number of nodes of the element
+%    - the vector of local degrees of freedom of the element per node
+%      Assuming that the dofs per node are sorted as:
+%      [ u_x^1 \theta_x^1 u_y^1 \theta_y^1 u_z^1 \theta_z^1 ... ]
+function [numNodes, reducedDofsIndxs] = elementTypeDofs( elemType )
 
 if strcmp( elemType, 'node');
   numNodes = 1 ;
-  dofsStep = 2 ;
+  reducedDofsIndxs = 1:2:6 ;
 
 elseif strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
   numNodes = 2 ;
-  dofsStep = 2 ;
+  reducedDofsIndxs = 1:2:6*numNodes ;
 
 elseif strcmp( elemType, 'frame')
   numNodes = 2 ;
-  dofsStep = 1 ;
+  reducedDofsIndxs = 1:6*numNodes ;
 
 elseif strcmp( elemType, 'tetrahedron')
   numNodes = 4 ;
-  dofsStep = 2 ;
+  reducedDofsIndxs = 1:2:6*numNodes ;
 
 elseif strcmp( elemType, 'triangle')
   numNodes = 3 ;
-  dofsStep = 2 ;
+  reducedDofsIndxs = 1:2:6*numNodes ;
 
 elseif strcmp( elemType, 'triangle-plate')
   numNodes = 3 ;
-  dofsStep = 1 ;
+  reducedDofsIndxs = 0 ;
 
 end
+
