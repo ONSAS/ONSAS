@@ -44,12 +44,12 @@ end
 if tangBool
 
   % "allocates" space for the bigest possible matrices (4 nodes per element)
-  indsIK =         zeros( nElems*24*24, 1 )   ;
-  indsJK =         zeros( nElems*24*24, 1 )   ;
-  valsK  =         zeros( nElems*24*24, 1 )   ;
+  indsIK = zeros( nElems*24*24, 1 )   ;
+  indsJK = zeros( nElems*24*24, 1 )   ;
+  valsK  = zeros( nElems*24*24, 1 )   ;
 
-  valsC  =         zeros( nElems*24*24, 1 )   ;
-  valsM  =         zeros( nElems*24*24, 1 )   ;
+  valsC  = zeros( nElems*24*24, 1 )   ;
+  valsM  = zeros( nElems*24*24, 1 )   ;
 
   counterInds = 0 ; % counter non-zero indexes
 end
@@ -255,9 +255,6 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
     
-    dofselemRed = dofselem( [5 2 4 5+6 2+6 4+6 5+12 2+12 4+12] ) ; % sorted as [ uz thetax thetay ]
-    elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
-
     [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, hyperElasModel, ...
       hyperElasParams, thickness ) ;
 
