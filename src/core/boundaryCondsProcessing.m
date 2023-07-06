@@ -139,11 +139,6 @@ for elemNum = 1:length( elementTypes )
       dofs(3:3:end) = [ ] ;
     end
 
-    %md remove x-y displacements and thetaz
-    if strcmp( elemType, 'triangle-plate' );
-      dofs([1 3 6 1+6 3+6 6+6 1+12 3+12 6+12]) = [ ] ;
-    end
-
     neumDofs ( dofs ) = dofs ;
 
   end

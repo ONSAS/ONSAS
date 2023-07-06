@@ -3,13 +3,9 @@
 
 function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, hyperElasModel, hyperElasParams, thickness )
 
-dofs_sort = [5 2 4 5+6 2+6 4+6 5+12 2+12 4+12];
-% sort as [ uz thetax thetay ... ]
-elemDisps = elemDisps( dofs_sort ) ;
-
 % assertions
-assert( norm( elemCoords(3:3:end))==0,'only xy plates are considered' )
-assert( strcmp(hyperElasModel,'linearElastic'),' linear elastic model is implemented' )
+assert( norm( elemCoords(3:3:end))==0, 'only xy plates are considered' )
+assert( strcmp( hyperElasModel, 'linearElastic'), ' linear elastic model is implemented' )
 
 E = hyperElasParams(1)  ; 
 nu = hyperElasParams(2) ;
@@ -121,11 +117,12 @@ K = QQ' * DD * QQ ;
 
 fint = K * elemDisps ;
 
-fout = zeros(18,1);
-fout(dofs_sort) = fint ;
+fs = {fint};  ks = {K};
 
-Kout = zeros(18,18) ;
-Kout(dofs_sort,dofs_sort) = K ;
+% fout = zeros(18,1);
+% fout(dofs_sort) = fint ;
 
-fs = {fout};
-ks = {Kout};
+% Kout = zeros(18,18) ;
+% Kout(dofs_sort,dofs_sort) = K ;
+
+% fs = {fout};  ks = {Kout};

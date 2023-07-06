@@ -121,9 +121,9 @@ for elem = 1:nElems
   % dofselemRedA = dofselem( reducedDofsIndxs );       
   % dofselemRed = dofselem ( 1 : 1 : end ) ;
 
-    auxA = repmat(nodalDofsEntries,length(dofselem)/6,1);
-    auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1);
-    dofselemRed = dofselem( auxA+auxB )   ;
+  auxA = repmat(nodalDofsEntries,length(dofselem)/6,1) ;
+  auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
+  dofselemRed = dofselem( auxA+auxB )   ;
 
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
@@ -352,7 +352,7 @@ for elem = 1:nElems
   end % if stress
 
 	if matFintBool && ~isempty(fintLocCoord)
-		matFint( elem, dofselemRed ) = fintLocCoord' ;
+		matFint( elem, 1:length(fintLocCoord) ) = fintLocCoord' ;
 	end
 
 end % for elements ----
