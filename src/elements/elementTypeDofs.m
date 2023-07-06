@@ -22,34 +22,34 @@
 %    - the elemType string
 % Output:
 %    - the number of nodes of the element
-%    - the vector of local degrees of freedom of the element per node
-%      Assuming that the dofs per node are sorted as:
-%      [ u_x^1 \theta_x^1 u_y^1 \theta_y^1 u_z^1 \theta_z^1 ... ]
-function [numNodes, reducedDofsIndxs] = elementTypeDofs( elemType )
+%    - the vector of entries of the nodal degrees of freedom
+%      Assuming that the dofs per node are sorted, for node 1, as:
+%      [ u_x^1 \theta_x^1 u_y^1 \theta_y^1 u_z^1 \theta_z^1 ]
+function [numNodes, nodalDofsEntries] = elementTypeDofs( elemType )
 
 if strcmp( elemType, 'node');
   numNodes = 1 ;
-  reducedDofsIndxs = 1:2:6 ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
   numNodes = 2 ;
-  reducedDofsIndxs = 1:2:6*numNodes ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'frame')
   numNodes = 2 ;
-  reducedDofsIndxs = 1:6*numNodes ;
+  nodalDofsEntries = (1:6)' ;
 
 elseif strcmp( elemType, 'tetrahedron')
   numNodes = 4 ;
-  reducedDofsIndxs = 1:2:6*numNodes ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'triangle')
   numNodes = 3 ;
-  reducedDofsIndxs = 1:2:6*numNodes ;
+  nodalDofsEntries = [1 3 5]' ; % only x-y displacements
 
 elseif strcmp( elemType, 'triangle-plate')
   numNodes = 3 ;
-  reducedDofsIndxs = 0 ;
+  nodalDofsEntries = [5 2 4]' ; % assumed plate surface in x-y
 
 end
 
