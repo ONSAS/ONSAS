@@ -95,5 +95,7 @@ otherParams.problemName = 'platePatchTest'     ;
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 
-numeric_w3 = matUs(6*2+5, end)
-numeric_w5 = matUs(6*4+5, end)
+numeric_w3 = matUs(6*2+5, end);
+numeric_w5 = matUs(6*4+5, end);
+
+verifBoolean = abs( numeric_w3 - (-12.48) ) < 1e-4 
