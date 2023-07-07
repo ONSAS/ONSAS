@@ -15,9 +15,10 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-%md This function converts the mesh MEBI information to the data structures used in the numerical simulation
 
+%md
+%md This function converts the mesh MEB information to the data structures used in the numerical simulation
+%md
 function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel ] = boundaryCondsProcessing ( mesh, ...
                         materials, ...     % M
                         elements, ...      % E
@@ -29,8 +30,7 @@ Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
 KS     = sparse( 6*nnodes, 6*nnodes );
 
-
-%md Since we want to process the BCs, we keep only the nonzero BCs
+%md Since we want to process the BCs, we keep only the non-zeros at the third colum of the Conec matrix
 %md Computes the number of elements and BCs we have
 boundaryTypes  = unique( Conec( :, 3) ) ;
 if boundaryTypes(1) == 0,
@@ -39,7 +39,7 @@ end
 
 elementTypes   = unique( Conec( :, 2) ) ;
 if elementTypes(1)  == 0, % checks if all elements have a type
-  error('all elements must be defined');
+  error('all the entries of the mesh.conecCell must have an element defined in the second column');
 end
 
 factorLoadsFextCell = {} ;
@@ -103,10 +103,7 @@ for indBC = 1:length( boundaryTypes )
 
   end % if: springDofs
 
-
 end % for: elements with boundary condition assigned
-
-%full(KS)
 
 diriDofs = unique( diriDofs) ;
 
@@ -116,7 +113,7 @@ Conec( elemsToRemove, :  ) = [] ;
 
 %md construction of a vector with the neumann degrees of freedom
 
-%md a zeros filled vector is created
+%md a zeros-filled vector is created
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
 
 %md loop for construction of vector of dofs
@@ -130,10 +127,12 @@ for elemNum = 1:length( elementTypes )
 
   %md if there are any elements with this type
   if length( elementsNums ) > 0
-    [numNodes, dofsStep] = elementTypeInfo ( elemType ) ;
+    [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
     nodes    = Conec( elementsNums, (3+1):(3+numNodes) ) ;
-    dofs     = nodes2dofs( nodes, 6)'       ;
-    dofs     = dofs(1:dofsStep:end)         ;
+    dofs     = nodes2dofs( unique(nodes), 6)' ; % computes the dofs of all the nodes of all the elements
+    auxA = repmat(nodalDofsEntries,length(dofs)/6,1);
+    auxB = repelem( (0:6:length(dofs)-1)',length(nodalDofsEntries),1);
+    dofs     = dofs( auxA+auxB )   ;
 
     %md remove z displacement for triangles with material assigned (plane movement in x-y)
     if strcmp( elemType, 'triangle' );
@@ -141,6 +140,7 @@ for elemNum = 1:length( elementTypes )
     end
 
     neumDofs ( dofs ) = dofs ;
+
   end
 end
 

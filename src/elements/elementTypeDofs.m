@@ -16,26 +16,40 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [numNodes, dofsStep] = elementTypeInfo ( elemType )
+% This function provides information regarding the degrees of freedom
+% of each element.
+% Inputs:
+%    - the elemType string
+% Output:
+%    - the number of nodes of the element
+%    - the vector of entries of the nodal degrees of freedom
+%      Assuming that the dofs per node are sorted, for node 1, as:
+%      [ u_x^1 \theta_x^1 u_y^1 \theta_y^1 u_z^1 \theta_z^1 ]
+function [numNodes, nodalDofsEntries] = elementTypeDofs( elemType )
 
 if strcmp( elemType, 'node');
   numNodes = 1 ;
-  dofsStep = 2 ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
   numNodes = 2 ;
-  dofsStep = 2 ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'frame')
   numNodes = 2 ;
-  dofsStep = 1 ;
+  nodalDofsEntries = (1:6)' ;
 
 elseif strcmp( elemType, 'tetrahedron')
   numNodes = 4 ;
-  dofsStep = 2 ;
+  nodalDofsEntries = (1:2:6)' ;
 
 elseif strcmp( elemType, 'triangle')
   numNodes = 3 ;
-  dofsStep = 2 ;
+  nodalDofsEntries = [1 3 5]' ; % only x-y displacements
+
+elseif strcmp( elemType, 'triangle-plate')
+  numNodes = 3 ;
+  nodalDofsEntries = [5 2 4]' ; % assumed plate surface in x-y
 
 end
+
