@@ -80,8 +80,6 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
       dstressdeps = E ;
      
     elseif strcmp( hyperElasModel, 'isotropicHardening_logstrain')
-
-    % /\ isotropic hardening with logarithmic strain /\
     
     strain = log(ldef/lini) ; % logarithmic strain
 
@@ -118,8 +116,6 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
     KTe   = KMe + Ksige ;
 
     elseif strcmp( hyperElasModel, 'isotropicHardening_rotengstrain')
-
-    % /\ isotropic hardening with rotate engineering strain /\
     
     strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
