@@ -45,7 +45,7 @@ while finalTimeReachedBoolean == false
   percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
                        / modelProperties.analysisSettings.finalTime * 20 ) ;
   while plotted_bars < percent_time,
-    fprintf('=');   plotted_bars = plotted_bars +1 ;
+    fprintf('='); plotted_bars = plotted_bars +1 ;
   end
 
   % compute the model state at next time
