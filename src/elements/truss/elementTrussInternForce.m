@@ -79,11 +79,49 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain ] = ...
       stress      = E * strain ;
       dstressdeps = E ;
      
-    elseif strcmp( hyperElasModel, 'isotropicHardening')
+    elseif strcmp( hyperElasModel, 'isotropicHardening_logstrain')
 
-    % /\ isotropic hardening include use of logarithmic strain /\
+    % /\ isotropic hardening with logarithmic strain /\
     
     strain = log(ldef/lini) ; % logarithmic strain
+
+    E           = hyperElasParams(1) ;
+
+      stress_n           = previous_state{1,:}(1)  ;
+      strain_n           = previous_state{2,:}(1)  ;
+      acum_plas_strain_n =  previous_state{3} ;
+      
+      Kplas       = hyperElasParams(2) ;
+      sigma_Y_0   = hyperElasParams(3) ;
+  
+      stress_Elas = stress_n + E * (strain - strain_n) ;
+      phi_tr = abs( stress_Elas ) - ( sigma_Y_0 + Kplas*acum_plas_strain_n ) ;
+
+      if phi_tr < 0 % elastic behavior
+        stress           = stress_Elas ;
+        dstressdeps      = E ;
+        acum_plas_strain = acum_plas_strain_n ; 
+        
+      else % elasto-plastic behavior
+        delta_gamma = phi_tr / ( E + Kplas ) ;
+
+        stress           = stress_Elas - E*delta_gamma * sign( stress_Elas ) ;
+        dstressdeps      = E*Kplas / ( E + Kplas ) ;
+        acum_plas_strain = acum_plas_strain_n + delta_gamma ; 
+
+      end
+
+    Finte = stress * A * TTcl ;
+
+    KMe   = dstressdeps * A / lini * (                TTcl * (TTcl') ) ;
+    Ksige =      stress * A / ldef * ( Bdif' * Bdif - TTcl * (TTcl') ) ;
+    KTe   = KMe + Ksige ;
+
+    elseif strcmp( hyperElasModel, 'isotropicHardening_rotengstrain')
+
+    % /\ isotropic hardening with rotate engineering strain /\
+    
+    strain = ( ldef^2 - lini^2 ) / ( lini * (lini + ldef) ) ; % rotated eng
 
     E           = hyperElasParams(1) ;
 
