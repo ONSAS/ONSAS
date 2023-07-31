@@ -5,7 +5,6 @@
 ![matlab tests](https://github.com/ONSAS/ONSAS.m/workflows/matlab_tests/badge.svg)
 [![codecov](https://codecov.io/gh/ONSAS/ONSAS.m/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS.m) 
 
-
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
