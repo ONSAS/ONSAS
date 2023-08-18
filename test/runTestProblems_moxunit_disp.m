@@ -90,4 +90,8 @@ function test_19
   assertEqual( verifBoolean, true );
 
 function test_20
+  cantileverPlate
+  assertEqual( verifBoolean, true );
+
+function test_21
   assertEqual( gaussIntegrationTest, true);

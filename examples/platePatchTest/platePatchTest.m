@@ -3,8 +3,6 @@
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
 %md
-%md The following numeric parameters are considered.
-% scalar parameters for spring-mass system
 %md
 E = 1e3 ;
 nu = 0.3 ;
@@ -33,7 +31,7 @@ boundaryConds                  = struct() ;
 boundaryConds(1).loadsCoordSys = 'global'                   ;
 boundaryConds(1).loadsTimeFact = @(t) t  ;
 boundaryConds(1).loadsBaseVals = [ 0 a 0 -b 0 0 ]            ; % forces in node 1
-boundaryConds(1).imposDispDofs =  [ 1 3 5 ] ; % fixed nodes: 1 2 4
+boundaryConds(1).imposDispDofs =  [ 1 3 5 ]                  ; % fixed nodes: 1 2 4
 boundaryConds(1).imposDispVals =  [ 0 0 0 ] ;
 
 boundaryConds(2).loadsCoordSys = 'global'                   ;
@@ -90,6 +88,7 @@ otherParams                  = struct() ;
 %md The name of the problem is:
 %md
 otherParams.problemName = 'platePatchTest'     ;
+otherParams.plots_format = 'vtk'     ;
 %md
 %md Execute ONSAS and save the results:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
