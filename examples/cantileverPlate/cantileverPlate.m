@@ -37,8 +37,11 @@ boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -q 0 ] ;
 %md### mesh
 %md
 mesh = struct() ;
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( 'geometry_cantileverPlate.msh' ) ;
-
+base_dir='';
+if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
+  base_dir=['.' filesep 'examples' filesep  'cantileverPlate' filesep];
+end
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [base_dir 'geometry_cantileverPlate.msh'] ) ;
 %md### Initial conditions
 initialConds                  = struct() ;
 %md
