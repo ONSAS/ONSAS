@@ -88,6 +88,7 @@ otherParams                  = struct() ;
 %md The name of the problem is:
 %md
 otherParams.problemName = 'platePatchTest'     ;
+otherParams.plots_format = 'vtk'     ;
 %md
 %md Execute ONSAS and save the results:
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

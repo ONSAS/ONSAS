@@ -80,6 +80,15 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
         elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
       % end
 
+    elseif strcmp( elemTypeString, 'triangle-plate' )
+
+      vtkNormalForces = [] ;
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps ] ...
+        = shellVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
+        elemCrossSecParams, modS.U ) ;
+      % vtkStress{3,1} = stressMat ;
+
+
     elseif strcmp( elemTypeString, 'tetrahedron' )
 
       vtkNormalForces = [] ;
