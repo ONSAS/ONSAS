@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli.
 %
 % This file is part of ONSAS.
 %
@@ -20,6 +19,8 @@
 function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
 % materials
+
+
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
@@ -75,7 +76,6 @@ end
 %md and sets a default value if it is not defined.
 
 function structName = checkOrSetDefault( structName, fieldName, default )
-
 if ~isfield( structName, fieldName )
   for i=1:length( structName )
     aux(i)  = setfield( structName(i), fieldName, default ) ;
