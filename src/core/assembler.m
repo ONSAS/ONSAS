@@ -102,7 +102,7 @@ for elem = 1:nElems
   elemCrossSecParams = elements( mebVec( 2 ) ).elemCrossSecParams;
 
   %md extract aerodynamic properties
-  aeroCoefsFunctions = elements( mebVec( 2 ) ).aeroCoefFunctions       ;
+  aeroCoefs           = elements( mebVec( 2 ) ).aeroCoefFunctions       ;
   chordVector         = elements( mebVec( 2 ) ).chordVector         ;
   aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
 

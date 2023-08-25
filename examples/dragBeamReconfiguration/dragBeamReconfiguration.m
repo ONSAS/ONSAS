@@ -126,7 +126,7 @@ timeVec = linspace(0,analysisSettings.finalTime, numLoadSteps) ;
 % initialize vectors
 Cy = zeros(numLoadSteps-1, 1)                 ;
 R  = zeros(numLoadSteps-1, 1)                 ;
-C_d = feval( elements(2).dragCoefFunction, 0 , 0) ;
+C_d = feval( elements(2).aeroCoefFunctions{1}, 0 , 0) ;
 % fill them
 for windVelStep = 1:numLoadSteps - 1
     % Compute dimensionless magnitudes 
@@ -231,7 +231,7 @@ verifBoolean = verifBooleanR && all(verifBooleanDef)
 %md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) 
 %md
 %md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
-elements(2).dragCoefFunction = [];
+elements(2).aeroCoefFunctions = {[],[],[]};
 %md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2$ x $10^5$. Then the final load step, which is equivalent to the index in the velocity vector `uydot_vec`, is set to 5: 
 analysisSettings.finalTime = NR - 2 ;
 %md
