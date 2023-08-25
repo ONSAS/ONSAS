@@ -18,7 +18,8 @@
 
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-isONSASfield(materials, "materials", {"hyperElasModel", "hyperElasParams", "density"})
+% checks if the fields defined are correct or not
+checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
 %md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
