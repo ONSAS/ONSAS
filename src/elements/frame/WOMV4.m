@@ -15,8 +15,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-function qelem = WOMV4(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2,tl1, tl2, D, tnp1, dt,Kelem)
+  
+function qelem = WOMV4(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2,tl1, tl2, D, tnp1, dt,Kelem, ILVIVBool)
 % Computes the value of q for the element Kelem with random initial
 % conditions for q
 % vpr1, vpr2: relative velocities at nodes 1 and 2 (vpr = Ucos(theta0))
@@ -41,19 +41,28 @@ else
     qn = qvect(1+K*2,n);
     dqn = qvect(2+K*2,n);
     %[qnp1elem dqnp1elem ] = computeq(ddY2, D, tnp1, dt, vprelem, qn, dqn);
-    [qnp1elem dqnp1elem ] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn);
+    [qnp1elem dqnp1elem ] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, ILVIVBool);
     qelem = qnp1elem;
     % Updating qvect
     qvect(1+K*2:2+K*2, n+1) = [qnp1elem dqnp1elem];
 end
 %function computing q at node i
-function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn)% at node i= 1,2
+function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, ILVIVBool)% at node i= 1,2
+    global epsilony; %global Ay; 
     %time increments
     N= 2; % Number of steps
     h= dt/N; % Time step
     t = tnp1 - dt:h:tnp1; % Interval on which ode45 solves the VdP equation
-    % WOM constants from Facchinetti et al
-    A = 12; epsilon = 0.3; St = 0.2;
+    if ILVIVBool
+        A = 12; epsilon = 0.04; 
+ %       A = 12; epsilon = 0.3;
+        %A = 12; epsilon = epsilony;
+    else
+        % CF VIV only, WOM constants from Facchinetti et al
+        A = 12; epsilon = 0.3;
+    end
+    St = 0.2;
+    %St = 0.17;
     % VdP oscillator constants
     omegaf = 2*pi*St*vprelem/D;% Shedding pulsation
     cq = epsilon*omegaf;

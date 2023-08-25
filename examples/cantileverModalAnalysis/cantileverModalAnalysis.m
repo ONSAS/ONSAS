@@ -16,9 +16,6 @@ deltat = 0.1   ; % s
 global exportFirstMatrices
 exportFirstMatrices = true;
 
-global modalAnalysisBoolean
-modalAnalysisBoolean = true;
-
 %md### materials
 materials                 = struct()         ;
 materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
@@ -34,7 +31,7 @@ elements(2).elemCrossSecParams = { 'circle' , diam } ;
 %md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
 %md
-boundaryConditions             = struct() ;
+boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md and the second corresponds to a time dependant external force
@@ -65,6 +62,7 @@ analysisSettings.finalTime     =   tf   ;
 analysisSettings.stopTolDeltau =   1e-10 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
+analysisSettings.modalAnalysisBoolean = true;
 %md
 %md## otherParams
 otherParams = struct() ;

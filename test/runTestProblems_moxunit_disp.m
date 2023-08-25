@@ -37,17 +37,17 @@ function test_6
   frameLinearAnalysis
   assertEqual( verifBoolean, true );
 
-% function test_7
-%   linearAerodynamics
-%   assertEqual( verifBoolean, true );
+function test_7
+  linearAerodynamics
+  assertEqual( verifBoolean, true );
 
 function test_8
   ringPlaneStrain
   assertEqual( verifBoolean, true );
 
-% function test_9
-%   nonlinearPendulum
-%   assertEqual( verifBoolean, true );
+function test_9
+  nonlinearPendulum
+  assertEqual( verifBoolean, true );
 
 function test_10
   springMass
@@ -78,4 +78,20 @@ function test_16
   assertEqual( verifBoolean, true );
 
 function test_17
+  beamTrussJoint
+  assertEqual( verifBoolean, true );
+
+function test_18
+  staticPlasticVonMisesTruss
+  assertEqual( verifBoolean, true );
+
+function test_19
+  platePatchTest
+  assertEqual( verifBoolean, true );
+
+function test_20
+  cantileverPlate
+  assertEqual( verifBoolean, true );
+
+function test_21
   assertEqual( gaussIntegrationTest, true);

@@ -73,19 +73,6 @@ The `massMatType` field sets, for frame or truss elements, whether consistent or
 ### `elements.elemCrossSecParams`
 This is a cell structure with the information of the geometry of the element.
 
-### `elements.aeroNumericalParams`
-A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
-```math
-\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
-```
-where the default cell is `{4, false, true}`
-
-### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
-If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
-
-### `elements.chordVector`
-A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
-
 #### 1D elements
 
 For `truss` or `frame` elements, this cell has two entries, first a string with a name of the type of cross section, and in the second entry a vector of real parameters setting the shape of that section:
@@ -107,6 +94,21 @@ See the `crossSectionProps.m` function for more details.
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
 
+
+### `elements.aeroNumericalParams`
+A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
+```math
+\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
+```
+where the default cell is `{4, false, true}`
+
+### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
+If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
+
+### `elements.chordVector`
+A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
+
+
 ## The `boundaryConds` struct
 
 ### `boundaryConds.loadsCoordSys`
@@ -123,10 +125,11 @@ cell with the (row) vector of the components of the load case
 where $f_i$ are the components of forces and $m_i$ are the moments. Both forces or moments are considered per unit of length in the case of `truss`/`frame`/`edge` elements, or per unit of area in the case of `triangle`.
 
 ### `boundaryConds.userLoadsFileName`
-cell with filenames of `.m` function file provided by the user that can be used to apply other forces.
+string with the filename of the `.m` function file provided by the user that can be used to apply forces not given by time-varying loadFactors. This function file should be placed in the example folder and it must receive two arguments:  t (the time) and UsCell (a cell with: {the current displacement, velocity and acceleration} ). The function should one forces vector with the size of all the degrees of freedom of the problem (in global coordinates).
 
 ### `boundaryConds.imposDispDofs`
 cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
+
 ### `boundaryConds.imposDispVals`
 cell with vectors of the values of displacements imposed.
 
@@ -192,7 +195,7 @@ then the aerodynamic-frame element parameters set are
 ## The `otherParams` struct
 
   * `problemName`: string with the name of the problem, to be used in outputs.
-  * `plots_format`: string indicating the format of the output. Use __'vtk'__ for vtk output.
+  * `plots_format`: string indicating the format of the output. Use `'vtk'` for vtk output. default: no output.
   * `plots_deltaTs_separation`: integer number __N__ such that the time between vtk plots is __N x deltaT__.
   * `controlDofs`: matrix with information of the degrees of freedom to compute and control. Each row should contain this form: `[ node localdof ]`.
   * `storeBoolean`: boolean to store the results of the current iteration such as the displacements, tangent matrices, normal forces and stresses. [default: 1]

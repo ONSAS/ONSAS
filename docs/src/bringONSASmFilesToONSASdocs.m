@@ -52,6 +52,7 @@ function bringONSASmFilesToONSASdocs
     mkdir( './assets/generated/' );
   end
 
+  movefile('../../examples/staticVonMisesTruss/output/vonMisesTrussCheck.png', './assets/generated/')
   movefile('../../examples/simplePropeller/output/verifPropeller.png', './assets/generated/')
   movefile('../../examples/springMass/output/springMassCheckU.png', './assets/generated/')
   movefile('../../examples/uniaxialCompression/output/verifCompression.png', './assets/generated/')
