@@ -17,7 +17,7 @@
 
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-    checkFields(materials, {'hyperElasModel', 'hyperElasParams','density'})
+    checkFields(materials, {'hyperElasModel', 'hyperElasParams','density','nodalMass'})
 
 function checkFields(mystruct, expectedFields)
 
