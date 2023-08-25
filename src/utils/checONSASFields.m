@@ -17,6 +17,7 @@
 
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
+dfs
     checkFields(materials, {'hyperElasModel'})
 
 
