@@ -19,6 +19,10 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
 
     checkFields(materials, {'hyperElasModel', 'hyperElasParams','density','nodalMass'})
 
+    checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
+                            'elemCrossSecParams','aeroNumericalParams','dragCoefFunction',...
+                            'liftCoefFunction','momentCoefFunction','chordVector'});
+
 function checkFields(mystruct, expectedFields)
 
     myfields = fieldnames(mystruct);

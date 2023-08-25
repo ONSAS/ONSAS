@@ -1,4 +1,4 @@
-% Copyright 2023 Jorge M. Perez Zerpa.
+% Copyright 2023 Jorge M. Perez Zerpa, Joaquin Viera, Mauricio Vanzulli.
 %
 % This file is part of ONSAS.
 %
