@@ -1,4 +1,4 @@
-% Copyright 2023, Joaquin Viera.
+% Copyright 2023, Joaquin Viera, Jorge M. Perez Zerpa.
 %
 % This file is part of ONSAS.
 %
@@ -19,7 +19,7 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
 
 checkFields(materials, expectedFields)
 
-
+end
 function checkFields(mystruct, expectedFields)
 
     myfields = fieldnames(mystruct)
