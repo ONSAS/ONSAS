@@ -28,9 +28,7 @@ elements          = checkOrSetDefault ( elements         , 'massMatType'        
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'chordVector'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'dragCoefFunction'   , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'liftCoefFunction'   , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'pitchCoefFunction'  , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'aeroCoefFunctions'   , {[],[],[]} ) ;
 elements          = checkOrSetDefault ( elements         , 'aeroNumericalParams', {4, false, true} ) ;
 
 % boundaryConds

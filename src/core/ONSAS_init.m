@@ -25,7 +25,7 @@ checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysi
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
 %md sets the current version and welcomes user
-ONSASversion = '0.2.7'  ; welcome_message( ONSASversion, otherParams );
+ONSASversion = '0.2.8'  ; welcome_message( ONSASversion, otherParams );
 
 % creates outputdir in current location
 create_outputDir( otherParams )
