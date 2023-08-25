@@ -17,8 +17,7 @@
 
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-    checkFields(materials, {'hyperElasModel'})
-
+    checkFields(materials, {'hyperElasModel', 'hyperElasParams','density'})
 
 function checkFields(mystruct, expectedFields)
 
@@ -27,7 +26,7 @@ function checkFields(mystruct, expectedFields)
     
     for i = 1:length(myfields)
         j = 1;
-        while (strcmp(myfields{i},expectedFields{j}) ~= 1) && (j <= len)
+        while (j <= len) && (strcmp(myfields{i},expectedFields{j}) ~= 1)
             j = j+1;
         end
         if j == (len+1)
