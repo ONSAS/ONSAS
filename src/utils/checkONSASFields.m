@@ -21,9 +21,8 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
 
 function checkFields(mystruct, expectedFields)
 
-    myfields = fieldnames(mystruct)
-    len = length(expectedFields) ; % as cell
-    
+    myfields = fieldnames(mystruct);
+    len = length(expectedFields) ; % cell with expected fields
     for i = 1:length(myfields)
         j = 1;
         while (j <= len) && (strcmp(myfields{i},expectedFields{j}) ~= 1)
