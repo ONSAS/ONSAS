@@ -70,7 +70,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 %md
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md#### materials
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
@@ -220,7 +220,7 @@ labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
 legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('uniaxial compression test')
+title('uniaxial extension test')
 if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n')
   print('output/verifUniaxial.png','-dpng')

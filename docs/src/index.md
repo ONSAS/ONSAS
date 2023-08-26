@@ -7,7 +7,7 @@
 
 ## What is ONSAS.m?
 
-[ONSAS.m](https://github.com/ONSAS/ONSAS.m) is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf). The current version allows to perform a diverse set of simulations and it's been used in specific research applications.
+[ONSAS.m](https://github.com/ONSAS/ONSAS.m) is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf) for a graduate course taught at the [School of Engineering of Universidad de la República](https://www.fing.edu.uy/). The current version allows to perform a diverse set of simulations and it has been used in specific research applications.
 
 ## Publications using ONSAS
 
@@ -62,17 +62,8 @@ Theses using ONSAS:
 <img src="https://raw.githubusercontent.com/mvanzulli/Tex_CorrotationalDynamicTL_TesisMV/main/Presentacion/Videos/3.gif" alt="beam truss pendulum">
 ```
 
-### A chain model
 
-```@raw html
-<img src="https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true" alt="chain animation">
-```
-[chain](https://user-images.githubusercontent.com/42485529/90902313-a6bf8d80-e3a2-11ea-8369-a9be639552f9.gif?raw=true)
-
-
-
-
-## Connect <a name="connect"></a>
+## Connect
 
 ### Open discussions chat
 
@@ -109,7 +100,7 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
 
-* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions associated with the computation of static internal forces of the nonlinear frame element.
+* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
 
 **Affiliations**:
 

@@ -99,7 +99,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
       assert( size( elemNodeLoadsMatrix, 2)==6,'error, maybe missing thickness')
 
     %md triangle tension
-    elseif strcmp( elemType , 'triangle') ; %
+    elseif strcmp( elemType , 'triangle') || strcmp( elemType , 'triangle-plate') ; %
 
       nodes = Conec( elem, 3+(1:3) ) ;
 

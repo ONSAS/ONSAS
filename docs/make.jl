@@ -20,9 +20,9 @@ makedocs(
       "Reconfiguration beam"=>"examples/dragBeamReconfiguration.md",
       "Propeller model"=>"examples/simplePropeller.md",
       "Non-linear aerodynamics"=>"examples/nonLinearAerodynamics.md"],
-    "User guide" => Any["Installation"=>"howtouse/install.md",
-      "Creating Models"=>"howtouse/creatingModels.md",
-      "References"=>"theory/references.md"]
+      "User guide" => Any["Installation"=>"install.md",
+      "Creating Models"=>"creatingModels.md",
+      "References"=>"references.md"]
     #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
   ],
   strict=false

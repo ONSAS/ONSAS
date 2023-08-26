@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli.
 %
 % This file is part of ONSAS.
 %
@@ -20,6 +19,8 @@
 function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
 % materials
+
+
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
 % elements
@@ -27,9 +28,7 @@ elements          = checkOrSetDefault ( elements         , 'massMatType'        
 elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
 elements          = checkOrSetDefault ( elements         , 'chordVector'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'dragCoefFunction'   , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'liftCoefFunction'   , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'pitchCoefFunction'  , [] ) ;
+elements          = checkOrSetDefault ( elements         , 'aeroCoefFunctions'   , {[],[],[]} ) ;
 elements          = checkOrSetDefault ( elements         , 'aeroNumericalParams', {4, false, true} ) ;
 
 % boundaryConds
@@ -55,7 +54,8 @@ end
 if strcmp( analysisSettings.methodName, 'alphaHHT' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
 end
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag'  , 0              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag', 0              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean' , 0              ) ;
 % -----------------------------
 
 % otherParams
@@ -74,7 +74,6 @@ end
 %md and sets a default value if it is not defined.
 
 function structName = checkOrSetDefault( structName, fieldName, default )
-
 if ~isfield( structName, fieldName )
   for i=1:length( structName )
     aux(i)  = setfield( structName(i), fieldName, default ) ;

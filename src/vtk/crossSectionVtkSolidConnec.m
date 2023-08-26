@@ -17,7 +17,6 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [ iniNodes, midNodes, endNodes, secc ] = crossSectionVtkSolidConnec( elemCrossSecParams )
-
   crossSecShape  = elemCrossSecParams{1} ;
   crossSecParams = elemCrossSecParams{2} ;
   if size( elemCrossSecParams, 1 ) > 2
