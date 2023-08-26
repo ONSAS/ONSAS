@@ -102,8 +102,9 @@ A cell with the number of Gauss integration points `numGauss`, the boolean `comp
 ```
 where the default cell is `{4, false, true}`
 
-### `elements.dragCoefFunction`,   `elements.liftCoefFunction` and `elements.pitchCoefFunction`
-If a frame aerodynamic analysis is desired, the drag, lift and pitch moment should be defined in this field. Each function receives Reynolds and the incidence angle as inputs and returns the the respective coefficient. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default.If any of the coefficients is defined considered then an empty `[]` struct is considered, this set this coefficient to zero.
+### `elements.aeroCoefFunctions`
+If a frame aerodynamic analysis is desired, the drag, lift and pitch moment functions should be defined using this field. This field should contain a cell with either the strings of the functions or the definition of anonymous functions for draf lif and pitch moment in that order. Each function must receive as first input the incidence angle and as second the Reynolds number. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default thus there is no need to set this field.
+
 
 ### `elements.chordVector`
 A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)

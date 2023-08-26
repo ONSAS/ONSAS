@@ -57,9 +57,7 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'circle' ; d };
 elements(2).massMatType =  'consistent'        ;
 %md with the definition of the aerodynamic forces
-elements(2).dragCoefFunction = @(beta,Re) 0;
-elements(2).liftCoefFunction ='liftCoef';
-elements(2).momentCoefFunction = @(beta,Re) 0;
+elements(2).aeroCoefFunctions = {@(beta,Re) 0, 'liftCoef', @(beta,Re) 0};
 %md and a auxiliar truss element for the pole
 elements(3).elemType = 'truss' ;
 elements(3).elemCrossSecParams = {'circle' ; 1.5*d };
