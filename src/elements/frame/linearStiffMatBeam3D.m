@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, Jorge M. Perez Zerpa, Joaquin Viera, Mauricio Vanzulli.
 %
 % This file is part of ONSAS.
 %
@@ -16,10 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-% --------------------------------------------------------------------------------------------------
-
-% =============================================================================
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, ...
+                                                           massMatType, density, modelName, modelParams, ...
+                                                           Ut, Udotdotte)
   
   ndofpnode = 6 ;
   

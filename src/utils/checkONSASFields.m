@@ -17,7 +17,7 @@
 
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-    checkFields(materials, {'hyperElasModel', 'hyperElasParams','density','nodalMass'})
+    checkFields(materials, {'modelName', 'modelParams','density','nodalMass'})
 
     checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});

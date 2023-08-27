@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Joaquin Viera, Alexandre Villié
 %
 % This file is part of ONSAS.
 %
@@ -16,11 +15,12 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-%mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
-                                                           materials, KS, Ut, Udott, Udotdott,...
-                                                           analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previousStateCell )
+% This function computes the assembled force vectors, tangent matrices and stress matrices.
+function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] ... 
+  = assembler( Conec, elements, Nodes, ...
+               materials, KS, Ut, Udott, Udotdott,...
+               analysisSettings, outputBooleans, nodalDispDamping,...
+               timeVar, previousStateCell )
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -34,7 +34,6 @@ nNodes   = size(Nodes, 1) ;
 
 % -------  forces vectors -------------------------------------------
 if fsBool
-  % --- creates Fint vector ---
   Fint  = zeros( nNodes*6 , 1 ) ;
   Fmas  = zeros( nNodes*6 , 1 ) ;
   Fvis  = zeros( nNodes*6 , 1 ) ;
@@ -44,7 +43,6 @@ end
 
 % -------  tangent matrices   -------------------------------------
 if tangBool
-
   % "allocates" space for the bigest possible matrices (4 nodes per element)
   indsIK = zeros( nElems*24*24, 1 )   ;
   indsJK = zeros( nElems*24*24, 1 )   ;
@@ -84,16 +82,15 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 
 
 % ====================================================================
-%  --- 2 loop assembly ---
+%  --- 2 assembly loop ---
 % ====================================================================
-
 for elem = 1:nElems
 
   mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties
-  hyperElasModel     = materials( mebVec( 1 ) ).hyperElasModel   ;
-  hyperElasParams    = materials( mebVec( 1 ) ).hyperElasParams  ;
+  modelName          = materials( mebVec( 1 ) ).modelName        ;
+  modelParams        = materials( mebVec( 1 ) ).modelParams      ;
   density            = materials( mebVec( 1 ) ).density          ;
 
   elemType           = elements( mebVec( 2 ) ).elemType          ;
@@ -121,7 +118,6 @@ for elem = 1:nElems
   auxA = repmat(nodalDofsEntries,length(dofselem)/6,1) ;
   auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
   dofselemRed = dofselem( auxA+auxB )   ;
-
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
@@ -155,8 +151,7 @@ for elem = 1:nElems
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
-
-    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
+    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -166,7 +161,8 @@ for elem = 1:nElems
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
-    
+
+    % #TO DO integrate as native    
     global temperature
     if length( temperature )>0
       timeVar
@@ -174,21 +170,12 @@ for elem = 1:nElems
       temperatureVal = temperature( timeVar) 
       Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
     end
+    % ---------------
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-		if strcmp(hyperElasModel, 'linearElastic')
-			boolLinear = 1 ;
-			boolMatNonLin = 0 ;
-		elseif strcmp(hyperElasModel, 'biLinear') || strcmp(hyperElasModel, 'userFunc')
-			boolLinear = 1 ;
-			boolMatNonLin = 1 ;
-		else
-			boolLinear = 0 ;
-		end
-
-		if  boolLinear == 1
+		if  strcmp( modelName,'linearElastic') || strcmp( modelName,'isotropicHardening')
 
 			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
 
@@ -198,7 +185,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
-		elseif strcmp( hyperElasModel, '1DrotEngStrain')
+		elseif strcmp( modelName, '1DrotEngStrain')
 
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
@@ -220,7 +207,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
-      error('wrong hyperElasModel for frame element.')
+      error('wrong material modelName for frame element.')
     end
 
     %md compute fluid forces on the element

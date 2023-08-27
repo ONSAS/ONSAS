@@ -14,11 +14,11 @@ Each struct has its own _fields_ with specific names, used to store each corresp
 
 ## The `materials` struct
 
-The materials struct contains the information of the material behavior considered for each element.
+The `materials` object can be either a scalar struct or a vector of structs where each entry _i_ contains the information of the  behavior of the _i_-th material.
 
-### `material.hyperElasModel`
+### `material.modelName`
 
-This is a cell array with the string-names of the material models used, the options for these names are:
+This field must contain a string with the name of the material models used, the options for these names are:
  * `'linearElastic'`: for linear behavior in small strains and displacements. The scalar parameters of this model are $p_1=E$ the Young modulus and $p_2=\nu$ the Poisson's ratio.
  * `'SVK'`: for a Saint-Venant-Kirchhoff material where the parameters $p_1$ and $p_2$ are the Lamé parameters and $\textbf{E}$ is the Green-Lagrange strain tensor, with the strain-energy density function given by
 ```math
