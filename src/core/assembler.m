@@ -177,11 +177,11 @@ for elem = 1:nElems
 
 		if  strcmp( modelName,'linearElastic') || strcmp( modelName,'isotropicHardening')
 
-			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
-      if dynamicProblemBool
+      if dynamicProblemBool 
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 

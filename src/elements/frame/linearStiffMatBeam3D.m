@@ -15,17 +15,20 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, ...
-                                                           massMatType, density, modelName, modelParams, ...
-                                                           Ut, Udotdotte)
-  
+function [fs, ks, finteLocalCoor] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, ...
+                                                         massMatType, density, modelName, modelParams, ...
+                                                         Ut, Udotdotte)
   ndofpnode = 6 ;
   
-  % --- material constit params ---
-	E   = hyperElasParams(1) ;
-	nu  = hyperElasParams(2) ;
-	G   = E/(2*(1+nu)) ;
-	
+  % --- material constitutive params ---
+	if strcmp(modelName,'linearElastic')
+    E   = modelParams(1) ;
+	  nu  = modelParams(2) ;
+	  G   = E/(2*(1+nu)) ;
+	elseif strcmp(modelName,'isotropicHardening')
+
+  end
+
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
   % --- elem lengths and rotation matrix
@@ -87,7 +90,65 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
 	else
 		KbendXZ = zeros(4,4) ;
 	end
+
+if strcmp(modelName,'isotropicHardening')
+
+global ne
+global secFinteVec
+global elemFuncs
+
+KbendXZ = zeros(4,4) ;
+finte 	= zeros(4,1) ;
+
+elemCrossSecParamsVec = elemCrossSecParams{2} 
+
+RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
+
+% Elem Gauss points
+[xge, we] = gaussPointsAndWeights(ne) ;
+pgeVec = ( l/2  * xge' + l/2 ) ;	
+
+for j = 1:length(we)
+	secFint 	= 0 ;
+	secKTe 		= 0 ;
+	pge 			= pgeVec(j) ; 
 	
+	% Bending intern functions second derivative
+	B = bendingInterFuns(pge, l, 2)*RXYXZ ;
+	
+	if intBool == 1
+		% Tangent stiffness matrix
+		secKTe = quadv('secKT', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
+														 elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
+														 Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
+		KbendXZ = l/2*( B'*secKTe*B*we(j) ) + KbendXZ ;	
+	end
+	
+	secFint = quadv('secFint', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
+															elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
+															Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
+	finte = l/2*secFint*we(j) + finte ;	
+	
+	% ==============================
+	if matFintBool == 1 && ( elem == elemFuncs || elem == elemFuncs+1 )
+		if elem == elemFuncs
+			secFinteVec(1,end+1) = secFint(4) ;
+		else
+			secFinteVec(2, (size(secFinteVec,2)-ne)+j ) = secFint(4) ;
+		end	
+	end
+		
+		
+	% ==============================
+													
+end % endfor we
+
+
+
+
+
+
+
   Ktorsn = G*J/l * [  1 -1  ; ...
                      -1  1  ] ;
 	
@@ -132,9 +193,7 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
       error('the massMatType field into the elements struct must be or consistent or lumped' )
     end
     
-    Fmasse = Me * Udotdotte ;
-
-    fs{3} = Fmasse  ;
+    fs{3} = Me * Udotdotte  ;
     ks{3} = Me      ;
   elseif density == 0
     fs{3} = zeros(12,1) ;
@@ -189,3 +248,18 @@ end
 
 %~ end
 % ==============================================================================
+
+
+
+function FintInt = secFint( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel)
+		
+	epsk = epsVal(z, B, R, Ut) ;
+	[sigma, ~] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
+	FintInt = ty * -B' * (z .* sigma)' ;
+
+
+function KTInt = secKT( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel )
+		
+	epsk = epsVal(z, B, R, Ut) ;
+	[~, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
+	KTInt = ty * dsigdeps * z.^2  ;
