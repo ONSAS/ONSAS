@@ -86,4 +86,12 @@ function test_18
   assertEqual( verifBoolean, true );
 
 function test_19
+  platePatchTest
+  assertEqual( verifBoolean, true );
+
+function test_20
+  cantileverPlate
+  assertEqual( verifBoolean, true );
+
+function test_21
   assertEqual( gaussIntegrationTest, true);
