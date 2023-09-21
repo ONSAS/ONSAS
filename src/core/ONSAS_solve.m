@@ -109,6 +109,7 @@ if modelProperties.analysisSettings.modalAnalysisBoolean
   else % dense analysis
     [PHI, OMEGA] = eig( full(Kred), full(Mred) ) ;
     numer_modes = fliplr(PHI);
+    #numer_modes = PHI;
   end
 
   modelPropertiesModal = modelProperties ;
@@ -118,13 +119,23 @@ if modelProperties.analysisSettings.modalAnalysisBoolean
   modelCurrSolModal   = modelCurrSol    ;
   modelCurrSolModal.U = zeros( size(modelCurrSol.U, 1) , 1 )    ;
 
+  coordsmat = modelProperties.Nodes;
+  minx = min(coordsmat(:,1)) ;
+  miny = min(coordsmat(:,2)) ;
+  minz = min(coordsmat(:,3)) ;
+  maxx = max(coordsmat(:,1)) ;
+  maxy = max(coordsmat(:,2)) ;
+  maxz = max(coordsmat(:,3)) ;
+
+  diam_struc = norm( [maxx,maxy,maxz]-[minx,miny,minz] );
+  mode_scale = diam_struc*.05 
   num_modal_times = 15 ;
   for i = 1:numModes
     fprintf(' generating mode %2i vtk\n', i) ;
     for j = 1:num_modal_times
       modelCurrSolModal.currTime = j ;
       modelPropertiesModal.problemName = [ modelProperties.problemName sprintf('_mode_%02i_', i ) ] ;
-      modelCurrSolModal.U( BCsData.neumDofs ) = sin(2*pi*j/num_modal_times) * numer_modes(:,i)  ;
+      modelCurrSolModal.U( BCsData.neumDofs ) = sin(2*pi*j/num_modal_times) * numer_modes(:,i) * mode_scale  ;
       vtkMainWriter( modelCurrSolModal, modelPropertiesModal ) ;
     end
   end

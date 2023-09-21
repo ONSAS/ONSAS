@@ -281,15 +281,25 @@ for elem = 1:nElems
       error('material not implemented yet! open an issue.')
     end
 
-   if isempty(elemTypeParams)
-     % (1 analytic 2 complex step)
-     consMatFlag = 1 ; % default: 1
-   else
-     consMatFlag = elemTypeParams(1) ;
-   end
-   [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
+    if isempty(elemTypeParams)
+      % (1 analytic 2 complex step)
+      consMatFlag = 1 ; % default: 1
+    else
+      consMatFlag = elemTypeParams(1) ;
+    end
+    
+    [ fs, ks, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, dotdotdispsElem, ...
+                            [ auxMatNum hyperElasParams], density, 2, consMatFlag ) ;
 
+    Finte = fs{1};
+    Ke    = ks{1};
+                        
+    if dynamicProblemBool
+      Fmase = fs{3};
+      Mmase = ks{3};
+      Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
+    end
+                        
   end   % case in type of element ----
   % -------------------------------------------
 

@@ -19,8 +19,8 @@
 % function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes 
 %tetraedron element with different constitutive behaviors. 
 %The hyperelastic behavior cased is based on equation 4.9.25 from belytschko 2nd edition.
-function [ Finte, KTe, stress ] = elementTetraSolid( ...
-  elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag )
+function [ fs, ks, stress ] = elementTetraSolid( ...
+  elemCoords, elemDisps, dotdotdispsElem, elemConstitutiveParams, density, paramOut, consMatFlag )
 
   % Internal flag to compute the stiffness matrix of the element using an analytic expression
   booleanKTAnalytic = 1 ;
@@ -76,6 +76,14 @@ function [ Finte, KTe, stress ] = elementTetraSolid( ...
     KTe = Kml + Kgl ;
 
   end % if param out
+
+
+  Mmase = density*vol/4.0 * speye(12,12);
+	Fmase = Mmase * dotdotdispsElem ;
+
+  fs = { Finte, [], Fmase } ;
+	ks = { KTe,   [], Mmase } ;
+
 
 % ======================================================================
 % Auxiliar functions
