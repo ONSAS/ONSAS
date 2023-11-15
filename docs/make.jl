@@ -24,8 +24,7 @@ makedocs(
       "Creating Models"=>"creatingModels.md",
       "References"=>"references.md"]
     #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
-  ],
-  strict=false
+  ]
 )
 
 deploydocs(
