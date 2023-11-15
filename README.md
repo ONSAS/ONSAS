@@ -5,7 +5,6 @@
 ![matlab tests](https://github.com/ONSAS/ONSAS.m/workflows/matlab_tests/badge.svg)
 [![codecov](https://codecov.io/gh/ONSAS/ONSAS.m/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS.m) 
 
-
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
@@ -28,19 +27,9 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/)/Matlab code for st
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
 
 
-## Connect <a name="connect"></a>
+## Contact <a name="connect"></a>
 
-### Open discussions chat
-
-If you have a question of want to discuss any topic you can write in the ONSAS.m [github's dicussions](https://github.com/ONSAS/ONSAS.m/discussions) tab.
-
-### Direct contact
-You can also send an e-mail to _jorgepz [AT] fing.edu.uy_ .
-
-### Zoom meetings
-
-Weekly zoom meetings are also open for anyone to join via [![this zoom room](https://img.shields.io/badge/zoom-meetings-red)](https://salavirtual-udelar.zoom.us/j/89574786968?pwd=S3c3c3hMVlR1N3E3Z2tSbVlCWW1QUT09)
-
+You can send an e-mail to _jorgepz [AT] fing.edu.uy_ .
 
 ## License
 

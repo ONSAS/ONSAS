@@ -98,19 +98,18 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
 
-* [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
-
-* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**5**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
+* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**4**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
 
 **Affiliations**:
 
  1. Instituto de Estructuras y Transporte, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay
  1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
  1. Department of Mechanical Engineering, Polytechnique Montréal, Montréal, Canada.
- 1. Centro Universitario Regional Este, Universidad de la República, Maldonado, Uruguay
  1. Department of Civil and Architectural Engineering, KTH Royal Institute of Technology, Stockholm, Sweden
 
 ### Contributions and Acknowledgments
+
+[Marcelo Forets](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) made contributions through the application of software technology tools in the documentation generation workflow.
 
 [Santiago Correa](https://github.com/santiago-correa-89) made contributions to examples, currently available at the documentation site.
 
