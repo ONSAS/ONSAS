@@ -51,21 +51,16 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
                     -1  1 ] ;
   KL( LocAxialdofs , LocAxialdofs ) = Kaxial ;
 
-  kBendReleaseRig = [ 3    3*l   -3   0 ; ...
-                      3*l  3*l^2 -3*l 0 ; ...
-                     -3   -3*l    3   0 ; ...
-                      0    0      0   0 ] ;
+  % Euler-Bernoulli element with embeded discontinuity
 
-  kBendReleaseLef = [  3   0 -3   3*l   ; ...
-                       0   0  0   0     ; ...
-                      -3   0  3  -3*l   ; ...
-                       3*l 0 -3*l 3*l^2 ] ;
+  uvector = [u1; u2] ;
+  dvector = [uvector',vvector',thetavector'] ;
 
-  % K bending in local coordinates
-  kBendNoRelease = [  12     6*l    -12     6*l   ; ...
-                       6*l   4*l^2   -6*l   2*l^2 ; ...
-                     -12    -6*l     12    -6*l   ; ...
-                       6*l   2*l^2   -6*l   4*l^2 ] ;
+  %
+ 
+
+    function integrando()
+
 
   % bending XY
   if     elemReleases(3) == 0 && elemReleases(4) == 0
