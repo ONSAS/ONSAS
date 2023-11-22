@@ -1,6 +1,6 @@
 %md# Linear Dynamic Vibration of a Simply Supported Beam
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/beamLinearVibration/beamLinearVibration.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/beamLinearVibration/beamLinearVibration.m)
 %md
 %mdIn this tutorial, the dynamic response of a simply supported beam is computed using ONSAS with the linear elastic and the co-rotational formulations. The aim of this example is to verify the numerical implementations using an analytic solution.
 %md

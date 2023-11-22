@@ -5,7 +5,7 @@ DocMeta.setdocmeta!(ONSAS_docs, :DocTestSetup,
   :(using ONSAS_docs); recursive=true)
 
 makedocs(
-  sitename="ONSAS.m",
+  sitename="ONSAS",
   format=Documenter.HTML(prettyurls=get(ENV, "CI", nothing) == "true"),
   pages=[
     "Home" => "index.md",
@@ -28,5 +28,5 @@ makedocs(
 )
 
 deploydocs(
-  repo="github.com/ONSAS/ONSAS.m.git",
+  repo="github.com/ONSAS/ONSAS.git",
   push_preview=true)

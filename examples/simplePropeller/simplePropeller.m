@@ -149,5 +149,5 @@ end
 %md
 %mdThe obtained simulation is: 
 %md```@raw html
-%md<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
+%md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
 %md```

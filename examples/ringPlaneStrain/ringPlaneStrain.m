@@ -1,6 +1,6 @@
 %md# Plane strain ring example  
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/ringPlaneStrain/ringPlaneStrain.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/ringPlaneStrain/ringPlaneStrain.m)
 %md
 %md In this example a hollow cylinder submitted to an internal pressure $p_i$ as shown in diagram depicted below is considered. The length of the cylinder is $L_z $ m and the internal and external radious are $R_i$ and $R_e$, respectively. 
 %md

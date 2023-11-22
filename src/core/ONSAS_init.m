@@ -83,7 +83,7 @@ previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
 
-% TO DO  https://github.com/ONSAS/ONSAS.m/issues/649 compute intial stress and internal forces
+% TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
 matFint = [] ; 
 

@@ -1,6 +1,6 @@
 %md# Aerodynamic non-linear cantilever beam example
 %md
-%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/nonLinearCantileverAero/nonLinearCantileverAero.m)
 %md
 %md In this tutorial, the aerodynamic non-linear cantilever beam example is solved using ONSAS. The aim of this problem is to validate aerodynamic steady wind loads applied to a cantilever beam undergoing small strains. The aerodynamic force modification due to the beam deformation is considered (drag reconfiguration). Given the aforementioned characteristics and under the hypothesis of small displacements regime a semi-analytic solution is available.   
 %md
@@ -102,7 +102,7 @@ otherParams.plots_format = 'vtk' ;
 %md
 %md### DifferentialEquations.jl (reconfiguration) solution.
 %md
-%md DiffEq.jl solves the third order ordinary differential equation for this case by executing [DiffEq.jl script](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/DiffEq.jl). Then  [`assembleJuliaSol.m` script](https://github.com/ONSAS/ONSAS.m/blob/master/examples/nonLinearCantileverAero/assembleJuliaSol.m) function is executed to build the julia solution with `mesh` and `elements` struct as:
+%md DiffEq.jl solves the third order ordinary differential equation for this case by executing [DiffEq.jl script](https://github.com/ONSAS/ONSAS/blob/master/examples/nonLinearCantileverAero/DiffEq.jl). Then  [`assembleJuliaSol.m` script](https://github.com/ONSAS/ONSAS/blob/master/examples/nonLinearCantileverAero/assembleJuliaSol.m) function is executed to build the julia solution with `mesh` and `elements` struct as:
 % [dSolJulia] = assembleJuliaSol(elements,mesh) ;
 %md Then the the relevance linear and angular displacements are extracted using:
 % ydefJulia = dSolJulia(3:6:end)              ;

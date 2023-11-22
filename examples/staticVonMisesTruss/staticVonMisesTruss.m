@@ -1,6 +1,6 @@
 %md# Static Von-Mises Truss example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/staticVonMisesTruss.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/staticVonMisesTruss/staticVonMisesTruss.m)
 %md
 %mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to verify the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
 %md

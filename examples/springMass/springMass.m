@@ -1,6 +1,6 @@
 %md# Spring-mass-damper system example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/springMass/springMass.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/springMass/springMass.m)
 %md
 %md## ODE System definition
 %mdIn this example a simple spring-mass-damper system is considered. This simple problem is used to validate different implementations of truss and frame elements submitted to dynamic loads.

@@ -1,4 +1,4 @@
-#Bash to generate the ONSAS.m documents authomatically
+#Bash to generate the ONSAS documents authomatically
 
 # create environment variable for docs generation
 export DOCSBUILD=yes

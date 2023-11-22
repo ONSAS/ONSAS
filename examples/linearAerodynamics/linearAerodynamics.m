@@ -1,6 +1,6 @@
 %md# Linear aerodynamic steady analysis of cantilever beam
 %md
-%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
 %md
 %md In this tutorial, the linear steady analysis of a cantilever beam is presented. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
 %md

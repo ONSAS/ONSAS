@@ -1,13 +1,13 @@
 
 # Introduction
 
-![tests](https://github.com/ONSAS/ONSAS.m/workflows/tests/badge.svg)
-[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING.txt)
+![tests](https://github.com/ONSAS/ONSAS/workflows/tests/badge.svg)
+[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 
 
-## What is ONSAS.m?
+## What is ONSAS?
 
-[ONSAS.m](https://github.com/ONSAS/ONSAS.m) is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf) for a graduate course taught at the [School of Engineering of Universidad de la República](https://www.fing.edu.uy/). The current version allows to perform a diverse set of simulations and it has been used in specific research applications.
+[ONSAS](https://github.com/ONSAS/ONSAS) is an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab. It consists in a set of implementations of numerical methods for static/dynamic and linear/non-linear analysis of structures. The first version was developed for educational purposes and published in a Structural Analysis [handbook](https://www.colibri.udelar.edu.uy/jspui/bitstream/20.500.12008/22106/1/Bazzano_P%c3%a9rezZerpa_Introducci%c3%b3n_al_An%c3%a1lisis_No_Lineal_de_Estructuras_2017.pdf) for a graduate course taught at the [School of Engineering of Universidad de la República](https://www.fing.edu.uy/). The current version allows to perform a diverse set of simulations and it has been used in specific research applications.
 
 ## Publications using ONSAS
 
@@ -27,19 +27,19 @@ Theses using ONSAS:
 ### A deployable ring
 
 ```@raw html
-<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true">
+<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/deployableRing.gif?raw=true">
 ```
 
-[ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)
+[ring](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/deployableRing.gif?raw=true)
 
 
 ### A simple propeller model
 
 ```@raw html
-<img src="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
+<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
 ```
 
-[propeller animation](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true)
+[propeller animation](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A tower model
 

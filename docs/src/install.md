@@ -1,11 +1,11 @@
 # Installation
 
-## Running ONSAS.m
+## Running ONSAS
 
 The user should follow these steps to install and run ONSAS:
 
 1. Download and install the latest version of [GNU-Octave](https://www.gnu.org/software/octave/).
-1. Download the zip file of the latest ONSAS release from [these site](https://github.com/ONSAS/ONSAS.m/releases/latest).
+1. Download the zip file of the latest ONSAS release from [these site](https://github.com/ONSAS/ONSAS/releases/latest).
 1. Open GNU-Octave and run one of the example scripts from the examples folder (or create yours!).
 
 ## Visualizing results
