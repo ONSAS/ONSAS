@@ -1,44 +1,41 @@
 %md# Simple Propeller example
-%mdIn this example a simple propeller problem, inspired in an example [this article](https://arxiv.org/abs/2204.10545), is considered.
+%mdIn this example a simple propeller problem, inspired in an example [this article](https://doi.org/10.1016/j.heliyon.2023.e19990), is considered.
+%md
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end %hidden
+addpath( genpath( [ pwd '/../../src'] ) ); %hidden
 %md
 %md## Problem definition
 %md
 %mdThe propeller has three blades with circular cross section and a uniform constant fluid flow is assumed as shown in the figure. Only lift is considered.
 %md
 %md```@raw html
-%md<img src="../../assets/diagprop.png" alt="plot check" width="500"/>
+%md<img src="../../assets/diagprop.png" alt="plot check" width="600"/>
 %md```
-%mdSince only lift is considered, an analytic solution can be computed. , first the wind parameters are loaded
-%mdThe wind velocity is assumed constant and uniform, given by the function `windVel.m` in the same folder.
 %md
-%md## Analytical solution
-%mdBefore computing the analytic solution the variables are cleared and the ONSAS/src path is added
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-addpath( genpath( [ pwd '/../../src'] ) );
-%mdThen the fluid velocity is computed
+%mdThe wind velocity is assumed constant and uniform, given by the function `windVel.m` located in the same folder. Then the fluid velocity is computed
 va = feval('windVel', 0,0) ;
 %md
 %mdThe density and kinematic viscosity are set: 
 rhoA = 1.225 ; nuA = 1.6e-5 ;
-%mdThe blades are considered to have only lift, with a lift coefficient given by the function `liftCoef.m`
+%mdThe blades are considered to have only lift, with a lift coefficient given by the function `liftCoef.m` placed in the same folder.
 c_l = feval('liftCoef', 0) ;
-%mdThe material parameters of the blades correspond to steel
+%mdThe material parameters of the blades correspond to steel with Young modulus, Poisson coefficient and density given by:
 E = 210e9 ;  nu = 0.3 ; rho = 6000 ; 
-%mdand the geometric parameters of the blades for length and diameter are set as
+%mdand the geometric parameters of the blades for length and diameter are set as:
 l = 3 ; d = 0.1;
 %
-%mdThen the lift load per unit of length is obtained as: 
+%md## Analytical solution
+%mdSince only lift is considered, an analytical solution can be computed. The the lift load per unit of length is obtained as: 
 fl = 1 / 2 * c_l * rhoA * norm(va)^2 * d ;
 %md the total moment $M_x$ in node 1 is given by the sum of the moments for the three blades: 
 moment1x = 3 * fl * l * l / 2 ;
 %mdand then the angular moment is:
 bladeMass = rho * l * pi * d ^2 /4 ; 
-Jrho =  3 * 1/3 * bladeMass  * l ^ 2 ; 
+Jrho =  3 * 1/3 * bladeMass  * l^2 ; 
 %md Then, integrating, the angle $\theta_x$ can be obtained as a function of time.
 angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md
-%mdIf the the blades are considered considerably stiff and only lift is considered, this rigid-rotation analytic solution can be used to verify the numerical solution. 
-%md
+%mdIf the blades are considered stiff enough and only lift is considered, this rigid-rotation solution can be used to verify the numerical solution. 
 %md
 %md## Numerical solution
 %md

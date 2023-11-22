@@ -13,7 +13,7 @@
 
 Journal articles using ONSAS:
 
- * 2022, M. Vanzulli, J. M. Pérez Zerpa, A consistent co-rotational formulation for aerodynamic nonlinear analysis of flexible frame structures, arXiv article under-review (https://arxiv.org/abs/2204.10545)
+ * 2023, M. Vanzulli, J. M. Pérez Zerpa, *A co-rotational formulation for quasi-steady aerodynamic nonlinear analysis of frame structures*, Heliyon [url](https://doi.org/10.1016/j.heliyon.2023.e19990)
  * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, Computers & Structures [url](https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor)
 
 Theses using ONSAS:
@@ -63,19 +63,9 @@ Theses using ONSAS:
 ```
 
 
-## Connect
+## Contact
 
-### Open discussions chat
-
-If you have a question of want to discuss any topic you can write in the ONSAS.m [github's dicussions](https://github.com/ONSAS/ONSAS.m/discussions) tab.
-
-### Direct contact
-You can also send an e-mail to _jorgepz [AT] fing.edu.uy_ .
-
-### Zoom meetings
-
-Weekly zoom meetings are also open for anyone to join via [![this zoom room](https://img.shields.io/badge/zoom-meetings-red)](https://salavirtual-udelar.zoom.us/j/89574786968?pwd=S3c3c3hMVlR1N3E3Z2tSbVlCWW1QUT09)
-
+You can send an e-mail to _jorgepz [AT] fing.edu.uy_ .
 
 
 ## Contributors and License
@@ -92,13 +82,13 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**Mauricio Vanzulli**](https://github.com/mvanzulli) (**2**) co-developed the Newmark's method functions and scripts, developed input files for the dynamic analysis examples. Developed the nonlinear dynamic co-rotational frame element function, its validation and integration with the VIV function. 
 
-* [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
-
 * [**Joaquín Viera**](https://exportcvuy.anii.org.uy/cv/?b6b1cd2fe90a9c29279eedb0d3cc4c4d) (**1**), leaded the development of the Linear Analysis module and input files, collaborated in the design and development of the input reading and output generation modules, leaded the development of a GUI.
 
-* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
+* [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
 
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**4**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
+
+* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
 
 **Affiliations**:
 
