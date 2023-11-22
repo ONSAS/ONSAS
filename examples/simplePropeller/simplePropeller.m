@@ -12,7 +12,7 @@ addpath( genpath( [ pwd '/../../src'] ) ); %hidden
 %md<img src="../../assets/diagprop.png" alt="plot check" width="600"/>
 %md```
 %md
-%mdThe wind velocity is assumed constant and uniform, given by the function `windVel.m` located in the same folder. Then the fluid velocity is computed
+%mdThe wind velocity is assumed constant and uniform, given by the function `windVel.m` with one argument (time), located in the same folder. Then the fluid velocity is computed as:
 va = feval('windVel', 0,0) ;
 %md
 %mdThe density and kinematic viscosity are set: 
@@ -23,7 +23,7 @@ c_l = feval('liftCoef', 0) ;
 E = 210e9 ;  nu = 0.3 ; rho = 6000 ; 
 %mdand the geometric parameters of the blades for length and diameter are set as:
 l = 3 ; d = 0.1;
-%
+%md
 %md## Analytical solution
 %mdSince only lift is considered, an analytical solution can be computed. The the lift load per unit of length is obtained as: 
 fl = 1 / 2 * c_l * rhoA * norm(va)^2 * d ;
@@ -39,11 +39,11 @@ angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md
 %md## Numerical solution
 %md
-%mdThe material parameters are
-materials                 = struct() ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ]        ;
-materials.density         = rho             ;
+%mdSet the material parameters:
+materials             = struct() ;
+materials.modelName   = '1DrotEngStrain' ;
+materials.modelParams = [ E nu ]        ;
+materials.density     = rho             ;
 %md 
 %md### elements
 %mdThe elements are given by: nodes

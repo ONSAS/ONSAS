@@ -10,17 +10,19 @@ The data and properties of each structural model are defined through a set of de
  1. `numericalMethod`
  1. `otherParams`
 
-Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assigned using _structName.fieldName_. A description of each struct and its fields follows at next.
+Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assigned using _structName.fieldName_. A description of each struct and its fields follows at next. It is highly recommended to read the current sectiong following one of the examples presented in the documentation. 
 
 ## The `materials` struct
 
 The materials struct contains the information of the material behavior considered for each element.
 
-### `material.hyperElasModel`
+### `material.modelName`
 
-This is a cell array with the string-names of the material models used, the options for these names are:
- * `'linearElastic'`: for linear behavior in small strains and displacements. The scalar parameters of this model are $p_1=E$ the Young modulus and $p_2=\nu$ the Poisson's ratio.
- * `'SVK'`: for a Saint-Venant-Kirchhoff material where the parameters $p_1$ and $p_2$ are the Lamé parameters and $\textbf{E}$ is the Green-Lagrange strain tensor, with the strain-energy density function given by
+This is field contains a string of the material model used to compute the internal forces of the structure. The models implemented in ONSAS are:
+
+ * `'elastic-linear'`: used for linear behavior with small strains and small displacements. The scalar parameters of this model are $p_1=E$ the Young modulus and $p_2=\nu$ the Poisson's ratio.
+
+ * `'elastic-SVK'`: used for a Saint-Venant-Kirchhoff material where the parameters $p_1$ and $p_2$ are the Lamé parameters with the strain-energy density function given by the following equation (where $\textbf{E}$ is the Green-Lagrange strain tensor)
 ```math
 \Psi( \textbf{E} ) = \frac{p_1}{2} tr(\textbf{E})^2 + p_2 tr(\textbf{E}^2)
 \quad
@@ -28,7 +30,8 @@ p_1 = \frac{ E \nu }{ (1+\nu) (1-2\nu) }
 \quad
 p_2 = \frac{ E }{ 2 (1+\nu) }
 ```
- * `'NHC'`: for a Neo-Hookean compressible material. The model implemented is given by
+
+ * `'elastic-NHC'`: used for a Neo-Hookean compressible material. The model implemented is given by
 ```math
 \Psi( \textbf{C} ) = \frac{p_1}{2} ( tr(\textbf{C})-3 -2 L( \sqrt{det(\textbf{C})} ) ) + \frac{p_2}{2} \left( \sqrt{det(\textbf{C})}-1 \right)^2
  \quad
@@ -36,9 +39,18 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
  \quad
  p_2 = \frac{ E }{ 3 (1-2 \nu) }
 ```
- * `'isotropicHardening'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: REVISAR!! $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
-### `materials.hyperElasParams`
+ * `'elastic-rotEngStr'`: used for 1D elements (truss or frame) under large displacements.
+
+ * `'elastic-rotLogStr'`: used for 1D elements (truss) under large displacements.
+
+ * `'plastic-isoHard'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: REVISAR!! $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
+
+ * `'plastic-rotEngStr'`: an ElastoPlastic material .
+
+ * `'plastic-rotLogStr'`: an ElastoPlastic material .
+
+### `materials.modelParams`
 
 A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
 ```math

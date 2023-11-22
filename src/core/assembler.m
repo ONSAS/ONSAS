@@ -92,8 +92,8 @@ for elem = 1:nElems
   mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties
-  hyperElasModel     = materials( mebVec( 1 ) ).hyperElasModel   ;
-  hyperElasParams    = materials( mebVec( 1 ) ).hyperElasParams  ;
+  modelName          = materials( mebVec( 1 ) ).modelName   ;
+  modelParams        = materials( mebVec( 1 ) ).modelParams  ;
   density            = materials( mebVec( 1 ) ).density          ;
 
   elemType           = elements( mebVec( 2 ) ).elemType          ;
@@ -156,7 +156,7 @@ for elem = 1:nElems
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
 
-    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, hyperElasModel, hyperElasParams, A, previous_state ) ;
+    [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -172,16 +172,16 @@ for elem = 1:nElems
       timeVar
       thermalExpansion = materials( mebVec( 1 ) ).thermalExpansion
       temperatureVal = temperature( timeVar) 
-      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
+      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, modelParams(1), A, thermalExpansion, temperatureVal )
     end
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-		if strcmp(hyperElasModel, 'linearElastic')
+		if strcmp(modelName, 'linearElastic')
 			boolLinear = 1 ;
 			boolMatNonLin = 0 ;
-		elseif strcmp(hyperElasModel, 'biLinear') || strcmp(hyperElasModel, 'userFunc')
+		elseif strcmp(modelName, 'biLinear') || strcmp(modelName, 'userFunc')
 			boolLinear = 1 ;
 			boolMatNonLin = 1 ;
 		else
@@ -190,7 +190,7 @@ for elem = 1:nElems
 
 		if  boolLinear == 1
 
-			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -198,11 +198,11 @@ for elem = 1:nElems
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
-		elseif strcmp( hyperElasModel, '1DrotEngStrain')
+		elseif strcmp( modelName, '1DrotEngStrain')
 
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
-                                                             [ 1 hyperElasParams ] , ...
+                                                             [ 1 modelParams ] , ...
                                                              u2ElemDisps( Ut, dofselem ) ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -210,7 +210,7 @@ for elem = 1:nElems
 
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
                                             elemCrossSecParams                  , ...
-                                            [ 1 hyperElasParams ]               , ...
+                                            [ 1 modelParams ]               , ...
                                             u2ElemDisps( Ut, dofselem )         , ...
                                             u2ElemDisps( Udott    , dofselem )  , ...
                                             u2ElemDisps( Udotdott , dofselem )  , ...
@@ -220,7 +220,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
-      error('wrong hyperElasModel for frame element.')
+      error('wrong modelName for frame element.')
     end
 
     %md compute fluid forces on the element
@@ -246,7 +246,7 @@ for elem = 1:nElems
 		previous_state = { stress_n_vec{elem} ; strain_n_vec{elem} ; acum_plas_strain_n_vec{elem} } ;
 		  
 		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-																										hyperElasModel, [1 hyperElasParams], 2, thickness, planeStateFlag, ...
+																										modelName, [1 modelParams], 2, thickness, planeStateFlag, ...
 																										dotdotdispsElem, density, previous_state ) ;
 		%
     Finte = fs{1};
@@ -262,8 +262,8 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
     
-    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, hyperElasModel, ...
-      hyperElasParams, thickness ) ;
+    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
+      modelParams, thickness ) ;
 
     Finte = fs{1};
 		Ke    = ks{1};
@@ -271,13 +271,13 @@ for elem = 1:nElems
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 
-    if strcmp( hyperElasModel, 'SVK' )
+    if strcmp( modelName, 'SVK' )
       auxMatNum = 2 ;
 
-    elseif strcmp( hyperElasModel, 'NHC' )
+    elseif strcmp( modelName, 'NHC' )
       auxMatNum = 3 ;
     else
-      hyperElasModel
+      modelName
       error('material not implemented yet! open an issue.')
     end
 
@@ -288,7 +288,7 @@ for elem = 1:nElems
      consMatFlag = elemTypeParams(1) ;
    end
    [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
+                            [ auxMatNum modelParams], 2, consMatFlag ) ;
 
   end   % case in type of element ----
   % -------------------------------------------
