@@ -16,11 +16,11 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-%md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with linearElastic and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
+%md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with elastic-linear and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
 %md
 
 function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
-  elemCoords, elemDisps, hyperElasModel, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state )
+  elemCoords, elemDisps, modelName, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state )
 
 	x = elemCoords(1:3:end)' ;  y = elemCoords(2:3:end)' ;
 
@@ -55,13 +55,13 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 												 0          0          (1-2*nu)/(2*(1-nu)) ] ;
 	end
 
-	if strcmp( hyperElasModel, 'linearElastic' )
+	if strcmp( modelName, 'elastic-linear' )
 
 		dstressdeps = De ;
 		stress = dstressdeps * strain ;
 		stress_n           = previous_state{1,:}(1:3)  ;
 		
-	elseif strcmp( hyperElasModel, 'isotropicHardening') 
+	elseif strcmp( modelName, 'isotropicHardening') 
 		
 		G = E/(2*(1+nu)) 	; % Shear modulus
 		K = E/(3*(1-2*nu)) 	; % Bulk modulus

@@ -1,7 +1,7 @@
 %md# Uniform curvature cantilever beam example
 %md---
 %md
-%mdIn this tutorial, the Uniform curvature cantilever example and its resolution using ONSAS are described. The aim of this example is to validate the static co-rotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.  The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m).
+%mdIn this tutorial, the Uniform curvature cantilever example and its resolution using ONSAS are described. The aim of this example is to validate the static co-rotational 3D beam implementation by comparing the results provided by ONSAS with the analytical solution.  The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS/blob/master/examples/uniformCurvatureCantilever/onsasExample_uniformCurvatureCantilever.m).
 %md
 %mdThe problem consists in a beam, with one free end (right) submitted to a nodal moment $M$, and the other end (left) constrained (welded), as it is shown in the figure.
 %md
@@ -33,8 +33,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials                 = struct() ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 %md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 %md
 %md### elements

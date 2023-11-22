@@ -36,9 +36,9 @@ rho = 2*m / ( A * l0 )  ;
 %mdSince the first case contains only one type of material the fields of the `materials` struct will have only one entry.
 materials  = struct();
 materials.density = rho ;
-%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 %md
 %md### elements
 %md
@@ -132,8 +132,8 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 ] ;
 materials(1).density = 0 ;
 %mdalso the new material that produce m*g at the end of the frame is:
 rhoF = m / ( A * (lumpedParam * l0) ) ;
-materials(2).hyperElasModel  = '1DrotEngStrain' ;
-materials(2).hyperElasParams = [ E nu ] ;
+materials(2).modelName  = 'elastic-rotEngStr' ;
+materials(2).modelParams = [ E nu ] ;
 materials(2).density = rhoF ;
 otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------

@@ -25,7 +25,7 @@ checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysi
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
 %md sets the current version and welcomes user
-ONSASversion = '0.2.8'  ; welcome_message( ONSASversion, otherParams );
+ONSASversion = '0.2.9'  ; welcome_message( ONSASversion, otherParams );
 
 % creates outputdir in current location
 create_outputDir( otherParams )
@@ -83,7 +83,7 @@ previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
 
-% TO DO  https://github.com/ONSAS/ONSAS.m/issues/649 compute intial stress and internal forces
+% TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
 matFint = [] ; 
 

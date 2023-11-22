@@ -18,8 +18,8 @@ exportFirstMatrices = true;
 
 %md### materials
 materials                 = struct()         ;
-materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
-materials.hyperElasParams = [ E nu ]         ;
+materials.modelName  = 'elastic-rotEngStr' ;%'elastic-linear';%
+materials.modelParams = [ E nu ]         ;
 materials.density         = rho              ;
 %md
 %md### elements

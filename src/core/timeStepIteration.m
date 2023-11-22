@@ -31,7 +31,7 @@ currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 % -----------------------------------------------------------
 stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
 if ~(stabilityAnalysisFlag==0)
-  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS.m/issues/351');  
+  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');  
   % reduced tangent matrix of previous time for nonlinear buckling analysis
   KTtred = modelCurrSol.systemDeltauMatrix ;
 end

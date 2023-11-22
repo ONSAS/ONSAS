@@ -14,8 +14,8 @@ Pz = 2e3   ; Py = 1e3 ; % applied nodal loads
 %md
 %md### Materials
 materials = struct();
-materials(1).hyperElasModel = 'linearElastic'  ;
-materials(1).hyperElasParams = [ E, nu] ;
+materials(1).modelName = 'elastic-linear'  ;
+materials(1).modelParams = [ E, nu] ;
 %md### Elements
 elements = struct();
 elements(1).elemType  = 'node'  ;

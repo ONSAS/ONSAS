@@ -20,9 +20,9 @@ rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
 %md Fluid inertia is only defined by the mass ratio:
 massratio = 1;
-%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 %md
 %md### elements
 %md

@@ -1,12 +1,12 @@
 
 
-function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, hyperElasModel, hyperElasParams, thickness )
+function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, modelName, modelParams, thickness )
 
 % assertions
 assert( norm( elemCoords(3:3:end))==0, 'only xy plates are considered' )
-assert( strcmp( hyperElasModel, 'linearElastic'), ' linear elastic model is implemented' )
+assert( strcmp( modelName, 'elastic-linear'), ' linear elastic model is implemented' )
 
-E = hyperElasParams(1)  ;  nu = hyperElasParams(2) ;
+E = modelParams(1)  ;  nu = modelParams(2) ;
 
 x1G = elemCoords(1);  y1G = elemCoords(2);
 x2G = elemCoords(4);  y2G = elemCoords(5);
