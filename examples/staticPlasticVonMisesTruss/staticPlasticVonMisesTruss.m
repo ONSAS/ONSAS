@@ -11,7 +11,7 @@ x2 = cos( ang1*pi/180 ) * L ;
 z2 = sin( ang1*pi/180 ) * L ;
 
 materials = struct();
-materials.modelName  = 'isotropicHardening' ;
+materials.modelName  = 'plastic-rotEngStr' ;
 materials.modelParams = [ E Kplas sigma_Y_0 ] ;
 
 elements = struct();
