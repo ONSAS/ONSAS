@@ -178,7 +178,7 @@ for elem = 1:nElems
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-		if strcmp(modelName, 'linearElastic')
+		if strcmp(modelName, 'elastic-linear')
 			boolLinear = 1 ;
 			boolMatNonLin = 0 ;
 		elseif strcmp(modelName, 'biLinear') || strcmp(modelName, 'userFunc')
@@ -198,7 +198,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
-		elseif strcmp( modelName, '1DrotEngStrain')
+		elseif strcmp( modelName, 'elastic-rotEngStr')
 
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...

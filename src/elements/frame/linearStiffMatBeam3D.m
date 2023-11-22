@@ -19,13 +19,13 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, Ut, Udotdotte, intBool, matFintBool, elem)
   
   ndofpnode = 6 ;
   
   % --- material constit params ---
-	E   = hyperElasParams(1) ;
-	nu  = hyperElasParams(2) ;
+	E   = modelParams(1) ;
+	nu  = modelParams(2) ;
 	G   = E/(2*(1+nu)) ;
 	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;

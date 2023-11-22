@@ -124,13 +124,13 @@ loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md### Analysis case 2: Newton-Raphson with linear elastic behavior
 %mdIn this case a linear elastic behavior is assumed. Then the material modelName is overwritten
 materials.modelName = 'elastic-linear' ;
-otherParams.problemName  = 'staticVonMisesTruss_linearElastic';
+otherParams.problemName  = 'staticVonMisesTruss_elastic-linear';
 analysisSettings.finalTime  =   1.5    ;
 %md and the analysis is run again
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md the displacements are extracted
-controlDispsNRLinearElastic =  -matUs(11,:) ;
-loadFactorsNRLinearElastic  =  loadFactorsMat(:,2) ;
+controlDispsNRlinearElastic =  -matUs(11,:) ;
+loadFactorsNRlinearElastic  =  loadFactorsMat(:,2) ;
 %md
 %md and the analytic values of the load factor are computed, as well as its difference with the numerical solution
 %md
@@ -223,9 +223,9 @@ plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'y-*' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRlinearElastic, loadFactorsNRlinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','LinearElastic', 'location','northoutside')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','elastic-linear', 'location','northoutside')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')

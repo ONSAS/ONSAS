@@ -17,8 +17,8 @@ E  = 210e6 ; nu = 0.3 ; %
 sigmaY = 250e3 ; 
 K = E/3 ; % Linear hardening parameter 
 
-materials(1).hyperElasModel = 'biLinear' ;
-materials(1).hyperElasParams = [ E, nu, sigmaY, K ] ;
+materials(1).modelName = 'biLinear' ;
+materials(1).modelParams = [ E, nu, sigmaY, K ] ;
 
 % Elements
 elements(1).elemType  = 'node'  ;

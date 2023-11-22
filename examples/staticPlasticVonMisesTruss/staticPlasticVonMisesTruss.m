@@ -11,8 +11,8 @@ x2 = cos( ang1*pi/180 ) * L ;
 z2 = sin( ang1*pi/180 ) * L ;
 
 materials = struct();
-materials.hyperElasModel  = 'isotropicHardening' ;
-materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
+materials.modelName  = 'isotropicHardening' ;
+materials.modelParams = [ E Kplas sigma_Y_0 ] ;
 
 elements = struct();
 elements(1).elemType = 'node' ;
@@ -75,7 +75,7 @@ valsP = min( valsLin, valsFlu) ;
 
 % softening
 Kplas = -E*.05 ;
-materials.hyperElasParams = [ E Kplas sigma_Y_0 ] ;
+materials.modelParams = [ E Kplas sigma_Y_0 ] ;
 
 analysisSettings.methodName    = 'arcLength' ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;

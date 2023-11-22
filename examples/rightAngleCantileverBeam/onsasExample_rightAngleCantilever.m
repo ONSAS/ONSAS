@@ -37,9 +37,9 @@ nElemsPerBeam = 10 ;
 %mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
 %md
 %md### materials
-%mdSince the example contains only one type of material the fields of the `materials` struct will have only one entry. The material density has no effect in this case because no gravity load is included and the dyadic inertia tensor is set manually. Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+%mdSince the example contains only one type of material the fields of the `materials` struct will have only one entry. The material density has no effect in this case because no gravity load is included and the dyadic inertia tensor is set manually. Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 materials.density = rho ;
 %md
 %md### elements

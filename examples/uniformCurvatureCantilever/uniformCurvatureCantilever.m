@@ -33,8 +33,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials                 = struct() ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 %md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 %md
 %md### elements

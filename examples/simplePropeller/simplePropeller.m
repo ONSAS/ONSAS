@@ -41,7 +41,7 @@ angleXnode1 = @(t)  moment1x / Jrho / 2 * t .^ 2 ;
 %md
 %mdSet the material parameters:
 materials             = struct() ;
-materials.modelName   = '1DrotEngStrain' ;
+materials.modelName   = 'elastic-rotEngStr' ;
 materials.modelParams = [ E nu ]        ;
 materials.density     = rho             ;
 %md 

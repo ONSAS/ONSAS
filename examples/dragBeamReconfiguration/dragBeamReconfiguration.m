@@ -37,8 +37,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
 materials                 = struct()         ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ]         ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ]         ;
 materials.density         = rhoS             ;
 %md
 %md### elements

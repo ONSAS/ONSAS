@@ -72,8 +72,8 @@ analyticDisY = analyticDisY * (2*Fo/(rho*ty*tz*l) ) ;   analyticDisZ = analyticD
 %md### materials
 %md Since the example contains only one rod and no nodal masses are used, only one `materials` struct is defined. The first analysis is done using the co-rotational formulation
 materials = struct() ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu]          ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu]          ;
 materials.density         = rho              ;
 %md
 %md### elements
@@ -135,8 +135,8 @@ otherParams.problemName = 'coRotationaluniformDynamicBeam';
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md
 %md The second analysis case implements the linear elastic formulation
-materials.hyperElasModel  = 'linearElastic' ;
-otherParams.problemName = 'linearElasticuniformDynamicBeam';
+materials.modelName  = 'elastic-linear' ;
+otherParams.problemName = 'elastic-linearuniformDynamicBeam';
 %md
 %md ONSAS execution
 [linElasMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -166,7 +166,7 @@ figure, hold on, grid on
 plot(ts, coRotMatUs(dofYendNode, :),'r-x' , 'linewidth', lw,'markersize',ms )
 plot(ts, linElasMatUs(dofYendNode, :),'k-o' , 'linewidth', lw,'markersize',ms )
 plot(ts, analyticDisY,'b' , 'linewidth', lw,'markersize',ms )
-legend('coRotational_{disp}','linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
+legend('coRotational_{disp}','elastic-linear_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -176,7 +176,7 @@ figure, hold on, grid on
 plot(ts, coRotMatUs(dofZendNode, :),'r-x' , 'linewidth', lw, 'markersize', ms )
 plot(ts, linElasMatUs(dofZendNode, :),'k-o' , 'linewidth', lw, 'markersize', ms )
 plot(ts, analyticDisZ, 'b' , 'linewidth', lw, 'markersize', ms )
-legend('coRotational_{disp}', 'linearElastic_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
+legend('coRotational_{disp}', 'elastic-linear_{disp}', 'Analytic_{disp}', 'location', 'eastoutside')
 labx = xlabel('time (s)');   laby = ylabel('displacement (m)') ;
 set(gca, 'linewidth', lw2, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;

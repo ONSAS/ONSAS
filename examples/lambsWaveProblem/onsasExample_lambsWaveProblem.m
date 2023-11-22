@@ -12,8 +12,8 @@ global spitMatrices, spitMatrices = true ;
 %md## MEBI parameters
 %md
 %md### materials
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams =  [ E nu ]       ;
+materials.modelName  = 'elastic-linear' ;
+materials.modelParams =  [ E nu ]       ;
 materials.density         =  rho            ;
 %md
 %md### elements

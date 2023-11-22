@@ -77,8 +77,8 @@ E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 %md since only one material is considered, a scalar struct is defined as follows
 materials                 = struct() ;
-materials.hyperElasModel  = 'SVK' ;
-materials.hyperElasParams = [ lambda mu ] ;
+materials.modelName  = 'SVK' ;
+materials.modelParams = [ lambda mu ] ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:

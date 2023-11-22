@@ -58,8 +58,8 @@ numElements = 10 ;
 %md
 %md### materials
 %md Since the example contains only one linear Euler Bernoulli element the fields of the `materials` struct will have only one entry. Although, the constitutive behavior law selected is Saint-Venant-Kirchhoff:
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams = [ E nu ]        ;
+materials.modelName  = 'elastic-linear' ;
+materials.modelParams = [ E nu ]        ;
 %md
 %md### elements
 %md

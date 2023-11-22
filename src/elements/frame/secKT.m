@@ -16,10 +16,10 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function KTInt = secKT( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel )
+function KTInt = secKT( z, ty, tz, B, R, Ut, modelParams, modelName )
 		
 	epsk = epsVal(z, B, R, Ut) ;
-	[~, dsigdeps] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
+	[~, dsigdeps] = constitutiveModel(modelParams, modelName, epsk') ;
 	KTInt = ty * dsigdeps * z.^2  ;
 
 end

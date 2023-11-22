@@ -39,8 +39,8 @@ Re = 200 ; Ri = 100 ;
 %md The constitutive behavior of the material considered is isotropic linear elastic.
 %md Since only one material is considered, the structs defined for the materials contain only one entry:
 materials = struct() ;
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams =  [ E nu ]       ;
+materials.modelName  = 'elastic-linear' ;
+materials.modelParams =  [ E nu ]       ;
 %md
 %md##### elements
 %md 
@@ -176,22 +176,22 @@ E = 210 ; nu = 0.3 ; H = 0 ; sigmaY0 = 0.24 ; L = .75 ; p = 0.01 ;
 %md#### materials
 %md The constitutive behavior of the material considered is isotropic hardening.
 %md Since only one material is considered, the structs defined for the materials contain only one entry:
-materials.hyperElasModel  = 'isotropicHardening' ;
-materials.hyperElasParams =  [ E nu H sigmaY0 ] ;
+materials.modelName  = 'isotropicHardening' ;
+materials.modelParams =  [ E nu H sigmaY0 ] ;
 %md
 %md#### elements
 %md 
 %md The elements struct is the same as the previous model.
 %md
 %md#### boundaryConds
-%md The BC struct is the same as in the linearElastic case. However the loadsTimeFact function can be modified to consider unloading as follows.
+%md The BC struct is the same as in the elastic-linear case. However the loadsTimeFact function can be modified to consider unloading as follows.
 boundaryConds(3).loadsTimeFact = @(t) t*(t<=19) + (t-(t-19)*2)*(t>19)  ;
 %md
 %md#### initialConds
 %md Any non-homogeneous initial conditions are considered, thereafter the struc is the same as in the previous example.
 %md
 %md### Mesh
-%md The mesh can be read from the msh file. The same mesh as in the linearElastic case is considered for this problem.
+%md The mesh can be read from the msh file. The same mesh as in the elastic-linear case is considered for this problem.
 %md
 Conec = myCell2Mat( mesh.conecCell ) ;
 elems = size(Conec,1) 
