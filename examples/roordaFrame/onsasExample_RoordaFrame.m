@@ -20,8 +20,8 @@ for indecc = 1:length(vececc)
   ecc = vececc(indecc);
 
 %Material Definitions
-materials(1).hyperElasModel  = '1DrotEngStrain' ;
-materials(1).hyperElasParams = [ E nu ] ;
+materials(1).modelName  = 'elastic-rotEngStr' ;
+materials(1).modelParams = [ E nu ] ;
 
 %Element Definitions
 elements(1).elemType = 'node' ;

@@ -20,9 +20,9 @@ rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
 %md Fluid inertia is only defined by the mass ratio:
 massratio = 1;
-%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 %md
 %md### elements
 %md
@@ -95,14 +95,10 @@ rhoFluid = rho/massratio; nuFluid = 1e-6;
 % angle_init = 0;
 nameFuncVel = 'windUniform';
 %md Drag and lift are ignored in this idealized example
-elements(2).aeroCoefs   = {[]; []; [] }   ;
-% hydro cross-section props
-numGaussPoints  = 4 ;
-AeroBoolmat = false;
-elements(2).elemTypeAero = [0 0 -d numGaussPoints AeroBoolmat] ;
+elements(2).aeroCoefFunctions = {[]; []; [] }   ;
+elements(2).chordVector = [0 0 d ] ;
 %md Analysis Settings
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-analysisSettings.geometricNonLinearAero = true;
 %analysisSettings.booleanSelfWeight = false ;
 analysisSettings.stopTolDeltau = 1e-8 ;
 analysisSettings.stopTolForces = 1e-8 ;

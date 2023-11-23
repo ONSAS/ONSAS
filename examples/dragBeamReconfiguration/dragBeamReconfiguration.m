@@ -1,6 +1,6 @@
 %md# Reconfiguration cantilever beam example
 %md
-%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/dragBeamReconfiguration/dragBeamReconfiguration.m)
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/dragBeamReconfiguration/dragBeamReconfiguration.m)
 %md
 %md In this tutorial, a cantilever beam submitted to a flow producing drag forces is considered. The main goal is to validate the drag forces computation considering reconfiguration in a problem with large displacements. The example is based on one of the problems considered in [this reference](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/drag-reduction-of-flexible-plates-by-reconfiguration/A3A066DE3886C40B1463508C92D1C81D), where a reference solution is presented and validated with experimental data. The reference solution was generated with the code publicly available in [this repository](https://github.com/lm2-poly/Reconfiguration-Beam/blob/master/reconfiguration.m)
 %md
@@ -37,8 +37,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
 materials                 = struct()         ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ]         ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ]         ;
 materials.density         = rhoS             ;
 %md
 %md### elements

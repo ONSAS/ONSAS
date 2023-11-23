@@ -1,14 +1,13 @@
 
-# ONSAS.m: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab
+# ONSAS: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab
 
-![octave tests](https://github.com/ONSAS/ONSAS.m/workflows/octave_tests/badge.svg)
-![matlab tests](https://github.com/ONSAS/ONSAS.m/workflows/matlab_tests/badge.svg)
-[![codecov](https://codecov.io/gh/ONSAS/ONSAS.m/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS.m) 
+![octave tests](https://github.com/ONSAS/ONSAS/workflows/octave_tests/badge.svg)
+![matlab tests](https://github.com/ONSAS/ONSAS/workflows/matlab_tests/badge.svg)
+[![codecov](https://codecov.io/gh/ONSAS/ONSAS/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS) 
 
-
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS.m/dev/)
-[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS.m/blob/master/COPYING)
-[![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS.m/releases)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS/dev/)
+[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING)
+[![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
 [![DOI](https://zenodo.org/badge/170120732.svg)](https://zenodo.org/badge/latestdoi/170120732)
 
 
@@ -19,28 +18,18 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/)/Matlab code for st
 ## Some examples
 
 ### A deployable ring
-![ring](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/deployableRing.gif?raw=true)
+![ring](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/deployableRing.gif?raw=true)
 
 ### A propeller model
-![propeller](https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/assets/propeller.gif?raw=true)
+![propeller](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A truss tower model
 ![tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
 
 
-## Connect <a name="connect"></a>
+## Contact <a name="connect"></a>
 
-### Open discussions chat
-
-If you have a question of want to discuss any topic you can write in the ONSAS.m [github's dicussions](https://github.com/ONSAS/ONSAS.m/discussions) tab.
-
-### Direct contact
-You can also send an e-mail to _jorgepz [AT] fing.edu.uy_ .
-
-### Zoom meetings
-
-Weekly zoom meetings are also open for anyone to join via [![this zoom room](https://img.shields.io/badge/zoom-meetings-red)](https://salavirtual-udelar.zoom.us/j/89574786968?pwd=S3c3c3hMVlR1N3E3Z2tSbVlCWW1QUT09)
-
+You can send an e-mail to _jorgepz [AT] fing.edu.uy_ .
 
 ## License
 
@@ -58,4 +47,4 @@ An introduction to using and contributing to ONSAS was presented in 2022. The re
 
 ## Contributions <a name="contributions"></a>
 
-The complete list of authors of code, contributions, affiliations and acknowledgments is available [in the documentation](https://onsas.github.io/ONSAS.m/dev/#Authors).
+The complete list of authors of code, contributions, affiliations and acknowledgments is available [in the documentation](https://onsas.github.io/ONSAS/dev/#Authors).
