@@ -95,14 +95,10 @@ rhoFluid = rho/massratio; nuFluid = 1e-6;
 % angle_init = 0;
 nameFuncVel = 'windUniform';
 %md Drag and lift are ignored in this idealized example
-elements(2).aeroCoefs   = {[]; []; [] }   ;
-% hydro cross-section props
-numGaussPoints  = 4 ;
-AeroBoolmat = false;
-elements(2).elemTypeAero = [0 0 -d numGaussPoints AeroBoolmat] ;
+elements(2).aeroCoefFunctions = {[]; []; [] }   ;
+elements(2).chordVector = [0 0 d ] ;
 %md Analysis Settings
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-analysisSettings.geometricNonLinearAero = true;
 %analysisSettings.booleanSelfWeight = false ;
 analysisSettings.stopTolDeltau = 1e-8 ;
 analysisSettings.stopTolForces = 1e-8 ;
