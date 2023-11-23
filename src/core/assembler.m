@@ -111,24 +111,20 @@ for elem = 1:nElems
   %md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
-  %md obtains nodes and dofs of element
+  % obtains nodes and dofs of element
   nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )   ;     
-  % dofselemRedA = dofselem( reducedDofsIndxs );       
-  % dofselemRed = dofselem ( 1 : 1 : end ) ;
 
-  auxA = repmat(nodalDofsEntries,length(dofselem)/6,1) ;
+  % construct vector of degrees of freedom of element
+  auxA = repmat( nodalDofsEntries, length(dofselem)/6,1 )  ;
   auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
   dofselemRed = dofselem( auxA+auxB )   ;
 
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
-  elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
-
-  %md dotdotdispsElem contains the accelerations corresponding to the dofs of the element
-  if dynamicProblemBool
-    dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
-  end
+  elemDisps       = u2ElemDisps( Ut      , dofselemRed ) ;
+  dotdispsElem    = u2ElemDisps( Udott   , dofselemRed ) ;
+  dotdotdispsElem = u2ElemDisps( Udotdott, dofselemRed ) ;
 
   elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
@@ -160,7 +156,6 @@ for elem = 1:nElems
     Finte = fs{1} ;  Ke = ks{1} ;
 
     if dynamicProblemBool
-      dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
@@ -178,18 +173,8 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'frame')
 
 		if strcmp(modelName, 'elastic-linear')
-			boolLinear = 1 ;
-			boolMatNonLin = 0 ;
-		elseif strcmp(modelName, 'biLinear') || strcmp(modelName, 'userFunc')
-			boolLinear = 1 ;
-			boolMatNonLin = 1 ;
-		else
-			boolLinear = 0 ;
-		end
 
-		if  boolLinear == 1
-
-			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ), tangBool, matFintBool, elem ) ;
+			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -202,7 +187,7 @@ for elem = 1:nElems
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
                                                              [ 1 modelParams ] , ...
-                                                             u2ElemDisps( Ut, dofselem ) ) ;
+                                                             elemDisps ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
@@ -210,9 +195,9 @@ for elem = 1:nElems
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
                                             elemCrossSecParams                  , ...
                                             [ 1 modelParams ]               , ...
-                                            u2ElemDisps( Ut, dofselem )         , ...
-                                            u2ElemDisps( Udott    , dofselem )  , ...
-                                            u2ElemDisps( Udotdott , dofselem )  , ...
+                                            elemDisps         , ...
+                                            dotdispsElem  , ...
+                                            dotdotdispsElem  , ...
                                             density, massMatType  ) ;
 
 
@@ -226,9 +211,9 @@ for elem = 1:nElems
     if aeroBool && fsBool
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
                                      elemCrossSecParams                   ,        ...
-                                     u2ElemDisps( Ut       , dofselem )   ,        ...
-                                     u2ElemDisps( Udott    , dofselem )   ,        ...
-                                     u2ElemDisps( Udotdott , dofselem )   ,        ...
+                                     elemDisps   ,        ...
+                                     dotdispsElem   ,        ...
+                                     dotdotdispsElem   ,        ...
                                      aeroCoefs, chordVector, aeroNumericalParams,  ...
                                      analysisSettings, timeVar, elem, ...
                                      aeroNumericalParams{2}  ) ;

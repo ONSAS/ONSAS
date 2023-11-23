@@ -18,7 +18,7 @@
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ fs, ks, finteLocalCoor ] = elementFrameLinear(elemCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
   
