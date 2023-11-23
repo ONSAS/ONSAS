@@ -21,7 +21,6 @@ Udotdotte )
 
   Xe = Xe(:) ;
   localAxisRef = Xe(4:6) - Xe(1:3) ;
-
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
 
   Me = sparse( 12, 12 ) ;
@@ -45,4 +44,4 @@ Udotdotte )
 
   Me = Me( 1:2:end, 1:2:end) ;
 
-  Fmasse = Me * Udotdotte(1:2:end) ;
+  Fmasse = Me * Udotdotte ;
