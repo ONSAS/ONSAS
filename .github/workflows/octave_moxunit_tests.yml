@@ -1,4 +1,4 @@
-# This is the ONSAS.m coode testing continuous integration config file
+# This is the ONSAS coode testing continuous integration config file
 #
 name: moxunit_code_coverage
 

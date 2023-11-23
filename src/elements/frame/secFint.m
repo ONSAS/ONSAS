@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,11 +14,11 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-function FintInt = secFint( z, ty, tz, B, R, Ut, hyperElasParams, hyperElasModel)
+%
+function FintInt = secFint( z, ty, tz, B, R, Ut, modelParams, modelName)
 		
 	epsk = epsVal(z, B, R, Ut) ;
-	[sigma, ~] = constitutiveModel(hyperElasParams, hyperElasModel, epsk') ;
+	[sigma, ~] = constitutiveModel(modelParams, modelName, epsk') ;
 	FintInt = ty * -B' * (z .* sigma)' ;
 
 end

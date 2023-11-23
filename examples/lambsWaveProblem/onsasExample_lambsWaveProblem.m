@@ -1,6 +1,6 @@
 %md# Lamb's wave problem
 %md
-%md In this case the ONSAS.m directory is loaded from an environment variable.
+%md In this case the ONSAS directory is loaded from an environment variable.
 % add path
 clear all, close all
 addpath( genpath( [ getenv( 'ONSAS_PATH' ) 'src/'] ) )
@@ -12,8 +12,8 @@ global spitMatrices, spitMatrices = true ;
 %md## MEBI parameters
 %md
 %md### materials
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams =  [ E nu ]       ;
+materials.modelName  = 'elastic-linear' ;
+materials.modelParams =  [ E nu ]       ;
 materials.density         =  rho            ;
 %md
 %md### elements

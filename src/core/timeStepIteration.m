@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
+% 
 % This functions performs the iteration for the computations of the state in
 % the next time step using the numerical method and parameters provided by the
 % user.
@@ -31,7 +30,7 @@ currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 % -----------------------------------------------------------
 stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
 if ~(stabilityAnalysisFlag==0)
-  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS.m/issues/351');  
+  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');  
   % reduced tangent matrix of previous time for nonlinear buckling analysis
   KTtred = modelCurrSol.systemDeltauMatrix ;
 end

@@ -1,6 +1,6 @@
 %md# Uniaxial Compression example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/uniaxialCompression/uniaxialCompression.m)
 %md
 %mdIn this tutorial example an hyperelastic solid is submitted to a uniaxial compression test. The geometry and tension applied are shown in the figure, where the $Lx$, $Ly$ and $Lz$ are the dimensions. A nominal compression tension $p$ is applied on the face $x=Lx$, as a nominal tension. Non-friction contact boundary conditions are considered on faces $x=0$, $y=0$ and $z=0$.
 %md
@@ -62,8 +62,8 @@ E = 1 ; nu = 0.3 ; p = -5 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ; bulk = E / ( 3*(1-2*nu) ) ;
 %md since only one material is considered, a scalar struct is defined as follows
 materials                 = struct() ;
-materials.hyperElasModel  = 'NHC' ;
-materials.hyperElasParams = [ mu bulk ] ;
+materials.modelName  = 'NHC' ;
+materials.modelParams = [ mu bulk ] ;
 %md
 %md#### elements
 %md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:

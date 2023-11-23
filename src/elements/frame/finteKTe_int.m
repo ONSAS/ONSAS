@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 % ======================================================================
 % KT and Finte computation
 % ======================================================================
@@ -47,13 +46,13 @@ for j = 1:length(we)
 		% Tangent stiffness matrix
 		secKTe = quadv('secKT', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
 														 elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
-														 Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
+														 Ut(LocBendXZdofs), modelParams, modelName) ;
 		KbendXZ = l/2*( B'*secKTe*B*we(j) ) + KbendXZ ;	
 	end
 	
 	secFint = quadv('secFint', -elemCrossSecParamsVec(2)/2, elemCrossSecParamsVec(2)/2, [], [], ...
 															elemCrossSecParamsVec(1), elemCrossSecParamsVec(2), B, R(LocBendXZdofs,LocBendXZdofs), ...
-															Ut(LocBendXZdofs), hyperElasParams, hyperElasModel) ;
+															Ut(LocBendXZdofs), modelParams, modelName) ;
 	finte = l/2*secFint*we(j) + finte ;	
 	
 	% ==============================

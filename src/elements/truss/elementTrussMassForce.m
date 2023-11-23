@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,14 +14,13 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
+% 
 
 function [ Fmasse, Me ] = elementTrussMassForce ( Xe, rho, A, massMatType, ...
 Udotdotte )
 
   Xe = Xe(:) ;
   localAxisRef = Xe(4:6) - Xe(1:3) ;
-
   lini = sqrt( sum( localAxisRef.^2 ) ) ;
 
   Me = sparse( 12, 12 ) ;
@@ -46,4 +44,4 @@ Udotdotte )
 
   Me = Me( 1:2:end, 1:2:end) ;
 
-  Fmasse = Me * Udotdotte(1:2:end) ;
+  Fmasse = Me * Udotdotte ;

@@ -18,12 +18,12 @@ numElemF = 10; numElemT = 1;
 %md
 %md### materials
 %mdtruss material:
-materials(1).hyperElasModel  = '1DrotEngStrain' ;
-materials(1).hyperElasParams = [ Et nut ] ;
+materials(1).modelName  = 'elastic-rotEngStr' ;
+materials(1).modelParams = [ Et nut ] ;
 materials(1).density = rhot ;
 %mdframe material:
-materials(2).hyperElasModel  = '1DrotEngStrain' ;
-materials(2).hyperElasParams = [ Ef nuf ] ;
+materials(2).modelName  = 'elastic-rotEngStr' ;
+materials(2).modelParams = [ Ef nuf ] ;
 materials(2).density = rhof ;
 %md
 %md### elements
