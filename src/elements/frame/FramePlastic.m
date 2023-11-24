@@ -55,13 +55,11 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
 
   uvector = [u1; u2] ;
   dvector = [uvector',vvector',thetavector'] ;
-
-  % Euler–Bernoulli element with embedded discontinuity
  
   %{
 
   %}
-  
+
   % bending XY
   if     elemReleases(3) == 0 && elemReleases(4) == 0
     KbendXY = E * Iz / l^3 * kBendNoRelease ;
