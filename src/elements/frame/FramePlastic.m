@@ -1,5 +1,6 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini,
+% Sergio A. Merlino.
 %
 % This file is part of ONSAS.
 %
@@ -16,10 +17,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
-% --------------------------------------------------------------------------------------------------
+% =========================================================================
 
-% =============================================================================
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+% Euler-Bernoulli element with embeded discontinuity
+% Numerical modeling of softening hinges in thin Euler–Bernoulli beams
+% Francisco Armero, David Ehrlich / University of California, Berkeley
+
+% =========================================================================
+
+function [ fs, ks, finteLocalCoor ] = FramePlastic(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
   
   ndofpnode = 6 ;
   
@@ -35,9 +41,9 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
 	
   % temporary
-  %~ ------------------------
+  % ------------------------
   elemReleases = [0 0 0 0] ;
-  %~ ------------------------
+  % ------------------------
 
   % --- set the local degrees of freedom corresponding to each behavior
   LocAxialdofs  = [ 1 7 ] ;
@@ -51,14 +57,56 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
                     -1  1 ] ;
   KL( LocAxialdofs , LocAxialdofs ) = Kaxial ;
 
-  % Euler-Bernoulli element with embeded discontinuity
+  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
   uvector = [u1; u2] ;
-  dvector = [uvector',vvector',thetavector'] ;
- 
-  %{
+  vvector = [v1; v2] ;
+  thetavector = [theta1; theta2] ;
 
-  %}
+  dvector = [uvector', vvector', thetavector']' ;
+  
+  Bu = [-1/l 1/l] ;
+
+  Kfd = zeros(6,6) ;
+  Kfalfa = zeros(6,6) ;
+  Khd = zeros(6,6) ;
+  Khalfa = zeros(6,6) ;
+
+  % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
+
+  npi = 3 ;
+  xpi = [a (a+b)/2 b] ;
+  wpi = [1/3 4/3 1/3] ;
+
+  % Integration
+
+  for j = 1:npi
+  [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j),wpi(j)) ;
+  Kfd = Kfd + Kfdj ;
+  Kfalfa = Kfalfa + Kfalfaj ;
+  Khd = Khd + Khdj ;
+  Khalfa = khalfa + Khalfaj ;
+  end
+
+  function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi)
+
+  N = bendingInterFuns (xpi, le, 2) ;
+  Bv = [N(1) N(3)] ;
+  Btheta = [N(2) N(4)] ;
+
+  Bd = [Bu 0 0; 0 Bv Btheta] ;
+
+  Cep
+  Ghat
+
+  Kfd = Bd'*E*A*Bd ;
+  Kfalfa = Bd'*E*A*Bd ;
+  Khd = Bd'*E*A*Bd ;
+  Khalfa = Bd'*E*A*Bd ;
+  
+  end
+
+  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
   % bending XY
   if     elemReleases(3) == 0 && elemReleases(4) == 0
@@ -138,49 +186,3 @@ function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCross
   end
 
 end
-% ==============================================================================
-%~ % ==============================================================================
-%~ function [KGelem] = linearStiffTimoMatBeam3D
-
-  %~ G = E / ( 2*(1 + nu) ) ;
-  %~ ky = 5/6 ;
-  %~ kz = 5/6 ; % Shear factor
-
-  %~ Da = E * A ;
-  %~ Dby = E * Iy ;
-  %~ Dbz = E * Iz ;
-  %~ Dsy = G * ky * A ;
-  %~ Dsz = G * kz * A ;
-  %~ Dt = G * J ;
-
-  %~ % Local matrices
-
-  %~ Ke11 = [ Da/l  0       0       0     0                     0                   ; ...
-           %~ 0     Dsy/l   0       0     0                     Dsy/2               ; ...
-           %~ 0     0       Dsz/l   0    -Dsz/2                 0                   ; ...
-           %~ 0     0       0       Dt/l  0                     0                   ; ...
-           %~ 0     0      -Dsz/2   0     (Dsz*l/4 + Dby/l)     0                   ; ...
-           %~ 0     Dsy/2   0       0     0                     (Dsy*l/4 + Dbz/l)   ] ;
-
-  %~ Ke12 = [ -Da/l   0       0        0      0                   0                 ; ...
-            %~ 0     -Dsy/l   0        0      0                   Dsy/2             ; ...
-            %~ 0      0      -Dsz/l    0     -Dsz/2               0                 ; ...
-            %~ 0      0       0       -Dt/l   0                   0                 ; ...
-            %~ 0      0       Dsz/2    0      (Dsz*l/4 + Dby/l)   0                 ; ...
-            %~ 0     -Dsy/2   0        0      0                   (Dsy*l/4 - Dbz/l) ] ;
-
-  %~ Ke22 = [ Da/l   0       0       0       0                 0                 ; ...
-           %~ 0      Dsy/l   0       0       0                -Dsy/2             ; ...
-           %~ 0      0       Dsz/l   0       Dsz/2             0                 ; ...
-           %~ 0      0       0       Dt/l    0                 0                 ; ...
-           %~ 0      0       Dsz/2   0       (Dsz*l/4 + Dby)   0                 ; ...
-           %~ 0     -Dsy/2   0       0       0                 (Dsy*l/4 + Dbz/l) ] ;
-
-  %~ Ke21 = abs(Ke12)' ;
-
-  %~ Kelem = [ Ke11 Ke12 ; ...
-            %~ Ke21 Ke22 ] ;
-
-
-%~ end
-% ==============================================================================
