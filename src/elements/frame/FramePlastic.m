@@ -1,5 +1,5 @@
 % Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini,
+% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini, 
 % Sergio A. Merlino.
 %
 % This file is part of ONSAS.
@@ -25,7 +25,7 @@
 
 % =========================================================================
 
-function [ fs, ks, finteLocalCoor ] = FramePlastic(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlastic(dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
   
   ndofpnode = 6 ;
   
@@ -33,6 +33,8 @@ function [ fs, ks, finteLocalCoor ] = FramePlastic(elemCoords, elemCrossSecParam
 	E   = hyperElasParams(1) ;
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
+    Mc, My, Mu, k1, k2  % (data from the moment-curvature diagram)
+	ks % (data from the moment-rotation jump diagram)
 	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
@@ -81,24 +83,29 @@ function [ fs, ks, finteLocalCoor ] = FramePlastic(elemCoords, elemCrossSecParam
   % Integration
 
   for j = 1:npi
-  [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j),wpi(j)) ;
+  [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j), xd) ;
   Kfd = Kfd + Kfdj ;
   Kfalfa = Kfalfa + Kfalfaj ;
   Khd = Khd + Khdj ;
   Khalfa = khalfa + Khalfaj ;
   end
 
-  function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi)
+  function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi, xd)
 
-  N = bendingInterFuns (xpi, le, 2) ;
+  N = bendingInterFuns (xpi, l, 2) ;
   Bv = [N(1) N(3)] ;
   Btheta = [N(2) N(4)] ;
 
   Bd = [Bu 0 0; 0 Bv Btheta] ;
 
   Cep
-  Ghat
+  Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
 
+  khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+  khat2 = dirac(xd)*alfan ;
+  k = khat + khat2 ;
+  ken = khat - kpn ;
+  
   Kfd = Bd'*E*A*Bd ;
   Kfalfa = Bd'*E*A*Bd ;
   Khd = Bd'*E*A*Bd ;
