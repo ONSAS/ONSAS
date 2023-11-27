@@ -25,7 +25,7 @@
 
 % =========================================================================
 
-function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlastic(dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
   
   ndofpnode = 6 ;
   
@@ -62,11 +62,13 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-  uvector = [u1; u2] ;
-  vvector = [v1; v2] ;
-  thetavector = [theta1; theta2] ;
+  % uvector = [u1; u2] ;
+  % vvector = [v1; v2] ;
+  % thetavector = [theta1; theta2] ;
 
-  dvector = [uvector', vvector', thetavector']' ;
+  uvector = dn(1,:)' ;
+  vvector = dn(2,:)' ;
+  thetavector = dn(3,:)' ;
   
   Bu = [-1/l 1/l] ;
 
