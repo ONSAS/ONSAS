@@ -33,9 +33,9 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
 	E   = hyperElasParams(1) ;
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
-    Mc, My, Mu  % (data from the moment-curvature diagram)
+    Mc, My, Mu  % from the moment-curvature diagram
     kh1, kh2    % hardening modules
-	ks          % (from the moment-rotation jump diagram)
+	ks          % from the moment-rotation jump diagram
 	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
