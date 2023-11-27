@@ -86,12 +86,17 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
   % Integration
 
   for j = 1:npi
+
   [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j), xd) ;
-  Kfd = Kfd + Kfdj ;
-  Kfalfa = Kfalfa + Kfalfaj ;
-  Khd = Khd + Khdj ;
-  Khalfa = khalfa + Khalfaj ;
+
+  Kfd = Kfd + Kfdj*wpi(j) ;
+  Kfalfa = Kfalfa + Kfalfaj*wpi(j) ;
+  Khd = Khd + Khdj*wpi(j) ;
+  Khalfa = khalfa + Khalfaj*wpi(j) ;
   end
+
+  Khalfa = Khalfa +ks ; % integral + ks
+
 
   function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi, xd)
 
@@ -119,12 +124,19 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
   q = piecewise(xin1 <= (My-Mc)/kh1, -kh1*xin1, -(My-Mc)*(1-kh2/kh1)-kh2*xin1) ;
   phi = abs(M) - (Mc - q) ;
 
+  % elastoplastic tangent bending modulus
+
+  Cep
+
   % stiffness matrices
 
-  Kfd = Bd'*E*A*Bd ;
-  Kfalfa = Bd'*E*A*Bd ;
-  Khd = Bd'*E*A*Bd ;
-  Khalfa = Bd'*E*A*Bd ;
+  Kfd = Bd'*[E*A 0; 0 Cep]*Bd ;
+
+  Kfalfa = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
+
+  Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
+
+  Khalfa = Ghat*Cep*Ghat ;
   
   end
 
