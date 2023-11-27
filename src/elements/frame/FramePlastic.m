@@ -33,8 +33,9 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
 	E   = hyperElasParams(1) ;
 	nu  = hyperElasParams(2) ;
 	G   = E/(2*(1+nu)) ;
-    Mc, My, Mu, k1, k2  % (data from the moment-curvature diagram)
-	ks % (data from the moment-rotation jump diagram)
+    Mc, My, Mu  % (data from the moment-curvature diagram)
+    kh1, kh2    % hardening modules
+	ks          % (from the moment-rotation jump diagram)
 	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
@@ -98,14 +99,26 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   Bd = [Bu 0 0; 0 Bv Btheta] ;
 
-  Cep
   Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
+
+  % curvatures k, ke, kp, khat2 (discrete part of the curvature)
 
   khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
   khat2 = dirac(xd)*alfan ;
-  k = khat + khat2 ;
+  kn = khat + khat2 ;
   ken = khat - kpn ;
-  
+
+  % moment
+
+  M= E*Iy*ken ;
+
+  % yield criterion
+
+  q = piecewise(xin1 <= (My-Mc)/kh1, -kh1*xin1, -(My-Mc)*(1-kh2/kh1)-kh2*xin1) ;
+  phi = abs(M) - (Mc - q) ;
+
+  % stiffness matrices
+
   Kfd = Bd'*E*A*Bd ;
   Kfalfa = Bd'*E*A*Bd ;
   Khd = Bd'*E*A*Bd ;
