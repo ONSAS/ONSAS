@@ -1,14 +1,12 @@
-% ONSAS nonlinear pendulum
+% nonlinear added mass pendulum eample
 
-close all, clear all ;
-% add path
-addpath( genpath( [ pwd '/../../src'] ) );
-global massratio;
-global AMBool;
+close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
+
 %md Case 1: the fluid is still: it is only modelled by an added inertia of the solid, the fluid properties are only defined by the massratio = rho_structure/rho_fluid
-otherParams.problemName     = 'AMCase1';
+otherParams.problemName     = 'addedMassPedulum_case1';
+
 %md AMBool = false because the fluid is not defined in this case (in case 2 it is defined)
-AMBool = false;
+global AMBool; AMBool = false;
 % scalar parameters
 EA = 1e8 ;  nu = 0       ; 
 A = 0.1  ;  l0  = 3.0443 ;
@@ -18,8 +16,10 @@ T = 4.13 ;
 E   = EA / A ;  d = 2*sqrt(A/pi);
 rho = 2*m / ( A * l0 )  ;
 materials.density = rho ;
+
 %md Fluid inertia is only defined by the mass ratio:
-massratio = 1;
+global massratio;  massratio = 1;
+
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
 materials.modelName  = 'elastic-rotEngStr' ;
 materials.modelParams = [ E nu ] ;
@@ -47,27 +47,24 @@ initialConds = {} ;
 %mdThe coordinates considering a mesh of two nodes is:
 angle_init = 25; % degrees
 mesh.nodesCoords = [   0                    0    l0 ; ...
-                   sind(angle_init)*l0  0  l0-cosd(angle_init)*l0  ] ;
-%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+                    sind(angle_init)*l0  0  l0-cosd(angle_init)*l0  ] ;
+
 mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
-%md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used. Finally, at the end of the vector the number of the node is included (1).
-mesh.conecCell{ 2, 1 } = [ 0 1 0  2   ] ;
-%md and for node $2$ only the boundary condition is changed, because it is lodaded.
-%md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.
-mesh.conecCell{ 3, 1 } = [ 1 2 0  1 2 ] ;
-%md
+mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
+
 %md### analysisSettings
-%mdA Newmark algorithm is used to solve this problem with the following parameters during one period $T$:
 analysisSettings.deltaT        = 0.05  ;
-analysisSettings.finalTime     = 2*T  ;
+analysisSettings.finalTime     = 2*T *.1 ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
-%otherParams.plots_format       = 'vtk' ;
+
+otherParams.plots_format       = 'vtk' ;
+
 % ------------------------------------
-%md### Analysis case 2: Solution using HHT with truss element, consistent mass formulation and self weight boolean activated:
+
 analysisSettings.booleanSelfWeight = true ;
 %mdIn order to validate HHT numerical method this is executed with $alphaHHT = 0$ which necessarily implies that numerical results must be identical to CASE 1, since HHT is equivalent to Newmark if AplhaHHT = 0,
 analysisSettings.methodName = 'alphaHHT';
@@ -76,19 +73,16 @@ analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 % ------------------------------------
 [matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-% ------------------------------------
-%md Case 2: the fluid has an acceeration
-otherParams.problemName     = 'AMCase2';
+
+analysisSettings.deltaT        = 0.01  ;
+
+otherParams.problemName     = 'addedMassPedulum_case2';
 %md AMBool is turned to true to consider fluid acceleration
 AMBool = true;
 %md Mesh is now a vertical pendulum
 %mdThe coordinates conisdering a mesh of two nodes is:
-mesh.nodesCoords = [   0   0    l0 ;...
-                       l0  0    0  ] ;
-mesh.conecCell = { } ;
-mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
-mesh.conecCell{ 2, 1 } = [ 0 1 0  2   ] ;
-mesh.conecCell{ 3, 1 } = [ 1 2 0  1 2 ] ;
+# mesh.nodesCoords = [   0   0    l0 ;...
+#                        l0  0    0  ] ;
 % Fluid parameters
 rhoFluid = rho/massratio; nuFluid = 1e-6;
 %md Initially straight, motion is only driven by the added mass force with no weight
@@ -97,13 +91,17 @@ nameFuncVel = 'windUniform';
 %md Drag and lift are ignored in this idealized example
 elements(2).aeroCoefFunctions = {[]; []; [] }   ;
 elements(2).chordVector = [0 0 d ] ;
+
 %md Analysis Settings
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
 %analysisSettings.booleanSelfWeight = false ;
-analysisSettings.stopTolDeltau = 1e-8 ;
-analysisSettings.stopTolForces = 1e-8 ;
+analysisSettings.stopTolDeltau = 1e-12 ;
+analysisSettings.stopTolForces = 1e-12 ;
+
 % ------------------------------------
 [matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+
 % ------------------------------------------------------------------------------
 %md### extract control displacements
 %mdThe mass displacement in z are:
@@ -125,8 +123,9 @@ times  = (0:length(controlDispZCase1)-1) * dt ;
 % Analytical solution for Case 1
 d = 2*sqrt(A/pi);
 if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
-    AMcoef =  1+(1/massratio) ;
-else AMcoef = 1;
+  AMcoef =  1+(1/massratio) ;
+else
+  AMcoef = 1;
 end
 T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g)));
 f_ana_lim  = 1/T_ana_lim;
