@@ -6,7 +6,9 @@ close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 otherParams.problemName     = 'addedMassPedulum_case1';
 
 %md AMBool = false because the fluid is not defined in this case (in case 2 it is defined)
-global AMBool; AMBool = false;
+
+# global AMBool; AMBool = false;
+
 % scalar parameters
 EA = 1e8 ;  nu = 0       ; 
 A = 0.1  ;  l0  = 3.0443 ;
@@ -72,22 +74,28 @@ analysisSettings.alphaHHT   =  0        ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 % ------------------------------------
-[matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+# [matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-analysisSettings.deltaT        = 0.01  ;
+# analysisSettings.deltaT        = 0.01  ;
 
 otherParams.problemName     = 'addedMassPedulum_case2';
 %md AMBool is turned to true to consider fluid acceleration
-AMBool = true;
+
+# AMBool = true;
+
+
 %md Mesh is now a vertical pendulum
 %mdThe coordinates conisdering a mesh of two nodes is:
 # mesh.nodesCoords = [   0   0    l0 ;...
 #                        l0  0    0  ] ;
 % Fluid parameters
+
 rhoFluid = rho/massratio; nuFluid = 1e-6;
+
 %md Initially straight, motion is only driven by the added mass force with no weight
 % angle_init = 0;
 nameFuncVel = 'windUniform';
+
 %md Drag and lift are ignored in this idealized example
 elements(2).aeroCoefFunctions = {[]; []; [] }   ;
 elements(2).chordVector = [0 0 d ] ;
@@ -95,8 +103,6 @@ elements(2).chordVector = [0 0 d ] ;
 %md Analysis Settings
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
 %analysisSettings.booleanSelfWeight = false ;
-analysisSettings.stopTolDeltau = 1e-12 ;
-analysisSettings.stopTolForces = 1e-12 ;
 
 % ------------------------------------
 [matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

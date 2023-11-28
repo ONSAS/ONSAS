@@ -213,6 +213,10 @@ for elem = 1:nElems
                                      aeroCoefs, chordVector, aeroNumericalParams,  ...
                                      analysisSettings, timeVar, elem, ...
                                      aeroNumericalParams{2}  ) ;
+                                     disp('evaluando aero')
+                                     norm(FaeroElem)
+                                     
+
     end
 
   % ---------  triangle solid element -----------------------------

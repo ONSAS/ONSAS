@@ -25,6 +25,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
   
+  disp('fuerzas internas')
+  norm(Fint)
+  norm(Fvis)
+  norm(Fmas)
+  norm(Faero)
+  norm(Fther)
+  disp('==========')
+  
   KT   = mats{1} ; 
 
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
@@ -126,11 +134,21 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 
+    norm(Faerot)
+
+    disp('Fexts ')
+
     [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
+    norm(FextG)
 
     [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
+    norm(FextGt)
 
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
+
+    norm(Fintt)
+    norm(Fvist)
+    norm(Faerot)
 
     rhat   =  ( 1 + alphaHHT ) * ( ...
                 + Fint  ( BCsData.neumDofs ) ...
@@ -164,4 +182,8 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors ] =
 
   end
 
+
+  disp('RHS system delta u')
+
+  norm(systemDeltauRHS)
 

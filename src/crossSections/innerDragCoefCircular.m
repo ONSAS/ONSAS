@@ -18,7 +18,8 @@
 % This function retrevies drag for circular cross section  
 % Reference for the drag formulation.
 % https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722
-% The function is suggetes by Frederick Gosselin in #issue 617 
+
+% The function is suggeted by Frederick Gosselin in #issue 617 
 
 function C_d = innerDragCoefCircular( betaRel, Re )
 

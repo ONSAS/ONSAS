@@ -71,6 +71,9 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
   tch = (vecChordUndef / norm( vecChordUndef )) ;
 
+  disp('vpi')
+  norm( VpiRelG)
+
   % Calculate relative incidence angle in the deformed configuration
   if( norm( VpiRelG ) == 0 )
       td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
@@ -81,20 +84,30 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
       td = VpiRelG / norm( VpiRelG ) ;
   end
 
+if isnan(  norm( VpiRelG)  ),  stop, end
+
   cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
   sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
   betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
   %-----------------------------------------------------------------
 
   % Delete spaces
+  aeroCoefs
   userDragCoef   = aeroCoefs{1} ;
   userLiftCoef   = aeroCoefs{2} ;
   userMomentCoef = aeroCoefs{3} ;
 
-  % Computation of Renynolds number
+  % Computation of Reynolds number
   Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
 
+  disp('reynolds')
+  norm(udotFlowG)
+   dimCharacteristic 
+   viscosityFluid 
+Re
   % ------------ Read Cd, Cl, Cm  ------------
+
+
   % Check fluid coefficients existence and the load it values if not set 0:
   if ~isempty( userDragCoef )
     c_d = feval( userDragCoef, betaRelG, Re  ) ;
@@ -118,10 +131,26 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % ------------ Compute drag, lift and pitch moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
+  uniformUdot
+  
   if ~isempty( uniformUdot ) && uniformUdot
+
       fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
+
+      norm(fdl)
+      disp('entro')
   else
-      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ;
+    disp('NO entro')
+
+    densityFluid
+c_d 
+ dimCharacteristic
+  norm( VpiRelG) 
+   VpiRelG
+
+    fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ;
+norm(fdl)
+if isnan(norm(fdl)),stop,end
   end
   if ~isempty(  ILVIVBool ) && ILVIVBool
       fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
@@ -161,6 +190,11 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
 
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll + fdl_il;
+  disp('integrand')
+  norm(fdl)
+  norm(fll)
+  norm(fdl_il)
+  
   % torsional moment fluid load in deformed coordinates
   ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
 

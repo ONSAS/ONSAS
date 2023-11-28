@@ -62,8 +62,13 @@ systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
 systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 previousStateCell  = modelCurrSol.previousStateCell  ;
 
+disp('llamada primera systemassembler')
+norm(Ut)
 % --- assemble system of equations ---
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
+
+norm(FextG)
+norm(systemDeltauRHS)
 
 booleanConverged = false ;
 dispIters        = 0     ;
@@ -74,8 +79,11 @@ while  booleanConverged == 0
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
 
+  norm(systemDeltauRHS)
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
+
+  norm(deltaured)
 
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
@@ -173,16 +181,16 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
     Udottp1    = Udott ;
   end
 
-%test
 % ==============================================================================
-%
+% update Uiter
 % ==============================================================================
+
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
   Uk( neumdofs ) = Uk( neumdofs ) + deltaured ;
   currDeltau     = currDeltau     + deltaured ;
 
 function vec = antiSkew( mat )
-  vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
+  vec = [ mat(3,2); mat(1,3); mat(2,1) ] ;
 
 function args = argsAL(analysisSettings, len, neumDofs, timeIndex)
   arcLengthNorm = zeros( len ) ;

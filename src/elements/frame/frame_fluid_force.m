@@ -199,7 +199,12 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   % Compute the element fluid force by the equivalent virtual work theory
   fDragLiftPitchElem = zeros(12,1) ;
+
+  # disp('drag force')
+  # udotFlowElem
+  # stop
   for ind = 1 : length( xIntPoints )
+ind
     %The Gauss integration coordinate is:
     xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element
@@ -210,7 +215,21 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                                            I3, O3, P, G, EE, L2, L3,...
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
-  end
+
+                                                           norm(fDragLiftPitchElem)
+                                                           if isnan( norm(fDragLiftPitchElem)),                                                              error('fdsfas'), end
+
+                                                            
+                                                            xGauss, ddotg, udotFlowElem,...
+                                                           l0, tl1, tl2, Rr,...
+                                                           chordVector', dimCharacteristic,...
+                                                           I3, O3, P, G, EE, L2, L3,...
+                                                           aeroCoefs, densityFluid, viscosityFluid,...
+                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool
+                                                            
+
+                                                          end
+
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fDragLiftPitchElem = swtichToONSASBase( fDragLiftPitchElem ) ;
@@ -222,6 +241,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
   % -------------------------------
+disp('added mass force')
+norm(fAddedMassElem)
 
   fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
