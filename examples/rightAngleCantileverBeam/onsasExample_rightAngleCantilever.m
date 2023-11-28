@@ -1,7 +1,7 @@
 %md# Right angle cantilever beam problem
 %md---
 %md
-%mdIn this tutorial, the right angle cantilever beam problem example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic co-rotational 3D beam implementation by comparing the results provided by ONSAS with a solution provided by [(T.L Lee & J.M Battini, 2014)](https://www.sciencedirect.com/science/article/abs/pii/S0045782513003022) and originally solved in (Simo & Vu-Quoc, 1998). The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS.m/blob/master/examples/rightAngleCantilever/onsasExample_rightAngleCantilever.m). This is a validation classical example, in corrotational literature and all units discribed in this problem are meaningless in real terms. 
+%mdIn this tutorial, the right angle cantilever beam problem example and its resolution using ONSAS are described. The aim of this example is to validate the dynamic co-rotational 3D beam implementation by comparing the results provided by ONSAS with a solution provided by [(T.L Lee & J.M Battini, 2014)](https://www.sciencedirect.com/science/article/abs/pii/S0045782513003022) and originally solved in (Simo & Vu-Quoc, 1998). The Octave script of this example is available at [this url](https://github.com/ONSAS/ONSAS/blob/master/examples/rightAngleCantilever/onsasExample_rightAngleCantilever.m). This is a validation classical example, in corrotational literature and all units discribed in this problem are meaningless in real terms. 
 %md
 %mdThe example is conformed by two identical right-angled bars, where each member has a length of $L = 10$. The structure is embedded at the base and a force in z direction is applied at the elbow. This force bends nd troses the system into the $x-y$ plane, producing free vibrations of wide amplitude. This force acts during two initial seconds, increases linearly until the first second of simulation and then decreases to zero. 
 %md
@@ -37,9 +37,9 @@ nElemsPerBeam = 10 ;
 %mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
 %md
 %md### materials
-%mdSince the example contains only one type of material the fields of the `materials` struct will have only one entry. The material density has no effect in this case because no gravity load is included and the dyadic inertia tensor is set manually. Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `hyperElasModel` is:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+%mdSince the example contains only one type of material the fields of the `materials` struct will have only one entry. The material density has no effect in this case because no gravity load is included and the dyadic inertia tensor is set manually. Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 materials.density = rho ;
 %md
 %md### elements

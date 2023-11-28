@@ -12,11 +12,11 @@ Eb = Et/3 ;db = 5*dt ; Ab = pi*db^2/4 ;  lb = .5 ; nub = 0.3 ; Ib = pi*db^4/64 ;
 %md### materials
 %mdSince the example contains two different type of materials the fields of the `materials` struct will have two entries. Although the structure develops small displacements a Rotated Engineering strain material constitutive behavior is considered.
 materials            = struct() ;
-materials(1).hyperElasModel  = '1DrotEngStrain' ;
-materials(1).hyperElasParams = [ Et nu ] ;
+materials(1).modelName  = 'elastic-rotEngStr' ;
+materials(1).modelParams = [ Et nu ] ;
 %
-materials(2).hyperElasModel  = '1DrotEngStrain' ;
-materials(2).hyperElasParams = [ Eb nu ] ;
+materials(2).modelName  = 'elastic-rotEngStr' ;
+materials(2).modelParams = [ Eb nu ] ;
 
 %md### elements
 %md

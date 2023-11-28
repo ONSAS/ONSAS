@@ -17,7 +17,10 @@ while ~feof( fidIn )
     currentLine = fgetl( fidIn ) ;
   end
 
-  if length( currentLine )>=3 && strcmp( currentLine(1:3), '%md' ) % not code
+  if length( currentLine )>=7 && strcmp( currentLine((end-6):end), '%hidden' )
+    % hidden line do not do anything
+
+  elseif length( currentLine )>=3 && strcmp( currentLine(1:3), '%md' ) % not code
 
     if isInCodeBlock % closes code block before writing comment
       if includeCodeBoolean

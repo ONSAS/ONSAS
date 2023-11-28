@@ -1,6 +1,6 @@
 %md# Spring-mass-damper system example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/springMass/springMass.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/springMass/springMass.m)
 %md
 %md## ODE System definition
 %mdIn this example a simple spring-mass-damper system is considered. This simple problem is used to validate different implementations of truss and frame elements submitted to dynamic loads.
@@ -83,8 +83,8 @@ assert( u0 < l, 'this analytical solution is not valid for this u0 and l0');
 %md#### Materials
 %md
 materials                    = struct() ;
-materials(1).hyperElasModel  = '1DrotEngStrain' ;
-materials(1).hyperElasParams = [ E 0 ]          ;
+materials(1).modelName  = 'elastic-rotEngStr' ;
+materials(1).modelParams = [ E 0 ]          ;
 materials(1).density         = rho              ;
 %md
 %md#### Elements
@@ -192,9 +192,9 @@ Izz = pi * d^4 / 64 ;
 E   = k* l^3 / ( 3 * Izz ) ; % delta = P L3/(3EI)  =>  k = P/delta = 3EI/L3  => E = kL3/(3I)
 rho = 2*m/(A*l) ; 
 %md
-materials(1).hyperElasParams = [ E 0 ] ;
+materials(1).modelParams = [ E 0 ] ;
 materials(1).density  = rho ;
-materials(1).hyperElasModel  = 'linearElastic' ; % 1DrotEngStrain should work as well
+materials(1).modelName  = 'elastic-linear' ; % elastic-rotEngStr should work as well
 %md
 elements             = {} ;
 elements(1).elemType = 'node' ;
