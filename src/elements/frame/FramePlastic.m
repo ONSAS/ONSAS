@@ -42,11 +42,6 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
   % --- elem lengths and rotation matrix
 	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
 	R = RotationMatrix(ndofpnode, local2globalMats) ;
-	
-  % temporary
-  % ------------------------
-  elemReleases = [0 0 0 0] ;
-  % ------------------------
 
   % --- set the local degrees of freedom corresponding to each behavior
   LocAxialdofs  = [ 1 7 ] ;
