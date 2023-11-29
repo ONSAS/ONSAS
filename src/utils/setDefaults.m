@@ -39,6 +39,7 @@ boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'addedMassBool'          , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;

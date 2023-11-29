@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs)
+function [ chordVector, aeroCoefs ] = setDefauAeroCrossSecProps( elemCrossSecParams, chordVector, aeroCoefs)
 
     chordVecIsDefined = ~isempty( chordVector ) ; 
     dragIsDefined     = ~isempty( aeroCoefs{1}) ; 
@@ -24,13 +24,26 @@ function [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams
 
     if strcmp( elemCrossSecParams{1}, 'circle' ) || strcmp( elemCrossSecParams{1}, 'pipe' )
 
-        d_ext = elemCrossSecParams{2} ;
-        if ~chordVecIsDefined chordVector = [ 0 0 d_ext ] ; end ;
-        if ~dragIsDefined dragF = 'innerDragCoefCircular'; else dragF = aeroCoefs{1};  end ;
+        if ~chordVecIsDefined
+            chordVector = [ 0 0 elemCrossSecParams{2} ] ;
+        end ;
+
+        if ~dragIsDefined
+            dragF = 'innerDragCoefCircular';
+        else
+            dragF = aeroCoefs{1};
+        end ;
+
         anonymus_null = @(beta,Re) 0 ;
-        if ~liftIsDefined liftF = anonymus_null ; else liftF = aeroCoefs{2}; end ;
-        if ~pitchIsDefined pitchF = anonymus_null  ; else pitchF = aeroCoefs{3};  end ;
-
+        if ~liftIsDefined
+            liftF = anonymus_null ;
+        else
+            liftF = aeroCoefs{2};
+        end ;
+        if ~pitchIsDefined
+            pitchF = anonymus_null;
+        else
+            pitchF = aeroCoefs{3};
+        end ;
     end
-
     aeroCoefs = { dragF; liftF; pitchF } ;

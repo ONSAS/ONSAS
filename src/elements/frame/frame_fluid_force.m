@@ -26,15 +26,17 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs);
+  [ chordVector, aeroCoefs ] = setDefauAeroCrossSecProps( elemCrossSecParams, chordVector, aeroCoefs);
 
   % Declare booleans for VIV model
   global VIVBool
   global ILVIVBool
   global constantLiftDir
   global uniformUdot
-  global AMBool
   global fluidFlowBool
+
+  AMBool = analysisSettings.addedMassBool;
+
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
 

@@ -2,12 +2,9 @@
 
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 
-%md Case 1: the fluid is still: it is only modelled by an added inertia of the solid, the fluid properties are only defined by the massratio = rho_structure/rho_fluid
+%md Case 1: the fluid is still: it is only modelled by an added inertia of the solid,
+%md the fluid properties are only defined by the massratio = rho_structure/rho_fluid
 otherParams.problemName     = 'addedMassPedulum_case1';
-
-%md AMBool = false because the fluid is not defined in this case (in case 2 it is defined)
-
-# global AMBool; AMBool = false;
 
 % scalar parameters
 EA = 1e8 ;  nu = 0       ; 
@@ -17,30 +14,29 @@ T = 4.13 ;
 %md
 E   = EA / A ;  d = 2*sqrt(A/pi);
 rho = 2*m / ( A * l0 )  ;
-materials.density = rho ;
-
-%md Fluid inertia is only defined by the mass ratio:
-global massratio;  massratio = 1;
 
 %md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
 materials.modelName  = 'elastic-rotEngStr' ;
 materials.modelParams = [ E nu ] ;
+materials.density = rho ;
 %md
 %md### elements
 %md
 %mdTwo different types of elements are considered, node and truss. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The `elemType` field is then:
 elements(1).elemType = 'node' ;
+
 elements(2).elemType = 'frame';
-%mdA rectangular $2$ section is considered with sqrt(A)xsqrt(A). However this type of section has no effect in the results, because of the inertial primacy against stiffness terms. Subsequently `elemCrossSecParams` field is:
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;
 elements(2).massMatType  = 'consistent';
+
 %md
 %md### boundaryConds
 %md
 %mdThe elements are submitted to a hinged condition where onnly rotation along y is allowed. then the `boundaryConds(1)` set is:
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 6] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0] ;
+
 %md### initial Conditions
 %mdHomogeneous initial conditions are considered in this example, consequently the `initialConds` cell is set empty:
 initialConds = {} ;
@@ -48,11 +44,10 @@ initialConds = {} ;
 %md### mesh parameters
 %mdThe coordinates considering a mesh of two nodes is:
 angle_init = 25; % degrees
-mesh.nodesCoords = [   0                    0    l0 ; ...
-                    sind(angle_init)*l0  0  l0-cosd(angle_init)*l0  ] ;
+mesh.nodesCoords = [  0                    0  l0                       ; ...
+                      sind(angle_init)*l0  0  l0*(1-cosd(angle_init))  ] ;
 
 mesh.conecCell = { } ;
-%md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
 mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
 
@@ -63,25 +58,25 @@ analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
 
-otherParams.plots_format       = 'vtk' ;
-
-% ------------------------------------
-
 analysisSettings.booleanSelfWeight = true ;
-%mdIn order to validate HHT numerical method this is executed with $alphaHHT = 0$ which necessarily implies that numerical results must be identical to CASE 1, since HHT is equivalent to Newmark if AplhaHHT = 0,
+
 analysisSettings.methodName = 'alphaHHT';
 analysisSettings.alphaHHT   =  0        ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
-% ------------------------------------
-# [matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-# analysisSettings.deltaT        = 0.01  ;
+otherParams.plots_format       = 'vtk' ;
+
+[matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+% =========================================================================
+
 
 otherParams.problemName     = 'addedMassPedulum_case2';
-%md AMBool is turned to true to consider fluid acceleration
 
-# AMBool = true;
+analysisSettings.deltaT        = 0.05  ;
+
+%md AMBool is turned to true to consider fluid acceleration
 
 
 %md Mesh is now a vertical pendulum
@@ -97,12 +92,11 @@ rhoFluid = rho/massratio; nuFluid = 1e-6;
 nameFuncVel = 'windUniform';
 
 %md Drag and lift are ignored in this idealized example
-elements(2).aeroCoefFunctions = {[]; []; [] }   ;
-elements(2).chordVector = [0 0 d ] ;
 
 %md Analysis Settings
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-%analysisSettings.booleanSelfWeight = false ;
+analysisSettings.addedMassBool = true  ;
+analysisSettings.booleanSelfWeight = false ;
 
 % ------------------------------------
 [matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;

@@ -27,6 +27,11 @@ function C_d = innerDragCoefCircular( betaRel, Re )
 
     if Re >= 2 * (10)^5
         warning("Re > 2x10^5 The drag coefficient relation breaks down as it does not account for the drag crisis.");
+
+    elseif Re < 1
+        C_d
+        error('Reynolds lower than 1');
     end
+
 end
 
