@@ -6,23 +6,25 @@ close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 %md the fluid properties are only defined by the massratio = rho_structure/rho_fluid
 otherParams.problemName     = 'addedMassPedulum_case1';
 
-% scalar parameters
-EA = 1e8 ;  nu = 0       ; 
-A = 0.1  ;  l0  = 3.0443 ;
-m   = 10 ;  g = 9.80     ;
-T = 4.13 ;
-%md
-E   = EA / A ;  d = 2*sqrt(A/pi);
-rho = 2*m / ( A * l0 )  ;
+% input scalar parameters
+EA = 1e8  ;  nu = 0       ; 
+A  = 0.1  ;  l0  = 3.0443 ;
+m  = 10   ;  g = 9.80     ;
+T  = 4.13 ;
 
-%md Moreover, the constitutive behavior considered is the Rotated Engineering strain, thus the field `modelName` is:
-materials.modelName  = 'elastic-rotEngStr' ;
+% computed scalar parameters
+E   = EA / A ;              % young modulus
+d   = 2 * sqrt(A/pi);       % cross-section diameter
+rho_structure = 2 * m / ( A * l0 ) ;  % solid density
+
+% materials
+materials.modelName   = 'elastic-rotEngStr' ;
 materials.modelParams = [ E nu ] ;
-materials.density = rho ;
+materials.density     = rho_structure ;
 %md
+
 %md### elements
 %md
-%mdTwo different types of elements are considered, node and truss. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The `elemType` field is then:
 elements(1).elemType = 'node' ;
 
 elements(2).elemType = 'frame';
@@ -30,17 +32,14 @@ elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;
 elements(2).massMatType  = 'consistent';
 
-%md
 %md### boundaryConds
-%md
-%mdThe elements are submitted to a hinged condition where onnly rotation along y is allowed. then the `boundaryConds(1)` set is:
+
 boundaryConds(1).imposDispDofs = [ 1 2 3 5 6] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0] ;
 
 %md### initial Conditions
-%mdHomogeneous initial conditions are considered in this example, consequently the `initialConds` cell is set empty:
 initialConds = {} ;
-%md
+
 %md### mesh parameters
 %mdThe coordinates considering a mesh of two nodes is:
 angle_init = 25; % degrees
@@ -52,10 +51,10 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
 mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
 
 %md### analysisSettings
-analysisSettings.deltaT        = 0.05  ;
+analysisSettings.deltaT        = 0.01  ;
 analysisSettings.finalTime     = 2*T *.1 ;
-analysisSettings.stopTolDeltau = 1e-12 ;
-analysisSettings.stopTolForces = 1e-12 ;
+analysisSettings.stopTolDeltau = 1e-13 ;
+analysisSettings.stopTolForces = 1e-13 ;
 analysisSettings.stopTolIts    = 30    ;
 
 analysisSettings.booleanSelfWeight = true ;
@@ -69,37 +68,39 @@ otherParams.plots_format       = 'vtk' ;
 
 [matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-% =========================================================================
+# stop
+# % =========================================================================
 
 
-otherParams.problemName     = 'addedMassPedulum_case2';
+# otherParams.problemName     = 'addedMassPedulum_case2';
 
-analysisSettings.deltaT        = 0.05  ;
+# analysisSettings.deltaT        = 0.05  ;
 
-%md AMBool is turned to true to consider fluid acceleration
+# %md AMBool is turned to true to consider fluid acceleration
 
 
-%md Mesh is now a vertical pendulum
-%mdThe coordinates conisdering a mesh of two nodes is:
-# mesh.nodesCoords = [   0   0    l0 ;...
-#                        l0  0    0  ] ;
-% Fluid parameters
+# %md Mesh is now a vertical pendulum
+# %mdThe coordinates conisdering a mesh of two nodes is:
+# # mesh.nodesCoords = [   0   0    l0 ;...
+# #                        l0  0    0  ] ;
+# % Fluid parameters
 
-rhoFluid = rho/massratio; nuFluid = 1e-6;
+massratio = inf;
+rhoFluid = rho_structure/massratio; nuFluid = 1e-6;
 
-%md Initially straight, motion is only driven by the added mass force with no weight
-% angle_init = 0;
-nameFuncVel = 'windUniform';
+# %md Initially straight, motion is only driven by the added mass force with no weight
+# % angle_init = 0;
+# nameFuncVel = 'windUniform';
 
-%md Drag and lift are ignored in this idealized example
+# %md Drag and lift are ignored in this idealized example
 
-%md Analysis Settings
-analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-analysisSettings.addedMassBool = true  ;
-analysisSettings.booleanSelfWeight = false ;
+# %md Analysis Settings
+# analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
+# analysisSettings.addedMassBool = true  ;
+# analysisSettings.booleanSelfWeight = false ;
 
-% ------------------------------------
-[matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+# % ------------------------------------
+# [matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 
 % ------------------------------------------------------------------------------
@@ -107,26 +108,23 @@ analysisSettings.booleanSelfWeight = false ;
 %mdThe mass displacement in z are:
 controlDofDispZ = 6 + 5 ;
 controlDispZCase1 = matUspendulumCase1( controlDofDispZ , : ) + (l0-cosd(angle_init)*l0);
-controlDispZCase2 = matUspendulumCase2( controlDofDispZ , : ) ;
-%mdanalogously the mass dipslacement in x are:
+# controlDispZCase2 = matUspendulumCase2( controlDofDispZ , : ) ;
 controlDofDispX = 6 + 1 ;
 controlDispXCase1 = matUspendulumCase1( controlDofDispX , : ) + sind(angle_init)*l0;
-controlDispXCase2 = matUspendulumCase2( controlDofDispX , : ) ;
+# controlDispXCase2 = matUspendulumCase2( controlDofDispX , : ) ;
 %
 %mdIn order to contrast the solution with the literature refrence the bounce angle measured from the vertical is computed:
 angleThetaCase1= rad2deg( atan2( controlDispXCase1, l0 - controlDispZCase1 ) ) ;
-angleThetaCase2= rad2deg( atan2( controlDispXCase2, l0 - controlDispZCase2 ) ) ;
+# angleThetaCase2= rad2deg( atan2( controlDispXCase2, l0 - controlDispZCase2 ) ) ;
 %
 %mdTo plot diplsacements against $t$ the time vector is:
 dt = analysisSettings.deltaT;
 times  = (0:length(controlDispZCase1)-1) * dt ;
 % Analytical solution for Case 1
 d = 2*sqrt(A/pi);
-if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
-  AMcoef =  1+(1/massratio) ;
-else
-  AMcoef = 1;
-end
+
+AMcoef =  1+(1/massratio) ;
+
 T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g)));
 f_ana_lim  = 1/T_ana_lim;
 theta_ana = angle_init*cos(2*pi*f_ana_lim.*times);
@@ -137,6 +135,8 @@ plot( times, theta_ana, 'ko')
 xlabel('time (s)'), ylabel('Pendulum angle \theta (degrees)')
 title(['AddedMassPendulum - case 1' sprintf(' massratio=%d', massratio)] )
 legend('ONSAS', 'analytical')
+
+stop
 %md
 if isThisOctave
   figure(), hold on, grid on
