@@ -25,23 +25,24 @@
 
 % =========================================================================
 
-function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
+function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
   
   ndofpnode = 6 ;
   
   % --- material constit params ---
-	E   = hyperElasParams(1) ;
-	nu  = hyperElasParams(2) ;
-	G   = E/(2*(1+nu)) ;
-    Mc, My, Mu  % from the moment-curvature diagram
-    kh1, kh2    % hardening modules
-	ks          % from the moment-rotation jump diagram
-	
-	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
+  E   = hyperElasParams(1) ;
+  nu  = hyperElasParams(2) ;
+  G   = E/(2*(1+nu)) ;
+  
+  Mc, My, Mu  % from the moment-curvature diagram
+  kh1, kh2    % hardening modules
+  ks          % from the moment-rotation jump diagram
+  
+  [A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
   % --- elem lengths and rotation matrix
-	[ local2globalMats, l ] = beamParameters( elemCoords ) ;
-	R = RotationMatrix(ndofpnode, local2globalMats) ;
+  [ local2globalMats, l ] = beamParameters( elemCoords ) ;
+  R = RotationMatrix(ndofpnode, local2globalMats) ;
 
   % --- set the local degrees of freedom corresponding to each behavior
   LocAxialdofs  = [ 1 7 ] ;
@@ -119,9 +120,36 @@ function [ dn, kpn, xin1, xin2, alfan, xd, fs, ks, finteLocalCoor ] = FramePlast
   q = piecewise(xin1 <= (My-Mc)/kh1, -kh1*xin1, -(My-Mc)*(1-kh2/kh1)-kh2*xin1) ;
   phi = abs(M) - (Mc - q) ;
 
+  % test values
+
+  kpn1test = kpn ;
+
+  xin11test = xin1 ;
+
+  phitest =  phi ;
+
+  % gamma values calculations (gamma derivative is the plastic multiplier)
+  % the new values of internal variables are computed
+
+  if phitest <= 0
+  
+    gamma = 0 ;
+    kpn1 = kpn ;
+    xin11 = xin1 ;
+    M1 = M ;
+
+  else
+
+    gamma = piecewise(xin1 + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
+    kpn1 = kpn + gamma*sign(M) ;
+    xin11 = xin1 + gamma ;
+    M1 = E*Iy*(khat-kpn1) ;
+
+  end
+
   % elastoplastic tangent bending modulus
 
-  Cep
+  Cep = piecewise(gamma=0, E*Iy, gamma > 0 & xin11 <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11 > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
 
   % stiffness matrices
 
