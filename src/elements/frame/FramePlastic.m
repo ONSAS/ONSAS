@@ -149,7 +149,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   % elastoplastic tangent bending modulus
 
-  Cep = piecewise(gamma=0, E*Iy, gamma > 0 & xin11 <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11 > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
+  Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11 <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11 > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
 
   % stiffness matrices
 
