@@ -33,12 +33,36 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
   E   = hyperElasParams(1) ;
   nu  = hyperElasParams(2) ;
   G   = E/(2*(1+nu)) ;
-  
-  Mc, My, Mu  % from the moment-curvature diagram
-  kh1, kh2    % hardening modules
-  ks          % from the moment-rotation jump diagram
-  
+
   [A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
+
+  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
+
+  % numerical example
+  % cantilever beam of rectangular cross-section loaded with a vertical force at the free end
+  
+  % Mc, My, Mu / from the moment-curvature diagram
+  % kh1, kh2   / hardening modules
+  % ks         / from the moment-rotation jump diagram
+
+  l = 2.5 ;         % m
+
+  E = 300000000 ;   % K(N/m^2) KPa
+
+  EI = 77650 ;      % KNm^2
+
+  Iy = EI/E ;       % m^4
+
+  Mc = 37.9 ;       % KNm
+  My = 268 ;
+  Mu = 374 ;
+
+  kh1 = 29400 ;     % KNm^2
+  kh2 = 272 ;
+
+  ks = -18000 ;     % KNm
+
+  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 	
   % --- elem lengths and rotation matrix
   [ local2globalMats, l ] = beamParameters( elemCoords ) ;
@@ -93,7 +117,6 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   Khalfa = Khalfa +ks ; % integral + ks
 
-
   function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi, xd)
 
   N = bendingInterFuns (xpi, l, 2) ;
@@ -104,7 +127,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
 
-  % curvatures k, ke, kp, khat2 (discrete part of the curvature)
+  % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
   khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
   khat2 = dirac(xd)*alfan ;
@@ -123,9 +146,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
   % test values
 
   kpn1test = kpn ;
-
   xin11test = xin1 ;
-
   phitest =  phi ;
 
   % gamma values calculations (gamma derivative is the plastic multiplier)
