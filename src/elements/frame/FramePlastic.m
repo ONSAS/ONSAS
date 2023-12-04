@@ -1,6 +1,4 @@
-% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini, 
-% Sergio A. Merlino.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -36,8 +34,6 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   [A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 
-  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-
   % numerical example
   % cantilever beam of rectangular cross-section loaded with a vertical force at the free end
   
@@ -46,20 +42,14 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
   % ks         / from the moment-rotation jump diagram
 
   l = 2.5 ;         % m
-
   E = 300000000 ;   % K(N/m^2) KPa
-
   EI = 77650 ;      % KNm^2
-
   Iy = EI/E ;       % m^4
-
   Mc = 37.9 ;       % KNm
   My = 268 ;
   Mu = 374 ;
-
   kh1 = 29400 ;     % KNm^2
   kh2 = 272 ;
-
   ks = -18000 ;     % KNm
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
@@ -182,85 +172,6 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   Khalfa = Ghat*Cep*Ghat ;
   
-  end
-
-  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-
-  % bending XY
-  if     elemReleases(3) == 0 && elemReleases(4) == 0
-    KbendXY = E * Iz / l^3 * kBendNoRelease ;
-  elseif elemReleases(3) == 1 && elemReleases(4) == 0
-    KbendXY = E * Iz / l^3 * kBendReleaseLef ;
-  elseif elemReleases(3) == 0 && elemReleases(4) == 1
-    KbendXY = E * Iz / l^3 * kBendReleaseRig ;
-  else
-    KbendXY = zeros(4,4) ;
-  end
-  
-	% bending XZ
-	RXYXZ = eye(4) ; RXYXZ(2,2) = -1; RXYXZ(4,4) = -1;
-	if     elemReleases(1) == 0 && elemReleases(2) == 0
-		KbendXZ = E * Iy / l^3 * RXYXZ * kBendNoRelease * RXYXZ ;
-	elseif elemReleases(1) == 1 && elemReleases(2) == 0
-		KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseLef * RXYXZ ;
-	elseif elemReleases(1) == 0 && elemReleases(2) == 1
-		KbendXZ = E * Iy / l^3 * RXYXZ * kBendReleaseRig * RXYXZ ;
-	else
-		KbendXZ = zeros(4,4) ;
-	end
-	
-  Ktorsn = G*J/l * [  1 -1  ; ...
-                     -1  1  ] ;
-	
-	
-  KL( LocBendXYdofs , LocBendXYdofs ) = KbendXY ;
-  KL( LocBendXZdofs , LocBendXZdofs ) = KbendXZ ;
-  KL( LocTorsndofs  , LocTorsndofs  ) = Ktorsn ;
-
-  KGelem = R * KL * R' ;
-  Finte = KGelem * Ut ;
-
-  finteLocalCoor =  R' * Finte ;
-
-  fs{1} = Finte  ;
-  ks{1} = KGelem ;
-
-  if density > 0
-    Xe = elemCoords(:) ;
-    localAxisRef = Xe(4:6) - Xe(1:3) ;
-    lini = sqrt( sum( localAxisRef.^2 ) ) ;
-    Me = sparse( 12, 12 ) ;
-
-    if strcmp(massMatType, 'consistent')
-    
-          MeBending = density * A *  l / 420 *       [156     22*l    54     -13*l   ;...
-                                                22*l    4*l^2   13*l   -3*l^2  ;...
-                                                54      13*l    156    -22*l   ;...
-                                                -13*l   -3*l^2  -22*l  4*l^2  ] ;
-
-          MeAxial   = density * A * l / 6 *     [ 2  1;...
-                                                  1  2];
-                                                  
-          Me(LocBendXYdofs,LocBendXYdofs) = MeBending ;
-          Me(LocBendXZdofs,LocBendXZdofs) = RXYXZ * MeBending * RXYXZ ;
-          Me(LocAxialdofs, LocAxialdofs)  = MeAxial;
-          
-    elseif strcmp(massMatType, 'lumped')
-    
-          Me (1:2:end, 1:2:end) = density * A * lini * 0.5 * eye(6) ;
-          
-    else
-      error('the massMatType field into the elements struct must be or consistent or lumped' )
-    end
-    
-    Fmasse = Me * Udotdotte ;
-
-    fs{3} = Fmasse  ;
-    ks{3} = Me      ;
-  elseif density == 0
-    fs{3} = zeros(12,1) ;
-    ks{2} = zeros(12)   ;
-    ks{3} = zeros(12)   ;
   end
 
 end
