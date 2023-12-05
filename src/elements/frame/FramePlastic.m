@@ -97,17 +97,22 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   for j = 1:npi
 
-  [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj] = integrand(xpi(j), xd) ;
 
-  Kfd = Kfd + Kfdj*wpi(j) ;
-  Kfalfa = Kfalfa + Kfalfaj*wpi(j) ;
-  Khd = Khd + Khdj*wpi(j) ;
-  Khalfa = khalfa + Khalfaj*wpi(j) ;
+    Kfd = Kfd + Kfdj*wpi(j) ;
+    Kfalfa = Kfalfa + Kfalfaj*wpi(j) ;
+    Khd = Khd + Khdj*wpi(j) ;
+    Khalfa = khalfa + Khalfaj*wpi(j) ;
+  
   end
 
   Khalfa = Khalfa +ks ; % integral + ks
 
   function [Kfd, Kfalfa, Khd, Khalfa] = integrand(xpi, xd)
+
+  % elastoplasticity with hardening
+  % the usual trial-corrector (return mapping) algorithm
+  % is used at each of the Gauss–Lobatto integration points.
 
   N = bendingInterFuns (xpi, l, 2) ;
   Bv = [N(1) N(3)] ;
@@ -162,6 +167,11 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11 <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11 > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
 
+  % plastic softening at the discontinuity
+  % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
+
+  % /\ /\ /\
+  
   % stiffness matrices
 
   Kfd = Bd'*[E*A 0; 0 Cep]*Bd ;
