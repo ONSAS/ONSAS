@@ -4,45 +4,52 @@ close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 
 %md Case 1: the fluid is still: it is only modelled by an added inertia of the solid,
 %md the fluid properties are only defined by the massratio = rho_structure/rho_fluid
-otherParams.problemName     = 'addedMassPedulum_case1';
+otherParams.problemName     = 'addedMassPedulum';
 
 % input scalar parameters
 EA = 1e8  ;  nu = 0       ; 
 A  = 0.1  ;  l0  = 3.0443 ;
-m  = 10   ;  g = 9.80     ;
-T  = 4.13 ;
+m  = 10   ;  T  = 4.13 ;
 
 % computed scalar parameters
 E   = EA / A ;              % young modulus
 d   = 2 * sqrt(A/pi);       % cross-section diameter
 rho_structure = 2 * m / ( A * l0 ) ;  % solid density
 
+% analytic solution
+massratio = 1;
+AMcoef =  1+(1/massratio) ;
+rhoFluid = rho_structure/massratio; nuFluid = 1e-6;
+g = 9.80     ;
+
+T_analy = 2*pi*sqrt( AMcoef * 1/g * ( d^2/(8*l0) + 2*l0/(3) ) );
+
 % materials
 materials.modelName   = 'elastic-rotEngStr' ;
 materials.modelParams = [ E nu ] ;
 materials.density     = rho_structure ;
-%md
 
 %md### elements
-%md
 elements(1).elemType = 'node' ;
 
 elements(2).elemType = 'frame';
 elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ] ;
+
+anonymus_null = @(beta,Re) 0 ;
+elements(2).aeroCoefFunctions = { anonymus_null, anonymus_null, anonymus_null };
 elements(2).massMatType  = 'consistent';
 
 %md### boundaryConds
-
-boundaryConds(1).imposDispDofs = [ 1 2 3 5 6] ;
-boundaryConds(1).imposDispVals = [ 0 0 0 0 0] ;
+boundaryConds(1).imposDispDofs = [ 1 2 3 5 6 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
 
 %md### initial Conditions
 initialConds = {} ;
 
 %md### mesh parameters
 %mdThe coordinates considering a mesh of two nodes is:
-angle_init = 25; % degrees
+angle_init = 10 ; % degrees
 mesh.nodesCoords = [  0                    0  l0                       ; ...
                       sind(angle_init)*l0  0  l0*(1-cosd(angle_init))  ] ;
 
@@ -51,8 +58,8 @@ mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
 mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
 
 %md### analysisSettings
-analysisSettings.deltaT        = 0.01  ;
-analysisSettings.finalTime     = 2*T *.1 ;
+analysisSettings.deltaT        = T_analy/100  ;
+analysisSettings.finalTime     = 2*T_analy ;
 analysisSettings.stopTolDeltau = 1e-13 ;
 analysisSettings.stopTolForces = 1e-13 ;
 analysisSettings.stopTolIts    = 30    ;
@@ -64,11 +71,24 @@ analysisSettings.alphaHHT   =  0        ;
 analysisSettings.stopTolDeltau = 1e-12 ;
 analysisSettings.stopTolForces = 1e-12 ;
 
-otherParams.plots_format       = 'vtk' ;
+# otherParams.plots_format       = 'vtk' ;
 
-[matUspendulumCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+# nameFuncVel = 'zerovel';
 
-# stop
+# %md Drag and lift are ignored in this idealized example
+
+# %md Analysis Settings
+analysisSettings.fluidProps = {rhoFluid; nuFluid; @(x,t) zeros(3,1) } ;
+analysisSettings.addedMassBool = true  ;
+# analysisSettings.booleanSelfWeight = false ;
+
+[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+
+controlDofDispZ = 6 + 5 ;
+figure
+plot( matUs(controlDofDispZ,:))
+stop
 # % =========================================================================
 
 
@@ -78,26 +98,8 @@ otherParams.plots_format       = 'vtk' ;
 
 # %md AMBool is turned to true to consider fluid acceleration
 
-
-# %md Mesh is now a vertical pendulum
-# %mdThe coordinates conisdering a mesh of two nodes is:
-# # mesh.nodesCoords = [   0   0    l0 ;...
-# #                        l0  0    0  ] ;
 # % Fluid parameters
 
-massratio = inf;
-rhoFluid = rho_structure/massratio; nuFluid = 1e-6;
-
-# %md Initially straight, motion is only driven by the added mass force with no weight
-# % angle_init = 0;
-# nameFuncVel = 'windUniform';
-
-# %md Drag and lift are ignored in this idealized example
-
-# %md Analysis Settings
-# analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-# analysisSettings.addedMassBool = true  ;
-# analysisSettings.booleanSelfWeight = false ;
 
 # % ------------------------------------
 # [matUspendulumCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -123,11 +125,9 @@ times  = (0:length(controlDispZCase1)-1) * dt ;
 % Analytical solution for Case 1
 d = 2*sqrt(A/pi);
 
-AMcoef =  1+(1/massratio) ;
-
-T_ana_lim = 2*pi*sqrt(AMcoef*(d^2/(8*l0) + 2*l0/(3*g)));
 f_ana_lim  = 1/T_ana_lim;
-theta_ana = angle_init*cos(2*pi*f_ana_lim.*times);
+theta_ana = angle_init*cos( 2*pi * f_ana_lim .* times);
+
 %md Plot angle solution for case 1
 figure(), hold on, grid on
 plot( times, angleThetaCase1, 'rx')

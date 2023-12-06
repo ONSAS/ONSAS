@@ -20,16 +20,20 @@ function [ materials, elements, boundaryConds, analysisSettings, otherParams ] =
 
 % materials
 
-
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
+% =========================================
 % elements
-elements          = checkOrSetDefault ( elements         , 'massMatType'        , 'lumped' ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'chordVector'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'aeroCoefFunctions'   , {[],[],[]} ) ;
-elements          = checkOrSetDefault ( elements         , 'aeroNumericalParams', {4, false, true} ) ;
+elements = checkOrSetDefault( elements, 'massMatType'        , 'lumped' ) ;
+elements = checkOrSetDefault( elements, 'elemTypeParams'     , [] ) ;
+elements = checkOrSetDefault( elements, 'elemCrossSecParams' , [] ) ;
+elements = checkOrSetDefault( elements, 'chordVector'        , []         ) ;
+elements = checkOrSetDefault( elements, 'aeroCoefFunctions'  , {[],[],[]} ) ;
+elements = checkOrSetDefault( elements, 'aeroNumericalParams', {4, false, true} ) ;
+
+elements = setDefauAeroCrossSecProps( elements );
+
+% =========================================
 
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;

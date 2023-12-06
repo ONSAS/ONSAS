@@ -26,14 +26,13 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  [ chordVector, aeroCoefs ] = setDefauAeroCrossSecProps( elemCrossSecParams, chordVector, aeroCoefs);
-
   % Declare booleans for VIV model
   global VIVBool
   global ILVIVBool
   global constantLiftDir
   global uniformUdot
   global fluidFlowBool
+
 
   AMBool = analysisSettings.addedMassBool;
 
@@ -168,6 +167,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
         tlift2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
       end
 
+
       % computes van der pol solution for current element
       % node 1
       [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
@@ -206,7 +206,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   # udotFlowElem
   # stop
   for ind = 1 : length( xIntPoints )
-ind
+
+
     %The Gauss integration coordinate is:
     xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element
@@ -218,19 +219,17 @@ ind
                                                            aeroCoefs, densityFluid, viscosityFluid,...
                                                            VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
 
-                                                           norm(fDragLiftPitchElem)
-                                                           if isnan( norm(fDragLiftPitchElem)),                                                              error('fdsfas'), end
-
+                                                           if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
                                                             
-                                                            xGauss, ddotg, udotFlowElem,...
-                                                           l0, tl1, tl2, Rr,...
-                                                           chordVector', dimCharacteristic,...
-                                                           I3, O3, P, G, EE, L2, L3,...
-                                                           aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool
+                                                          #   xGauss, ddotg, udotFlowElem,...
+                                                          #  l0, tl1, tl2, Rr,...
+                                                          #  chordVector', dimCharacteristic,...
+                                                          #  I3, O3, P, G, EE, L2, L3,...
+                                                          #  aeroCoefs, densityFluid, viscosityFluid,...
+                                                          #  VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool
                                                             
 
-                                                          end
+  end
 
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
@@ -243,10 +242,11 @@ ind
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
   % -------------------------------
-disp('added mass force')
-norm(fAddedMassElem)
 
-  fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
+%  disp('added mass force')
+% norm(fAddedMassElem)
+
+fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem

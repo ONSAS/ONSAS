@@ -15,35 +15,51 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ chordVector, aeroCoefs ] = setDefauAeroCrossSecProps( elemCrossSecParams, chordVector, aeroCoefs)
+function elements = setDefauAeroCrossSecProps( elements )
 
-    chordVecIsDefined = ~isempty( chordVector ) ; 
-    dragIsDefined     = ~isempty( aeroCoefs{1}) ; 
-    liftIsDefined     = ~isempty( aeroCoefs{2}) ; 
-    pitchIsDefined    = ~isempty( aeroCoefs{3}) ; 
+    for i=1:length(elements)
+    elements(i)
+    if iscell(elements(i).elemCrossSecParams)
+      cross_sec_name = elements(i).elemCrossSecParams{1} ;
+      if strcmp( cross_sec_name, 'circle' ) || strcmp( cross_sec_name, 'pipe' )
 
-    if strcmp( elemCrossSecParams{1}, 'circle' ) || strcmp( elemCrossSecParams{1}, 'pipe' )
+        if isempty( elements(i).chordVector)
+          elements(i).chordVector = [ 0 0 elements(i).elemCrossSecParams{2} ] ;
+        end
 
-        if ~chordVecIsDefined
-            chordVector = [ 0 0 elemCrossSecParams{2} ] ;
-        end ;
-
-        if ~dragIsDefined
-            dragF = 'innerDragCoefCircular';
-        else
-            dragF = aeroCoefs{1};
-        end ;
-
-        anonymus_null = @(beta,Re) 0 ;
-        if ~liftIsDefined
-            liftF = anonymus_null ;
-        else
-            liftF = aeroCoefs{2};
-        end ;
-        if ~pitchIsDefined
-            pitchF = anonymus_null;
-        else
-            pitchF = aeroCoefs{3};
-        end ;
+        if isempty( elements(i).aeroCoefFunctions{1}) && isempty( elements(i).aeroCoefFunctions{2}) && isempty( elements(i).aeroCoefFunctions{3})
+          anonymus_null = @(beta,Re) 0 ;
+          elements(i).aeroCoefFunctions = { 'innerDragCoefCircular'; anonymus_null; anonymus_null } ; 
+        end
+  
+      end
     end
-    aeroCoefs = { dragF; liftF; pitchF } ;
+  end
+
+
+    #   elements(i) = checkOrSetDefault( elements(i), ' 
+
+    # chordVecIsDefined = ~isempty( chordVector ) ; 
+    # dragIsDefined     = ~isempty( aeroCoefs{1}) ; 
+    # liftIsDefined     = ~isempty( aeroCoefs{2}) ; 
+    # pitchIsDefined    = ~isempty( aeroCoefs{3}) ; 
+
+
+        # if ~chordVecIsDefined
+        #     chordVector = [ 0 0 elemCrossSecParams{2} ] ;
+        # end ;
+
+        # if ~dragIsDefined
+        # else
+        #     dragF = aeroCoefs{1};
+        # end ;
+
+        # if ~liftIsDefined
+        #     liftF = anonymus_null ;
+        # else
+        #     liftF = aeroCoefs{2};
+        # end ;
+        # if ~pitchIsDefined
+        #     pitchF = anonymus_null;
+        # else
+        #     pitchF = aeroCoefs{3};
