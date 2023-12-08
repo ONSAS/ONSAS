@@ -2,8 +2,6 @@
 
 close all, clear all ; addpath( genpath( [ pwd '/../../src'] ) );
 
-%md Case 1: the fluid is still: it is only modelled by an added inertia of the solid,
-%md the fluid properties are only defined by the massratio = rho_structure/rho_fluid
 otherParams.problemName     = 'addedMassPedulum';
 
 % input scalar parameters
@@ -59,17 +57,14 @@ mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
 
 %md### analysisSettings
 analysisSettings.deltaT        = T_analy/100  ;
-analysisSettings.finalTime     = 2*T_analy ;
+analysisSettings.finalTime     = T_analy*.5 ;
+analysisSettings.methodName    = 'newmark';
 analysisSettings.stopTolDeltau = 1e-13 ;
-analysisSettings.stopTolForces = 1e-13 ;
+analysisSettings.stopTolForces = 1e-10 ;
 analysisSettings.stopTolIts    = 30    ;
 
 analysisSettings.booleanSelfWeight = true ;
 
-analysisSettings.methodName = 'alphaHHT';
-analysisSettings.alphaHHT   =  0        ;
-analysisSettings.stopTolDeltau = 1e-12 ;
-analysisSettings.stopTolForces = 1e-12 ;
 
 # otherParams.plots_format       = 'vtk' ;
 
@@ -84,10 +79,15 @@ analysisSettings.addedMassBool = true  ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
+theta_num = angle_init + matUs(4,:) ;
+times  = (0:length(theta_num)-1) * analysisSettings.deltaT ;
+theta_ana = angle_init * cos( 2*pi / T_analy .* times);
 
-controlDofDispZ = 6 + 5 ;
 figure
-plot( matUs(controlDofDispZ,:))
+plot( times, theta_ana)
+hold on, grid on
+plot( times, theta_num)
+
 stop
 # % =========================================================================
 
@@ -120,13 +120,6 @@ angleThetaCase1= rad2deg( atan2( controlDispXCase1, l0 - controlDispZCase1 ) ) ;
 # angleThetaCase2= rad2deg( atan2( controlDispXCase2, l0 - controlDispZCase2 ) ) ;
 %
 %mdTo plot diplsacements against $t$ the time vector is:
-dt = analysisSettings.deltaT;
-times  = (0:length(controlDispZCase1)-1) * dt ;
-% Analytical solution for Case 1
-d = 2*sqrt(A/pi);
-
-f_ana_lim  = 1/T_ana_lim;
-theta_ana = angle_init*cos( 2*pi * f_ana_lim .* times);
 
 %md Plot angle solution for case 1
 figure(), hold on, grid on
