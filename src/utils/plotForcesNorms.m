@@ -29,32 +29,10 @@ times = matriz(:,1);
 
 iters = matriz(:,2);
 
-finalIters = min([ 300, length(times)-1]) ;
+times = matriz(:,end);
 
-subplot(4,1,1)
-plot(matriz((end-finalIters):end,4),'b-x')
-grid on
-title('external forces')
-
-subplot(4,1,2)
-plot(matriz((end-finalIters):end,5),'b-x')
-grid on
-title('internal forces')
-
-subplot(4,1,3)
-plot(matriz((end-finalIters):end,7),'b-x')
-grid on
-title('inertial forces')
-
-subplot(4,1,4)
-plot(matriz((end-finalIters):end,3),'b-x')
-grid on
-title('residual forces')
-
-print([ outputDir  problemName '_forcesNorms_plot_all.png'], '-dpng');
 
 indexes = inds_last_iters ;
-
 
 figure
 
@@ -84,3 +62,32 @@ grid on
 title('iterations')
 
 print([ outputDir  problemName '_forcesNorms_plot_converged.png'], '-dpng');
+
+
+figure
+
+
+finalIters = min([ 300, length(times)-1]) ;
+
+subplot(4,1,1)
+plot(matriz((end-finalIters):end,4),'b-x')
+grid on
+title('external forces')
+
+subplot(4,1,2)
+plot(matriz((end-finalIters):end,5),'b-x')
+grid on
+title('internal forces')
+
+subplot(4,1,3)
+plot(matriz((end-finalIters):end,7),'b-x')
+grid on
+title('inertial forces')
+
+subplot(4,1,4)
+plot(matriz((end-finalIters):end,3),'b-x')
+grid on
+title('residual forces')
+
+print([ outputDir  problemName '_forcesNorms_plot_all.png'], '-dpng');
+

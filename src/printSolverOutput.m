@@ -88,7 +88,7 @@ fclose(fileIncrements);
 if ~isempty(fnorms)
 
 forcesNormsFile = [ outputdir  problemName '_forcesNorms.txt' ] ;
-format_fnorms   = [ '%4i %4i %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e\n' ] ;
+format_fnorms   = [ '%4i %4i %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e\n' ] ;
 
 if lineData(1)==0 % print header
   fileNorms = fopen( forcesNormsFile ,'w');

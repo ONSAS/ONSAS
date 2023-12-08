@@ -93,7 +93,7 @@ while  booleanConverged == 0
 
   %
 % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther  
-  fnorms = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms ] ;
+  fnorms = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   
 

@@ -34,7 +34,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   global fluidFlowBool
 
 
-  AMBool = analysisSettings.addedMassBool;
+  AMBool = analysisSettings.addedMassBool ;
 
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
@@ -241,6 +241,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                 l0, elemCoords, elemCrossSecParams     ,...
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
+
+                                fAddedMassElem
+                                stop
   % -------------------------------
 
 %  disp('added mass force')

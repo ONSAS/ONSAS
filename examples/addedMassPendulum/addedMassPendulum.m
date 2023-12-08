@@ -7,7 +7,7 @@ otherParams.problemName     = 'addedMassPedulum';
 % input scalar parameters
 EA = 1e8  ;  nu = 0       ; 
 A  = 0.1  ;  l0  = 3.0443 ;
-m  = 10   ;  T  = 4.13 ;
+m  = 10   ;
 
 % computed scalar parameters
 E   = EA / A ;              % young modulus
@@ -16,11 +16,11 @@ rho_structure = 2 * m / ( A * l0 ) ;  % solid density
 
 % analytic solution
 massratio = 1;
-AMcoef =  1+(1/massratio) ;
+AMcoef =  1 + 1/massratio ;
 rhoFluid = rho_structure/massratio; nuFluid = 1e-6;
 g = 9.80     ;
 
-T_analy = 2*pi*sqrt( AMcoef * 1/g * ( d^2/(8*l0) + 2*l0/(3) ) );
+T_analy = 2*pi * sqrt( AMcoef * 1/g * ( d^2/(8*l0) + 2*l0/(3) ) );
 
 % materials
 materials.modelName   = 'elastic-rotEngStr' ;
@@ -47,46 +47,47 @@ initialConds = {} ;
 
 %md### mesh parameters
 %mdThe coordinates considering a mesh of two nodes is:
-angle_init = 10 ; % degrees
-mesh.nodesCoords = [  0                    0  l0                       ; ...
-                      sind(angle_init)*l0  0  l0*(1-cosd(angle_init))  ] ;
+angle_init = 5 ; % degrees
+x_ini = sind(angle_init)*l0 ;
+mesh.nodesCoords = [  0      0  l0                       ; ...
+                      x_ini  0  l0*(1-cosd(angle_init))  ] ;
 
 mesh.conecCell = { } ;
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
 mesh.conecCell{ 2, 1 } = [ 1 2 0  1 2 ] ;
 
 %md### analysisSettings
-analysisSettings.deltaT        = T_analy/100  ;
+analysisSettings.deltaT        = T_analy/50  ;
 analysisSettings.finalTime     = T_analy*.5 ;
 analysisSettings.methodName    = 'newmark';
-analysisSettings.stopTolDeltau = 1e-13 ;
-analysisSettings.stopTolForces = 1e-10 ;
+analysisSettings.stopTolDeltau = 1e-8 ;
+analysisSettings.stopTolForces = 1e-12 ;
 analysisSettings.stopTolIts    = 30    ;
 
 analysisSettings.booleanSelfWeight = true ;
 
+analysisSettings.fluidProps = {rhoFluid; nuFluid; @(x,t) zeros(3,1) } ;
+analysisSettings.addedMassBool = true  ;
 
-# otherParams.plots_format       = 'vtk' ;
-
-# nameFuncVel = 'zerovel';
+otherParams.plots_format       = 'vtk' ;
 
 # %md Drag and lift are ignored in this idealized example
 
 # %md Analysis Settings
-analysisSettings.fluidProps = {rhoFluid; nuFluid; @(x,t) zeros(3,1) } ;
-analysisSettings.addedMassBool = true  ;
 # analysisSettings.booleanSelfWeight = false ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-theta_num = angle_init + matUs(4,:) ;
-times  = (0:length(theta_num)-1) * analysisSettings.deltaT ;
+times  = (0:size(matUs,2)-1) * analysisSettings.deltaT ;
 theta_ana = angle_init * cos( 2*pi / T_analy .* times);
 
+x_num = x_ini + matUs(7,:)' ;
+theta_num = asin( x_num ./ l0) * 180/pi ;
+
 figure
-plot( times, theta_ana)
+plot( times, theta_ana,'r-o')
 hold on, grid on
-plot( times, theta_num)
+plot( times, theta_num,'b-x')
 
 stop
 # % =========================================================================
