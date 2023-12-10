@@ -202,23 +202,23 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
     % trial value of the moment at the discontinuity (tM at xd)
     tM = 0 ;
 
-    for j=1:npi
+    for jj=1:npi
 
-        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(j)/l)) ;
+        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(jj)/l)) ;
 
         % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
         khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
         khat2 = dirac(xd)*alfan ;
         kn = khat + khat2 ;
-        kenxpi = khat - kpn(j) ;
+        kenxpi = khat - kpn(jj) ;
         
         % moment at integration points
         Mixpi = E*Iy*kenxpi ;
 
         % integration (Gauss-Lobatto)
     
-        tM = tM - Ghatxpi*Mixpi*wpi(j) ;
+        tM = tM - Ghatxpi*Mixpi*wpi(jj) ;
 
     end
 
