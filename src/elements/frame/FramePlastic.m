@@ -103,7 +103,7 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
 
   for j = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, Ghat, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi(j), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi(j), xd) ;
 
     % integration (Gauss-Lobatto)
 
@@ -122,87 +122,87 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
 
   Khalfa = Khalfa + Ks ; % integral + ks
 
-    function [Kfd, Kfalfa, Khd, Khalfa, Ghat, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi, xd)
+  function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi, xd)
 
-  % elastoplasticity with hardening
-  % the usual trial-corrector (return mapping) algorithm
-  % is used at each of the Gauss–Lobatto integration points.
+    % elastoplasticity with hardening
+    % the usual trial-corrector (return mapping) algorithm
+    % is used at each of the Gauss–Lobatto integration points.
 
-  N = bendingInterFuns (xpi, l, 2) ;
-  Bv = [N(1) N(3)] ;
-  Btheta = [N(2) N(4)] ;
+    N = bendingInterFuns (xpi, l, 2) ;
+    Bv = [N(1) N(3)] ;
+    Btheta = [N(2) N(4)] ;
 
-  Bd = [Bu 0 0; 0 Bv Btheta] ;
+    Bd = [Bu 0 0; 0 Bv Btheta] ;
 
-  Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
+    Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
 
-  % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
+    % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-  khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-  khat2 = dirac(xd)*alfan ;
-  kn = khat + khat2 ;
-  ken = khat - kpn(j) ;
+    khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+    khat2 = dirac(xd)*alfan ;
+    kn = khat + khat2 ;
+    ken = khat - kpn(j) ;
 
-  % moment
+    % moment
 
-  Mxpi= E*Iy*ken ;
+    Mxpi= E*Iy*ken ;
 
-  % yield criterion
+    % yield criterion
 
-  qxpi = piecewise(xin1(j) <= (My-Mc)/kh1, -kh1*xin1(j), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(j)) ;
-  phixpi = abs(Mxpi) - (Mc - qxpi) ;
+    qxpi = piecewise(xin1(j) <= (My-Mc)/kh1, -kh1*xin1(j), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(j)) ;
+    phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
-  % test values
+    % test values
 
-  % kpn1test = kpn ;
-  % xin11test = xin1 ;
-  phitest =  phixpi ;
+    % kpn1test = kpn ;
+    % xin11test = xin1 ;
+    phitest =  phixpi ;
 
-  % gamma values calculations (gamma derivative is the plastic multiplier)
-  % the new values of internal variables are computed
+    % gamma values calculations (gamma derivative is the plastic multiplier)
+    % the new values of internal variables are computed
 
-  if phitest <= 0
+    if phitest <= 0
   
-    gamma = 0 ;
-    kpn1xpi = kpn(j) ;
-    xin11xpi = xin1(j) ;
-    M1xpi = Mxpi ;
+        gamma = 0 ;
+        kpn1xpi = kpn(j) ;
+        xin11xpi = xin1(j) ;
+        M1xpi = Mxpi ;
 
-  else
+    else
 
-    gamma = piecewise(xin1(j) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
-    kpn1xpi = kpn(j) + gamma*sign(M) ;
-    xin11xpi = xin1(j) + gamma ;
-    M1xpi = E*Iy*(khat-kpn1(j)) ;
+        gamma = piecewise(xin1(j) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
+        kpn1xpi = kpn(j) + gamma*sign(M) ;
+        xin11xpi = xin1(j) + gamma ;
+        M1xpi = E*Iy*(khat-kpn1(j)) ;
 
-  end
+    end
 
-  % elastoplastic tangent bending modulus
+    % elastoplastic tangent bending modulus
 
-  Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11xpi <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11xpi > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
+    Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11xpi <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11xpi > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
   
-  % stiffness matrices
+    % stiffness matrices
 
-  Kfd = Bd'*[E*A 0; 0 Cep]*Bd ;
+    Kfd = Bd'*[E*A 0; 0 Cep]*Bd ;
 
-  Kfalfa = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
+    Kfalfa = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
 
-  Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
+    Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
 
-  Khalfa = Ghat*Cep*Ghat ;
+    Khalfa = Ghat*Cep*Ghat ;
 
-  % plastic softening at the discontinuity
-  % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
+    % plastic softening at the discontinuity
+    % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 
-  % test values
+    % test values
   
-  % alfan1test = alfan ;
-  % xin2test = xin2 ;
+    % alfan1test = alfan ;
+    % xin2test = xin2 ;
 
-   % trial value of the moment at the discontinuity (tM at xd)
-   tM = 0 ;
+    % trial value of the moment at the discontinuity (tM at xd)
+    tM = 0 ;
 
-   for j=1:npi
+    for j=1:npi
 
         Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(j)/l)) ;
 
@@ -220,27 +220,24 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
     
         tM = tM - Ghatxpi*Mixpi ;
 
-   end
-
-     % softening criterion (failure function) at integration points
-
-  qfailxpi = min(-Ks*xin2(j), Mu) ;
-  phifailxpi = abs(tM)-(Mu-qfail) ;
-    
-    if phifailxpi <= 0
-
-        alfan1 = alfan ;
-        xin21xpi = xin2(j) ;
-
-        else
-            gamma2 = piecewise(xin2(j)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
-            alfan1=alfan + gamma2*sign(tM) ;
-            xin21xpi = xin2(j) + gamma2 ;
-
-            xd = xpi ;
-            
     end
 
+    % softening criterion (failure function) at integration points
+
+    qfailxpi = min(-Ks*xin2(j), Mu) ;
+    phifailxpi = abs(tM)-(Mu-qfail) ;
+    
+        if phifailxpi <= 0
+
+            alfan1 = alfan ;
+            xin21xpi = xin2(j) ;
+
+            else
+                gamma2 = piecewise(xin2(j)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
+                alfan1=alfan + gamma2*sign(tM) ;
+                xin21xpi = xin2(j) + gamma2 ;
+
+                xd = xpi ;       
+        end
   end
-  
 end
