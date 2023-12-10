@@ -23,7 +23,7 @@
 
 % =========================================================================
 
-function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
+function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
   
   ndofpnode = 6 ;
   
@@ -39,7 +39,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
   
   % Mc, My, Mu / from the moment-curvature diagram
   % kh1, kh2   / hardening modules
-  % ks         / from the moment-rotation jump diagram
+  % Ks         / from the moment-rotation jump diagram
 
   l = 2.5 ;         % m
   E = 300000000 ;   % K(N/m^2) KPa
@@ -50,7 +50,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
   Mu = 374 ;
   kh1 = 29400 ;     % KNm^2
   kh2 = 272 ;
-  ks = -18000 ;     % KNm
+  Ks = -18000 ;     % KNm
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 	
@@ -120,7 +120,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
   end
 
-  Khalfa = Khalfa +ks ; % integral + ks
+  Khalfa = Khalfa + Ks ; % integral + ks
 
     function [Kfd, Kfalfa, Khd, Khalfa, Ghat, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi, xd)
 
@@ -224,7 +224,7 @@ function [ kpn1, xin11, xin21, alfan1, xd, fs, ks, finteLocalCoor ] = FramePlast
 
      % softening criterion (failure function) at integration points
 
-  qfailxpi = min(-ks*xin2(j), Mu) ;
+  qfailxpi = min(-Ks*xin2(j), Mu) ;
   phifailxpi = abs(tM)-(Mu-qfail) ;
     
     if phifailxpi <= 0
