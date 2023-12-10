@@ -216,9 +216,9 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
         % moment at integration points
         Mixpi = E*Iy*kenxpi ;
 
-        % integration
+        % integration (Gauss-Lobatto)
     
-        tM = tM - Ghatxpi*Mixpi ;
+        tM = tM - Ghatxpi*Mixpi*wpi(j) ;
 
     end
 
