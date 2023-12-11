@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 % This function returns the hydrodinamic mass force of the element in global coordinates.
 
 function fam = addedMassForce( AMBool                                   ,...
@@ -24,9 +23,11 @@ function fam = addedMassForce( AMBool                                   ,...
 
   Aelem  = crossSectionProps( elemCrossSecParams, 0.0 ) ; % the 0.0 density does not affect A value
 
-  if ~isempty( AMBool ) && AMBool     % linear(node1_x)  angular(node1_x)   % linear(node2_z)  angular(node2_z)
+  if AMBool     % linear(node1_x)  angular(node1_x)   % linear(node2_z)  angular(node2_z)
+
     % fill fluid acceleration vector [udotdot_f_x_1, wdotdot_f_x_1 .... udotdot_f_z_2, wdotdot_f_x_12 ]
     Udotdotflow = zeros(12, 1);
+
     % compute fluid element acceleration [udotdot_f_x_1, udotdot_f_y_1, udotdot_f_z_1, udotdot_f_x_2 ....]
     ddUf = computeddUf(nextTime, deltaT, userFlowVel,  elemCoords);
     Udotdotflow(1:2:12) = ddUf(1:6); % Irotationnal flow
@@ -42,4 +43,3 @@ function fam = addedMassForce( AMBool                                   ,...
   else
     fam = zeros(12, 1);
   end
-end

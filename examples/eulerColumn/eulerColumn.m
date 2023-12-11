@@ -16,8 +16,8 @@ numElements = 8 ;
 % Materials
 % ----------------------------------------------------------------------
 materials  = struct();
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 % Elements
 % ----------------------------------------------------------------------
 % Types

@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 function [P1, P2, N, N1, N2 ] = corotVecMatAuxDyn(...
 N1, N2, N3, N4, N5, N6, N7, N8, tl1, tl2, Gaux, I3, O3, P )
   

@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,11 +14,12 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 % This function retrevies drag for circular cross section  
 % Reference for the drag formulation.
 % https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722
-% The function is suggetes by Frederick Gosselin in #issue 617 
+
+% The function is suggeted by Frederick Gosselin in #issue 617 
 
 function C_d = innerDragCoefCircular( betaRel, Re )
 
@@ -27,6 +27,11 @@ function C_d = innerDragCoefCircular( betaRel, Re )
 
     if Re >= 2 * (10)^5
         warning("Re > 2x10^5 The drag coefficient relation breaks down as it does not account for the drag crisis.");
+
+    elseif Re < 1
+        C_d
+        error('Reynolds lower than 1');
     end
+
 end
 

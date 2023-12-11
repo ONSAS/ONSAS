@@ -15,8 +15,8 @@ E = 200e9 ; nu = 0.3 ; Lx = 2 ; Ly = .02 ; Lz = .2 ; rho = 8e3 ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
 %md since only one material is considered, a scalar struct is defined as follows
 materials = struct();
-materials.hyperElasModel = 'SVK' ;
-materials.hyperElasParams = [ lambda mu ] ;
+materials.modelName = 'SVK' ;
+materials.modelParams = [ lambda mu ] ;
 materials.density = rho ;
 %md
 %md#### elements

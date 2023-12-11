@@ -1,6 +1,6 @@
 %md# Reconfiguration cantilever beam example
 %md
-%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/dragBeamReconfiguration/dragBeamReconfiguration.m)
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/dragBeamReconfiguration/dragBeamReconfiguration.m)
 %md
 %md In this tutorial, a cantilever beam submitted to a flow producing drag forces is considered. The main goal is to validate the drag forces computation considering reconfiguration in a problem with large displacements. The example is based on one of the problems considered in [this reference](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/drag-reduction-of-flexible-plates-by-reconfiguration/A3A066DE3886C40B1463508C92D1C81D), where a reference solution is presented and validated with experimental data. The reference solution was generated with the code publicly available in [this repository](https://github.com/lm2-poly/Reconfiguration-Beam/blob/master/reconfiguration.m)
 %md
@@ -37,8 +37,8 @@ numElements = 10 ;
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
 materials                 = struct()         ;
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ]         ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ]         ;
 materials.density         = rhoS             ;
 %md
 %md### elements
@@ -187,10 +187,10 @@ end
 %md Deformed configurations for different cauchy numbers  
 %md
 fig3 = figure(3) ;
-hold on
 % plot reference configuration
 plot(xref, yref  , 'k--' , 'linewidth', lw, 'markersize', ms   );
-% add ficitcius plots for the legend
+hold on, grid on
+% add markers for the legend
 plot(0, 0,  ONSASline    , 'linewidth', lw, 'markersize', ms );
 plot(0, 0,  ONSASlineBuiltInDrag    , 'linewidth', lw, 'markersize', ms );
 % plot deformed configurations for different fluid load steps
@@ -265,8 +265,7 @@ labx=xlabel('x [m]');    laby=ylabel('y [m]');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','eastOutside' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-grid on
-axis equal
+%axis equal
 % save fig
 namefig3 = strcat(folderPathFigs, 'xy.png') ;
 if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')

@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,8 +14,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
+%
+function [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( ...
   analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS )
 
   stopTolDeltau = analysisSettings.stopTolDeltau ;
@@ -31,6 +30,10 @@ function [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( ...
 
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
   logicForcStop = ( deltaErrLoad < ( (normFext+(normFext < stopTolForces)) * stopTolForces ) )  * ( deltaErrLoad > 0 ) ;
+
+  if isnan( norm(redDeltaU) )
+    error(' ERROR: the displacements are NOT A NUMBER!')
+  end
 
   if logicForcStop
     stopCritPar = 1 ;      booleanConverged = 1 ;

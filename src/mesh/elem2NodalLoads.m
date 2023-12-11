@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
+% 
 %md function that constructs the assembled Fext vector for one given BC
 
 function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )

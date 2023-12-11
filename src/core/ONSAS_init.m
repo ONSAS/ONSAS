@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,6 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
 
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
@@ -25,7 +25,7 @@ checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysi
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
 %md sets the current version and welcomes user
-ONSASversion = '0.2.8'  ; welcome_message( ONSASversion, otherParams );
+ONSASversion = '0.2.9'  ; welcome_message( ONSASversion, otherParams );
 
 % creates outputdir in current location
 create_outputDir( otherParams )
@@ -83,7 +83,7 @@ previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
 
-% TO DO  https://github.com/ONSAS/ONSAS.m/issues/649 compute intial stress and internal forces
+% TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
 matFint = [] ; 
 
@@ -99,8 +99,8 @@ modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress
 % =================================================================
 
 %md prints headers for solver output file
-printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  ) ;
-printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
+printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  , [] ) ;
+printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ], [] ) ;
 
 %md writes vtk file
 if strcmp( modelProperties.plots_format, 'vtk' )

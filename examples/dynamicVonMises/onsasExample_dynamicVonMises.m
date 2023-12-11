@@ -31,16 +31,16 @@ M = [mb 0 ; 0 (mb+mConc)/2] ;
 
 
 nu = .3 ;
-materials(1).hyperElasModel  = '1DrotEngStrain' ;
-materials(1).hyperElasParams = [ E nu ] ;
+materials(1).modelName  = 'elastic-rotEngStr' ;
+materials(1).modelParams = [ E nu ] ;
 materials(1).density =  rho ;
 
-materials(2).hyperElasModel  = '1DrotEngStrain' ;
-materials(2).hyperElasParams = [ 1e10*E nu ] ;
+materials(2).modelName  = 'elastic-rotEngStr' ;
+materials(2).modelParams = [ 1e10*E nu ] ;
 materials(2).density = rhoBarraMasa ;
 
-materials(3).hyperElasModel  = '1DrotEngStrain' ;
-materials(3).hyperElasParams = [ kc*L0/Ac nu ] ;
+materials(3).modelName  = 'elastic-rotEngStr' ;
+materials(3).modelParams = [ kc*L0/Ac nu ] ;
 materials(3).density = rho ;
 
 

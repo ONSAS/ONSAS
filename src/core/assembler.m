@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 % Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Joaquin Viera, Alexandre Villié
+=======
+% Copyright 2023, ONSAS Authors (see documentation)
+>>>>>>> master
 %
 % This file is part of ONSAS.
 %
@@ -14,6 +18,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+<<<<<<< HEAD
 
 % This function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] ... 
@@ -21,6 +26,14 @@ function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strai
                materials, KS, Ut, Udott, Udotdott,...
                analysisSettings, outputBooleans, nodalDispDamping,...
                timeVar, previousStateCell )
+=======
+%
+%mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
+function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
+                                                           materials, KS, Ut, Udott, Udotdott,...
+                                                           analysisSettings, outputBooleans, nodalDispDamping,...
+                                                           timeVar, previousStateCell )
+>>>>>>> master
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -89,8 +102,13 @@ for elem = 1:nElems
   mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties
+<<<<<<< HEAD
   modelName          = materials( mebVec( 1 ) ).modelName        ;
   modelParams        = materials( mebVec( 1 ) ).modelParams      ;
+=======
+  modelName          = materials( mebVec( 1 ) ).modelName   ;
+  modelParams        = materials( mebVec( 1 ) ).modelParams  ;
+>>>>>>> master
   density            = materials( mebVec( 1 ) ).density          ;
 
   elemType           = elements( mebVec( 2 ) ).elemType          ;
@@ -109,23 +127,19 @@ for elem = 1:nElems
   %md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
-  %md obtains nodes and dofs of element
+  % obtains nodes and dofs of element
   nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
   dofselem    = nodes2dofs( nodeselem , 6 )   ;     
-  % dofselemRedA = dofselem( reducedDofsIndxs );       
-  % dofselemRed = dofselem ( 1 : 1 : end ) ;
 
-  auxA = repmat(nodalDofsEntries,length(dofselem)/6,1) ;
+  % construct vector of degrees of freedom of element
+  auxA = repmat( nodalDofsEntries, length(dofselem)/6,1 )  ;
   auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
   dofselemRed = dofselem( auxA+auxB )   ;
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
-  elemDisps   = u2ElemDisps( Ut , dofselemRed ) ;
-
-  %md dotdotdispsElem contains the accelerations corresponding to the dofs of the element
-  if dynamicProblemBool
-    dotdotdispsElem  = u2ElemDisps( Udotdott , dofselemRed ) ;
-  end
+  elemDisps       = u2ElemDisps( Ut      , dofselemRed ) ;
+  dotdispsElem    = u2ElemDisps( Udott   , dofselemRed ) ;
+  dotdotdispsElem = u2ElemDisps( Udotdott, dofselemRed ) ;
 
   elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
 
@@ -151,12 +165,15 @@ for elem = 1:nElems
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
     if dynamicProblemBool
-      dotdotdispsElem  = u2ElemDisps( Udotdott , dofselem ) ;
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
@@ -168,16 +185,22 @@ for elem = 1:nElems
       timeVar
       thermalExpansion = materials( mebVec( 1 ) ).thermalExpansion
       temperatureVal = temperature( timeVar) 
-      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, hyperElasParams(1), A, thermalExpansion, temperatureVal )
+      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, modelParams(1), A, thermalExpansion, temperatureVal )
     end
     % ---------------
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
+<<<<<<< HEAD
 		if  strcmp( modelName,'linearElastic') || strcmp( modelName,'isotropicHardening')
 
 			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
+=======
+		if strcmp(modelName, 'elastic-linear')
+
+			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
+>>>>>>> master
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -185,41 +208,47 @@ for elem = 1:nElems
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
+<<<<<<< HEAD
 		elseif strcmp( modelName, '1DrotEngStrain')
+=======
+		elseif strcmp( modelName, 'elastic-rotEngStr')
+>>>>>>> master
 
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
-                                                             [ 1 hyperElasParams ] , ...
-                                                             u2ElemDisps( Ut, dofselem ) ) ;
+                                                             [ 1 modelParams ] , ...
+                                                             elemDisps ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-
-        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
-                                            elemCrossSecParams                  , ...
-                                            [ 1 hyperElasParams ]               , ...
-                                            u2ElemDisps( Ut, dofselem )         , ...
-                                            u2ElemDisps( Udott    , dofselem )  , ...
-                                            u2ElemDisps( Udotdott , dofselem )  , ...
-                                            density, massMatType  ) ;
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
+                                            [ 1 modelParams ], elemDisps, ...
+                                            dotdispsElem, dotdotdispsElem  , ...
+                                            density, massMatType ) ;
 
 
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
+<<<<<<< HEAD
       error('wrong material modelName for frame element.')
+=======
+      error('wrong modelName for frame element.')
+>>>>>>> master
     end
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
                                      elemCrossSecParams                   ,        ...
-                                     u2ElemDisps( Ut       , dofselem )   ,        ...
-                                     u2ElemDisps( Udott    , dofselem )   ,        ...
-                                     u2ElemDisps( Udotdott , dofselem )   ,        ...
+                                     elemDisps   ,        ...
+                                     dotdispsElem   ,        ...
+                                     dotdotdispsElem   ,        ...
                                      aeroCoefs, chordVector, aeroNumericalParams,  ...
                                      analysisSettings, timeVar, elem, ...
                                      aeroNumericalParams{2}  ) ;
+                                     
+
     end
 
   % ---------  triangle solid element -----------------------------
@@ -233,7 +262,7 @@ for elem = 1:nElems
 		previous_state = { stress_n_vec{elem} ; strain_n_vec{elem} ; acum_plas_strain_n_vec{elem} } ;
 		  
 		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
-																										hyperElasModel, [1 hyperElasParams], 2, thickness, planeStateFlag, ...
+																										modelName, [1 modelParams], 2, thickness, planeStateFlag, ...
 																										dotdotdispsElem, density, previous_state ) ;
 		%
     Finte = fs{1};
@@ -249,8 +278,8 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
     
-    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, hyperElasModel, ...
-      hyperElasParams, thickness ) ;
+    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
+      modelParams, thickness ) ;
 
     Finte = fs{1};
 		Ke    = ks{1};
@@ -258,13 +287,13 @@ for elem = 1:nElems
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 
-    if strcmp( hyperElasModel, 'SVK' )
+    if strcmp( modelName, 'SVK' )
       auxMatNum = 2 ;
 
-    elseif strcmp( hyperElasModel, 'NHC' )
+    elseif strcmp( modelName, 'NHC' )
       auxMatNum = 3 ;
     else
-      hyperElasModel
+      modelName
       error('material not implemented yet! open an issue.')
     end
 
@@ -275,7 +304,7 @@ for elem = 1:nElems
      consMatFlag = elemTypeParams(1) ;
    end
    [ Finte, Ke, stressElem ] = elementTetraSolid( elemNodesxyzRefCoords, elemDisps, ...
-                            [ auxMatNum hyperElasParams], 2, consMatFlag ) ;
+                            [ auxMatNum modelParams], 2, consMatFlag ) ;
 
   end   % case in type of element ----
   % -------------------------------------------

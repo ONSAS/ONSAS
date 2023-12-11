@@ -13,8 +13,8 @@ R = 120   ;  ty = .6 ;   tz = 6 ;
 % the number of elements of the mesh
 Nelem = 2*21 ;
 
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 
 otherParams.problemName = 'deployableRing' ;
 
