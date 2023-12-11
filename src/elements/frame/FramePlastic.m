@@ -127,6 +127,16 @@ function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlast
 
   Khalfa = Khalfa + Ks ; % integral + ks
 
+  % element stiffness matrix
+
+  Kelement = Kfd - Kfalfa*(Khalfa^(-1))*Khd ;
+
+  % internal and external forces
+
+  
+
+  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
+
   function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi, xd)
 
     % elastoplasticity with hardening
