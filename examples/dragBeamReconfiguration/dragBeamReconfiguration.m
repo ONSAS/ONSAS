@@ -187,10 +187,10 @@ end
 %md Deformed configurations for different cauchy numbers  
 %md
 fig3 = figure(3) ;
-hold on
 % plot reference configuration
 plot(xref, yref  , 'k--' , 'linewidth', lw, 'markersize', ms   );
-% add ficitcius plots for the legend
+hold on, grid on
+% add markers for the legend
 plot(0, 0,  ONSASline    , 'linewidth', lw, 'markersize', ms );
 plot(0, 0,  ONSASlineBuiltInDrag    , 'linewidth', lw, 'markersize', ms );
 % plot deformed configurations for different fluid load steps
@@ -265,8 +265,7 @@ labx=xlabel('x [m]');    laby=ylabel('y [m]');
 set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location','eastOutside' ) ;
 set(gca, 'linewidth', axislw, 'fontsize', curveFontSize ) ;
 set(labx, 'FontSize', axisFontSize); set(laby, 'FontSize', axisFontSize) ;
-grid on
-axis equal
+%axis equal
 % save fig
 namefig3 = strcat(folderPathFigs, 'xy.png') ;
 if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
