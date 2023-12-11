@@ -204,28 +204,19 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   for ind = 1 : length( xIntPoints )
 
-
     %The Gauss integration coordinate is:
     xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element
     fDragLiftPitchElem =  fDragLiftPitchElem ...
-               +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,...
-                                                           l0, tl1, tl2, Rr,...
-                                                           chordVector', dimCharacteristic,...
-                                                           I3, O3, P, G, EE, L2, L3,...
-                                                           aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
+               +l0/2 * wIntPoints( ind ) ...
+                 * integFluidForce( xGauss, ddotg, udotFlowElem,...
+                                    l0, tl1, tl2, Rr,...
+                                    chordVector', dimCharacteristic,...
+                                    I3, O3, P, G, EE, L2, L3,...
+                                    aeroCoefs, densityFluid, viscosityFluid,...
+                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
 
-                                                           if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
-                                                            
-                                                          #   xGauss, ddotg, udotFlowElem,...
-                                                          #  l0, tl1, tl2, Rr,...
-                                                          #  chordVector', dimCharacteristic,...
-                                                          #  I3, O3, P, G, EE, L2, L3,...
-                                                          #  aeroCoefs, densityFluid, viscosityFluid,...
-                                                          #  VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool
-                                                            
-
+    if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
   end
 
 
@@ -241,10 +232,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   % -------------------------------
 
-%  disp('added mass force')
-% norm(fAddedMassElem)
-
-fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
+  fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
 
   % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
@@ -258,7 +246,6 @@ fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
     tMatHydroElemU = [] ;
   end
   % -------------------------------
-
 
 end
 
