@@ -1,8 +1,4 @@
-<<<<<<< HEAD:src/elements/frame/linearStiffMatBeam3D.m
-% Copyright 2023, Jorge M. Perez Zerpa, Joaquin Viera, Mauricio Vanzulli.
-=======
 % Copyright 2023, ONSAS Authors (see documentation)
->>>>>>> master:src/elements/frame/elementFrameLinear.m
 %
 % This file is part of ONSAS.
 %
@@ -18,23 +14,6 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-<<<<<<< HEAD:src/elements/frame/linearStiffMatBeam3D.m
- 
-function [fs, ks, finteLocalCoor] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, ...
-                                                         massMatType, density, modelName, modelParams, ...
-                                                         Ut, Udotdotte)
-  ndofpnode = 6 ;
-  
-  % --- material constitutive params ---
-	if strcmp(modelName,'linearElastic')
-    E   = modelParams(1) ;
-	  nu  = modelParams(2) ;
-	  G   = E/(2*(1+nu)) ;
-	elseif strcmp(modelName,'isotropicHardening')
-
-  end
-
-=======
 % 
 % --------------------------------------------------------------------------------------------------
 
@@ -48,7 +27,6 @@ function [ fs, ks, finteLocalCoor ] = elementFrameLinear(elemCoords, elemCrossSe
 	nu  = modelParams(2) ;
 	G   = E/(2*(1+nu)) ;
 	
->>>>>>> master:src/elements/frame/elementFrameLinear.m
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
 	
   % --- elem lengths and rotation matrix
