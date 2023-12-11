@@ -88,13 +88,8 @@ for elem = 1:nElems
   mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties
-<<<<<<< HEAD
-  modelName          = materials( mebVec( 1 ) ).modelName        ;
-  modelParams        = materials( mebVec( 1 ) ).modelParams      ;
-=======
   modelName          = materials( mebVec( 1 ) ).modelName   ;
   modelParams        = materials( mebVec( 1 ) ).modelParams  ;
->>>>>>> master
   density            = materials( mebVec( 1 ) ).density          ;
 
   elemType           = elements( mebVec( 2 ) ).elemType          ;
@@ -151,10 +146,6 @@ for elem = 1:nElems
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
