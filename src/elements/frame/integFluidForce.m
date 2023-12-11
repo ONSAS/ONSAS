@@ -174,10 +174,6 @@ if isnan(  norm( VpiRelG)  ),  stop, end
 
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll + fdl_il;
-  # disp('integrand')
-  # norm(fdl)
-  # norm(fll)
-  # norm(fdl_il)
   
   % torsional moment fluid load in deformed coordinates
   ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
