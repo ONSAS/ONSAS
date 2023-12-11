@@ -17,11 +17,7 @@
 
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-<<<<<<< HEAD
-    checkFields(materials, {'modelName', 'modelParams','density','nodalMass'})
-=======
   checkFields(materials, {'modelName', 'modelParams', 'density', 'nodalMass'})
->>>>>>> master
 
   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});

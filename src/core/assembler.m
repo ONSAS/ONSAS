@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-% Copyright 2023, Jorge M. Perez Zerpa, Mauricio Vanzulli, Joaquin Viera, Alexandre Villié
-=======
 % Copyright 2023, ONSAS Authors (see documentation)
->>>>>>> master
 %
 % This file is part of ONSAS.
 %
@@ -18,22 +14,12 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-<<<<<<< HEAD
-
-% This function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] ... 
-  = assembler( Conec, elements, Nodes, ...
-               materials, KS, Ut, Udott, Udotdott,...
-               analysisSettings, outputBooleans, nodalDispDamping,...
-               timeVar, previousStateCell )
-=======
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
->>>>>>> master
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -192,15 +178,9 @@ for elem = 1:nElems
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
 
-<<<<<<< HEAD
-		if  strcmp( modelName,'linearElastic') || strcmp( modelName,'isotropicHardening')
-
-			[ fs, ks, fintLocCoord ] = linearStiffMatBeam3D(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, u2ElemDisps( Ut, dofselem ), u2ElemDisps( Udotdott , dofselem ) ) ;
-=======
 		if strcmp(modelName, 'elastic-linear')
 
 			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
->>>>>>> master
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
@@ -208,11 +188,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
-<<<<<<< HEAD
-		elseif strcmp( modelName, '1DrotEngStrain')
-=======
 		elseif strcmp( modelName, 'elastic-rotEngStr')
->>>>>>> master
 
       [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
@@ -230,11 +206,7 @@ for elem = 1:nElems
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
     else
-<<<<<<< HEAD
-      error('wrong material modelName for frame element.')
-=======
       error('wrong modelName for frame element.')
->>>>>>> master
     end
 
     %md compute fluid forces on the element
