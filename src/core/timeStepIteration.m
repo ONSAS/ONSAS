@@ -100,8 +100,6 @@ while  booleanConverged == 0
   % --- prints iteration info in file ---
   printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ], fnorms ) ;
 
-  # stop
-
 end % iteration while
 % --------------------------------------------------------------------
 
