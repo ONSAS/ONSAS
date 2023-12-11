@@ -23,7 +23,7 @@
 
 % =========================================================================
 
-function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
+function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
   
   ndofpnode = 6 ;
   
@@ -57,6 +57,11 @@ function [ kpn1, xin11, xin21, alfan1, xd ] = FramePlastic( dn, kpn, xin1, xin2,
   % --- elem lengths and rotation matrix
   [ local2globalMats, l ] = beamParameters( elemCoords ) ;
   R = RotationMatrix(ndofpnode, local2globalMats) ;
+  
+  % temporary
+  % ------------------------
+  elemReleases = [0 0 0 0] ;
+  % ------------------------
 
   % --- set the local degrees of freedom corresponding to each behavior
   LocAxialdofs  = [ 1 7 ] ;
