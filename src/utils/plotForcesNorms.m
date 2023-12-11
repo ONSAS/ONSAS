@@ -34,7 +34,7 @@ times = matriz(:,end);
 
 indexes = inds_last_iters ;
 
-figure
+h = figure();
 
 subplot(5,1,1)
 plot(times(indexes), matriz(indexes,4),'b-x')
@@ -63,8 +63,9 @@ title('iterations')
 
 print([ outputDir  problemName '_forcesNorms_plot_converged.png'], '-dpng');
 
+close(h)
 
-figure
+h = figure();
 
 
 finalIters = min([ 300, length(times)-1]) ;
@@ -91,3 +92,4 @@ title('residual forces')
 
 print([ outputDir  problemName '_forcesNorms_plot_all.png'], '-dpng');
 
+close(h)

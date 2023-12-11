@@ -18,9 +18,10 @@
 %md set optional fields defaults
 function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
+% =========================================
 % materials
-
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
+
 
 % =========================================
 % elements
@@ -33,13 +34,14 @@ elements = checkOrSetDefault( elements, 'aeroNumericalParams', {4, false, true} 
 
 elements = setDefauAeroCrossSecProps( elements );
 
-% =========================================
 
+% =========================================
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
 
+% =========================================
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
@@ -61,8 +63,8 @@ if strcmp( analysisSettings.methodName, 'alphaHHT' )
 end
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag', 0              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean' , 0              ) ;
-% -----------------------------
 
+% =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'plots_format', []    ) ;
@@ -75,11 +77,13 @@ if isempty( exportFirstMatrices )
   exportFirstMatrices = false ;
 end
 
+
+
 %md function that checks if a field is defined in a (scalar or array) struct
 %md and sets a default value if it is not defined.
-
 function structName = checkOrSetDefault( structName, fieldName, default )
-if ~isfield( structName, fieldName )
+
+  if ~isfield( structName, fieldName )
   for i=1:length( structName )
     aux(i)  = setfield( structName(i), fieldName, default ) ;
   end

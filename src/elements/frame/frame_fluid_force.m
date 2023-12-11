@@ -202,9 +202,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Compute the element fluid force by the equivalent virtual work theory
   fDragLiftPitchElem = zeros(12,1) ;
 
-  # disp('drag force')
-  # udotFlowElem
-  # stop
   for ind = 1 : length( xIntPoints )
 
 
@@ -242,8 +239,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
 
-                                fAddedMassElem
-                                stop
   % -------------------------------
 
 %  disp('added mass force')
