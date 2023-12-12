@@ -108,9 +108,9 @@ function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlast
 
   for j = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi(j), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(j, xpi(j), xd) ;
 
-    % integration (Gauss-Lobatto)
+    % stiffness matrices / integration (Gauss-Lobatto)
 
     Kfd = Kfd + Kfdj*wpi(j) ;
     Kfalfa = Kfalfa + Kfalfaj*wpi(j) ;
@@ -123,6 +123,10 @@ function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlast
     xin11(j) = xin11xpi ;
     xin21(j) = xin21xpi ;
 
+    % internal forces / integration (Gauss-Lobatto)
+
+    Fint = Fint + Fi*wpi(j) ;
+
   end
 
   Khalfa = Khalfa + Ks ; % integral + ks
@@ -131,13 +135,9 @@ function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlast
 
   Kelement = Kfd - Kfalfa*(Khalfa^(-1))*Khd ;
 
-  % internal and external forces
-
-  
-
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-  function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd] = integrand(j, xpi, xd)
+    function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(j, xpi, xd)
 
     % elastoplasticity with hardening
     % the usual trial-corrector (return mapping) algorithm
@@ -205,6 +205,10 @@ function [ kpn1, xin11, xin21, alfan1, xd , fs, ks, finteLocalCoor] = FramePlast
     Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
 
     Khalfa = Ghat*Cep*Ghat ;
+
+    epsilon = Bu*uvector ;
+
+    Fi= Bd'*[E*A*epsilon; M1xpi] ;
 
     % plastic softening at the discontinuity
     % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
