@@ -48,7 +48,8 @@ while finalTimeReachedBoolean == false
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
-
+  global globalNIterAero;
+  globalNIterAero = [globalNIterAero, modelNextSol.timeStepIters];
   % iterations average
   iterations_average = ...
     (   iterations_average* (modelNextSol.timeIndex-2) + modelNextSol.timeStepIters ) ...

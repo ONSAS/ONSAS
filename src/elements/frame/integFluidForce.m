@@ -33,7 +33,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   ul = P1 * [ tl1; tl2 ]                   ; % Eq.(38)  T-N Le J.-M. Battini et al 2014
   % Auxiliary matrices H
   H1  = N + P1 * P - 1 * skew( ul ) * G' ;
-  H2      = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
+  H2  = P2 * P + G'; %Ec 72 se puede usar para comprobar con ec A.10
   % angular local rotation
   thethaRoof  = P2 * [tl1 ; tl2] ; % Eq. 39 Le, Battini 2014
   % local Rroof rotation matrix is
@@ -85,8 +85,21 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
   betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
   %-----------------------------------------------------------------
+  if ~isempty( uBEMbool )
+      for k=1:6                 
+          clthick(k)    =  interp1( aoa(:,k), cl(:,k),   betaRelG, 'linear', 'extrap' );
+          cdthick(k)    =  interp1( aoa(:,k), cd(:,k),   betaRelG, 'linear', 'extrap' );
+          cmthick(k)    =  interp1( aoa(:,k), cm(:,k),   betaRelG, 'linear', 'extrap' );
+      end 
+      clstat   = interp1( thick_prof(:), clthick(:)    , thick(j), 'linear', 'extrap' ) ; % Static 2D  Cl Coef
+      cdstat   = interp1( thick_prof(:), cdthick(:)    , thick(j), 'linear', 'extrap' ) ; % Static 2D  Cd Coef
+      cmstat   = interp1( thick_prof(:), cdthick(:)    , thick(j), 'linear', 'extrap' ) ; % Static 2D  Cd Coef
 
-  % Delete spaces
+      userDragCoef   =
+      userLiftCoef   =
+      userMomentCoef =
+  
+      % Delete spaces
   userDragCoef   = aeroCoefs{1} ;
   userLiftCoef   = aeroCoefs{2} ;
   userMomentCoef = aeroCoefs{3} ;

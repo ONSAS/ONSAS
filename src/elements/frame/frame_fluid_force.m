@@ -26,8 +26,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs);
-
   % Declare booleans for VIV model
   global VIVBool
   global ILVIVBool
@@ -35,8 +33,22 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   global uniformUdot
   global AMBool
   global fluidFlowBool
+  global uBEMbool
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
+  
+  % define chord and aero coef parameters in the element
+  if ~isempty( uBEMbool )
+      global airFoilProfiles;
+      global thickList
+      % blade data including, radius, twist, chord and thick
+      bladeData     = importdata('bladedat.txt');
+      thickData     = thickList;
+      aeroAirfoils  = airFoilProfiles;
+      [ bladeChords, aeroCoefs ] = aeroBEMprops( aeroAirfoils, thickData ,strucdata ) ;
+  else
+      [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs ) ;
+  end
 
   % extract fluid properties
   densityFluid   = analysisSettings.fluidProps{1,1} ;
@@ -190,7 +202,22 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       q = 0 ; p = 0;% No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
-    end      
+    end
+  
+  elseif ~isempty( uBEMbool )
+      %----------------------------------------------------------------
+      % BEM geometries inputs
+      %----------------------------------------------------------------
+      R          =  89.17    ; % Blade Radius (m)
+      Rhub       =  5.6      ; % Hub Radius (m)
+      nblade     =  3        ; % Number of blades
+      thetaTilt   = 3*pi/180 ; % Angle must be in RADIANS!
+      thetaCone   = 4*pi/180 ; % Angle must be in RADIANS!
+      
+      
+      q = 2 ; p = 0;
+      % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
+      tlift1 = [] ; tlift2 = [] ;
   else
     q = 2 ; p = 0;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
