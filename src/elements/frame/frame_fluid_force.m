@@ -26,15 +26,16 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs);
-
   % Declare booleans for VIV model
   global VIVBool
   global ILVIVBool
   global constantLiftDir
   global uniformUdot
-  global AMBool
   global fluidFlowBool
+
+
+  AMBool = analysisSettings.addedMassBool ;
+
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
 
@@ -166,6 +167,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
         tlift2 = VpiRelPerp2 / norm( VpiRelPerp2 ) ;
       end
 
+
       % computes van der pol solution for current element
       % node 1
       [VpiRel1_defCords, VpiRelPerp1_defCords, Vrel1_glob] = computeVpiRels( udotFlowNode1, [0 0 0]',...
@@ -199,18 +201,24 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   % Compute the element fluid force by the equivalent virtual work theory
   fDragLiftPitchElem = zeros(12,1) ;
+
   for ind = 1 : length( xIntPoints )
+
     %The Gauss integration coordinate is:
     xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
     %Integrate for different cross section inner to the element
     fDragLiftPitchElem =  fDragLiftPitchElem ...
-               +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,...
-                                                           l0, tl1, tl2, Rr,...
-                                                           chordVector', dimCharacteristic,...
-                                                           I3, O3, P, G, EE, L2, L3,...
-                                                           aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
+               +l0/2 * wIntPoints( ind ) ...
+                 * integFluidForce( xGauss, ddotg, udotFlowElem,...
+                                    l0, tl1, tl2, Rr,...
+                                    chordVector', dimCharacteristic,...
+                                    I3, O3, P, G, EE, L2, L3,...
+                                    aeroCoefs, densityFluid, viscosityFluid,...
+                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
+
+    if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
   end
+
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
   fDragLiftPitchElem = swtichToONSASBase( fDragLiftPitchElem ) ;
@@ -221,6 +229,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                 l0, elemCoords, elemCrossSecParams     ,...
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
+
   % -------------------------------
 
   fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
@@ -237,7 +246,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
     tMatHydroElemU = [] ;
   end
   % -------------------------------
-
 
 end
 
