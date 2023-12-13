@@ -71,13 +71,7 @@ otherParams       = checkOrSetDefault( otherParams      , 'plots_format', []    
 otherParams       = checkOrSetDefault( otherParams      , 'plots_deltaTs_separation', 1  ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'nodalDispDamping', 0 ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
-
-global exportFirstMatrices;
-if isempty( exportFirstMatrices )
-  exportFirstMatrices = false ;
-end
-
-
+otherParams       = checkOrSetDefault( otherParams      , 'exportFirstMatrices', false    ) ;
 
 %md function that checks if a field is defined in a (scalar or array) struct
 %md and sets a default value if it is not defined.
