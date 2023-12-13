@@ -23,8 +23,7 @@ checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysi
 
 %md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
-otherParams.exportFirstMatrices
-stop
+
 %md sets the current version and welcomes user
 ONSASversion = '0.2.9'  ; welcome_message( ONSASversion, otherParams );
 
