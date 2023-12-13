@@ -34,7 +34,6 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     massMat    = mats{3} ;
 
     if modelProperties.exportFirstMatrices
-      cacaaa
       KTred      = KT( neumdofs, neumdofs );
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
