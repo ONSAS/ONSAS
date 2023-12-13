@@ -94,4 +94,8 @@ function test_20
   assertEqual( verifBoolean, true );
 
 function test_21
+  addedMassPendulum
+  assertEqual( verifBoolean, true );
+  
+function test_22
   assertEqual( gaussIntegrationTest, true);
