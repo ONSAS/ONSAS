@@ -197,8 +197,9 @@ another additional optional parameters are:
 
  * `booleanSelfWeight`: a boolean indicating if self weight loads are considered or not. The loads are computed using the density of the material and in the $-z$ global direction.
  * `iniMatUs`: a matrix with initial solutions for each time step.
+ * `addedMassBoolean`: if this parameter is set `'true'` the fluid density is considered in the intertial forces term for frame elements.
 
-then the aerodynamic-frame element parameters set are
+the aerodynamic-frame element parameters set are
 * `fluidProps`: is a row cell with the density $\rho_f$, viscosity $\nu_f$ and the function with the fluid velocity  
 
 ```math
