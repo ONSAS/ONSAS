@@ -23,7 +23,8 @@ checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysi
 
 %md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
-
+otherParams.exportFirstMatrices
+stop
 %md sets the current version and welcomes user
 ONSASversion = '0.2.9'  ; welcome_message( ONSASversion, otherParams );
 
@@ -91,6 +92,7 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
+modelProperties.exportFirstMatrices
 %md call assembler
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 

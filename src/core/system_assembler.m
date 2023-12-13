@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, false ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell )
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell )
 
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
@@ -25,14 +25,16 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
   
-  
+
+  exportFirstMatrices = false;
   KT   = mats{1} ; 
 
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
     dampingMat = mats{2} ;
     massMat    = mats{3} ;
 
-    if modelProperties.exportFirstMatrices == true
+    if modelProperties.exportFirstMatrices
+      cacaaa
       KTred      = KT( neumdofs, neumdofs );
       massMatred = massMat(neumdofs,neumdofs);
       save('-mat', 'output/matrices.mat', 'KT','massMat','neumdofs' );
@@ -41,7 +43,6 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
       figure
       spy(full(massMat)), title('mass')
       fprintf('matrices exported.\n--------\n')
-      exportFirstMatrices = false;
     end
   end
 

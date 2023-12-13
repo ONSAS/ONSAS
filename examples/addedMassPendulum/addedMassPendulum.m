@@ -3,8 +3,6 @@
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
 
-otherParams.problemName     = 'addedMassPedulum';
-
 % input scalar parameters
 EA = 1e8  ;  nu = 0       ; 
 A  = 0.1  ;  l0  = 3.0443 ;
@@ -69,6 +67,8 @@ analysisSettings.booleanSelfWeight = true ;
 analysisSettings.fluidProps = {rhoFluid; nuFluid; @(x,t) zeros(3,1) } ;
 analysisSettings.addedMassBool = true  ;
 
+otherParams = struct();
+otherParams.problemName     = 'addedMassPedulum';
 otherParams.plots_format       = 'vtk' ;
 
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
