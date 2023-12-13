@@ -31,20 +31,16 @@ finalTimeReachedBoolean = false ;
 fprintf('|                                                 |\n')
 fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
-%
+
 % iteration variables
 iterations_average = 0 ;  iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
-% progress bar variables
-plotted_bars = 0 ;
-aux_time = cputime() ;
-while finalTimeReachedBoolean == false
 
-  percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
-                       / modelProperties.analysisSettings.finalTime * 20 ) ;
-  while plotted_bars < percent_time,
-    fprintf('='); plotted_bars = plotted_bars +1 ;
-  end
+% progress bar variables
+plotted_bars = 0 ; aux_time = cputime() ;
+
+while finalTimeReachedBoolean == false
+  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
@@ -139,3 +135,12 @@ if modelProperties.analysisSettings.modalAnalysisBoolean
   modelProperties.analysisSettings.modalAnalysisBoolean = false ;
 end %endif
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+function plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars)
+
+  percent_time = round( (modelCurrSol.timeIndex * modelProperties.analysisSettings.deltaT) ...
+                       / modelProperties.analysisSettings.finalTime * 20 ) ;
+  while plotted_bars < percent_time,
+    fprintf('='); plotted_bars = plotted_bars +1 ;
+  end
