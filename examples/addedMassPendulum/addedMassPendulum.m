@@ -71,11 +71,6 @@ analysisSettings.addedMassBool = true  ;
 
 otherParams.plots_format       = 'vtk' ;
 
-# %md Drag and lift are ignored in this idealized example
-
-# %md Analysis Settings
-# analysisSettings.booleanSelfWeight = false ;
-
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 times  = (0:size(matUs,2)-1) * analysisSettings.deltaT ;
