@@ -98,6 +98,7 @@ analysisSettings.methodName    = 'alphaHHT' ;
 %md
 ### otherParams
 %mdA name problem and vtk output is set:
+otherParams = struct() ;
 otherParams.problemName = 'rightAngleCantilever'; 
 otherParams.plots_format = 'vtk' ;
 %mdONSAS code is run for the input structs stated above
