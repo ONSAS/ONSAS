@@ -105,6 +105,7 @@ analysisSettings.fluidProps = { rhoA ; nuA ; 'windVel' } ;
 %md
 %md### otherParams
 %md
+otherParams = struct() ;
 otherParams.problemName =  'simplePropeller' ;
 otherParams.plots_format = 'vtk' ;
 %md
