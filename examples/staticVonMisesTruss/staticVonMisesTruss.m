@@ -110,7 +110,7 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
-otherParams              = {};
+otherParams              = struct();
 otherParams.problemName  = 'staticVonMisesTruss_NR_RotEng';
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;

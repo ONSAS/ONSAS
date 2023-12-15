@@ -117,6 +117,7 @@ analysisSettings.stopTolIts    =   10            ;
 %md
 %md### otherParams
 %md The name of the problem and the plots format: 
+otherParams = struct();
 otherParams.problemName  = 'linearAerodynamics';
 otherParams.plots_format = '' ;
 %md

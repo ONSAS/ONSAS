@@ -85,14 +85,17 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
+  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
   % --- check convergence ---
-  [ booleanConverged, stopCritPar, deltaErrLoad ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
+  [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
   % ---------------------------------------------------
 
+  % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther  
+  fnorms = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
+
   % --- prints iteration info in file ---
-  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ] ) ;
+  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ], fnorms ) ;
 
 end % iteration while
 % --------------------------------------------------------------------
@@ -107,7 +110,7 @@ KTtp1red = systemDeltauMatrix ;
 % compute stress at converged state
 [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
-printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ) ;
+printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
 if stabilityAnalysisFlag == 2
   [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
@@ -173,16 +176,16 @@ function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk,
     Udottp1    = Udott ;
   end
 
-%test
 % ==============================================================================
-%
+% update Uiter
 % ==============================================================================
+
 function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
   Uk( neumdofs ) = Uk( neumdofs ) + deltaured ;
   currDeltau     = currDeltau     + deltaured ;
 
 function vec = antiSkew( mat )
-  vec = [ mat(3,2) mat(1,3) mat(2,1) ]' ;
+  vec = [ mat(3,2); mat(1,3); mat(2,1) ] ;
 
 function args = argsAL(analysisSettings, len, neumDofs, timeIndex)
   arcLengthNorm = zeros( len ) ;
