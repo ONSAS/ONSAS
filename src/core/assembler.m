@@ -361,8 +361,7 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
-  fsCell{5} = Fther ;
-
+  
   global globalReactionForces
   global glboalNodeReactionForces
   if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)
