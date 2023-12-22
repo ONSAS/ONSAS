@@ -23,7 +23,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
   
   [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell  ) ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ; Fther = fs{5} ;  
+  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ;
   
 
   exportFirstMatrices = false;
@@ -52,8 +52,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
-                - Faero( BCsData.neumDofs ) ...
-                - Fther( BCsData.neumDofs ) ;
+                - Faero( BCsData.neumDofs ) ;
 
     systemDeltauRHS = - rhat ;
 
@@ -78,8 +77,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
     rhat      =   Fint ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
-                - Faero( BCsData.neumDofs ) ...
-                - Fther( BCsData.neumDofs ) ;
+                - Faero( BCsData.neumDofs ) ;
 
     systemDeltauRHS = [ -rhat   BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs) ] ;
 
@@ -96,8 +94,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
                 + Fvis ( BCsData.neumDofs ) ...
                 + Fmas ( BCsData.neumDofs ) ...
                 - FextG( BCsData.neumDofs ) ...
-                - Faero( BCsData.neumDofs ) ...
-                - Fther( BCsData.neumDofs );
+                - Faero( BCsData.neumDofs );
 
     systemDeltauRHS = -rhat ;
 
