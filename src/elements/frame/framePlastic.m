@@ -23,7 +23,7 @@
 
 % =========================================================================
 
-function [ kpn1, xin11, xin21, alfan1, xd , ft, kt, finteLocalCoor] = FramePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
+function [ kpn1, xin11, xin21, alfan1, xd , ft, kt, finteLocalCoor] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
   
   ndofpnode = 6 ;
   
