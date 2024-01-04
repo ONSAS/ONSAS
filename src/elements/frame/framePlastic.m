@@ -23,39 +23,11 @@
 
 % =========================================================================
 
-function [ kpn1, xin11, xin21, alfan1, xd , ft, kt, finteLocalCoor] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem )
+function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCrossSecParams, density, hyperElasModel, hyperElasParams)
   
   ndofpnode = 6 ;
-  
-  % --- material constit params ---
-  E   = hyperElasParams(1) ;
-  nu  = hyperElasParams(2) ;
-  G   = E/(2*(1+nu)) ;
 
   [A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
-
-  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-	
-  % --- elem lengths and rotation matrix
-  [ local2globalMats, l ] = beamParameters( elemCoords ) ;
-  R = RotationMatrix(ndofpnode, local2globalMats) ;
-  
-  % temporary
-  % ------------------------
-  elemReleases = [0 0 0 0] ;
-  % ------------------------
-
-  % --- set the local degrees of freedom corresponding to each behavior
-  LocAxialdofs  = [ 1 7 ] ;
-  LocTorsndofs  = [ 2 8 ] ;
-  LocBendXYdofs = [ 3 6 9 12 ] ;
-  LocBendXZdofs = [ 5 4 11 10 ] ;
-
-  KL = zeros ( 2*ndofpnode, 2*ndofpnode ) ;
-
-  Kaxial = E*A/l * [ 1 -1 ; ...
-                    -1  1 ] ;
-  KL( LocAxialdofs , LocAxialdofs ) = Kaxial ;
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 

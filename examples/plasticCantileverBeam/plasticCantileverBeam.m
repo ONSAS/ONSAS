@@ -18,3 +18,12 @@ Mu = 374 ;
 kh1 = 29400 ;     % KNm^2
 kh2 = 272 ;
 Ks = -18000 ;     % KNm
+
+nu = 0.3 ;
+
+% --- material constit params ---
+hyperElasParams(1) = E ;
+hyperElasParams(2) = nu ;
+G   = E/(2*(1+nu)) ;
+
+[ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCrossSecParams, density, hyperElasModel, hyperElasParams) ;
