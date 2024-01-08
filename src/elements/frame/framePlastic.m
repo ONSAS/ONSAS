@@ -100,7 +100,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
 
   % system of equilibrium equations
 
-  deltad = Kelement\[0 0 0 (lambda - Fint) ;
+  deltad = Kelement\[0 0 0 0 (lambda - Fint) 0]' ;
 
   dn1 = dn + deltad ;
 
