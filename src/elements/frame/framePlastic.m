@@ -23,11 +23,20 @@
 
 % =========================================================================
 
-function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemCrossSecParams, density, hyperElasModel, hyperElasParams)
-  
-  ndofpnode = 6 ;
+function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams, lambda)
 
-  [A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;
+  % --- element params ---
+  l = elemParams(1) ;
+  Iy = elemParams(2) ;
+
+  % --- elastoplastic params ---
+  E = elastoplasticParams(1) ;
+  Mc = elastoplasticParams(2) ;
+  My = elastoplasticParams(3) ;
+  Mu = elastoplasticParams(4) ;
+  kh1 = elastoplasticParams(5) ;
+  kh2 = elastoplasticParams(6) ;
+  Ks = elastoplasticParams(7) ;
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
@@ -62,7 +71,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, x
 
   for j = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(j, xpi(j), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, xd, Fi] = integrand(j, xpi(j), xd) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
 
@@ -89,6 +98,12 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, x
 
   Kelement = Kfd - Kfalfa*(Khalfa^(-1))*Khd ;
 
+  % system of equilibrium equations
+
+  deltad = Kelement\[0 0 0 (lambda - Fint) ;
+
+  dn1 = dn + deltad ;
+
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
     function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(j, xpi, xd)
@@ -108,8 +123,8 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, x
     % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
     khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-    khat2 = dirac(xd)*alfan ;
-    kn = khat + khat2 ;
+    % khat2 = dirac(xd)*alfan ;
+    % kn = khat + khat2 ;
     ken = khat - kpn(j) ;
 
     % moment
@@ -182,8 +197,8 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, x
         % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
         khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
-        khat2 = dirac(xd)*alfan ;
-        kn = khat + khat2 ;
+        % khat2 = dirac(xd)*alfan ;
+        % kn = khat + khat2 ;
         kenxpi = khat - kpn(jj) ;
         
         % moment at integration points
@@ -197,7 +212,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic( dn, kpn, xin1, x
 
     % softening criterion (failure function) at integration points
 
-    qfailxpi = min(-Ks*xin2(j), Mu) ;
+    % qfailxpi = min(-Ks*xin2(j), Mu) ;
     phifailxpi = abs(tM)-(Mu-qfail) ;
     
         if phifailxpi <= 0
