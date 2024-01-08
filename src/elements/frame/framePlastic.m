@@ -58,7 +58,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
   % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
   npi = 3 ;
-  xpi = [a (a+b)/2 b] ;
+  xpi = [0 1/2 1] ;
   wpi = [1/3 4/3 1/3] ;
 
   kpn1 = zeros(npi,1) ;

@@ -23,8 +23,22 @@ nu = 0.3 ;
 tol1 = 0.01 ;
 tol2 = 0.01 ;
 
-% initial value of displacement
-dn = 0 ;
+% initial values
+dn = [0 0; 0 0; 0 0] ;
+dn1 = [ 1 1; 1 1; 1 1] ;
+Fint = 0 ;
+
+% Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
+
+npi = 3 ;
+
+kpn = zeros(npi,1) ;
+xin1 = zeros(npi,1) ;
+xin2 = zeros(npi,1) ;
+
+alfan = 0 ;
+
+xd = 0 ;
 
 % --- element params ---
 elemParams = [l Iy] ;
@@ -34,7 +48,7 @@ elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
 for lambda = 1:1000
 
-while (dn1-dn) < tol1 && abs(lambda - Fint) < tol2
+while norm(dn1-dn) > tol1 && abs(lambda - Fint) > tol2
 
 [dn1, kpn1, xin11, xin21, alfan1, xd] = framePlastic(dn, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams, lambda) ;
 
