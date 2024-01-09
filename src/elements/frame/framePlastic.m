@@ -69,26 +69,26 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
   % integration (Gauss-Lobatto)
   % and calculation of values of internal parameters at integration points
 
-  for j = 1:npi
+  for jj = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, xd, Fi] = integrand(j, xpi(j), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, xd, Fi] = integrand(jj, xpi(jj), xd) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
 
-    Kfd = Kfd + Kfdj*wpi(j) ;
-    Kfalfa = Kfalfa + Kfalfaj*wpi(j) ;
-    Khd = Khd + Khdj*wpi(j) ;
-    Khalfa = khalfa + Khalfaj*wpi(j) ;
+    Kfd = Kfd + Kfdj*wpi(jj) ;
+    Kfalfa = Kfalfa + Kfalfaj*wpi(jj) ;
+    Khd = Khd + Khdj*wpi(jj) ;
+    Khalfa = khalfa + Khalfaj*wpi(jj) ;
 
     % values of internal parameters at integration points
 
-    kpn1(j) = kpn1xpi ;
-    xin11(j) = xin11xpi ;
-    xin21(j) = xin21xpi ;
+    kpn1(jj) = kpn1xpi ;
+    xin11(jj) = xin11xpi ;
+    xin21(jj) = xin21xpi ;
 
     % internal forces / integration (Gauss-Lobatto)
 
-    Fint = Fint + Fi*wpi(j) ;
+    Fint = Fint + Fi*wpi(jj) ;
 
   end
 
@@ -106,7 +106,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-    function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(j, xpi, xd)
+    function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(jj, xpi, xd)
 
     % elastoplasticity with hardening
     % the usual trial-corrector (return mapping) algorithm
@@ -125,15 +125,15 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
     khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
     % khat2 = dirac(xd)*alfan ;
     % kn = khat + khat2 ;
-    ken = khat - kpn(j) ;
+    ken = khat - kpn(jj) ;
 
     % moment
 
-    Mxpi= E*Iy*ken ;
+    Mxpi = E*Iy*ken ;
 
     % yield criterion
-
-    qxpi = piecewise(xin1(j) <= (My-Mc)/kh1, -kh1*xin1(j), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(j)) ;
+    
+    qxpi = piecewise(xin1(jj) <= (My-Mc)/kh1, -kh1*xin1(jj), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj)) ;
     phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
     % test values
@@ -148,16 +148,16 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
     if phitest <= 0
   
         gamma = 0 ;
-        kpn1xpi = kpn(j) ;
-        xin11xpi = xin1(j) ;
+        kpn1xpi = kpn(jj) ;
+        xin11xpi = xin1(jj) ;
         M1xpi = Mxpi ;
 
     else
 
         gamma = piecewise(xin1(j) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
-        kpn1xpi = kpn(j) + gamma*sign(M) ;
-        xin11xpi = xin1(j) + gamma ;
-        M1xpi = E*Iy*(khat-kpn1(j)) ;
+        kpn1xpi = kpn(jj) + gamma*sign(M) ;
+        xin11xpi = xin1(jj) + gamma ;
+        M1xpi = E*Iy*(khat-kpn1(jj)) ;
 
     end
 
@@ -218,12 +218,12 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
         if phifailxpi <= 0
 
             alfan1 = alfan ;
-            xin21xpi = xin2(j) ;
+            xin21xpi = xin2(jj) ;
 
             else
                 gamma2 = piecewise(xin2(j)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
                 alfan1=alfan + gamma2*sign(tM) ;
-                xin21xpi = xin2(j) + gamma2 ;
+                xin21xpi = xin2(jj) + gamma2 ;
 
                 xd = xpi ;       
         end
