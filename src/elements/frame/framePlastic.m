@@ -116,7 +116,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
     Bv = [N(1) N(3)] ;
     Btheta = [N(2) N(4)] ;
 
-    Bd = [Bu 0 0; 0 Bv Btheta] ;
+    Bd = [Bu 0 0 0 0; 0 0 Bv Btheta] ;
 
     Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
 
