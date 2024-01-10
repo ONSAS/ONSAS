@@ -154,7 +154,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
 
     else
 
-        gamma = piecewise(xin1(j) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
+        gamma = piecewise(xin1(jj) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
         kpn1xpi = kpn(jj) + gamma*sign(M) ;
         xin11xpi = xin1(jj) + gamma ;
         M1xpi = E*Iy*(khat-kpn1(jj)) ;
@@ -221,7 +221,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
             xin21xpi = xin2(jj) ;
 
             else
-                gamma2 = piecewise(xin2(j)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
+                gamma2 = piecewise(xin2(jj)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
                 alfan1=alfan + gamma2*sign(tM) ;
                 xin21xpi = xin2(jj) + gamma2 ;
 
