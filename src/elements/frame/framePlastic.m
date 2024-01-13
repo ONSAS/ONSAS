@@ -23,11 +23,12 @@
 
 % =========================================================================
 
-function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams, lambda)
+function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda)
 
   % --- element params ---
   l = elemParams(1) ;
-  Iy = elemParams(2) ;
+  A = elemParams(2) ;
+  Iy = elemParams(3) ;
 
   % --- elastoplastic params ---
   E = elastoplasticParams(1) ;
@@ -44,9 +45,9 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
   % vvector = [v1; v2] ;
   % thetavector = [theta1; theta2] ;
 
-  uvector = dn(1,:)' ;
-  vvector = dn(2,:)' ;
-  thetavector = dn(3,:)' ;
+  uvector = dn(1:2)' ;
+  vvector = dn(3:4)' ;
+  thetavector = dn(5:6)' ;
   
   Bu = [-1/l 1/l] ;
 
@@ -69,26 +70,26 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
   % integration (Gauss-Lobatto)
   % and calculation of values of internal parameters at integration points
 
-  for jj = 1:npi
+  for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, xd, Fi] = integrand(jj, xpi(jj), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, xd, Fi] = integrand(ii, xpi(ii), xd) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
 
-    Kfd = Kfd + Kfdj*wpi(jj) ;
-    Kfalfa = Kfalfa + Kfalfaj*wpi(jj) ;
-    Khd = Khd + Khdj*wpi(jj) ;
-    Khalfa = khalfa + Khalfaj*wpi(jj) ;
+    Kfd = Kfd + Kfdj*wpi(ii) ;
+    Kfalfa = Kfalfa + Kfalfaj*wpi(ii) ;
+    Khd = Khd + Khdj*wpi(ii) ;
+    Khalfa = Khalfa + Khalfaj*wpi(ii) ;
 
     % values of internal parameters at integration points
 
-    kpn1(jj) = kpn1xpi ;
-    xin11(jj) = xin11xpi ;
-    xin21(jj) = xin21xpi ;
+    kpn1(ii) = kpn1xpi ;
+    xin11(ii) = xin11xpi ;
+    xin21(ii) = xin21xpi ;
 
     % internal forces / integration (Gauss-Lobatto)
 
-    Fint = Fint + Fi*wpi(jj) ;
+    Fint = Fint + Fi*wpi(ii) ;
 
   end
 
@@ -132,8 +133,19 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
     Mxpi = E*Iy*ken ;
 
     % yield criterion
+
+    if xin1(jj) <= (My-Mc)/kh1
+
+        qxpi = -kh1*xin1(jj) ;
+
+    else
+
+        qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
+
+    end
     
-    qxpi = piecewise(xin1(jj) <= (My-Mc)/kh1, -kh1*xin1(jj), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj)) ;
+    % qxpi = piecewise(xin1(jj) <= (My-Mc)/kh1, -kh1*xin1(jj), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj)) ;
+
     phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
     % test values
@@ -163,7 +175,21 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
 
     % elastoplastic tangent bending modulus
 
-    Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11xpi <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11xpi > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
+    if gamma == 0
+
+        Cep = E*Iy ;
+
+    elseif gamma > 0 && xin11xpi <= (My-Mc)/kh1
+
+        Cep = E*Iy*kh1/(E*Iy + kh1) ;
+
+    elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
+
+        Cep = E*Iy*kh2/(E*Iy + kh2) ;
+
+    end
+
+    % Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11xpi <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11xpi > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
   
     % stiffness matrices
 
@@ -190,30 +216,11 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
     % trial value of the moment at the discontinuity (tM at xd)
     tM = 0 ;
 
-    for jj=1:npi
-
-        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(jj)/l)) ;
-
-        % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-
-        khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
-        % khat2 = dirac(xd)*alfan ;
-        % kn = khat + khat2 ;
-        kenxpi = khat - kpn(jj) ;
-        
-        % moment at integration points
-        Mixpi = E*Iy*kenxpi ;
-
-        % integration (Gauss-Lobatto)
-    
-        tM = tM - Ghatxpi*Mixpi*wpi(jj) ;
-
-    end
-
     % softening criterion (failure function) at integration points
 
-    % qfailxpi = min(-Ks*xin2(j), Mu) ;
-    phifailxpi = abs(tM)-(Mu-qfail) ;
+    qfailxpi = min(-Ks*xin2(jj), Mu) ;
+
+    phifailxpi = abs(tM)-(Mu-qfailxpi) ;
     
         if phifailxpi <= 0
 
@@ -227,5 +234,29 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint ] = framePlastic( dn, kpn, 
 
                 xd = xpi ;       
         end
-  end
+    end
+
+    for ii = 1:npi
+
+        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
+
+        N = bendingInterFuns (xpi(ii), l, 2) ;
+        Bv = [N(1) N(3)] ;
+        Btheta = [N(2) N(4)] ;
+
+        % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
+
+        khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
+        % khat2 = dirac(xd)*alfan ;
+        % kn = khat + khat2 ;
+        kenxpi = khat - kpn(ii) ;
+        
+        % moment at integration points
+        Mixpi = E*Iy*kenxpi ;
+
+        % integration (Gauss-Lobatto)
+    
+        tM = tM - Ghatxpi*Mixpi*wpi(ii) ;
+
+    end
 end
