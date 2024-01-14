@@ -97,25 +97,11 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
 
   % element stiffness matrix
 
-  Khalfainv = inv (Khalfa) ;
-
-  if Khalfainv == inf
-
-      Khalfainv = eye(6) ;
-
-  end
-
-  Kelement = Kfd - Kfalfa*Khalfainv*Khd ;
+  Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
   % system of equilibrium equations
 
   deltad = Kelement\[0 0 0 0 (lambda - Fint) 0]' ;
-
-  if isnan(deltad)
-
-      deltad = [0 0 0 0 0.01 0]' ;
-
-  end
 
   dn1 = dn + deltad ;
 
