@@ -45,9 +45,9 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
   % vvector = [v1; v2] ;
   % thetavector = [theta1; theta2] ;
 
-  uvector = dn(1:2)' ;
-  vvector = dn(3:4)' ;
-  thetavector = dn(5:6)' ;
+  uvector = dn(1:2) ;
+  vvector = dn(3:4) ;
+  thetavector = dn(5:6) ;
   
   Bu = [-1/l 1/l] ;
 
@@ -97,11 +97,25 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
 
   % element stiffness matrix
 
-  Kelement = Kfd - Kfalfa*(Khalfa^(-1))*Khd ;
+  Khalfainv = inv (Khalfa) ;
+
+  if Khalfainv == inf
+
+      Khalfainv = eye(6) ;
+
+  end
+
+  Kelement = Kfd - Kfalfa*Khalfainv*Khd ;
 
   % system of equilibrium equations
 
   deltad = Kelement\[0 0 0 0 (lambda - Fint) 0]' ;
+
+  if isnan(deltad)
+
+      deltad = [0 0 0 0 0.01 0]' ;
+
+  end
 
   dn1 = dn + deltad ;
 
@@ -166,8 +180,19 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
 
     else
 
-        gamma = piecewise(xin1(jj) + phitest/(kh1+E*I)<=(My-Mc)/kh1, phitest/(kh1+E*I), phitest/(kh2+E*I)) ;
-        kpn1xpi = kpn(jj) + gamma*sign(M) ;
+        if xin1(jj) + phitest/(kh1+E*Iy)<=(My-Mc)/kh1
+
+            gamma = phitest/(kh1+E*Iy) ;
+
+        else
+
+            gamma = phitest/(kh2+E*Iy) ;
+        
+        end
+
+        % gamma = piecewise(xin1(jj) + phitest/(kh1+E*Iy)<=(My-Mc)/kh1, phitest/(kh1+E*Iy), phitest/(kh2+E*Iy)) ;
+        
+        kpn1xpi = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi = xin1(jj) + gamma ;
         M1xpi = E*Iy*(khat-kpn1(jj)) ;
 
