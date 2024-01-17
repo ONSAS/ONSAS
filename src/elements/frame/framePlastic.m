@@ -23,7 +23,7 @@
 
 % =========================================================================
 
-function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda)
+function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda)
 
   % --- element params ---
   l = elemParams(1) ;
@@ -45,16 +45,16 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
   % vvector = [v1; v2] ;
   % thetavector = [theta1; theta2] ;
 
-  uvector = dn(1:2) ;
-  vvector = dn(3:4) ;
-  thetavector = dn(5:6) ;
+  uvector = dnk(1:2) ;
+  vvector = dnk(3:4) ;
+  thetavector = dnk(5:6) ;
   
   Bu = [-1/l 1/l] ;
 
   Kfd = zeros(6,6) ;
   Kfalfa = zeros(6,6) ;
   Khd = zeros(6,6) ;
-  Khalfa = zeros(6,6) ;
+  Khalfa = 0 ;
 
   % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
@@ -93,7 +93,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
 
   end
 
-  Khalfa = Khalfa + Ks ; % integral + ks
+  Khalfa = Khalfa + Ks ; % integral + Ks
 
   % element stiffness matrix
 
@@ -103,7 +103,7 @@ function [ dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dn, kp
 
   deltad = Kelement\[0 0 0 0 (lambda - Fint) 0]' ;
 
-  dn1 = dn + deltad ;
+  dnk1 = dnk + deltad ;
 
   % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 

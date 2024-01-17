@@ -25,8 +25,7 @@ tol1 = 0.001 ;
 tol2 = 0.001 ;
 
 % initial values
-dn = [0 0 0 0 0 0]' ;
-dn1 = [ 0 0 0 0 0.01 0]' ;
+dn = [0 0 0 0 -0.01 0]' ;
 Fint = 0 ;
 tM = 0 ;
 
@@ -48,12 +47,31 @@ elemParams = [l A Iy] ;
 % --- elastoplastic params ---
 elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
-for lambda = 1:1000
+matdes = dn ;
 
-while norm(dn1-dn) > tol1 && abs(lambda - Fint) > tol2
+for n = 2:1000
 
-[dn1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic(dn, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda) ;
+    disp(n) ;
+
+    k = 0 ;
+
+    dnk = matdes(:,n-1)  ;
+
+    notconverge = true ;
+
+while notconverge
+
+    k = k + 1 ;
+    disp(k) ;
+
+[dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
+
+delta = dnk - dnk1 ;
+
+notconverge = norm(delta) > tol1 && abs(n - Fint) > tol2 ;
 
 end
+
+matdes = [matdes dnk1] ;
 
 end
