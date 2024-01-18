@@ -1,8 +1,18 @@
-clear ;
-close all ;
+% =========================================================================
+
+% Euler-Bernoulli element with embeded discontinuity
+% Numerical modeling of softening hinges in thin Euler–Bernoulli beams
+% Francisco Armero, David Ehrlich / University of California, Berkeley
+
+% =========================================================================
 
 % numerical example
-% cantilever beam of rectangular cross-section loaded with a vertical force at the free end
+% cantilever beam loaded with a vertical force at the free end
+
+% =========================================================================
+
+clear ;
+close all ;
           
 % Mc, My, Mu / from the moment-curvature diagram
 % kh1, kh2   / hardening modules
@@ -51,8 +61,6 @@ matdes = dn ;
 
 for n = 2:1000
 
-    disp(n) ;
-
     k = 0 ;
 
     dnk = matdes(:,n-1)  ;
@@ -62,13 +70,14 @@ for n = 2:1000
 while notconverge
 
     k = k + 1 ;
-    disp(k) ;
 
 [dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
 
 delta = dnk - dnk1 ;
 
-notconverge = norm(delta) > tol1 && abs(n - Fint) > tol2 ;
+dnk = dnk1 ;
+
+notconverge = norm(delta) > tol1 && norm([0 0 0 0 n 0]' - Fint) > tol2 ;
 
 end
 
