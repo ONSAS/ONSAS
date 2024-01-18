@@ -65,9 +65,9 @@ for n = 2:1000
 
     dnk = matdes(:,n-1)  ;
 
-    notconverge = true ;
+    nonconverge = true ;
 
-while notconverge
+while nonconverge
 
     k = k + 1 ;
 
@@ -77,7 +77,7 @@ delta = dnk - dnk1 ;
 
 dnk = dnk1 ;
 
-notconverge = norm(delta) > tol1 && norm([0 0 0 0 n 0]' - Fint) > tol2 ;
+nonconverge = norm(delta) > tol1 && norm([0 0 0 0 n 0]' - Fint) > tol2 ;
 
 end
 
