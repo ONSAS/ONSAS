@@ -72,7 +72,7 @@ function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, 
 
   for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(ii, xpi(ii), xd) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi] = integrand(ii, xpi(ii), xd) ;
 
 
     % stiffness matrices / integration (Gauss-Lobatto)

@@ -61,6 +61,8 @@ matdes = dn ;
 
 for n = 2:1000
 
+    fprintf('Fuerza %d\n',n) ;
+
     k = 0 ;
 
     dnk = matdes(:,n-1)  ;
@@ -71,13 +73,18 @@ while nonconverge
 
     k = k + 1 ;
 
+    fprintf('Iteración %d\n',k) ;
+
 [dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
 
 delta = dnk - dnk1 ;
 
 dnk = dnk1 ;
 
-nonconverge = norm(delta) > tol1 && norm([0 0 0 0 n 0]' - Fint) > tol2 ;
+norm1 = norm(delta) ;
+norm2 = norm([0 0 0 0 n 0]' - Fint) ;
+
+nonconverge = norm1 > tol1 &&  norm2 > tol2 ;
 
 end
 
