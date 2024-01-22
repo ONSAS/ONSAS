@@ -100,13 +100,15 @@ function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, 
 
   Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
-  Kelement(1,:) = [] ;
-  Kelement(2,:) = [] ;
-  Kelement(3,:) = [] ;
+  Krelement = Kelement ;
 
-  Kelement(:,1) = [] ;
-  Kelement(:,2) = [] ;
-  Kelement(:,3) = [] ;
+  Krelement(1,:) = [] ;
+  Krelement(2,:) = [] ;
+  Krelement(3,:) = [] ;
+
+  Krelement(:,1) = [] ;
+  Krelement(:,2) = [] ;
+  Krelement(:,3) = [] ;
 
   Fint(1) = [] ;
   Fint(2) = [] ;
@@ -114,7 +116,7 @@ function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, 
  
   % system of equilibrium equations
 
-  deltad = Kelement\([0 lambda 0]' - Fint) ;
+  deltad = Krelement\([0 lambda 0]' - Fint) ;
 
   deltad = [0; 0; 0; deltad] ;
 
