@@ -75,14 +75,14 @@ while nonconverge
 
     fprintf('Iteración %d\n',k) ;
 
-[dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
+[dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM, FReactions] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
 
 delta = dnk - dnk1 ;
 
 dnk = dnk1 ;
 
 norm1 = norm(delta) ;
-norm2 = norm([0 0 0 0 n 0]' - Fint) ;
+norm2 = norm([0; 0; 0; FReactions]  + [0 0 0 0 n 0]' - Fint) ;
 
 nonconverge = norm1 > tol1 &&  norm2 > tol2 ;
 

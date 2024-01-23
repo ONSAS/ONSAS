@@ -23,7 +23,7 @@
 
 % =========================================================================
 
-function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda)
+function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM, FReactions] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, lambda)
 
   % --- element params ---
   l = elemParams(1) ;
@@ -116,9 +116,11 @@ function [ dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM] = framePlastic( dnk, 
  
   % system of equilibrium equations
 
-  deltad = Krelement\([0 lambda 0]' - Fint) ;
+  deltad = Krelement\([0 lambda 0]') ;
 
   deltad = [0; 0; 0; deltad] ;
+
+  FReactions = [Kelement(1,:); Kelement(2,:); Kelement(3,:)]*deltad + [0 lambda 0]' ;
 
   Fint = [0; 0; 0; Fint] ;
 
