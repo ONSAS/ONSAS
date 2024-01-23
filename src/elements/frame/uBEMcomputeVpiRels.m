@@ -14,17 +14,18 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
+% This function returns the relative projected velocity in local coordinates
 
-function [ chordVector, aoa, cl, cd, cm, fstat, clinv, clfullysep ] = aeroBEMprops( aeroAirfoils, sectionData ) ;
+function [VpiRel, VpiRelPerp, VrelG] = uBEMcomputeVpiRels( udotFlow, udotFrame, udotWake, Rroof, Rr, L2, L3 )
+  
+% the relative velocity in global cooridantes is Ref: eq 9.9 Hansen 2015
+VrelG = udotFlow - udotFrame + udotWake;
 
-for i = length(aeroAirfoils)
-    [aoa(:,i), cl(:,i), cd(:,i), cm(:,i), fstat(:,i), clinv(:,i), clfullysep(:,i)] = readairfoildata( aeroAirfoils(i) );
-end
+% then the projection (in t2,t3 plane) of the relative flow velocity in deformed coordinates is:
+VpiRel = L2 * Rroof' * Rr' * VrelG ;
+  
+% the perpendicular flow relative velocity projection in deformed coordinates is:
+VpiRelPerp = L3 * VpiRel ;
 
-twist       = sectionData(:,2); % Angle in DEGRESS
-chord       = sectionData(:,3);
-
-for j = 1:length(twist)
-    chordVector(1,j) = [0, 0 , chord(j)] ;
-end
 end
