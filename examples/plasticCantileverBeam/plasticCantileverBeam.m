@@ -11,8 +11,8 @@
 
 % =========================================================================
 
-clear ;
-close all ;
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+addpath( genpath( [ pwd '/../../src'] ) );
           
 % Mc, My, Mu / from the moment-curvature diagram
 % kh1, kh2   / hardening modules
@@ -30,12 +30,15 @@ kh1 = 29400 ;     % KNm^2
 kh2 = 272 ;
 Ks = -18000 ;     % KNm
 
+freedofs = [2 4 6 ];
+
 nu = 0.3 ;
-tol1 = 0.001 ;
-tol2 = 0.001 ;
+tol1 = 1e-8 ;
+tol2 = 1e-4 ;
+tolk = 3 ;
 
 % initial values
-dn = [0 0 0 0 -0.01 0]' ;
+dn = [0 0 0 0 0 0]' ;
 Fint = 0 ;
 tM = 0 ;
 
@@ -59,35 +62,56 @@ elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
 matdes = dn ;
 
+%Mc / l 
 for n = 2:1000
 
-    fprintf('Fuerza %d\n',n) ;
+    fprintf('Fuerza  %d \n',n) ;
 
-    k = 0 ;
+    k = 0 ; % set iterations zero
 
-    dnk = matdes(:,n-1)  ;
+    Fext = [0 0 0 n-1 0 0]' ;
+
+    dnk = matdes(:,n-1) ;
 
     nonconverge = true ;
 
-while nonconverge
+    while nonconverge && k < tolk
 
-    k = k + 1 ;
+        k = k + 1 ;
 
-    fprintf('Iteración %d\n',k) ;
+        fprintf('Iteración %d\n',k) ;
 
-[dnk1, kpn1, xin11, xin21, alfan1, xd, Fint, tM, FReactions] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams, n) ;
+        [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams) ;
 
-delta = dnk - dnk1 ;
+        residualForce = Fint - Fext 
 
-dnk = dnk1 ;
+        Krelement = Kelement( freedofs, freedofs) 
+ 
+        residualForceRed = residualForce(freedofs) 
+      
+        % system of equilibrium equations
 
-norm1 = norm(delta) ;
-norm2 = norm([0; 0; 0; FReactions]  + [0 0 0 0 n 0]' - Fint) ;
+        deltadred = Krelement\ ( - residualForceRed )
+      
+        deltad = zeros(6,1);      
+        deltad(freedofs) = deltadred ;
+            
+        dnk1 = dnk + deltad ;
 
-nonconverge = norm1 > tol1 &&  norm2 > tol2 ;
+        dnk = dnk1 ;
 
-end
+        # delta
+        # FReactions
+        # Fint
+        norm1 = norm( deltadred ) 
+        norm2 = norm( residualForceRed ) 
 
-matdes = [matdes dnk1] ;
+        nonconverge = norm1 > tol1 &&  norm2 > tol2 
+
+    end
+
+    stop
+
+    matdes = [matdes dnk1] ;
 
 end
