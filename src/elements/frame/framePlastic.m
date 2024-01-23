@@ -89,12 +89,22 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
     Fint = Fint + Fi*wpi(ii) ;
 
   end
+Khalfa
 
+Ks
   Khalfa = Khalfa + Ks ; % integral + Ks
-
+  Khd
+  fprintf("HOLLLLLLLLLAAAAAAAAAAAAAAAAAAAA")
+#   Khalfa
+#   stop
   % element stiffness matrix
+# Khd
+# Kfalfa 
+# Kfalfa * Khd
 
-  Kelement = Kfd %- Kfalfa*Khalfa^(-1)*Khd ;
+  Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd 
+#   stop
+  %Kelement = Kfd - Khd ;
   
   %stop
 

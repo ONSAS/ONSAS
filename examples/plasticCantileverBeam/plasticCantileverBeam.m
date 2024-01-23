@@ -63,7 +63,7 @@ elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 matdes = dn ;
 
 %Mc / l 
-for n = 2:1000
+for n = 2:100
 
     fprintf('Fuerza  %d \n',n) ;
 
@@ -83,6 +83,8 @@ for n = 2:1000
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams) ;
 
+        alfan1
+        
         residualForce = Fint - Fext 
 
         Krelement = Kelement( freedofs, freedofs) 
@@ -110,7 +112,7 @@ for n = 2:1000
 
     end
 
-    stop
+    # stop
 
     matdes = [matdes dnk1] ;
 

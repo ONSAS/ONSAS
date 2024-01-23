@@ -1,7 +1,7 @@
 
 
 
-function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu)
+function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu)
 
     % elastoplasticity with hardening
     % the usual trial-corrector (return mapping) algorithm
@@ -17,7 +17,8 @@ Btheta = [N(2) N(4)] ;
 
 Bd = [ Bu  0 0 0 0    ; ...
        0 0 Bv  Btheta ] ;
-Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
+
+Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
@@ -106,7 +107,7 @@ end
     Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
 
     Khalfa = Ghat*Cep*Ghat ;
-
+ 
     epsilon = Bu*uvector ;
 
     Fi= Bd' * [E*A*epsilon; M1xpi] ;
