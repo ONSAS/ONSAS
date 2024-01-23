@@ -35,7 +35,7 @@ freedofs = [2 4 6 ];
 nu = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 3 ;
+tolk = 10 ;
 
 % initial values
 dn = [0 0 0 0 0 0]' ;
@@ -92,7 +92,7 @@ for n = 2:1000
         % system of equilibrium equations
 
         deltadred = Krelement\ ( - residualForceRed )
-      
+        
         deltad = zeros(6,1);      
         deltad(freedofs) = deltadred ;
             

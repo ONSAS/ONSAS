@@ -1,7 +1,7 @@
 
 
 
-function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi] = integrand(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu)
+function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu)
 
     % elastoplasticity with hardening
     % the usual trial-corrector (return mapping) algorithm
@@ -129,15 +129,12 @@ end
     phifailxpi = abs(tM)-(Mu-qfailxpi) ;
     
     if phifailxpi <= 0
-
-            alfan1 = alfan ;
-            xin21xpi = xin2(jj) ;
-
+        alfan1 = alfan ;
+        xin21xpi = xin2(jj) ;
     else
-            gamma2 = piecewise(xin2(jj)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
-            alfan1=alfan + gamma2*sign(tM) ;
-            xin21xpi = xin2(jj) + gamma2 ;
-
-            xd = xpi ;       
+        gamma2 = piecewise(xin2(jj)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
+        alfan1=alfan + gamma2*sign(tM) ;
+        xin21xpi = xin2(jj) + gamma2 ;
+        xd = xpi ;       
     end
 

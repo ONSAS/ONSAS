@@ -72,7 +72,7 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
 
   for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -94,7 +94,9 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
 
   % element stiffness matrix
 
-  Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
+  Kelement = Kfd %- Kfalfa*Khalfa^(-1)*Khd ;
+  
+  %stop
 
 
 #   for ii = 1:npi
