@@ -22,7 +22,7 @@ c_l = feval('liftCoef', 0) ;
 %mdThe material parameters of the blades correspond to steel with Young modulus, Poisson coefficient and density given by:
 E = 210e9 ;  nu = 0.3 ; rho = 6000 ; 
 %mdand the geometric parameters of the blades for length and diameter are set as:
-l = 60 ; d = 0.1;
+l = 3 ; d = 0.1;
 %md
 %md## Analytical solution
 %mdSince only lift is considered, an analytical solution can be computed. The the lift load per unit of length is obtained as: 
