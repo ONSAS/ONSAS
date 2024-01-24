@@ -1,14 +1,12 @@
 
 
 
-function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu)
+function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu)
 
     % elastoplasticity with hardening
     % the usual trial-corrector (return mapping) algorithm
     % is used at each of the Gauss–Lobatto integration points.
-xpi
-xd
-jj
+
 Bu = [-1/l 1/l] ;
 
 N = bendingInterFuns (xpi, l, 2) ;
@@ -28,7 +26,7 @@ khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 ken = khat - kpn(jj) ;
 
 % moment
-Mxpi = E*Iy*ken 
+Mxpi = E*Iy*ken ;
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1

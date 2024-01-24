@@ -72,7 +72,7 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
 
   for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, A, Ks, xin2, Mu) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -89,50 +89,36 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
     Fint = Fint + Fi*wpi(ii) ;
 
   end
-Khalfa
 
-Ks
   Khalfa = Khalfa + Ks ; % integral + Ks
-  Khd
-  fprintf("HOLLLLLLLLLAAAAAAAAAAAAAAAAAAAA")
-#   Khalfa
-#   stop
+
   % element stiffness matrix
-# Khd
-# Kfalfa 
-# Kfalfa * Khd
 
-  Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd 
-#   stop
-  %Kelement = Kfd - Khd ;
-  
-  %stop
+  Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
+for ii = 1:npi
 
-#   for ii = 1:npi
+Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
 
-#     Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
+N = bendingInterFuns (xpi(ii), l, 2) ;
+Bv = [N(1) N(3)] ;
+Btheta = [N(2) N(4)] ;
 
-#     N = bendingInterFuns (xpi(ii), l, 2) ;
-#     Bv = [N(1) N(3)] ;
-#     Btheta = [N(2) N(4)] ;
+% curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-#     % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-
-#     khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
-#     % khat2 = dirac(xd)*alfan ;
-#     % kn = khat + khat2 ;
-#     kenxpi = khat - kpn(ii) ;
+khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
+% khat2 = dirac(xd)*alfan ;
+% kn = khat + khat2 ;
+kenxpi = khat - kpn(ii) ;
     
-#     % moment at integration points
-#     Mixpi = E*Iy*kenxpi ;
+% moment at integration points
+Mixpi = E*Iy*kenxpi ;
 
-#     % integration (Gauss-Lobatto)
+% integration (Gauss-Lobatto)
 
-#     tM = tM - Ghatxpi*Mixpi*wpi(ii) ;
+tM = tM - Ghatxpi*Mixpi*wpi(ii) ;
 
-# end
+end
 
-
-  % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
+% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
