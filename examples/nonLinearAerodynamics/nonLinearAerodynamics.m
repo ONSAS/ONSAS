@@ -91,6 +91,7 @@ analysisSettings.stopTolIts    =   40            ;
 %md
 %md### otherParams
 %md The name of the problem and vtk format output are selected: 
+otherParams = struct();
 otherParams.problemName = 'nonLinearCantileverSD2D';
 otherParams.plots_format = 'vtk' ;
 %md

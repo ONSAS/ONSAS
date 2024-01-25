@@ -109,6 +109,7 @@ analysisSettings.stopTolForces  =   1e-5      ;
 % load settings
 analysisSettings.booleanSelfWeight = false ;
 % otherParams
+otherParams = struct() ;
 otherParams.nodalDispDamping = cu ;
 otherParams.problemName      = strcat('VIVTest') ;
 %

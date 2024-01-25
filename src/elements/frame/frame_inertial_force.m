@@ -18,8 +18,8 @@
 
 function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
                         elemCrossSecParams, elemConstitutiveParams, ...
-                        Ue, Udote, Udotdote, elemrho, massMatType ) ;
-  global massratio;
+                        Ue, Udote, Udotdote, elemrho, massMatType, analysisSettings ) ;
+
   % element coordinates
   xs = elemCoords(:) ;
 
@@ -28,13 +28,12 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   nu  = elemConstitutiveParams(3) ;
   G   = E/(2*(1+nu)) ;
   rho = elemrho ;
-  if ~isempty( massratio ) % massratio = rho_structure/rho_fluid
-    rho = rho * (1+(1/massratio)) ;
+  if analysisSettings.addedMassBool
+    rho = rho + analysisSettings.fluidProps{1} ;
   end
+
   % ----- extract cross section properties ---
-% [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, 0 ) ; % select a ficticious elemrho
   [Area, J, Iyy, Izz, Jrho] = crossSectionProps ( elemCrossSecParams, rho ) ; % select a ficticious elemrho 
-  % ------------------------------------------
 
   % compute corotational matrices rotation 
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
@@ -48,7 +47,6 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   % global acel and vels
   ddotg    = switchToBattiniNom( Udote ) ;
   ddotdotg = switchToBattiniNom( Udotdote ) ;
-  % -------------------------------
 
   % length and coords of the element  
   [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
@@ -74,8 +72,7 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE ] = corotVecMatAuxStatic(...
                                                                   R0, Rr, Rg1, Rg2, l, II, O3, O1);
                 
-
-if strcmp( massMatType, 'consistent' )
+  if strcmp( massMatType, 'consistent' )
     sumInterForce  = zeros (12, 1 ) ;
     sumGyro        = zeros (12    ) ;
     sumMass        = zeros (12    ) ;
@@ -86,18 +83,18 @@ if strcmp( massMatType, 'consistent' )
     % Compute internalForce
     for ind = 1 : length( xIntPoints )
 
-    xGauss = l0/2 * (xIntPoints( ind ) + 1) ;
+      xGauss = l0/2 * (xIntPoints( ind ) + 1) ;
 
-    [interTermInertialForce, interTermMassMatrix, interTermGyroMatrix ] = interElementBeamForces ( ... 
+      [interTermInertialForce, interTermMassMatrix, interTermGyroMatrix ] = interElementBeamForces ( ... 
         xGauss, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, R0, Jrho, rho, Area, Gaux) ;
 
-    sumInterForce = sumInterForce ...
+      sumInterForce = sumInterForce ...
         + l0/2 * wIntPoints( ind ) * interTermInertialForce ;
-    %
-    sumGyro = sumGyro ...
+    
+      sumGyro = sumGyro ...
         + l0/2 * wIntPoints( ind ) * interTermGyroMatrix  ;
-    %
-    sumMass = sumMass ...
+    
+      sumMass = sumMass ...
         + l0/2 * wIntPoints( ind ) * interTermMassMatrix ;
     end
 
@@ -117,13 +114,12 @@ if strcmp( massMatType, 'consistent' )
     GyroMatrix = swtichToONSASBase(GyroMatrix); % Format [u1 theta1 u2 theta2 u3 theta3];
     MassMatrix = swtichToONSASBase(MassMatrix); % Format [u1 theta1 u2 theta2 u3 theta3];
 
-    %~ Fine
     fs{3} = Fine ;
 
     ks{2} = GyroMatrix ;
     ks{3} = MassMatrix ;
 
-elseif strcmp( massMatType, 'lumped' )
+  elseif strcmp( massMatType, 'lumped' )
     Me = sparse(12,12)                                      ;
     Me (1:2:end, 1:2:end) = rho * Area * l0 * 0.5 * eye(6)  ;
     Fine = Me * Udotdote                                    ;
@@ -131,15 +127,15 @@ elseif strcmp( massMatType, 'lumped' )
     fs{3} = Fine      ;
     ks{2} = zeros(12) ;
     ks{3} = Me        ;
-else
+  else
     error('the massMatType field into the elements struct must be or consistent or lumped' )
-end %endIfConsistentBoolean
+  end %endIfConsistentBoolean
 
-end%endFunction
+end %endFunction
 
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix ] = interElementBeamForces (...
 x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux )
-   % global massratio;
+
     % Bernoulli weight function
     [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0) ;
 

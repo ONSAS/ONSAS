@@ -144,16 +144,47 @@ if ~isempty( uBEMbool ) && uBEMbool
     c_m  = cmstat1 * N1 + cmstat2 * N2 ;  
 else
 
+  %-----------------------------------------------------------------
+
+  % ------------ Compute relative incidence angle  ------------
+  % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
+  tch = (vecChordUndef / norm( vecChordUndef )) ;
+
+  %disp('vpi')
+  %norm( VpiRelG)
+
+  % Calculate relative incidence angle in the deformed configuration
+  if( norm( VpiRelG ) == 0 )
+      td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+  elseif ~isempty( uniformUdot ) && uniformUdot % Verification for small disp
+      td = VpiRelGflow/ norm( VpiRelGflow ) ; % constant along x
+      tlconst = VpiRelGperpflow/ norm( VpiRelGperpflow) ; % constant along y
+  else % the drag direction at a generic cross section in deformed coordinates is:
+      td = VpiRelG / norm( VpiRelG ) ;
+  end
+
+if isnan(  norm( VpiRelG)  ),  stop, end
+
+  cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
+  sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
+  betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
+  %-----------------------------------------------------------------
+
   userDragCoef   = aeroCoefs{1} ;
   userLiftCoef   = aeroCoefs{2} ;
   userMomentCoef = aeroCoefs{3} ;
 
   % -----------------------------------------------------------------
   % Computation of Renynolds number
+
+  % Computation of Reynolds number
+
   Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
 
   % -----------------------------------------
   % ------------ Read Cd, Cl, Cm  ------------
+
+
   % Check fluid coefficients existence and the load it values if not set 0:
   if ~isempty( userDragCoef )
     c_d = feval( userDragCoef, betaRelG, Re  ) ;
@@ -179,6 +210,7 @@ end
 % ------------ Compute drag, lift and pitch moment forces  ------------
   % The cross section fluid forces in deformed coordinates is:
   % drag cross section force vector in deformed coordinates
+
 if ~isempty( uniformUdot ) && uniformUdot
   fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
 else
@@ -191,6 +223,26 @@ else
 end
 % lift cross section force vector in deformed coordinates
 if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
+
+  
+  if ~isempty( uniformUdot ) && uniformUdot
+
+      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
+
+  else
+
+    fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ;
+
+    if isnan(norm(fdl)),stop,end
+  end
+  if ~isempty(  ILVIVBool ) && ILVIVBool
+      fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
+  else
+      fdl_il =  [0 0 0]' ;
+  end
+  % lift cross section force vector in deformed coordinates
+  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
+
     if uniformUdot 
         fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlconst;
     elseif constantLiftDir % lift direction is constant
@@ -217,6 +269,7 @@ else % no WOM and a variable lift direction
     fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
 end
 
+
 % drag + lift cross section force vector in deformed coordinates
 fal =  fdl + fll + fdl_il;
 % torsional moment fluid load in deformed coordinates
@@ -230,4 +283,18 @@ integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;
 % rotate to global coordinates with EE matrix for rigid configuration formulation
 integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
 %-----------------------------------------------------------------
+  end
+
+  % drag + lift cross section force vector in deformed coordinates
+  fal =  fdl + fll + fdl_il;
+  
+  % torsional moment fluid load in deformed coordinates
+  ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
+
+  % Compute the element fluid load forces vector in global coordinates
+  % compute the integral term of the current cross section in rigid coordinates
+  integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;
+  % rotate to global coordinates with EE matrix for rigid configuration formulation
+  integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
+  %-----------------------------------------------------------------
 end

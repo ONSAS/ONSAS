@@ -191,14 +191,10 @@ for elem = 1:nElems
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool
-
-        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords               , ...
-                                            elemCrossSecParams                  , ...
-                                            [ 1 modelParams ]               , ...
-                                            elemDisps         , ...
-                                            dotdispsElem  , ...
-                                            dotdotdispsElem  , ...
-                                            density, massMatType  ) ;
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
+                                            [ 1 modelParams ], elemDisps, ...
+                                            dotdispsElem, dotdotdispsElem  , ...
+                                            density, massMatType, analysisSettings ) ;
 
 
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
@@ -220,6 +216,8 @@ for elem = 1:nElems
                                      aeroCoefs, chordVector, aeroNumericalParams,  ...
                                      analysisSettings, timeVar, elem, ...
                                      aeroNumericalParams{2}  ) ;
+                                     
+
     end
 
   % ---------  triangle solid element -----------------------------
@@ -366,8 +364,7 @@ if fsBool
   fsCell{2} = Fvis  ;
   fsCell{3} = Fmas  ;
   fsCell{4} = Faero ;
-  fsCell{5} = Fther ;
-
+  
   global globalReactionForces
   global glboalNodeReactionForces
   if ~isempty(globalReactionForces) && (round(timeVar) == timeVar) && (timeVar ~= 0)

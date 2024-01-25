@@ -91,16 +91,17 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
+modelProperties.exportFirstMatrices
 %md call assembler
-[ systemDeltauMatrix, systemDeltauRHS ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
+[ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 % =================================================================
 
 %md prints headers for solver output file
-printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  ) ;
-printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ] ) ;
+printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  , [] ) ;
+printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ], [] ) ;
 
 %md writes vtk file
 if strcmp( modelProperties.plots_format, 'vtk' )

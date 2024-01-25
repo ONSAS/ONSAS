@@ -1,7 +1,7 @@
 
 # Introduction
 
-![tests](https://github.com/ONSAS/ONSAS/workflows/tests/badge.svg)
+![tests](https://github.com/ONSAS/ONSAS/workflows/octave_tests/badge.svg)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 
 
@@ -22,24 +22,31 @@ Theses using ONSAS:
  * 2021, A. Teliz, *Optimización de torres de alta tensión y su análisis frente a vientos de alta intensidad* [url](https://hdl.handle.net/20.500.12008/35985)
 
 
-## Some example applications
+## Some academic examples
 
 ### A deployable ring
+
+This nonlinear static problem is introduced in [(Goto et. al, 1992)](https://doi.org/10.1016/0020-7683(92)90024-N) and also considered in [(Battini and Pacoste, 2002)](https://doi.org/10.1016/S0045-7825(01)00352-8).
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/deployableRing.gif?raw=true">
 ```
 
-[ring](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/deployableRing.gif?raw=true)
+### Right-Angle Cantilever
 
+This nonlinear dynamic analysis problem is introduced in [(Simo and Vu-Quoc, 1988)](https://doi.org/10.1016/0045-7825(88)90073-4) and also considered as Example 1 in [(Le et. al., 2014)](https://doi.org/10.1016/j.cma.2013.11.007).
+
+```@raw html
+<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/rightAngleCantilever.gif?raw=true" alt="right-angle animation">
+```
 
 ### A simple propeller model
+
+This problem is based on one of the examples presented in [(Vanzulli and Pérez Zerpa, 2023)](https://doi.org/10.1016/j.heliyon.2023.e19990).
 
 ```@raw html
 <img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true" alt="propeller animation">
 ```
-
-[propeller animation](https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/propeller.gif?raw=true)
 
 ### A tower model
 
@@ -47,21 +54,11 @@ Theses using ONSAS:
 <img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true" alt="tower animation">
 ```
 
-[tower](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/tower.gif?raw=true)
-
-### A uniaxial extension test
-
-```@raw html
-<img src="https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/uniaxial.gif?raw=true" alt="uniaxial animation">
-```
-[uniaxial animation](https://github.com/ONSAS/ONSAS_docs/blob/master/gifs/uniaxial.gif?raw=true)
-
 ### A beam/truss pendulum
 
 ```@raw html
 <img src="https://raw.githubusercontent.com/mvanzulli/Tex_CorrotationalDynamicTL_TesisMV/main/Presentacion/Videos/3.gif" alt="beam truss pendulum">
 ```
-
 
 ## Contact
 
@@ -86,6 +83,8 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
 
+* [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
+
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**4**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
 
 * [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
@@ -95,6 +94,7 @@ The authorship of each version is (or tends to be) based on the criteria defined
  1. Instituto de Estructuras y Transporte, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay
  1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
  1. Department of Mechanical Engineering, Polytechnique Montréal, Montréal, Canada.
+ 1. Centro Universitario Regional Este, Universidad de la República, Maldonado, Uruguay
  1. Department of Civil and Architectural Engineering, KTH Royal Institute of Technology, Stockholm, Sweden
 
 ### Contributions and Acknowledgments
