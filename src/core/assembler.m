@@ -203,10 +203,11 @@ for elem = 1:nElems
       error('wrong modelName for frame element.')
     end
 
-    %md compute fluid forces on the element
     if isempty(aeroNumericalParams)
         aeroBool = false; % Used for uBEM first element of the interesection between nose and blase is computed as a frame without wind vel applied. 
     end
+    
+    %md compute fluid forces on the element
     if aeroBool && fsBool
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
                                      elemCrossSecParams                   ,        ...

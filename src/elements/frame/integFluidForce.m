@@ -24,7 +24,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
                                             VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, ...
-                                            fluidFlowBool, ILVIVBool, uBEMbool, DWMbool)
+                                            fluidFlowBool, ILVIVBool, uBEMbool )
   
 %% -----------------------------------------------------------------------
 % Bernoulli weight function
@@ -104,31 +104,39 @@ else
     [VpiRelG, VpiRelGperp, VrelG] = computeVpiRels( udotFlowG, udotG, Rroofx, Rr, L2, L3 )  ;
 end
   
-%% -----------------------------------------------------------------
-% Compute relative incidence angle 
+%-----------------------------------------------------------------
+
+% ------------ Compute relative incidence angle  ------------
 % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
-tch = (vecChordUndef / norm( vecChordUndef )) ;
+if ~isempty( uBEMbool ) && uBEMbool
+    foilTwist   = dot( (Rroofx'*Rr'*deg2rad( twistVector ) )', [1,0,0] ) ;
+    chordVec    = expon( [foilTwist 0 0] )*vecChordUndef ;
+    tch = ( chordVec / norm( chordVec )) ;
+else
+    tch = (vecChordUndef / norm( vecChordUndef )) ;
+end
+
+%disp('vpi')
+%norm( VpiRelG)
+
+% Calculate relative incidence angle in the deformed configuration
 if( norm( VpiRelG ) == 0 )
     td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
 elseif ~isempty( uniformUdot ) && uniformUdot % Verification for small disp
     td = VpiRelGflow/ norm( VpiRelGflow ) ; % constant along x
     tlconst = VpiRelGperpflow/ norm( VpiRelGperpflow) ; % constant along y
-% Calculate relative incidence angle in the deformed configuration
 else % the drag direction at a generic cross section in deformed coordinates is:
     td = VpiRelG / norm( VpiRelG ) ;
 end
 
+if isnan(  norm( VpiRelG)  ),  stop, end
+
 cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
 sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
-
 if ~isempty( uBEMbool ) && uBEMbool
-    L1 = [ 1 0 0 ;
-           0 0 0 ;
-           0 0 0];
-    preTwist  = dot( (L1*Rroofx'*Rr'*deg2rad( twistVector ))', [1,0,0] ) ;   % pre twisted blade angle vector in local def blade coordinate
-    betaRelG   = - sign( sinBeta ) * acos( cosBeta ) - preTwist ;
+    betaRelG = - sign( sinBeta ) * acos( cosBeta ) 
 else
-    betaRelG = sign( sinBeta ) * acos( cosBeta );
+    betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
 end
 % ------------------------------------------------------------------
 
@@ -138,71 +146,47 @@ if ~isempty( uBEMbool ) && uBEMbool
     % Interpolated Cl, Cd and Cm in evaluated gaussian section interpolated with linear shape functions   
     global cdstat1; global clstat1; global cmstat1;
     global cdstat2; global clstat2; global cmstat2;
-
+    
     c_d  = cdstat1 * N1 + cdstat2 * N2 ;
     c_l  = clstat1 * N1 + clstat2 * N2 ;
-    c_m  = cmstat1 * N1 + cmstat2 * N2 ;  
+    c_m  = cmstat1 * N1 + cmstat2 * N2 ;
+    Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
 else
-
   %-----------------------------------------------------------------
-
-  % ------------ Compute relative incidence angle  ------------
-  % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
-  tch = (vecChordUndef / norm( vecChordUndef )) ;
-
-  %disp('vpi')
-  %norm( VpiRelG)
-
-  % Calculate relative incidence angle in the deformed configuration
-  if( norm( VpiRelG ) == 0 )
-      td = tch ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
-  elseif ~isempty( uniformUdot ) && uniformUdot % Verification for small disp
-      td = VpiRelGflow/ norm( VpiRelGflow ) ; % constant along x
-      tlconst = VpiRelGperpflow/ norm( VpiRelGperpflow) ; % constant along y
-  else % the drag direction at a generic cross section in deformed coordinates is:
-      td = VpiRelG / norm( VpiRelG ) ;
-  end
-
-if isnan(  norm( VpiRelG)  ),  stop, end
-
-  cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
-  sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
-  betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
-  %-----------------------------------------------------------------
-
-  userDragCoef   = aeroCoefs{1} ;
-  userLiftCoef   = aeroCoefs{2} ;
-  userMomentCoef = aeroCoefs{3} ;
-
-  % -----------------------------------------------------------------
-  % Computation of Renynolds number
-
-  % Computation of Reynolds number
-
-  Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
-
-  % -----------------------------------------
-  % ------------ Read Cd, Cl, Cm  ------------
-
-
-  % Check fluid coefficients existence and the load it values if not set 0:
-  if ~isempty( userDragCoef )
-    c_d = feval( userDragCoef, betaRelG, Re  ) ;
-    c_d_il = 0.1; % IL VIV
-  else
-    c_d = 0 ;
-  end
-  if ~isempty( userLiftCoef )
-    c_l = feval( userLiftCoef, betaRelG, Re  ) ;
-  else
-    ~isempty( VIVBool ) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ') ;
-    c_l = 0 ;
-  end
-  if ~isempty( userMomentCoef )
-    c_m = feval( userMomentCoef, betaRelG, Re ) ;
-  else
-    c_m = 0 ;
-  end
+    
+    userDragCoef   = aeroCoefs{1} ;
+    userLiftCoef   = aeroCoefs{2} ;
+    userMomentCoef = aeroCoefs{3} ;
+    
+    % -----------------------------------------------------------------
+    % Computation of Renynolds number
+    
+    % Computation of Reynolds number
+    
+    Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
+    
+    % -----------------------------------------
+    % ------------ Read Cd, Cl, Cm  ------------
+    
+    
+    % Check fluid coefficients existence and the load it values if not set 0:
+    if ~isempty( userDragCoef )
+        c_d = feval( userDragCoef, betaRelG, Re  ) ;
+        c_d_il = 0.1; % IL VIV
+    else
+        c_d = 0 ;
+    end
+    if ~isempty( userLiftCoef )
+        c_l = feval( userLiftCoef, betaRelG, Re  ) ;
+    else
+        ~isempty( VIVBool ) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ') ;
+        c_l = 0 ;
+    end
+    if ~isempty( userMomentCoef )
+        c_m = feval( userMomentCoef, betaRelG, Re ) ;
+    else
+        c_m = 0 ;
+    end
 end
 %--------------------------------------------------------------------
 
@@ -212,37 +196,22 @@ end
   % drag cross section force vector in deformed coordinates
 
 if ~isempty( uniformUdot ) && uniformUdot
-  fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
+    
+    fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
+
 else
-  fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ;
-end
-if ~isempty(  ILVIVBool ) && ILVIVBool
-  fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
-else
-  fdl_il =  [0 0 0]' ;
-end
-% lift cross section force vector in deformed coordinates
-if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
-
-  
-  if ~isempty( uniformUdot ) && uniformUdot
-
-      fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG)^2 * td    ;
-
-  else
-
+    
     fdl = 1/2 * densityFluid * c_d * dimCharacteristic * norm( VpiRelG) * VpiRelG     ;
 
     if isnan(norm(fdl)),stop,end
-  end
-  if ~isempty(  ILVIVBool ) && ILVIVBool
-      fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
-  else
-      fdl_il =  [0 0 0]' ;
-  end
-  % lift cross section force vector in deformed coordinates
-  if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
-
+end
+if ~isempty(  ILVIVBool ) && ILVIVBool
+    fdl_il =  1/2 * densityFluid * c_d_il * p/2 * dimCharacteristic * norm( VpiRelGflow )^2 * td   ;  % U^2 along VpiRelG
+else
+    fdl_il =  [0 0 0]' ;
+end
+% lift cross section force vector in deformed coordinates
+if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     if uniformUdot 
         fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG )^2 * tlconst;
     elseif constantLiftDir % lift direction is constant
@@ -259,14 +228,17 @@ if ~isempty( VIVBool ) && ~isempty( constantLiftDir ) && ~isempty( uniformUdot )
     else % lift direction is variable
         if ~isempty( fluidFlowBool ) && fluidFlowBool 
             fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelGflow ) * VpiRelGperp ;
-%           elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
-%           fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ;
+%        elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
+%          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ;
         else % Trim validation
             fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
         end
     end
+
 else % no WOM and a variable lift direction
+
     fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ; %note that if there is VIV effect q is 2
+
 end
 
 
@@ -283,18 +255,4 @@ integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;
 % rotate to global coordinates with EE matrix for rigid configuration formulation
 integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
 %-----------------------------------------------------------------
-  end
-
-  % drag + lift cross section force vector in deformed coordinates
-  fal =  fdl + fll + fdl_il;
-  
-  % torsional moment fluid load in deformed coordinates
-  ma =  1/2 * densityFluid * c_m * VpiRelG' * VpiRelG * dimCharacteristic * ( [1 0 0]' ) ;
-
-  % Compute the element fluid load forces vector in global coordinates
-  % compute the integral term of the current cross section in rigid coordinates
-  integralTermAeroForceRigid  =   H1' * Rroofx * fal + H2' * Rroofx * ma ;
-  % rotate to global coordinates with EE matrix for rigid configuration formulation
-  integFluidForce  =  EE *( integralTermAeroForceRigid ) ; %Rotate from rigid to global coordinates
-  %-----------------------------------------------------------------
 end

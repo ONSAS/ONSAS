@@ -36,9 +36,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   global constantLiftDir
   global uniformUdot
   global fluidFlowBool
-
   global uBEMbool; global DWMbool; 
-
 
 
   AMBool = analysisSettings.addedMassBool ;
@@ -67,42 +65,34 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs ) ;
   end
 
-  %% -------------------------
-  % Extract fluid properties
-  % --------------------------
+  % extract fluid properties
   densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
 
-  %% ------------------------------------------------- 
+  % check user Flow Vel is not empty
+  assert( ~isempty( userFlowVel ), 'empty user windvel' )
+
   % extract nonLinearity in aero force boolean
-  % --------------------------------------------------
   numGaussPoints         = aeroNumericalParams{1};
   geometricNonLinearAero = aeroNumericalParams{3} ;
 
-  %% -------------------------------------------------
-  % Boolean to compute the fluid force with ut = 0, 
-  % this should be used if the fluid loads are computed in the reference
+  % Boolean to compute the fluid force with ut = 0, this should be used if the fluid loads are computed in the reference
   % configuration and nonlinear effects are not considered.
   if ~geometricNonLinearAero
     Ue = zeros(12,1) ;
   end
-  % --------------------------------------------------
 
-  %% --------------------------------------- 
+  % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ;
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
+  % compact them into a single vector for the element
+  udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
+
   % Elem reference coordinates:
-  % ----------------------------------------
   xs = elemCoords(:) ;
-
-  %% ---------------------------------------
-  % Compute corotational rotation matrices
-  % ----------------------------------------
-  % load local rotation matrix of HAWT system to bring back local system
-  [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
-
-  %% --------------------------------------- 
+  
   % Load element properties to fluid loads
-  % ----------------------------------------
   % length of the chord vector
   if ~isempty( uBEMbool ) && uBEMbool
       global elemTwist;   global elemIDsection; global elemRadius;
@@ -119,8 +109,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
           a14g = a14(:,:,3) ;
       end
     
-      % Convert twist angle and chord from uBEM global coordinate system to
-      % ONSAS coordinate system in local deformed configuration
+      % Convert twist angle and chord from uBEM local coordinate system to
+      % global coordiante system 
       elemTwist = [ a14g*elemTwist(1:3) ; a14g*elemTwist(4:6) ] ; % twist angle expresed in global HAWT coordinates
       elemChord = [ a14g*elemChord(1:3) ; a14g*elemChord(4:6) ]' ; % chord local coords expresed in global HAWT coordinates
       dimCharacteristic =  [ norm( elemChord(1:3) ), norm( elemChord(4:6) ) ]' ;
@@ -128,48 +118,43 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       dimCharacteristic = norm( chordVector ) ;
   end
 
-  %% ----------------------------- 
-  % global kinematics 
-  % ------------------------------
+  % compute corotational rotation matrices
+  [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
+
+  % --- global kinematics ---
   % permut indexes according to Battini's nomenclature
-  dg       = switchToBattiniNom( Ue ) ;
+  dg = switchToBattiniNom( Ue ) ;
   ddotg    = switchToBattiniNom( Udote ) ;
   ddotdotg = switchToBattiniNom( Udotdote ) ;
   % -------------------------------
 
-  %% ---------------------------------
   % length and coords of the element
-  % ----------------------------------
   [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
-  % ----------------------------------
 
-  %% --------------------------------
-  % auxiliary vector and matrices
-  % ---------------------------------
+  % --- auxiliary vector and matrices  ---
   % aux zero matrices
   [I3, O3, O1, II] = corotZeros() ;
+
   % auxiliary q base
   q1g = Rg1 * R0 * [0 1 0]' ;
   q2g = Rg2 * R0 * [0 1 0]' ;
   qg  = ( q1g + q2g ) / 2   ;
 
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, G, P, EE ] = corotVecMatAuxStatic(...
-                                                         R0, Rr, Rg1, Rg2, l, II, O3, O1);
-  % ----------------------------------
+                                                                  R0, Rr, Rg1, Rg2, l, II, O3, O1);
+  % -------------------------------
   
-  %% ------------------------------------------------------
   % local rotations
-  % -------------------------------------------------------
   if ~baseBool ;
-    Rroof1 = Rr' * Rg1 * R0 ; % Eq(30) J.-M. Battini 2002
-    Rroof2 = Rr' * Rg2 * R0 ; % Eq(30) J.-M. Battini 2002
+    Rroof1 = Rr' * Rg1 * R0 ;% Eq(30) J.-M. Battini 2002
+    Rroof2 = Rr' * Rg2 * R0 ;% Eq(30) J.-M. Battini 2002
   else
     Rroof1 = Rr' * R0 * Rg1 ;
     Rroof2 = Rr' * R0 * Rg2 ;
   end
 
   tl1 = logar( Rroof1 ) ; % Eq(31) J.-M. Battini 2002
-  tl2 = logar( Rroof2 ) ; % Eq(31) J.-M. Battini 2002
+  tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
   
   % auxiliary matrix created for uBEM method to compute twist angle
   L1 = [ 1 0 0   ;
@@ -185,9 +170,10 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   L3 = expon( [pi/2 0 0] ) ;
   % --------------------------------------------------------
 
-    %% ---------------------------
+  % Extract points and weights for numGausspoints selected
+  [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
+
   % Fluid velocity definition
-  % ----------------------------
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
   % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
@@ -198,10 +184,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       
       % compute section wind velocity from global HAWT system to
       % global corotational system
-      global timeIdx; timeIdx = nextTime/analysisSettings.deltaT ;
-      if timeIdx == 2
-          check
-      end
+      global timeIdx; timeIdx = nextTime/analysisSettings.deltaT 
    
       global Rrot; global Rhub;
     
@@ -225,18 +208,18 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       [VpiRelNode1, VpiRelperpNode1, VrelGnode1] = uBEMcomputeVpiRels( udotFlowNode1, ...
                                     udotFrame1, inducedVelNod1n1, Rroof1, Rr, L2, L3 ) ;
       % Compute angle of attack of node 1
-      tch1 = ( elemChord(1:3) / norm( elemChord(1:3) )) ;
+      twistVecNod1   = dot( (Rroof1'*Rr'*deg2rad( elemTwist(1:3) ))', [1,0,0] ) ;
+      chordVecNod1   = expon( [twistVecNod1 0 0] )*elemChord(1:3)' ;
+      tchNod1        = ( chordVecNod1 / norm( chordVecNod1 )) ;
       if( norm( VpiRelNode1 ) == 0 )
-        td1 = tch1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+        td1 = tchNod1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
       else % the drag direction at a generic cross section in deformed coordinates is:
         td1 = VpiRelNode1 / norm( VpiRelNode1 ) ;
       end
     
-      cosBetanod1 = dot( tch1, td1 ) / ( norm(td1) * norm(tch1) ) ;
-      sinBetanod1 = dot( cross(td1,tch1), [1 0 0] ) / ( norm( td1 ) * norm( tch1 ) ) ;
-      preTwist1   = dot( (L1*Rroof1'*Rr'*deg2rad( elemTwist(1:3) ))', [1,0,0] ) ;   % pre twisted blade angle vector in local def blade coordinate
-      defTwist1   = dot( (Rroof1'*Rr'*Udote(2:2:6))', [1,0,0] );                    % angle def vector in local def blade coordinate
-      betaRelnod1 = - sign( sinBetanod1 ) * acos( cosBetanod1 ) - defTwist1 - preTwist1 ;
+      cosBetanod1 = dot( tchNod1, td1 ) / ( norm(td1) * norm(tchNod1) ) ;
+      sinBetanod1 = dot( cross(td1,tchNod1), [1 0 0] ) / ( norm( td1 ) * norm( tchNod1 ) ) ;
+      betaRelnod1 = - sign( sinBetanod1 ) * acos( cosBetanod1 ) ;
       
       % Compute node 1 aero params
       global clstat1; global cdstat1; global cmstat1;
@@ -246,15 +229,10 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       fll1  =  1/2 * densityFluid * clstat1 / 2 * dimCharacteristic(1) * norm( VpiRelNode1 ) * VpiRelperpNode1 ;
       fdl1  =  1/2 * densityFluid * cdstat1 / 2 * dimCharacteristic(1) * norm( VpiRelNode1 ) * VpiRelNode1 ;
       
-
-
       [inducedVelNod1, inducedVelIntNod1, inducedQSVelNod1] = uBEMinducedVelocity(fll1, VpiRelNode1, inducedVelNod1n1, inducedQSVelNod1n1, ...
                                                              inducedIntVelNod1n1, elemRadius(1), Rrot, Rhub, betaRelnod1, densityFluid, ...
                                                              analysisSettings.deltaT, L2, Rroof1, Rr, DWMbool) ;
       
-      wWake{timeIdx + 1}(nodIdx1,:)     = inducedVelNod1;
-      wWakeQS{timeIdx + 1}(nodIdx1,:)   = inducedVelIntNod1;
-      wWakeInt{timeIdx + 1}(nodIdx1,:)  = inducedQSVelNod1;
     
       % ----------------------------------------------------------------------------------
       % Node 2
@@ -263,6 +241,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       % Node 2 frame velocity
       udotFrame2 = Udote( 7:2:12 ) ;
       % Node 2 flow velocity
+      elemCoords(4:6)
       udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime )  ;
       % Node 2 induced velocity of previous time step
       global inducedVelNod2n1    ; inducedVelNod2n1     = wWake{timeIdx}(nodIdx2,:)';
@@ -272,23 +251,24 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       [VpiRelNode2, VpiRelperpNode2, VrelGnode2] = uBEMcomputeVpiRels( udotFlowNode2, ...
                                     udotFrame2, inducedVelNod1n1, Rroof2, Rr, L2, L3 ) 
       
-      % Compute angle of attack of node 1
-      tch2 = ( elemChord(4:6) / norm( elemChord(4:6) )) ;
+      % Compute angle of attack of node 2
+      twistVecNod2   = dot( (Rroof2'*Rr'*deg2rad( elemTwist(4:6) ))', [1,0,0] ) 
+      chordVecNod2   = expon( [twistVecNod2 0 0] )*elemChord(4:6)' 
+      tchNod2        = ( chordVecNod2 / norm( chordVecNod2 )) ;
       if( norm( VpiRelNode2 ) == 0 )
-        td2 = tch2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+        td2 = tchNod2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
       else % the drag direction at a generic cross section in deformed coordinates is:
         td2 = VpiRelNode2 / norm( VpiRelNode2 ) ;
       end
     
-      cosBetanod2 = dot( tch2, td2 ) / ( norm(td2) * norm(tch2) ) ;
-      sinBetanod2 = dot( cross(td2,tch2), [1 0 0] ) / ( norm( td2 ) * norm( tch2 ) ) ;
-      preTwist2   = dot( (L1*Rroof2'*Rr'*deg2rad( elemTwist(4:6) ))', [1,0,0] ) ;   % pre twisted blade angle vector in local def blade coordinate
-      defTwist2   = dot( (Rroof1'*Rr'*Udote(8:2:12))', [1,0,0] );                    % angle def vector in local def blade coordinate
-      betaRelnod2 = - sign( sinBetanod2 ) * acos( cosBetanod2 ) - defTwist2 - preTwist2 
+      cosBetanod2 = dot( tchNod2, td2 ) / ( norm(td2) * norm(tchNod2) ) ;
+      sinBetanod2 = dot( cross(td2,tchNod2), [1 0 0] ) / ( norm( td2 ) * norm( tchNod2 ) ) ;
+      betaRelnod2 = - sign( sinBetanod2 ) * acos( cosBetanod2 ) 
+      rad2deg(betaRelnod2)
     
       % Compute node 1 aero params
       global clstat2; global cdstat2; global cmstat2;
-      [clstat2, cdstat2, cmstat2] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(2), betaRelnod2)
+      [clstat2, cdstat2, cmstat2] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(2), betaRelnod2);
       
       % Compute node 1 induced velocity
       fll2  =  1/2 * densityFluid * clstat2 / 2 * dimCharacteristic(2) * norm( VpiRelNode2 ) * VpiRelperpNode2 ;
@@ -298,24 +278,11 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                                              inducedIntVelNod2n1, elemRadius(2), Rrot, Rhub, betaRelnod2, densityFluid, ...
                                                              analysisSettings.deltaT, L2, Rroof2, Rr, DWMbool) ; 
     
-      wWake{timeIdx + 1}(nodIdx2,:)     = inducedVelNod2;
-      wWakeQS{timeIdx + 1}(nodIdx2,:)   = inducedVelIntNod2;
-      wWakeInt{timeIdx + 1}(nodIdx2,:)  = inducedQSVelNod2;
   else
       udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ;
       udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   end
   % compact them into a single vector for the element
-  fext = norm((Rroof1'*Rr')'*(fll2 + fdl2))
-  udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
-
-
-  %% ------------------------------------------------------- 
-  % Gaussian interpolation
-  % --------------------------------------------------------
-  % Extract points and weights for numGausspoints selected
-  [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
-  % --------------------------------------------------------
 
   %% ----------------------------------------------------------
   % WOM or uBEM computation call for cases with VIVbool or uBEMbool equal to true
@@ -414,22 +381,13 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
     chordVector = elemChord ;
     %Integrate for different cross section inner to the element
     fDragLiftPitchElem =  fDragLiftPitchElem ...
-
-               +l0/2 * wIntPoints( ind ) * integFluidForce( xGauss, ddotg, udotFlowElem,...
-                                                           l0, tl1, tl2, Rr,...
-                                                           chordVector', dimCharacteristic,...
-                                                           I3, O3, P, G, EE, L2, L3,...
-                                                           aeroCoefs, densityFluid, viscosityFluid,...
-                                                           VIVBool, q, p, constantLiftDir, uniformUdot, ...
-                                                           tlift1, tlift2, fluidFlowBool, ILVIVBool, uBEMbool) ;
-
                +l0/2 * wIntPoints( ind ) ...
                  * integFluidForce( xGauss, ddotg, udotFlowElem,...
                                     l0, tl1, tl2, Rr,...
                                     chordVector', dimCharacteristic,...
                                     I3, O3, P, G, EE, L2, L3,...
                                     aeroCoefs, densityFluid, viscosityFluid,...
-                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
+                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool, uBEMbool) ;
 
     if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
 
