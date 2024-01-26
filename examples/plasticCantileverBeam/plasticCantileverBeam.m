@@ -11,7 +11,7 @@
 
 % =========================================================================
 
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
 addpath( genpath( [ pwd '/../../src'] ) );
           
 % Mc, My, Mu / from the moment-curvature diagram
@@ -82,18 +82,16 @@ for n = 2:100
         fprintf('Iteración %d\n',k) ;
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams) ;
-
-        alfan1
         
-        residualForce = Fint - Fext 
+        residualForce = Fint - Fext ;
 
-        Krelement = Kelement( freedofs, freedofs) 
+        Krelement = Kelement( freedofs, freedofs) ;
  
-        residualForceRed = residualForce(freedofs) 
+        residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
 
-        deltadred = Krelement\ ( - residualForceRed )
+        deltadred = Krelement\ ( - residualForceRed ) ;
         
         deltad = zeros(6,1);      
         deltad(freedofs) = deltadred ;
@@ -102,17 +100,12 @@ for n = 2:100
 
         dnk = dnk1 ;
 
-        # delta
-        # FReactions
-        # Fint
-        norm1 = norm( deltadred ) 
-        norm2 = norm( residualForceRed ) 
+        norm1 = norm( deltadred ) ;
+        norm2 = norm( residualForceRed ) ;
 
-        nonconverge = norm1 > tol1 &&  norm2 > tol2 
+        nonconverge = norm1 > tol1 &&  norm2 > tol2 ;
 
     end
-
-    # stop
 
     matdes = [matdes dnk1] ;
 
