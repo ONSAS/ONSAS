@@ -21,6 +21,10 @@
 % Numerical modeling of softening hinges in thin Euler–Bernoulli beams
 % Francisco Armero, David Ehrlich / University of California, Berkeley
 
+% Embedded discontinuity finite element formulation
+% Miha Jukić, Boštjan Brank / University of Ljubljana
+% Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
+
 % =========================================================================
 
 function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams )
