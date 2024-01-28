@@ -59,6 +59,7 @@ Kfd    = zeros(6,6) ;
 Kfalfa = zeros(6,6) ;
 Khd    = zeros(6,6) ;
 Khalfa = 0 ;
+Cep = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
@@ -76,7 +77,7 @@ xin21 = zeros(npi,1) ;
 
 for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, kpn1, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
