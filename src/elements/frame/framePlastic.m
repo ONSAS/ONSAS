@@ -46,7 +46,6 @@ Ks = elastoplasticParams(7) ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-
 % uvector = [u1; u2] ;
 % vvector = [v1; v2] ;
 % thetavector = [theta1; theta2] ;
