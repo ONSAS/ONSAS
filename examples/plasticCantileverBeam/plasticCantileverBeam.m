@@ -67,7 +67,7 @@ elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 matdes = dn ;
 
 %Mc / l 
-for n = 2:17
+for n = 2:100
 
     fprintf('Fuerza  %d \n',n-1) ;
 
