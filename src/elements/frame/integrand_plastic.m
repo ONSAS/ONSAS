@@ -28,14 +28,15 @@ Bd = [ Bu  0 0 0 0    ; ...
 Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-% khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-khat = 0 ; % khat is zero
+
+khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
 ken = khat - kpn(jj) ;
 
 % moment
+
 Mxpi = E*Iy*ken ;
 
 % yield criterion

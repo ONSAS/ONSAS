@@ -115,8 +115,8 @@ for ii = 1:npi
     
     % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
     
-    % khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
-    khat = 0 ; % khat is zero
+    khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
+    
     % khat2 = dirac(xd)*alfan ;
     % kn = khat + khat2 ;
     kenxpi = khat - kpn(ii) ;
@@ -131,4 +131,3 @@ for ii = 1:npi
 end
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-
