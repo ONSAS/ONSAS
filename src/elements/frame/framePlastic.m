@@ -22,6 +22,7 @@
 % Francisco Armero, David Ehrlich / University of California, Berkeley
 
 % Embedded discontinuity finite element formulation
+% For failure analysis of planar reinforced concrete beams and frames
 % Miha Jukić, Boštjan Brank / University of Ljubljana
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 
