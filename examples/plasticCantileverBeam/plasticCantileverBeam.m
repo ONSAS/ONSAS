@@ -69,7 +69,7 @@ matdes = dn ;
 %Mc / l 
 for n = 2:17
 
-    fprintf('Fuerza  %d \n',n) ;
+    fprintf('Fuerza  %d \n',n-1) ;
 
     k = 0 ; % set iterations zero
 
@@ -85,9 +85,9 @@ for n = 2:17
 
         fprintf('Iteración %d\n',k) ;
 
-        [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams) ;
+        [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
         
-        residualForce = Fint - Fext ;
+        residualForce = Fext - Fint ;
 
         Krelement = Kelement( freedofs, freedofs) ;
  
@@ -95,7 +95,7 @@ for n = 2:17
       
         % system of equilibrium equations
 
-        deltadred = Krelement\ ( - residualForceRed ) ;
+        deltadred = Krelement\ (  residualForceRed ) ;
         
         deltad = zeros(6,1);      
         deltad(freedofs) = deltadred ;

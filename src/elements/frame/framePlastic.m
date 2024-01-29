@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, Fint, tM, elemParams, elastoplasticParams )
+function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams )
 
 
 % --- element params ---
@@ -60,6 +60,11 @@ Kfalfa = zeros(6,6) ;
 Khd    = zeros(6,6) ;
 Khalfa = 0 ;
 Cep = 0 ;
+Fint = 0 ;
+
+% trial value of the moment at the discontinuity (tM at xd)
+
+tM = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
@@ -77,7 +82,7 @@ xin21 = zeros(npi,1) ;
 
 for ii = 1:npi
 
-    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, kpn1, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep) ;
+    [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, kpn1, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep,tM) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -111,7 +116,8 @@ for ii = 1:npi
     
     % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
     
-    khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
+    % khat = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
+    khat = 0 ; % khat is zero
     % khat2 = dirac(xd)*alfan ;
     % kn = khat + khat2 ;
     kenxpi = khat - kpn(ii) ;

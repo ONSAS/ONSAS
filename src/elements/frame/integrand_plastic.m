@@ -10,7 +10,7 @@
 
 % =========================================================================
 
-function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, kpn1, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep)
+function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, kpn1, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep,tM)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -28,7 +28,8 @@ Bd = [ Bu  0 0 0 0    ; ...
 Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+% khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+khat = 0 ; % khat is zero
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
@@ -126,9 +127,6 @@ Fi= Bd' * [E*A*epsilon; M1xpi] ;
 
 % alfan1test = alfan ;
 % xin2test = xin2 ;
-
-% trial value of the moment at the discontinuity (tM at xd)
-tM = 0 ;
 
 % softening criterion (failure function) at integration points
 
