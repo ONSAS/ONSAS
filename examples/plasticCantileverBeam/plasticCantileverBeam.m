@@ -40,7 +40,7 @@ freedofs = [2 4 6 ];
 nu = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 10 ;
+tolk = 1000 ;
 
 % initial values
 dn = [0 0 0 0 0 0]' ;

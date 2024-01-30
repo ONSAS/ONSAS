@@ -70,7 +70,7 @@ tM = 0 ;
 
 npi = 3 ;
 xpi = [0 l/2 l] ;
-wpi = [1/3 4/3 1/3] * l*0.5 ;
+wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 kpn1 = zeros(npi,1) ;
 xin11 = zeros(npi,1) ;
