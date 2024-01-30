@@ -47,32 +47,26 @@ Ks = elastoplasticParams(7) ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-% uvector = [u1; u2] ;
-% vvector = [v1; v2] ;
-% thetavector = [theta1; theta2] ;
-
-uvector = dnk(1:2) ;
-vvector = dnk(3:4) ;
+uvector     = dnk(1:2) ;
+vvector     = dnk(3:4) ;
 thetavector = dnk(5:6) ;
 
 Kfd    = zeros(6,6) ;
 Kfalfa = zeros(6,6) ;
 Khd    = zeros(6,6) ;
 Khalfa = 0 ;
-Cep = 0 ;
-Fint = 0 ;
+Cep    = 0 ;
+Fint   = 0 ;
 
 % trial value of the moment at the discontinuity (tM at xd)
-
 tM = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-
 npi = 3 ;
 xpi = [0 l/2 l] ;
 wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
-kpn1 = zeros(npi,1) ;
+kpn1  = zeros(npi,1) ;
 xin11 = zeros(npi,1) ;
 xin21 = zeros(npi,1) ;
 
@@ -97,14 +91,13 @@ for ii = 1:npi
     
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
-
 end
 
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 
-Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
+Kelement = Kfd ;%- Kfalfa*Khalfa^(-1)*Khd ;
 
 for ii = 1:npi
 

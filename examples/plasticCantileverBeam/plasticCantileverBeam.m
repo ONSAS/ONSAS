@@ -35,23 +35,22 @@ kh1 = 29400 ;     % KNm^2
 kh2 = 272 ;
 Ks = -18000 ;     % KNm
 
-freedofs = [2 4 6 ];
+freedofs = [2 4 6 ]; % u2 v2 theta2
 
-nu = 0.3 ;
+nu   = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 1000 ;
+tolk = 3 ;
 
 % initial values
-dn = [0 0 0 0 0 0]' ;
+dn   = [0 0 0 0 0 0]' ;
 Fint = 0 ;
-tM = 0 ;
+tM   = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-
 npi = 3 ;
 
-kpn = zeros(npi,1) ;
+kpn  = zeros(npi,1) ;
 xin1 = zeros(npi,1) ;
 xin2 = zeros(npi,1) ;
 
@@ -59,6 +58,8 @@ alfan = 0 ;
 
 xd = 0 ;
 
+load_case = [0 0 0 -10 0 0]' ; % (1 en Fy2)
+load_factors = 0:4;
 % --- element params ---
 elemParams = [l A Iy] ;
 
@@ -66,51 +67,65 @@ elemParams = [l A Iy] ;
 elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
 matdes = dn ;
- 
-for n = 2:100
 
-    fprintf('Fuerza  %d \n',n-1) ;
+for ind = 2:length(load_factors)
+    curr_load_factor = load_factors(ind) ;
+    fprintf(' factor:  %d   \n', curr_load_factor ) ;
 
+    Fext = load_case * curr_load_factor 
+
+    dnk = matdes(:,ind-1) ;
+
+    % iteration vars
+    converged_bool = false ;
     k = 0 ; % set iterations zero
 
-    Fext = [0 0 0 n-1 0 0]' ;
-
-    dnk = matdes(:,n-1) ;
-
-    nonconverge = true ;
-
-    while nonconverge && k < tolk
+    while converged_bool == false && k < tolk
 
         k = k + 1 ;
 
-        fprintf('Iteración %d\n',k) ;
+        fprintf('================   Iteración %d\n',k) ;
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
-        
-        residualForce = Fext - Fint ;
 
+        fprintf('Fint ')
+        Fint 
+        fprintf('Kelement ')
+        Kelement
+
+        residualForce = Fext - Fint 
+Fext
+Fint
         Krelement = Kelement( freedofs, freedofs) ;
  
+
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
-
-        deltadred = Krelement\ (  residualForceRed ) ;
+        Krelement
+        residualForceRed
+        deltadred = Krelement\ (  residualForceRed ) 
         
         deltad = zeros(6,1);      
         deltad(freedofs) = deltadred ;
-            
-        dnk1 = dnk + deltad ;
+        deltad
+        dnk1 = dnk + deltad 
 
         dnk = dnk1 ;
 
         norm1 = norm( deltadred ) ;
         norm2 = norm( residualForceRed ) ;
 
-        nonconverge = norm1 > tol1 &&  norm2 > tol2 ;
+        converged_bool = norm1 < tol1 || norm2 < tol2 ;
 
     end
 
     matdes = [matdes dnk1] ;
 
 end
+
+figure
+plot( abs(matdes(4,:)))
+
+figure
+plot(abs( matdes(6,:)))

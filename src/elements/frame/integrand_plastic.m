@@ -38,20 +38,18 @@ ken = khat - kpn(jj) ;
 
 % moment
 
-Mxpi = E*Iy*ken ;
+Mxpi = E*Iy*ken 
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
-    qxpi = -kh1*xin1(jj) ;
+  qxpi = -kh1*xin1(jj) ;
         
-    else
-
-    qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
+else
+  qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
 
 end
     
 % qxpi = piecewise(xin1(jj) <= (My-Mc)/kh1, -kh1*xin1(jj), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj)) ;
-
 phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
 % test values
@@ -65,10 +63,10 @@ phitest =  phixpi ;
 
 if phitest <= 0 % elastic increment
 
-    gamma = 0 ;
-    kpn1xpi = kpn(jj) ;
+    gamma    = 0 ;
+    kpn1xpi  = kpn(jj) ;
     xin11xpi = xin1(jj) ;
-    M1xpi = Mxpi ;
+    M1xpi    = Mxpi ;
 
 else
 
@@ -93,15 +91,12 @@ end
 % elastoplastic tangent bending modulus
 
 if gamma == 0
-
-    Cep = E*Iy ;
+    Cep = E*Iy 
 
 elseif gamma > 0 && xin11xpi <= (My-Mc)/kh1
-
-    Cep = E*Iy*kh1/(E*Iy + kh1) ;
+    Cep = E*Iy*kh1/(E*Iy + kh1) 
 
 elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
-
     Cep = E*Iy*kh2/(E*Iy + kh2) ;
 
 end
