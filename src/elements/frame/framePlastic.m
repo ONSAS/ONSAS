@@ -93,7 +93,7 @@ for ii = 1:npi
     Fint = Fint + Fi*wpi(ii) ;
 end
 
-Khalfa = Khalfa + Ks ; % integral + Ks
+% Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 

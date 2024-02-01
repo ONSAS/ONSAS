@@ -38,7 +38,7 @@ ken = khat - kpn(jj) ;
 
 % moment
 
-Mxpi = E*Iy*ken 
+Mxpi = E*Iy*ken ;
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
@@ -91,10 +91,10 @@ end
 % elastoplastic tangent bending modulus
 
 if gamma == 0
-    Cep = E*Iy 
+    Cep = E*Iy ;
 
 elseif gamma > 0 && xin11xpi <= (My-Mc)/kh1
-    Cep = E*Iy*kh1/(E*Iy + kh1) 
+    Cep = E*Iy*kh1/(E*Iy + kh1) ;
 
 elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
     Cep = E*Iy*kh2/(E*Iy + kh2) ;
