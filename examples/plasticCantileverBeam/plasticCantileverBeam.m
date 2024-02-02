@@ -59,7 +59,7 @@ alfan = 0 ;
 xd = 0 ;
 
 load_case = [0 0 0 -10 0 0]' ; % (1 en Fy2)
-load_factors = 0:4;
+load_factors = 0:4 ;
 % --- element params ---
 elemParams = [l A Iy] ;
 
@@ -74,7 +74,7 @@ for ind = 2:length(load_factors)
     fprintf('factor: %d \n', curr_load_factor ) ;
 
     Fext = load_case * curr_load_factor ;
-    fprintf(['Fext: %d \n'], Fext) ;
+    fprintf('Fext: %d \n', Fext) ;
 
     dnk = matdes(:,ind-1) ;
 
@@ -90,8 +90,10 @@ for ind = 2:length(load_factors)
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
         
-        display(Fint) ;
-        display(Fext) ;
+        fprintf('Fint \n') ;
+        disp(Fint)
+        fprintf('Fext \n') ;
+        disp(Fext) ;
         
         residualForce = Fext - Fint ;
 
@@ -100,14 +102,25 @@ for ind = 2:length(load_factors)
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
-        Krelement
-        residualForceRed
-        deltadred = Krelement\ (  residualForceRed ) 
+        fprintf('Krelement \n') ;
+        disp(Krelement) ;
+        fprintf('residualForceRed \n') ;
+        disp(residualForceRed) ;
+        deltadred = Krelement\ (  residualForceRed ) ;
+
+        fprintf('deltadred \n') ;
+        disp(deltadred) ;
         
-        deltad = zeros(6,1);      
+        deltad = zeros(6,1) ;      
         deltad(freedofs) = deltadred ;
-        deltad
-        dnk1 = dnk + deltad 
+        
+        fprintf('deltad \n') ;
+        disp(deltad) ;
+
+        dnk1 = dnk + deltad ;
+
+        fprintf('dnk1 \n') ;
+        disp(dnk1) ;
 
         dnk = dnk1 ;
 
@@ -122,7 +135,7 @@ for ind = 2:length(load_factors)
 
 end
 
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
+lw = 2.0 ; ms = 11 ; plotfontsize = 16 ;
 
 figure
 hold on, grid on
@@ -132,4 +145,4 @@ labx = xlabel('Generalized displacements');   laby = ylabel('Load Factor \lambda
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plastic') ;
+title('Cantilever Beam / Plasticity') ;
