@@ -32,18 +32,18 @@ function [ Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic( d
 
 
 % --- element params ---
-l = elemParams(1) ;
-A = elemParams(2) ;
+l  = elemParams(1) ;
+A  = elemParams(2) ;
 Iy = elemParams(3) ;
 
 % --- elastoplastic params ---
-E = elastoplasticParams(1) ;
-Mc = elastoplasticParams(2) ;
-My = elastoplasticParams(3) ;
-Mu = elastoplasticParams(4) ;
+E   = elastoplasticParams(1) ;
+Mc  = elastoplasticParams(2) ;
+My  = elastoplasticParams(3) ;
+Mu  = elastoplasticParams(4) ;
 kh1 = elastoplasticParams(5) ;
 kh2 = elastoplasticParams(6) ;
-Ks = elastoplasticParams(7) ;
+Ks  = elastoplasticParams(7) ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
@@ -97,7 +97,7 @@ end
 
 % element stiffness matrix
 
-Kelement = Kfd ;%- Kfalfa*Khalfa^(-1)*Khd ;
+Kelement = Kfd ; % - Kfalfa*Khalfa^(-1)*Khd ;
 
 for ii = 1:npi
 

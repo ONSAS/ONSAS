@@ -35,7 +35,7 @@ kh1 = 29400 ;     % KNm^2
 kh2 = 272 ;
 Ks = -18000 ;     % KNm
 
-freedofs = [2 4 6 ]; % u2 v2 theta2
+freedofs = [2 4 6]; % u2 v2 theta2
 
 nu   = 0.3 ;
 tol1 = 1e-8 ;
@@ -69,10 +69,12 @@ elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 matdes = dn ;
 
 for ind = 2:length(load_factors)
-    curr_load_factor = load_factors(ind) ;
-    fprintf(' factor:  %d   \n', curr_load_factor ) ;
 
-    Fext = load_case * curr_load_factor 
+    curr_load_factor = load_factors(ind) ;
+    fprintf('factor: %d \n', curr_load_factor ) ;
+
+    Fext = load_case * curr_load_factor ;
+    fprintf(['Fext: %d \n'], Fext) ;
 
     dnk = matdes(:,ind-1) ;
 
@@ -84,21 +86,17 @@ for ind = 2:length(load_factors)
 
         k = k + 1 ;
 
-        fprintf('================   Iteración %d\n',k) ;
+        fprintf('= = = = Iteración %d\n', k) ;
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
+        
+        display(Fint) ;
+        display(Fext) ;
+        
+        residualForce = Fext - Fint ;
 
-        fprintf('Fint ')
-        Fint 
-        fprintf('Kelement ')
-        Kelement
-
-        residualForce = Fext - Fint 
-Fext
-Fint
         Krelement = Kelement( freedofs, freedofs) ;
  
-
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
@@ -124,8 +122,14 @@ Fint
 
 end
 
-figure
-plot( abs(matdes(4,:)))
+lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 
 figure
-plot(abs( matdes(6,:)))
+hold on, grid on
+plot(abs(matdes(6,:)), load_factors,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(4,:)), load_factors, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+labx = xlabel('Generalized displacements');   laby = ylabel('Load Factor \lambda') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plastic') ;
