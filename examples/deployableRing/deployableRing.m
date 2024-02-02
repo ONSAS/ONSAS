@@ -13,10 +13,8 @@ R = 120   ;  ty = .6 ;   tz = 6 ;
 % the number of elements of the mesh
 Nelem = 2*21 ;
 
-materials.hyperElasModel  = '1DrotEngStrain' ;
-materials.hyperElasParams = [ E nu ] ;
-
-otherParams.problemName = 'deployableRing' ;
+materials.modelName  = 'elastic-rotEngStr' ;
+materials.modelParams = [ E nu ] ;
 
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
@@ -58,6 +56,8 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(analysisSettings.deltaT)/100 ;
 
+otherParams = struct();
+otherParams.problemName  = 'deployableRing' ;
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 5 ;
 

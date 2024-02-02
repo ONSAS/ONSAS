@@ -1,8 +1,8 @@
 %md# Static Von-Mises Truss example
 %md
-%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/staticVonMisesTruss/staticVonMisesTruss.m)
+%md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/staticVonMisesTruss/staticVonMisesTruss.m)
 %md
-%mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to validate the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
+%mdIn this example the Static Von Mises Truss problem and its resolution using ONSAS are described. The aim of this example is to verify the implementations of the Newton-Raphson and Newton-Raphson-Arc-Length methods by comparing the results provided with the analytic solutions.
 %md
 %mdThe structural model is formed by two truss elements with length $L$ as it is shown in the figure, with nodes $1$ and $3$ fixed, and node $2$ submitted to a nodal load $P$ and constrained to move only in the $x-z$ plane.
 %md
@@ -19,10 +19,10 @@
 %md
 %md## Numerical solutions
 %md
-%mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
-addpath( genpath( [ pwd '/../../src'] ) );
-%md some scalar parameters are defined and computed
+%mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path %hidden
+close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end%hidden
+addpath( genpath( [ pwd '/../../src'] ) );%hidden
+%md First some scalar parameters are defined and computed
 % scalar parameters
 E = 210e9  ; nu = 0 ;
 A = 2.5e-3 ; ang1 = 65 ; L = 2 ; 
@@ -37,10 +37,10 @@ z2 = sin( ang1*pi/180 ) * L ;
 %md#### materials
 %mdThe `materials` struct is initialized as empty.
 materials                 = {} ;
-%md Since for each model both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is the Rotated Engineering strain, then the field `hyperElasModel` is set to:
-materials.hyperElasModel  = '1DrotEngStrain' ;
-%md and in the field `hyperElasParams` a vector with the parameters of the Engineering Strain model is set
-materials.hyperElasParams = [ E nu ] ;
+%md Since for each model both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is an elastic behavior for the Rotated Engineering strain, then:
+materials.modelName  = 'elastic-rotEngStr' ;
+%md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
+materials.modelParams = [ E nu ] ;
 %md which in the case of this material model are the Young modulus and the Poisson ratio.
 %md The field `density` is not set, then the default $\rho = 0$ value is considered by ONSAS.
 %md
@@ -110,7 +110,7 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
-otherParams              = {};
+otherParams              = struct();
 otherParams.problemName  = 'staticVonMisesTruss_NR_RotEng';
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;
@@ -122,15 +122,15 @@ controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md
 %md### Analysis case 2: Newton-Raphson with linear elastic behavior
-%mdIn this case a linear elastic behavior is assumed. Then the hyperelasmodel es overwritten
-materials.hyperElasModel = 'linearElastic' ;
-otherParams.problemName  = 'staticVonMisesTruss_linearElastic';
+%mdIn this case a linear elastic behavior is assumed. Then the material modelName is overwritten
+materials.modelName = 'elastic-linear' ;
+otherParams.problemName  = 'staticVonMisesTruss_elastic-linear';
 analysisSettings.finalTime  =   1.5    ;
 %md and the analysis is run again
 [matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md the displacements are extracted
-controlDispsNRLinearElastic =  -matUs(11,:) ;
-loadFactorsNRLinearElastic  =  loadFactorsMat(:,2) ;
+controlDispsNRlinearElastic =  -matUs(11,:) ;
+loadFactorsNRlinearElastic  =  loadFactorsMat(:,2) ;
 %md
 %md and the analytic values of the load factor are computed, as well as its difference with the numerical solution
 %md
@@ -142,10 +142,10 @@ difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactor
 %md### Analysis case 3: NR with Green Strain
 %md In order to perform a SVK case analysis, the material is changed and the problemName is also updated
 otherParams.problemName  = 'staticVonMisesTruss_NR_Green';
-materials.hyperElasModel = 'SVK' ;
+materials.modelName      = 'elastic-SVK' ;
 analysisSettings.finalTime =   1.0    ;
 lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
-materials.hyperElasParams = [ lambda mu ] ;
+materials.modelParams = [ lambda mu ] ;
 %md the load history is also changed
 boundaryConds(2).loadsTimeFact = @(t) 1.5e8*t ;
 %boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
@@ -223,9 +223,9 @@ plot( controlDispsNRALGreen, analyticLoadFactorsGreen( controlDispsNRALGreen ), 
 plot( controlDispsNRGreen, loadFactorsNRGreen, 'r-s' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRALGreen, loadFactorsNRALGreen, 'c-^' , 'linewidth', lw,'markersize',ms )
 plot( controlDispsNRAL_Jirasek_Green, loadFactorsNRAL_Jirasek_Green, 'y-*' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsNRLinearElastic, loadFactorsNRLinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
+plot( controlDispsNRlinearElastic, loadFactorsNRlinearElastic, 'm-+' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement w(t)');   laby = ylabel('\lambda(t)') ;
-legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','LinearElastic', 'location','northoutside')
+legend( 'analytic-RotEng', 'NR-RotEng','analytic-Green', 'NR-Green','NRAL-Green', 'NRAL-Jirasek-Green','elastic-linear', 'location','northoutside')
 set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 print('output/vonMisesTrussCheck.png','-dpng')

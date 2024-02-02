@@ -1,6 +1,6 @@
 %md# Linear aerodynamic steady analysis of cantilever beam
 %md
-%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS.m/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
+%md [![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/linearAerodynamics/linearAerodynamics.m)
 %md
 %md In this tutorial, the linear steady analysis of a cantilever beam is presented. The aim of this example is to validate the aerodynamic steady and uniform wind loads applied to a cantilever beam undergoing small displacements and strains. The aerodynamic force variation due to the beam deformation is not considered. Under these hypotheses an analytic solution is available. 
 %md
@@ -58,8 +58,8 @@ numElements = 10 ;
 %md
 %md### materials
 %md Since the example contains only one linear Euler Bernoulli element the fields of the `materials` struct will have only one entry. Although, the constitutive behavior law selected is Saint-Venant-Kirchhoff:
-materials.hyperElasModel  = 'linearElastic' ;
-materials.hyperElasParams = [ E nu ]        ;
+materials.modelName  = 'elastic-linear' ;
+materials.modelParams = [ E nu ]        ;
 %md
 %md### elements
 %md
@@ -117,6 +117,7 @@ analysisSettings.stopTolIts    =   10            ;
 %md
 %md### otherParams
 %md The name of the problem and the plots format: 
+otherParams = struct();
 otherParams.problemName  = 'linearAerodynamics';
 otherParams.plots_format = '' ;
 %md

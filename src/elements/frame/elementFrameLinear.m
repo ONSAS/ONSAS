@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,17 +14,17 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
+% 
 % --------------------------------------------------------------------------------------------------
 
 % =============================================================================
-function [ fs, ks, finteLocalCoor ] = linearStiffMatBeam3D(elemCoords, elemCrossSecParams, massMatType, density, hyperElasModel, hyperElasParams, Ut, Udotdotte, intBool, matFintBool, elem)
+function [ fs, ks, finteLocalCoor ] = elementFrameLinear(elemCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, Ut, Udotdotte)
   
   ndofpnode = 6 ;
   
   % --- material constit params ---
-	E   = hyperElasParams(1) ;
-	nu  = hyperElasParams(2) ;
+	E   = modelParams(1) ;
+	nu  = modelParams(2) ;
 	G   = E/(2*(1+nu)) ;
 	
 	[A, J, Iy, Iz] = crossSectionProps ( elemCrossSecParams, density ) ;

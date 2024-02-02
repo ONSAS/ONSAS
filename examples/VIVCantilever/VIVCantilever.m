@@ -53,9 +53,9 @@ uzsol = 1.0e-07 *[ 0         0         0         0         0         0         0
 %
 % materials
 %
-materials.hyperElasParams = [ E nu ] ;
+materials.modelParams = [ E nu ] ;
 materials.density         = rho      ;
-materials.hyperElasModel  = '1DrotEngStrain' ; 
+materials.modelName  = 'elastic-rotEngStr' ; 
 %
 elements = struct();
 % node
@@ -109,6 +109,7 @@ analysisSettings.stopTolForces  =   1e-5      ;
 % load settings
 analysisSettings.booleanSelfWeight = false ;
 % otherParams
+otherParams = struct() ;
 otherParams.nodalDispDamping = cu ;
 otherParams.problemName      = strcat('VIVTest') ;
 %

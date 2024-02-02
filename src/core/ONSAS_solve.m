@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,8 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
-% Function that performs the time analysis with the model structs as input.
+%% Function that performs the time analysis with the model structs as input.
 function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
 % initialize structures to store solutions
@@ -33,20 +31,16 @@ finalTimeReachedBoolean = false ;
 fprintf('|                                                 |\n')
 fprintf('| Analysis progress:   |0       50       100| %%   |\n')
 fprintf('|                      |')
-%
+
 % iteration variables
 iterations_average = 0 ;  iterations_maximum = 0 ;
 iterations_strop_crit_vec = [ 0 0 0 ] ;
-% progress bar variables
-plotted_bars = 0 ;
-aux_time = cputime() ;
-while finalTimeReachedBoolean == false
 
-  percent_time = round( (modelCurrSol.timeIndex*modelProperties.analysisSettings.deltaT) ...
-                       / modelProperties.analysisSettings.finalTime * 20 ) ;
-  while plotted_bars < percent_time,
-    fprintf('='); plotted_bars = plotted_bars +1 ;
-  end
+% progress bar variables
+plotted_bars = 0 ; aux_time = cputime() ;
+
+while finalTimeReachedBoolean == false
+  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
@@ -112,6 +106,12 @@ if modelProperties.analysisSettings.modalAnalysisBoolean
     #numer_modes = PHI;
   end
 
+  s = size(OMEGA) ;
+  index = 1:s(1)+1:s(1)*s(2) ;
+  [elem_diag, ind] = sort(diag(OMEGA)) ;
+  OMEGA(index) = elem_diag ;
+  PHI = PHI(:,ind) ;
+
   modelPropertiesModal = modelProperties ;
   modelPropertiesModal.plots_deltaTs_separation = 1 ;
   modelPropertiesModal.analysisSettings.deltaT  = 1 ;
@@ -146,3 +146,12 @@ if modelProperties.analysisSettings.modalAnalysisBoolean
   modelProperties.analysisSettings.modalAnalysisBoolean = false ;
 end %endif
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+function plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars)
+
+  percent_time = round( (modelCurrSol.timeIndex * modelProperties.analysisSettings.deltaT) ...
+                       / modelProperties.analysisSettings.finalTime * 20 ) ;
+  while plotted_bars < percent_time,
+    fprintf('='); plotted_bars = plotted_bars +1 ;
+  end

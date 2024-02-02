@@ -18,32 +18,39 @@
 %md set optional fields defaults
 function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
+% =========================================
 % materials
-
-
 materials         = checkOrSetDefault ( materials        , 'density'       , 0   ) ;
 
-% elements
-elements          = checkOrSetDefault ( elements         , 'massMatType'        , 'lumped' ) ;
-elements          = checkOrSetDefault ( elements         , 'elemTypeParams'     , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'elemCrossSecParams' , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'chordVector'       , [] ) ;
-elements          = checkOrSetDefault ( elements         , 'aeroCoefFunctions'   , {[],[],[]} ) ;
-elements          = checkOrSetDefault ( elements         , 'aeroNumericalParams', {4, false, true} ) ;
 
+% =========================================
+% elements
+elements = checkOrSetDefault( elements, 'massMatType'        , 'lumped' ) ;
+elements = checkOrSetDefault( elements, 'elemTypeParams'     , [] ) ;
+elements = checkOrSetDefault( elements, 'elemCrossSecParams' , [] ) ;
+elements = checkOrSetDefault( elements, 'chordVector'        , []         ) ;
+elements = checkOrSetDefault( elements, 'aeroCoefFunctions'  , {[],[],[]} ) ;
+elements = checkOrSetDefault( elements, 'aeroNumericalParams', {4, false, true} ) ;
+
+elements = setDefauAeroCrossSecProps( elements );
+
+
+% =========================================
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
 
+% =========================================
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'addedMassBool'          , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'                 , 1               ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'               , 1               ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'              , 1               ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'          , 1e-6            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'          , 1e-6            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'             , 15              ) ;
@@ -56,25 +63,21 @@ if strcmp( analysisSettings.methodName, 'alphaHHT' )
 end
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag', 0              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean' , 0              ) ;
-% -----------------------------
 
+% =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'plots_format', []    ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'plots_deltaTs_separation', 1  ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'nodalDispDamping', 0 ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
-
-global exportFirstMatrices;
-if isempty( exportFirstMatrices )
-  exportFirstMatrices = false ;
-end
+otherParams       = checkOrSetDefault( otherParams      , 'exportFirstMatrices', false    ) ;
 
 %md function that checks if a field is defined in a (scalar or array) struct
 %md and sets a default value if it is not defined.
-
 function structName = checkOrSetDefault( structName, fieldName, default )
-if ~isfield( structName, fieldName )
+
+  if ~isfield( structName, fieldName )
   for i=1:length( structName )
     aux(i)  = setfield( structName(i), fieldName, default ) ;
   end

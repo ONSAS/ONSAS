@@ -13,14 +13,11 @@ numElements = 16 ; % Number of elements
 tf     = 0.3     ; % s
 deltat = 0.1   ; % s
 
-global exportFirstMatrices
-exportFirstMatrices = true;
-
 %md### materials
-materials                 = struct()         ;
-materials.hyperElasModel  = '1DrotEngStrain' ;%'linearElastic';%
-materials.hyperElasParams = [ E nu ]         ;
-materials.density         = rho              ;
+materials             = struct()         ;
+materials.modelName   = 'elastic-rotEngStr' ;%'elastic-linear';%
+materials.modelParams = [ E nu ]         ;
+materials.density     = rho              ;
 %md
 %md### elements
 elements = struct() ;
@@ -67,6 +64,7 @@ analysisSettings.modalAnalysisBoolean = true;
 %md## otherParams
 otherParams = struct() ;
 otherParams.problemName = 'cantilever_modal_analysis';
+otherParams.exportFirstMatrices = true;
 %md ONSAS execution
 [coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %md

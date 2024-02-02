@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 function modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, ...
                                                       analysisSettings, otherParams, timesPlotsVec )
 
@@ -30,4 +29,5 @@ modelProperties = struct( 'Nodes'                       , Nodes                 
                         , 'plots_format'                , otherParams.plots_format                 ...
                         , 'plots_deltaTs_separation'    , otherParams.plots_deltaTs_separation     ...
                         , 'nodalDispDamping'            , otherParams.nodalDispDamping             ...
+                        , 'exportFirstMatrices'         , otherParams.exportFirstMatrices          ...
                         ) ;

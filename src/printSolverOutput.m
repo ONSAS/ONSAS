@@ -1,5 +1,4 @@
-% Copyright 2022, Jorge M. Perez Zerpa, Mauricio Vanzulli, Alexandre Villié,
-% Joaquin Viera, J. Bruno Bazzano, Marcelo Forets, Jean-Marc Battini.
+% Copyright 2023, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,10 +14,10 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
+% 
 % Prints analysis output
 
-function printSolverOutput( outputdir, problemName, lineData )
+function printSolverOutput( outputdir, problemName, lineData, fnorms )
 
 iterationResultsFile = [ outputdir  problemName '_iterations.tex' ] ;
 
@@ -84,3 +83,23 @@ end
 
 % close file
 fclose(fileIncrements);
+
+
+if ~isempty(fnorms)
+
+forcesNormsFile = [ outputdir  problemName '_forcesNorms.txt' ] ;
+format_fnorms   = [ '%4i %4i %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e\n' ] ;
+
+if lineData(1)==0 % print header
+  fileNorms = fopen( forcesNormsFile ,'w');
+else
+  fileNorms = fopen( forcesNormsFile ,'a');
+end
+
+fprintf( fileNorms, format_fnorms, fnorms  ) ;
+
+
+
+fclose( fileNorms );
+
+end
