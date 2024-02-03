@@ -72,23 +72,24 @@ udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
 % -----------------------------------------------------------------
 % uBEM compute relative local velocity
 if ~isempty( uBEMbool ) && uBEMbool
+
     % load induced velocity node 1 and node 2
-    global inducedVelNod1n1    ;   global inducedVelNod2n1;
+    global inducedVelNod1    ;   global inducedVelNod2;
 
     % Geom parameteres
     global elemTwist; 
 
     % Interpolated chord vector in evaluated gaussian section interpolated with linear shape functions
-    vecChordUndef = vecChordUndef(1:3) * N1 + vecChordUndef(4:6) * N2 ;    
+    vecChordUndef     = vecChordUndef(1:3) * N1 + vecChordUndef(4:6) * N2 ;    
     
     % Interpolated twist vector in evaluated gaussian section interpolated with linear shape functions
-    twistVector = elemTwist(1:3) * N1 + elemTwist(4:6) * N2 ;
+    twistVector       = elemTwist(1:3)' * N1 + elemTwist(4:6)' * N2 ;
     
     % Interpolated twist vector in evaluated gaussian section interpolated with linear shape functions
     dimCharacteristic = norm(vecChordUndef) ;    
     
     % cross section induced velocity flow velocity in global coordinates interpolated with linear shape functions
-    inducedVelGn1    = inducedVelNod1n1 * N1    + inducedVelNod2n1 * N2 ;     % induced wake velocity of previous time step    
+    inducedVelGn1     = inducedVelNod1 * N1  + inducedVelNod2 * N2 ;     % induced wake velocity of previous time step    
     
     % Kinematic velocities for the generic cross section
     % cross section centroid rigid velocity in global coordinates
@@ -109,9 +110,10 @@ end
 % ------------ Compute relative incidence angle  ------------
 % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
 if ~isempty( uBEMbool ) && uBEMbool
-    foilTwist   = dot( (Rroofx'*Rr'*deg2rad( twistVector ) )', [1,0,0] ) ;
-    chordVec    = expon( [foilTwist 0 0] )*vecChordUndef ;
-    tch = ( chordVec / norm( chordVec )) ;
+    %foilTwist   = dot( (Rroofx'*Rr'*deg2rad( twistVector ) )', [1,0,0] ) ;
+    %chordVec    = expon( [foilTwist 0 0] )*( L2*(Rroofx'*Rr')*vecChordUndef' ) ;
+    vecChordUndef    = expon( deg2rad(twistVector) )*( (Rroofx'*Rr')*vecChordUndef ) ;
+    tch = ( vecChordUndef / norm( vecChordUndef )) ;
 else
     tch = (vecChordUndef / norm( vecChordUndef )) ;
 end
@@ -131,11 +133,13 @@ end
 
 if isnan(  norm( VpiRelG)  ),  stop, end
 
-cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
-sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
 if ~isempty( uBEMbool ) && uBEMbool
-    betaRelG = - sign( sinBeta ) * acos( cosBeta ) 
+    cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
+    sinBeta  = dot( cross(tch, td), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
+    betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
 else
+    cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
+    sinBeta  = dot( cross(td,tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
     betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
 end
 % ------------------------------------------------------------------
@@ -150,7 +154,6 @@ if ~isempty( uBEMbool ) && uBEMbool
     c_d  = cdstat1 * N1 + cdstat2 * N2 ;
     c_l  = clstat1 * N1 + clstat2 * N2 ;
     c_m  = cmstat1 * N1 + cmstat2 * N2 ;
-    Re = norm(udotFlowG) * dimCharacteristic / viscosityFluid ;
 else
   %-----------------------------------------------------------------
     

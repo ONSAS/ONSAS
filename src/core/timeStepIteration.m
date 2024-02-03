@@ -99,7 +99,6 @@ while  booleanConverged == 0
 
 end % iteration while
 % --------------------------------------------------------------------
-
 Utp1       = Utp1k ;
 Udottp1    = Udottp1k ;
 Udotdottp1 = Udotdottp1k ;
@@ -120,6 +119,79 @@ elseif stabilityAnalysisFlag == 1
 else
   nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
 end
+
+global uBEMbool
+% --- update uBEM induced velocity
+if ~isempty( uBEMbool ) && uBEMbool
+    global DWMbool;
+    global testBeta;
+    global iterCounter;
+    global uBEMdataCoords;
+    global wWake;
+    global wWakeQS;
+    global wWakeInt;
+
+    neumdofs = BCsData.neumDofs ;
+    Conec    = modelProperties.Conec;  nElems   = size(Conec, 1) ;
+    elements = modelProperties.elements; 
+    Nodes    = modelProperties.Nodes;  nNodes   = size(Nodes, 1) ;
+
+    timeIndexWake  = modelCurrSol.timeIndex + 1 ;
+    currTime       = nextTime ;
+    
+    for elem = 1:nElems
+        mebVec     = Conec( elem, 1:3) ;
+        % extract element properties
+        elemType   = elements( mebVec( 2 ) ).elemType     ;
+        modelName = modelProperties.materials.modelName  ;
+        
+        % compute aerodynamic force booleans
+        aeroBool = ~isempty(modelProperties.analysisSettings.fluidProps) ;
+        aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
+
+        % obtain element info
+        [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
+
+        % obtains nodes and dofs of element
+        nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
+        dofselem    = nodes2dofs( nodeselem , 6 )   ; 
+
+        % construct vector of degrees of freedom of element
+        auxA = repmat( nodalDofsEntries, length(dofselem)/6,1 )  ;
+        auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
+        dofselemRed = dofselem( auxA+auxB )   ;
+
+        %md elemDisps contains the displacements corresponding to the dofs of the element
+        elemDisps       = Utp1( dofselemRed )   ;
+        dotdispsElem    = Udottp1(dofselemRed ) ;
+        dotdotdispsElem = Udotdottp1( dofselemRed ) ;
+
+        elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
+        
+        if strcmp( elemType, 'frame')
+            if strcmp( modelName, 'elastic-rotEngStr') || strcmp(modelName, 'elastic-linear')
+                if isempty(aeroNumericalParams)
+                    aeroBool = false; % Used for uBEM first element of the interesection between nose and blase is computed as a frame without wind vel applied. 
+                elseif aeroBool
+                    inducedVeln1     = wWake{modelCurrSol.timeIndex}(nodeselem, :);
+                    inducedIntVeln1  = wWakeInt{modelCurrSol.timeIndex}(nodeselem, :);
+                    inducedQSVeln1   = wWakeQS{modelCurrSol.timeIndex}(nodeselem, :);
+
+                    [ inducedVel, inducedIntVel, inducedQSVel, idx1, idx2 ] = uBEMupdateInducedVelocity(modelProperties.analysisSettings, elemNodesxyzRefCoords, ...
+                                                                                                        inducedVeln1, inducedIntVeln1, inducedQSVeln1,...
+                                                                                                        elemDisps, dotdispsElem, uBEMdataCoords, ...
+                                                                                                        currTime, DWMbool);
+
+                    wWake{timeIndexWake}([idx1, idx2], 1:3)    = reshape(inducedVel, 3, 2)';
+                    wWakeInt{timeIndexWake}([idx1, idx2], 1:3) = reshape(inducedIntVel, 3, 2)';
+                    wWakeQS{timeIndexWake}([idx1, idx2], 1:3)  = reshape(inducedQSVel, 3, 2)';
+                end
+            end
+        end
+    end
+    iterCounter = 0;
+end
+
 
 % --- stores next step values ---
 U          = Utp1 ;

@@ -19,7 +19,7 @@
 function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           , ...
                                      elemCrossSecParams                         , ...
                                      Ue, Udote, Udotdote                        , ...
-                                     aeroCoefs, chordVector,aeroNumericalParams ,...
+                                     aeroCoefs, chordVector, aeroNumericalParams ,...
                                     analysisSettings, nextTime, currElem         ,...
                                     computeAeroStiffnessMatrix)
 
@@ -53,16 +53,13 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       global uBEMdataCoords ;
       global polars ; aeroData   = polars ; 
       global radius ; radiusList = radius ;
-      global chord  ; chordList  = chord  ;
-      global twist  ; twistList  = twist  ;
       % blade data including, radius, twist, chord and thick
-      [ chordVector, aoast, liftCoef, dragCoef, momCoef ] = uBEMAeroProps( twistList, chordList , aeroData ) ;
+      clear chordVector;
+      [ aoast, liftCoef, dragCoef, momCoef ] = uBEMAeroProps( aeroData ) ;
       aeroCoefs{1} = aoast    ;
       aeroCoefs{2} = liftCoef ;
       aeroCoefs{3} = dragCoef ;
       aeroCoefs{4} = momCoef  ;
-  else
-      [ chordVector, aeroCoefs ] = aeroCrossSectionProps ( elemCrossSecParams, chordVector, aeroCoefs ) ;
   end
 
   % extract fluid properties
@@ -84,7 +81,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   end
 
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ;
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6) , nextTime ) ;
   udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   % compact them into a single vector for the element
   udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
@@ -97,23 +94,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   if ~isempty( uBEMbool ) && uBEMbool
       global elemTwist;   global elemIDsection; global elemRadius;
       % Frame geom properties
-      [elemTwist, elemChord, elemIDsection, elemRadius, nodIdx1, nodIdx2] = uBEMframeProps(uBEMdataCoords, xs);
-
-      % uBEM system HAWT configuration matrix
-      global a14;     global a12;     global a34;
-      if nodIdx2 <= (3 + (length(radiusList) + 1)*1)
-          a14g = a14(:,:,1) ;
-      elseif nodIdx2 > (3 + (length(radiusList) + 1)*1) && nodIdx2 <= (3 + (length(radiusList) + 1)*2)
-          a14g = a14(:,:,2) ;
-      elseif nodIdx2 > (3 + (length(radiusList) + 1)*2) && nodIdx2 <= (3 + (length(radiusList) + 1)*3)
-          a14g = a14(:,:,3) ;
-      end
-    
-      % Convert twist angle and chord from uBEM local coordinate system to
-      % global coordiante system 
-      elemTwist = [ a14g*elemTwist(1:3) ; a14g*elemTwist(4:6) ] ; % twist angle expresed in global HAWT coordinates
-      elemChord = [ a14g*elemChord(1:3) ; a14g*elemChord(4:6) ]' ; % chord local coords expresed in global HAWT coordinates
-      dimCharacteristic =  [ norm( elemChord(1:3) ), norm( elemChord(4:6) ) ]' ;
+      [elemTwist, chordVector, elemIDsection, elemRadius, nodIdx1, nodIdx2] = uBEMframeProps(uBEMdataCoords, xs);
   else
       dimCharacteristic = norm( chordVector ) ;
   end
@@ -159,7 +140,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % auxiliary matrix created for uBEM method to compute twist angle
   L1 = [ 1 0 0   ;
          0 0 0   ;
-         0 0 0] ;
+         0 0 0]  ;
 
   % auxiliary matrix created to project transversal velocity
   L2 = [ 0 0 0   ;
@@ -168,6 +149,17 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   % 90 degrees rotation matrix
   L3 = expon( [pi/2 0 0] ) ;
+
+  global Rbem;   global R12;     global R34;
+  if nodIdx2 <= (3 + (length(radiusList) + 1)*1)
+      Rb = Rbem(:,:,1) ;
+  elseif nodIdx2 > (3 + (length(radiusList) + 1)*1) && nodIdx2 <= (3 + (length(radiusList) + 1)*2)
+      Rb = Rbem(:,:,2) ;
+  elseif nodIdx2 > (3 + (length(radiusList) + 1)*2) && nodIdx2 <= (3 + (length(radiusList) + 1)*3)
+      Rb = Rbem(:,:,3) ;
+  end
+  global C0;
+  C0    = R0'*Rb;
   % --------------------------------------------------------
 
   % Extract points and weights for numGausspoints selected
@@ -178,20 +170,31 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
   if ~isempty( uBEMbool ) && uBEMbool
+      % Convert twist angle and chord vector from uBEM local coordinate system to
+      % reference ONSAS coordiante system 
+      elemTwist   = [ ( elemTwist(1:3)')'      , ( elemTwist(4:6)')' ]     ; % twist angle expresed in ONSAS ref coordinates
+      chordVector = [ ( R0*chordVector(1:3)')' , ( R0*chordVector(4:6)')' ]   ; % chord local coords expresed in ONASS ref coordinates
+      dimCharacteristic =  [ norm( chordVector(1:3) ), norm( chordVector(4:6) ) ] ;
       % induced velocity vector of node 1 and node 2 in global corotational system
       % Init static wake velocity in HAWT global coordiantes
-      global wWake; global wWakeInt; global wWakeQS;
+      global wWake; global iterCounter;
       
       % compute section wind velocity from global HAWT system to
       % global corotational system
-      global timeIdx; timeIdx = nextTime/analysisSettings.deltaT 
-   
-      global Rrot; global Rhub;
+      global timeIdx; timeIdx = round(nextTime/analysisSettings.deltaT);
     
-      % Init induced vel components
-      global inducedVelNod1; global inducedVelIntNod1; global inducedQSVelNod1;
-      global inducedVelNod2; global inducedVelIntNod2; global inducedQSVelNod2;
-    
+      % Init induced vel components at first enter to iteration loop
+      global inducedVel; global inducedVelNod1; global inducedVelNod2;
+      if iterCounter == 0
+        timeIdx
+        inducedVel  = wWake{timeIdx};
+        iterCounter = 1;
+      end
+      
+      inducedVelNod1 = inducedVel(nodIdx1,:)';
+      inducedVelNod2 = inducedVel(nodIdx2,:)';
+
+
       %% -------------------------------------------------------------------------------- 
       % Node 1
       % Velocity params
@@ -201,39 +204,26 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       % Node 1 flow velocity
       udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime )  ;
       % Node 1 induced velocity of previous time step
-      global inducedVelNod1n1    ; inducedVelNod1n1     = wWake{timeIdx}(nodIdx1,:)';
-      global inducedQSVelNod1n1  ; inducedQSVelNod1n1   = wWakeQS{timeIdx}(nodIdx1,:)';
-      global inducedIntVelNod1n1 ; inducedIntVelNod1n1  = wWakeInt{timeIdx}(nodIdx1,:)';
+
       % Compute relative velocity of node 1 
       [VpiRelNode1, VpiRelperpNode1, VrelGnode1] = uBEMcomputeVpiRels( udotFlowNode1, ...
-                                    udotFrame1, inducedVelNod1n1, Rroof1, Rr, L2, L3 ) ;
+                                    udotFrame1, inducedVelNod1, Rroof1, Rr, L2, L3 ) ;
+      
       % Compute angle of attack of node 1
-      twistVecNod1   = dot( (Rroof1'*Rr'*deg2rad( elemTwist(1:3) ))', [1,0,0] ) ;
-      chordVecNod1   = expon( [twistVecNod1 0 0] )*elemChord(1:3)' ;
-      tchNod1        = ( chordVecNod1 / norm( chordVecNod1 )) ;
+      defChordVecNod1 = expon( deg2rad( elemTwist(1:3) ) )*( (Rroof1'*Rr')*chordVector(1:3)') ;
+      tch1            = ( defChordVecNod1 / norm( defChordVecNod1 )) ;
       if( norm( VpiRelNode1 ) == 0 )
-        td1 = tchNod1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+          td1 = tchNod1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
       else % the drag direction at a generic cross section in deformed coordinates is:
-        td1 = VpiRelNode1 / norm( VpiRelNode1 ) ;
+          td1 = VpiRelNode1 / norm( VpiRelNode1 ) ;
       end
-    
-      cosBetanod1 = dot( tchNod1, td1 ) / ( norm(td1) * norm(tchNod1) ) ;
-      sinBetanod1 = dot( cross(td1,tchNod1), [1 0 0] ) / ( norm( td1 ) * norm( tchNod1 ) ) ;
-      betaRelnod1 = - sign( sinBetanod1 ) * acos( cosBetanod1 ) ;
+      cosBetanod1 = dot( tch1, td1 ) / ( norm(td1) * norm(tch1) ) ;
+      sinBetanod1 = dot( cross(tch1, td1), [1 0 0] ) / ( norm( td1 ) * norm( tch1 ) ) ;
+      betaRelnod1 = sign( sinBetanod1 ) * acos( cosBetanod1 ) ;
       
       % Compute node 1 aero params
       global clstat1; global cdstat1; global cmstat1;
       [clstat1, cdstat1, cmstat1] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(1), betaRelnod1);
-      
-      % Compute node 1 induced velocity
-      fll1  =  1/2 * densityFluid * clstat1 / 2 * dimCharacteristic(1) * norm( VpiRelNode1 ) * VpiRelperpNode1 ;
-      fdl1  =  1/2 * densityFluid * cdstat1 / 2 * dimCharacteristic(1) * norm( VpiRelNode1 ) * VpiRelNode1 ;
-      
-      [inducedVelNod1, inducedVelIntNod1, inducedQSVelNod1] = uBEMinducedVelocity(fll1, VpiRelNode1, inducedVelNod1n1, inducedQSVelNod1n1, ...
-                                                             inducedIntVelNod1n1, elemRadius(1), Rrot, Rhub, betaRelnod1, densityFluid, ...
-                                                             analysisSettings.deltaT, L2, Rroof1, Rr, DWMbool) ;
-      
-    
       % ----------------------------------------------------------------------------------
       % Node 2
       % Velocity params
@@ -241,43 +231,28 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       % Node 2 frame velocity
       udotFrame2 = Udote( 7:2:12 ) ;
       % Node 2 flow velocity
-      elemCoords(4:6)
       udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime )  ;
       % Node 2 induced velocity of previous time step
-      global inducedVelNod2n1    ; inducedVelNod2n1     = wWake{timeIdx}(nodIdx2,:)';
-      global inducedQSVelNod2n1  ; inducedQSVelNod2n1   = wWakeQS{timeIdx}(nodIdx2,:)';
-      global inducedIntVelNod2n1 ; inducedIntVelNod2n1  = wWakeInt{timeIdx}(nodIdx2,:)';
+
       % Compute relative velocity of node 2 
       [VpiRelNode2, VpiRelperpNode2, VrelGnode2] = uBEMcomputeVpiRels( udotFlowNode2, ...
-                                    udotFrame2, inducedVelNod1n1, Rroof2, Rr, L2, L3 ) 
+                                    udotFrame2, inducedVelNod2, Rroof2, Rr, L2, L3 );
       
       % Compute angle of attack of node 2
-      twistVecNod2   = dot( (Rroof2'*Rr'*deg2rad( elemTwist(4:6) ))', [1,0,0] ) 
-      chordVecNod2   = expon( [twistVecNod2 0 0] )*elemChord(4:6)' 
-      tchNod2        = ( chordVecNod2 / norm( chordVecNod2 )) ;
+      defChordVecNod2   = expon( deg2rad( elemTwist(4:6) ) )*( (Rroof2'*Rr')*chordVector(4:6)') ;
+      tch2           = ( defChordVecNod2 / norm( defChordVecNod2 )) ;
       if( norm( VpiRelNode2 ) == 0 )
-        td2 = tchNod2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
+          td2 = tchNod2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
       else % the drag direction at a generic cross section in deformed coordinates is:
-        td2 = VpiRelNode2 / norm( VpiRelNode2 ) ;
+          td2 = VpiRelNode2 / norm( VpiRelNode2 ) ;
       end
-    
-      cosBetanod2 = dot( tchNod2, td2 ) / ( norm(td2) * norm(tchNod2) ) ;
-      sinBetanod2 = dot( cross(td2,tchNod2), [1 0 0] ) / ( norm( td2 ) * norm( tchNod2 ) ) ;
-      betaRelnod2 = - sign( sinBetanod2 ) * acos( cosBetanod2 ) 
-      rad2deg(betaRelnod2)
+      cosBetanod2 = dot( tch2, td2 ) / ( norm(td2) * norm(tch2) ) ;
+      sinBetanod2 = dot( cross(tch2, td2), [1 0 0] ) / ( norm( td2 ) * norm( tch2 ) ) ;
+      betaRelnod2 = sign( sinBetanod2 ) * acos( cosBetanod2 ) ; 
     
       % Compute node 1 aero params
       global clstat2; global cdstat2; global cmstat2;
-      [clstat2, cdstat2, cmstat2] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(2), betaRelnod2);
-      
-      % Compute node 1 induced velocity
-      fll2  =  1/2 * densityFluid * clstat2 / 2 * dimCharacteristic(2) * norm( VpiRelNode2 ) * VpiRelperpNode2 ;
-      fdl2  =  1/2 * densityFluid * cdstat2 / 2 * dimCharacteristic(2) * norm( VpiRelNode2 ) * VpiRelNode2 ;
-      
-      [inducedVelNod2, inducedVelIntNod2, inducedQSVelNod2] = uBEMinducedVelocity(fll2, VpiRelNode2, inducedVelNod2n1, inducedQSVelNod2n1, ...
-                                                             inducedIntVelNod2n1, elemRadius(2), Rrot, Rhub, betaRelnod2, densityFluid, ...
-                                                             analysisSettings.deltaT, L2, Rroof2, Rr, DWMbool) ; 
-    
+      [clstat2, cdstat2, cmstat2] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(2), betaRelnod2);  
   else
       udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ;
       udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
@@ -378,7 +353,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
     %The Gauss integration coordinate is:
     xGauss = l0/2 * ( xIntPoints( ind ) + 1 ) ;
-    chordVector = elemChord ;
     %Integrate for different cross section inner to the element
     fDragLiftPitchElem =  fDragLiftPitchElem ...
                +l0/2 * wIntPoints( ind ) ...

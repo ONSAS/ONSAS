@@ -15,13 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [ chordVector, aoast, liftCoef, dragCoef, momCoef] = uBEMAeroProps( twistList, chordList, polars ) 
+function [ aoast, liftCoef, dragCoef, momCoef] = uBEMAeroProps( polars ) 
 
 [aoast, liftCoef, dragCoef, momCoef ] = uBEMreadFoilData( polars ) ;
 
-chordVector = zeros( length(chordList), 3 );
-
-for j = 1:length(twistList)
-    chordVector(j,3) = chordList(j) ;
-end
 end
