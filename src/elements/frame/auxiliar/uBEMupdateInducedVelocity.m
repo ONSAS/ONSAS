@@ -149,6 +149,8 @@ betaTest = [betaTest, rad2deg(betaRelnod2)];
 
 % Compute node 1 aero params
 [clstat2, cdstat2, cmstat2] = uBEMinterpAeroParams(aeroCoefs, elemIDsection(2), betaRelnod2);
+global cl;
+cl = [ cl, clstat2 ];
 
 % Compute node 1 induced velocity
 fll2  =  1/2 * densityFluid * clstat2 / 2 * dimCharacteristic(2) * norm( VpiRelNode2 ) * VpiRelperpNode2 ;

@@ -124,7 +124,6 @@ global uBEMbool
 % --- update uBEM induced velocity
 if ~isempty( uBEMbool ) && uBEMbool
     global DWMbool;
-    global testBeta;
     global iterCounter;
     global uBEMdataCoords;
     global wWake;
