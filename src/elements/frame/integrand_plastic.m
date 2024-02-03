@@ -48,8 +48,7 @@ else
   qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
 
 end
-    
-% qxpi = piecewise(xin1(jj) <= (My-Mc)/kh1, -kh1*xin1(jj), -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj)) ;
+
 phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
 % test values

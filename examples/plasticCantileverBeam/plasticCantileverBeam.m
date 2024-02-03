@@ -58,7 +58,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-load_case = [0 0 0 -10 0 0]' ; % (1 en Fy2)
+load_case = [0 0 0 -10 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:4 ;
 % --- element params ---
 elemParams = [l A Iy] ;
@@ -86,7 +86,7 @@ for ind = 2:length(load_factors)
 
         k = k + 1 ;
 
-        fprintf('= = = = Iteración %d\n', k) ;
+        fprintf('= = = = Iteración %d = = = =\n', k) ;
 
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
         
@@ -137,7 +137,7 @@ end
 
 lw = 2.0 ; ms = 11 ; plotfontsize = 16 ;
 
-figure
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(abs(matdes(6,:)), load_factors,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(matdes(4,:)), load_factors, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
