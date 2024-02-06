@@ -39,7 +39,7 @@ freedofs = [2 4 6]; % u2 v2 theta2
 
 nu   = 0.3 ;
 tol1 = 1e-8 ;
-tol2 = 1e-4 ;
+tol2 = 1e-8 ;
 tolk = 10 ;
 
 % initial values
@@ -59,14 +59,17 @@ alfan = 0 ;
 xd = 0 ;
 
 load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
-load_factors = 0:108 ;
+load_factors = 0:115 ;
+
 % --- element params ---
 elemParams = [l A Iy] ;
 
 % --- elastoplastic params ---
 elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
-matdes = dn ;
+matdes = zeros (6, 116) ;
+
+matdes(:,1) = dn ;
 
 for ind = 2:length(load_factors)
 
@@ -131,11 +134,11 @@ for ind = 2:length(load_factors)
 
     end
 
-    matdes = [matdes dnk1] ;
+    matdes(:, ind) = dnk1 ;
 
 end
 
-lw = 3.0 ; ms = 1 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 1 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
