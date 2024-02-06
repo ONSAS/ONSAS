@@ -23,24 +23,24 @@ addpath( genpath( [ pwd '/../../src'] ) );
 % kh1, kh2   / hardening modules
 % Ks         / from the moment-rotation jump diagram
         
-l = 2.5 ;         % m
-A = 0.4*0.3 ;     % m^2
-E = 300000000 ;   % K(N/m^2) KPa
-EI = 77650 ;      % KNm^2
-Iy = EI/E ;       % m^4
-Mc = 37.9 ;       % KNm
+l = 2.5 ;           % m
+A = 0.4*0.3 ;       % m^2
+E = 30000000 ;      % KN/m^2 KPa
+EI = 77650 ;        % KN.m^2
+Iy = EI/E ;         % m^4
+Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 374 ;
-kh1 = 29400 ;     % KNm^2
+kh1 = 29400 ;       % KN.m^2
 kh2 = 272 ;
-Ks = -18000 ;     % KNm
+Ks = -18000 ;       % KN.m
 
 freedofs = [2 4 6]; % u2 v2 theta2
 
 nu   = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 3 ;
+tolk = 10 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
@@ -58,8 +58,8 @@ alfan = 0 ;
 
 xd = 0 ;
 
-load_case = [0 0 0 -10 0 0]' ; % load applied in vertical direction (Y)
-load_factors = 0:4 ;
+load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
+load_factors = 0:108 ;
 % --- element params ---
 elemParams = [l A Iy] ;
 
@@ -135,7 +135,7 @@ for ind = 2:length(load_factors)
 
 end
 
-lw = 2.0 ; ms = 11 ; plotfontsize = 16 ;
+lw = 3.0 ; ms = 1 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on

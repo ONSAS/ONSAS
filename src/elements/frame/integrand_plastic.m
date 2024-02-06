@@ -78,43 +78,39 @@ else
         gamma = phitest/(kh2+E*Iy) ;
     
     end
-
-    % gamma = piecewise(xin1(jj) + phitest/(kh1+E*Iy)<=(My-Mc)/kh1, phitest/(kh1+E*Iy), phitest/(kh2+E*Iy)) ;
     
-    kpn1xpi = kpn(jj) + gamma*sign(Mxpi) ;
-    xin11xpi = xin1(jj) + gamma ;
-    M1xpi = E*Iy*(khat-kpn1(jj)) ;
+    kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
+    xin11xpi    = xin1(jj) + gamma ;
+    M1xpi       = E*Iy*(khat-kpn1xpi) ;
 
 end
 
 % elastoplastic tangent bending modulus
 
-if gamma == 0
-    Cep = E*Iy ;
+if      gamma == 0
+        Cep = E*Iy ;
 
-elseif gamma > 0 && xin11xpi <= (My-Mc)/kh1
-    Cep = E*Iy*kh1/(E*Iy + kh1) ;
+elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
+        Cep = E*Iy*kh1/(E*Iy + kh1) ;
 
-elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
-    Cep = E*Iy*kh2/(E*Iy + kh2) ;
+elseif  gamma > 0 && xin11xpi > (My-Mc)/kh1
+        Cep = E*Iy*kh2/(E*Iy + kh2) ;
 
 end
 
-% Cep = piecewise(gamma == 0, E*Iy , gamma > 0 & xin11xpi <= (My-Mc)/kh1, E*Iy*kh1/(E*Iy + kh1), gamma > 0 & xin11xpi > (My-Mc)/kh1, E*Iy*kh2/(E*Iy + kh2)) ;
-
 % stiffness matrices
 
-Kfd = Bd'*[E*A 0; 0 Cep]*Bd ;
+Kfd     = Bd'*[E*A 0; 0 Cep]*Bd ;
 
-Kfalfa = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
+Kfalfa  = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
 
-Khd = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
+Khd     = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
 
-Khalfa = Ghat*Cep*Ghat ;
+Khalfa  = Ghat*Cep*Ghat ;
 
 epsilon = Bu*uvector ;
 
-Fi= Bd' * [E*A*epsilon; M1xpi] ;
+Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
