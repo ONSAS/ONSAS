@@ -130,8 +130,21 @@ if phifailxpi <= 0
     alfan1 = alfan ;
     xin21xpi = xin2(jj) ;
 else
-    gamma2 = piecewise(xin2(jj)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
-    alfan1=alfan + gamma2*sign(tM) ;
-    xin21xpi = xin2(jj) + gamma2 ;
-    xd = xpi ;       
+
+    if  xin2(jj)<=-Mu/Ks
+
+        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
+
+    else
+
+        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
+    
+    end
+    
+    % gamma2 = piecewise(xin2(jj)<=-Mu/Ks, phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks),abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2))) ;
+    
+    alfan1      = alfan + gamma2*sign(tM) ;
+    xin21xpi    = xin2(jj) + gamma2 ;
+    xd          = xpi ;       
+
 end
