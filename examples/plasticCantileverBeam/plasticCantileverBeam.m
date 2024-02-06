@@ -58,8 +58,10 @@ alfan = 0 ;
 
 xd = 0 ;
 
+Final_force = 40 ;
+
 load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
-load_factors = 0:115 ;
+load_factors = 0:Final_force ;
 
 % --- element params ---
 elemParams = [l A Iy] ;
@@ -67,7 +69,7 @@ elemParams = [l A Iy] ;
 % --- elastoplastic params ---
 elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
 
-matdes = zeros (6, 116) ;
+matdes = zeros (6, Final_force+1) ;
 
 matdes(:,1) = dn ;
 
