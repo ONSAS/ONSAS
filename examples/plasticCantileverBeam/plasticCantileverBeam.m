@@ -141,7 +141,7 @@ figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(abs(matdes(6,:)), load_factors,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(matdes(4,:)), load_factors, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-labx = xlabel('Generalized displacements');   laby = ylabel('Load Factor \lambda') ;
+labx = xlabel('Generalized displacements (m)');   laby = ylabel('Load Factor \lambda (KN)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
