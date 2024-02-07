@@ -17,7 +17,9 @@
 % =========================================================================
 
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
-addpath( genpath( [ pwd '/../../src'] ) );
+addpath( genpath( [ pwd '/../../src'] ) ) ;
+
+clc ;
           
 % Mc, My, Mu / from the moment-curvature diagram
 % kh1, kh2   / hardening modules
@@ -61,7 +63,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ;
+Final_force = 20 ;
 
 load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -78,13 +80,16 @@ matdes(:,1) = dn ;
 
 gxin = zeros(Final_force,1) ;
 
+% header
+fprintf('|--------------------------------------------------------------------------------| \n') ;
+fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated |\n') ;
+fprintf('|--------------------------------------------------------------------------------| \n') ;
+
 for ind = 2:length(load_factors)
 
     curr_load_factor = load_factors(ind) ;
-    fprintf('factor: %d \n', curr_load_factor ) ;
 
     Fext = load_case * curr_load_factor ;
-    fprintf('Fext: %d \n', Fext) ;
 
     dnk = matdes(:,ind-1) ;
 
@@ -95,23 +100,14 @@ for ind = 2:length(load_factors)
     xin1 = xin11 ;
     gxin(ind-1,1) = xin1(1) ;
 
-
-    fprintf('xin1 \n') ;
-    disp(xin11) ;
+    fprintf('-----------------------------------------------------\n') ;
 
     while converged_bool == false && k < tolk
 
         k = k + 1 ;
 
-        fprintf('= = = = Iteración %d = = = =\n', k) ;
-
         [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
-        
-        fprintf('Fint \n') ;
-        disp(Fint)
-        fprintf('Fext \n') ;
-        disp(Fext) ;
-        
+
         residualForce = Fext - Fint ;
 
         Krelement = Kelement( freedofs, freedofs) ;
@@ -119,30 +115,22 @@ for ind = 2:length(load_factors)
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
-        fprintf('Krelement \n') ;
-        disp(Krelement) ;
-        fprintf('residualForceRed \n') ;
-        disp(residualForceRed) ;
+
         deltadred = Krelement\ (  residualForceRed ) ;
 
-        fprintf('deltadred \n') ;
-        disp(deltadred) ;
+        % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
         
         deltad = zeros(6,1) ;      
         deltad(freedofs) = deltadred ;
-        
-        fprintf('deltad \n') ;
-        disp(deltad) ;
 
         dnk1 = dnk + deltad ;
-
-        fprintf('dnk1 \n') ;
-        disp(dnk1) ;
 
         dnk = dnk1 ;
 
         norm1 = norm( deltadred ) ;
         norm2 = norm( residualForceRed ) ;
+
+        fprintf('%4i |%3i |%12.4e |%12.4e |%12.4e \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1) ) ;
 
         converged_bool = norm1 < tol1 || norm2 < tol2 ;
 
