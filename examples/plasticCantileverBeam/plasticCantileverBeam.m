@@ -40,7 +40,7 @@ freedofs = [2 4 6]; % u2 v2 theta2
 nu   = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 3 ;
+tolk = 10 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
@@ -61,9 +61,9 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ;
+Final_force = 1200 ;
 
-load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
+load_case = [0 0 0 -0.1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
 
 % --- element params ---
@@ -76,7 +76,7 @@ matdes = zeros (6, Final_force+1) ;
 
 matdes(:,1) = dn ;
 
-gxin = zeros(Final_force+1,1) ;
+gxin = zeros(Final_force-1,1) ;
 
 for ind = 2:length(load_factors)
 
@@ -152,13 +152,13 @@ for ind = 2:length(load_factors)
 
 end
 
-lw = 2.5 ; ms = 1 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(abs(matdes(6,:)), load_factors,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(matdes(4,:)), load_factors, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-labx = xlabel('Generalized displacements (m)');   laby = ylabel('Load Factor \lambda (KN)') ;
+labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Load Factor \lambda (KN)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -167,9 +167,8 @@ title('Cantilever Beam / Plasticity') ;
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(gxin, (load_factors-1)*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-labx = xlabel('Internal parameter of plasticity \xi (curvature accumulated)');   laby = ylabel('Moment applied (KN.m)') ;
-legend('Internal parameter of plasticity \xi','location','Southeast') ;
+labx = xlabel('Curvature accumulated \xi');   laby = ylabel('Moment applied (KN.m)') ;
+legend('Internal parameter of plasticity \xi','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
-
