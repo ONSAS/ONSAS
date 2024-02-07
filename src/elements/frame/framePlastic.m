@@ -67,13 +67,14 @@ xpi = [0 l/2 l] ;
 wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 kpn1  = zeros(npi,1) ;
-xin11 = zeros(npi,1) ;
 xin21 = zeros(npi,1) ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
 
+disp(' ===============================')
+xin1
 for ii = 1:npi
 
     [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep,tM) ;
@@ -92,6 +93,7 @@ for ii = 1:npi
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
 end
+xin11
 
 % Khalfa = Khalfa + Ks ; % integral + Ks
 

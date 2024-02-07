@@ -40,6 +40,7 @@ ken = khat - kpn(jj) ;
 
 Mxpi = E*Iy*ken ;
 
+
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
   qxpi = -kh1*xin1(jj) ;

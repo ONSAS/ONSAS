@@ -51,19 +51,20 @@ tM   = 0 ;
 npi = 3 ;
 
 kpn  = zeros(npi,1) ;
-xin1 = zeros(npi,1) ;
+xin1 = zeros(npi,1) ; % xi en tiempo n
 xin2 = zeros(npi,1) ;
 
-xin11 = zeros(npi,1) ;
-xin21 = zeros(npi,1) ;
+xin11 = zeros(npi,1) ; % xi del instante de tiempo n+1
+xin21 = zeros(npi,1) ; % xi cuando hay rotula en n+1
 
 alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ;
+%Final_force = 120;
+Final_force = 30;
 
-load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
+load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)  [ u1 u2 v1 v2 t1 t2 ]
 load_factors = 0:Final_force ;
 
 % --- element params ---
@@ -78,13 +79,14 @@ matdes(:,1) = dn ;
 
 gxin = zeros(Final_force,1) ;
 
+% header
+fprintf(' timeInd  iteration  deltaU  residForce xin1 \n');
+
 for ind = 2:length(load_factors)
 
     curr_load_factor = load_factors(ind) ;
-    fprintf('factor: %d \n', curr_load_factor ) ;
 
     Fext = load_case * curr_load_factor ;
-    fprintf('Fext: %d \n', Fext) ;
 
     dnk = matdes(:,ind-1) ;
 
@@ -92,25 +94,31 @@ for ind = 2:length(load_factors)
     converged_bool = false ;
     k = 0 ; % set iterations zero
 
-    xin1 = xin11 ;
+    # xin1 = xin11 ; % setea el valor del n tomando el de tiempo n+1 
     gxin(ind-1,1) = xin1(1) ;
 
+    # fprintf('xin1 \n') ;
+    # disp(xin11) ;
 
-    fprintf('xin1 \n') ;
-    disp(xin11) ;
+    fprintf('-------------------------------------------------\n') ;
+
+
+    xin11 = xin1 ;
 
     while converged_bool == false && k < tolk
 
         k = k + 1 ;
 
-        fprintf('= = = = Iteración %d = = = =\n', k) ;
+        # fprintf('= = = = Iteración %d = = = =\n', k) ;
 
-        [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, elemParams, elastoplasticParams) ;
+
+
+        [Fint, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(dnk, kpn, xin11, xin2, alfan, xd, elemParams, elastoplasticParams) ;
         
-        fprintf('Fint \n') ;
-        disp(Fint)
-        fprintf('Fext \n') ;
-        disp(Fext) ;
+        # fprintf('Fint \n') ;
+        # disp(Fint)
+        # fprintf('Fext \n') ;
+        # disp(Fext) ;
         
         residualForce = Fext - Fint ;
 
@@ -119,34 +127,37 @@ for ind = 2:length(load_factors)
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
-        fprintf('Krelement \n') ;
-        disp(Krelement) ;
-        fprintf('residualForceRed \n') ;
-        disp(residualForceRed) ;
+        # fprintf('Krelement \n') ;
+        # disp(Krelement) ;
+        # fprintf('residualForceRed \n') ;
+        # disp(residualForceRed) ;
         deltadred = Krelement\ (  residualForceRed ) ;
 
-        fprintf('deltadred \n') ;
-        disp(deltadred) ;
+        %fprintf('deltadred \n') ;
+        %disp(deltadred) ;
         
         deltad = zeros(6,1) ;      
         deltad(freedofs) = deltadred ;
         
-        fprintf('deltad \n') ;
-        disp(deltad) ;
+        %fprintf('deltad \n') ;
+        %disp(deltad) ;
 
         dnk1 = dnk + deltad ;
 
-        fprintf('dnk1 \n') ;
-        disp(dnk1) ;
+        # fprintf('dnk1 \n') ;
+        # disp(dnk1) ;
 
         dnk = dnk1 ;
 
         norm1 = norm( deltadred ) ;
         norm2 = norm( residualForceRed ) ;
 
+        fprintf('  %4i  %3i  %12.4e  %12.4e  %12.4e   \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1) ) ;
+
         converged_bool = norm1 < tol1 || norm2 < tol2 ;
 
     end
+    xin1 = xin11 ; % setea el valor del n tomando el de tiempo n+1 
 
     matdes(:, ind) = dnk1 ;
 
