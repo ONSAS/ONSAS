@@ -61,9 +61,9 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 1200 ;
+Final_force = 120 ;
 
-load_case = [0 0 0 -0.1 0 0]' ; % load applied in vertical direction (Y)
+load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
 
 % --- element params ---
