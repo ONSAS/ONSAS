@@ -40,7 +40,7 @@ freedofs = [2 4 6]; % u2 v2 theta2
 nu   = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 10 ;
+tolk = 3 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
@@ -76,7 +76,7 @@ matdes = zeros (6, Final_force+1) ;
 
 matdes(:,1) = dn ;
 
-gxin = zeros(Final_force-1,1) ;
+gxin = zeros(Final_force,1) ;
 
 for ind = 2:length(load_factors)
 
@@ -93,7 +93,7 @@ for ind = 2:length(load_factors)
     k = 0 ; % set iterations zero
 
     xin1 = xin11 ;
-    gxin(ind,1) = xin1(1) ;
+    gxin(ind-1,1) = xin1(1) ;
 
 
     fprintf('xin1 \n') ;
@@ -166,7 +166,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(gxin, (load_factors-1)*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(gxin, load_factors(1:(length(load_factors)-1))*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 labx = xlabel('Curvature accumulated \xi');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Internal parameter of plasticity \xi','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
