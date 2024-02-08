@@ -42,7 +42,7 @@ freedofs = [2 4 6]; % u2 v2 theta2
 nu   = 0.3 ;
 tol1 = 1e-8 ;
 tol2 = 1e-4 ;
-tolk = 3 ;
+tolk = 10 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
@@ -56,6 +56,7 @@ kpn  = zeros(npi,1) ;
 xin1 = zeros(npi,1) ;
 xin2 = zeros(npi,1) ;
 
+kpn1  = zeros(npi,1) ;
 xin11 = zeros(npi,1) ;
 xin21 = zeros(npi,1) ;
 
@@ -63,9 +64,9 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 20 ;
+Final_force = 120 ;
 
-load_case = [0 0 0 -1 0 0]' ; % load applied in vertical direction (Y)
+load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
 
 % --- element params ---
@@ -78,12 +79,13 @@ matdes = zeros (6, Final_force+1) ;
 
 matdes(:,1) = dn ;
 
-gxin = zeros(Final_force,1) ;
+gxin = zeros(Final_force, 1) ;
+gkpn = zeros(Final_force, 1) ;
 
 % header
-fprintf('|--------------------------------------------------------------------------------| \n') ;
-fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated |\n') ;
-fprintf('|--------------------------------------------------------------------------------| \n') ;
+fprintf('|----------------------------------------------------------------------------------------------------| \n') ;
+fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | \n') ;
+fprintf('|----------------------------------------------------------------------------------------------------| \n') ;
 
 for ind = 2:length(load_factors)
 
@@ -97,8 +99,8 @@ for ind = 2:length(load_factors)
     converged_bool = false ;
     k = 0 ; % set iterations zero
 
-    xin1 = xin11 ;
     gxin(ind-1,1) = xin1(1) ;
+    gkpn(ind-1,1) = kpn(1) ;
 
     fprintf('-----------------------------------------------------\n') ;
 
@@ -110,13 +112,13 @@ for ind = 2:length(load_factors)
 
         residualForce = Fext - Fint ;
 
-        Krelement = Kelement( freedofs, freedofs) ;
+        Krelement = Kelement(freedofs,freedofs) ;
  
         residualForceRed = residualForce(freedofs) ;
       
         % system of equilibrium equations
 
-        deltadred = Krelement\ (  residualForceRed ) ;
+        deltadred = Krelement\residualForceRed ;
 
         % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
         
@@ -125,18 +127,20 @@ for ind = 2:length(load_factors)
 
         dnk1 = dnk + deltad ;
 
-        dnk = dnk1 ;
+        dnk  = dnk1  ;
+        xin1 = xin11 ;
+        kpn  = kpn1  ;
 
-        norm1 = norm( deltadred ) ;
-        norm2 = norm( residualForceRed ) ;
+        norm1 = norm(deltadred) ;
+        norm2 = norm(residualForceRed) ;
 
-        fprintf('%4i |%3i |%12.4e |%12.4e |%12.4e \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1) ) ;
+        fprintf('%4i |%3i |%12.4e |%12.4e |%12.4e |%12.4e \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1) ) ;
 
         converged_bool = norm1 < tol1 || norm2 < tol2 ;
 
     end
 
-    matdes(:, ind) = dnk1 ;
+    matdes(:,ind) = dnk1 ;
 
 end
 
@@ -157,6 +161,15 @@ hold on, grid on
 plot(gxin, load_factors(1:(length(load_factors)-1))*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 labx = xlabel('Curvature accumulated \xi');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Internal parameter of plasticity \xi','location','Southeast');
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(gkpn, load_factors(1:(length(load_factors)-1))*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+labx = xlabel('Plastic curvature kp');   laby = ylabel('Moment applied (KN.m)') ;
+legend('Plastic curvature kp','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;

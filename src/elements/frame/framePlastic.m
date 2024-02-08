@@ -66,10 +66,6 @@ npi = 3 ;
 xpi = [0 l/2 l] ;
 wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
-kpn1  = zeros(npi,1) ;
-xin11 = zeros(npi,1) ;
-xin21 = zeros(npi,1) ;
-
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
@@ -116,11 +112,11 @@ for ii = 1:npi
     kenxpi = khat - kpn(ii) ;
     
     % moment at integration points
-    Mixpi = E*Iy*kenxpi ;
+    M1xpi = E*Iy*kenxpi ;
     
     % integration (Gauss-Lobatto)
     
-    tM = tM - Ghatxpi*Mixpi*wpi(ii) ;
+    tM = tM - Ghatxpi*M1xpi*wpi(ii) ;
 
 end
 
