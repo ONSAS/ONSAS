@@ -14,7 +14,6 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
 % =========================================================================
 
 % Euler-Bernoulli element with embeded discontinuity
@@ -28,7 +27,7 @@
 
 % =========================================================================
 
-function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, tM, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep,tM)
+function [Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -47,15 +46,15 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-khat = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
-ken = khat - kpn(jj) ;
+kenxpi = khatxpi - kpn(jj) ;
 
 % moment
 
-Mxpi = E*Iy*ken ;
+Mxpi = E*Iy*kenxpi ;
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
@@ -90,21 +89,29 @@ else
 
         gamma = phitest/(kh1+E*Iy) ;
 
+        kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
+        xin11xpi    = xin1(jj) + gamma ;
+
+        M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
+
     else
 
         gamma = phitest/(kh2+E*Iy) ;
+
+        kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
+        xin11xpi    = xin1(jj) + gamma ;
+
+        M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
     
     end
-    
-    kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
-    xin11xpi    = xin1(jj) + gamma ;
-    M1xpi       = E*Iy*(khat-kpn1xpi) ;
+
+    % curvatures (time n + 1) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
 end
 
 % elastoplastic tangent bending modulus
 
-if      gamma == 0
+if      abs(gamma) < 1e-5
         Cep = E*Iy ;
 
 elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
@@ -131,11 +138,6 @@ Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
-
-% test values
-
-% alfan1test = alfan ;
-% xin2test = xin2 ;
 
 % softening criterion (failure function) at integration points
 
