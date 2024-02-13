@@ -197,7 +197,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
 labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Load Applied (KN)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
