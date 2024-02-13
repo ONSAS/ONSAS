@@ -18,8 +18,6 @@
 
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
 addpath( genpath( [ pwd '/../../src'] ) ) ;
-
-clc ;
           
 % Mc, My, Mu / from the moment-curvature diagram
 % kh1, kh2   / hardening modules
@@ -102,7 +100,7 @@ for ind = 2:length(load_factors)
     gxin(ind-1,1) = xin1(1) ;
     gkpn(ind-1,1) = kpn(1) ;
 
-    fprintf('-----------------------------------------------------\n') ;
+    fprintf(' ------------------------------------------------------------------\n') ;
 
     while converged_bool == false && k < tolk
 
@@ -134,7 +132,7 @@ for ind = 2:length(load_factors)
         norm1 = norm(deltadred) ;
         norm2 = norm(residualForceRed) ;
 
-        fprintf('%4i |%3i |%12.4e |%12.4e |%12.4e |%12.4e \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1) ) ;
+        fprintf('|%4i |%3i |%12.4e |%12.4e |%12.4e |%12.4e | \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1) ) ;
 
         converged_bool = norm1 < tol1 || norm2 < tol2 ;
 
