@@ -50,7 +50,7 @@ tolk = 10 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
-Fint = 0 ;
+Fint = [0 0 0 0 0 0]' ;
 tM   = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
@@ -67,6 +67,7 @@ xin21 = zeros(npi,1) ;
 khat1 = zeros(npi,1) ;
 
 M1 = zeros(npi,1) ;
+Fn = zeros(npi,1) ;
 
 alfan = 0 ;
 
@@ -112,6 +113,7 @@ for ind = 2:length(load_factors)
     gxin(ind-1,1) = xin1(1) ;
     gkpn(ind-1,1) = kpn(1) ;
     Mn(ind-1,1) = M1(1) ;
+    Fn(ind-1,1) = Fint(4) ;
 
     % header
     fprintf('|----------------------------------------------------------------------------------------------------| \n') ;
@@ -188,6 +190,15 @@ hold on, grid on
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Load Applied (KN)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
