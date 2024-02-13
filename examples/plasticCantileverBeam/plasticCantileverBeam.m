@@ -73,7 +73,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 160 ;
+Final_force = 120 ;
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -189,7 +189,7 @@ figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
+labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -197,8 +197,19 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
-labx = xlabel('Generalized displacements (m, rad)');   laby = ylabel('Load Applied (KN)') ;
+plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Load Applied (KN)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
