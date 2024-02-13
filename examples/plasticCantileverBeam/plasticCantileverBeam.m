@@ -163,6 +163,8 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
 
+%{
+
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(gkpn, load_factors(1:(length(load_factors)-1))*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
@@ -171,3 +173,5 @@ legend('Plastic curvature kp','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
+
+%}

@@ -70,6 +70,11 @@ wpi = [1/3 4/3 1/3] * l * 0.5 ;
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
 
+% set initial values of internal parameters at integration points
+kpn1  = kpn  ;
+xin11 = xin1 ;
+xin21 = xin2 ;
+
 for ii = 1:npi
 
     [Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, ~, tM, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep,tM) ;
