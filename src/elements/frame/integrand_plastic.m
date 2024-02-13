@@ -111,7 +111,7 @@ end
 
 % elastoplastic tangent bending modulus
 
-if      abs(gamma) < 1e-5
+if      gamma == 0
         Cep = E*Iy ;
 
 elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
