@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [plastic_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
+function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -149,7 +149,7 @@ if phifailxpi <= 0
     alfan1 = alfan ;
     xin21xpi = xin2(jj) ;
 
-    plastic_hinge_boolean = false ;
+    soft_hinge_boolean = false ;
 else
 
     if  xin2(jj)<=-Mu/Ks
@@ -165,6 +165,6 @@ else
     alfan1      = alfan + gamma2*sign(tM) ;
     xin21xpi    = xin2(jj) + gamma2 ;
     xd          = xpi ;
-    plastic_hinge_boolean = true ;
+    soft_hinge_boolean = true ;
 
 end

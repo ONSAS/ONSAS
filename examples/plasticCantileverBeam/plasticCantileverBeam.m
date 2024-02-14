@@ -37,8 +37,8 @@ Ks = -18000 ;       % KN.m
 
 freedofs = [2 4 6]; % u2 v2 theta2
 
-% at the beginning..., there was no plastic hinge
-plastic_hinge_boolean = false ;
+% at the beginning..., there was no softening hinge
+soft_hinge_boolean = false ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
@@ -126,7 +126,7 @@ for ind = 2:length(load_factors)
 
         k = k + 1 ;
 
-        [plastic_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(plastic_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1) ;
+        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1) ;
 
         residualForce = Fext - Fint ;
 
