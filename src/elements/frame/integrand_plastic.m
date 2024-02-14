@@ -105,8 +105,6 @@ else
     
     end
 
-    % curvatures (time n + 1) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-
 end
 
 % elastoplastic tangent bending modulus

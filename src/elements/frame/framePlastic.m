@@ -28,7 +28,7 @@
 
 % =========================================================================
 
-function [ plastic_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(plastic_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1 )
+function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1 )
 
 
 % --- element params ---
@@ -57,7 +57,9 @@ Cep    = 0 ;
 Fint   = 0 ;
 
 % trial value of the moment at the discontinuity (tM at xd)
-% tM = 0 ;
+if soft_hinge_boolean == false
+    tM = 0 ;
+end
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
