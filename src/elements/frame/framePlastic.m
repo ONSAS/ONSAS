@@ -62,7 +62,7 @@ Fint   = 0 ;
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
 xpi = [0 l/2 l] ;
-wpi = [1/3 4/3 1/3] * l * 0.5 ;
+wpi = [1/3 4/3 1/3]*l*0.5 ;
 
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
