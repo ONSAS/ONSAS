@@ -37,6 +37,9 @@ Ks = -18000 ;       % KN.m
 
 freedofs = [2 4 6]; % u2 v2 theta2
 
+% at the beginning..., there was no plastic hinge
+plastic_hinge_boolean = false ;
+
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 
 npi = 3 ;
@@ -104,7 +107,7 @@ for ind = 2:length(load_factors)
     dnk = matdes(:,ind-1) ;
 
     % iteration vars
-    converged_bool = false ;
+    converged_boolean = false ;
     k = 0 ; % set iterations zero
 
     gxin(ind-1,1) = xin1(1) ;
@@ -119,11 +122,11 @@ for ind = 2:length(load_factors)
 
     fprintf(' ------------------------------------------------------------------\n') ;
 
-    while converged_bool == false && k < tolk
+    while converged_boolean == false && k < tolk
 
         k = k + 1 ;
 
-        [Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1) ;
+        [plastic_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(plastic_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1) ;
 
         residualForce = Fext - Fint ;
 
@@ -172,7 +175,7 @@ for ind = 2:length(load_factors)
 
         fprintf('|%4i |%3i |%12.4e |%12.4e |%12.4e |%12.4e | \n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1) ) ;
 
-        converged_bool = norm1 < tol1 || norm2 < tol2 ;
+        converged_boolean = norm1 < tol1 || norm2 < tol2 ;
 
     end
 
