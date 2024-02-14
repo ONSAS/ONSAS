@@ -148,6 +148,7 @@ if phifailxpi <= 0
     xin21xpi = xin2(jj) ;
 
     soft_hinge_boolean = false ;
+
 else
 
     if  xin2(jj)<=-Mu/Ks
@@ -162,7 +163,9 @@ else
     
     alfan1      = alfan + gamma2*sign(tM) ;
     xin21xpi    = xin2(jj) + gamma2 ;
+    
     xd          = xpi ;
+    
     soft_hinge_boolean = true ;
 
 end
