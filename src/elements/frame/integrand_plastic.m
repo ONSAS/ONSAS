@@ -58,10 +58,12 @@ Mxpi = E*Iy*kenxpi ;
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
-  qxpi = -kh1*xin1(jj) ;
+  
+    qxpi = -kh1*xin1(jj) ;
         
 else
-  qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
+  
+    qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
 
 end
 

@@ -53,12 +53,16 @@ Kfd    = zeros(6,6) ;
 Kfalfa = zeros(6,6) ;
 Khd    = zeros(6,6) ;
 Khalfa = 0 ;
+
 Cep    = 0 ;
+
 Fint   = 0 ;
 
 % trial value of the moment at the discontinuity (tM at xd)
 if soft_hinge_boolean == false
+   
     tM = 0 ;
+
 end
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]

@@ -138,7 +138,7 @@ for ind = 2:length(load_factors)
 
         deltadred = Krelement\residualForceRed ;
 
-        %
+        % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
         
         deltad = zeros(6,1) ;      
         deltad(freedofs) = deltadred ;
