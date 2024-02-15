@@ -58,13 +58,6 @@ Cep    = 0 ;
 
 Fint   = 0 ;
 
-% trial value of the moment at the discontinuity (tM at xd)
-if soft_hinge_boolean == false
-   
-    tM = 0 ;
-
-end
-
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
 xpi = [0 l/2 l] ;
@@ -83,7 +76,7 @@ xin21 = xin2 ;
 
 for ii = 1:npi
 
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1(ii)) ;
+    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1(ii)) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -111,6 +104,14 @@ if soft_hinge_boolean == true
 
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
+else
+    
+    Kelement = Kfd ;
+
+end
+
+tM = 0 ;
+
     for ii = 1:npi
 
     Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
@@ -119,12 +120,10 @@ if soft_hinge_boolean == true
     
     tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
+    if tM > 374
+
+    display(tM) ;
+        
     end
 
-else
-    
-    Kelement = Kfd ;
-
-    tM = 0 ;
-
-end
+    end

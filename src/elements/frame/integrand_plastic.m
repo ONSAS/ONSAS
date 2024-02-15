@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
+function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -91,8 +91,17 @@ else
 
         gamma = phitest/(kh1+E*Iy) ;
 
+        if soft_hinge_boolean == false
+
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
+
+        else
+
+        kpn1xpi     = kpn(jj) ;
+        xin11xpi    = xin1(jj) ;
+
+        end
 
         M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
@@ -100,8 +109,17 @@ else
 
         gamma = phitest/(kh2+E*Iy) ;
 
+        if soft_hinge_boolean == false
+
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
+        
+        else
+
+        kpn1xpi     = kpn(jj) ;
+        xin11xpi    = xin1(jj) ;
+
+        end
 
         M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
     
@@ -136,6 +154,9 @@ epsilon = Bu*uvector ;
 
 Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
+xin21xpi = 0 ;
+alfan1 = 0 ;
+
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 
@@ -166,8 +187,12 @@ else
     alfan1      = alfan + gamma2*sign(tM) ;
     xin21xpi    = xin2(jj) + gamma2 ;
     
-    xd          = xpi ;
+    if soft_hinge_boolean == false
+        
+        xd          = xpi ;
+        
+        soft_hinge_boolean = true ;
     
-    soft_hinge_boolean = true ;
+    end
 
 end

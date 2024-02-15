@@ -73,7 +73,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ; % value of the final force
+Final_force = 153 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -115,6 +115,10 @@ for ind = 2:length(load_factors)
     Mn(ind-1,1) = M1(1) ;
     Fn(ind-1,1) = Fint(4) ;
 
+    if ind > 200
+        M1(1);
+    end
+
     % header
     fprintf('|----------------------------------------------------------------------------------------------------| \n') ;
     fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | \n') ;
@@ -147,6 +151,8 @@ for ind = 2:length(load_factors)
 
         dnk  = dnk1  ;
         xin1 = xin11 ;
+        xin2 = xin21 ;
+        alfan = alfan1 ;
         kpn  = kpn1  ;
 
         uvector     = dnk1(1:2) ;
