@@ -115,10 +115,6 @@ for ind = 2:length(load_factors)
     Mn(ind-1,1) = M1(1) ;
     Fn(ind-1,1) = Fint(4) ;
 
-    if ind > 200
-        M1(1);
-    end
-
     % header
     fprintf('|----------------------------------------------------------------------------------------------------| \n') ;
     fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | \n') ;

@@ -46,11 +46,12 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+% khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
-kenxpi = khatxpi - kpn(jj) ;
+
+kenxpi = khat1xpi - kpn(jj) ;
 
 % moment
 
@@ -91,17 +92,8 @@ else
 
         gamma = phitest/(kh1+E*Iy) ;
 
-        if soft_hinge_boolean == false
-
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
-
-        else
-
-        kpn1xpi     = kpn(jj) ;
-        xin11xpi    = xin1(jj) ;
-
-        end
 
         M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
@@ -109,17 +101,8 @@ else
 
         gamma = phitest/(kh2+E*Iy) ;
 
-        if soft_hinge_boolean == false
-
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
-        
-        else
-
-        kpn1xpi     = kpn(jj) ;
-        xin11xpi    = xin1(jj) ;
-
-        end
 
         M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
     
@@ -169,8 +152,6 @@ phifailxpi = abs(tM)-(Mu-qfailxpi) ;
 if phifailxpi <= 0
     alfan1 = alfan ;
     xin21xpi = xin2(jj) ;
-
-    soft_hinge_boolean = false ;
 
 else
 
