@@ -41,7 +41,6 @@ freedofs = [2 4 6]; % u2 v2 theta2
 soft_hinge_boolean = false ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-
 npi = 3 ;
 xpi = [0 l/2 l] ;
 wpi = [1/3 4/3 1/3] * l * 0.5 ;
@@ -73,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 155 ; % value of the final force
+Final_force = 160 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -112,11 +111,11 @@ for ind = 2:length(load_factors)
     converged_boolean = false ;
     k = 0 ; % set iterations zero
 
-    gxin(ind-1,1) = xin1(1) ;
-    gkpn(ind-1,1) = kpn(1) ;
-    Mn(ind-1,1) = Fint(5) ;
-    Fn(ind-1,1) = Fint(4) ;
-    Alf(ind-1,1) = alfan ;
+    gxin(ind-1,1)   = xin1(1) ;
+    gkpn(ind-1,1)   = kpn(1)  ;
+    Mn(ind-1,1)     = M1(1)   ;
+    Fn(ind-1,1)     = Fint(4) ;
+    Alf(ind-1,1)    = -alfan  ;
 
     % header
     fprintf('|----------------------------------------------------------------------------------------------------|--------------|\n') ;
@@ -176,8 +175,8 @@ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(abs(matdes(6,1:length(load_factors)-1)), -Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Northeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
@@ -196,7 +195,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(gxin, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(gxin, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 labx = xlabel('Curvature accumulated \xi');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
 legend('Internal parameter of plasticity \xi','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
@@ -205,7 +204,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(gkpn, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(gkpn, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 labx = xlabel('Plastic curvature kp');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Plastic curvature kp','location','Southeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
@@ -214,7 +213,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(Alf, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(Alf, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 labx = xlabel('Angle \alpha at hinge');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Angle \alpha at hinge','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;

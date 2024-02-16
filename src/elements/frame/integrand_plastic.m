@@ -32,7 +32,6 @@ function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
 % is used at each of the Gauss–Lobatto integration points
-
 Bu = [-1/l 1/l] ;
 
 N = bendingInterFuns (xpi, l, 2) ;
@@ -45,7 +44,6 @@ Bd = [ Bu  0 0 0 0    ; ...
 Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-
 khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 if soft_hinge_boolean == true
@@ -56,11 +54,9 @@ end
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
-
 kenxpi = khatxpi - kpn(jj) ;
 
 % moment
-
 Mxpi = E*Iy*kenxpi ;
 
 % yield criterion
@@ -77,15 +73,12 @@ end
 phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
 % test values
-
 % kpn1test = kpn ;
-% xin11test = xin1 ;
-    
-    phitest =  phixpi ;
+% xin11test = xin1 ; 
+phitest =  phixpi ;
 
 % gamma values calculations (gamma derivative is the plastic multiplier)
 % the new values of internal variables are computed
-
 if phitest <= 0 % elastic increment
 
     gamma    = 0 ;
@@ -112,7 +105,6 @@ else
     end
 
     % curvatures (time n + 1) / khat1 (continuous part of the curvature), khat2 (localized part of the curvature)
-
     khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
     if soft_hinge_boolean == true
@@ -126,7 +118,6 @@ else
 end
 
 % elastoplastic tangent bending modulus
-
 if      gamma == 0
         Cep = E*Iy ;
 
@@ -139,7 +130,6 @@ elseif  gamma > 0 && xin11xpi > (My-Mc)/kh1
 end
 
 % stiffness matrices
-
 Kfd     = Bd'*[E*A 0; 0 Cep]*Bd ;
 
 Kfalfa  = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
@@ -154,9 +144,7 @@ Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
-
 % softening criterion (failure function) at integration points
-
 qfailxpi = min(-Ks*xin2(jj), Mu) ;
 
 phifailxpi = abs(tM)-(Mu-qfailxpi) ;

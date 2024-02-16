@@ -99,7 +99,6 @@ end
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
-
 if soft_hinge_boolean == true
 
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
@@ -117,17 +116,8 @@ for ii = 1:npi
     Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
 
     % integration (Gauss-Lobatto)
-
     tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
-end
-
-if Fint(5) >= 0 
-    
-    Fint(5) = 0 ;
-    Fint(4) = 0 ;
-    tM = 0 ;
-    
 end
 
 if tM >= Mu && soft_hinge_boolean == false
