@@ -27,11 +27,11 @@
 
 % =========================================================================
 
-function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM)
+function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, A, uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
-% is used at each of the Gauss–Lobatto integration points.
+% is used at each of the Gauss–Lobatto integration points
 
 Bu = [-1/l 1/l] ;
 
