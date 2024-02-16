@@ -28,7 +28,7 @@
 
 % =========================================================================
 
-function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1 )
+function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat)
 
 
 % --- element params ---
@@ -76,7 +76,7 @@ xin21 = xin2 ;
 
 for ii = 1:npi
 
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1(ii)) ;
+    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -96,7 +96,7 @@ for ii = 1:npi
 
 end
 
-% Khalfa = Khalfa + Ks ; % integral + Ks
+Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 
@@ -112,18 +112,20 @@ end
 
 tM = 0 ;
 
-    for ii = 1:npi
+for ii = 1:npi
 
     Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
-    
+
     % integration (Gauss-Lobatto)
-    
+
     tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
-    if tM > 374
+end
 
-    display(tM) ;
-        
-    end
+if tM >= Mu && soft_hinge_boolean == false
 
-    end
+    soft_hinge_boolean = true ;
+
+    xd = 0 ;
+
+end

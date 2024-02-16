@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM, khat1xpi)
+function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1, khat1xpi] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -46,7 +46,13 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-% khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+
+if soft_hinge_boolean == true
+
+    khat1xpi = 0 ;
+
+end
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
@@ -74,7 +80,8 @@ phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
 % kpn1test = kpn ;
 % xin11test = xin1 ;
-phitest =  phixpi ;
+    
+    phitest =  phixpi ;
 
 % gamma values calculations (gamma derivative is the plastic multiplier)
 % the new values of internal variables are computed
@@ -95,18 +102,16 @@ else
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
 
-        M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
-
     else
 
         gamma = phitest/(kh2+E*Iy) ;
 
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
-
-        M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
     
     end
+
+    M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
 end
 
@@ -137,9 +142,6 @@ epsilon = Bu*uvector ;
 
 Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
-xin21xpi = 0 ;
-alfan1 = 0 ;
-
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 
@@ -167,13 +169,5 @@ else
     
     alfan1      = alfan + gamma2*sign(tM) ;
     xin21xpi    = xin2(jj) + gamma2 ;
-    
-    if soft_hinge_boolean == false
-        
-        xd          = xpi ;
-        
-        soft_hinge_boolean = true ;
-    
-    end
 
 end
