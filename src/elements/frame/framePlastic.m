@@ -28,7 +28,7 @@
 
 % =========================================================================
 
-function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat)
+function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams)
 
 
 % --- element params ---
@@ -120,6 +120,14 @@ for ii = 1:npi
 
     tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
+end
+
+if Fint(5) >= 0 
+    
+    Fint(5) = 0 ;
+    Fint(4) = 0 ;
+    tM = 0 ;
+    
 end
 
 if tM >= Mu && soft_hinge_boolean == false

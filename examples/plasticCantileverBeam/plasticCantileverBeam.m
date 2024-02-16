@@ -48,7 +48,7 @@ wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 nu   = 0.3 ;
 tol1 = 1e-8;
-tol2 = 1e-8 ;
+tol2 = 1e-4 ;
 tolk = 10 ;
 
 % initial values
@@ -73,7 +73,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 150 ; % value of the final force
+Final_force = 155 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -130,7 +130,7 @@ for ind = 2:length(load_factors)
 
         k = k + 1 ;
 
-        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM, khat1] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams, khat1) ;
+        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams) ;
 
         residualForce = Fext - Fint ;
 
@@ -158,23 +158,6 @@ for ind = 2:length(load_factors)
         uvector     = dnk1(1:2) ;
         vvector     = dnk1(3:4) ;
         thetavector = dnk1(5:6) ;
-
-        for jj = 1:npi
-
-            Bu = [-1/l 1/l] ;
-
-            N = bendingInterFuns (xpi(jj), l, 2) ;
-            Bv = [N(1) N(3)] ;
-            Btheta = [N(2) N(4)] ;
-
-            Bd = [ Bu  0 0 0 0    ; ...
-            0 0 Bv  Btheta ] ;
-
-        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(jj)/l)) ;
-
-        khat1(jj)  = Bv*vvector + Btheta*thetavector + Ghatxpi*alfan ;
-
-        end
 
         norm1 = norm(deltadred) ;
         norm2 = norm(residualForceRed) ;
@@ -231,7 +214,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(-Alf, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(Alf, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 labx = xlabel('Angle at hinge \alpha');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Angle at hinge \alpha','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;

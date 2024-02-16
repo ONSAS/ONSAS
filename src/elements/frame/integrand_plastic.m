@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1, khat1xpi] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM)
+function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, A, Ks, xin2, Mu, Cep, tM)
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -46,18 +46,18 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 if soft_hinge_boolean == true
 
-    khat1xpi = 0 ;
+    khatxpi = 0 ;
 
 end
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
 
-kenxpi = khat1xpi - kpn(jj) ;
+kenxpi = khatxpi - kpn(jj) ;
 
 % moment
 
@@ -109,6 +109,14 @@ else
         kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
         xin11xpi    = xin1(jj) + gamma ;
     
+    end
+
+    khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
+
+    if soft_hinge_boolean == true
+
+        khat1xpi = 0 ;
+
     end
 
     M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
