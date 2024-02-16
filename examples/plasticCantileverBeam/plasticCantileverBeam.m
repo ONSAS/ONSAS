@@ -231,7 +231,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(-Alf, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(-Alf, -Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 labx = xlabel('Angle at hinge \alpha');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Angle at hinge \alpha','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
