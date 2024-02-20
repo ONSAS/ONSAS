@@ -38,9 +38,9 @@ function [ fs , ks, params_plastic_2Dframe] = frame2D_plastic_internal_force( el
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
-l = sqrt( sum( ( Bdif * elemNodesxyzRefCoords'    ).^2 ) )
-A  = elemCrossSecParams{2}(1)
-Iy = elemCrossSecParams{2}(3)
+l = sqrt( sum( ( Bdif * elemNodesxyzRefCoords'    ).^2 ) ) ;
+A  = elemCrossSecParams{2}(1) ;
+Iy = elemCrossSecParams{2}(3) ;
 
 % --- elastoplastic params ---
 E   = modelParams(1) ;
@@ -146,11 +146,11 @@ end
 
 
 Fintout = zeros(12,1) ;
-KTout = zeros(12,12);
+KTout = zeros(12,12) ;
 
-dofsconv = [1 1+6 3 3+6 5 5+6];
-Fintout(dofsconv) = Fint;
+dofsconv = [1 1+6 3 3+6 5 5+6] ;
+Fintout(dofsconv) = Fint ;
 KTout(dofsconv,dofsconv) = Kelement ;
 
 fs = {Fintout} ;
-ks = {KTout};
+ks = {KTout} ;

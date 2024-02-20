@@ -97,9 +97,9 @@ Alf = zeros(Final_force, 1) ;
 fout = fopen('salida.txt','w');
 
 % header
-# fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
-# fprintf(fout,'| Time | Iters | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
-# fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+% fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+% fprintf(fout,'| Time | Iters | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
+% fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
 
 for ind = 2:length(load_factors)
 
@@ -124,8 +124,7 @@ for ind = 2:length(load_factors)
     fprintf(fout,'| Time | Iters | Delta Disps | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
     fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
 
-
-    # fprintf(fout,' ------------------------------------------------------------------\n') ;
+    % fprintf(fout,' ------------------------------------------------------------------\n') ;
 
     while converged_boolean == false && k < tolk
 
@@ -174,7 +173,6 @@ for ind = 2:length(load_factors)
 end
 
 fclose(fout);
-
 
 lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 
