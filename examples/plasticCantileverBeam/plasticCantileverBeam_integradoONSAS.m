@@ -47,9 +47,9 @@ Mu = 374 ;
 
 materials             = struct() ;
 
-# materials.modelName   = 'plastic-2Dframe' ;
-# materials.modelParams = [ E nu Ks kh1 kh2 ]        ;
-# materials.density     = rho             ;
+% materials.modelName   = 'plastic-2Dframe' ;
+% materials.modelParams = [ E nu Ks kh1 kh2 ]        ;
+% materials.density     = rho             ;
 
 materials.modelName  = 'elastic-rotEngStr' ;
 %md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
