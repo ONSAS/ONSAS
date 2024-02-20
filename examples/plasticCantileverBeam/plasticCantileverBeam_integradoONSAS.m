@@ -37,7 +37,7 @@ tz = .4; % height cross section
 
 A = .4*.3 ;       % m^2
 EI = 77650 ;        % KN.m^2
-Iy = EI/E ;         % m^4
+Inercia = EI/E ;         % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 374 ;
@@ -46,14 +46,12 @@ Mu = 374 ;
 
 
 materials             = struct() ;
+materials.modelName   = 'plastic-2Dframe' ;
+materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ]        ;
 
-% materials.modelName   = 'plastic-2Dframe' ;
-% materials.modelParams = [ E nu Ks kh1 kh2 ]        ;
-% materials.density     = rho             ;
-
-materials.modelName  = 'elastic-rotEngStr' ;
+%materials.modelName  = 'elastic-rotEngStr' ;
 %md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
-materials.modelParams = [ E nu ] ;
+%materials.modelParams = [ E nu ] ;
 
 
 disp('hola')
@@ -61,7 +59,7 @@ elements             = struct() ;
 elements(1).elemType = 'node'  ;
 %mdframe elements for modelling the blades
 elements(2).elemType = 'frame' ;
-elements(2).elemCrossSecParams = {'generic' ; [A 1 Iy 1] };
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] };
 
 
 boundaryConds                  = {} ;
@@ -69,7 +67,7 @@ boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %
 boundaryConds(2).loadsCoordSys = 'global'         ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -1 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t     ;
 %md
 
