@@ -42,8 +42,8 @@ soft_hinge_boolean = false ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
-xpi = [0 l/2 l] ;
-wpi = [1/3 4/3 1/3] * l * 0.5 ;
+% xpi = [0 l/2 l] ;
+% wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 nu   = 0.3 ;
 tol1 = 1e-8;
@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ; % value of the final force
+Final_force = 152 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -94,10 +94,12 @@ Mn = zeros(Final_force, 1) ;
 
 Alf = zeros(Final_force, 1) ;
 
+fout = fopen('salida.txt','w');
+
 % header
-fprintf('|----------------------------------------------------------------------------------------------------|--------------|\n') ;
-fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
-fprintf('|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+# fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+# fprintf(fout,'| Time | Iters | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
+# fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
 
 for ind = 2:length(load_factors)
 
@@ -118,12 +120,12 @@ for ind = 2:length(load_factors)
     Alf(ind-1,1)    = -alfan  ;
 
     % header
-    fprintf('|----------------------------------------------------------------------------------------------------|--------------|\n') ;
-    fprintf('| Time | Iteration | Delta Displacement | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
-    fprintf('|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+    fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
+    fprintf(fout,'| Time | Iters | Delta Disps | Residual Force | Curvature accumulated | Plastic curvature | Hinge moment |\n') ;
+    fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
 
 
-    fprintf(' ------------------------------------------------------------------\n') ;
+    # fprintf(fout,' ------------------------------------------------------------------\n') ;
 
     while converged_boolean == false && k < tolk
 
@@ -161,7 +163,7 @@ for ind = 2:length(load_factors)
         norm1 = norm(deltadred) ;
         norm2 = norm(residualForceRed) ;
 
-        fprintf('|%4i |%3i |%12.4e |%12.4e |%12.4e |%12.4e |%12.4e |\n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1), tM ) ;
+        fprintf(fout,'| %4i |  %4i |%12.4e |%12.4e |%12.4e |%12.4e |%12.4e |\n', curr_load_factor, k, norm(deltadred), norm(residualForceRed), xin11(1), kpn1(1), tM ) ;
 
         converged_boolean = norm1 < tol1 || norm2 < tol2 ;
 
@@ -170,6 +172,9 @@ for ind = 2:length(load_factors)
     matdes(:,ind) = dnk1 ;
 
 end
+
+fclose(fout);
+
 
 lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 

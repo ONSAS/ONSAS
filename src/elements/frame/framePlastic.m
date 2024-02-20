@@ -100,7 +100,7 @@ Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 if soft_hinge_boolean == true
-
+disp('hola')
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
 else
