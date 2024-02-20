@@ -28,26 +28,33 @@
 
 % =========================================================================
 
-function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams)
+function [ fs , ks, params_plastic_2Dframe] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+    elemCrossSecParams    , ...
+    modelParams , ...
+    elemDisps , params_plastic_2Dframe )
+    
+%    (soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams)
 
 
-% --- element params ---
-l  = elemParams(1) ;
-A  = elemParams(2) ;
-Iy = elemParams(3) ;
+% initial/deformed lengths
+Bdif = [ -eye(3) eye(3) ] ;
+l = sqrt( sum( ( Bdif * elemNodesxyzRefCoords'    ).^2 ) )
+A  = elemCrossSecParams{2}(1)
+Iy = elemCrossSecParams{2}(3)
 
 % --- elastoplastic params ---
-E   = elastoplasticParams(1) ;
-Mc  = elastoplasticParams(2) ;
-My  = elastoplasticParams(3) ;
-Mu  = elastoplasticParams(4) ;
-kh1 = elastoplasticParams(5) ;
-kh2 = elastoplasticParams(6) ;
-Ks  = elastoplasticParams(7) ;
+E   = modelParams(1) ;
+Mc  = modelParams(2) ;
+My  = modelParams(3) ;
+Mu  = modelParams(4) ;
+kh1 = modelParams(5) ;
+kh2 = modelParams(6) ;
+Ks  = modelParams(7) ;
+nu  = modelParams(8) ;
 
-uvector     = dnk(1:2) ;
-vvector     = dnk(3:4) ;
-thetavector = dnk(5:6) ;
+uvector     = elemDisps([1,7]) ;  % x
+vvector     = elemDisps([3,9]) ;  % y
+thetavector = elemDisps([6,12]) ;   % theta z
 
 Kfd    = zeros(6,6) ;
 Kfalfa = zeros(6,6) ;
@@ -69,6 +76,15 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 % initial values of bulk moments
 M1 = zeros(npi,1) ;
 
+%
+kpn = params_plastic_2Dframe(1:3);
+xin1 = params_plastic_2Dframe(4:6);
+xin2 =  params_plastic_2Dframe(7:9);
+soft_hinge_boolean = params_plastic_2Dframe(10)
+xd = params_plastic_2Dframe(11)
+alfan = params_plastic_2Dframe(12)
+
+
 % set initial values of internal parameters at integration points
 kpn1  = kpn  ;
 xin11 = xin1 ;
@@ -76,7 +92,7 @@ xin21 = xin2 ;
 
 for ii = 1:npi
 
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM) ;
+    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, 0) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -99,7 +115,7 @@ end
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
-if soft_hinge_boolean == true
+if soft_hinge_boolean == 1
 disp('hola')
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
@@ -127,3 +143,14 @@ if tM >= Mu && soft_hinge_boolean == false
     xd = 0 ;
 
 end
+
+
+Fintout = zeros(12,1) ;
+KTout = zeros(12,12);
+
+dofsconv = [1 1+6 3 3+6 5 5+6];
+Fintout(dofsconv) = Fint;
+KTout(dofsconv,dofsconv) = Kelement ;
+
+fs = {Fintout} ;
+ks = {KTout};

@@ -199,6 +199,33 @@ for elem = 1:nElems
 
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
+
+		elseif strcmp( modelName, 'plastic-2Dframe')
+
+      elemNodesxyzRefCoords
+      elemCrossSecParams
+      modelParams
+      elemDisps
+
+      params_plastic_2Dframe = previousStateCell{elem,4};
+
+      [ fs, ks, params_plastic_2Dframe_np1 ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+                                                                    elemCrossSecParams    , ...
+                                                                    modelParams , ...
+                                                                    elemDisps , params_plastic_2Dframe) ;
+      
+                                                                    Finte = fs{1} ;  Ke = ks{1} ;
+
+      if dynamicProblemBool
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
+                                            [ 1 modelParams ], elemDisps, ...
+                                            dotdispsElem, dotdotdispsElem  , ...
+                                            density, massMatType, analysisSettings ) ;
+
+
+        Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
+      end
+
     else
       error('wrong modelName for frame element.')
     end

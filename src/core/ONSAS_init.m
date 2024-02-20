@@ -82,6 +82,7 @@ previousStateCell = cell( size(Conec,1), 3) ;
 previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
+previousStateCell(:,4) = {zeros( 1, 12 )} ;
 
 % TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
