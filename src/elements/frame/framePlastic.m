@@ -85,7 +85,7 @@ for ii = 1:npi
     Khalfa = Khalfa + Khalfaj * wpi(ii) ;
     
     % values of internal parameters at integration points
-    kpn1(ii)  = kpn1xpi ;
+    kpn1(ii)  = kpn1xpi  ;
     xin11(ii) = xin11xpi ;
     xin21(ii) = xin21xpi ;
     
