@@ -73,12 +73,6 @@ kenxpi = khatxpi - kpn(jj) ;
 % moment
 Mxpi = E*Iy*kenxpi ;
 
-%~ if Mxpi < 0
-
-    %~ Mxpi = 0 ;
-
-%~ end
-
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
   
@@ -169,8 +163,6 @@ epsilon = Bu*uvector ;
 
 Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 
-
-
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 % softening criterion (failure function) at integration points
@@ -198,6 +190,5 @@ else
     xin21xpi    = xin2(jj) + gamma2 ;
 
 end
-
 
 disp(' salimos')

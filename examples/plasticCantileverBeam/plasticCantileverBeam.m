@@ -42,8 +42,8 @@ soft_hinge_boolean = false ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
-% xpi = [0 l/2 l] ;
-% wpi = [1/3 4/3 1/3] * l * 0.5 ;
+xpi = [0 l/2 l] ;
+wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 nu   = 0.3 ;
 tol1 = 1e-8;
@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 205 ; % value of the final force
+Final_force = 120 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
