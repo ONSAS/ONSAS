@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 152 ; % value of the final force
+Final_force = 120 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -91,6 +91,7 @@ gxin = zeros(Final_force, 1) ;
 gkpn = zeros(Final_force, 1) ;
 
 Mn = zeros(Final_force, 1) ;
+TM = zeros(Final_force, 1) ;
 
 Alf = zeros(Final_force, 1) ;
 
@@ -113,11 +114,12 @@ for ind = 2:length(load_factors)
     converged_boolean = false ;
     k = 0 ; % set iterations zero
 
-    gxin(ind-1,1)   = xin1(1) ;
-    gkpn(ind-1,1)   = kpn(1)  ;
-    Mn(ind-1,1)     = M1(1)   ;
-    Fn(ind-1,1)     = Fint(4) ;
-    Alf(ind-1,1)    = -alfan  ;
+    gxin(ind-1,1)   = xin1(1)   ;
+    gkpn(ind-1,1)   = kpn(1)    ;
+    Mn(ind-1,1)     = -Fint(5)  ;
+    TM(ind-1,1)     = tM        ;
+    Fn(ind-1,1)     = Fint(4)   ;
+    Alf(ind-1,1)    = -alfan    ;
 
     % header
     fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
@@ -178,8 +180,8 @@ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(matdes(6,1:length(load_factors)-1)), TM,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), TM, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
