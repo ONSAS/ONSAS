@@ -38,7 +38,7 @@ function [ fs , ks, params_plastic_2Dframe] = frame2D_plastic_internal_force( el
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
-l = sqrt( sum( ( Bdif * elemNodesxyzRefCoords'    ).^2 ) ) ;
+l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
 A  = elemCrossSecParams{2}(1) ;
 Iy = elemCrossSecParams{2}(3) ;
 
@@ -52,8 +52,8 @@ kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
 nu  = modelParams(8) ;
 
-uvector     = elemDisps([1,7]) ;  % x
-vvector     = elemDisps([3,9]) ;  % y
+uvector     = elemDisps([1,7]) ;    % x
+vvector     = elemDisps([3,9]) ;    % y
 thetavector = elemDisps([6,12]) ;   % theta z
 
 Kfd    = zeros(6,6) ;
@@ -77,12 +77,14 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 %
-kpn = params_plastic_2Dframe(1:3);
-xin1 = params_plastic_2Dframe(4:6);
-xin2 =  params_plastic_2Dframe(7:9);
-soft_hinge_boolean = params_plastic_2Dframe(10)
-xd = params_plastic_2Dframe(11)
-alfan = params_plastic_2Dframe(12)
+kpn  = params_plastic_2Dframe(1:3) ;
+xin1 = params_plastic_2Dframe(4:6) ;
+xin1 =  params_plastic_2Dframe(7:9) ;
+
+soft_hinge_boolean = params_plastic_2Dframe(10) ;
+
+xd      = params_plastic_2Dframe(11) ;
+alfan   = params_plastic_2Dframe(12) ;
 
 
 % set initial values of internal parameters at integration points
@@ -116,7 +118,7 @@ Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 if soft_hinge_boolean == 1
-disp('hola')
+
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
 else

@@ -35,9 +35,9 @@ l = 2.5 ;           % m
 ty = .3; % width cross section
 tz = .4; % height cross section
 
-A = .4*.3 ;       % m^2
+A = .4*.3 ;         % m^2
 EI = 77650 ;        % KN.m^2
-Inercia = EI/E ;         % m^4
+Inercia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 374 ;
@@ -47,7 +47,7 @@ Mu = 374 ;
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
-materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ]        ;
+materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 
 %materials.modelName  = 'elastic-rotEngStr' ;
 %md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
@@ -86,11 +86,11 @@ mesh.conecCell{ 3, 1 } = [ 1 2 0   1 2   ] ;
 initialConds = {} ;
 
 
-analysisSettings               = {};
+analysisSettings               = {} ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 
 analysisSettings.deltaT        =   1  ;
-analysisSettings.finalTime     =   16    ;
+analysisSettings.finalTime     =   16 ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
@@ -100,9 +100,4 @@ otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
 otherParams.plots_format = 'vtk' ;
 
-disp('hola')
-
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
-
-disp('chau')

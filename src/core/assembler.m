@@ -207,7 +207,7 @@ for elem = 1:nElems
       modelParams
       elemDisps
 
-      params_plastic_2Dframe = previousStateCell{elem,4};
+      params_plastic_2Dframe = previousStateCell{elem,4} ;
 
       [ fs, ks, params_plastic_2Dframe_np1 ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...
