@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 152 ; % value of the final force
+Final_force = 120 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -218,7 +218,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(Alf, TM, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(Alf, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 labx = xlabel('Angle \alpha at hinge');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Angle \alpha at hinge','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;

@@ -59,6 +59,12 @@ kenxpi = khatxpi - kpn(jj) ;
 % moment
 Mxpi = E*Iy*kenxpi ;
 
+if Mxpi < 0
+
+    Mxpi = 0 ;
+
+end
+
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
   
@@ -109,9 +115,9 @@ else
 
     M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
-    if soft_hinge_boolean == true
+    if M1xpi < 0
 
-        khat1xpi = 0 ;
+        M1xpi = 0 ;
 
     end
 
