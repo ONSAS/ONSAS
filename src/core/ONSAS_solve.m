@@ -40,6 +40,8 @@ iterations_strop_crit_vec = [ 0 0 0 ] ;
 plotted_bars = 0 ; aux_time = cputime() ;
 
 while finalTimeReachedBoolean == false
+
+disp(' ========================= NUEVO TIEMPO ==================')
   plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
 
   % compute the model state at next time

@@ -28,7 +28,7 @@
 
 % =========================================================================
 
-function [ fs , ks, params_plastic_2Dframe] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
     elemCrossSecParams    , ...
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
@@ -77,9 +77,9 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 %
-kpn  = params_plastic_2Dframe(1:3) ;
-xin1 = params_plastic_2Dframe(4:6) ;
-xin1 =  params_plastic_2Dframe(7:9) ;
+kpn  = params_plastic_2Dframe(1:3) 
+xin1 = params_plastic_2Dframe(4:6) 
+xin2 =  params_plastic_2Dframe(7:9) ;
 
 soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
@@ -87,15 +87,17 @@ xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
 
 
-% set initial values of internal parameters at integration points
+% set candidate values of internal parameters for next time at integration points
 kpn1  = kpn  ;
 xin11 = xin1 ;
-xin21 = xin2 ;
+xin21 = xin2 ; 
 
 for ii = 1:npi
 
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, 0) ;
-    
+    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] ...
+       = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
+         uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, 0) ;
+
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
     Kfalfa = Kfalfa + Kfalfaj * wpi(ii) ;
@@ -114,11 +116,15 @@ for ii = 1:npi
 
 end
 
+disp('  ESTA ES LA QUE HAY Q VERRRRRRRRRRRRR')
+kpn1
+
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 if soft_hinge_boolean == 1
 
+stop
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
 else
@@ -126,6 +132,7 @@ else
     Kelement = Kfd ;
 
 end
+
 
 tM = 0 ;
 
@@ -146,13 +153,47 @@ if tM >= Mu && soft_hinge_boolean == false
 
 end
 
+disp('chequeando fint')
+
+%~ Fint 
 
 Fintout = zeros(12,1) ;
 KTout = zeros(12,12) ;
 
-dofsconv = [1 1+6 3 3+6 5 5+6] ;
+dofsconv = [1 1+6 3 3+6 6 6+6] ;
 Fintout(dofsconv) = Fint ;
-KTout(dofsconv,dofsconv) = Kelement ;
+KTout(dofsconv, dofsconv) = Kelement ;
 
+if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
+Fi 
+Fint
+elemDisps
+thetavector
+vvector
+[ Fintout KTout*elemDisps] 
+error('ojo')
+end
+
+%~ Fintout = KTout*elemDisps
+%~ Fint 
 fs = {Fintout} ;
 ks = {KTout} ;
+
+
+kpn  = params_plastic_2Dframe(1:3) 
+xin1 = params_plastic_2Dframe(4:6) 
+xin2 =  params_plastic_2Dframe(7:9) ;
+
+soft_hinge_boolean = params_plastic_2Dframe(10) ;
+
+xd      = params_plastic_2Dframe(11) ;
+alfan   = params_plastic_2Dframe(12) ;
+
+
+params_plastic_2Dframe_np1 = zeros(1,12);
+params_plastic_2Dframe_np1(1:3) = kpn1; 
+params_plastic_2Dframe_np1(4:6) = xin11 ;
+params_plastic_2Dframe_np1(7:9) = xin12 ;
+params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
+params_plastic_2Dframe_np1(11) = xd ;
+params_plastic_2Dframe_np1(12) = alfan1 ;

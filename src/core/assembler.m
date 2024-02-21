@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec, frame2D_plasticParams_mat ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
@@ -202,12 +202,12 @@ for elem = 1:nElems
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
 
-      elemNodesxyzRefCoords
-      elemCrossSecParams
-      modelParams
-      elemDisps
+      %~ elemNodesxyzRefCoords
+      %~ elemCrossSecParams
+      %~ modelParams
+      %~ elemDisps
 
-      params_plastic_2Dframe = previousStateCell{elem,4} ;
+      params_plastic_2Dframe = previousStateCell{elem,4:15} ;
 
       [ fs, ks, params_plastic_2Dframe_np1 ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...

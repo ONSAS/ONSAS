@@ -42,6 +42,8 @@ Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 374 ;
 
+
+num_elem = 1;
 % -------------------------------------------
 
 
@@ -66,6 +68,8 @@ boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %
+boundaryConds(2).imposDispDofs = [ 2 4 5] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t     ;
@@ -89,8 +93,8 @@ initialConds = {} ;
 analysisSettings               = {} ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 
-analysisSettings.deltaT        =   1  ;
-analysisSettings.finalTime     =   16 ;
+analysisSettings.deltaT        =   5  ;
+analysisSettings.finalTime     =   25 ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
@@ -101,3 +105,20 @@ otherParams.problemName  = 'plastic_2dframe';
 otherParams.plots_format = 'vtk' ;
 
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+girosUltimoNodo = matUs((num_elem+1)*6,:);
+descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
+factorescarga = loadFactorsMat(:,2) ;
+
+%~ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 4.5 ; plotfontsize = 16 ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;

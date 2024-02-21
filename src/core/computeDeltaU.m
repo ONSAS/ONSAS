@@ -95,5 +95,8 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   deltaured = deltauast + deltalambda(1) * deltaubar ;
 
   else   % incremental displacement
+  
+  %~ full(systemDeltauMatrix)
+  
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
   end

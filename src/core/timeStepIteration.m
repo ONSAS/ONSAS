@@ -142,6 +142,7 @@ end
 
 previousStateCell(:,2) = strain_vec ;
 previousStateCell(:,3) = acum_plas_strain_vec ;
+previousStateCell(:,4) = params_plastic_2Dframe ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
