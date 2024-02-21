@@ -46,7 +46,7 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
-if soft_hinge_boolean == true
+if soft_hinge_boolean == true && xpi == xd
 
     khatxpi = 0 ;
 
@@ -110,16 +110,22 @@ else
     
     end
 
+    if soft_hinge_boolean == true && xpi == xd
+
+        kpn1xpi  = kpn(jj) ;
+
+    end
+
     % curvatures (time n + 1) / khat1 (continuous part of the curvature), khat2 (localized part of the curvature)
     khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
-    M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
+    if soft_hinge_boolean == true && xpi == xd
 
-    if M1xpi < 0
-
-        M1xpi = 0 ;
+    khat1xpi = 0 ;
 
     end
+
+    M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
 end
 
