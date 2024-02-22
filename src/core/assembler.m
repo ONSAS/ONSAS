@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec, frame2D_plasticParams_mat ] = assembler( Conec, elements, Nodes,...
+function [ fsCell, stressMat, tangMatsCell, matFint, stateCellnp1 ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
@@ -70,12 +70,12 @@ else
 end
 
 % Previous state
-stress_n_vec           =  previousStateCell(:,1) ;
-strain_n_vec           =  previousStateCell(:,2) ;
-acum_plas_strain_n_vec =  previousStateCell(:,3) ;
+%~ stress_n_vec           =  previousStateCell(:,1) ;
+%~ strain_n_vec           =  previousStateCell(:,2) ;
+%~ acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
-strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
-acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
+%~ strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
+%~ acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
                   || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
@@ -85,6 +85,8 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 % ====================================================================
 %  --- 2 loop assembly ---
 % ====================================================================
+
+  stateCellnp1 = zeros( size(previousStateCell) );
 
 for elem = 1:nElems
 
@@ -130,6 +132,7 @@ for elem = 1:nElems
 
   stressElem = [] ;
   fintLocCoord = [] ;
+
 
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
@@ -207,15 +210,20 @@ for elem = 1:nElems
       %~ modelParams
       %~ elemDisps
 
-      params_plastic_2Dframe = previousStateCell{elem,4:15} ;
+      params_plastic_2Dframe = previousStateCell(elem,:) ;
 
-      [ fs, ks, params_plastic_2Dframe_np1 ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+      [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...
                                                                     modelParams , ...
                                                                     elemDisps , params_plastic_2Dframe) ;
       
                                                                     Finte = fs{1} ;  Ke = ks{1} ;
-
+	%~ if norm(aux)>0, 
+	%~ aux
+	%~ elemNodesxyzRefCoords
+	%~ end
+	stateCellnp1(elem,:) = aux ;
+	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
                                             [ 1 modelParams ], elemDisps, ...

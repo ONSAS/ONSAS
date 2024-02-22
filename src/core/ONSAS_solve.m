@@ -17,6 +17,8 @@
 %% Function that performs the time analysis with the model structs as input.
 function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
+global historico_params
+
 % initialize structures to store solutions
 matUs          = modelCurrSol.U                   ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
@@ -41,11 +43,13 @@ plotted_bars = 0 ; aux_time = cputime() ;
 
 while finalTimeReachedBoolean == false
 
-disp(' ========================= NUEVO TIEMPO ==================')
+%~ disp(' ========================= NUEVO TIEMPO ==================')
   plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+
+historico_params = [ historico_params ;  modelNextSol.previousStateCell ] ;
 
   % iterations average
   iterations_average = ...

@@ -43,8 +43,13 @@ My = 268 ;
 Mu = 374 ;
 
 
-num_elem = 1;
+num_elem = 5;
+
 % -------------------------------------------
+
+global historico_params
+
+historico_params=[];
 
 
 materials             = struct() ;
@@ -74,31 +79,50 @@ boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t     ;
 %md
+boundaryConds(3).imposDispDofs = [ 2 4 5] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
 mesh             = {} ;
-mesh.nodesCoords = [   0  0   0 ; ...
-                       l  0   0 ] ;
+xs = linspace(0,l,num_elem+1);
+mesh.nodesCoords =  [  xs' zeros(num_elem+1,2) ] ;
 
 mesh.conecCell = {} ;
 
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ; % nodo
-mesh.conecCell{ 2, 1 } = [ 0 1 2   2   ] ; % nodo
 
-mesh.conecCell{ 3, 1 } = [ 1 2 0   1 2   ] ;
+if num_elem>1
+  for k=2:num_elem
+    mesh.conecCell{ end+1, 1 } = [ 0 1 3   k   ] ;
+  end
+end
+
+for k=1:num_elem
+  mesh.conecCell{ end+1, 1 } = [ 1 2 0   k k+1   ] ;
+end
+mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % nodo cargado
 
 initialConds = {} ;
 
 
+%~ analysisSettings               = {} ;
+%~ analysisSettings.methodName    = 'newtonRaphson' ;
+%~ analysisSettings.deltaT        =   5  ;
+%~ analysisSettings.finalTime     =   25 ;
+%~ analysisSettings.stopTolDeltau =   1e-8 ;
+%~ analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
+%md
 analysisSettings               = {} ;
-analysisSettings.methodName    = 'newtonRaphson' ;
-
-analysisSettings.deltaT        =   5  ;
-analysisSettings.finalTime     =   25 ;
+analysisSettings.methodName    = 'arcLength' ;
+analysisSettings.deltaT        =   1  ;
+analysisSettings.incremArcLen = 1.2e-4
+analysisSettings.finalTime     =   400;
+analysisSettings.iniDeltaLamb = 1;
+analysisSettings.posVariableLoadBC = 2;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
-%md
 
 otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
@@ -113,11 +137,14 @@ factorescarga = loadFactorsMat(:,2) ;
 %~ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 lw = 2.5 ; ms = 4.5 ; plotfontsize = 16 ;
 
+%~ historico_params
+
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-labx = xlabel('Generalized displacements in free node (m, rad)');   laby = ylabel('Moment in plastic hinge (KN.m)') ;
+labx = xlabel('Generalized displacements in free node (m, rad)'); 
+laby = ylabel('Lambda') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;

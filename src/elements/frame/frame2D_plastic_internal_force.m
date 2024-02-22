@@ -77,8 +77,8 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 %
-kpn  = params_plastic_2Dframe(1:3) 
-xin1 = params_plastic_2Dframe(4:6) 
+kpn  = params_plastic_2Dframe(1:3) ;
+xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
 
 soft_hinge_boolean = params_plastic_2Dframe(10) ;
@@ -108,7 +108,6 @@ for ii = 1:npi
     kpn1(ii)  = kpn1xpi ;
     xin11(ii) = xin11xpi ;
     xin21(ii) = xin21xpi ;
-    
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
 
@@ -116,8 +115,8 @@ for ii = 1:npi
 
 end
 
-disp('  ESTA ES LA QUE HAY Q VERRRRRRRRRRRRR')
-kpn1
+%~ disp('  ESTA ES LA QUE HAY Q VERRRRRRRRRRRRR')
+%~ kpn1
 
 Khalfa = Khalfa + Ks ; % integral + Ks
 
@@ -153,7 +152,7 @@ if tM >= Mu && soft_hinge_boolean == false
 
 end
 
-disp('chequeando fint')
+%~ disp('chequeando fint')
 
 %~ Fint 
 
@@ -179,9 +178,8 @@ end
 fs = {Fintout} ;
 ks = {KTout} ;
 
-
-kpn  = params_plastic_2Dframe(1:3) 
-xin1 = params_plastic_2Dframe(4:6) 
+kpn  = params_plastic_2Dframe(1:3) ;
+xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
 
 soft_hinge_boolean = params_plastic_2Dframe(10) ;
@@ -193,7 +191,7 @@ alfan   = params_plastic_2Dframe(12) ;
 params_plastic_2Dframe_np1 = zeros(1,12);
 params_plastic_2Dframe_np1(1:3) = kpn1; 
 params_plastic_2Dframe_np1(4:6) = xin11 ;
-params_plastic_2Dframe_np1(7:9) = xin12 ;
+params_plastic_2Dframe_np1(7:9) = xin21 ;
 params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
 params_plastic_2Dframe_np1(11) = xd ;
 params_plastic_2Dframe_np1(12) = alfan1 ;

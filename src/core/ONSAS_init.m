@@ -78,11 +78,7 @@ nNodes = size( mesh.nodesCoords, 1 ) ;
 convDeltau   = zeros( size(U) ) ; 
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-previousStateCell = cell( size(Conec,1), 3) ;
-previousStateCell(:,1) = {zeros( 1, 3 )} ;
-previousStateCell(:,2) = {zeros( 1, 3 )} ;
-previousStateCell(:,3) = {0} ;
-previousStateCell(:,4) = {zeros( 1, 12 )} ;
+previousStateCell = zeros( size(Conec,1), 12 ) ;  % ahora es la matriz que tiene todos los params plas para todos los elementos
 
 % TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
@@ -92,13 +88,13 @@ matFint = [] ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-modelProperties.exportFirstMatrices
 %md call assembler
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
 % =================================================================
+
 
 %md prints headers for solver output file
 printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  , [] ) ;

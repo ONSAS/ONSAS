@@ -31,7 +31,7 @@ function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21
   = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, A, uvector, vvector, ...
                       thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM)
 
-disp(' entramos adentro de integrand plastic')
+%~ disp(' entramos adentro de integrand plastic')
 
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
@@ -139,7 +139,7 @@ end
 
 % elastoplastic tangent bending modulus
 if      gamma == 0
-  disp('jeje')
+  %~ disp('jeje')
         Cep = E*Iy ;
 
 elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
@@ -191,4 +191,4 @@ else
 
 end
 
-disp(' salimos')
+%~ disp(' salimos')
