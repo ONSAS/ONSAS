@@ -119,7 +119,7 @@ for ind = 2:length(load_factors)
     Mn(ind-1,1)     = M1(1)     ;
     TM(ind-1,1)     = tM        ;
     Fn(ind-1,1)     = Fint(4)   ;
-    Alf(ind-1,1)    = alfan    ;
+    Alf(ind-1,1)    = alfan     ;
 
     % header
     fprintf(fout,'|----------------------------------------------------------------------------------------------------|--------------|\n') ;
@@ -151,11 +151,16 @@ for ind = 2:length(load_factors)
 
         dnk1 = dnk + deltad ;
 
-        dnk  = dnk1  ;
-        xin1 = xin11 ;
-        xin2 = xin21 ;
-        alfan = alfan1 ;
-        kpn  = kpn1  ;
+        dnk     = dnk1   ;
+        xin1    = xin11  ;
+        xin2    = xin21  ;
+        alfan   = alfan1 ;
+
+        if soft_hinge_boolean == false
+        
+            kpn  = kpn1  ;
+
+        end
 
         uvector     = dnk1(1:2) ;
         vvector     = dnk1(3:4) ;
