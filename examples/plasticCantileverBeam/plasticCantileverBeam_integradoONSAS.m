@@ -19,7 +19,7 @@
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
-% assumed XZ plane
+% assumed XY plane
 
 % -------------------------------------------
 % scalar parameters
