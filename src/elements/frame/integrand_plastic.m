@@ -31,18 +31,13 @@ function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, xin21
   = integrand_plastic(soft_hinge_boolean, jj, xpi, xd, l, A, uvector, vvector, ...
                       thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM)
 
-%~ disp(' entramos adentro de integrand plastic')
-
 % elastoplasticity with hardening
 % the usual trial-corrector (return mapping) algorithm
 % is used at each of the Gauss–Lobatto integration points
 Bu = [-1/l 1/l] ;
 
-%~ vvector
-
-%~ xpi
 N = bendingInterFuns (xpi, l, 2) ;
-%~ stop
+
 Bv = [N(1) N(3)] ;
 Btheta = [N(2) N(4)] ;
 
@@ -51,19 +46,13 @@ Bd = [ Bu  0 0 0 0    ; ...
 
 Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
-%~ vvector
-%~ thetavector
- %~ Btheta
- %~ Bv
- %~ Ghat
- %~ alfan
-
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 if soft_hinge_boolean == true && xpi == xd
-%~ hehe
+
     khatxpi = 0 ;
+
 end
 
 % khat2 = dirac(xd)*alfan ;
@@ -101,7 +90,7 @@ if phitest <= 0 % elastic increment
     M1xpi    = Mxpi ;
 
 else
-%stop
+
     if xin1(jj) + phitest/(kh1+E*Iy)<=(My-Mc)/kh1
 
         gamma = phitest/(kh1+E*Iy) ;
@@ -139,7 +128,7 @@ end
 
 % elastoplastic tangent bending modulus
 if      gamma == 0
-  %~ disp('jeje')
+
         Cep = E*Iy ;
 
 elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
@@ -190,5 +179,3 @@ else
     xin21xpi    = xin2(jj) + gamma2 ;
 
 end
-
-%~ disp(' salimos')

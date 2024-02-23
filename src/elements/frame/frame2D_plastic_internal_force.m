@@ -33,8 +33,7 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
     
-%    (soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams)
-
+% params_plastic_2Dframe / soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
@@ -115,23 +114,18 @@ for ii = 1:npi
 
 end
 
-%~ disp('  ESTA ES LA QUE HAY Q VERRRRRRRRRRRRR')
-%~ kpn1
-
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 if soft_hinge_boolean == 1
 
-stop
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
 else
-    
+
     Kelement = Kfd ;
 
 end
-
 
 tM = 0 ;
 
@@ -152,10 +146,6 @@ if tM >= Mu && soft_hinge_boolean == false
 
 end
 
-%~ disp('chequeando fint')
-
-%~ Fint 
-
 Fintout = zeros(12,1) ;
 KTout = zeros(12,12) ;
 
@@ -164,17 +154,11 @@ Fintout(dofsconv) = Fint ;
 KTout(dofsconv, dofsconv) = Kelement ;
 
 if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
-Fi 
-Fint
-elemDisps
-thetavector
-vvector
+
 [ Fintout KTout*elemDisps] 
-error('ojo')
+
 end
 
-%~ Fintout = KTout*elemDisps
-%~ Fint 
 fs = {Fintout} ;
 ks = {KTout} ;
 
@@ -186,7 +170,6 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
-
 
 params_plastic_2Dframe_np1 = zeros(1,12);
 params_plastic_2Dframe_np1(1:3) = kpn1; 

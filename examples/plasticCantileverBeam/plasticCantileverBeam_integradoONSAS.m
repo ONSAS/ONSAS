@@ -43,7 +43,7 @@ My = 268 ;
 Mu = 374 ;
 
 
-num_elem = 5;
+num_elem = 1 ;
 
 % -------------------------------------------
 
@@ -111,18 +111,18 @@ initialConds = {} ;
 %~ analysisSettings.finalTime     =   25 ;
 %~ analysisSettings.stopTolDeltau =   1e-8 ;
 %~ analysisSettings.stopTolForces =   1e-8 ;
-analysisSettings.stopTolIts    =   15   ;
+%  analysisSettings.stopTolIts    =   15   ;
 %md
 analysisSettings               = {} ;
 analysisSettings.methodName    = 'arcLength' ;
-analysisSettings.deltaT        =   1  ;
-analysisSettings.incremArcLen = 1.2e-4
-analysisSettings.finalTime     =   400;
-analysisSettings.iniDeltaLamb = 1;
-analysisSettings.posVariableLoadBC = 2;
-analysisSettings.stopTolDeltau =   1e-8 ;
-analysisSettings.stopTolForces =   1e-8 ;
-analysisSettings.stopTolIts    =   15   ;
+analysisSettings.deltaT        = 1 ;
+analysisSettings.incremArcLen = 1e-3 ;
+analysisSettings.finalTime     = 1000 ;
+analysisSettings.iniDeltaLamb = 1 ;
+analysisSettings.posVariableLoadBC = 2 ;
+analysisSettings.stopTolDeltau = 1e-8 ;
+analysisSettings.stopTolForces = 1e-8 ;
+analysisSettings.stopTolIts    = 15 ;
 
 otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
@@ -135,7 +135,7 @@ descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
 factorescarga = loadFactorsMat(:,2) ;
 
 %~ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
-lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.1 ; plotfontsize = 16 ;
 
 %~ historico_params
 
