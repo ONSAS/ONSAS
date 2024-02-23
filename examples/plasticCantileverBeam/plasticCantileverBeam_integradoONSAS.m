@@ -43,7 +43,7 @@ My = 268 ;
 Mu = 374 ;
 
 % number of finite elements
-num_elem = 1 ;
+num_elem = 20 ;
 
 % -------------------------------------------
 
@@ -81,7 +81,7 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
 mesh             = {} ;
 xs = linspace(0,l,num_elem+1);
-mesh.nodesCoords =  [  xs' zeros(num_elem+1,2) ] ;
+mesh.nodesCoords =  [  xs' zeros(num_elem+1, 2) ] ;
 
 mesh.conecCell = {} ;
 
@@ -112,7 +112,7 @@ analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 analysisSettings.incremArcLen       = 1e-4 ;
-analysisSettings.finalTime          = 100 ;
+analysisSettings.finalTime          = 200 ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-8 ;
@@ -129,7 +129,7 @@ girosUltimoNodo = matUs((num_elem+1)*6,:);
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
 factorescarga = loadFactorsMat(:,2) ;
 
-lw = 2.5 ; ms = 0.1 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
