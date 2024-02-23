@@ -42,7 +42,7 @@ Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 374 ;
 
-
+% number of finite elements
 num_elem = 1 ;
 
 % -------------------------------------------
@@ -50,7 +50,6 @@ num_elem = 1 ;
 global historico_params
 
 historico_params=[];
-
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -60,14 +59,11 @@ materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 %md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
 %materials.modelParams = [ E nu ] ;
 
-
-disp('hola')
 elements             = struct() ;
 elements(1).elemType = 'node'  ;
 %mdframe elements for modelling the blades
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] };
-
 
 boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
@@ -103,7 +99,6 @@ end
 mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % nodo cargado
 
 initialConds = {} ;
-
 
 %~ analysisSettings               = {} ;
 %~ analysisSettings.methodName    = 'newtonRaphson' ;
