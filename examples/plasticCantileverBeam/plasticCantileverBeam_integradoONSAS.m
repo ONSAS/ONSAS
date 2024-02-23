@@ -32,8 +32,8 @@ Ks = -18000 ;       % KN.m
 
 % geometry
 l = 2.5 ;           % m
-ty = .3; % width cross section
-tz = .4; % height cross section
+ty =0.3 ;           % width cross section
+tz =0.4 ;           % height cross section
 
 A = .4*.3 ;         % m^2
 EI = 77650 ;        % KN.m^2
@@ -108,16 +108,16 @@ initialConds = {} ;
 %~ analysisSettings.stopTolForces =   1e-8 ;
 %  analysisSettings.stopTolIts    =   15   ;
 %md
-analysisSettings               = {} ;
-analysisSettings.methodName    = 'arcLength' ;
-analysisSettings.deltaT        = 1 ;
-analysisSettings.incremArcLen = 1e-3 ;
-analysisSettings.finalTime     = 1000 ;
-analysisSettings.iniDeltaLamb = 1 ;
-analysisSettings.posVariableLoadBC = 2 ;
-analysisSettings.stopTolDeltau = 1e-8 ;
-analysisSettings.stopTolForces = 1e-8 ;
-analysisSettings.stopTolIts    = 15 ;
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
+analysisSettings.incremArcLen       = 1e-4 ;
+analysisSettings.finalTime          = 100 ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-8 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 15 ;
 
 otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
@@ -129,10 +129,7 @@ girosUltimoNodo = matUs((num_elem+1)*6,:);
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
 factorescarga = loadFactorsMat(:,2) ;
 
-%~ lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
 lw = 2.5 ; ms = 0.1 ; plotfontsize = 16 ;
-
-%~ historico_params
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on

@@ -85,7 +85,6 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
 
-
 % set candidate values of internal parameters for next time at integration points
 kpn1  = kpn  ;
 xin11 = xin1 ;
