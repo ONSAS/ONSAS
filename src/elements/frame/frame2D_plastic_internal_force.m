@@ -221,16 +221,18 @@ params_plastic_2Dframe_np1 = zeros(1,12);
 
 if soft_hinge_boolean == true
 
-    params_plastic_2Dframe_np1(1:3) = kpn;
+    params_plastic_2Dframe_np1(1:3) = kpn ;
+    params_plastic_2Dframe_np1(4:6) = xin1 ;
 
 else
 
-    params_plastic_2Dframe_np1(1:3) = kpn1;    
+    params_plastic_2Dframe_np1(1:3) = kpn1 ;
+    params_plastic_2Dframe_np1(4:6) = xin11 ;
 
 end
 
 % params_plastic_2Dframe_np1(1:3) = kpn1; 
-params_plastic_2Dframe_np1(4:6) = xin11 ;
+% params_plastic_2Dframe_np1(4:6) = xin11 ;
 params_plastic_2Dframe_np1(7:9) = xin21 ;
 params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
 params_plastic_2Dframe_np1(11) = xd ;

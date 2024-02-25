@@ -1,3 +1,20 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
 % =========================================================================
 
 % Euler-Bernoulli element with embeded discontinuity
@@ -88,7 +105,7 @@ mesh.nodesCoords =  [  xs' zeros(num_elem+1, 2) ] ;
 
 mesh.conecCell = {} ;
 
-mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ; % nodo
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ; % node
 
 if num_elem>1
   for k=2:num_elem
@@ -99,7 +116,7 @@ end
 for k=1:num_elem
   mesh.conecCell{ end+1, 1 } = [ 1 2 0   k k+1   ] ;
 end
-mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % nodo cargado
+mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % loaded node
 
 initialConds = {} ;
 
@@ -114,8 +131,8 @@ initialConds = {} ;
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
-analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 1000          ;
+analysisSettings.incremArcLen       = 1e-6          ;
+analysisSettings.finalTime          = 5000          ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
