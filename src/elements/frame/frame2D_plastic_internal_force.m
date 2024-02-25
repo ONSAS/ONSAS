@@ -116,7 +116,7 @@ end
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
-if soft_hinge_boolean == 1
+if soft_hinge_boolean == true
 
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 
@@ -126,6 +126,47 @@ else
 
 end
 
+if abs(M1(1)) > 374
+
+    M1(1);
+
+end
+
+if abs(M1(1)) >= Mu && soft_hinge_boolean == false
+
+    soft_hinge_boolean = true ;
+
+    xd = 0 ;
+
+    tM = 0 ;
+
+for ii = 1:npi
+
+    Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
+
+    % integration (Gauss-Lobatto)
+    tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+
+end
+
+end
+
+if soft_hinge_boolean == true
+
+    tM = 0 ;
+
+    for ii = 1:npi
+
+        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
+
+        % integration (Gauss-Lobatto)
+        tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+
+    end
+
+end
+
+%{
 tM = 0 ;
 
 for ii = 1:npi
@@ -145,6 +186,8 @@ if tM >= Mu && soft_hinge_boolean == false
 
 end
 
+%}
+
 Fintout = zeros(12,1) ;
 KTout = zeros(12,12) ;
 
@@ -154,12 +197,14 @@ KTout(dofsconv, dofsconv) = Kelement ;
 
 if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
 
-[ Fintout KTout*elemDisps] 
+Fintout = [Fintout KTout*elemDisps] ;
 
 end
 
 fs = {Fintout} ;
 ks = {KTout} ;
+
+%{
 
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
@@ -170,10 +215,25 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
 
+%}
+
 params_plastic_2Dframe_np1 = zeros(1,12);
-params_plastic_2Dframe_np1(1:3) = kpn1; 
+
+if soft_hinge_boolean == true
+
+    params_plastic_2Dframe_np1(1:3) = kpn;
+
+else
+
+    params_plastic_2Dframe_np1(1:3) = kpn1;    
+
+end
+
+% params_plastic_2Dframe_np1(1:3) = kpn1; 
 params_plastic_2Dframe_np1(4:6) = xin11 ;
 params_plastic_2Dframe_np1(7:9) = xin21 ;
 params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
 params_plastic_2Dframe_np1(11) = xd ;
 params_plastic_2Dframe_np1(12) = alfan1 ;
+
+end

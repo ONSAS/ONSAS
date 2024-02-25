@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 120 ; % value of the final force
+Final_force = 203 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -156,7 +156,7 @@ for ind = 2:length(load_factors)
         xin2    = xin21  ;
         alfan   = alfan1 ;
 
-        if soft_hinge_boolean == false
+        if soft_hinge_boolean == true
         
             kpn  = kpn1  ;
 
