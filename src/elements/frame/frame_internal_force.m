@@ -29,6 +29,11 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   % ----- extract cross section properties ---
   [Area, J, Iyy, Izz, ~] = crossSectionProps ( elemCrossSecParams, 0 ) ; % select a ficticious elemrho 
   % ------------------------------------------
+%   global nonWakebool
+%   if nonWakebool
+%       global Itest
+%       Izz = Itest;
+%   end
 
   % compute corotational matrices rotation 
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;

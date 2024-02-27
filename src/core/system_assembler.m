@@ -127,7 +127,14 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
 
     [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
-
+    
+    global uBEMbool;
+    if ~ uBEMbool
+        global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ;
+    elseif uBEMbool
+        global aeroBEMForce    ; aeroBEMForce   = [aeroBEMForce, Faero]   ;
+    end
+    
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
 
     rhat   =  ( 1 + alphaHHT ) * ( ...

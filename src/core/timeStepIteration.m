@@ -76,7 +76,10 @@ while  booleanConverged == 0
 
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
-
+%   global deltaured1;
+%   if dispIter == 1
+%       deltaured1 = deltaured ;
+%   end
   % updates: model variables and computes internal forces ---
   [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
 
@@ -109,6 +112,16 @@ KTtp1red = systemDeltauMatrix ;
 % compute stress at converged state
 [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
+global uBEMbool; global nonWakebool ;
+
+if ~uBEMbool
+    global normForcesAero  ; normForcesAero = [ normForcesAero, fnorms ] ;  
+    global iterationsAero  ; iterationsAero = [ iterationsAero, dispIters ] ;
+elseif uBEMbool
+    global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnorms ] ;
+    global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters ] ;
+end
+
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
 if stabilityAnalysisFlag == 2
@@ -120,9 +133,8 @@ else
   nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
 end
 
-global uBEMbool
 % --- update uBEM induced velocity
-if ~isempty( uBEMbool ) && uBEMbool
+if ~isempty( uBEMbool ) && uBEMbool && ~nonWakebool
     global DWMbool;
     global iterCounter;
     global uBEMdataCoords;
@@ -142,11 +154,12 @@ if ~isempty( uBEMbool ) && uBEMbool
         mebVec     = Conec( elem, 1:3) ;
         % extract element properties
         elemType   = elements( mebVec( 2 ) ).elemType     ;
-        modelName = modelProperties.materials.modelName  ;
+        modelName  = modelProperties.materials.modelName  ;
         
         % compute aerodynamic force booleans
         aeroBool = ~isempty(modelProperties.analysisSettings.fluidProps) ;
         aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
+        chordVector = elements( mebVec( 2 ) ).chordVector ;
 
         % obtain element info
         [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
@@ -178,7 +191,7 @@ if ~isempty( uBEMbool ) && uBEMbool
 
                     [ inducedVel, inducedIntVel, inducedQSVel, idx1, idx2 ] = uBEMupdateInducedVelocity(modelProperties.analysisSettings, elemNodesxyzRefCoords, ...
                                                                                                         inducedVeln1, inducedIntVeln1, inducedQSVeln1,...
-                                                                                                        elemDisps, dotdispsElem, uBEMdataCoords, ...
+                                                                                                        chordVector, elemDisps, dotdispsElem, uBEMdataCoords, ...
                                                                                                         currTime, DWMbool);
 
                     wWake{timeIndexWake}([idx1, idx2], 1:3)    = reshape(inducedVel, 3, 2)';
