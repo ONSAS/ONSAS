@@ -126,12 +126,6 @@ else
 
 end
 
-if abs(M1(1)) > 374
-
-    M1(1);
-
-end
-
 if abs(M1(1)) >= Mu && soft_hinge_boolean == false
 
     soft_hinge_boolean = true ;
@@ -205,7 +199,6 @@ fs = {Fintout} ;
 ks = {KTout} ;
 
 %{
-
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
@@ -214,10 +207,10 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
-
 %}
 
 params_plastic_2Dframe_np1 = zeros(1,12);
+
 
 if soft_hinge_boolean == true
 
@@ -231,7 +224,7 @@ else
 
 end
 
-% params_plastic_2Dframe_np1(1:3) = kpn1; 
+% params_plastic_2Dframe_np1(1:3) = kpn1 ; 
 % params_plastic_2Dframe_np1(4:6) = xin11 ;
 params_plastic_2Dframe_np1(7:9) = xin21 ;
 params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;

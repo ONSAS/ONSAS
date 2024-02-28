@@ -44,7 +44,8 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 30000000 ;      % KN/m^2 KPa
 nu   = 0.3 ;
 kh1 = 29400 ;       % KN.m^2
-kh2 = 272 ;
+kh2 = 2720  ;
+% kh2 = 272 ;
 Ks = -18000 ;       % KN.m
 
 % geometry
@@ -57,7 +58,8 @@ EI = 77650 ;        % KN.m^2
 Inercia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
-Mu = 374 ;
+Mu = 300 ;
+% Mu = 374 ;
 
 % at the beginning..., there was no softening hinge
 soft_hinge_boolean = false ;
@@ -159,7 +161,17 @@ plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', 
 plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)'); 
 laby = ylabel('Lambda') ;
-legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Northeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(historico_params(:,12), historico_params(:,1),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+labx = xlabel('Plastic Curvature'); 
+laby = ylabel('\alpha') ;
+legend('\alpha','location','Northeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
