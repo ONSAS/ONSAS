@@ -97,14 +97,10 @@ end
 
 % ------------ Compute relative incidence angle  ------------
 % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
-if ~isempty( uBEMbool ) && uBEMbool
+if ~isempty( uBEMbool ) && uBEMbool 
     clear dimCharacteristic;
-    
-    global elemBeta;
-    tchx    = N1*vecChordUndef(1,:)' + N2*vecChordUndef(2,:)' ;
-    betaLoc = N1*elemBeta(:,1) + N2*elemBeta(:,2) ;
-    tch     = expon( -betaLoc )*tchx ;
-    dimCharacteristic = norm(tchx) ;
+    tch    = N1*vecChordUndef(1,:)' + N2*vecChordUndef(2,:)' ;
+    dimCharacteristic = norm(tch) ;
 else
     tch = (vecChordUndef / norm( vecChordUndef )) ;
 end

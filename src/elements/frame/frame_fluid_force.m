@@ -195,7 +195,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                     udotFrame1, inducedVelNod1, Rroof1, Rr, L2, L3 ) ;
       
       % Compute angle of attack of node 1
-      chRef1  = expon( -deg2rad(elemBeta(:,1)))*chordVector(:,1)  ; 
+      chRef1  = chordVector(:,1)  ; 
       tch1    = chRef1 / norm( chRef1 ) ;
       if( norm( VpiRelNode1 ) == 0 )
           td1 = tchNod1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
@@ -224,7 +224,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                     udotFrame2, inducedVelNod2, Rroof2, Rr, L2, L3 );
       
       % Compute angle of attack of node 2
-      chRef2  = expon( -deg2rad(elemBeta(:,2)))*chordVector(:,2); 
+      chRef2  = chordVector(:,2); 
       tch2    = chRef2 / norm( chRef2 ) ;
       if( norm( VpiRelNode2 ) == 0 )
           td2 = tchNod2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
