@@ -120,13 +120,15 @@ mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % loaded node
 
 initialConds = {} ;
 
-%~ analysisSettings               = {} ;
-%~ analysisSettings.methodName    = 'newtonRaphson' ;
-%~ analysisSettings.deltaT        =   5  ;
-%~ analysisSettings.finalTime     =   25 ;
-%~ analysisSettings.stopTolDeltau =   1e-8 ;
-%~ analysisSettings.stopTolForces =   1e-8 ;
-%  analysisSettings.stopTolIts    =   15   ;
+%{
+analysisSettings               = {} ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        =   1  ;
+analysisSettings.finalTime     =   50 ;
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
+%}
 %md
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
