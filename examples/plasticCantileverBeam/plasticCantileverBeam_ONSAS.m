@@ -58,8 +58,7 @@ EI = 77650 ;        % KN.m^2
 Inercia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
-Mu = 300 ;
-% Mu = 374 ;
+Mu = 374 ;
 
 % at the beginning..., there was no softening hinge
 soft_hinge_boolean = false ;
@@ -136,7 +135,7 @@ analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 600           ;
+analysisSettings.finalTime          = 1000           ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
