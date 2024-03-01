@@ -63,7 +63,7 @@ Mu = 374 ;
 soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 1 ;
+num_elem = 5 ;
 
 % -------------------------------------------
 
@@ -134,7 +134,7 @@ analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 8333          ;
+analysisSettings.finalTime          = 600           ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
