@@ -32,8 +32,6 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     elemCrossSecParams    , ...
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
-    
-% params_plastic_2Dframe [kpn(1,2,3), xin1(1,2,3), xin2(1,2,3), soft_hinge_boolean, xd, alpha]
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
@@ -75,7 +73,7 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 % initial values of bulk moments
 M1 = zeros(npi,1) ;
 
-%
+% params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12)]
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
@@ -106,6 +104,7 @@ for ii = 1:npi
     kpn1(ii)  = kpn1xpi ;
     xin11(ii) = xin11xpi ;
     xin21(ii) = xin21xpi ;
+    
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
 
@@ -160,28 +159,6 @@ if soft_hinge_boolean == true
 
 end
 
-%{
-tM = 0 ;
-
-for ii = 1:npi
-
-    Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
-
-    % integration (Gauss-Lobatto)
-    tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
-
-end
-
-if tM >= Mu && soft_hinge_boolean == false
-
-    soft_hinge_boolean = true ;
-
-    xd = 0 ;
-
-end
-
-%}
-
 Fintout = zeros(12,1) ;
 KTout = zeros(12,12) ;
 
@@ -198,16 +175,14 @@ end
 fs = {Fintout} ;
 ks = {KTout} ;
 
-%{
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
 
-soft_hinge_boolean = params_plastic_2Dframe(10) ;
+% soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
-%}
 
 params_plastic_2Dframe_np1 = zeros(1,12);
 

@@ -44,7 +44,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 30000000 ;      % KN/m^2 KPa
 nu   = 0.3 ;
 kh1 = 29400 ;       % KN.m^2
-kh2 = 272  ;
+kh2 = 272 ;
 Ks = -18000 ;       % KN.m
 
 % geometry
@@ -134,7 +134,7 @@ analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 2000          ;
+analysisSettings.finalTime          = 8333          ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
