@@ -110,6 +110,7 @@ else
     if soft_hinge_boolean == true && xpi == xd
 
         kpn1xpi  = kpn(jj) ;
+        xin11xpi = xin1(jj) ;
 
     end
 
@@ -177,5 +178,7 @@ else
     
     alfan1      = alfan + gamma2*sign(tM) ;
     xin21xpi    = xin2(jj) + gamma2 ;
+    kpn1xpi     = kpn(jj) ;
+    xin11xpi    = xin1(jj) ;
 
 end

@@ -33,7 +33,7 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
     
-% params_plastic_2Dframe / soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams
+% params_plastic_2Dframe [kpn(1,2,3), xin1(1,2,3), xin2(1,2,3), soft_hinge_boolean, xd, alpha]
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;

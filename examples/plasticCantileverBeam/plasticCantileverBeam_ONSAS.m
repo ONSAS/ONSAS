@@ -44,8 +44,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 30000000 ;      % KN/m^2 KPa
 nu   = 0.3 ;
 kh1 = 29400 ;       % KN.m^2
-kh2 = 2720  ;
-% kh2 = 272 ;
+kh2 = 272  ;
 Ks = -18000 ;       % KN.m
 
 % geometry
@@ -135,7 +134,7 @@ analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 1000           ;
+analysisSettings.finalTime          = 2000          ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
@@ -160,14 +159,14 @@ plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', 
 plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)'); 
 laby = ylabel('Lambda') ;
-legend('Degree of Freedom y','Degree of Freedom \theta','location','Northeast') ;
+legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(historico_params(:,12), historico_params(:,1),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(historico_params(:,12), historico_params(:,7),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 labx = xlabel('Plastic Curvature'); 
 laby = ylabel('\alpha') ;
 legend('\alpha','location','Northeast') ;
