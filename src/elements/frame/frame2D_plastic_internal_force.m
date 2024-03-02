@@ -59,7 +59,6 @@ Khd    = zeros(6,6) ;
 Khalfa = 0 ;
 
 Cep    = 0 ;
-
 Fint   = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
@@ -74,9 +73,9 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 % initial value of hinge moment
-tM = 0 ;
+% tM = 0 ;
 
-% params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12)]
+% params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12), tM(13)]
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
@@ -198,16 +197,6 @@ end
 
 fs = {Fintout} ;
 ks = {KTout} ;
-
-kpn  = params_plastic_2Dframe(1:3) ;
-xin1 = params_plastic_2Dframe(4:6) ;
-xin2 =  params_plastic_2Dframe(7:9) ;
-
-soft_hinge_boolean = params_plastic_2Dframe(10) ;
-
-xd      = params_plastic_2Dframe(11) ;
-alfan   = params_plastic_2Dframe(12) ;
-tM      = params_plastic_2Dframe(13) ;
 
 params_plastic_2Dframe_np1 = zeros(1,13);
 
