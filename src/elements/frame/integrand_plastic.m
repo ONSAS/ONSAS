@@ -151,6 +151,7 @@ qfailxpi = min(-Ks*xin2(jj), Mu) ;
 phifailxpi = abs(tM)-(Mu-qfailxpi) ;
 
 if phifailxpi <= 0
+   
     alfan1 = alfan ;
     xin21xpi = xin2(jj) ;
 

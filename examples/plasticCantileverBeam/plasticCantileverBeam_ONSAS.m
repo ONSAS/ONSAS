@@ -75,30 +75,26 @@ materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
 materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 
-%materials.modelName  = 'elastic-rotEngStr' ;
-%md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
-%materials.modelParams = [ E nu ] ;
-
 elements             = struct() ;
 elements(1).elemType = 'node'  ;
-%mdframe elements for modelling the blades
+
 elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] };
 
 boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
-%
+
 boundaryConds(2).imposDispDofs = [ 2 4 5] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t     ;
-%md
+
 boundaryConds(3).imposDispDofs = [ 2 4 5] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 
-%mdThe coordinates of the nodes of the mesh are given by the matrix:
+% The coordinates of the nodes of the mesh are given by the matrix:
 mesh             = {} ;
 xs = linspace(0,l,num_elem+1);
 mesh.nodesCoords =  [  xs' zeros(num_elem+1, 2) ] ;
@@ -129,7 +125,6 @@ analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %}
-%md
 
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
