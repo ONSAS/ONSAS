@@ -69,7 +69,7 @@ num_elem = 1 ;
 
 global historic_parameters
 
-historic_parameters=[];
+historic_parameters = [];
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -89,7 +89,7 @@ boundaryConds(2).imposDispDofs = [ 2 4 5] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global'         ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
-boundaryConds(2).loadsTimeFact = @(t) t     ;
+boundaryConds(2).loadsTimeFact = @(t) t ;
 
 boundaryConds(3).imposDispDofs = [ 2 4 5] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
@@ -112,6 +112,7 @@ end
 for k=1:num_elem
   mesh.conecCell{ end+1, 1 } = [ 1 2 0   k k+1   ] ;
 end
+
 mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % loaded node
 
 initialConds = {} ;

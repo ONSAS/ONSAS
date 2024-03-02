@@ -145,6 +145,7 @@ Fi      = Bd' * [E*A*epsilon; M1xpi] ;
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 % softening criterion (failure function) at integration points
+
 qfailxpi = min(-Ks*xin2(jj), Mu) ;
 
 phifailxpi = abs(tM)-(Mu-qfailxpi) ;
