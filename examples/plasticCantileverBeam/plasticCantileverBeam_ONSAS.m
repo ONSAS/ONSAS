@@ -44,7 +44,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 E = 30000000 ;      % KN/m^2 KPa
 nu   = 0.3 ;
 kh1 = 29400 ;       % KN.m^2
-kh2 = 272 ;
+kh2 = 273 ;
 Ks = -18000 ;       % KN.m
 
 % geometry
@@ -161,6 +161,7 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
 
+%{
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(historic_parameters(:,12), historic_parameters(:,7),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
@@ -170,3 +171,4 @@ legend('\alpha','location','Northeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
+%}

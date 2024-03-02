@@ -205,11 +205,7 @@ for elem = 1:nElems
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
 
-      %~ elemNodesxyzRefCoords
-      %~ elemCrossSecParams
-      %~ modelParams
-      %~ elemDisps
-
+      %
       params_plastic_2Dframe = previousStateCell(elem,:) ;
 
       [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
@@ -222,7 +218,10 @@ for elem = 1:nElems
 	%~ aux
 	%~ elemNodesxyzRefCoords
 	%~ end
-	stateCellnp1(elem,:) = aux ;
+
+    
+    
+    stateCellnp1(elem,:) = aux ;
 	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...

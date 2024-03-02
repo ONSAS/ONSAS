@@ -200,7 +200,6 @@ ks = {KTout} ;
 
 params_plastic_2Dframe_np1 = zeros(1,13);
 
-
 if soft_hinge_boolean == true
 
     params_plastic_2Dframe_np1(1:3) = kpn ;
@@ -218,5 +217,15 @@ params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
 params_plastic_2Dframe_np1(11) = xd ;
 params_plastic_2Dframe_np1(12) = alfan1 ;
 params_plastic_2Dframe_np1(13) = tM ;
+
+params_plastic_2Dframe(1:3) = kpn  ;
+params_plastic_2Dframe(4:6) = xin1;
+params_plastic_2Dframe(7:9) = xin2;
+
+params_plastic_2Dframe(10) = soft_hinge_boolean ;
+
+params_plastic_2Dframe(11) = xd ;
+params_plastic_2Dframe(12) = alfan ;
+arams_plastic_2Dframe(13) = tM ;
 
 end
