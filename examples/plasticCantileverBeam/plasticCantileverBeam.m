@@ -152,14 +152,18 @@ for ind = 2:length(load_factors)
         dnk1 = dnk + deltad ;
 
         dnk     = dnk1   ;
+
+        kpn     = kpn1   ;
         xin1    = xin11  ;
+
         xin2    = xin21  ;
         alfan   = alfan1 ;
-        kpn     = kpn1   ;
 
-        uvector     = dnk1(1:2) ;
-        vvector     = dnk1(3:4) ;
-        thetavector = dnk1(5:6) ;
+        if soft_hinge_boolean == true
+
+            dnk(6) = dnk(5) + alfan ;
+
+        end
 
         norm1 = norm(deltadred) ;
         norm2 = norm(residualForceRed) ;
@@ -176,7 +180,7 @@ end
 
 fclose(fout);
 
-lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.2 ; plotfontsize = 16 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on

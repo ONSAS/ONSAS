@@ -63,7 +63,7 @@ Mu = 374 ;
 soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 2 ;
+num_elem = 1 ;
 
 % -------------------------------------------
 

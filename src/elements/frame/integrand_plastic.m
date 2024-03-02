@@ -47,13 +47,8 @@ Bd = [ Bu  0 0 0 0    ; ...
 Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
+
 khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-
-if soft_hinge_boolean == true && xpi == xd
-
-    khatxpi = 0 ;
-
-end
 
 % khat2 = dirac(xd)*alfan ;
 % kn = khat + khat2 ;
@@ -115,13 +110,8 @@ else
     end
 
     % curvatures (time n + 1) / khat1 (continuous part of the curvature), khat2 (localized part of the curvature)
+    
     khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-
-    if soft_hinge_boolean == true && xpi == xd
-
-    khat1xpi = 0 ;
-
-    end
 
     M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
 
@@ -176,9 +166,7 @@ else
     
     end
     
-    alfan1      = alfan + gamma2*sign(tM) ;
-    xin21xpi    = xin2(jj) + gamma2 ;
-    kpn1xpi     = kpn(jj) ;
-    xin11xpi    = xin1(jj) ;
+    alfan1      = alfan     + gamma2*sign(tM) ;
+    xin21xpi    = xin2(jj)  + gamma2 ;
 
 end

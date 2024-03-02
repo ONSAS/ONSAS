@@ -109,20 +109,14 @@ else
 
 end
 
-if M1(1) >= Mu && soft_hinge_boolean == false
+for ii = 1:npi
+
+if M1(ii) >= Mu && soft_hinge_boolean == false
 
     soft_hinge_boolean = true ;
 
-    xd = 0 ;
-
-    tM = 0 ;
-
-for ii = 1:npi
-
-    Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
-
-    % integration (Gauss-Lobatto)
-    tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+    xd = xpi(ii) ;
+    xdi = ii ;
 
 end
 
