@@ -165,7 +165,6 @@ global scalingProjection
 scalingProjection = -1 ;
 %}
 
-
 otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
 otherParams.plots_format = 'vtk' ;
