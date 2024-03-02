@@ -85,6 +85,7 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
+tM      = params_plastic_2Dframe(13) ;
 
 if soft_hinge_boolean == true
 
@@ -175,10 +176,10 @@ if soft_hinge_boolean == true
         % integration (Gauss-Lobatto)
         tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
-        thetavector(2) = thetavector(1) + alfan ;
-        vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
-
     end
+
+    thetavector(2) = thetavector(1) + alfan ;
+    vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
 
 end
 
@@ -202,12 +203,13 @@ kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7:9) ;
 
-% soft_hinge_boolean = params_plastic_2Dframe(10) ;
+soft_hinge_boolean = params_plastic_2Dframe(10) ;
 
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
+tM      = params_plastic_2Dframe(13) ;
 
-params_plastic_2Dframe_np1 = zeros(1,12);
+params_plastic_2Dframe_np1 = zeros(1,13);
 
 
 if soft_hinge_boolean == true
@@ -222,11 +224,10 @@ else
 
 end
 
-% params_plastic_2Dframe_np1(1:3) = kpn1 ; 
-% params_plastic_2Dframe_np1(4:6) = xin11 ;
 params_plastic_2Dframe_np1(7:9) = xin21 ;
 params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
 params_plastic_2Dframe_np1(11) = xd ;
 params_plastic_2Dframe_np1(12) = alfan1 ;
+params_plastic_2Dframe_np1(13) = tM ;
 
 end

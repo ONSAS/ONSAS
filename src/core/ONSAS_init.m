@@ -78,7 +78,7 @@ nNodes = size( mesh.nodesCoords, 1 ) ;
 convDeltau   = zeros( size(U) ) ; 
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-previousStateCell = zeros( size(Conec,1), 12 ) ;  % ahora es la matriz que tiene todos los params plas para todos los elementos
+previousStateCell = zeros( size(Conec,1), 13 ) ;  % ahora es la matriz que tiene todos los params plas para todos los elementos
 
 % TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
