@@ -47,8 +47,8 @@ wpi = [1/3 4/3 1/3] * l * 0.5 ;
 
 nu   = 0.3 ;
 tol1 = 1e-8;
-tol2 = 1e-4 ;
-tolk = 10 ;
+tol2 = 1e-8 ;
+tolk = 15 ;
 
 % initial values
 dn   = [0 0 0 0 0 0]' ;
@@ -72,7 +72,7 @@ alfan = 0 ;
 
 xd = 0 ;
 
-Final_force = 180 ; % value of the final force
+Final_force = 205 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -162,6 +162,7 @@ for ind = 2:length(load_factors)
         if soft_hinge_boolean == true
 
             dnk(6) = dnk(5) + alfan ;
+            dnk(4) = dnk(3) + xd*dnk(5) + (l-xd)*(alfan + dnk(5)) ;
 
         end
 

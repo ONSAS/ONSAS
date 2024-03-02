@@ -90,15 +90,15 @@ else
 
         gamma = phitest/(kh1+E*Iy) ;
 
-        kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
-        xin11xpi    = xin1(jj) + gamma ;
+        kpn1xpi     = kpn(jj)   + gamma*sign(Mxpi) ;
+        xin11xpi    = xin1(jj)  + gamma ;
 
     else
 
         gamma = phitest/(kh2+E*Iy) ;
 
-        kpn1xpi     = kpn(jj) + gamma*sign(Mxpi) ;
-        xin11xpi    = xin1(jj) + gamma ;
+        kpn1xpi     = kpn(jj)   + gamma*sign(Mxpi) ;
+        xin11xpi    = xin1(jj)  + gamma ;
     
     end
 
@@ -119,7 +119,6 @@ end
 
 % elastoplastic tangent bending modulus
 if      gamma == 0
-
         Cep = E*Iy ;
 
 elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1

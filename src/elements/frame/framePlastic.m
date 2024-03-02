@@ -55,7 +55,6 @@ Khd    = zeros(6,6) ;
 Khalfa = 0 ;
 
 Cep    = 0 ;
-
 Fint   = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
