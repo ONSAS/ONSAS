@@ -73,6 +73,9 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 % initial values of bulk moments
 M1 = zeros(npi,1) ;
 
+% initial value of hinge moment
+tM = 0 ;
+
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12)]
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
@@ -83,6 +86,22 @@ soft_hinge_boolean = params_plastic_2Dframe(10) ;
 xd      = params_plastic_2Dframe(11) ;
 alfan   = params_plastic_2Dframe(12) ;
 
+if soft_hinge_boolean == true
+
+    tM = 0 ;
+
+    for ii = 1:npi
+
+        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
+
+        % integration (Gauss-Lobatto)
+        tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+
+    end
+
+end
+
+
 % set candidate values of internal parameters for next time at integration points
 kpn1  = kpn  ;
 xin11 = xin1 ;
@@ -90,9 +109,16 @@ xin21 = xin2 ;
 
 for ii = 1:npi
 
+        if soft_hinge_boolean == true
+
+            thetavector(2) = thetavector(1) + alfan ;
+            vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
+
+        end
+
     [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] ...
        = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
-         uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, 0) ;
+         uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM) ;
 
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -125,20 +151,14 @@ else
 
 end
 
-if abs(M1(1)) >= Mu && soft_hinge_boolean == false
+for ii = 1:npi
+
+if abs(M1(ii)) >= Mu && soft_hinge_boolean == false
 
     soft_hinge_boolean = true ;
 
-    xd = 0 ;
-
-    tM = 0 ;
-
-for ii = 1:npi
-
-    Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
-
-    % integration (Gauss-Lobatto)
-    tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+    xd = xpi(ii) ;
+    % xdi = jj ;
 
 end
 
@@ -154,6 +174,9 @@ if soft_hinge_boolean == true
 
         % integration (Gauss-Lobatto)
         tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
+
+        thetavector(2) = thetavector(1) + alfan ;
+        vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
 
     end
 

@@ -115,7 +115,7 @@ if M1(ii) >= Mu && soft_hinge_boolean == false
     soft_hinge_boolean = true ;
 
     xd = xpi(ii) ;
-    xdi = ii ;
+    % xdi = ii ;
 
 end
 

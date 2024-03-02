@@ -57,13 +57,13 @@ EI = 77650 ;        % KN.m^2
 Inercia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
-Mu = 374 ;
+Mu = 376 ;
 
 % at the beginning..., there was no softening hinge
 soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 1 ;
+num_elem = 4 ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
 
@@ -97,7 +97,7 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh             = {} ;
 xs = linspace(0,l,num_elem+1);
-mesh.nodesCoords =  [  xs' zeros(num_elem+1, 2) ] ;
+mesh.nodesCoords =  [  xs' zeros(num_elem + 1, 2) ] ;
 
 mesh.conecCell = {} ;
 
