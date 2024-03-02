@@ -65,11 +65,11 @@ soft_hinge_boolean = false ;
 % number of finite elements
 num_elem = 1 ;
 
-% -------------------------------------------
+% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
 
-global historico_params
+global historic_parameters
 
-historico_params=[];
+historic_parameters=[];
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -185,7 +185,7 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(historico_params(:,12), historico_params(:,7),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(historic_parameters(:,12), historic_parameters(:,7),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 labx = xlabel('Plastic Curvature'); 
 laby = ylabel('\alpha') ;
 legend('\alpha','location','Northeast') ;
