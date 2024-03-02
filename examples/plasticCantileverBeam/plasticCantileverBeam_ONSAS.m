@@ -63,7 +63,7 @@ Mu = 374 ;
 soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 5 ;
+num_elem = 2 ;
 
 % -------------------------------------------
 
@@ -130,16 +130,41 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %}
 %md
+
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 600           ;
+analysisSettings.finalTime          = 2000          ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
 analysisSettings.stopTolForces      = 1e-8          ;
 analysisSettings.stopTolIts         = 15            ;
+
+%{
+analysisSettings = {} ;
+analysisSettings.methodName     = 'arcLength' ;
+analysisSettings.deltaT         =   1 ;
+analysisSettings.incremArcLen   = [.1/2000*ones(1,2000) .1/10*ones(1,10)] ;
+analysisSettings.finalTime      = 2010  ;
+analysisSettings.iniDeltaLamb   = boundaryConds(2).loadsTimeFact(.1)/2010 ;
+
+analysisSettings.posVariableLoadBC  =   2 ;
+analysisSettings.stopTolDeltau      =   1e-8 ;
+analysisSettings.stopTolForces      =   1e-8 ;
+analysisSettings.stopTolIts         =   15   ;
+
+global arcLengthFlag
+arcLengthFlag = 2 ;
+
+global dominantDofs
+dominantDofs = 9*2 ; number of dominant degree of freedom 9, finite elements 2
+
+global scalingProjection
+scalingProjection = -1 ;
+%}
+
 
 otherParams              = struct();
 otherParams.problemName  = 'plastic_2dframe';
