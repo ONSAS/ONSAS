@@ -28,7 +28,7 @@
 
 % =========================================================================
 
-function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams)
+function [ soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, xdi, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, xdi, tM, elemParams, elastoplasticParams)
 
 
 % --- element params ---
@@ -73,9 +73,11 @@ kpn1  = kpn  ;
 xin11 = xin1 ;
 xin21 = xin2 ;
 
+alfan1 = 0 ;
+
 for ii = 1:npi
 
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, xin21xpi, M1xpi, xd, Fi, alfan1] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, uvector, vvector, thetavector, alfan, xin1, xin2, kpn, E, Iy, My, Mc, Mu, kh1, kh2, Ks, Cep, tM) ;
+    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep) ;
     
     % stiffness matrices / integration (Gauss-Lobatto)
     Kfd    = Kfd    + Kfdj    * wpi(ii) ;
@@ -86,7 +88,6 @@ for ii = 1:npi
     % values of internal parameters at integration points
     kpn1(ii)  = kpn1xpi  ;
     xin11(ii) = xin11xpi ;
-    xin21(ii) = xin21xpi ;
     
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
@@ -115,7 +116,7 @@ if M1(ii) >= Mu && soft_hinge_boolean == false
     soft_hinge_boolean = true ;
 
     xd = xpi(ii) ;
-    % xdi = ii ;
+    xdi = ii ;
 
 end
 
@@ -133,6 +134,40 @@ if soft_hinge_boolean == true
         tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
 
     end
+
+end
+
+% plastic softening at the discontinuity
+% the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
+% softening criterion (failure function) at integration points
+
+if soft_hinge_boolean == true
+
+qfailxpi = min(-Ks*xin2(xdi), Mu) ;
+
+phifailxpi = abs(tM)-(Mu-qfailxpi) ;
+
+if phifailxpi <= 0
+   
+    alfan1 = alfan ;
+    xin21 = xin2(xdi) ;
+
+else
+
+    if  xin2(xdi)<=-Mu/Ks
+
+        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
+
+    else
+
+        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
+    
+    end
+    
+    alfan1      = alfan     + gamma2*sign(tM) ;
+    xin21    = xin2(xdi)    + gamma2 ;
+
+end
 
 end
 

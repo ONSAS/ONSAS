@@ -57,11 +57,11 @@ tM   = 0 ;
 
 kpn  = zeros(npi,1) ;
 xin1 = zeros(npi,1) ;
-xin2 = zeros(npi,1) ;
+xin2 = 0 ;
 
 kpn1  = zeros(npi,1) ;
 xin11 = zeros(npi,1) ;
-xin21 = zeros(npi,1) ;
+xin21 = 0 ;
 
 khat1 = zeros(npi,1) ;
 
@@ -71,6 +71,7 @@ Fn = zeros(npi,1) ;
 alfan = 0 ;
 
 xd = 0 ;
+xdi = 1 ;
 
 Final_force = 205 ; % value of the final force
 
@@ -88,6 +89,7 @@ matdes = zeros (6, Final_force+1) ;
 matdes(:,1) = dn ;
 
 gxin = zeros(Final_force, 1) ;
+gxin2 = zeros(Final_force, 1) ;
 gkpn = zeros(Final_force, 1) ;
 
 Mn = zeros(Final_force, 1) ;
@@ -115,6 +117,7 @@ for ind = 2:length(load_factors)
     k = 0 ; % set iterations zero
 
     gxin(ind-1,1)   = xin1(1)   ;
+    gxin2(ind-1,1)  = xin2      ;
     gkpn(ind-1,1)   = kpn(1)    ;
     Mn(ind-1,1)     = M1(1)     ;
     TM(ind-1,1)     = tM        ;
@@ -132,7 +135,7 @@ for ind = 2:length(load_factors)
 
         k = k + 1 ;
 
-        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, tM, elemParams, elastoplasticParams) ;
+        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, xdi, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, xdi, tM, elemParams, elastoplasticParams) ;
 
         residualForce = Fext - Fint ;
 
@@ -223,9 +226,18 @@ title('Cantilever Beam / Plasticity') ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
-plot(Alf, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(Alf, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 labx = xlabel('Angle \alpha at hinge');   laby = ylabel('Moment applied (KN.m)') ;
 legend('Angle \alpha at hinge','location','Northeast');
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+hold on, grid on
+plot(gxin2, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+labx = xlabel('Plastic parameter \xi_2');   laby = ylabel('Moment applied (KN.m)') ;
+legend('Plastic parameter \xi_2','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
