@@ -148,7 +148,7 @@ girosUltimoNodo = matUs((num_elem+1)*6,:);
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
 factorescarga = loadFactorsMat(:,2) ;
 
-lw = 2.5 ; ms = 0.5 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
