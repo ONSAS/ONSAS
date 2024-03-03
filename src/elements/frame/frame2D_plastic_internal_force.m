@@ -47,7 +47,7 @@ Mu  = modelParams(4) ;
 kh1 = modelParams(5) ;
 kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
-nu  = modelParams(8) ;
+% nu  = modelParams(8) ;
 
 uvector     = elemDisps([1,7]) ;    % x
 vvector     = elemDisps([3,9]) ;    % y
@@ -60,7 +60,6 @@ Khalfa = 0 ;
 
 Cep    = 0 ;
 Fint   = 0 ;
-alfan1 = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
@@ -177,9 +176,6 @@ if soft_hinge_boolean == true
 
     end
 
-    thetavector(2) = thetavector(1) + alfan ;
-    vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
-
 end
 
 % hinge_softening_module 
@@ -255,6 +251,8 @@ params_plastic_2Dframe_np1(12) = alfan1 ;
 params_plastic_2Dframe_np1(13) = tM ;
 params_plastic_2Dframe_np1(14) = xdi ;
 
+%{
+
 params_plastic_2Dframe(1:3) = kpn  ;
 params_plastic_2Dframe(4:6) = xin1;
 params_plastic_2Dframe(7:9) = xin2;
@@ -265,5 +263,7 @@ params_plastic_2Dframe(11) = xd ;
 params_plastic_2Dframe(12) = alfan ;
 params_plastic_2Dframe(13) = tM ;
 params_plastic_2Dframe(14) = xdi ;
+
+%}
 
 end

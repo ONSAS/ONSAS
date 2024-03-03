@@ -73,7 +73,7 @@ alfan = 0 ;
 xd = 0 ;
 xdi = 1 ;
 
-Final_force = 205 ; % value of the final force
+Final_force = 165 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -184,7 +184,7 @@ end
 
 fclose(fout);
 
-lw = 2.5 ; ms = 0.2 ; plotfontsize = 16 ;
+lw = 2.5 ; ms = 0.2 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on

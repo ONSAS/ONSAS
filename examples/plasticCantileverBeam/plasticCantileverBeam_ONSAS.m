@@ -42,15 +42,16 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 % material
 E = 30000000 ;      % KN/m^2 KPa
-nu   = 0.3 ;
 kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
 Ks = -18000 ;       % KN.m
 
+nu = 0.3 ;
+
 % geometry
 l = 2.5 ;           % m
-ty =0.3 ;           % width cross section
-tz =0.4 ;           % height cross section
+ty = 0.3 ;           % width cross section
+tz = 0.4 ;           % height cross section
 
 A = .4*.3 ;         % m^2
 EI = 77650 ;        % KN.m^2
@@ -131,7 +132,7 @@ analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
 analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 600           ;
+analysisSettings.finalTime          = 800           ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
