@@ -43,7 +43,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % material
 E = 30000000 ;      % KN/m^2 KPa
 kh1 = 29400 ;       % KN.m^2
-kh2 = 273 ;
+kh2 = 2730 ;
 Ks = -18000 ;       % KN.m
 
 nu = 0.3 ;
@@ -58,7 +58,8 @@ EI = 77650 ;        % KN.m^2
 Inercia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
-Mu = 376 ;
+Mu = 280 ;
+% Mu = 376 ;
 
 % at the beginning..., there was no softening hinge
 soft_hinge_boolean = false ;
@@ -131,8 +132,8 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
-analysisSettings.incremArcLen       = 1e-4          ;
-analysisSettings.finalTime          = 800           ;
+analysisSettings.incremArcLen       = 1e-5          ;
+analysisSettings.finalTime          = 4000          ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;

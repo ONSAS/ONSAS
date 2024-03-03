@@ -87,21 +87,6 @@ alfan   = params_plastic_2Dframe(12) ;
 tM      = params_plastic_2Dframe(13) ;
 xdi     = params_plastic_2Dframe(14) ;
 
-if soft_hinge_boolean == true
-
-    tM = 0 ;
-
-    for ii = 1:npi
-
-        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
-
-        % integration (Gauss-Lobatto)
-        tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
-
-    end
-
-end
-
 % set candidate values of internal parameters for next time at integration points
 kpn1  = kpn  ;
 xin11 = xin1 ;
