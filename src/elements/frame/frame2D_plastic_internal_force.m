@@ -183,7 +183,7 @@ if soft_hinge_boolean == true
 
 end
 
-% /\ /\ /\ /\ /\ /\ hinge_softening_module /\ /\ /\ /\ /\ /\ 
+% hinge_softening_module 
 
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
