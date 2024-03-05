@@ -43,15 +43,20 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   
   elseif arcLengthFlag == 2 % Jirasek approach
 		
-  	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
-
+  	
 		% Variables to be defined by user
 		global dominantDofs
 		global scalingProjection
+		global sizecmatrix
+
+%    dominantDofs
+%		scalingProjection
+    cMatrix = zeros(sizecmatrix,1) ; % Jirasek	
+
 		% Projection matrix
 		cMatrix(dominantDofs) = scalingProjection ;
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
-	
+%	cMatrix
 		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
   
   elseif arcLengthFlag == 1  % Cylindrical constraint equation
