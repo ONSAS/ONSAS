@@ -33,7 +33,7 @@
 
 % =========================================================================
 
-close all, clear all
+close all; clear
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
@@ -64,7 +64,7 @@ Mu = 376 ;
 soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 1 ;
+num_elem = 10 ;
 
 % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
 
@@ -143,12 +143,8 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {}            ;
 analysisSettings.methodName         = 'arcLength'   ;
 analysisSettings.deltaT             = 1             ;
-%analysisSettings.incremArcLen       = [ 1e-4 2e-3*ones(1,8) 1e-3*ones(1,10) 5e-3*ones(1,5)  ]          ;
-
-analysisSettings.incremArcLen       = [ 1e-4 1e-4 1e-4 8e-4 4e-3*ones(1,10)  8e-3*ones(1,4) 5e-2*ones(1,16)  1e-10*ones(1,1) ]          ;
-
-%analysisSettings.incremArcLen       = [ 1e-4 8e-4 1e-4*ones(1,3) 8e-3*ones(1,2)  1e-3*ones(1,2) 8e-3*ones(1,12 ) 7e-2*ones(1,10 )  1e-5*ones(1,1 )   ]          ;
-analysisSettings.finalTime          = length(analysisSettings.incremArcLen)          ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1             ;
 analysisSettings.posVariableLoadBC  = 2             ;
 analysisSettings.stopTolDeltau      = 1e-8          ;
@@ -165,7 +161,7 @@ girosUltimoNodo = matUs((num_elem+1)*6,:);
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
 factorescarga = loadFactorsMat(:,2) ;
 
-lw = 2.5 ; ms = 6.5 ; plotfontsize = 14 ;
+lw = 2.5 ; ms = 0.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
@@ -177,15 +173,3 @@ legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
-
-%{
-figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
-hold on, grid on
-plot(historic_parameters(:,12), historic_parameters(:,7),'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-labx = xlabel('Plastic Curvature'); 
-laby = ylabel('\alpha') ;
-legend('\alpha','location','Northeast') ;
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plasticity') ;
-%}

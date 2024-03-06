@@ -33,7 +33,7 @@
 
 % =========================================================================
 
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
+close all, clear
 addpath( genpath( [ pwd '/../../src'] ) ) ;
           
 % Mc, My, Mu / from the moment-curvature diagram
