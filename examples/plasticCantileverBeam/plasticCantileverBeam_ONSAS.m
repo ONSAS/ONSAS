@@ -46,12 +46,12 @@ kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
 Ks = -18000 ;       % KN.m
 
-nu = 0.3 ;
+nu = 0.3 ;          % Poisson's ratio
 
 % geometry
 l = 2.5 ;           % m
-ty = 0.3 ;           % width cross section
-tz = 0.4 ;           % height cross section
+ty = 0.3 ;          % width cross section
+tz = 0.4 ;          % height cross section
 
 A = .4*.3 ;         % m^2
 EI = 77650 ;        % KN.m^2
@@ -127,7 +127,7 @@ end
 for k=1:num_elem
 
     mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
-    
+
 end
 
 mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
