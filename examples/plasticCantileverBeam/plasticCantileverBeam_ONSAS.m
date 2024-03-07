@@ -71,28 +71,28 @@ num_elem = 10 ;
 global historic_parameters
 
 global arcLengthFlag % 1: cylindrical 2: jirasek
-arcLengthFlag = 2;
+arcLengthFlag = 2 ;
 
 global dominantDofs
 dominantDofs = (num_elem+1)*6-3 ;
 
 global scalingProjection
-scalingProjection = -1  ;
+scalingProjection = -1 ;
 
 global sizecmatrix
-sizecmatrix = 6*(num_elem+1);
+sizecmatrix = 6*(num_elem+1) ;
 
-historic_parameters = [];
+historic_parameters = [] ;
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
 materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 
 elements             = struct() ;
-elements(1).elemType = 'node'  ;
+elements(1).elemType = 'node' ;
 
 elements(2).elemType = 'frame' ;
-elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] };
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] } ;
 
 boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
@@ -100,7 +100,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 
 boundaryConds(2).imposDispDofs = [ 2 4 5] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
-boundaryConds(2).loadsCoordSys = 'global'         ;
+boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
@@ -108,25 +108,29 @@ boundaryConds(3).imposDispDofs = [ 2 4 5] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 
 % The coordinates of the nodes of the mesh are given by the matrix:
-mesh             = {} ;
+mesh = {} ;
 xs = linspace(0,l,num_elem+1);
-mesh.nodesCoords =  [  xs' zeros(num_elem + 1, 2) ] ;
+mesh.nodesCoords = [  xs' zeros(num_elem + 1, 2) ] ;
 
 mesh.conecCell = {} ;
 
-mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ; % node
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
 
 if num_elem>1
-  for k=2:num_elem
-    mesh.conecCell{ end+1, 1 } = [ 0 1 3   k   ] ;
-  end
+  
+    for k=2:num_elem
+        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
+    end
+
 end
 
 for k=1:num_elem
-  mesh.conecCell{ end+1, 1 } = [ 1 2 0   k k+1   ] ;
+
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+    
 end
 
-mesh.conecCell{ end+1, 1 } = [ 0 1 2   num_elem+1   ] ; % loaded node
+mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
 
 initialConds = {} ;
 
@@ -140,34 +144,34 @@ analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
 %}
 
-analysisSettings                    = {}            ;
-analysisSettings.methodName         = 'arcLength'   ;
-analysisSettings.deltaT             = 1             ;
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
 analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
-analysisSettings.iniDeltaLamb       = 1             ;
-analysisSettings.posVariableLoadBC  = 2             ;
-analysisSettings.stopTolDeltau      = 1e-8          ;
-analysisSettings.stopTolForces      = 1e-8          ;
-analysisSettings.stopTolIts         = 15            ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-8 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 15 ;
 
-otherParams              = struct();
-otherParams.problemName  = 'plastic_2dframe';
+otherParams              = struct() ;
+otherParams.problemName  = 'plastic_2dframe' ;
 otherParams.plots_format = 'vtk' ;
 
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-girosUltimoNodo = matUs((num_elem+1)*6,:);
-descensosUltimoNodo = matUs((num_elem+1)*6-3,:);
+girosUltimoNodo = matUs((num_elem+1)*6,:) ;
+descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
 lw = 2.5 ; ms = 0.5 ; plotfontsize = 14 ;
 
-figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-labx = xlabel('Generalized displacements in free node (m, rad)'); 
+labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Lambda') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
