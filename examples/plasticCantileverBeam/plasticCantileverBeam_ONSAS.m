@@ -55,7 +55,7 @@ tz = 0.4 ;          % height cross section
 
 A = .4*.3 ;         % m^2
 EI = 77650 ;        % KN.m^2
-Inercia = EI/E ;    % m^4
+Inertia = EI/E ;    % m^4
 Mc = 37.9 ;         % KN.m
 My = 268 ;
 Mu = 376 ;
@@ -92,7 +92,7 @@ elements             = struct() ;
 elements(1).elemType = 'node' ;
 
 elements(2).elemType = 'frame' ;
-elements(2).elemCrossSecParams = {'generic' ; [A 1 Inercia Inercia] } ;
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
 
 boundaryConds                  = {} ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
