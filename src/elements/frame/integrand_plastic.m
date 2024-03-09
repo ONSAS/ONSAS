@@ -118,13 +118,6 @@ else
 
     % curvatures (time n + 1) / khat1 (continuous part of the curvature), khat2 (localized part of the curvature)
     
-    if soft_hinge_boolean == true
-
-        thetavector(2) = thetavector(1) + alfan ;
-        vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
-
-    end
-    
     khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
     M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
