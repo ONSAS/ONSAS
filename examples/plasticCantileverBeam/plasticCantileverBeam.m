@@ -179,13 +179,6 @@ for ind = 2:length(load_factors)
         xin2    = xin21  ;
         alfan   = alfan1 ;
 
-        if soft_hinge_boolean == true
-
-            dnk(6) = dnk(5) + alfan ;
-            dnk(4) = dnk(3) + xd*dnk(5) + (l-xd)*(alfan + dnk(5)) ;
-
-        end
-
         norm1 = norm(deltadred) ;
         norm2 = norm(residualForceRed) ;
 

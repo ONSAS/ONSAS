@@ -94,13 +94,6 @@ xin21 = xin2 ;
 
 for ii = 1:npi
 
-        if soft_hinge_boolean == true
-
-            thetavector(2) = thetavector(1) + alfan ;
-            vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
-
-        end
-
     [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
        = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
          uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep) ;
