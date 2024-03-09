@@ -15,13 +15,14 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell )
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell, ...
+                                                                                                              Wake )
 
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
   neumdofs = BCsData.neumDofs ;
   
-  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell  ) ;
+  [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell, Wake ) ;
 
 
   Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ;
@@ -120,7 +121,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     end
 
     fs = assembler ( ...
-      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previousStateCell  ) ;
+      modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previousStateCell, Wake  ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
 
@@ -128,11 +129,11 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
     [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
     
-    global uBEMbool;
-    if ~ uBEMbool
-        global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ;
-    elseif uBEMbool
+    BEMbool = modelProperties.analysisSettings.modelBEM;
+    if BEMbool
         global aeroBEMForce    ; aeroBEMForce   = [aeroBEMForce, Faero]   ;
+    else
+        global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ;       
     end
     
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;

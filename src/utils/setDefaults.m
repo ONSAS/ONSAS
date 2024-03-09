@@ -25,12 +25,19 @@ materials         = checkOrSetDefault ( materials        , 'density'       , 0  
 
 % =========================================
 % elements
-elements = checkOrSetDefault( elements, 'massMatType'        , 'lumped' ) ;
-elements = checkOrSetDefault( elements, 'elemTypeParams'     , [] ) ;
-elements = checkOrSetDefault( elements, 'elemCrossSecParams' , [] ) ;
-elements = checkOrSetDefault( elements, 'chordVector'        , []         ) ;
-elements = checkOrSetDefault( elements, 'aeroCoefFunctions'  , {[],[],[]} ) ;
-elements = checkOrSetDefault( elements, 'aeroNumericalParams', {4, false, true} ) ;
+elements = checkOrSetDefault( elements, 'massMatType'         , 'lumped' ) ;
+elements = checkOrSetDefault( elements, 'elemTypeParams'      , [] ) ;
+elements = checkOrSetDefault( elements, 'elemCrossSecParams'  , [] ) ;
+elements = checkOrSetDefault( elements, 'chordVector'         , [] ) ;
+elements = checkOrSetDefault( elements, 'aeroCoefFunctions'   , {[],[],[]} ) ;
+elements = checkOrSetDefault( elements, 'aeroNumericalParams' , {4, false, true} ) ;
+
+%------------------
+% BEM test
+elements = checkOrSetDefault( elements, 'BEMparams'           , []            ) ; % nodes, radio, twist, chord, IDsection
+elements = checkOrSetDefault( elements, 'dynStallParams'      , [] );             % IDsection, AoA0, CnAoAslope, Cd0, Cn1, Cn2
+elements = checkOrSetDefault( elements, 'airFoilPolars'       , {[],[],[],[]} ) ; % IDsection, listAoA, clstat, cdstat, cmstat 
+%------------------
 
 elements = setDefauAeroCrossSecProps( elements );
 
@@ -39,12 +46,17 @@ elements = setDefauAeroCrossSecProps( elements );
 % boundaryConds
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsTimeFact' , [] ) ;
 boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'loadsCoordSys' , [] ) ;
-boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
+boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs'    , [] ) ;
 
 % =========================================
 % analysisSettings
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
+%------------------
+% BEM test
+analysisSettings = checkOrSetDefault ( analysisSettings  , 'modelBEM'               , false           ) ;
+analysisSettings = checkOrSetDefault ( analysisSettings  , 'dynFlowModel'           , false           ) ;
+%------------------ 
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'addedMassBool'          , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;

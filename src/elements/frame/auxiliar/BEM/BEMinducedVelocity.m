@@ -1,4 +1,4 @@
-function [inducedVeln, inducedIntVeln, inducedQSVeln] = uBEMinducedVelocity(lift, vFlowG, VpiRel, inducedVeln1, ...
+function [inducedVeln, inducedIntVeln, inducedQSVeln] = BEMinducedVelocity(lift, vFlowG, VpiRel, inducedVeln1, ...
                             inducedQSVeln1, inducedIntVeln1, radio, Rrot, Rhub, betaRel, rho, ...
                             deltaT, Rroof, Rr, R0, Rrblade, Rcone, L2, DWMbool) 
 
@@ -22,19 +22,19 @@ else
 end
 
 % Apply prandtl tip and hub correction factor
-F     = uBEMprandtlFactor(radio, Rrot, Rhub, betaRel);
+F     = BEMprandtlFactor(radio, Rrot, Rhub, betaRel);
 aux1  = norm( V0 + fglau*n*dot( inducedVeln1, n ));
 aux2  = aux1*4*pi*rho*radio*F;
         
 inducedQSVeln = -3*lift/aux2 ;
 
 if DWMbool
-    [inducedVeln, inducedIntVeln] = uBEMdynamicInflow(inducedVeln1, inducedQSVeln, ...
+    [inducedVeln, inducedIntVeln] = BEMdynamicInflow(inducedVeln1, inducedQSVeln, ...
                             inducedQSVeln1, inducedIntVeln1, V0, radio, Rrot, a, deltaT) ;
     
     inducedVeln    = ( (Rroof'*Rr')'*inducedVeln  )'   ; % Convert back to global coordinates
-    inducedIntVeln = ( (Rroof'*Rr')'*inducedIntVeln )'; % Convert back to global coordinates
-    inducedQSVeln  = ( (Rroof'*Rr')'*inducedQSVeln )' ; % Convert back to global coordinates
+    inducedIntVeln = ( (Rroof'*Rr')'*inducedIntVeln )' ; % Convert back to global coordinates
+    inducedQSVeln  = ( (Rroof'*Rr')'*inducedQSVeln )'  ; % Convert back to global coordinates
 else
     inducedVeln    = ( (Rroof'*Rr')'*inducedQSVeln )';
     inducedIntVeln = [0, 0, 0] ;

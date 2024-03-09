@@ -64,8 +64,8 @@ while finalTimeReachedBoolean == false
   modelCurrSol   	=  	modelNextSol ;
   matUs          	= [ matUs          modelCurrSol.U                     ] ;
   loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;	
-	cellFint{end+1}  	= modelCurrSol.matFint ;
-	cellStress{end+1}	= modelCurrSol.Stress ;
+  cellFint{end+1}  	= modelCurrSol.matFint ;
+  cellStress{end+1}	= modelCurrSol.Stress ;
 		
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )

@@ -1,4 +1,4 @@
-function [W, Wint] = uBEMdynamicInflow(Wold, Wqs, Wqsold, Wintold, V0, r, R, a, deltaT)
+function [W, Wint] = BEMdynamicInflow(Wold, Wqs, Wqsold, Wintold, V0, r, R, a, deltaT)
 
 % Dynamic Wake Model (Snel and Schepers, 1995). Oye Model
 k = 0.6; 

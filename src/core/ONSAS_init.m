@@ -75,6 +75,17 @@ timeStepIters    = 0 ; timeStepStopCrit = 0 ;
 nNodes = size( mesh.nodesCoords, 1 ) ;
 [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
+BEMbool = analysisSettings.modelBEM   ;
+if ~isempty( BEMbool ) && BEMbool
+    WakeQS  = zeros( 3*nNodes, 1 ) ;
+    WakeINT = zeros( 3*nNodes, 1 ) ;
+    Wake    = zeros( 3*nNodes, 1 ) ;
+else
+    WakeQS  = [] ;
+    WakeINT = [] ;
+    Wake    = [] ;
+end
+
 convDeltau   = zeros( size(U) ) ; 
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
@@ -93,10 +104,10 @@ nextTime = currTime + analysisSettings.deltaT ;
 
 modelProperties.exportFirstMatrices
 %md call assembler
-[ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
+[ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell, Wake ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, Wake, WakeQS, WakeINT ) ;
 % =================================================================
 
 %md prints headers for solver output file

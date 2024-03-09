@@ -14,18 +14,9 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-%
-% This function returns the relative projected velocity in local coordinates
 
-function [VpiRel, VpiRelPerp, VrelG] = uBEMcomputeVpiRels( udotFlow, udotFrame, udotWake, Rroof, Rr, L2, L3 )
-  
-% the relative velocity in global cooridantes is Ref: eq 9.9 Hansen 2015
-VrelG = udotFlow - udotFrame + udotWake;
+function [ aoast, liftCoef, dragCoef, momCoef] = BEMAeroProps( file, polars ) 
 
-% then the projection (in t2,t3 plane) of the relative flow velocity in deformed coordinates is:
-VpiRel = L2 * Rroof' * Rr' * VrelG ;
-  
-% the perpendicular flow relative velocity projection in deformed coordinates is:
-VpiRelPerp = L3 * VpiRel ;
+[aoast, liftCoef, dragCoef, momCoef ] = BEMreadFoilData( file, polars ) ;
 
 end

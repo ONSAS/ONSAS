@@ -19,7 +19,7 @@
 function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previousStateCell )
+                                                           timeVar, previousStateCell, Wake )
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -95,31 +95,39 @@ for elem = 1:nElems
   modelParams        = materials( mebVec( 1 ) ).modelParams  ;
   density            = materials( mebVec( 1 ) ).density          ;
 
-  elemType           = elements( mebVec( 2 ) ).elemType          ;
-  elemTypeParams     = elements( mebVec( 2 ) ).elemTypeParams    ;
-  massMatType        = elements( mebVec( 2 ) ).massMatType       ;
-  elemCrossSecParams = elements( mebVec( 2 ) ).elemCrossSecParams;
-
-  %md extract aerodynamic properties
-  aeroCoefs           = elements( mebVec( 2 ) ).aeroCoefFunctions       ;
-  chordVector         = elements( mebVec( 2 ) ).chordVector         ;
-  aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
+  elemType           = elements( mebVec( 2 ) ).elemType             ;
+  elemTypeParams     = elements( mebVec( 2 ) ).elemTypeParams       ;
+  massMatType        = elements( mebVec( 2 ) ).massMatType          ;
+  elemCrossSecParams = elements( mebVec( 2 ) ).elemCrossSecParams   ;
 
   %md compute aerodynamic force booleans
   aeroBool = ~isempty(analysisSettings.fluidProps) ;
+  BEMbool  = analysisSettings.modelBEM   ;
+
+  %md extract aerodynamic properties
+  % Agregar IF para computar la cuerda y los coeficientes
+  aeroCoefs           = elements( mebVec( 2 ) ).aeroCoefFunctions   ;
+  chordVector         = elements( mebVec( 2 ) ).chordVector         ;
+  aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
+  
+  % Element and rotor data to compute BEM force
+  BEMparams           = elements( mebVec( 2 ) ).BEMparams           ;
+  polarAeroCoefs      = elements( mebVec( 2 ) ).airFoilPolars       ;
+  dynStallParams      = elements( mebVec( 2 ) ).dynStallParams      ;
+
 
   %md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
   % obtains nodes and dofs of element
   nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
-  dofselem    = nodes2dofs( nodeselem , 6 )   ;     
+  dofselem    = nodes2dofs( nodeselem , 6 )        ;
+  dofsWake    = nodes2dofs( nodeselem , 3 )        ;
 
   % construct vector of degrees of freedom of element
   auxA = repmat( nodalDofsEntries, length(dofselem)/6,1 )  ;
   auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
   dofselemRed = dofselem( auxA+auxB )   ;
-
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps       = u2ElemDisps( Ut      , dofselemRed ) ;
@@ -204,24 +212,29 @@ for elem = 1:nElems
     end
 
     if isempty(aeroNumericalParams)
-        aeroBool = false; % Used for uBEM first element of the interesection between nose and blase is computed as a frame without wind vel applied. 
+        aeroBool = false;
+    end
+
+    if BEMbool
+        elemWake       = Wake( dofsWake ) ;
+    else 
+        elemWake       = [];
     end
     
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
-                                     elemCrossSecParams                   ,        ...
-                                     elemDisps   ,        ...
-                                     dotdispsElem   ,        ...
-                                     dotdotdispsElem   ,        ...
-                                     aeroCoefs, chordVector, aeroNumericalParams,  ...
-                                     analysisSettings, timeVar, elem, ...
-                                     aeroNumericalParams{2}  ) ;
-                                     
-
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,             ...
+                                     elemCrossSecParams                   ,             ...
+                                     elemDisps   ,                                      ...
+                                     dotdispsElem   ,                                   ...
+                                     dotdotdispsElem   ,                                ...
+                                     aeroCoefs, chordVector, aeroNumericalParams,       ...
+                                     analysisSettings, timeVar, elem,                   ...
+                                     aeroNumericalParams{2}, BEMparams, polarAeroCoefs, ...
+                                     dynStallParams, elemWake ) ;
     end
 
-  % ---------  triangle solid element -----------------------------
+  % ---------  triangle solid element -------------------------
   elseif strcmp( elemType, 'triangle')
 
     thickness = elemCrossSecParams ;

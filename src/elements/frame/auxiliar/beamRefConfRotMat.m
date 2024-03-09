@@ -16,7 +16,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 % 
 function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
-
+  
+  global princiaplRotAxes;
+  global phi;
+    
   assert( iscolumn(x), 'coordinates must be in a column vector.')
 
   lengthElem = norm(x) ;
@@ -34,6 +37,15 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   end
   ezL = cross( exL, eyL ) ;
 
-  Ro  = [ exL eyL ezL ] ;
+  Ro  = [ exL eyL ezL ]   ;
+  if ~isempty( princiaplRotAxes ) && princiaplRotAxes
+      Rrot = [1     0           0         ;
+              0    cos(phi)   -sin(phi)   ;
+              0    sin(phi)    cos(phi)  ];
+      exL  = Rrot*exL;
+      eyL  = Rrot*eyL;
+      ezL  = Rrot*ezL;
+      Ro  = [ exL eyL ezL ]   ;
+  end
 
 end

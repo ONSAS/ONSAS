@@ -20,7 +20,7 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
   checkFields(materials, {'modelName', 'modelParams', 'density', 'nodalMass'})
 
   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
-                            'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
+                            'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector', 'BEMparams', 'dynStallParams', 'airFoilPolars'});
 
 %   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
 %                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});

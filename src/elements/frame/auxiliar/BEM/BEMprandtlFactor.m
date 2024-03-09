@@ -1,4 +1,4 @@
-function F = uBEMprandtlFactor(r, R, Rhub, alpha)
+function F = BEMprandtlFactor(r, R, Rhub, alpha)
       
     f_tip = 3*(R - r)/(2*r*abs(sin(alpha)));
     F_tip = (2/pi)*acos(exp(-f_tip));

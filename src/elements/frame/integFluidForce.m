@@ -24,7 +24,7 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
                                             VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, ...
-                                            fluidFlowBool, ILVIVBool, uBEMbool )
+                                            fluidFlowBool, ILVIVBool, BEMbool, clstat, cdstat, cmstat, Wake )
   
 %% -----------------------------------------------------------------------
 % Bernoulli weight function
@@ -71,19 +71,14 @@ udotFlowG = udotFlowElem(1:3) * N1 + udotFlowElem(4:6) * N2 ;
 [VpiRelGflow, VpiRelGperpflow, VrelGflow] = computeVpiRels( udotFlowG, [0 0 0]', Rroofx, Rr, L2, L3 ) ;  
 % -----------------------------------------------------------------
 % uBEM compute relative local velocity
-if ~isempty( uBEMbool ) && uBEMbool
-
-    % load induced velocity node 1 and node 2
-    global inducedVelNod1    ;   global inducedVelNod2;
-
+if ~isempty( BEMbool ) && BEMbool
     % cross section induced velocity flow velocity in global coordinates interpolated with linear shape functions
-    inducedVelGn1     = inducedVelNod1 * N1  + inducedVelNod2 * N2 ;     % induced wake velocity of previous time step    
-    
+    inducedVelGn1     = Wake( 1:3 ) * N1  + Wake( 4:6 )* N2 ;     % induced wake velocity of previous time step       
     % Kinematic velocities for the generic cross section
     % cross section centroid rigid velocity in global coordinates
     udotG = Rr * H1 * EE' * ddotg ; % Eq.(61)  T-N Le J.-M. Battini et al 2014
     
-    [VpiRelG, VpiRelGperp, VrelG] = uBEMcomputeVpiRels( udotFlowG, udotG,...
+    [VpiRelG, VpiRelGperp, VrelG] = BEMcomputeVpiRels( udotFlowG, udotG,...
                                        inducedVelGn1, Rroofx, Rr, L2, L3 ) ;
 
 elseif ~isempty( fluidFlowBool ) && fluidFlowBool % Leclercq validation
@@ -97,16 +92,12 @@ end
 
 % ------------ Compute relative incidence angle  ------------
 % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
-if ~isempty( uBEMbool ) && uBEMbool 
-    clear dimCharacteristic;
+if ~isempty( BEMbool ) && BEMbool 
     tch    = N1*vecChordUndef(1,:)' + N2*vecChordUndef(2,:)' ;
     dimCharacteristic = norm(tch) ;
 else
     tch = (vecChordUndef / norm( vecChordUndef )) ;
 end
-
-%disp('vpi')
-%norm( VpiRelG)
 
 % Calculate relative incidence angle in the deformed configuration
 if( norm( VpiRelG ) == 0 )
@@ -128,14 +119,12 @@ betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
 
 %% -----------------------------------------------------------------
 % Compute the lift, drag and pitch coefs corresponding to the uBEM model
-if ~isempty( uBEMbool ) && uBEMbool    
+if ~isempty( BEMbool ) && BEMbool    
     % Interpolated Cl, Cd and Cm in evaluated gaussian section interpolated with linear shape functions   
-    global cdstat1; global clstat1; global cmstat1;
-    global cdstat2; global clstat2; global cmstat2;
     
-    c_d  = cdstat1 * N1 + cdstat2 * N2 ;
-    c_l  = clstat1 * N1 + clstat2 * N2 ;
-    c_m  = cmstat1 * N1 + cmstat2 * N2 ;
+    c_d  = cdstat(1) * N1 + cdstat(2) * N2 ;
+    c_l  = clstat(1) * N1 + clstat(2) * N2 ;
+    c_m  = cmstat(1) * N1 + cmstat(2) * N2 ;
     
 else
   %-----------------------------------------------------------------

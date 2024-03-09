@@ -26,6 +26,17 @@ Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSo
 convDeltau = modelCurrSol.convDeltau ;
 currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 
+BEMbool = modelProperties.analysisSettings.modelBEM   ;
+if ~isempty( BEMbool ) && BEMbool
+    WakeQS  = modelCurrSol.WakeQS  ;
+    WakeINT = modelCurrSol.WakeINT ;
+    Wake    = modelCurrSol.Wake    ;
+else
+    WakeQS  = [] ;
+    WakeINT = [] ;
+    Wake    = [] ;
+end
+
 % stability analysis
 % -----------------------------------------------------------
 stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
@@ -63,7 +74,7 @@ systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 previousStateCell  = modelCurrSol.previousStateCell  ;
 
 % --- assemble system of equations ---
-[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
+[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, Wake ) ;
 
 booleanConverged = false ;
 dispIters        = 0     ;
@@ -88,7 +99,8 @@ while  booleanConverged == 0
     Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
+  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, ...
+                                                                                                                        nextTime, nextLoadFactorsVals, previousStateCell, Wake ) ;
 
   % --- check convergence ---
   [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
@@ -110,14 +122,16 @@ Udotdottp1 = Udotdottp1k ;
 KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
-[~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
+if ~BEMbool
+    [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell, []   ) ;
+elseif BEMbool
+    [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell, Wake ) ;
+end
 
-global uBEMbool; global nonWakebool ;
-
-if ~uBEMbool
+if ~BEMbool
     global normForcesAero  ; normForcesAero = [ normForcesAero, fnorms ] ;  
     global iterationsAero  ; iterationsAero = [ iterationsAero, dispIters ] ;
-elseif uBEMbool
+elseif BEMbool
     global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnorms ] ;
     global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters ] ;
 end
@@ -133,77 +147,21 @@ else
   nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
 end
 
+global nonWakeModel
+
 % --- update uBEM induced velocity
-if ~isempty( uBEMbool ) && uBEMbool && ~nonWakebool
-    global DWMbool;
-    global iterCounter;
-    global uBEMdataCoords;
-    global wWake;
-    global wWakeQS;
-    global wWakeInt;
-
-    neumdofs = BCsData.neumDofs ;
-    Conec    = modelProperties.Conec;  nElems   = size(Conec, 1) ;
-    elements = modelProperties.elements; 
-    Nodes    = modelProperties.Nodes;  nNodes   = size(Nodes, 1) ;
-
-    timeIndexWake  = modelCurrSol.timeIndex + 1 ;
-    currTime       = nextTime ;
-    
-    for elem = 1:nElems
-        mebVec     = Conec( elem, 1:3) ;
-        % extract element properties
-        elemType   = elements( mebVec( 2 ) ).elemType     ;
-        modelName  = modelProperties.materials.modelName  ;
-        
-        % compute aerodynamic force booleans
-        aeroBool = ~isempty(modelProperties.analysisSettings.fluidProps) ;
-        aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
-        chordVector = elements( mebVec( 2 ) ).chordVector ;
-
-        % obtain element info
-        [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
-
-        % obtains nodes and dofs of element
-        nodeselem   = Conec( elem, (3+1):(3+numNodes) )' ;
-        dofselem    = nodes2dofs( nodeselem , 6 )   ; 
-
-        % construct vector of degrees of freedom of element
-        auxA = repmat( nodalDofsEntries, length(dofselem)/6,1 )  ;
-        auxB = repelem( (0:6:length(dofselem)-1)',length(nodalDofsEntries),1) ;
-        dofselemRed = dofselem( auxA+auxB )   ;
-
-        %md elemDisps contains the displacements corresponding to the dofs of the element
-        elemDisps       = Utp1( dofselemRed )   ;
-        dotdispsElem    = Udottp1(dofselemRed ) ;
-        dotdotdispsElem = Udotdottp1( dofselemRed ) ;
-
-        elemNodesxyzRefCoords  = reshape( Nodes( nodeselem, : )', 1, 3*numNodes ) ;
-        
-        if strcmp( elemType, 'frame')
-            if strcmp( modelName, 'elastic-rotEngStr') || strcmp(modelName, 'elastic-linear')
-                if isempty(aeroNumericalParams)
-                    aeroBool = false; % Used for uBEM first element of the interesection between nose and blase is computed as a frame without wind vel applied. 
-                elseif aeroBool
-                    inducedVeln1     = wWake{modelCurrSol.timeIndex}(nodeselem, :);
-                    inducedIntVeln1  = wWakeInt{modelCurrSol.timeIndex}(nodeselem, :);
-                    inducedQSVeln1   = wWakeQS{modelCurrSol.timeIndex}(nodeselem, :);
-
-                    [ inducedVel, inducedIntVel, inducedQSVel, idx1, idx2 ] = uBEMupdateInducedVelocity(modelProperties.analysisSettings, elemNodesxyzRefCoords, ...
-                                                                                                        inducedVeln1, inducedIntVeln1, inducedQSVeln1,...
-                                                                                                        chordVector, elemDisps, dotdispsElem, uBEMdataCoords, ...
-                                                                                                        currTime, DWMbool);
-
-                    wWake{timeIndexWake}([idx1, idx2], 1:3)    = reshape(inducedVel, 3, 2)';
-                    wWakeInt{timeIndexWake}([idx1, idx2], 1:3) = reshape(inducedIntVel, 3, 2)';
-                    wWakeQS{timeIndexWake}([idx1, idx2], 1:3)  = reshape(inducedQSVel, 3, 2)';
-                end
-            end
-        end
-    end
-    iterCounter = 0;
+if ~isempty( BEMbool ) && BEMbool && ~nonWakeModel
+    [ Waket1p, WakeQSt1p, WakeINTt1p ] = BEMcomputeInducedVel( BCsData, modelProperties, modelCurrSol, nextTime );
+elseif ~isempty( BEMbool ) && BEMbool && nonWakeModel
+    nNodes     = length(modelProperties.Nodes(:,1));
+    Waket1p    = zeros( 3*nNodes, 1 ) ;
+    WakeQSt1p  = zeros( 3*nNodes, 1 ) ;
+    WakeINTt1p = zeros( 3*nNodes, 1 ) ;
+elseif nonWakeModel
+    Waket1p    = [ ] ;
+    WakeQSt1p  = [ ] ;
+    WakeINTt1p = [ ] ;
 end
-
 
 % --- stores next step values ---
 U          = Utp1 ;
@@ -230,7 +188,7 @@ previousStateCell(:,3) = acum_plas_strain_vec ;
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, Waket1p, WakeQSt1p, WakeINTt1p ) ;
 
 % ==============================================================================
 % ==============================================================================
