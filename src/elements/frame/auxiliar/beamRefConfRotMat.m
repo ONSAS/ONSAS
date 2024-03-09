@@ -17,7 +17,7 @@
 % 
 function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   
-  global princiaplRotAxes;
+  global principalRotAxes;
   global phi;
     
   assert( iscolumn(x), 'coordinates must be in a column vector.')
@@ -38,7 +38,7 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   ezL = cross( exL, eyL ) ;
 
   Ro  = [ exL eyL ezL ]   ;
-  if ~isempty( princiaplRotAxes ) && princiaplRotAxes
+  if ~isempty( principalRotAxes ) && principalRotAxes
       Rrot = [1     0           0         ;
               0    cos(phi)   -sin(phi)   ;
               0    sin(phi)    cos(phi)  ];

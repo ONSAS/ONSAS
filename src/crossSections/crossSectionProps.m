@@ -62,6 +62,7 @@ elseif strcmp( elemCrossSecParams{1}, 'pipe' )
     Izz  = Iyy                         ;
     J    = Iyy + Izz                   ;
     Jrho = rho * diag( [ J Iyy Izz ] ) ;
+    
 else
   error(' section type not implemented yet, please create an issue')
 end
