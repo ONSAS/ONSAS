@@ -73,7 +73,7 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 % initial value at hinge --not present yet--
-% alfan1 = 0 ;
+alfan1 = 0 ;
 
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12), tM(13)]
 kpn  = params_plastic_2Dframe(1:3) ;
@@ -90,7 +90,7 @@ xdi     = params_plastic_2Dframe(12) ;
 % set candidate values of internal parameters for next time at integration points
 kpn1  = zeros(3,1) ;
 xin11 = zeros(3,1) ;
-% xin21 = 0 ; 
+xin21 = 0 ; 
 
 for ii = 1:npi
 
@@ -156,35 +156,9 @@ if soft_hinge_boolean == true
 
 end
 
-% hinge_softening_module 
+if soft_hinge_boolean == true
 
-% plastic softening at the discontinuity
-% the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
-% softening criterion (failure function) at integration points
-
-qfailxpi = min(-Ks*xin2, Mu) ;
-
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
-
-if phifailxpi <= 0
-   
-    alfan1 = alfan ;
-    xin21 = xin2 ;
-
-else
-
-    if  xin2 <= -Mu/Ks
-
-        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
-
-    else
-
-        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
-    
-    end
-    
-    alfan1      = alfan     + gamma2*sign(tM) ;
-    xin21       = xin2      + gamma2 ;
+[soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
 
 end
 
