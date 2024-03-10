@@ -24,7 +24,7 @@ problemNameWithoutUnderscores                                      = problemName
 problemNameWithoutUnderscores( find( problemNameWithoutUnderscores == '_') ) = [] ;
 
 
-plotForcesNorms(outputDir, problemName )
+% plotForcesNorms(outputDir, problemName )
 
 % -------------------------------------------------------------------------
 % ------------------- generation of the report  main tex file -------------
