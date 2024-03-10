@@ -87,7 +87,7 @@ alfan   = params_plastic_2Dframe(10) ;
 tM      = params_plastic_2Dframe(11) ;
 xdi     = params_plastic_2Dframe(12) ;
 
-% set candidate values of internal parameters for next time at integration points
+% set initial values
 kpn1  = zeros(3,1) ;
 xin11 = zeros(3,1) ;
 xin21 = 0 ; 
