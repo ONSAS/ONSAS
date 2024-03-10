@@ -48,13 +48,6 @@ Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
-if soft_hinge_boolean == true
-
-thetavector(2) = thetavector(1) + alfan ;
-vvector(2) = vvector(1) + xd*thetavector(1) + (l-xd)*(alfan + thetavector(1)) ;
-
-end
-
 khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 
 % khat2 = dirac(xd)*alfan ;
@@ -93,7 +86,7 @@ if phitest <= 0 % elastic increment
 
 else
 
-    if xin1(jj) + phitest/(kh1+E*Iy)<=(My-Mc)/kh1
+    if xin1(jj) + phitest/(kh1+E*Iy) <= (My-Mc)/kh1
 
         gamma = phitest/(kh1+E*Iy) ;
 
@@ -109,7 +102,9 @@ else
     
     end
 
-    if soft_hinge_boolean == true && xpi == xd
+    % once the hinge is formed, we assume that the plastic deformations in the bulk will not be changing any more
+
+    if soft_hinge_boolean == true
 
         kpn1xpi  = kpn(jj) ;
         xin11xpi = xin1(jj) ;

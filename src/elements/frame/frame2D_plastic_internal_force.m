@@ -229,19 +229,4 @@ params_plastic_2Dframe_np1(12) = alfan1 ;
 params_plastic_2Dframe_np1(13) = tM ;
 params_plastic_2Dframe_np1(14) = xdi ;
 
-%{
-
-params_plastic_2Dframe(1:3) = kpn  ;
-params_plastic_2Dframe(4:6) = xin1;
-params_plastic_2Dframe(7:9) = xin2;
-
-params_plastic_2Dframe(10) = soft_hinge_boolean ;
-
-params_plastic_2Dframe(11) = xd ;
-params_plastic_2Dframe(12) = alfan ;
-params_plastic_2Dframe(13) = tM ;
-params_plastic_2Dframe(14) = xdi ;
-
-%}
-
 end
