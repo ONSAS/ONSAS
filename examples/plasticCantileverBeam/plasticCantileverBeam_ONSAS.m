@@ -163,10 +163,11 @@ otherParams.plots_format = 'vtk' ;
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
+rotation_hinge = matUs(6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
-lw = 2.5 ; ms = 0.5 ; plotfontsize = 14 ;
+lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
@@ -175,6 +176,16 @@ plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersi
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Lambda') ;
 legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
+hold on, grid on
+plot(rotation_hinge, factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+labx = xlabel('Rotation \alpha in the hinge (rad)') ;
+laby = ylabel('Lambda') ;
+legend('Rotation \alpha in the hinge (rad)') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
