@@ -73,24 +73,24 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 % initial value at hinge --not present yet--
-alfan1 = 0 ;
+% alfan1 = 0 ;
 
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7:9), soft_hinge_boolean(10), xd(11), alpha(12), tM(13)]
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
-xin2 =  params_plastic_2Dframe(7:9) ;
+xin2 =  params_plastic_2Dframe(7) ;
 
-soft_hinge_boolean = params_plastic_2Dframe(10) ;
+soft_hinge_boolean = params_plastic_2Dframe(8) ;
 
-xd      = params_plastic_2Dframe(11) ;
-alfan   = params_plastic_2Dframe(12) ;
-tM      = params_plastic_2Dframe(13) ;
-xdi     = params_plastic_2Dframe(14) ;
+xd      = params_plastic_2Dframe(9) ;
+alfan   = params_plastic_2Dframe(10) ;
+tM      = params_plastic_2Dframe(11) ;
+xdi     = params_plastic_2Dframe(12) ;
 
 % set candidate values of internal parameters for next time at integration points
-kpn1  = kpn  ;
-xin11 = xin1 ;
-xin21 = xin2 ; 
+kpn1  = zeros(3,1) ;
+xin11 = zeros(3,1) ;
+% xin21 = 0 ; 
 
 for ii = 1:npi
 
@@ -162,9 +162,7 @@ end
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 % softening criterion (failure function) at integration points
 
-if soft_hinge_boolean == true
-
-qfailxpi = min(-Ks*xin2(xdi), Mu) ;
+qfailxpi = min(-Ks*xin2, Mu) ;
 
 phifailxpi = abs(tM)-(Mu-qfailxpi) ;
 
@@ -175,7 +173,7 @@ if phifailxpi <= 0
 
 else
 
-    if  xin2(xdi)<=-Mu/Ks
+    if  xin2 <= -Mu/Ks
 
         gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
 
@@ -187,8 +185,6 @@ else
     
     alfan1      = alfan     + gamma2*sign(tM) ;
     xin21       = xin2      + gamma2 ;
-
-end
 
 end
 
@@ -208,7 +204,7 @@ end
 fs = {Fintout} ;
 ks = {KTout} ;
 
-params_plastic_2Dframe_np1 = zeros(1,13);
+params_plastic_2Dframe_np1 = zeros(1,12);
 
 if soft_hinge_boolean == true
 
@@ -222,11 +218,11 @@ else
 
 end
 
-params_plastic_2Dframe_np1(7:9) = xin21 ;
-params_plastic_2Dframe_np1(10) = soft_hinge_boolean ;
-params_plastic_2Dframe_np1(11) = xd ;
-params_plastic_2Dframe_np1(12) = alfan1 ;
-params_plastic_2Dframe_np1(13) = tM ;
-params_plastic_2Dframe_np1(14) = xdi ;
+params_plastic_2Dframe_np1(7) = xin21 ;
+params_plastic_2Dframe_np1(8) = soft_hinge_boolean ;
+params_plastic_2Dframe_np1(9) = xd ;
+params_plastic_2Dframe_np1(10) = alfan1 ;
+params_plastic_2Dframe_np1(11) = tM ;
+params_plastic_2Dframe_np1(12) = xdi ;
 
 end
