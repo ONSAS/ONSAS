@@ -167,7 +167,14 @@ rotation_hinge = matUs(6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
-lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+% validacion con funcion moments_cantilever 1elem
+% for i 1 : end matUs(:,i)
+
+%%%%%%%%%%%%%%%%%%%
+lw = 2.5 ; ms = 6.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
