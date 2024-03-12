@@ -174,7 +174,7 @@ factorescarga = loadFactorsMat(:,2) ;
 % for i 1 : end matUs(:,i)
 
 %%%%%%%%%%%%%%%%%%%
-lw = 2.5 ; ms = 6.5 ; plotfontsize = 14 ;
+lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
