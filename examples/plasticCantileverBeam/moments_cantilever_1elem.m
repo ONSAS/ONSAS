@@ -33,11 +33,11 @@
 
 % =========================================================================
 
-% deplazamientos en tiempo n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
+% displacements in time n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
 
-% curvatura plástica en tiempo n / kappas plas n
+% plastic curvature in time n / kappa_plas_n
 
-function Ms = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, l, kappas_plas_n )
+function Ms = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, l)
 
 x = [0;l/2;l];
 
@@ -47,17 +47,27 @@ Bv2 =  6/l^2*(1-2*x/l) ;
 Bt1 = -2/l*(2-3*x/l) ;
 Bt2 = -2/l*(1-3*x/l) ;
 
-% Gtecho = -1 ;  xd 
+G_bar = -(1+3*(1-2*xd/l)*(1-2*x/l))/l ; 
 
 % CREO QUE NO while % no convergio
 
-kappas_techo = Bv1*v1 + Bv2*v2 + Bt1*theta1 + Bt2*theta2 + (xd*alpha); % corregir + Gtecho * alpha
+kappa_bar = Bv1*v1 + Bv2*v2 + Bt1*theta1 + Bt2*theta2 + G_bar*alpha ;
 
-kappas_plas_n1 = kappas_plas_n ; 
+kappa_plas_n1 = kappa_plas_n ;
 
-Mnp1_test = E*I*( kappas_techo - kappas_plas_n1 ) ;
+Mnp1_test = E*I*(kappa_bar - kappa_plas_n1) ;
 
-% phi_test = 
+if xin1 <= (My - Mc)/kh1
+
+    q = -kh1*xin1 ;
+
+else
+
+    q = -(My - Mc)*(1-kh2/kh1) - kh2*xin1 ;
+
+end
+
+phi_test = Mnp1_test- (Mc - q) ;
 
 if phi_test <0
 
