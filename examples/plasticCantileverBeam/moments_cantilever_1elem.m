@@ -37,15 +37,15 @@
 
 % curvatura plástica en tiempo n / kappas plas n
 
-function Ms = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, L, kappas_plas_n )
+function Ms = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, l, kappas_plas_n )
 
-x = [0;L/2;L];
+x = [0;l/2;l];
 
-Bv1 = -6/L^2*(1-2*x/L) ;
-Bv2 =  6/L^2*(1-2*x/L) ;
+Bv1 = -6/l^2*(1-2*x/l) ;
+Bv2 =  6/l^2*(1-2*x/l) ;
 
-Bt1 = -2/L*(2-3*x/L) ;
-Bt2 = -2/L*(1-3*x/L) ;
+Bt1 = -2/l*(2-3*x/l) ;
+Bt2 = -2/l*(1-3*x/l) ;
 
 % Gtecho = -1 ;  xd 
 
