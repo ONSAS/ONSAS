@@ -28,16 +28,15 @@
 
 % =========================================================================
 
-% numerical example
-% cantilever beam loaded with a vertical force at the free end
+% algorithm for the update of the internal variables for elastoplasticity with hardening
+% and for the computation of the moment in the bulk Mn1
 
 % =========================================================================
 
 % displacements in time n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
-
 % plastic curvature in time n / kappa_plas_n
 
-function Ms = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, l)
+function [kappa_plas_n1, xin11, Mn1] = moments_cantilever_1elem( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, E, Iy, l)
 
 x = [0;l/2;l];
 
@@ -47,15 +46,13 @@ Bv2 =  6/l^2*(1-2*x/l) ;
 Bt1 = -2/l*(2-3*x/l) ;
 Bt2 = -2/l*(1-3*x/l) ;
 
-G_bar = -(1+3*(1-2*xd/l)*(1-2*x/l))/l ; 
-
-% CREO QUE NO while % no convergio
+G_bar = -(1+3*(1-2*xd/l)*(1-2*x/l))/l ;
 
 kappa_bar = Bv1*v1 + Bv2*v2 + Bt1*theta1 + Bt2*theta2 + G_bar*alpha ;
 
-kappa_plas_n1 = kappa_plas_n ;
+kappa_plas_test = kappa_plas_n ;
 
-Mnp1_test = E*I*(kappa_bar - kappa_plas_n1) ;
+Mn1_test = E*Iy*(kappa_bar - kappa_plas_test) ;
 
 if xin1 <= (My - Mc)/kh1
 
@@ -67,13 +64,30 @@ else
 
 end
 
-phi_test = Mnp1_test- (Mc - q) ;
+phi_test = Mn1_test- (Mc - q) ;
 
-if phi_test <0
+if phi_test <= 0
+
+    kappa_plas_n1 = kappa_plas_n ;
+    xin11 = xin1 ;
+    Mn1 = Mn1_test ;
+
+else
+
+    % calculation of gamma_n1
+
+    if xin1 + phi_test/(kh1 + E*Iy) <= (My - Mc)/kh1
+
+        gamma_n1 = phi_test/(kh1 + E*Iy) ;
+
+    else
+
+        gamma_n1 = phi_test/(kh2 + E*Iy) ;
+
+    end
+
+    kappa_plas_n1 = kappa_plas_n + gamma_n1*sign(Mn1_test) ;
+    xin11 = xin1 + gamma_n1 ;
+    Mn1 = E*Iy*(kappa_bar - kappa_plas_n1) ;
 
 end
-
-% end
-
-disp(Mnp1_test) ;
-Ms = zeros(3,1) ;
