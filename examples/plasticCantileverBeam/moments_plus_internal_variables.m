@@ -38,7 +38,8 @@
 
 function [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, E, Iy, l)
 
-x = [0;l/2;l];
+x = 0 ;
+alpha = 0 ;
 
 Bv1 = -6/l^2*(1-2*x/l) ;
 Bv2 =  6/l^2*(1-2*x/l) ;
@@ -64,7 +65,7 @@ else
 
 end
 
-phi_test = Mn1_test- (Mc - q) ;
+phi_test = abs(Mn1_test)- (Mc - q) ;
 
 if phi_test <= 0
 
@@ -88,6 +89,21 @@ else
 
     kappa_plas_n1 = kappa_plas_n + gamma_n1*sign(Mn1_test) ;
     xin11 = xin1 + gamma_n1 ;
-    Mn1 = E*Iy*(kappa_bar - kappa_plas_n1) ;
+
+    if gamma_n1 == 0
+
+        Cep = E*Iy ;
+
+    elseif gamma_n1 > 0 && xin11 <= (My - Mc)/kh1
+
+        Cep = E*Iy*kh1/(E*Iy + kh1) ;
+
+    elseif gamma_n1 > 0 && xin11 > (My - Mc)/kh1
+
+        Cep = E*Iy*kh2/(E*Iy + kh2) ;
+
+    end
+
+    Mn1 = Cep*(kappa_bar - kappa_plas_n1) ;
 
 end

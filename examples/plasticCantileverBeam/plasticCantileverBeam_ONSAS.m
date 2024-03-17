@@ -82,6 +82,10 @@ scalingProjection = -1 ;
 global sizecmatrix
 sizecmatrix = 6*(num_elem+1) ;
 
+global alpha
+global xin1val
+global kappa_plas_n
+
 historic_parameters = [] ;
 
 materials             = struct() ;
@@ -148,7 +152,8 @@ analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,100)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -171,9 +176,25 @@ factorescarga = loadFactorsMat(:,2) ;
 
 % validation with the function moments_plus_internal_variables
 
-% for i = 1:end(matUs(:,i))
+xd = 0 ;
 
-% end
+alpha = 0 ;
+
+Mn1_validation = zeros(1,length(matUs(1,:))) ;
+
+for i = 1:length(matUs(1,:))
+
+    v1 = matUs(3,i) ;
+    v2 = matUs(9,i) ;
+
+    theta1 = matUs(6,i) ;
+    theta2 = matUs(12,i) ;
+
+   [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+
+    Mn1_validation(i) = Mn1(1) ;
+
+end
 
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
@@ -181,11 +202,12 @@ lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
-plot(abs(girosUltimoNodo), factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), factorescarga*2.5,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo), -Mn1_validation, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Lambda') ;
-legend('Degree of Freedom y','Degree of Freedom \theta','location','Southeast') ;
+legend('Degree of Freedom \theta', 'Degree of Freedom y', 'location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;

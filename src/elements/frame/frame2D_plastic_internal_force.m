@@ -33,6 +33,10 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
+global alpha
+global xin1val
+global kappa_plas_n
+
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
 l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
@@ -172,6 +176,10 @@ KTout(dofsconv, dofsconv) = Kelement ;
 if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
 
 Fintout = [Fintout KTout*elemDisps] ;
+
+alpha = 0 ;
+kappa_plas_n(1,end+1) = kpn1(1) ;
+xin1val(1,end+1) = xin11(1) ;
 
 end
 
