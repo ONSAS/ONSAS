@@ -90,6 +90,7 @@ else
     kappa_plas_n1 = kappa_plas_n + gamma_n1*sign(Mn1_test) ;
     xin11 = xin1 + gamma_n1 ;
 
+    %{
     if gamma_n1 == 0
 
         Cep = E*Iy ;
@@ -103,6 +104,9 @@ else
         Cep = E*Iy*kh2/(E*Iy + kh2) ;
 
     end
+    %}
+
+    Cep = E*Iy ;
 
     Mn1 = Cep*(kappa_bar - kappa_plas_n1) ;
 

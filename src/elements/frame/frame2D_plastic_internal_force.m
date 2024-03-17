@@ -178,8 +178,8 @@ if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
 Fintout = [Fintout KTout*elemDisps] ;
 
 alpha = 0 ;
-kappa_plas_n(1,end+1) = kpn1(1) ;
-xin1val(1,end+1) = xin11(1) ;
+kappa_plas_n(1,end+1) = kpn(1) ;
+xin1val(1,end+1) = xin1(1) ;
 
 end
 
