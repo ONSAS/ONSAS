@@ -39,7 +39,6 @@
 function [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, E, Iy, l)
 
 x = 0 ;
-alpha = 0 ;
 
 Bv1 = -6/l^2*(1-2*x/l) ;
 Bv2 =  6/l^2*(1-2*x/l) ;

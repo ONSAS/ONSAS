@@ -153,7 +153,7 @@ analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,50)] ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,50) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -179,6 +179,8 @@ factorescarga = loadFactorsMat(:,2) ;
 xd = 0 ;
 
 alpha = 0 ;
+xin1val = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n = zeros(1,length(matUs(1,:))) ;
 
 Mn1_validation = zeros(1,length(matUs(1,:))) ;
 
@@ -190,9 +192,9 @@ for i = 1:length(matUs(1,:))
     theta1 = matUs(6,i) ;
     theta2 = matUs(12,i) ;
 
-   [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+  [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
 
-    Mn1_validation(i) = Mn1(1) ;
+  Mn1_validation(i) = Mn1(1) ;
 
 end
 
