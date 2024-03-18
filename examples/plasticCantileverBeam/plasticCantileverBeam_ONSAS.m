@@ -34,7 +34,7 @@
 % =========================================================================
 
 close all ;
-clear all ;
+clear ;
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
@@ -209,7 +209,7 @@ plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersiz
 plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
-laby = ylabel('Moment') ;
+laby = ylabel('Moments / Forces') ;
 legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation (\theta)', 'Validation (y)', 'location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
