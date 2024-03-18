@@ -191,10 +191,10 @@ for i = 1:length(matUs(1,:))
 
     kappa_plas_n(i) = kappa_plas_n1(1) ;
     xin1val(i) = xin11val(1) ;
-
-  [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
-
-  Mn1_validation(i) = Mn1(1) ;
+    
+    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+    
+    Mn1_validation(i) = Mn1(1) ;
 
 end
 
