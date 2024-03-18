@@ -33,10 +33,6 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
-global alpha
-global xin1val
-global kappa_plas_n
-
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
 l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
@@ -51,7 +47,7 @@ Mu  = modelParams(4) ;
 kh1 = modelParams(5) ;
 kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
-nu  = modelParams(8) ;
+% nu  = modelParams(8) ;
 
 uvector     = elemDisps([1,7]) ;    % x
 vvector     = elemDisps([3,9]) ;    % y

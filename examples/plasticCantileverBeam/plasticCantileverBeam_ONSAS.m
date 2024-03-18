@@ -83,10 +83,6 @@ scalingProjection = -1 ;
 global sizecmatrix
 sizecmatrix = 6*(num_elem+1) ;
 
-global alpha
-global xin1val
-global kappa_plas_n
-
 historic_parameters = [] ;
 
 materials             = struct() ;
@@ -154,7 +150,7 @@ analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
-analysisSettings.incremArcLen       = 1e-3*ones(1,100) ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -169,17 +165,14 @@ otherParams.plots_format = 'vtk' ;
 [matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
-rotation_hinge = matUs(6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
-
 
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 % validation with the function moments_plus_internal_variables
 
 xd = 0 ;
-
 alpha = 0 ;
 xin1val = zeros(1,length(matUs(1,:))) ;
 kappa_plas_n = zeros(1,length(matUs(1,:))) ;
@@ -207,15 +200,15 @@ end
 
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
-lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
+lw = 1.5 ; ms = 0.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
-plot(abs(girosUltimoNodo), factorescarga*2.5,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-yline(268, 'linewidth', lw*2.5, "Color", "#0072BD") ;
+% yline(268, 'linewidth', lw*2.5, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moment') ;
 legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation', 'location','Southeast') ;
