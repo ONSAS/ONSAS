@@ -207,11 +207,10 @@ hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-% yline(268, 'linewidth', lw*2.5, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moment') ;
-legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation', 'location','Southeast') ;
+legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation (\theta)', 'Validation (y)', 'location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
