@@ -61,7 +61,7 @@ if xin1 <= (My - Mc)/kh1
 
 else
 
-    q = -(My - Mc)*(1-kh2/kh1) - kh2*xin1 ;
+    q = -(My - Mc)*(1-kh2/kh1) - kh2*xin1 ; % \/\/\/ ERROR \/\/\/
 
 end
 
