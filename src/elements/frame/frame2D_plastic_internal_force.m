@@ -51,7 +51,7 @@ Mu  = modelParams(4) ;
 kh1 = modelParams(5) ;
 kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
-% nu  = modelParams(8) ;
+nu  = modelParams(8) ;
 
 uvector     = elemDisps([1,7]) ;    % x
 vvector     = elemDisps([3,9]) ;    % y
@@ -176,10 +176,6 @@ KTout(dofsconv, dofsconv) = Kelement ;
 if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
 
 Fintout = [Fintout KTout*elemDisps] ;
-
-alpha = 0 ;
-kappa_plas_n(1,end+1) = kpn(1) ;
-xin1val(1,end+1) = xin1(1) ;
 
 end
 

@@ -33,7 +33,8 @@
 
 % =========================================================================
 
-close all; clear
+close all ;
+clear all ;
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
@@ -153,7 +154,7 @@ analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
-analysisSettings.incremArcLen       = 1e-3*ones(1,50) ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,100) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -172,6 +173,7 @@ rotation_hinge = matUs(6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
+
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 % validation with the function moments_plus_internal_variables
@@ -181,6 +183,8 @@ xd = 0 ;
 alpha = 0 ;
 xin1val = zeros(1,length(matUs(1,:))) ;
 kappa_plas_n = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n1 = zeros(1,3) ;
+xin11val = zeros(1,3) ;
 
 Mn1_validation = zeros(1,length(matUs(1,:))) ;
 
@@ -192,7 +196,10 @@ for i = 1:length(matUs(1,:))
     theta1 = matUs(6,i) ;
     theta2 = matUs(12,i) ;
 
-  [kappa_plas_n1, xin11, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+    kappa_plas_n(i) = kappa_plas_n1(1) ;
+    xin1val(i) = xin11val(1) ;
+
+  [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
 
   Mn1_validation(i) = Mn1(1) ;
 
@@ -204,10 +211,10 @@ lw = 1 ; ms = 2.5 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
-plot(abs(girosUltimoNodo), factorescarga*2.5,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(girosUltimoNodo), -Mn1_validation, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo), -Mn1_validation, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(girosUltimoNodo), factorescarga*2.5,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 yline(268, 'linewidth', lw*2.5, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moment') ;
