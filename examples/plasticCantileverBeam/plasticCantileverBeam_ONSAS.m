@@ -206,9 +206,9 @@ plot(abs(girosUltimoNodo), factorescarga*2.5,'b-x' , 'linewidth', lw, 'markersiz
 plot(abs(descensosUltimoNodo), factorescarga*2.5, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(girosUltimoNodo), -Mn1_validation, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo), -Mn1_validation, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-yline(268, 'linewidth', lw*3, "Color", "#77AC30") ;
+yline(268, 'linewidth', lw*2.5, "Color", "#0072BD") ;
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
-laby = ylabel('Lambda') ;
+laby = ylabel('Moment') ;
 legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation', 'location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
