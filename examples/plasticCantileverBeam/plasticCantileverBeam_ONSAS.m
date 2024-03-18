@@ -200,7 +200,7 @@ end
 
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
-lw = 1.5 ; ms = 0.5 ; plotfontsize = 14 ;
+lw = 1 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
