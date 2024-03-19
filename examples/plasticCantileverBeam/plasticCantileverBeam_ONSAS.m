@@ -285,7 +285,7 @@ title('Cantilever Beam / Plasticity') ;
 
 print('Forces.png', '-dpng') ;
 
-figure('Name','Moments (Validation) / Plasticity','NumberTitle','off') ;
+figure('Name','Moments / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
@@ -299,10 +299,10 @@ plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'marke
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moments') ;
-legend('Val. Analitic (\theta)', 'Val. Analitic (y)',  'Val. ONSAS (\theta)', 'Val. ONSAS (y)','location','Southeast') ;
+legend('Analytic (\theta)', 'Analytic (y)',  'ONSAS (\theta)', 'ONSAS (y)','location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plasticity') ;
+title('Cantilever Beam / Plasticity (validation)') ;
 
 print('Moment.png', '-dpng') ;
 
