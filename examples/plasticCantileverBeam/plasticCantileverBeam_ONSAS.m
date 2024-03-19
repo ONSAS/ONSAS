@@ -198,22 +198,113 @@ for i = 1:length(matUs(1,:))
 
 end
 
+% number of finite elements
+num_elem = 20 ;
+
+% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
+
+historic_parameters = [] ;
+
+arcLengthFlag = 2 ;
+
+dominantDofs = (num_elem+1)*6-3 ;
+
+scalingProjection = -1 ;
+
+sizecmatrix = 6*(num_elem+1) ;
+
+% The coordinates of the nodes of the mesh are given by the matrix:
+mesh = {} ;
+xs = linspace(0,l,num_elem+1);
+mesh.nodesCoords = [  xs' zeros(num_elem + 1, 2) ] ;
+
+mesh.conecCell = {} ;
+
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+
+if num_elem>1
+  
+    for k=2:num_elem
+        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
+    end
+
+end
+
+for k=1:num_elem
+
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+
+end
+
+mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
+
+%{
+analysisSettings               = {} ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        =   1  ;
+analysisSettings.finalTime     =   600 ;
+analysisSettings.stopTolDeltau =   1e-8 ;
+analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolIts    =   15   ;
+%}
+
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-8 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 15 ;
+
+[matUsmod2, loadFactorsMatmod2 ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+girosUltimoNodomod2 = matUsmod2((num_elem+1)*6,:) ;
+descensosUltimoNodomod2 = matUsmod2((num_elem+1)*6-3,:) ;
+factorescargamod2 = loadFactorsMatmod2(:,2) ;
+
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 lw = 1 ; ms = 1 ; plotfontsize = 14 ;
 
-figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
+figure('Name','Load Factors / Plasticity','NumberTitle','off') ;
 hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
-laby = ylabel('Moments / Forces') ;
-legend('Degree of Freedom \theta', 'Degree of Freedom y', 'Validation (\theta)', 'Validation (y)', 'location','Southeast') ;
+laby = ylabel('Forces') ;
+legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y', 'location','Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
+
+print('Forces.png', '-dpng') ;
+
+figure('Name','Moments (Validation) / Plasticity','NumberTitle','off') ;
+hold on, grid on
+plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+
+plot(abs(girosUltimoNodomod2), factorescargamod2*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(descensosUltimoNodomod2), factorescargamod2*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+
+
+plot(abs(girosUltimoNodo), factorescarga*2.5,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+
+labx = xlabel('Generalized displacements in free node (m, rad)') ; 
+laby = ylabel('Moments') ;
+legend('Val. Analitic (\theta)', 'Val. Analitic (y)',  'Val. ONSAS (\theta)', 'Val. ONSAS (y)','location','Southeast') ;
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
+
+print('Moment.png', '-dpng') ;
 
 %{
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
