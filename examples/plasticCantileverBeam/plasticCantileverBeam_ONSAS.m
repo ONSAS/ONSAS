@@ -269,7 +269,7 @@ factorescargamod2 = loadFactorsMatmod2(:,2) ;
 
 % /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
-lw = 1 ; ms = 1 ; plotfontsize = 14 ;
+lw = 1.5 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
@@ -288,8 +288,8 @@ print('Forces.png', '-dpng') ;
 figure('Name','Cantilever Beam / Plasticity (moments validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(abs(girosUltimoNodo), factorescarga*2.5,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#4DBEEE") ;
 plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
