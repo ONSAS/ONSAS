@@ -124,7 +124,7 @@ KTtp1red = systemDeltauMatrix ;
 % compute stress at converged state
 if ~BEMbool
     [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell, []   ) ;
-elseif BEMbool
+elseif ~isempty( BEMbool ) && BEMbool
     [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell, Wake ) ;
 end
 
@@ -148,10 +148,13 @@ else
 end
 
 global nonWakeModel
-
 % --- update uBEM induced velocity
 if ~isempty( BEMbool ) && BEMbool && ~nonWakeModel
-    [ Waket1p, WakeQSt1p, WakeINTt1p ] = BEMcomputeInducedVel( BCsData, modelProperties, modelCurrSol, nextTime );
+    [ Waket1p, WakeQSt1p, WakeINTt1p, AoA, clift, cdrag ] = BEMcomputeInducedVel( BCsData, modelProperties, modelCurrSol, nextTime );
+    global WakeOut         ; WakeOut   = [ WakeOut  , Waket1p ] ;
+    global AoAoutput       ; AoAoutput = [ AoAoutput, AoA     ] ;
+    global cLiftOut        ; cLiftOut  = [ cLiftOut , clift   ] ;
+    global cDragOut        ; cDragOut  = [ cDragOut , cdrag   ] ;
 elseif ~isempty( BEMbool ) && BEMbool && nonWakeModel
     nNodes     = length(modelProperties.Nodes(:,1));
     Waket1p    = zeros( 3*nNodes, 1 ) ;

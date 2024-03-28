@@ -22,7 +22,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                      aeroCoefs, chordVector, aeroNumericalParams , ...
                                     analysisSettings, nextTime, currElem         , ...
                                     computeAeroStiffnessMatrix, BEMparams        , ...
-                                    polarAeroCoefs, dynStallParams, Wake          )
+                                    polarAeroCoefs, dynStallParams, Wake)
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
@@ -74,21 +74,25 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   xs = elemCoords(:) ;
   
   % Load element properties to fluid loads
-  % length of the chord vector
-%   if ~isempty( uBEMbool ) && uBEMbool
-%       global elemIDsection; global elemRadius; global elemBeta;
-%       clear chordVector
-%       Frame geom properties
-%       [elemIDsection, elemRadius, chordVector, elemBeta, nodIdx1, nodIdx2] = BEMframeProps(uBEMdataCoords, xs);
-%       dimCharacteristic = norm( ( chordVector(:,1) + chordVector(:,2) )/2 ) ;
   if ~isempty( BEMbool ) && BEMbool
-      [ nodID, nodRadio, nodChords, nodTwist, nodes ] = BEMframeProps(BEMparams, xs);
+      bladeRadio     = BEMparams{1}(:) ;
+      chordVector    = [ BEMparams{2}(1:3); BEMparams{2}(4:6) ]' ;
+      bladeThick     = BEMparams{3}(:) ;
+      bladeAeroTws   = BEMparams{4}(:) ;
+      bladestrucTws  = BEMparams{5}(1) ;
+      %global Theta ;
+      %global bladePitch; 
+      %Theta = deg2rad( [bladestrucTws(1), 0, 0] - [bladeAeroTws(1), 0, 0] + bladePitch );
       dimCharacteristic = [];
-      chordVector = nodChords;
   else
+      bladeRadio    = [] ;
+      bladeThick    = [] ;
+      bladestrucTws = [] ; 
+      bladeAeroTws  = [] ;
       dimCharacteristic = norm( chordVector ) ;
   end
-
+%   if currElem == 33 || currElem == 63
+%       check = 1; end
   % compute corotational rotation matrices
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
 
@@ -130,7 +134,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % auxiliary matrix created for uBEM method to compute twist angle
   L1 = [ 1 0 0   ;
          0 0 0   ;
-         0 0 0]  ;
+         0 0 0 ] ;
 
   % auxiliary matrix created to project transversal velocity
   L2 = [ 0 0 0   ;
@@ -149,69 +153,10 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
   % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
-  if ~isempty( BEMbool ) && BEMbool
-      % induced velocity vector of node 1 and node 2 in global corotational system
-      % Init induced vel components at first enter to iteration loop
+  
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime )  ;
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
 
-      %% -------------------------------------------------------------------------------- 
-      % Node 1
-      % Velocity params
-      % Node 1 frame velocity
-      udotFrame1 = Udote( 1:2:6 ) ;
-      % Node 1 flow velocity
-      udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime )  ;
-      % Node 1 induced velocity of previous time step
-      inducedVelNod1 = Wake( 1:3 );
-      % Compute relative velocity of node 1 
-      [VpiRelNode1, VpiRelperpNode1, VrelGnode1] = BEMcomputeVpiRels( udotFlowNode1, ...
-                                    udotFrame1, inducedVelNod1, Rroof1, Rr, L2, L3 ) ;
-      
-      % Compute angle of attack of node 1
-      tchRef1 = expon(-nodTwist(:,1))*nodChords(:,1)  ; 
-      tch1    = ( tchRef1 / norm( tchRef1 ) ) ;
-      if( norm( VpiRelNode1 ) == 0 )
-          td1 = tchNod1 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
-      else % the drag direction at a generic cross section in deformed coordinates is:
-          td1 = VpiRelNode1 / norm( VpiRelNode1 ) ;
-      end
-      cosBetanod1 = dot( td1, tch1 ) / ( norm(td1) * norm(tch1) ) ;
-      sinBetanod1 = dot( cross(td1, tch1), [1 0 0] ) / ( norm( td1 ) * norm( tch1 ) ) ;
-      betaRelnod1 = sign( sinBetanod1 ) * acos( cosBetanod1 ); 
-      
-      % Compute node 1 aero params
-      [clstat(1), cdstat(1), cmstat(1)] = BEMinterpAeroParams( polarAeroCoefs, nodID(1), betaRelnod1);
-      % ----------------------------------------------------------------------------------
-      % Node 2
-      % Velocity params   
-      % Node 2 frame velocity
-      udotFrame2 = Udote( 7:2:12 ) ;
-      % Node 2 flow velocity
-      udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime )  ;
-      % Node 2 induced velocity of previous time step
-      inducedVelNod2 = Wake( 4:6 );
-      % Compute relative velocity of node 2 
-      [VpiRelNode2, VpiRelperpNode2, VrelGnode2] = BEMcomputeVpiRels( udotFlowNode2, ...
-                                    udotFrame2, inducedVelNod2, Rroof2, Rr, L2, L3 );
-      
-      % Compute angle of attack of node 2
-      tchRef2 = expon(-nodTwist(:,2))*nodChords(:,2)  ; 
-      tch2    = ( tchRef2 / norm( tchRef2 ) ) ;
-      if( norm( VpiRelNode2 ) == 0 )
-          td2 = tchNod2 ;%define tch equal to td if vRel is zero to compute force with zero angle of attack
-      else % the drag direction at a generic cross section in deformed coordinates is:
-          td2 = VpiRelNode2 / norm( VpiRelNode2 ) ;
-      end
-      cosBetanod2 = dot( td2, tch2 ) / ( norm(td2) * norm(tch2) ) ;
-      sinBetanod2 = dot( cross(td2, tch2), [1 0 0] ) / ( norm( td2 ) * norm( tch2 ) ) ;
-      betaRelnod2 = sign( sinBetanod2 ) * acos( cosBetanod2 );  
-    
-      % Compute node 1 aero params
-      [clstat(2), cdstat(2), cmstat(2)] = BEMinterpAeroParams( polarAeroCoefs, nodID(2), betaRelnod2);  
-  else
-      udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime )  ;
-      udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
-      clstat = []; cdstat = []; cmstat = [];
-  end
   % compact them into a single vector for the element
 
   %% ----------------------------------------------------------
@@ -316,8 +261,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                     chordVector', dimCharacteristic,...
                                     I3, O3, P, G, EE, L2, L3,...
                                     aeroCoefs, densityFluid, viscosityFluid,...
-                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool, BEMbool, ...
-                                    clstat, cdstat, cmstat, Wake ) ;
+                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool, ...
+                                    BEMbool, bladeRadio, bladeThick, bladestrucTws, bladeAeroTws, polarAeroCoefs, Wake ) ;
 
     if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
 
@@ -356,7 +301,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                     Ue, Udote, Udotdote              ,...
                                     aeroCoefs, chordVector, aeroNumericalParams      , ...
                                     analysisSettings, nextTime, currElem, BEMparams  , ...
-                                    polarAeroCoefs, dynStallParams ) ;
+                                    polarAeroCoefs, dynStallParams, Wake ) ;
   else
     tMatHydroElemU = [] ;
   end
@@ -373,7 +318,7 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
                                             Ue, Udote, Udotdote                       ,...
                                             aeroCoefs, chordVector, aeroNumericalParams       ,... 
                                             analysisSettings, nextTime, currElem, BEMparams  , ...
-                                            polarAeroCoefs, dynStallParams )
+                                            polarAeroCoefs, dynStallParams, Wake )
   % disp("entre")
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
@@ -390,8 +335,8 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
                                       UplusDeltaU, Udote, Udotdote                ,...
                                       aeroCoefs, chordVector, aeroNumericalParams ,...
                                       analysisSettings,nextTime, currElem         ,...
-                                      false, BEMparams, polarAeroCoefs, dynStallParams ) ;
-    
+                                      false, BEMparams, polarAeroCoefs, dynStallParams, Wake ) ;
+
     % central difference
     dispTangMatElem(:, indexIncrementU ) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor

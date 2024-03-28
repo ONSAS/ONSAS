@@ -24,9 +24,15 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
   xs = elemCoords(:) ;
 
   % ----- material and geometric params ------
-  E   = elemConstitutiveParams(2) ;
-  nu  = elemConstitutiveParams(3) ;
-  G   = E/(2*(1+nu)) ;
+  if length(elemConstitutiveParams) == 4
+      E   = elemConstitutiveParams(2) ;
+      nu  = elemConstitutiveParams(3) ;
+      G   = elemConstitutiveParams(4) ;
+  else
+      E   = elemConstitutiveParams(2) ;
+      nu  = elemConstitutiveParams(3) ;
+      G   = E/(2*(1+nu))              ;
+  end
   rho = elemrho ;
   if analysisSettings.addedMassBool
     rho = rho + analysisSettings.fluidProps{1} ;

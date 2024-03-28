@@ -24,7 +24,8 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
                                             vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3,...
                                             aeroCoefs, densityFluid, viscosityFluid                   ,...
                                             VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, ...
-                                            fluidFlowBool, ILVIVBool, BEMbool, clstat, cdstat, cmstat, Wake )
+                                            fluidFlowBool, ILVIVBool, BEMbool, ...
+                                            bladeRadio, bladeThick, blstrucTws, blAerotws, polarAeroCoefs, Wake )
   
 %% -----------------------------------------------------------------------
 % Bernoulli weight function
@@ -93,8 +94,23 @@ end
 % ------------ Compute relative incidence angle  ------------
 % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
 if ~isempty( BEMbool ) && BEMbool 
-    tch    = N1*vecChordUndef(1,:)' + N2*vecChordUndef(2,:)' ;
-    dimCharacteristic = norm(tch) ;
+    % Interpolation element point
+    interPoint = (bladeRadio(2) - bladeRadio(1))*x/l0 + bladeRadio(1) ;
+    % Interpolate Thick 
+    tThick     = spline(bladeRadio, bladeThick, interPoint )          ;
+    % Interpolate Twist of mid positions of the blade
+    elemTwist  = blAerotws(2) - blAerotws(1)  ;
+    tTwist     = spline(bladeRadio, [0, elemTwist], interPoint )      ;
+    tTwist     = [ tTwist, 0, 0 ] ;
+    % Interpolate chord
+    tChord     = spline(bladeRadio, vecChordUndef', interPoint )      ;  
+    % Rotate the chord from princiapl axes to local defromed chord axes
+    strucTwist  = [blstrucTws, 0 , 0] ;
+    chordRefSys = deg2rad(- strucTwist - tTwist) ;  % Rotatation angle for chord direction 
+    tChord      = expon( chordRefSys )*(tChord)  ;  % Express local chord in aerodinamic coords into vector in principal axes 
+   
+    tch         = tChord/norm(tChord)  ;
+    dimCharacteristic = norm(tChord)  ;
 else
     tch = (vecChordUndef / norm( vecChordUndef )) ;
 end
@@ -109,7 +125,8 @@ else % the drag direction at a generic cross section in deformed coordinates is:
     td = VpiRelG / norm( VpiRelG ) ;
 end
 
-if isnan(  norm( VpiRelG)  ),  stop, end
+if isnan(  norm( VpiRelG)  ),  
+    stop, end
 
 cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
 sinBeta  = dot( cross(td, tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
@@ -121,11 +138,24 @@ betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
 % Compute the lift, drag and pitch coefs corresponding to the uBEM model
 if ~isempty( BEMbool ) && BEMbool    
     % Interpolated Cl, Cd and Cm in evaluated gaussian section interpolated with linear shape functions   
+    aoastat = polarAeroCoefs{1} ;
+    clstat  = polarAeroCoefs{2} ;
+    cdstat  = polarAeroCoefs{3} ;
+    cmstat  = polarAeroCoefs{4} ;
+
+    claoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
+    cdaoa  = interp1(aoastat(:,1), cdstat, rad2deg(betaRelG)) ;
+    cmaoa  = interp1(aoastat(:,1), cmstat, rad2deg(betaRelG)) ;
     
-    c_d  = cdstat(1) * N1 + cdstat(2) * N2 ;
-    c_l  = clstat(1) * N1 + clstat(2) * N2 ;
-    c_m  = cmstat(1) * N1 + cmstat(2) * N2 ;
-    
+    if bladeThick(1) == bladeThick(2) % only for first example
+        c_l = ( claoa(1) + claoa(2) )/2 ;
+        c_d = ( cdaoa(1) + cdaoa(2) )/2 ;
+        c_m = ( cmaoa(1) + cmaoa(2) )/2 ;
+    else
+        c_l    = spline( bladeThick', claoa, tThick ) ;
+        c_d    = spline( bladeThick', cdaoa, tThick ) ;
+        c_m    = spline( bladeThick', cmaoa, tThick ) ;
+    end
 else
   %-----------------------------------------------------------------
     

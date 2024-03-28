@@ -23,9 +23,16 @@ function  [ fs, ks, stress, rotData ] = frame_internal_force( ...
   xs = elemCoords(:) ;
 
   % ----- material and geometric params ------
-  E   = elemConstitutiveParams(2) ;
-  nu  = elemConstitutiveParams(3) ;
-  G   = E/(2*(1+nu))              ;
+  if length(elemConstitutiveParams) >= 4
+      E   = elemConstitutiveParams(2) ;
+      nu  = elemConstitutiveParams(3) ;
+      G   = elemConstitutiveParams(4) ;
+  else
+      E   = elemConstitutiveParams(2) ;
+      nu  = elemConstitutiveParams(3) ;
+      G   = E/(2*(1+nu))              ;
+  end
+
   % ----- extract cross section properties ---
   [Area, J, Iyy, Izz, ~] = crossSectionProps ( elemCrossSecParams, 0 ) ; % select a ficticious elemrho 
   % ------------------------------------------

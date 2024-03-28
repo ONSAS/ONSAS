@@ -34,9 +34,9 @@ elements = checkOrSetDefault( elements, 'aeroNumericalParams' , {4, false, true}
 
 %------------------
 % BEM test
-elements = checkOrSetDefault( elements, 'BEMparams'           , []            ) ; % nodes, radio, twist, chord, IDsection
-elements = checkOrSetDefault( elements, 'dynStallParams'      , [] );             % IDsection, AoA0, CnAoAslope, Cd0, Cn1, Cn2
-elements = checkOrSetDefault( elements, 'airFoilPolars'       , {[],[],[],[]} ) ; % IDsection, listAoA, clstat, cdstat, cmstat 
+elements = checkOrSetDefault( elements, 'BEMparams'           , { [], [], [], [], [] } ) ; % radio, chord, thick, aeroTwist, strTwist
+elements = checkOrSetDefault( elements, 'dynStallParams'      , [] )                 ; % Modelname (Oye or BLM), IDsection, (fstat, clinv clfs ) or (AoA0, CnAoAslope, Cd0, Cn1, Cn2)
+elements = checkOrSetDefault( elements, 'airFoilPolars'       , { [],[],[],[] } )    ; % listAoA, clstat, cdstat, cmstat 
 %------------------
 
 elements = setDefauAeroCrossSecProps( elements );

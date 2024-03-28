@@ -115,7 +115,6 @@ for elem = 1:nElems
   polarAeroCoefs      = elements( mebVec( 2 ) ).airFoilPolars       ;
   dynStallParams      = elements( mebVec( 2 ) ).dynStallParams      ;
 
-
   %md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
@@ -179,6 +178,14 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
+      
+      if BEMbool && ~isempty(BEMparams)
+          global Theta;
+          global bladePitch ;
+          bladeAeroTws  = [ BEMparams{4}(1), 0, 0 ] ;
+          bladeStrucTws = [ BEMparams{5}(1), 0, 0 ] ;
+          Theta = deg2rad( bladeStrucTws - bladeAeroTws  + bladePitch);
+      end
 
 		if strcmp(modelName, 'elastic-linear')
 
@@ -215,7 +222,7 @@ for elem = 1:nElems
         aeroBool = false;
     end
 
-    if BEMbool
+    if ~isempty(BEMbool)  && BEMbool
         elemWake       = Wake( dofsWake ) ;
     else 
         elemWake       = [];
@@ -223,7 +230,7 @@ for elem = 1:nElems
     
     %md compute fluid forces on the element
     if aeroBool && fsBool
-      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,             ...
+      [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,           ...
                                      elemCrossSecParams                   ,             ...
                                      elemDisps   ,                                      ...
                                      dotdispsElem   ,                                   ...
