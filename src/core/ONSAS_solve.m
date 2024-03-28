@@ -44,7 +44,8 @@ while finalTimeReachedBoolean == false
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
-
+  global globalNIterAero;
+  globalNIterAero = [globalNIterAero, modelNextSol.timeStepIters];
   % iterations average
   iterations_average = ...
     (   iterations_average* (modelNextSol.timeIndex-2) + modelNextSol.timeStepIters ) ...
@@ -63,8 +64,8 @@ while finalTimeReachedBoolean == false
   modelCurrSol   	=  	modelNextSol ;
   matUs          	= [ matUs          modelCurrSol.U                     ] ;
   loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;	
-	cellFint{end+1}  	= modelCurrSol.matFint ;
-	cellStress{end+1}	= modelCurrSol.Stress ;
+  cellFint{end+1}  	= modelCurrSol.matFint ;
+  cellStress{end+1}	= modelCurrSol.Stress ;
 		
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )

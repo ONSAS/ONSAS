@@ -17,6 +17,8 @@
 % 
 function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
 
+  global Theta;
+    
   assert( iscolumn(x), 'coordinates must be in a column vector.')
 
   lengthElem = norm(x) ;
@@ -26,7 +28,7 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   eyG = [0 1 0]' ;    ezG = [0 0 1]' ;
 
   % Vector normal to beam in reference configuration
-  if ( abs( exL(1) ) > 1e-8*lengthElem ) || ( abs( exL(2) ) > 1e-8*lengthElem ) ; % if exL it is not ezG
+  if ( abs( exL(1) ) > 1e-8*lengthElem ) || ( abs( exL(2) ) > 1e-8*lengthElem )  % if exL it is not ezG
     aux = cross( ezG, exL ) ;
     eyL = aux / norm( aux ) ;
   else
@@ -34,6 +36,12 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   end
   ezL = cross( exL, eyL ) ;
 
-  Ro  = [ exL eyL ezL ] ;
+  Ro  = [ exL eyL ezL ]   ;
+  
+  if ~isempty( Theta )
+      Rrot  = expon([Theta, 0, 0]') ;
+      RrotT = [1 0 0; 0 cos(Theta(1)) -sin(Theta(1)); 0 sin(Theta(1)) cos(Theta(1))];
+      Ro    = Ro*Rrot ;
+  end
 
 end

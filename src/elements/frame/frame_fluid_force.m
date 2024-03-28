@@ -16,28 +16,35 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % This function computes fluid forces as proposed in https://arxiv.org/abs/2204.10545
-function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           , ...
-                                     elemCrossSecParams                         , ...
-                                     Ue, Udote, Udotdote                        , ...
-                                     aeroCoefs, chordVector,aeroNumericalParams ,...
-                                    analysisSettings, nextTime, currElem         ,...
-                                    computeAeroStiffnessMatrix)
+function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords            , ...
+                                     elemCrossSecParams                          , ...
+                                     Ue, Udote, Udotdote                         , ...
+                                     aeroCoefs, chordVector, aeroNumericalParams , ...
+                                    analysisSettings, nextTime, currElem         , ...
+                                    computeAeroStiffnessMatrix, BEMparams        , ...
+                                    polarAeroCoefs, dynStallParams, Wake)
 
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
+
+  %% Declare booleans for VIV model
+
   % Declare booleans for VIV model
+
   global VIVBool
   global ILVIVBool
   global constantLiftDir
   global uniformUdot
   global fluidFlowBool
 
-
   AMBool = analysisSettings.addedMassBool ;
 
   % Implementation Booleans for internal test, baseBool changes the local angles computation
   baseBool = false ;
+  
+  % Set boolean to run BEM model internally
+  BEMbool   = analysisSettings.modelBEM   ;
 
   % extract fluid properties
   densityFluid   = analysisSettings.fluidProps{1,1} ;
@@ -48,7 +55,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
 
   % extract nonLinearity in aero force boolean
-  numGaussPoints = aeroNumericalParams{1};
+  numGaussPoints         = aeroNumericalParams{1};
   geometricNonLinearAero = aeroNumericalParams{3} ;
 
   % Boolean to compute the fluid force with ut = 0, this should be used if the fluid loads are computed in the reference
@@ -58,18 +65,34 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   end
 
   % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
-  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime ) ;
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6) , nextTime ) ;
   udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
   % compact them into a single vector for the element
   udotFlowElem  = [udotFlowNode1; udotFlowNode2] ;
 
   % Elem reference coordinates:
   xs = elemCoords(:) ;
-
+  
   % Load element properties to fluid loads
-  % length of the chord vector
-  dimCharacteristic = norm( chordVector ) ;
-
+  if ~isempty( BEMbool ) && BEMbool
+      bladeRadio     = BEMparams{1}(:) ;
+      chordVector    = [ BEMparams{2}(1:3); BEMparams{2}(4:6) ]' ;
+      bladeThick     = BEMparams{3}(:) ;
+      bladeAeroTws   = BEMparams{4}(:) ;
+      bladestrucTws  = BEMparams{5}(1) ;
+      %global Theta ;
+      %global bladePitch; 
+      %Theta = deg2rad( [bladestrucTws(1), 0, 0] - [bladeAeroTws(1), 0, 0] + bladePitch );
+      dimCharacteristic = [];
+  else
+      bladeRadio    = [] ;
+      bladeThick    = [] ;
+      bladestrucTws = [] ; 
+      bladeAeroTws  = [] ;
+      dimCharacteristic = norm( chordVector ) ;
+  end
+%   if currElem == 33 || currElem == 63
+%       check = 1; end
   % compute corotational rotation matrices
   [R0, Rr, Rg1, Rg2, Rroof1, Rroof2] = corotRotMatrices( Ue, elemCoords ) ;
 
@@ -95,7 +118,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, G, P, EE ] = corotVecMatAuxStatic(...
                                                                   R0, Rr, Rg1, Rg2, l, II, O3, O1);
   % -------------------------------
-
+  
   % local rotations
   if ~baseBool ;
     Rroof1 = Rr' * Rg1 * R0 ;% Eq(30) J.-M. Battini 2002
@@ -107,19 +130,41 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   tl1 = logar( Rroof1 ) ; % Eq(31) J.-M. Battini 2002
   tl2 = logar( Rroof2 ) ;% Eq(31) J.-M. Battini 2002
+  
+  % auxiliary matrix created for uBEM method to compute twist angle
+  L1 = [ 1 0 0   ;
+         0 0 0   ;
+         0 0 0 ] ;
 
   % auxiliary matrix created to project transversal velocity
-  L2 = [ 0 0 0 ;
-         0 1 0 ;
+  L2 = [ 0 0 0   ;
+         0 1 0   ;
          0 0 1 ] ;
+
   % 90 degrees rotation matrix
   L3 = expon( [pi/2 0 0] ) ;
+
+  % --------------------------------------------------------
 
   % Extract points and weights for numGausspoints selected
   [xIntPoints, wIntPoints] = gaussPointsAndWeights( numGaussPoints ) ;
 
-  % WOM computation call for cases with VIVbool equal to true
-  if ~isempty( VIVBool ) 
+  % Fluid velocity definition
+  % fluid velocity at the nodes of the element evaluated in deformed configuration (spatial points):
+  % check user Flow Vel is not empty
+  assert( ~isempty( userFlowVel ), 'empty user windvel' )
+  
+  udotFlowNode1 = feval( userFlowVel, elemCoords(1:3)' + Ue(1:2:6), nextTime )  ;
+  udotFlowNode2 = feval( userFlowVel, elemCoords(4:6)' + Ue(7:2:12), nextTime ) ;
+
+  % compact them into a single vector for the element
+
+  %% ----------------------------------------------------------
+  % WOM or uBEM computation call for cases with VIVbool or uBEMbool equal to true
+  % -----------------------------------------------------------
+  if ~isempty( VIVBool )
+    %% ----------------------------------------------------------------
+    % WOM computational
     if VIVBool && ( norm(udotFlowNode1)*norm(udotFlowNode2) ) > 0 % VIV with non null flow
       % extract accelerations and velocities (global coordinates) of the nodes
       % node 1
@@ -192,14 +237,16 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       q = 0 ; p = 0;% No lift with circular cross section!
       % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
       tlift1 = [] ; tlift2 = [] ;
-    end      
+    end
   else
     q = 2 ; p = 0;
     % declare lift constant directions which are not taken into account (in this case the lift direction is updated)
     tlift1 = [] ; tlift2 = [] ;
   end
 
+  %% ----------------------------------------------------------------------- 
   % Compute the element fluid force by the equivalent virtual work theory
+  % ------------------------------------------------------------------------
   fDragLiftPitchElem = zeros(12,1) ;
 
   for ind = 1 : length( xIntPoints )
@@ -214,49 +261,64 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
                                     chordVector', dimCharacteristic,...
                                     I3, O3, P, G, EE, L2, L3,...
                                     aeroCoefs, densityFluid, viscosityFluid,...
-                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool) ;
+                                    VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool, ...
+                                    BEMbool, bladeRadio, bladeThick, bladestrucTws, bladeAeroTws, polarAeroCoefs, Wake ) ;
 
     if isnan( norm(fDragLiftPitchElem)), error(' drag force is NaN'), end
-  end
 
+  end
+  % ------------------------------------------------------------------------
+
+
+  %% -----------------------------------------------------------------------
 
   % express aerodynamic force in ONSAS nomenclature  [force1 moment1 force2 moment2  ...];
+  % ------------------------------------------------------------------------
   fDragLiftPitchElem = swtichToONSASBase( fDragLiftPitchElem ) ;
-  % -------------------------------
+  % ------------------------------------------------------------------------
 
+  %% -----------------------------------------------------------------------
   % Compute the element fluid force by the equivalent virtual work theory
+  % -----------------------------------------------------------------------
   fAddedMassElem = addedMassForce( AMBool                              ,...
                                 l0, elemCoords, elemCrossSecParams     ,...
                                 analysisSettings.deltaT, nextTime      ,...
                                 userFlowVel, densityFluid ) ;
 
+
   % -------------------------------
 
   fHydroElem =  fDragLiftPitchElem + fAddedMassElem ;
+  % -----------------------------------------------------------------------
 
-  % --- compute tangent matrix (dFagElem/du) using Central Difference  ---
+  %% -------------------------------------------------------------------- 
+  % compute tangent matrix (dFagElem/du) using Central Difference
+  % ---------------------------------------------------------------------
   % fHydroElem(udotdot, udot, u + iu) - fHydroElem
   if computeAeroStiffnessMatrix
     tMatHydroElemU = dispTangMatElem( fHydroElem                     ,...
                                     elemCoords, elemCrossSecParams   ,...
                                     Ue, Udote, Udotdote              ,...
-                                    aeroCoefs, chordVector, aeroNumericalParams ,...
-                                    analysisSettings, nextTime, currElem ) ;
+                                    aeroCoefs, chordVector, aeroNumericalParams      , ...
+                                    analysisSettings, nextTime, currElem, BEMparams  , ...
+                                    polarAeroCoefs, dynStallParams, Wake ) ;
   else
     tMatHydroElemU = [] ;
   end
-  % -------------------------------
+  % ---------------------------------------------------------------------
 
 end
 
 
-% This function returns the tangent matrix of the hydrodinamic force vector with respect to u
-% employing a simple central difference alg.
+%% -----------------------------------------------------------------------
+% This function returns the tangent matrix of the hydrodinamic force vector 
+% with respect to u employing a simple central difference alg.
 function dispTangMatElem = dispTangMatElem( fHydroElem                                ,...
                                             elemCoords, elemCrossSecParams            ,...
                                             Ue, Udote, Udotdote                       ,...
-                                            aeroCoefs, chordVector, aeroNumericalParams ,... 
-                                            analysisSettings , nextTime, currElem )
+                                            aeroCoefs, chordVector, aeroNumericalParams       ,... 
+                                            analysisSettings, nextTime, currElem, BEMparams  , ...
+                                            polarAeroCoefs, dynStallParams, Wake )
   % disp("entre")
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
@@ -268,12 +330,13 @@ function dispTangMatElem = dispTangMatElem( fHydroElem                          
     % increment displacement
     UplusDeltaU = Ue + h * e_i   ;
     % compute forces with u + h*ei at the index indexIncrementU}
-    fhydro_incU = frame_fluid_force( elemCoords                                ,...
-                                      elemCrossSecParams                        ,...
-                                      UplusDeltaU, Udote, Udotdote              ,...
+    fhydro_incU = frame_fluid_force( elemCoords                                   ,...
+                                      elemCrossSecParams                          ,...
+                                      UplusDeltaU, Udote, Udotdote                ,...
                                       aeroCoefs, chordVector, aeroNumericalParams ,...
-                                      analysisSettings,nextTime, currElem,...
-                                      false ) ;
+                                      analysisSettings,nextTime, currElem         ,...
+                                      false, BEMparams, polarAeroCoefs, dynStallParams, Wake ) ;
+
     % central difference
     dispTangMatElem(:, indexIncrementU ) = ( fhydro_incU - fHydroElem ) / h ;
   end % endfor
