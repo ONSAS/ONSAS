@@ -3,7 +3,7 @@
 // sizes for another case: rInt = 0.05 ; rExt = 0.15 ;
 Lx = 2 ; Ly = 1 ;
 
-ms = .1 ; //
+ms = .08 ; //
 
 Point(1) = {  0, 0,  0, ms};
 Point(2) = { Lx, 0,  0, ms};
