@@ -216,6 +216,7 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
 
+%{
 figure('Name','Cantilever Beam / Plasticity','NumberTitle','off');
 hold on, grid on
 plot(gxin, Mn, 'k-o' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
@@ -251,3 +252,4 @@ legend('Plastic parameter \xi_2','location','Northeast');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity') ;
+%}
