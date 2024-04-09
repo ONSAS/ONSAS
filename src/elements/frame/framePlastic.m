@@ -96,7 +96,8 @@ for ii = 1:npi
 
 end
 
-Khalfa = Khalfa + Ks ; % integral + Ks
+% integral + Ks
+Khalfa = Khalfa + Ks ;
 
 % element stiffness matrix
 if soft_hinge_boolean == true
@@ -143,32 +144,6 @@ end
 
 if soft_hinge_boolean == true
 
-qfailxpi = min(-Ks*xin2(xdi), Mu) ;
-
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
-
-if phifailxpi <= 0
-   
-    alfan1 = alfan ;
-    xin21 = xin2(xdi) ;
-
-else
-
-    if  xin2(xdi)<=-Mu/Ks
-
-        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
-
-    else
-
-        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
-    
-    end
-    
-    alfan1      = alfan     + gamma2*sign(tM) ;
-    xin21    = xin2(xdi)    + gamma2 ;
-
-end
-
-end
+[soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
 
 end
