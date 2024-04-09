@@ -33,6 +33,9 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
+% \/
+% called by the function assembler
+
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
 l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
