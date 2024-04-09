@@ -12,6 +12,7 @@ materials = struct() ;
 materials.modelName  = 'elastic-linear' ;
 materials.modelParams =  [ E nu ]       ;
 
+
 elements = struct() ;
 elements(1).elemType           = 'edge'    ;
 elements(1).elemCrossSecParams = tz         ;
