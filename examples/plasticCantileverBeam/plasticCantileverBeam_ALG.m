@@ -90,7 +90,7 @@ alfan = 0 ;
 xd = 0 ;
 xdi = 1 ;
 
-Final_force = 230 ; % value of the final force
+Final_force = 1000 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
@@ -134,7 +134,7 @@ for ind = 2:length(load_factors)
     Fn(ind-1,1)     = Fint(4)   ;
     Alf(ind-1,1)    = alfan     ;
 
-    while converged_boolean == false && k < tolk
+    while converged_boolean == false && k < tolk && tM >= 0
 
         k = k + 1 ;
 
