@@ -1,0 +1,5 @@
+function  getInternalForces( cellFint )
+
+    cellFint
+
+
