@@ -17,7 +17,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemCrossSecParams, U )
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, localFint )
 
   vtkNodes        = [] ;
   vtkConec        = [] ;

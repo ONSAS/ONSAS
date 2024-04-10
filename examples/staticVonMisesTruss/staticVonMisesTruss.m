@@ -207,10 +207,6 @@ difLoadGreenNRAL_Jirasek = analyticLoadFactorsNRAL_Jirasek_Green' - loadFactorsN
 %md## Verification
 %md the numerical resolution is validated for both strain measures.
 %md
-
-getInternalForces(cellFint)
-stop
-
 verifBoolean =  ( ( norm( difLoadEngRot            ) / norm( loadFactorsNREngRot           ) ) <  1e-4 ) ...
              && ( ( norm( difLoadGreen             ) / norm( loadFactorsNRGreen            ) ) <  1e-4 ) ...
              && ( ( norm( difLoadGreenNRAL         ) / norm( loadFactorsNRALGreen          ) ) <  1e-4 ) ...

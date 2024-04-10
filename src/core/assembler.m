@@ -157,7 +157,7 @@ for elem = 1:nElems
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
-    fintLocCoord = norm( Finte )
+    fintLocCoord = norm( Finte ) ;
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
@@ -181,7 +181,7 @@ for elem = 1:nElems
 			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
 
       Finte = fs{1} ;  Ke = ks{1} ;
-
+      
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
