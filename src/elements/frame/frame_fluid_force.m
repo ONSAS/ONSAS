@@ -142,7 +142,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
          0 0 1 ] ;
 
   % 90 degrees rotation matrix
-  L3 = expon( [pi/2 0 0] ) ;
+  L3 = expon( -[pi/2 0 0] ) ;
 
   % --------------------------------------------------------
 
@@ -248,6 +248,10 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Compute the element fluid force by the equivalent virtual work theory
   % ------------------------------------------------------------------------
   fDragLiftPitchElem = zeros(12,1) ;
+
+  if currElem == 10 || currElem  == 40 || currElem  == 70
+    check = 1;
+    end
 
   for ind = 1 : length( xIntPoints )
 

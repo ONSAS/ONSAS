@@ -184,7 +184,7 @@ for elem = 1:nElems
           global bladePitch ;
           bladeAeroTws  = [ BEMparams{4}(1), 0, 0 ] ;
           bladeStrucTws = [ BEMparams{5}(1), 0, 0 ] ;
-          Theta = deg2rad( bladeStrucTws - bladeAeroTws  + bladePitch);
+          Theta = -deg2rad( bladeStrucTws + bladeAeroTws  + bladePitch);
       end
 
 		if strcmp(modelName, 'elastic-linear')

@@ -40,7 +40,7 @@ function [ Ro, lengthElem ] = beamRefConfRotMat( x ) ;
   
   if ~isempty( Theta )
       Rrot  = expon([Theta, 0, 0]') ;
-      RrotT = [1 0 0; 0 cos(Theta(1)) -sin(Theta(1)); 0 sin(Theta(1)) cos(Theta(1))];
+      %RrotT = [1 0 0; 0 cos(Theta(1)) -sin(Theta(1)); 0 sin(Theta(1)) cos(Theta(1))];
       Ro    = Ro*Rrot ;
   end
 

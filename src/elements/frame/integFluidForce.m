@@ -106,7 +106,7 @@ if ~isempty( BEMbool ) && BEMbool
     tChord     = spline(bladeRadio, vecChordUndef', interPoint )      ;  
     % Rotate the chord from princiapl axes to local defromed chord axes
     strucTwist  = [blstrucTws, 0 , 0] ;
-    chordRefSys = deg2rad(- strucTwist - tTwist) ;  % Rotatation angle for chord direction 
+    chordRefSys = deg2rad( -strucTwist -tTwist) ;  % Rotatation angle for chord direction 
     tChord      = expon( chordRefSys )*(tChord)  ;  % Express local chord in aerodinamic coords into vector in principal axes 
    
     tch         = tChord/norm(tChord)  ;
@@ -144,9 +144,42 @@ if ~isempty( BEMbool ) && BEMbool
     cmstat  = polarAeroCoefs{4} ;
 
     claoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
-    cdaoa  = interp1(aoastat(:,1), cdstat, rad2deg(betaRelG)) ;
+    cdaoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
     cmaoa  = interp1(aoastat(:,1), cmstat, rad2deg(betaRelG)) ;
-    
+%     if isequal(clstat(:,1), clstat(:,2))
+%         [clUnique, idx] = unique(clstat(:,1)) ;
+%         if idx == 1
+%             claoa(1:2) = [ clUnique, clUnique ] ;
+%         else 
+%             claoa(1)  = interp1(aoastat(idx,1), clstat(idx,1), rad2deg(betaRelG));
+%             claoa(2)  = interp1(aoastat(idx,1), clstat(idx,1), rad2deg(betaRelG));
+%         end
+%     else
+%         claoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
+%     end
+%     if isequal(cdstat(:,1), cdstat(:,2))
+%         [cdUnique, idx] = unique(cdstat(:,1)) ;
+%         if idx == 1
+%             cdaoa(1:2) = [ cdUnique, cdUnique ] ;
+%         else 
+%             cdaoa(1)  = interp1(aoastat(idx,1), cdstat(idx,1), rad2deg(betaRelG));
+%             cdaoa(2)  = interp1(aoastat(idx,1), cdstat(idx,1), rad2deg(betaRelG));
+%         end
+%     else
+%         cdaoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
+%     end
+%     if isequal(cmstat(:,1), cmstat(:,2))
+%         [cmUnique, idx] = unique(cmstat(:,1)) ;
+%         if idx == 1
+%             cmaoa(1:2) = [ cmUnique, cmUnique ] ;
+%         else 
+%             cmaoa(1)  = interp1(aoastat(idx,1), cmstat(idx,1), rad2deg(betaRelG));
+%             cmaoa(2)  = interp1(aoastat(idx,1), cmstat(idx,1), rad2deg(betaRelG));
+%         end
+%     else
+%         cmaoa  = interp1(aoastat(:,1), cmstat, rad2deg(betaRelG)) ;
+%     end
+
     if bladeThick(1) == bladeThick(2) % only for first example
         c_l = ( claoa(1) + claoa(2) )/2 ;
         c_d = ( cdaoa(1) + cdaoa(2) )/2 ;

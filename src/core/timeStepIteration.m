@@ -150,9 +150,10 @@ end
 global nonWakeModel
 % --- update uBEM induced velocity
 if ~isempty( BEMbool ) && BEMbool && ~nonWakeModel
-    [ Waket1p, WakeQSt1p, WakeINTt1p, AoA, clift, cdrag ] = BEMcomputeInducedVel( BCsData, modelProperties, modelCurrSol, nextTime );
+    [ Waket1p, WakeQSt1p, WakeINTt1p, AoA, vRel, clift, cdrag ] = BEMcomputeInducedVel( BCsData, modelProperties, modelCurrSol, nextTime );
     global WakeOut         ; WakeOut   = [ WakeOut  , Waket1p ] ;
     global AoAoutput       ; AoAoutput = [ AoAoutput, AoA     ] ;
+    global VrelOut         ; VrelOut   = [ VrelOut  , vRel    ] ;
     global cLiftOut        ; cLiftOut  = [ cLiftOut , clift   ] ;
     global cDragOut        ; cDragOut  = [ cDragOut , cdrag   ] ;
 elseif ~isempty( BEMbool ) && BEMbool && nonWakeModel
@@ -171,12 +172,17 @@ U          = Utp1 ;
 Udot       = Udottp1  ;
 Udotdot    = Udotdottp1 ;
 convDeltau = Utp1 - Ut ;
+
+global UdotOut         ; UdotOut        = [UdotOut, Udot] ;
 %
 Stress     = Stresstp1 ;
 
 timeIndex  = modelCurrSol.timeIndex + 1 ;
 
 currTime   = nextTime ;
+if currTime == 10
+    check = True;
+end
 
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
