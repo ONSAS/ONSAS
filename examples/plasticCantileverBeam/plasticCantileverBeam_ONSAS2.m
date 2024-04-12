@@ -31,6 +31,11 @@
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
 
+% ONSAS ( 1 ELEMENT)
+% ONSAS (10 ELEMENT)
+% Validation
+% Algorithm without ONSAS
+
 % =========================================================================
 
 close all ;
@@ -64,10 +69,11 @@ Mu = 376 ;
 % at the beginning..., there was no softening hinge
 soft_hinge_boolean = false ;
 
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% ONSAS (NUMBER OF ELEMENTS 1)
+
 % number of finite elements
 num_elem = 1 ;
-
-% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
 
 global historic_parameters
 
@@ -148,8 +154,6 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
 analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -168,40 +172,11 @@ girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
-% /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-
-% validation with the function moments_plus_internal_variables
-
-xd = 0 ;
-alpha = 0 ;
-xin1val = zeros(1,length(matUs(1,:))) ;
-kappa_plas_n = zeros(1,length(matUs(1,:))) ;
-kappa_plas_n1 = zeros(1,3) ;
-xin11val = zeros(1,3) ;
-
-Mn1_validation = zeros(1,length(matUs(1,:))) ;
-
-for i = 1:length(matUs(1,:))
-
-    v1 = matUs(3,i) ;
-    v2 = matUs(9,i) ;
-
-    theta1 = matUs(6,i) ;
-    theta2 = matUs(12,i) ;
-
-    kappa_plas_n(i) = kappa_plas_n1(1) ;
-    xin1val(i) = xin11val(1) ;
-    
-    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
-    
-    Mn1_validation(i) = Mn1(1) ;
-
-end
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% ONSAS (NUMBER OF ELEMENTS 10)
 
 % number of finite elements
 num_elem = 10 ;
-
-% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ 
 
 historic_parameters = [] ;
 
@@ -238,21 +213,9 @@ end
 
 mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
 
-%{
-analysisSettings               = {} ;
-analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   1  ;
-analysisSettings.finalTime     =   600 ;
-analysisSettings.stopTolDeltau =   1e-8 ;
-analysisSettings.stopTolForces =   1e-8 ;
-analysisSettings.stopTolIts    =   15   ;
-%}
-
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,60) 2e-4*ones(1,1000) 8e-5*ones(1,1000) 9e-6*ones(1,1510)] ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps*ones(1,1)] ;
 analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -261,63 +224,45 @@ analysisSettings.stopTolDeltau      = 1e-8 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 15 ;
 
-[matUsmod2, loadFactorsMatmod2 ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUs_10, loadFactorsMat_10 ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-girosUltimoNodomod2 = matUsmod2((num_elem+1)*6,:) ;
-descensosUltimoNodomod2 = matUsmod2((num_elem+1)*6-3,:) ;
-factorescargamod2 = loadFactorsMatmod2(:,2) ;
+girosUltimoNodo_10 = matUs_10((num_elem+1)*6,:) ;
+descensosUltimoNodo_10 = matUs_10((num_elem+1)*6-3,:) ;
+factorescarga_10 = loadFactorsMat_10(:,2) ;
 
 
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% validation / ONSAS with the function moments_plus_internal_variables
 
-%{
-figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
-hold on, grid on
-plot(rotation_hinge, factorescarga,'b-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
-labx = xlabel('Rotation \alpha in the hinge (rad)') ;
-laby = ylabel('Lambda') ;
-legend('Rotation \alpha in the hinge (rad)') ;
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plasticity') ;
-%}
+xd = 0 ;
+alpha = 0 ;
+xin1val = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n1 = zeros(1,3) ;
+xin11val = zeros(1,3) ;
 
-% Copyright 2024, ONSAS Authors (see documentation)
-%
-% This file is part of ONSAS.
-%
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% ONSAS is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
-% =========================================================================
+Mn1_validation = zeros(1,length(matUs(1,:))) ;
 
-% Euler-Bernoulli element with embeded discontinuity
-% Numerical modeling of softening hinges in thin Euler–Bernoulli beams
-% Francisco Armero, David Ehrlich / University of California, Berkeley
+for i = 1:length(matUs(1,:))
 
-% Embedded discontinuity finite element formulation
-% For failure analysis of planar reinforced concrete beams and frames
-% Miha Jukić, Boštjan Brank / University of Ljubljana
-% Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
+    v1 = matUs(3,i) ;
+    v2 = matUs(9,i) ;
 
-% =========================================================================
+    theta1 = matUs(6,i) ;
+    theta2 = matUs(12,i) ;
 
-% numerical example
-% cantilever beam loaded with a vertical force at the free end
+    kappa_plas_n(i) = kappa_plas_n1(1) ;
+    xin1val(i) = xin11val(1) ;
+    
+    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+    
+    Mn1_validation(i) = Mn1(1) ;
 
-% =========================================================================
+end
 
-% close all ;
-% clear ;
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% Algorithm without ONSAS (NUMBER OF ELEMENTS 1)
+
 addpath( genpath( [ pwd '/../../src'] ) ) ;
           
 % Mc, My, Mu / from the moment-curvature diagram
@@ -460,7 +405,7 @@ for ind = 2:length(load_factors)
 
 end
 
-% /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+% GRAPHICS
 
 lw = 1.5 ; ms = 1 ; plotfontsize = 14 ;
 
@@ -488,11 +433,8 @@ plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw*2, 'm
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-*' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-*' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;
 
-%plot(abs(girosUltimoNodo), factorescarga*2.5,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#4DBEEE") ;
-%plot(abs(descensosUltimoNodo), factorescarga*2.5, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
-
-plot(abs(girosUltimoNodomod2), factorescargamod2*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodomod2), factorescargamod2*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(abs(girosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(descensosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moments') ;
