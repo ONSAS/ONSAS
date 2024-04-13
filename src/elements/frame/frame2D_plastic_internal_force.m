@@ -157,12 +157,8 @@ if soft_hinge_boolean == true
 
     end
 
-end
-
-if soft_hinge_boolean == true
-
 [soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
-
+fprintf('\n | alpha = %8f | tM = %8f\n |' , alfan1, tM) ;
 end
 
 Fintout = zeros(12,1) ;
@@ -184,6 +180,9 @@ ks = {KTout} ;
 params_plastic_2Dframe_np1 = zeros(1,12);
 
 if soft_hinge_boolean == true
+
+% once the hinge is formed, we assume that the plastic deformations in the bulk
+% will not be changing any more
 
     params_plastic_2Dframe_np1(1:3) = kpn ;
     params_plastic_2Dframe_np1(4:6) = xin1 ;

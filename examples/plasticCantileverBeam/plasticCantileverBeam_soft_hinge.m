@@ -154,7 +154,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -171,6 +171,8 @@ otherParams.plots_format = 'vtk' ;
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
+
+%{
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 10)
@@ -405,24 +407,28 @@ for ind = 2:length(load_factors)
 
 end
 
+%}
+
 % GRAPHICS
 
-lw = 1.5 ; ms = 1 ; plotfontsize = 14 ;
+lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
-plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw*2, 'markersize', ms*0.5, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw*2, 'markersize', ms*0.5, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;
+% plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
+% plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Forces') ;
-legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y','MATLAB ALG (1 elem) \theta', 'MATLAB ALG (1 elem) y', 'location', 'Southeast') ;
+legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y', 'location', 'Southeast') ; % ,'MATLAB ALG (1 elem) \theta', 'MATLAB ALG (1 elem) y', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (load factors)') ;
+
+%{
 
 figure('Name','Cantilever Beam / Plasticity (moments validation)','NumberTitle','off') ;
 hold on, grid on
@@ -445,3 +451,5 @@ title('Cantilever Beam / Plasticity (moments validation)') ;
 
 print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces.png','-dpng');
 print('-f2','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Moment.png','-dpng');
+
+%}
