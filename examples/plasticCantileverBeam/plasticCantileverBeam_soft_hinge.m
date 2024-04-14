@@ -158,8 +158,8 @@ analysisSettings.incremArcLen       = [1e-3*ones(1,847) eps] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-15 ;
-analysisSettings.stopTolForces      = 1e-15 ;
+analysisSettings.stopTolDeltau      = 1e-8 ;
+analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 15 ;
 
 otherParams              = struct() ;
