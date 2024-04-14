@@ -35,6 +35,7 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
 
 % \/
 % called by the function assembler
+% /\
 
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
