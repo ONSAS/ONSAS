@@ -90,7 +90,7 @@ alfan   = params_plastic_2Dframe(10) ;
 tM      = params_plastic_2Dframe(11) ;
 xdi     = params_plastic_2Dframe(12) ;
 
-% set initial values
+% set initial values of the parameters for time n + 1
 kpn1  = zeros(3,1) ;
 xin11 = zeros(3,1) ;
 xin21 = 0 ; 

@@ -44,7 +44,7 @@ Btheta = [N(2) N(4)] ;
 Bd = [ Bu  0 0 0 0    ; ...
        0 0 Bv  Btheta ] ;
 
-Ghat = -1/l * ( 1 + 3*(1-2*xd/l)*(1-2*xpi/l) ) ;
+Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
 
 % curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
 
