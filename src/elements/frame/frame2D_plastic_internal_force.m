@@ -160,7 +160,7 @@ if soft_hinge_boolean == true
 
 [soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
 
-fprintf('\n | alpha = %8.4f | tM = %8.4f\n |' , alfan1, tM) ;
+fprintf('\n | alpha = %8.8f | tM = %8.4f\n |' , alfan1, tM) ;
 
 end
 
