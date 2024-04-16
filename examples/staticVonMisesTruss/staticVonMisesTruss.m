@@ -199,7 +199,7 @@ dominantDofs = 11 ;
 global scalingProjection
 scalingProjection = -1 ;
 %md
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[matUs, loadFactorsMat, cellFint] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
 loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;
 analyticLoadFactorsNRAL_Jirasek_Green = analyticLoadFactorsGreen(controlDispsNRAL_Jirasek_Green);
