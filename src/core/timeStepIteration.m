@@ -92,10 +92,10 @@ while  booleanConverged == 0
   % ---------------------------------------------------
 
   % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther  
-  fnorms = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
+  fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   % --- prints iteration info in file ---
-  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ], fnorms ) ;
+  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ], fnormsGlobal ) ;
 
 end % iteration while
 % --------------------------------------------------------------------

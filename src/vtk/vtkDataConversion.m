@@ -31,11 +31,13 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   %md create cells for point and cell data (displacemets)
   vtkPointDataCell = {} ;     vtkCellDataCell  = {} ;
   vtkNodalDisps         = [] ;  % after filling the matrix it is assigned to the third column of the cell
+  vtkNormalForces = [] ;
 
   %md loop in element types and add nodes and cells considering the specific
   %md structure and connectivity for each type of element/cell
   %md
 	totalNodes = 0 ;
+
 
   for indType = 1:length( elemTypeInds )
 
@@ -54,19 +56,19 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'truss' )
 
-      [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U ) ;
+        elemCrossSecParams, modS.U, modS.matFint( elemIndsElemType,1)  ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
 
-      [ currVtkNodes, currVtkConec, currVtkNodalDisps, vtkNormalForces ] ...
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U ) ;
+        elemCrossSecParams, modS.U, modS.matFint( elemIndsElemType,1:12) ) ;
 
     elseif strcmp( elemTypeString, 'triangle' )
 
-      vtkNormalForces = [] ;
+      currVtkNormalForces = [] ;
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
@@ -82,7 +84,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'triangle-plate' )
 
-      vtkNormalForces = [] ;
+      currVtkNormalForces = [] ;
       [ currVtkNodes, currVtkConec, currVtkNodalDisps ] ...
         = shellVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
         elemCrossSecParams, modS.U ) ;
@@ -91,7 +93,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'tetrahedron' )
 
-      vtkNormalForces = [] ;
+      currVtkNormalForces = [] ;
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
@@ -120,17 +122,26 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
+    vtkNormalForces = [ vtkNormalForces ;  currVtkNormalForces ] ;
+
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
 
-
   end % for: elemTypeInds
-
 
 
   if length( vtkNodalDisps ) > 0
     vtkPointDataCell{1,1} = 'VECTORS'       ;
     vtkPointDataCell{1,2} = 'Displacements' ;
     vtkPointDataCell{1,3} = vtkNodalDisps ;
+  end
+
+  cellDataCounter = 0;
+
+  if length( vtkNormalForces ) > 0
+    cellDataCounter = cellDataCounter+1;
+    vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;
+    vtkCellDataCell{cellDataCounter,2} = 'Normal_Forces'   ;
+    vtkCellDataCell{cellDataCounter,3} = vtkNormalForces ;
   end
 
   stressMat =   modS.Stress ;
@@ -207,8 +218,16 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 %       vecIII = [vecIII ; vec(:,indIII)'/(norm(vec(:,indIII)'))*abs(sigIII)] ;
 %
 %     end
-         vtkCellDataCell{1,1} = 'SCALARS' ; vtkCellDataCell{1,2} = 'Von_Mises'   ; vtkCellDataCell{1,3} = svm ;
-         vtkCellDataCell{2,1} = 'SCALARS' ; vtkCellDataCell{2,2} = 'Sxx'   ; vtkCellDataCell{2,3} = sxx ;
+
+         cellDataCounter = cellDataCounter+1;
+         vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;
+         vtkCellDataCell{cellDataCounter,2} = 'Von_Mises'   ;
+         vtkCellDataCell{cellDataCounter,3} = svm ;
+
+         cellDataCounter = cellDataCounter+1;
+         vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;
+         vtkCellDataCell{cellDataCounter,2} = 'Sxx'   ;
+         vtkCellDataCell{cellDataCounter,3} = sxx ;
 %     cellCellData{2,1} = 'VECTORS' ; cellCellData{2,2} = 'vI'          ; cellCellData{2,3} = vecI ;
 %     cellCellData{3,1} = 'VECTORS' ; cellCellData{3,2} = 'vII'         ; cellCellData{3,3} = vecII ;
 %     cellCellData{4,1} = 'VECTORS' ; cellCellData{4,2} = 'vIII'        ; cellCellData{4,3} = vecIII ;
@@ -227,3 +246,4 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
        end
      end
    end
+
