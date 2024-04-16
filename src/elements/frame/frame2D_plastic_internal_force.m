@@ -83,7 +83,7 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 % initial value at hinge --not present yet--
-# alfan1 = 0 ;
+% alfan1 = 0 ;
 
 % saco valores de tiempo previo
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7), soft_hinge_boolean(8), xd(9), alpha(10), tM(11), xdi(12)]
@@ -93,10 +93,10 @@ xin2 =  params_plastic_2Dframe(7) ;
 
 soft_hinge_boolean = params_plastic_2Dframe(8) ; % indica si en el tiempo n hay algo de ablandamiento
 
-# if soft_hinge_boolean
-#     params_plastic_2Dframe
-#     stop
-# end
+% if soft_hinge_boolean
+%     params_plastic_2Dframe
+%     stop
+% end
 xd      = params_plastic_2Dframe(9) ; %pos
 alfan   = params_plastic_2Dframe(10) ; % alfa anterior
 alfan
