@@ -36,15 +36,18 @@ function [soft_hinge_boolean, alfan1, xin21, xd] ...
 
 qfailxpi = min(-Ks*xin2, Mu) ;
 
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
+phifailxpi = abs(tM)-(Mu-qfailxpi) 
+
+fprintf(" \n ENTRE SOFT HINGE\n")
+alfan
 
 if phifailxpi <= 0
-   
+
     alfan1 = alfan ;
     xin21 = xin2 ;
 
 else
-
+    fprintf(" \n HOLA ESTA FALLANDO\n")
     if  xin2 <= -Mu/Ks
 
         gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
@@ -54,10 +57,9 @@ else
         gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
     
     end
-    
+
+    gamma2
     alfan1      = alfan     + gamma2*sign(tM) ;
     xin21       = xin2      + gamma2 ;
-
-end
 
 end

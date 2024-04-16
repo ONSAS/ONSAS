@@ -97,7 +97,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   
   nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
 
-  deltaured = deltauast + deltalambda(1) * deltaubar ;
+  deltaured = deltauast + deltalambda(1) * deltaubar 
 
   else   % incremental displacement
   

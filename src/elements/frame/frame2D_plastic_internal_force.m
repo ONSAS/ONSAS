@@ -33,6 +33,10 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
+
+    disp(" HHHHHHHHHHHHOOOOOOOOLLLLLLLLLLLAAAAAAAAAAA ")
+
+
 % \/
 % called by the function assembler
 % /\
@@ -54,8 +58,10 @@ Ks  = modelParams(7) ;
 % nu  = modelParams(8) ;
 
 uvector     = elemDisps([1,7]) ;    % x
-vvector     = elemDisps([3,9]) ;    % y
+vvector     = elemDisps([3,9])  ;   % y
 thetavector = elemDisps([6,12]) ;   % theta z
+
+mivvector = vvector(2)
 
 Kfd    = zeros(6,6) ;
 Kfalfa = zeros(6,6) ;
@@ -77,25 +83,34 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 M1 = zeros(npi,1) ;
 
 % initial value at hinge --not present yet--
-alfan1 = 0 ;
+# alfan1 = 0 ;
 
+% saco valores de tiempo previo
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7), soft_hinge_boolean(8), xd(9), alpha(10), tM(11), xdi(12)]
 kpn  = params_plastic_2Dframe(1:3) ;
 xin1 = params_plastic_2Dframe(4:6) ;
 xin2 =  params_plastic_2Dframe(7) ;
 
-soft_hinge_boolean = params_plastic_2Dframe(8) ;
+soft_hinge_boolean = params_plastic_2Dframe(8) ; % indica si en el tiempo n hay algo de ablandamiento
 
-xd      = params_plastic_2Dframe(9) ;
-alfan   = params_plastic_2Dframe(10) ;
-tM      = params_plastic_2Dframe(11) ;
-xdi     = params_plastic_2Dframe(12) ;
+# if soft_hinge_boolean
+#     params_plastic_2Dframe
+#     stop
+# end
+xd      = params_plastic_2Dframe(9) ; %pos
+alfan   = params_plastic_2Dframe(10) ; % alfa anterior
+alfan
+tM      = params_plastic_2Dframe(11) ; % momento en punto de rótula
+xdi     = params_plastic_2Dframe(12) ; % coord punto de integrac
 
 % set initial values of the parameters for time n + 1
 kpn1  = zeros(3,1) ;
 xin11 = zeros(3,1) ;
 xin21 = 0 ; 
 
+soft_hinge_boolean_np1 = soft_hinge_boolean ; % inicializo con el del tiempo anterior
+
+% ------------------------------------
 for ii = 1:npi
 
     [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
@@ -115,53 +130,44 @@ for ii = 1:npi
     % internal forces / integration (Gauss-Lobatto)
     Fint = Fint + Fi*wpi(ii) ;
 
-    M1(ii) = M1xpi ;
-
+    M1(ii) = M1xpi ;   % momentos en puntos integración para desplazamientos candidatos de tiempo siguiente
+    M1xpi
 end
 
 Khalfa = Khalfa + Ks ; % integral + Ks
 
 % element stiffness matrix
 if soft_hinge_boolean == true
-
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
-
 else
-
     Kelement = Kfd ;
-
 end
 
 for ii = 1:npi
-
-if abs(M1(ii)) >= Mu && soft_hinge_boolean == false
-
-    soft_hinge_boolean = true ;
-
-    xd = xpi(ii) ;
-    xdi = ii ;
-
+    if abs(M1(ii)) >= Mu && soft_hinge_boolean_np1 == false
+        soft_hinge_boolean_np1 = true ;
+        xd = xpi(ii) ;
+        xdi = ii ;
+    end
 end
 
-end
 
-if soft_hinge_boolean == true
+if soft_hinge_boolean_np1 == true
 
     tM = 0 ;
-
     for ii = 1:npi
 
         Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ii)/l)) ;
 
         % integration (Gauss-Lobatto)
-        tM = tM - Ghatxpi*M1(ii)*wpi(ii) ;
-
+        tM = tM - Ghatxpi*M1(ii)*wpi(ii) ; % calcula tM con los momentos de tiempo siguiente
     end
 
-[soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
+    [soft_hinge_boolean, alfan1, xin21, xd] = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
 
-fprintf('\n | alpha = %8.8f | tM = %8.4f\n |' , alfan1, tM) ;
-
+    fprintf('\n | alpha = %8.8f | tM = %8.4f\n |' , alfan1, tM) ;
+else
+    alfan1= alfan;
 end
 
 Fintout = zeros(12,1) ;
@@ -171,12 +177,6 @@ dofsconv = [1 1+6 3 3+6 6 6+6] ;
 Fintout(dofsconv) = Fint ;
 KTout(dofsconv, dofsconv) = Kelement ;
 
-if norm(elemDisps)>1e-8 && norm(Fint)<1e-8 && norm(KTout*elemDisps)>1e-8
-
-Fintout = [Fintout KTout*elemDisps] ;
-
-end
-
 fs = {Fintout} ;
 ks = {KTout} ;
 
@@ -184,9 +184,8 @@ params_plastic_2Dframe_np1 = zeros(1,12);
 
 if soft_hinge_boolean == true
 
-% once the hinge is formed, we assume that the plastic deformations in the bulk
-% will not be changing any more
-
+    % once the hinge is formed, we assume that the plastic deformations in the bulk
+    % will not be changing any more
     params_plastic_2Dframe_np1(1:3) = kpn ;
     params_plastic_2Dframe_np1(4:6) = xin1 ;
 
@@ -198,7 +197,7 @@ else
 end
 
 params_plastic_2Dframe_np1(7) = xin21 ;
-params_plastic_2Dframe_np1(8) = soft_hinge_boolean ;
+params_plastic_2Dframe_np1(8) = soft_hinge_boolean_np1 ;
 params_plastic_2Dframe_np1(9) = xd ;
 params_plastic_2Dframe_np1(10) = alfan1 ;
 params_plastic_2Dframe_np1(11) = tM ;

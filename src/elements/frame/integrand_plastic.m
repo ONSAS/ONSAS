@@ -103,7 +103,6 @@ else
     end
 
     % once the hinge is formed, we assume that the plastic deformations in the bulk will not be changing any more
-
     if soft_hinge_boolean == true
 
         kpn1xpi  = kpn(jj) ;

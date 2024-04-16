@@ -89,7 +89,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 %  --- 2 loop assembly ---
 % ====================================================================
 
-  stateCellnp1 = zeros( size(previousStateCell) );
+stateCellnp1 = zeros( size(previousStateCell) );
 
 for elem = 1:nElems
 
@@ -127,7 +127,7 @@ for elem = 1:nElems
 
 
   %md elemDisps contains the displacements corresponding to the dofs of the element
-  elemDisps       = u2ElemDisps( Ut      , dofselemRed ) ;
+  elemDisps       = u2ElemDisps( Ut      , dofselemRed )
   dotdispsElem    = u2ElemDisps( Udott   , dofselemRed ) ;
   dotdotdispsElem = u2ElemDisps( Udotdott, dofselemRed ) ;
 
@@ -208,22 +208,23 @@ for elem = 1:nElems
       end
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
-
-      %
+      fprintf("ESTOY ENSAMBLANDO \n")
       params_plastic_2Dframe = previousStateCell(elem,:) ;
+      if params_plastic_2Dframe(12) >0
+        elem
+        params_plastic_2Dframe
+      end
 
       [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...
                                                                     modelParams , ...
                                                                     elemDisps , params_plastic_2Dframe) ;
       
-                                                                    Finte = fs{1} ;  Ke = ks{1} ;
+      Finte = fs{1};  Ke = ks{1} ;
 	%~ if norm(aux)>0, 
 	%~ aux
 	%~ elemNodesxyzRefCoords
 	%~ end
-
-    
     
     stateCellnp1(elem,:) = aux ;
 	
