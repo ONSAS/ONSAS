@@ -175,13 +175,13 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
-
+    
 		if strcmp(modelName, 'elastic-linear')
 
 			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
-
-      Finte = fs{1} ;  Ke = ks{1} ;
       
+      Finte = fs{1} ;  Ke = ks{1} ;
+
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
