@@ -93,7 +93,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'tetrahedron' )
 
-      vtkNormalForces = [] ;
+      currVtkNormalForces = [] ;
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
