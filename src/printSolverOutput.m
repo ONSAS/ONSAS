@@ -84,22 +84,17 @@ end
 % close file
 fclose(fileIncrements);
 
-
 if ~isempty(fnorms)
 
-forcesNormsFile = [ outputdir  problemName '_forcesNorms.txt' ] ;
-format_fnorms   = [ '%4i %4i %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e\n' ] ;
+  forcesNormsFile = [ outputdir  problemName '_forcesNorms.txt' ] ;
+  format_fnorms   = [ '%4i %4i %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e %9.2e \n' ] ;
 
-if lineData(1)==0 % print header
-  fileNorms = fopen( forcesNormsFile ,'w');
-else
-  fileNorms = fopen( forcesNormsFile ,'a');
-end
+  if lineData(1)==0 % print header
+    fileNorms = fopen( forcesNormsFile ,'w');
+  else
+    fileNorms = fopen( forcesNormsFile ,'a');
+  end
 
-fprintf( fileNorms, format_fnorms, fnorms  ) ;
-
-
-
-fclose( fileNorms );
-
+  fprintf( fileNorms, format_fnorms, fnorms  ) ;
+  fclose( fileNorms );
 end

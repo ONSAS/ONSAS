@@ -56,8 +56,11 @@ if tangBool
 end
 
 % -------  matrix with stress per element ----------------------------
+% due to octave constraints a matrix of zeros data is used,
+% however a boolean first column was added to save 1 if the element stress/fint was computed of zero if not.
+%
 if stressBool
-  stressMat = zeros( nElems, 6 ) ;
+  stressMat = zeros( nElems, 6 ) ;  
 else
   stressMat = [] ;
 end
@@ -154,6 +157,7 @@ for elem = 1:nElems
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
+    fintLocCoord = norm( Finte ) ;
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
@@ -171,11 +175,11 @@ for elem = 1:nElems
 
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
-
+    
 		if strcmp(modelName, 'elastic-linear')
 
 			[ fs, ks, fintLocCoord ] = elementFrameLinear(elemNodesxyzRefCoords, elemCrossSecParams, massMatType, density, modelName, modelParams, elemDisps, dotdotdispsElem) ;
-
+      
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if dynamicProblemBool

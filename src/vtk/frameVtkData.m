@@ -17,8 +17,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemCrossSecParams, U )
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, localFint )
 
+   
   vtkNodes        = [] ;
   vtkConec        = [] ;
   vtkNodalDisps   = [] ;
@@ -71,6 +72,11 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     valsLocThetaYSubElements = interFuncQuad   * [ 0; thetaLocIniElem(2); 0; thetaLocEndElem(2) ] ;
     valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ] ;
 
+    currNormalForce = abs(localFint(i,1));
+    if currNormalForce ~= abs(localFint(i,7))
+      error("error in normal forces")
+    end
+
     for j = 1:nPlotSubElements,
 
       dispLocIniSubElem = [ valsLocDispXSubElements( j   ) ; ...
@@ -99,6 +105,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
       vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
       vtkConec             = [ vtkConec ;     Conecvtk ] ;
       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
+      vtkNormalForces      = [ vtkNormalForces; currNormalForce ] ;
 
       counterNodes = counterNodes + (size(Conecvtk,2)-1) ;
 
