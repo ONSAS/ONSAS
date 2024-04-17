@@ -27,7 +27,7 @@
 
 % =========================================================================
 
-function [Ms, tM] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
+function [Ms, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
 
 Bu = [-1/l 1/l] ;
 
@@ -35,7 +35,7 @@ Bu = [-1/l 1/l] ;
 npi = length(kp) ;
 Ms = zeros(npi, 1) ;
 tM = 0 ;
-
+Ghats = zeros(npi,1);
 for ip = 1:npi
 
   N = bendingInterFuns (xpi(ip), l, 2) ;
@@ -55,4 +55,5 @@ for ip = 1:npi
 
   % tM calculated with the moments M1 corresponding to time n + 1
   tM = tM - Ghat*Mnp1(ip)*wpi(ip) ;
+  Ghats(ip) = Ghat;
 end

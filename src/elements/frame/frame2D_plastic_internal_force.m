@@ -95,7 +95,7 @@ xdi_np1     = xdi_n ; % number of the integration point where is the hinge
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-[ Mnp1, tM_np1] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
+[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
 
 max_abs_mom = max( abs ( Mnp1)) ;
 
@@ -106,108 +106,34 @@ max_abs_mom = max( abs ( Mnp1)) ;
 if ( SH_bool_n == false && max_abs_mom > Mu ) || SH_bool_np1 == true
   % solve softening step
   [alfa_np1, xi2_np1, xd_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+  if SH_bool_n == false, SH_bool_np1 = true; end 
+
 else
   % solve plastic bending step
-  [alfa_np1, xi2_np1, xd_np1] = hardening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
-
+   [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1)
+  
 end
 
-# [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
-# = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
-#   uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep) ;
-
-
-% params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7), soft_hinge_boolean(8), xd(9), alpha(10), tM(11), xdi(12)]
-
-
-
-Cep    = 0 ;
-Fint   = 0 ;
-
-
-
+[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
 
 
 % ==========================================================
-% calculo matrices
+% solve global equations
 % ==========================================================
 
-Kfd    = zeros(6, 6) ;
-Kfalfa = zeros(6, 1) ;
-Khd    = zeros(1, 6) ;
-Khalfa = 0 ;
+[ Kfd, Kfalfa, Khd, Khalfa] = frame_plastic_matrices( )
 
-
-
-for ii = 1:npi
-
-    [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
-       = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
-         uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep) ;
-
-    % stiffness matrices / integration (Gauss-Lobatto)
-    Kfd    = Kfd    + Kfdj    * wpi(ii) ;
-    Kfalfa = Kfalfa + Kfalfaj * wpi(ii) ;
-    Khd    = Khd    + Khdj    * wpi(ii) ;
-    Khalfa = Khalfa + Khalfaj * wpi(ii) ;
-    
-    size(Kfd)
-    size(Kfalfa) 
-    size(Khd) 
-    size(Khalfa)
-
-    size(Kfdj)
-    size(Kfalfaj) 
-    size(Khdj) 
-    size(Khalfaj)
-
-    stop
-    
-    % values of internal parameters at integration points
-    kpn1(ii)  = kpn1xpi ;
-    xin11(ii) = xin11xpi ;
-    
-    % internal forces / integration (Gauss-Lobatto)
-    Fint = Fint + Fi*wpi(ii) ;
-
-    % moments at the integration points for candidate displacements (correspondings of time n + 1)
-    M1(ii) = M1xpi ;
-
-if soft_hinge_boolean_np1 == true
-
-    tM = 0 ;
-
-    for jj = 1:npi
-
-        Ghatxpi = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(jj)/l)) ;
-
-        % integration (Gauss-Lobatto)
-        % tM calculated with the moments M1 corresponding to time n + 1
-        tM = tM - Ghatxpi*M1(jj)*wpi(jj) ;
-    
-    end
-
-else
-    
-alfan1 = alfan ;
-
-end
-
-end
-
-% integral + Ks
-Khalfa = Khalfa + Ks ;
-
-% element stiffness matrix
 if soft_hinge_boolean == true || soft_hinge_boolean_np1 == true
-
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
-
 else
-    
     Kelement = Kfd ;
-
 end
+
+
+
+
+
 
 % \/ Softening hinge activated
 

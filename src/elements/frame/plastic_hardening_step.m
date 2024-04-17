@@ -27,117 +27,55 @@
 
 % =========================================================================
 
-function [soft_hinge_boolean, Kfd, Kfalfa, Khd, Khalfa, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
-  = plastic_hardening_step(soft_hinge_boolean, jj, xpi, xd, l, A, uvector, vvector, ...
-                      thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep)
+function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
 
-% elastoplasticity with hardening
-% the usual trial-corrector (return mapping) algorithm
-% is used at each of the Gauss–Lobatto integration points
-Bu = [-1/l 1/l] ;
+kp_np1  = kp_n ;
+xi1_np1 = xi1_n ;
 
-N = bendingInterFuns (xpi, l, 2) ;
+npi       = length(xpi);
+qs        = zeros(npi,1);
+phis_test = zeros(npi,1);
+Cep_np1   = zeros(npi,1);
 
-Bv = [N(1) N(3)] ;
-Btheta = [N(2) N(4)] ;
+for ip = 1:npi
+  % yield criterion
+  if xi1_n(ip) <= (My-Mc)/kh1
+    qs(ip) = -kh1*xi1_n(ip) ;
+  else
+    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) ;
+  end
+  phitest = abs(Ms(ip)) - (Mc - qs(ip)) ;
+  phis_test(ip) = phitest ;
 
-Bd = [ Bu  0 0 0 0    ; ...
-       0 0 Bv  Btheta ] ;
-
-Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi/l)) ;
-
-% curvatures (time n) / k, ke, kp, khat (continuous part of the curvature), khat2 (localized part of the curvature)
-
-khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-
-% khat2 = dirac(xd)*alfan ;
-% kn = khat + khat2 ;
-kenxpi = khatxpi - kpn(jj) ;
-
-% moment
-Mxpi = E*Iy*kenxpi ;
-
-% yield criterion
-if xin1(jj) <= (My-Mc)/kh1
-  
-    qxpi = -kh1*xin1(jj) ;
-        
-else
-  
-    qxpi = -(My-Mc)*(1-kh2/kh1)-kh2*xin1(jj) ;
-
-end
-
-phixpi = abs(Mxpi) - (Mc - qxpi) ;
-
-phitest =  phixpi ;
-
-% gamma values calculations (gamma derivative is the plastic multiplier)
-% the new values of internal variables are computed
-if phitest <= 0 % elastic increment
-
+  % gamma values calculations (gamma derivative is the plastic multiplier)
+  % the new values of internal variables are computed
+  if phitest <= 0 % elastic increment
     gamma    = 0 ;
-    kpn1xpi  = kpn(jj) ;
-    xin11xpi = xin1(jj) ;
-    M1xpi    = Mxpi ;
+    # kp_np1(ip) = kpn(jj) ;
+    # xin11xpi = xin1(jj) ;
+    # M1xpi    = Mxpi ;
 
-else
+  else
 
-    if xin1(jj) + phitest/(kh1+E*Iy) <= (My-Mc)/kh1
-
+    if ( xi1_n(ip) + phitest/(kh1+E*Iy) ) <= (My-Mc)/kh1
         gamma = phitest/(kh1+E*Iy) ;
-
-        kpn1xpi     = kpn(jj)   + gamma*sign(Mxpi) ;
-        xin11xpi    = xin1(jj)  + gamma ;
-
     else
-
-        gamma = phitest/(kh2+E*Iy) ;
-
-        kpn1xpi     = kpn(jj)   + gamma*sign(Mxpi) ;
-        xin11xpi    = xin1(jj)  + gamma ;
-    
+        gamma = phitest/(kh2+E*Iy) ;    
     end
 
-    % once the hinge is formed, we assume that the plastic deformations in the bulk will not be changing any more
-    if soft_hinge_boolean == true
+    kp_np1(ip)  = kp_n(ip)  + gamma*sign(Ms(ip)) ;
+    xi1_np1(ip) = xi1_n(ip) + gamma ;
+  end
 
-        kpn1xpi  = kpn(jj) ;
-        xin11xpi = xin1(jj) ;
+      % elastoplastic tangent bending modulus
+  if      gamma == 0
+        Cep(ip) = E*Iy ;
 
-    end
+  elseif  gamma > 0 && xi1_np1(ip) <= (My-Mc)/kh1
+        Cep(ip) = E*Iy*kh1/(E*Iy + kh1) ;
 
-    % curvatures (time n + 1) / khat1 (continuous part of the curvature), khat2 (localized part of the curvature)
-    
-    khat1xpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
-
-    M1xpi = E*Iy*(khat1xpi-kpn1xpi) ;
-
-end
-
-% elastoplastic tangent bending modulus
-if      gamma == 0
-        Cep = E*Iy ;
-
-elseif  gamma > 0 && xin11xpi <= (My-Mc)/kh1
-        Cep = E*Iy*kh1/(E*Iy + kh1) ;
-
-elseif  gamma > 0 && xin11xpi > (My-Mc)/kh1
-        Cep = E*Iy*kh2/(E*Iy + kh2) ;
-
-end
-
-% stiffness matrices
-Kfd     = Bd'*[E*A 0; 0 Cep]*Bd ;
-
-Kfalfa  = Bd'*[E*A 0; 0 Cep]*[0 Ghat]' ;
-
-Khd     = [0 Ghat]*[E*A 0; 0 Cep]*Bd ;
-
-Khalfa  = Ghat*Cep*Ghat ;
-
-epsilon = Bu*uvector ;
-
-Fi      = Bd' * [E*A*epsilon; M1xpi] ;
+  elseif  gamma > 0 && xin11xpi > (My-Mc)/kh1
+        Cep(ip) = E*Iy*kh2/(E*Iy + kh2) ;
+  end
 
 end
