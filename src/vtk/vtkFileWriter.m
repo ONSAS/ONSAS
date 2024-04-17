@@ -151,14 +151,12 @@ end
 %
 % Cell CellData
 %
-
 if size( cellCellData, 1 ) > 0
   fprintf(fid, 'CELL_DATA  %8i \n' , nelem ) ;
   for k = 1:size( cellCellData, 1 )
     auxtype = cellCellData(k,1) ;
     auxstr  = cellCellData(k,2) ;
     auxdata = cell2mat(cellCellData(k,3)) ;
-
     if strcmp(auxtype, 'SCALARS')
       fprintf(fid, ['SCALARS ' '%s' ' float 1\n'], [auxstr{:}]) ;
       fprintf(fid,['LOOKUP_TABLE default\n']) ;

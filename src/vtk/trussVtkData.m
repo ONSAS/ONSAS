@@ -17,12 +17,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
  
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = trussVtkData( Nodes, Conec, elemCrossSecParams, U )
+   = trussVtkData( Nodes, Conec, elemCrossSecParams, U, normalForces )
 
   vtkNodes = [] ;
   vtkConec = [] ;
   vtkNodalDisps   = [] ;
-  vtkNormalForces = [] ;
+  vtkNormalForces = normalForces ;
 
   nelem = size(Conec,1) ;
 

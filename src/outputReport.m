@@ -23,7 +23,6 @@ function outputReport( outputDir, problemName )
 problemNameWithoutUnderscores                                      = problemName ;
 problemNameWithoutUnderscores( find( problemNameWithoutUnderscores == '_') ) = [] ;
 
-
 plotForcesNorms(outputDir, problemName )
 
 % -------------------------------------------------------------------------

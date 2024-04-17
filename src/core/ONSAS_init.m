@@ -96,7 +96,7 @@ previousStateCell(:,3) = {0} ;
 
 % TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
-matFint = [] ; 
+matFint = zeros(size(Conec,1),4*6) ; 
 
 [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
