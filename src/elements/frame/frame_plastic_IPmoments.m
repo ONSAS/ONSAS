@@ -27,35 +27,32 @@
 
 % =========================================================================
 
-% plastic softening at the discontinuity
-% the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
-% softening criterion (failure function) at integration points
+function [Ms, tM] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
 
-function [alfan1, xin21, xd] ...
-  = soft_hinge(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
+Bu = [-1/l 1/l] ;
 
-qfailxpi = min(-Ks*xin2, Mu) ;
 
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
+npi = length(kp) ;
+Ms = zeros(npi, 1) ;
+tM = 0 ;
 
-if phifailxpi <= 0
+for ip = 1:npi
 
-    alfan1 = alfan ;
-    xin21 = xin2 ;
+  N = bendingInterFuns (xpi(ip), l, 2) ;
 
-else
-    
-    if  xin2 <= -Mu/Ks
+  Bv = [N(1) N(3)] ;  Btheta = [N(2) N(4)] ;
+  
+  Bd = [ Bu   0 0 0 0    ; ...
+         0  0 Bv  Btheta ] ;
+  
+  Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ip)/l)) ;
 
-        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
+  khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfa ;
+  kenxpi = khatxpi - kp(ip) ;
 
-    else
+  % moment
+  Mnp1(ip) = E*Iy*kenxpi ;
 
-        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
-    
-    end
-
-    alfan1      = alfan     + gamma2*sign(tM) ;
-    xin21       = xin2      + gamma2 ;
-
+  % tM calculated with the moments M1 corresponding to time n + 1
+  tM = tM - Ghat*Mnp1(ip)*wpi(ip) ;
 end

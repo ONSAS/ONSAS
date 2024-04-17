@@ -51,51 +51,93 @@ Mu  = modelParams(4) ;
 kh1 = modelParams(5) ;
 kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
-% nu  = modelParams(8) ;
 
 uvector     = elemDisps([1,7]) ;    % x
 vvector     = elemDisps([3,9])  ;   % y
 thetavector = elemDisps([6,12]) ;   % theta z
-
-Kfd    = zeros(6,6) ;
-Kfalfa = zeros(6,6) ;
-Khd    = zeros(6,6) ;
-Khalfa = 0 ;
-
-Cep    = 0 ;
-Fint   = 0 ;
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 npi = 3 ;
 xpi = [0 l/2 l] ;
 wpi = [1/3 4/3 1/3]*l*0.5 ;
 
+
+% ==========================================================
+% variables de estado candidatas
+% ==========================================================
+
+% renombro a vars locales
+kp_n      = params_plastic_2Dframe(1:3) ;
+xi1_n     = params_plastic_2Dframe(4:6) ;
+xi2_n     = params_plastic_2Dframe(7) ;
+SH_bool_n = params_plastic_2Dframe(8) ; % true if in the n time is active the softening state
+xd_n      = params_plastic_2Dframe(9) ;  % hinge coordinate
+alfa_n    = params_plastic_2Dframe(10) ; % alpha in time n
+tM_n      = params_plastic_2Dframe(11) ; % hinge moment
+xdi_n     = params_plastic_2Dframe(12) ; % number of the integration point where is the hinge
+
+% candidates for state var for time n+1
+kp_np1      = kp_n ;
+xi1_np1     = xi1_n ;
+xi2_np1     = xi2_n ;
+SH_bool_np1 = SH_bool_n ;
+xd_np1      = xd_n ;
+alfa_np1    = alfa_n ; % alpha in time n
+tM_np1      = tM_n ; % hinge moment
+xdi_np1     = xdi_n ; % number of the integration point where is the hinge
+
+
+% ==========================================================
+% calculo momentos
+% ==========================================================
+
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-M1 = zeros(npi,1) ;
+[ Mnp1, tM_np1] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
+
+max_abs_mom = max( abs ( Mnp1)) ;
+
+% ==========================================================
+% solve local equations
+% ==========================================================
+
+if ( SH_bool_n == false && max_abs_mom > Mu ) || SH_bool_np1 == true
+  % solve softening step
+  [alfa_np1, xi2_np1, xd_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+else
+  % solve plastic bending step
+  [alfa_np1, xi2_np1, xd_np1] = hardening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+end
+
+# [soft_hinge_boolean, Kfdj, Kfalfaj, Khdj, Khalfaj, kpn1xpi, xin11xpi, M1xpi, xd, Fi] ...
+# = integrand_plastic(soft_hinge_boolean, ii, xpi(ii), xd, l, A, ...
+#   uvector, vvector, thetavector, alfan, xin1, kpn, E, Iy, My, Mc, kh1, kh2, Cep) ;
+
 
 % params_plastic_2Dframe [kpn(1:3), xin1(4:6), xin2(7), soft_hinge_boolean(8), xd(9), alpha(10), tM(11), xdi(12)]
 
-kpn  = params_plastic_2Dframe(1:3) ;
-xin1 = params_plastic_2Dframe(4:6) ;
-xin2 =  params_plastic_2Dframe(7) ;
 
-soft_hinge_boolean = params_plastic_2Dframe(8) ; % flag on if in the n time is active the softening state
 
-xd      = params_plastic_2Dframe(9) ;  % hinge coordinate
-alfan   = params_plastic_2Dframe(10) ; % alpha in time n
-tM      = params_plastic_2Dframe(11) ; % hinge moment
-xdi     = params_plastic_2Dframe(12) ; % number of the integration point where is the hinge
+Cep    = 0 ;
+Fint   = 0 ;
 
-% set initial values of the parameters for time n + 1
-kpn1  = zeros(3,1) ;
-xin11 = zeros(3,1) ;
-xin21 = 0 ;
 
-% initialized with the soft_hinge_boolean flag of time n
-soft_hinge_boolean_np1 = soft_hinge_boolean ;
+
+
+
+% ==========================================================
+% calculo matrices
+% ==========================================================
+
+Kfd    = zeros(6, 6) ;
+Kfalfa = zeros(6, 1) ;
+Khd    = zeros(1, 6) ;
+Khalfa = 0 ;
+
+
 
 for ii = 1:npi
 
@@ -108,6 +150,18 @@ for ii = 1:npi
     Kfalfa = Kfalfa + Kfalfaj * wpi(ii) ;
     Khd    = Khd    + Khdj    * wpi(ii) ;
     Khalfa = Khalfa + Khalfaj * wpi(ii) ;
+    
+    size(Kfd)
+    size(Kfalfa) 
+    size(Khd) 
+    size(Khalfa)
+
+    size(Kfdj)
+    size(Kfalfaj) 
+    size(Khdj) 
+    size(Khalfaj)
+
+    stop
     
     % values of internal parameters at integration points
     kpn1(ii)  = kpn1xpi ;
