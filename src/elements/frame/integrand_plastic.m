@@ -70,9 +70,6 @@ end
 
 phixpi = abs(Mxpi) - (Mc - qxpi) ;
 
-% test values
-% kpn1test = kpn ;
-% xin11test = xin1 ; 
 phitest =  phixpi ;
 
 % gamma values calculations (gamma derivative is the plastic multiplier)

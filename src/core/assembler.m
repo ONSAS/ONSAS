@@ -208,11 +208,11 @@ for elem = 1:nElems
       end
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
-      fprintf("ESTOY ENSAMBLANDO \n")
+      fprintf("assembling\n")
       params_plastic_2Dframe = previousStateCell(elem,:) ;
       if params_plastic_2Dframe(12) >0
-        elem
-        params_plastic_2Dframe
+       % elem
+       % params_plastic_2Dframe
       end
 
       [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
@@ -221,6 +221,7 @@ for elem = 1:nElems
                                                                     elemDisps , params_plastic_2Dframe) ;
       
       Finte = fs{1};  Ke = ks{1} ;
+      
 	%~ if norm(aux)>0, 
 	%~ aux
 	%~ elemNodesxyzRefCoords
