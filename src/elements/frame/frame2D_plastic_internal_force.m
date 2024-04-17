@@ -107,12 +107,17 @@ if ( SH_bool_n == false && max_abs_mom > Mu ) || SH_bool_np1 == true
   % solve softening step
   [alfa_np1, xi2_np1, xd_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
+  REVISAR
   if SH_bool_n == false, SH_bool_np1 = true; end 
+    xd = xpi(ii) ;
+    xdi = ii ;
 
 else
   % solve plastic bending step
    [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1)
-  
+   fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfan1, tM) ;
+   fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
+ 
 end
 
 [ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
@@ -132,27 +137,9 @@ end
 
 
 
-
-
-
-% \/ Softening hinge activated
-
-for ii = 1:npi
-    if abs(M1(ii)) >= Mu && soft_hinge_boolean_np1 == false
-        soft_hinge_boolean_np1 = true ;
-        xd = xpi(ii) ;
-        xdi = ii ;
-    end
-end
-
-if soft_hinge_boolean_np1 == true || soft_hinge_boolean == true
-
-    [alfan1, xin21, xd] = soft_hinge(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks) ;
-
-    fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfan1, tM) ;
-    fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
-
-end
+% ==========================================================
+% salida
+% ==========================================================
 
 Fintout = zeros(12,1) ;
 KTout = zeros(12,12) ;
