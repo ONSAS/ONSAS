@@ -56,7 +56,6 @@ else
     end
 
     alfan1      = alfan     + gamma2*sign(tM) ;
-    
     xin21       = xin2      + gamma2 ;
 
 end
