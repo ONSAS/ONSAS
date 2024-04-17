@@ -17,6 +17,9 @@
 %
 function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell, ...
                                                                                                               Wake )
+  if nextTime == 9.20
+      check = true;
+  end
 
   analysisSettings = modelProperties.analysisSettings ;
   nodalDispDamping = modelProperties.nodalDispDamping ;
@@ -124,16 +127,17 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previousStateCell, Wake  ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
-
-    [FextG, nexTimeLoadFactors ]  = computeFext( modelProperties, BCsData, nextTime, length(Fint), [] , {Utp1, Udottp1, Udotdottp1}) ;
-
-    [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), []  , {Ut, Udott, Udotdott} ) ;  % Evaluate external force in previous step
     
     BEMbool = modelProperties.analysisSettings.modelBEM;
     if BEMbool
+        global lastGenTrq
+        [ FextGt ]  = lastGenTrq(: , end) ;  % Evaluate external generator torque in previous step
+        [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
         global aeroBEMForce    ; aeroBEMForce   = [aeroBEMForce, Faero]   ;
     else
-        global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ;       
+        [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), [], {Ut, Udott, Udotdott} ) ;  % Evaluate external generator torque in previous step
+        [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
+        global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ; 
     end
     
     alphaHHT = modelProperties.analysisSettings.alphaHHT ;
