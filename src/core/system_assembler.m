@@ -17,7 +17,7 @@
 %
 function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell, ...
                                                                                                               Wake )
-  if nextTime == 9.20
+  if nextTime == 9.15
       check = true;
   end
 
@@ -130,9 +130,10 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     
     BEMbool = modelProperties.analysisSettings.modelBEM;
     if BEMbool
-        global lastGenTrq
-        [ FextGt ]  = lastGenTrq(: , end) ;  % Evaluate external generator torque in previous step
+        global lastGenTrq; global nGen;
+        [ FextGt ]  = nGen*lastGenTrq(: , end) ;  % Evaluate external generator torque in previous step
         [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
+        FextG       = FextG*nGen ;
         global aeroBEMForce    ; aeroBEMForce   = [aeroBEMForce, Faero]   ;
     else
         [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), [], {Ut, Udott, Udotdott} ) ;  % Evaluate external generator torque in previous step

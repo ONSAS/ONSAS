@@ -132,10 +132,11 @@ if ~BEMbool
     global normForcesAero  ; normForcesAero = [ normForcesAero, fnorms ] ;  
     global iterationsAero  ; iterationsAero = [ iterationsAero, dispIters ] ;
 elseif BEMbool
-    global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnorms    ] ;
-    global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters ] ;
-    global lastGenTrq      ; lastGenTrq     = [ lastGenTrq    , FextG     ] ;
-    check = [ Udottp1(6), FextG(6)]
+    global nGen;
+    global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnorms     ] ;
+    global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters  ] ;
+    global lastGenTrq      ; lastGenTrq     = [ lastGenTrq    , FextG/nGen ] ;
+    global check           ; check          = [ Udottp1(6), FextG(6)       ] ;
 end
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
