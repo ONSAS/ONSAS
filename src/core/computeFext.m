@@ -36,6 +36,10 @@ for i=1:length( factorLoadsFextCell )
 end
 
 if ~isempty( userLoadsFilename )
-  Fext = Fext + feval( userLoadsFilename, evalTime , UsCell)  ;
+    global nGen       ;
+    global bladePitch ;
+    global lastGenTrq ;
+    deltaTime  = modelProperties.analysisSettings.deltaT ;
+    Fext = Fext + feval( userLoadsFilename, evalTime , UsCell, {nGen, bladePitch, lastGenTrq, deltaTime })  ;
 end
 

@@ -21,15 +21,19 @@ function [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergence
   stopTolDeltau = analysisSettings.stopTolDeltau ;
   stopTolForces = analysisSettings.stopTolForces ;
   stopTolIts    = analysisSettings.stopTolIts    ;
+  global stopTol;
+  global deltaured1;
+  stopTolEnergy = stopTol                        ; 
 
-  normaUk       = norm( redUk )               ;
-  normadeltau   = norm( redDeltaU         )   ;
+  normaUk       = norm( redUk           )        ;
+  normadeltau   = norm( redDeltaU       )        ;
 
-  deltaErrLoad  = norm( systemDeltauRHS )     ;
-  normFext      = norm( redFext         )     ;
+  deltaErrLoad  = norm( systemDeltauRHS )        ;
+  normFext      = norm( redFext         )        ;
 
   logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
   logicForcStop = ( deltaErrLoad < ( (normFext+(normFext < stopTolForces)) * stopTolForces ) )  * ( deltaErrLoad > 0 ) ;
+  logicEnerStop = ( norm( redDeltaU'*deltaErrLoad ) < stopTolEnergy*(deltaured1) );
 
   if isnan( norm(redDeltaU) )
     error(' ERROR: the displacements are NOT A NUMBER!')
