@@ -65,14 +65,14 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 % ==========================================================
 
 % renaming as local variables
-kp_n      = params_plastic_2Dframe(1:3) ;
-xi1_n     = params_plastic_2Dframe(4:6) ;
-xi2_n     = params_plastic_2Dframe(7) ;
-SH_boole_n = params_plastic_2Dframe(8) ;    % true if in the n time is active the softening state
-xd_n      = params_plastic_2Dframe(9) ;     % hinge coordinate
-alfa_n    = params_plastic_2Dframe(10) ;    % alpha in time n
-tM_n      = params_plastic_2Dframe(11) ;    % hinge moment
-xdi_n     = params_plastic_2Dframe(12) ;    % number of the integration point where is the hinge
+kp_n        = params_plastic_2Dframe(1:3) ;
+xi1_n       = params_plastic_2Dframe(4:6) ;
+xi2_n       = params_plastic_2Dframe(7) ;
+SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active the softening state
+xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
+alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
+tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
+xdi_n        = params_plastic_2Dframe(12) ;  % number of the integration point where is the hinge
 
 % candidates for state var for time n+1
 kp_np1      = kp_n ;
@@ -95,20 +95,34 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 % initial values of bulk moments
 [ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-max_abs_mom = max( abs ( Mnp1)) ;
+max_abs_mom = max(abs(Mnp1)) ;
 
 % ==========================================================
 % solve local equations
 % ==========================================================
 
 if ( SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_np1 == true
-  % solve softening step
-  [alfa_np1, xi2_np1, xdi_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
-  REVISAR
-  if SH_boole_n == false, SH_boole_np1 = true ; end 
-    xd_np1 = xpi(ii) ;
-    xdi_np1 = ii ;
+    % solve softening step
+    [alfa_np1, xi2_np1, xdi_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+    elseif SH_boole_n == false && SH_boole_np1 == false && max_abs_mom > Mu
+      
+      SH_boole_np1 = true ;
+      xd_np1 = xpi(ii) ;
+      xdi_np1 = ii ;
+
+      % solve softening step
+      [alfa_np1, xi2_np1, xdi_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+    elseif SH_boole_n == true
+
+      SH_boole_np1 = true ;
+      xd_np1 = xpi(ii) ;
+      xdi_np1 = ii ;
+
+      % solve softening step
+      [alfa_np1, xi2_np1, xdi_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
 else
   % solve plastic bending step

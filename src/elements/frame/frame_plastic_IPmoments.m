@@ -26,7 +26,7 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [Ms, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
+function [Mnp1, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
 
 npi = length(kp) ;
 tM = 0 ;
@@ -44,12 +44,13 @@ for ip = 1:npi
   khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfa ;
   kenxpi = khatxpi - kp(ip) ;
 
-  % moment
+  % moments Mn at integration points, corresponding to time n + 1
   Mnp1(ip) = E*Iy*kenxpi ;
 
-  % tM calculated with the moments M1 corresponding to time n + 1
+  % tM calculated with the moments Mn corresponding to time n + 1
   tM = tM - Ghat*Mnp1(ip)*wpi(ip) ;
   Ghats(ip) = Ghat ;
+
 end
 
-Ms  = Mnp1 ;
+end
