@@ -24,7 +24,6 @@
 % For failure analysis of planar reinforced concrete beams and frames
 % Miha Jukić, Boštjan Brank / University of Ljubljana
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
-
 % =========================================================================
 
 % plastic softening at the discontinuity

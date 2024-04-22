@@ -14,7 +14,6 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
- 
 % =========================================================================
 
 % Euler-Bernoulli element with embeded discontinuity
@@ -25,7 +24,6 @@
 % For failure analysis of planar reinforced concrete beams and frames
 % Miha Jukić, Boštjan Brank / University of Ljubljana
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
-
 % =========================================================================
 
 function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...

@@ -1,3 +1,31 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+% =========================================================================
+
+% Euler-Bernoulli element with embeded discontinuity
+% Numerical modeling of softening hinges in thin Euler–Bernoulli beams
+% Francisco Armero, David Ehrlich / University of California, Berkeley
+
+% Embedded discontinuity finite element formulation
+% For failure analysis of planar reinforced concrete beams and frames
+% Miha Jukić, Boštjan Brank / University of Ljubljana
+% Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
+% =========================================================================
+
 function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, xpi, wpi, Mnp1, kp_np1, Cep_np1, Ghats)
     
 Kfd    = zeros(6, 6) ;

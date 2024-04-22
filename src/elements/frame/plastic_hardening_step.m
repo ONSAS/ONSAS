@@ -24,7 +24,6 @@
 % For failure analysis of planar reinforced concrete beams and frames
 % Miha Jukić, Boštjan Brank / University of Ljubljana
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
-
 % =========================================================================
 
 function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
