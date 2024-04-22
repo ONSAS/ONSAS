@@ -1,8 +1,4 @@
-
-
-function [ Kfd, Kfalfa, Khd, Khalfa] = frame_plastic_matrices(E, A, )
-
-
+function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, xpi, wpi, Mnp1, kp_np1, Cep_np1, Ghats)
     
 Kfd    = zeros(6, 6) ;
 Kfalfa = zeros(6, 1) ;
@@ -11,9 +7,7 @@ Khalfa = 0 ;
 
 Bu = [-1/l 1/l] ;
 
-npi = length(kp) ;
-Ms  = zeros(npi, 1) ;
-tM  = 0 ;
+npi = length(kp_np1) ;
 
 for ip = 1:npi
 
@@ -30,21 +24,23 @@ for ip = 1:npi
   
   Khd     = [0 Ghats(ip)]*[E*A 0; 0 Cep_np1(ip)]*Bd ;
   
-  Khalfa  = Ghats(ip)*Cep*Ghats(ip) ;
+  Khalfa  = Ghats(ip)*Cep_np1*Ghats(ip) ;
   
   epsilon = Bu*uvector ;
   
-  Fi      = Bd' * [E*A*epsilon; M1xpi] ;
+  Fi      = Bd' * [E*A*epsilon; Mnp1(ip)] ;
 
   % stiffness matrices / integration (Gauss-Lobatto)
-  Kfd    = Kfd    + Kfdj    * wpi(ii) ;
-  Kfalfa = Kfalfa + Kfalfaj * wpi(ii) ;
-  Khd    = Khd    + Khdj    * wpi(ii) ;
-  Khalfa = Khalfa + Khalfaj * wpi(ii) ;
+  Kfd    = Kfd    + Kfd    * wpi(ip) ;
+  Kfalfa = Kfalfa + Kfalfa * wpi(ip) ;
+  Khd    = Khd    + Khd    * wpi(ip) ;
+  Khalfa = Khalfa + Khalfa * wpi(ip) ;
     
   % internal forces / integration (Gauss-Lobatto)
-  Fint = Fint + Fi*wpi(ii) ;
+  Fint = Fi + Fi*wpi(ip) ;
 
 end
 
 Khalfa = Khalfa + Ks ;
+
+end

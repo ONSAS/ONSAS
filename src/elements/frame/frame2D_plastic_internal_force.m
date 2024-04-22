@@ -63,39 +63,39 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 
 
 % ==========================================================
-% variables de estado candidatas
+% candidate state variables
 % ==========================================================
 
-% renombro a vars locales
+% renaming as local variables
 kp_n      = params_plastic_2Dframe(1:3) ;
 xi1_n     = params_plastic_2Dframe(4:6) ;
 xi2_n     = params_plastic_2Dframe(7) ;
-SH_bool_n = params_plastic_2Dframe(8) ; % true if in the n time is active the softening state
-xd_n      = params_plastic_2Dframe(9) ;  % hinge coordinate
-alfa_n    = params_plastic_2Dframe(10) ; % alpha in time n
-tM_n      = params_plastic_2Dframe(11) ; % hinge moment
-xdi_n     = params_plastic_2Dframe(12) ; % number of the integration point where is the hinge
+SH_boole_n = params_plastic_2Dframe(8) ;    % true if in the n time is active the softening state
+xd_n      = params_plastic_2Dframe(9) ;     % hinge coordinate
+alfa_n    = params_plastic_2Dframe(10) ;    % alpha in time n
+tM_n      = params_plastic_2Dframe(11) ;    % hinge moment
+xdi_n     = params_plastic_2Dframe(12) ;    % number of the integration point where is the hinge
 
 % candidates for state var for time n+1
 kp_np1      = kp_n ;
 xi1_np1     = xi1_n ;
 xi2_np1     = xi2_n ;
-SH_bool_np1 = SH_bool_n ;
+SH_boole_np1 = SH_boole_n ;
 xd_np1      = xd_n ;
-alfa_np1    = alfa_n ; % alpha in time n
-tM_np1      = tM_n ; % hinge moment
-xdi_np1     = xdi_n ; % number of the integration point where is the hinge
+alfa_np1    = alfa_n ;      % alpha in time n
+tM_np1      = tM_n ;        % hinge moment
+xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 
 
 % ==========================================================
-% calculo momentos
+% moments calculation
 % ==========================================================
 
 % integration (Gauss-Lobatto)
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
+[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 max_abs_mom = max( abs ( Mnp1)) ;
 
@@ -103,42 +103,40 @@ max_abs_mom = max( abs ( Mnp1)) ;
 % solve local equations
 % ==========================================================
 
-if ( SH_bool_n == false && max_abs_mom > Mu ) || SH_bool_np1 == true
+if ( SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_np1 == true
   % solve softening step
-  [alfa_np1, xi2_np1, xd_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+  [alfa_np1, xi2_np1, xdi_np1] = softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   REVISAR
-  if SH_bool_n == false, SH_bool_np1 = true; end 
-    xd = xpi(ii) ;
-    xdi = ii ;
+  if SH_boole_n == false, SH_boole_np1 = true ; end 
+    xd_np1 = xpi(ii) ;
+    xdi_np1 = ii ;
 
 else
   % solve plastic bending step
-   [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1)
-   fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfan1, tM) ;
+   [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+   fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfa_np1, tM_np1) ;
    fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
  
 end
 
-[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi)
+[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 
 % ==========================================================
 % solve global equations
 % ==========================================================
 
-[ Kfd, Kfalfa, Khd, Khalfa] = frame_plastic_matrices( )
+[ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, xpi, wpi, Mnp1, kp_np1, Cep_np1, Ghats) ;
 
-if soft_hinge_boolean == true || soft_hinge_boolean_np1 == true
+if SH_boole_n == true || SH_boole_np1 == true
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
 else
     Kelement = Kfd ;
 end
 
-
-
 % ==========================================================
-% salida
+% outputs
 % ==========================================================
 
 Fintout = zeros(12,1) ;
@@ -153,13 +151,13 @@ ks = {KTout} ;
 
 params_plastic_2Dframe_np1 = zeros(1,12) ;
 
-params_plastic_2Dframe_np1(1:3) = kpn1 ;
-params_plastic_2Dframe_np1(4:6) = xin11 ;
-params_plastic_2Dframe_np1(7)   = xin21 ;
-params_plastic_2Dframe_np1(8)   = soft_hinge_boolean_np1 ;
-params_plastic_2Dframe_np1(9)   = xd ;
-params_plastic_2Dframe_np1(10)  = alfan1 ;
-params_plastic_2Dframe_np1(11)  = tM ;
-params_plastic_2Dframe_np1(12)  = xdi ;
+params_plastic_2Dframe_np1(1:3) = kp_np1 ;
+params_plastic_2Dframe_np1(4:6) = xi1_np1 ;
+params_plastic_2Dframe_np1(7)   = xi2_np1 ;
+params_plastic_2Dframe_np1(8)   = SH_boole_np1 ;
+params_plastic_2Dframe_np1(9)   = xd_np1 ;
+params_plastic_2Dframe_np1(10)  = alfa_np1 ;
+params_plastic_2Dframe_np1(11)  = tM_np1 ;
+params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
 end

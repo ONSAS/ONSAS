@@ -32,10 +32,10 @@ function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, t
 kp_np1  = kp_n ;
 xi1_np1 = xi1_n ;
 
-npi       = length(xpi);
-qs        = zeros(npi,1);
-phis_test = zeros(npi,1);
-Cep_np1   = zeros(npi,1);
+npi       = length(xpi) ;
+qs        = zeros(npi,1) ;
+phis_test = zeros(npi,1) ;
+Cep_np1   = zeros(npi,1) ;
 
 for ip = 1:npi
   % yield criterion
@@ -50,10 +50,10 @@ for ip = 1:npi
   % gamma values calculations (gamma derivative is the plastic multiplier)
   % the new values of internal variables are computed
   if phitest <= 0 % elastic increment
-    gamma    = 0 ;
-    # kp_np1(ip) = kpn(jj) ;
-    # xin11xpi = xin1(jj) ;
-    # M1xpi    = Mxpi ;
+    gamma = 0 ;
+    % kp_np1(ip) = kpn(jj) ;
+    % xin11xpi = xin1(jj) ;
+    % M1xpi    = Mxpi ;
 
   else
 
