@@ -26,7 +26,7 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, xpi, wpi, Mnp1, kp_np1, Cep_np1, Ghats)
+function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats)
     
 Kfd    = zeros(6, 6) ;
 Kfalfa = zeros(6, 1) ;
@@ -35,13 +35,12 @@ Khalfa = 0 ;
 
 Bu = [-1/l 1/l] ;
 
-npi = length(kp_np1) ;
-
 for ip = 1:npi
 
   N = bendingInterFuns (xpi(ip), l, 2) ;
 
-  Bv = [N(1) N(3)] ;  Btheta = [N(2) N(4)] ;
+  Bv = [N(1) N(3)] ;
+  Btheta = [N(2) N(4)] ;
   
   Bd = [ Bu   0 0 0 0    ; ...
          0  0 Bv  Btheta ] ;
@@ -63,7 +62,7 @@ for ip = 1:npi
   Kfalfa = Kfalfa + Kfalfa * wpi(ip) ;
   Khd    = Khd    + Khd    * wpi(ip) ;
   Khalfa = Khalfa + Khalfa * wpi(ip) ;
-    
+
   % internal forces / integration (Gauss-Lobatto)
   Fint = Fi + Fi*wpi(ip) ;
 

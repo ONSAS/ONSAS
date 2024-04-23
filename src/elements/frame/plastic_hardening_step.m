@@ -29,7 +29,7 @@
 % plastic hardening
 % the standard trial-corrector (return mapping) algorithm is used
 
-function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, vvector, thetavector, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
+function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
 
 kp_np1  = kp_n ;
 xi1_np1 = xi1_n ;
@@ -70,14 +70,18 @@ for ip = 1:npi
   end
 
       % elastoplastic tangent bending modulus
-  if      gamma == 0
-        Cep(ip) = E*Iy ;
+  if gamma == 0
+      
+      Cep_np1(ip) = E*Iy ;
 
-  elseif  gamma > 0 && xi1_np1(ip) <= (My-Mc)/kh1
-        Cep(ip) = E*Iy*kh1/(E*Iy + kh1) ;
+  elseif gamma > 0 && xi1_np1(ip) <= (My-Mc)/kh1
+    
+      Cep_np1(ip) = E*Iy*kh1/(E*Iy + kh1) ;
 
-  elseif  gamma > 0 && xin11xpi > (My-Mc)/kh1
-        Cep(ip) = E*Iy*kh2/(E*Iy + kh2) ;
+  elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
+    
+      Cep_np1(ip) = E*Iy*kh2/(E*Iy + kh2) ;
+
   end
 
 end

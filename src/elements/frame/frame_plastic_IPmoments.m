@@ -26,18 +26,18 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [Mnp1, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, xpi, xd, l, alfa, kp, wpi)
+function [Mnp1, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
 
-npi = length(kp) ;
 tM = 0 ;
-Ghats = zeros(npi,1) ;
-Mnp1 = zeros(npi,1) ;
+Ghats   = zeros(npi,1) ;
+Mnp1    = zeros(npi,1) ;
 
 for ip = 1:npi
 
   N = bendingInterFuns (xpi(ip), l, 2) ;
 
-  Bv = [N(1) N(3)] ;  Btheta = [N(2) N(4)] ;
+  Bv = [N(1) N(3)] ;
+  Btheta = [N(2) N(4)] ;
   
   Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ip)/l)) ;
 
