@@ -54,15 +54,15 @@ Ks = -18000 ;       % KN.m
 nu = 0.3 ;          % Poisson's ratio
 
 % geometry
-l = 2.5 ;           % m
-ty = 0.3 ;          % width cross section
-tz = 0.4 ;          % height cross section
-Inertia = tz*ty^3/12 ;    % m^4
+l = 2.5 ;               % m
+ty = 0.3 ;              % width cross section
+tz = 0.4 ;              % height cross section
+Inertia = ty*tz^3/12 ;  % m^4
+     
+E = EI/Inertia ;        % KN/m^2 KPa
 
-E = EI/Inertia ;      % KN/m^2 KPa
-
-A = .4*.3 ;         % m^2
-Mc = 37.9 ;         % KN.m
+A  = ty*tz ;            % m^2
+Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 376 ;
 
@@ -73,7 +73,7 @@ soft_hinge_boolean = false ;
 % ONSAS (NUMBER OF ELEMENTS 1)
 
 % number of finite elements
-num_elem = 10 ;
+num_elem = 1 ;
 
 global historic_parameters
 
@@ -154,8 +154,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [ 9e-4*ones(1,800)  ] ;
-% analysisSettings.incremArcLen       = [ 1e-2*ones(1,85) 1e-3*ones(1,5) 1e-3*ones(1,5)] ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,500) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
