@@ -22,9 +22,12 @@ jobs:
           tests: ./test/runTestProblems_moxunit_disp.m
           with_coverage: true
           cover_xml_file: coverage.xml
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
+          verbose: true
+          fail_ci_if_error: true
+          use_oidc: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         
