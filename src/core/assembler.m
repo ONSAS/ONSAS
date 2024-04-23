@@ -89,7 +89,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 %  --- 2 loop assembly ---
 % ====================================================================
 
-  stateCellnp1 = zeros( size(previousStateCell) );
+stateCellnp1 = zeros( size(previousStateCell) ) ;
 
 for elem = 1:nElems
 
@@ -209,7 +209,6 @@ for elem = 1:nElems
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
 
-      %
       params_plastic_2Dframe = previousStateCell(elem,:) ;
 
       [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
@@ -217,13 +216,12 @@ for elem = 1:nElems
                                                                     modelParams , ...
                                                                     elemDisps , params_plastic_2Dframe) ;
       
-                                                                    Finte = fs{1} ;  Ke = ks{1} ;
+      Finte = fs{1} ;  Ke = ks{1} ;
+      
 	%~ if norm(aux)>0, 
 	%~ aux
 	%~ elemNodesxyzRefCoords
 	%~ end
-
-    
     
     stateCellnp1(elem,:) = aux ;
 	

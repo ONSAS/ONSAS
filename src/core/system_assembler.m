@@ -23,10 +23,10 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
   
   [fs, ~, mats, ~ ] = assembler( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell  ) ;
 
-  Fint = fs{1} ;  Fvis =  fs{2};  Fmas = fs{3} ; Faero = fs{4} ;
+  Fint = fs{1} ;  Fvis =  fs{2} ;  Fmas = fs{3} ; Faero = fs{4} ;
   
 
-  exportFirstMatrices = false;
+  exportFirstMatrices = false ;
   KT   = mats{1} ; 
 
   if strcmp( analysisSettings.methodName, 'newmark' ) || strcmp( analysisSettings.methodName, 'alphaHHT' )
