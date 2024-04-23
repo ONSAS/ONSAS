@@ -27,11 +27,13 @@
 % =========================================================================
 
 function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats)
-    
+
 Kfd    = zeros(6, 6) ;
 Kfalfa = zeros(6, 1) ;
 Khd    = zeros(1, 6) ;
 Khalfa = 0 ;
+
+Fint   = zeros(6, 1) ;
 
 Bu = [-1/l 1/l] ;
 
@@ -45,26 +47,26 @@ for ip = 1:npi
   Bd = [ Bu   0 0 0 0    ; ...
          0  0 Bv  Btheta ] ;
 
-  Kfd     = Bd'*[E*A 0; 0 Cep_np1(ip)]*Bd ;
+  Kfdj     = Bd'*[E*A 0; 0 Cep_np1(ip)]*Bd ;
   
-  Kfalfa  = Bd'*[E*A 0; 0 Cep_np1(ip)]*[0 Ghats(ip)]' ;
+  Kfalfaj  = Bd'*[E*A 0; 0 Cep_np1(ip)]*[0 Ghats(ip)]' ;
   
-  Khd     = [0 Ghats(ip)]*[E*A 0; 0 Cep_np1(ip)]*Bd ;
+  Khdj     = [0 Ghats(ip)]*[E*A 0; 0 Cep_np1(ip)]*Bd ;
   
-  Khalfa  = Ghats(ip)*Cep_np1*Ghats(ip) ;
+  Khalfaj  = Ghats(ip)*Cep_np1(ip)*Ghats(ip) ;
   
   epsilon = Bu*uvector ;
   
   Fi      = Bd' * [E*A*epsilon; Mnp1(ip)] ;
 
   % stiffness matrices / integration (Gauss-Lobatto)
-  Kfd    = Kfd    + Kfd    * wpi(ip) ;
-  Kfalfa = Kfalfa + Kfalfa * wpi(ip) ;
-  Khd    = Khd    + Khd    * wpi(ip) ;
-  Khalfa = Khalfa + Khalfa * wpi(ip) ;
+  Kfd    = Kfd    + Kfdj    * wpi(ip) ;
+  Kfalfa = Kfalfa + Kfalfaj * wpi(ip) ;
+  Khd    = Khd    + Khdj    * wpi(ip) ;
+  Khalfa = Khalfa + Khalfaj * wpi(ip) ;
 
   % internal forces / integration (Gauss-Lobatto)
-  Fint = Fi + Fi*wpi(ip) ;
+  Fint = Fint + Fi*wpi(ip) ;
 
 end
 

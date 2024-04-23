@@ -78,7 +78,7 @@ for ip = 1:npi
     
       Cep_np1(ip) = E*Iy*kh1/(E*Iy + kh1) ;
 
-  elseif gamma > 0 && xin11xpi > (My-Mc)/kh1
+  elseif gamma > 0 && xi1_np1(ip) > (My-Mc)/kh1
     
       Cep_np1(ip) = E*Iy*kh2/(E*Iy + kh2) ;
 
