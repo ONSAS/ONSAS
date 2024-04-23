@@ -97,8 +97,8 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 
 Mnp1
 max_abs_mom = max(abs(Mnp1)) 
-# Mu
-# SH_boole_n
+% Mu
+% SH_boole_n
 
 % ==========================================================
 % solve local equations
