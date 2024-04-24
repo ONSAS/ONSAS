@@ -72,7 +72,7 @@ soft_hinge_boolean = false ;
 % ONSAS (NUMBER OF ELEMENTS 1)
 
 % number of finite elements
-num_elem = 20 ;
+num_elem = 30 ;
 
 global historic_parameters
 
@@ -153,7 +153,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1000) 1e-4*ones(1,5)] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,4000)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
