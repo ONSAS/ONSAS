@@ -38,7 +38,7 @@
 
 % =========================================================================
 
-close all ; clear all;
+close all ; clear all ;
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
@@ -46,10 +46,9 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % -------------------------------------------
 % scalar parameters
 % material
-EI = 77650 ;        % KN.m^2
 kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
-Ks = -18000 ;       % KN.m
+Ks  = -18000 ;      % KN.m
 
 nu = 0.3 ;          % Poisson's ratio
 
@@ -59,7 +58,7 @@ ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
 Inertia = ty*tz^3/12 ;  % m^4
      
-E = EI/Inertia ;        % KN/m^2 KPa
+E = 30e6 ;              % KN/m^2 KPa
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
@@ -73,7 +72,7 @@ soft_hinge_boolean = false ;
 % ONSAS (NUMBER OF ELEMENTS 1)
 
 % number of finite elements
-num_elem = 1 ;
+num_elem = 20 ;
 
 global historic_parameters
 
@@ -154,7 +153,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-3*ones(1,500) ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,1000) 1e-4*ones(1,5)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -165,10 +164,6 @@ analysisSettings.stopTolIts         = 15 ;
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
 otherParams.plots_format = 'vtk' ;
-
-entradas_matriz =12*E*Inertia/l^3
-entradasB_matriz = -6*E*Inertia/l^2
-
 
 [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 

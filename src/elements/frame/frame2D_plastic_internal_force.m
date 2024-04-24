@@ -96,7 +96,7 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 [ Mnp1, tM_np1, ~] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 max_abs_mom = max(abs(Mnp1)) ;
-% Mu
+% disp(Mu) ;
 % SH_boole_n
 
 % ==========================================================
@@ -116,8 +116,8 @@ else % elastic/plastic case without softening
     
   % solve plastic bending step
    [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
-   fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfa_np1, tM_np1) ;
-   fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
+   % fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfa_n, tM_np1) ;
+   % fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
  
 end
 
