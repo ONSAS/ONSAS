@@ -31,11 +31,6 @@
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
 
-% ONSAS ( 1 ELEMENT)
-% ONSAS (10 ELEMENT)
-% Validation
-% Algorithm without ONSAS
-
 % =========================================================================
 
 close all ; clear all ;
@@ -54,12 +49,12 @@ Ks  = -18000 ;      % KN.m
 nu = 0.3 ;          % Poisson's ratio
 
 % geometry
-l = 2.5 ;               % m
+l  = 2.5 ;              % m
 ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
 Inertia = ty*tz^3/12 ;  % m^4
      
-E = EI/Inertia ;        % KN/m^2 KPa
+E = EI/Inertia ;        % KN/m^2 [KPa]
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
@@ -70,10 +65,10 @@ Mu = 376 ;
 soft_hinge_boolean = false ;
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% ONSAS (NUMBER OF ELEMENTS 1)
+% ONSAS (NUMBER OF ELEMENTS 10)
 
 % number of finite elements
-num_elem = 30 ;
+num_elem = 10 ;
 
 global historic_parameters
 
@@ -154,7 +149,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,3500)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,100)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -417,8 +412,8 @@ lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
-plot(abs(girosUltimoNodo), factorescarga,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 % plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
 % plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;

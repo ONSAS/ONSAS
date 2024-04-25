@@ -116,8 +116,6 @@ else % elastic/plastic case without softening
     
   % solve plastic bending step
    [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
-   % fprintf('\n | alpha = %8.8f | tM = %8.4f\n |', alfa_n, tM_np1) ;
-   % fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
  
 end
 
@@ -159,5 +157,8 @@ params_plastic_2Dframe_np1(9)   = xd_np1 ;
 params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
+
+   fprintf('\n | Moment at Hinge = %8.8f', tM_np1) ;
+   fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
 
 end
