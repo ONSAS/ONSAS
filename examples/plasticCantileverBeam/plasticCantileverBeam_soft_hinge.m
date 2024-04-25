@@ -46,6 +46,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % -------------------------------------------
 % scalar parameters
 % material
+EI  = 77650 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
 Ks  = -18000 ;      % KN.m
@@ -58,7 +59,7 @@ ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
 Inertia = ty*tz^3/12 ;  % m^4
      
-E = 30e6 ;              % KN/m^2 KPa
+E = EI/Inertia ;        % KN/m^2 KPa
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
