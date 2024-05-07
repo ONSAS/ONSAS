@@ -438,7 +438,7 @@ plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-*' , 'linewidth', lw*0.5, 'm
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moments') ;
-legend('Analytic (1 elem) [\theta]', 'Analytic (1 elem) [y]', 'MATLAB ALG (1 elem) [\theta]', 'MATLAB ALG (1 elem) [y]', 'location', 'Southeast') ;
+legend('Pseudo Analytic (1 elem) [\theta]', 'Pseudo Analytic (1 elem) [y]', 'MATLAB ALG (1 elem) [\theta]', 'MATLAB ALG (1 elem) [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (moments validation)') ;
