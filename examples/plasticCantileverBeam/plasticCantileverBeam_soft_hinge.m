@@ -230,7 +230,7 @@ factorescarga_10 = loadFactorsMat_10(:,2) ;
 %}
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% validation / ONSAS with the function moments_plus_internal_variables
+% validation pseudo analitic / ONSAS with the function moments_plus_internal_variables
 
 xd = 0 ;
 alpha = 0 ;
