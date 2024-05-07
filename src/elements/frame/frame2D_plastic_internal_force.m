@@ -82,8 +82,9 @@ xi2_np1     = xi2_n ;
 SH_boole_np1 = SH_boole_n ;
 xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
-%tM_np1      = tM_n ;        % hinge moment
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
+
+% tM_np1      = tM_n ;      % hinge moment
 
 % ==========================================================
 % moments calculation
@@ -95,6 +96,9 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 % initial values of bulk moments
 [ Mnp1, tM_np1, ~] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
+fprintf('\n | displacement y = %1.16f\n |', vvector(2)) ;
+fprintf('\n | Bulk moments = %1.16f %1.16f %1.16f\n |', Mnp1) ;
+
 max_abs_mom = max(abs(Mnp1)) ;
 % disp(Mu) ;
 % SH_boole_n
@@ -103,14 +107,13 @@ max_abs_mom = max(abs(Mnp1)) ;
 % solve local equations
 % ==========================================================
 
-% if:   in time tn+1 the hinge is initiated   or    it was already formed in time tn
+% if in time tn+1 the hinge is initiated or it was already formed in time tn
 if ( SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_n == true
 
   % solve softening step
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(SH_boole_n, xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1) * E*Iy ;
-
 
 else % elastic/plastic case without softening
     
@@ -157,8 +160,5 @@ params_plastic_2Dframe_np1(9)   = xd_np1 ;
 params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
-
-   fprintf('\n | Moment at Hinge = %8.8f', tM_np1) ;
-   fprintf('\n | displacement y = %8.4f\n |', vvector(2)) ;
 
 end

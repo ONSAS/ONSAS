@@ -65,10 +65,10 @@ Mu = 376 ;
 soft_hinge_boolean = false ;
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% ONSAS (NUMBER OF ELEMENTS 10)
+% ONSAS (NUMBER OF ELEMENTS 1)
 
 % number of finite elements
-num_elem = 30 ;
+num_elem = 1 ;
 
 global historic_parameters
 
@@ -149,7 +149,7 @@ analysisSettings.stopTolIts    =   15   ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,30)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,460) 1e-4*ones(1,1000) 1e-5*ones(1,500)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -167,9 +167,7 @@ girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
-
 %{
-
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 10)
@@ -228,7 +226,6 @@ analysisSettings.stopTolIts         = 15 ;
 girosUltimoNodo_10 = matUs_10((num_elem+1)*6,:) ;
 descensosUltimoNodo_10 = matUs_10((num_elem+1)*6-3,:) ;
 factorescarga_10 = loadFactorsMat_10(:,2) ;
-
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % validation / ONSAS with the function moments_plus_internal_variables
@@ -424,6 +421,8 @@ legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y', 'location', 'Southeast') ; %
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (load factors)') ;
+
+print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces_soft_hinge.pdf','-dpdf');
 
 %{
 
