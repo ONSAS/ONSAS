@@ -227,6 +227,8 @@ girosUltimoNodo_10 = matUs_10((num_elem+1)*6,:) ;
 descensosUltimoNodo_10 = matUs_10((num_elem+1)*6-3,:) ;
 factorescarga_10 = loadFactorsMat_10(:,2) ;
 
+%}
+
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % validation / ONSAS with the function moments_plus_internal_variables
 
@@ -401,8 +403,6 @@ for ind = 2:length(load_factors)
 
 end
 
-%}
-
 % GRAPHICS
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
@@ -412,40 +412,36 @@ hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-% plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
-% plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;
+plot(abs(matdes(6,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#D95319") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), Fn,'-x' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#7E2F8E") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Forces') ;
-legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y', 'location', 'Southeast') ; % ,'MATLAB ALG (1 elem) \theta', 'MATLAB ALG (1 elem) y', 'location', 'Southeast') ;
+legend('ONSAS (1 elem) \theta', 'ONSAS (1 elem) y', 'MATLAB ALG (1 elem) \theta', 'MATLAB ALG (1 elem) y', 'location', 'Southeast') ; % ,'MATLAB ALG (1 elem) \theta', 'MATLAB ALG (1 elem) y', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (load factors)') ;
 
 print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces_soft_hinge.pdf','-dpdf');
 
-%{
-
 figure('Name','Cantilever Beam / Plasticity (moments validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw*2, 'markersize', ms*0.5, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw*2, 'markersize', ms*0.5, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw, 'markersize', ms*0.5, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-*' , 'linewidth', lw, 'markersize', ms*0.5, "Color", "#0072BD") ;
 
-plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-*' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#EDB120") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-*' , 'linewidth', lw*0.5, 'markersize', ms*2, "Color", "#0072BD") ;
+plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-*' , 'linewidth', lw*0.5, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-*' , 'linewidth', lw*0.5, 'markersize', ms, "Color", "#77AC30") ;
 
-plot(abs(girosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+% plot(abs(girosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+% plot(abs(descensosUltimoNodo_10), factorescarga_10*2.5, '-s' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ; 
 laby = ylabel('Moments') ;
-legend('Analytic (1 elem) [\theta]', 'Analytic (1 elem) [y]', 'MATLAB ALG (1 elem) [\theta]', 'MATLAB ALG (1 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
+legend('Analytic (1 elem) [\theta]', 'Analytic (1 elem) [y]', 'MATLAB ALG (1 elem) [\theta]', 'MATLAB ALG (1 elem) [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (moments validation)') ;
 
-print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces.png','-dpng');
-print('-f2','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Moment.png','-dpng');
-
-%}
+print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces.png','-dpng') ;
+print('-f2','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Moment.png','-dpng') ;
