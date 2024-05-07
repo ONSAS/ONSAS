@@ -422,7 +422,7 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (load factors)') ;
 
-print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces_soft_hinge.pdf','-dpdf');
+% print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces_soft_hinge.pdf','-dpdf');
 
 figure('Name','Cantilever Beam / Plasticity (moments validation)','NumberTitle','off') ;
 hold on, grid on
@@ -443,5 +443,5 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (moments validation)') ;
 
-print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces.png','-dpng') ;
-print('-f2','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Moment.png','-dpng') ;
+% print('-f1','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Forces.png','-dpng') ;
+% print('-f2','/Users/sergesto/Librería/Maestría/Tesis/Tex/Figuras_Matlab/Moment.png','-dpng') ;
