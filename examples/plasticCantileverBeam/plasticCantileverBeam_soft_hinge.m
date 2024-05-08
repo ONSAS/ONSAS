@@ -52,7 +52,7 @@ nu = 0.3 ;          % Poisson's ratio
 l  = 2.5 ;              % m
 ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
-Inertia = ty*tz^3/12 ;  % m^4
+Inertia = tz*ty^3/12 ;  % m^4
      
 E = EI/Inertia ;        % KN/m^2 [KPa]
 
