@@ -96,12 +96,10 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 % initial values of bulk moments
 [ Mnp1, tM_np1, ~] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-fprintf('\n | Displacement at the free end y = %1.16f\n |', vvector(2)) ;
-fprintf('\n | Bulk moments Mn = %1.16f %1.16f %1.16f\n |', Mnp1) ;
+% fprintf('\n | Displacement at the free end y = %1.16f\n |', vvector(2)) ;
+% fprintf('\n | Bulk moments Mn = %1.16f %1.16f %1.16f\n |', Mnp1) ;
 
 max_abs_mom = max(abs(Mnp1)) ;
-% disp(Mu) ;
-% SH_boole_n
 
 % ==========================================================
 % solve local equations
