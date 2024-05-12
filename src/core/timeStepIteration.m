@@ -20,13 +20,6 @@
 % user.
 function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
-global Mnp1
-global tM_np1
-global alfa_np1
-global MT
-global MTM
-global ALFA
-
 % assign current time (t) variables
 % ---------------------------------
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
@@ -167,11 +160,6 @@ modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
                                    systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, stateCellnp1 ) ;
-
-MT = [MT Mnp1] ;
-MTM = [MTM tM_np1] ;
-ALFA = [ALFA alfa_np1] ;
-
 
 % ==============================================================================
 % ==============================================================================

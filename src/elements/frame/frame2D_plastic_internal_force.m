@@ -35,14 +35,6 @@ function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force
 % called by the function assembler
 % /\
 
-global Mnp1
-global tM_np1
-global alfa_np1
-global MT
-global MTM
-global ALFA
-
-
 % initial/deformed lengths
 Bdif = [ -eye(3) eye(3) ] ;
 l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
