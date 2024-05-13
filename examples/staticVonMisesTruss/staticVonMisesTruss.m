@@ -167,8 +167,8 @@ elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
 %md In this case, the numerical method is changed for newtonRaphson arc length.
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = [ 0.15*ones(1,8) 0.3*ones(1,2)]                             ;
+analysisSettings.finalTime    = 1                                ;
+analysisSettings.incremArcLen = [ 0.15*ones(1,8) 0.3*ones(1,2)]  ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md
@@ -181,23 +181,21 @@ difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md### Analysis case 4: NR-AL Jirasek with Green Strain
 %md
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
-analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = 0.15                             ;
+analysisSettings.methodName   = 'arcLength'                              ;
+analysisSettings.finalTime    = 1                                        ;
+analysisSettings.incremArcLen = 0.15                                     ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
-%md Jirasek variant - Dominant dof
-%md Extracted from Jirásek & Bazant book Inelastic Analysis of Structures, 2002
-%md Chapter 22, Numerical Methods in Plasticity
 %md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
-global arcLengthFlag
-arcLengthFlag = 2 ;
+# global arcLengthFlag
+analysisSettings.ALdominantDOF = [ 11 -1 ] ;
+# arcLengthFlag = 2 ;
 %md The dominant dof selected for this problem correpsonds with the displacement uz of node 2.
-global dominantDofs
-dominantDofs = 11 ;
+# global dominantDofs
+# dominantDofs = 11 ;
 %md The scaling projection for the Jirasek method and for this selected dof is set as follows.
-global scalingProjection
-scalingProjection = -1 ;
+# global scalingProjection
+# scalingProjection = -1 ;
 %md
 [matUs, loadFactorsMat, cellFint] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
