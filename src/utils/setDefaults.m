@@ -63,6 +63,7 @@ if strcmp( analysisSettings.methodName, 'alphaHHT' )
 end
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag', 0              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean' , 0              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'ALdominantDOF'        , []             ) ;
 
 % =========================================
 % otherParams

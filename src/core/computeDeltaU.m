@@ -19,8 +19,10 @@ function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
   systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
 global arcLengthFlag % 1: cylindrical 2: jirasek
-if isempty( arcLengthFlag )
+if isempty( analysisSettings.ALdominantDOF )
   arcLengthFlag = 1 ;
+else
+  arcLengthFlag = 2 ;
 end
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
@@ -46,8 +48,8 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
 
 		% Variables to be defined by user
-		global dominantDofs
-		global scalingProjection
+		dominantDofs = analysisSettings.ALdominantDOF(1);
+		scalingProjection = analysisSettings.ALdominantDOF(2);
 		% Projection matrix
 		cMatrix(dominantDofs) = scalingProjection ;
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
