@@ -168,7 +168,7 @@ elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
 analysisSettings.methodName   = 'arcLength'                      ;
 analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = 0.15                             ;
+analysisSettings.incremArcLen = [ 0.15*ones(1,8) 0.3*ones(1,2)]                             ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md

@@ -186,7 +186,7 @@ This struct contains the parameters required to apply the numerical method for t
  * `stopTolIts`: integer with maximum number of iterations per time step
  * `deltaT`: time step
  * `finalTime`: final time of simulation
- * `incremArcLen`: with of cylinder for arcLength method
+ * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. 
  * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark delta = $1/2$ is set.
  * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark alpha = $1/4$ is set.
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
