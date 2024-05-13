@@ -180,13 +180,14 @@ If initial conditions are homogeneous, then an empty struct should be defined us
 
 This struct contains the parameters required to apply the numerical method for the resolution of the nonlinear equations:
 
- * `methodName`: string with the name of the method used: `'newtonRaphson'`,`'arcLength'`,`'newmark'`,`'alphaHHT'`.
+ * `methodName`: string with the name of the method used: `'newtonRaphson'`,`'arcLength'`, `'newmark'`,`'alphaHHT'`.
  * `stopTolDeltau`: float with tolerance for convergence in relative norm of displacements increment
  * `stopTolForces`: float with tolerance for convergence in relative norm of residual loads
  * `stopTolIts`: integer with maximum number of iterations per time step
  * `deltaT`: time step
  * `finalTime`: final time of simulation
  * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. 
+ * `ALdominantDOF`: if this is not set or set as `[]` (zero) then the cylindical ArcLength method based on DeSouzaNeto's Computational Methods for plasticity is used, if a non-empty vector is provided, then the dominant dof arc length variant based on Jirásek & Bazant, Inelastic Analysis of Structures, 2002, Chapter 22, is used, the first entry is the dof and the second the scaling factor
  * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark delta = $1/2$ is set.
  * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark alpha = $1/4$ is set.
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
