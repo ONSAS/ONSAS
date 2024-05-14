@@ -63,14 +63,20 @@ otherParams.problemName  = 'cantileverPlate' ;
 otherParams.plots_format = 'vtk' ;
 %md
 %md Execute ONSAS and save the results:
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
+%md
 Ly = .5;
 Lx = 1 ;
 qlin = q*Ly;
 I = Ly*tz^3/12;
-analy_wmax = -qlin*Lx^4/(8*E*I) ;
-numer_wmax = min(matUs(5:6:end)) ;
+analy_wmax = -qlin*Lx^4/(8*E*I) 
+numer_wmax = min(matUs(5:6:end)) 
 verifBoolean = (abs( analy_wmax - numer_wmax ) / abs(analy_wmax)) < 1e-3 
 

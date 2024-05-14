@@ -13,8 +13,9 @@
 
 Journal articles using ONSAS:
 
- * 2023, M. Vanzulli, J. M. Pérez Zerpa, *A co-rotational formulation for quasi-steady aerodynamic nonlinear analysis of frame structures*, Heliyon [url](https://doi.org/10.1016/j.heliyon.2023.e19990)
- * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, Computers & Structures [url](https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor)
+ * 2024, A. Villié, M. Vanzulli, J.M. Pérez Zerpa, J. Vétel, S. Etienne, F.P. Gosselin, *Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators*, **Journal of Fluids and Structures** [url](https://doi.org/10.1016/j.jfluidstructs.2024.104074)
+ * 2023, M. Vanzulli, J. M. Pérez Zerpa, *A co-rotational formulation for quasi-steady aerodynamic nonlinear analysis of frame structures*, **Heliyon** [url](https://doi.org/10.1016/j.heliyon.2023.e19990)
+ * 2022, M. Forets, D. Freire, J. M. Pérez Zerpa, *Combining set propagation with finite element methods for time integration in transient solid mechanics problems*, **Computers & Structures** [url](https://www.sciencedirect.com/science/article/abs/pii/S0045794921002212?dgcid=coauthor)
 
 Theses using ONSAS:
 

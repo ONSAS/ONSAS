@@ -68,7 +68,7 @@ initialConds = {} ;
 %mdThe coordinates of the nodes of the mesh are given by the matrix:
 mesh             = struct() ;
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. Finally the node is included.
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
@@ -95,7 +95,12 @@ otherParams.controlDofs = [ numElements+1  4 ] ;
 otherParams.plots_format = 'vtk' ;
 %md## Analysis case 1: NR with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md
 %md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
 angleControlDof      = (numElements+1)*6 - 2;

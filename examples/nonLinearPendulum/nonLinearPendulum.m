@@ -28,9 +28,9 @@ m   = 10     ; g = 9.80 ;
 %mdIn the example presented in [(K.J Bathe 2006)] the force $m*g$ is applied at the end node, consequently a syntheticall coherent densitiy to generate the same effect is:
 rho = 2*m / ( A * l0 )  ;
 %md##Numerical solution
-%md### MEBI parameters
+%md### MEB parameters
 %md
-%mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
+%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 %md
 %md### materials
 %mdSince the first case contains only one type of material the fields of the `materials` struct will have only one entry.
@@ -78,7 +78,7 @@ mesh.nodesCoords = [   0  0   l0 ; ...
 mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
-%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used.
+%md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used.
 mesh.conecCell{ 2, 1 } = [ 0 1 2  2   ] ;
 %md and for node $2$ only the boundary condition is changed, because it is lodaded.
 %md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.
@@ -99,7 +99,15 @@ otherParams.plots_format       = 'vtk' ;
 analysisSettings.methodName = 'newmark'     ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
-[matUsCase1, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase1, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 % ------------------------------------
 %md### Analysis case 2: Solution using HHT with truss element, mass lumped according to Bathe problem and self weight boolean activated:
 analysisSettings.booleanSelfWeight = true ;
@@ -110,7 +118,15 @@ analysisSettings.methodName = 'alphaHHT';
 analysisSettings.alphaHHT   =  0        ;        
 %mdthe new name of these problem is:
 otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
-[matUsCase2, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase2, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 % ------------------------------------
 %md### Analysis case 3: Solution using HHT using frame element, mass lumped at the final element and self weight boolean is activated. For this case denisity is null for the rest of the elements and rhoF =  m / ( A * (lNEWelem * l0) ) for the new one in order to produce the same force that is considered by [(K.J Bathe 2006)]
 %md
@@ -137,7 +153,14 @@ materials(2).modelParams = [ E nu ] ;
 materials(2).density = rhoF ;
 otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------
-[matUsCase3, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase3, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 
 %md### extract control displacements
 %mdThe mass displacement in z are:

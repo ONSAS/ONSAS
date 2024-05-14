@@ -8,7 +8,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 E = 200e9 ; nu = 0.3 ; Lx = 2 ; Ly = .02 ; Lz = .2 ; rho = 8e3 ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md#### materials
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
@@ -57,8 +57,14 @@ analysisSettings.deltaT            = 1   ;
 otherParams = struct() ;
 otherParams.problemName = 'cantileverSelfWeight' ;
 %md
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
+%md Execute ONSAS and save the results:
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 numericalDeflection = min( matUs(:,2) )
 

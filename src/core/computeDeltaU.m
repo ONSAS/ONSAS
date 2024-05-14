@@ -1,4 +1,4 @@
-% Copyright 2023, ONSAS Authors (see documentation)
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,13 +14,15 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% 
+%
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
   systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
 global arcLengthFlag % 1: cylindrical 2: jirasek
-if isempty( arcLengthFlag )
+if isempty( analysisSettings.ALdominantDOF )
   arcLengthFlag = 1 ;
+else
+  arcLengthFlag = 2 ;
 end
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
@@ -45,19 +47,13 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 		
   	
 		% Variables to be defined by user
-		global dominantDofs
-		global scalingProjection
-		global sizecmatrix
-
-%    dominantDofs
-%		scalingProjection
-    cMatrix = zeros(sizecmatrix,1) ; % Jirasek	
-
+		dominantDofs = analysisSettings.ALdominantDOF(1);
+		scalingProjection = analysisSettings.ALdominantDOF(2);
 		% Projection matrix
 		cMatrix(dominantDofs) = scalingProjection ;
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
-%	cMatrix
-		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
+
+    deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
   
   elseif arcLengthFlag == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;

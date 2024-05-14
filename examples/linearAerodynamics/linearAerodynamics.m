@@ -89,7 +89,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md### mesh parameters
 %mdThe coordinates of the mesh nodes are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. Finally the node is assigned:
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1 ] ;
@@ -126,7 +126,14 @@ otherParams.plots_format = '' ;
 %md The first case is executed used the internal ONSAS functions such as `hydroFrameForce.m`to compute the aerodynamic forces:
 %md
 %md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUsCase1`matrix:
-[matUsCase1, ~] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase1, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 %md
 %md### Case 2: user load function 
 % %md

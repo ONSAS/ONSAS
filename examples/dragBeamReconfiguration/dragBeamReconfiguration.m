@@ -32,7 +32,7 @@ addpath( genpath( [ pwd '/../../src'] ) );
 %md The number of elements employed to discretize the beam is:
 numElements = 10 ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
@@ -69,7 +69,7 @@ initialConds = struct() ;
 %mdThe coordinates of the mesh nodes are given by the matrix:
 mesh = struct() ;
 mesh.nodesCoords = [ (0:(numElements))' * L/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. Finally the node is assigned:
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1 ] ;
@@ -112,7 +112,15 @@ glboalNodeReactionForces = 1 ;
 %md
 %md### Numeric solution
 %md
-[matUsCase1] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md Execute ONSAS and save the results:
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase1, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 %md 
 %md## Verification
 %md---------------------
@@ -242,7 +250,14 @@ otherParams.problemName = 'staticReconfigurationCircleBuiltInDrag';
 %md
 %md### Numeric solution
 %md
-[matUsCase2] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase2, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 %md
 %md Deformed configurations for different cauchy numbers  
 %md

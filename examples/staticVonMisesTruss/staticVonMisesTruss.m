@@ -81,7 +81,7 @@ mesh.nodesCoords = [   0  0   0 ; ...
                     2*x2  0   0 ] ;
 %md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 %md
-%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEBI parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_ cell. Each entry of the cell (indexed using {}) contains a vector with the four indexes of the MEB parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = cell(5,1) ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
@@ -117,7 +117,12 @@ otherParams.plots_deltaTs_separation = 2 ;
 %md
 %md### Analysis case 1: Newton-Raphson with Rotated Eng Strain
 %md In the first case ONSAS is run and the solution at the dof of interest is stored.
-[matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 %md
@@ -127,7 +132,11 @@ materials.modelName = 'elastic-linear' ;
 otherParams.problemName  = 'staticVonMisesTruss_elastic-linear';
 analysisSettings.finalTime  =   1.5    ;
 %md and the analysis is run again
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md the displacements are extracted
 controlDispsNRlinearElastic =  -matUs(11,:) ;
 loadFactorsNRlinearElastic  =  loadFactorsMat(:,2) ;
@@ -150,7 +159,10 @@ materials.modelParams = [ lambda mu ] ;
 boundaryConds(2).loadsTimeFact = @(t) 1.5e8*t ;
 %boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
 %md and the analysis is run
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md and the displacements are extracted
 controlDispsNRGreen =  -matUs(11,:) ;
 loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
@@ -160,46 +172,41 @@ difLoadGreen = analyticLoadFactorsGreen( controlDispsNRGreen )' - loadFactorsNRG
 %md
 %md### Analysis case 4: NR-AL with Green Strain
 %md
+%mdIn this case the rectangle section is considered (with the same area as the previous cases) and the Arc-Length resolution method is used.
+otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
+%mdthe section is changed
 elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
 elements(2).elemCrossSecParams{2,1} = [ sqrt(A) sqrt(A)] ;
-%mdThe same loading conidition as before is used, but given by a user load function. The argument set in this case is:
-%md
-%md In this case, the numerical method is changed for newtonRaphson arc length.
-otherParams.problemName       = 'staticVonMisesTruss_NRAL_Green' ;
+%md the numerical method is changed 
 analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = 0.15                             ;
+analysisSettings.finalTime    = 1                                ;
+%md a varying step of displacements is considered 
+analysisSettings.incremArcLen = [ 0.15*ones(1,8) 0.3*ones(1,2)]  ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.posVariableLoadBC = 2 ;
 %md
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 controlDispsNRALGreen =  -matUs(11,:) ;
 loadFactorsNRALGreen  =  loadFactorsMat(:,2) ;
 analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
 difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md
-%md### Analysis case 4: NR-AL Jirasek with Green Strain
+%md### Analysis case 5: NR-AL Jirasek variant
 %md
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
-analysisSettings.methodName   = 'arcLength'                      ;
-analysisSettings.finalTime    = 1                               ;
-analysisSettings.incremArcLen = 0.15                             ;
-analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
-analysisSettings.posVariableLoadBC = 2 ;
-%md Jirasek variant - Dominant dof
-%md Extracted from Jirásek & Bazant book Inelastic Analysis of Structures, 2002
-%md Chapter 22, Numerical Methods in Plasticity
+analysisSettings.incremArcLen = 0.15                                     ;
 %md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
-global arcLengthFlag
-arcLengthFlag = 2 ;
-%md The dominant dof selected for this problem correpsonds with the displacement uz of node 2.
-global dominantDofs
-dominantDofs = 11 ;
-%md The scaling projection for the Jirasek method and for this selected dof is set as follows.
-global scalingProjection
-scalingProjection = -1 ;
+analysisSettings.ALdominantDOF = [ 11 -1 ] ;
 %md
-[matUs, loadFactorsMat, cellFint] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
 loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;
 analyticLoadFactorsNRAL_Jirasek_Green = analyticLoadFactorsGreen(controlDispsNRAL_Jirasek_Green);

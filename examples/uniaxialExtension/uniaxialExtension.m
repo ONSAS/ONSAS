@@ -130,7 +130,7 @@ mesh.nodesCoords = [ 0    0    0 ; ...
                      Lx   0   Lz ; ...
                      Lx  Ly   Lz ; ...
                      Lx  Ly    0 ] ;
-%md and the connectivity cell is defined as follows with the four MEBI parameters for each element followed by the indexes of the nodes of each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
+%md and the connectivity cell is defined as follows with the four MEB parameters for each element followed by the indexes of the nodes of each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
 mesh.conecCell = {[ 0 1 1     5 8 6   ]; ... % loaded face
                   [ 0 1 1     6 8 7   ]; ... % loaded face
                   [ 0 1 2     4 1 2   ]; ... % x=0 supp face
@@ -162,7 +162,11 @@ otherParams              = struct() ;
 otherParams.plots_format = 'vtk' ;
 otherParams.problemName  = 'uniaxialExtension_HandMadeMesh' ;
 %md
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md
 %md### Analytic solution computation
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
@@ -193,7 +197,11 @@ boundaryConds(1).loadsCoordSys = 'local';
 boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 elements(2).elemTypeParams = [ 2 ] ;
 
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 
 controlDisps = matUs(6*6+1,:) ;
 analyticVals = analyticFunc( controlDisps ) ;

@@ -63,7 +63,7 @@ mesh.nodesCoords = [(0:(numElemB))'*lb/numElemB zeros(numElemB+1,1) zeros(numEle
 		            lb*ones(numElemT,1) 	    zeros(numElemT,1)   -(1:(numElemT))'*lt/numElemT ] ;
 %md where the columns 1,2 and 3 correspond to $x$, $y$ and $z$ coordinates, respectively, and the row $i$-th corresponds to the coordinates of node $i$.
 
-%md The conectivity struct using MEBI nomenclature is defined by using the following auxiliar Element and Nodes matrix:
+%md The conectivity struct using MEB nomenclature is defined by using the following auxiliar Element and Nodes matrix:
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{1,1} = [ 0 1 1  1 ];
 %md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is fixed, then the first index of the `boundaryConds` struct is used. 
@@ -72,7 +72,7 @@ mesh.conecCell{2,1} = [ 0 1 2  numNodesB ];
 %md analogosly for node $numNodesB + numElemT$ only the boundary condition is changed:
 mesh.conecCell{3,1} = [ 0 1 3  numNodesB + numElemT ];
 %md
-%mdTo define the conecCell of elements a auxiliar auxConecElem matrix is defined using MEBI nomenclature:
+%mdTo define the conecCell of elements a auxiliar auxConecElem matrix is defined using MEB nomenclature:
 auxConecElem  = [ % MEB frame elements
                   [ ones(numElemB,1)*2  ones(numElemB,1)*3  zeros(numElemB,1) ...
                     (1:(numElemB))'         (2:numElemB + 1)' ] ;...
@@ -103,7 +103,14 @@ otherParams.problemName = 'beamTrussJoint' ;
 otherParams.plots_format = 'vtk'            ;
 %md
 %md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint. 
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%mdFirst the input structs are converted to structs with the model information
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 
 %md Its important to oultine analytical solution considering large dispalcements is not aviable. Thus the load applied is sleceted to produce amplitude displacements ($<0.05lt$). Consequently the small displacment solution of $uz$ is given by:

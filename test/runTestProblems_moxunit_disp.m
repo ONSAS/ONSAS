@@ -46,7 +46,7 @@ function test_8
   assertEqual( verifBoolean, true );
 
 function test_9
-  nonlinearPendulum
+  nonLinearPendulum
   assertEqual( verifBoolean, true );
 
 function test_10
@@ -98,8 +98,8 @@ function test_21
   assertEqual( verifBoolean, true );
 
 function test_22
-    rectangularPlate
-    assertEqual( verifBoolean, true );
+  rectangularPlate
+  assertEqual( verifBoolean, true );
   
 function test_23
   assertEqual( gaussIntegrationTest, true);

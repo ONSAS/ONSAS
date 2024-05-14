@@ -12,7 +12,7 @@ tz = .1 ; %m
 % the number of elements of the mesh
 numElements = 8 ;
 
-% MEBI parameters
+% MEB parameters
 % Materials
 % ----------------------------------------------------------------------
 materials  = struct();
@@ -83,7 +83,13 @@ A = ty*tz ;
 I = max(ty,tz)*min(ty,tz)^3/12 ;
 Pcrit = pi()^2*E*I/l^2 ;
 
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 
 Dof      		 = (numElements/2 + 1)*6 - 5 	;
