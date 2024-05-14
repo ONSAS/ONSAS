@@ -115,7 +115,11 @@ otherParams.problemName      = strcat('VIVTest') ;
 %
 % Run ONSAS
 %
-[ matUs, ~ ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ; 
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+matUs = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 % Extract numerical solution
 uz = matUs(5:6:end, :) 
 uz - uzsol

@@ -162,7 +162,11 @@ otherParams              = struct() ;
 otherParams.plots_format = 'vtk' ;
 otherParams.problemName  = 'uniaxialExtension_HandMadeMesh' ;
 %md
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md
 %md### Analytic solution computation
 analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
@@ -193,7 +197,11 @@ boundaryConds(1).loadsCoordSys = 'local';
 boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
 elements(2).elemTypeParams = [ 2 ] ;
 
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 
 controlDisps = matUs(6*6+1,:) ;
 analyticVals = analyticFunc( controlDisps ) ;

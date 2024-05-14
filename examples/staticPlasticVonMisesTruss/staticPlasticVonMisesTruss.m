@@ -59,7 +59,11 @@ otherParams.problemName = 'static_plastic_von_mises_truss';
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 2 ;
 
-[matUs, loadFactorsMat ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 
 deltas = -matUs(6+5,:)' ;
 eles = sqrt( x2^2 + (z2-deltas).^2 ) ;
@@ -81,7 +85,11 @@ analysisSettings.methodName    = 'arcLength' ;
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2)/100 ;
 analysisSettings.incremArcLen = [ 2e-4 4e-5*ones(1,100)];
 
-[matUsB, loadFactorsMatB ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsB, loadFactorsMatB, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 deltasB = -matUsB(6+5,:)' ;
 
 eles = sqrt( x2^2 + (z2-deltasB).^2 ) ;
