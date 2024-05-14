@@ -149,7 +149,12 @@ mesh.conecCell{ 2, 1 } = [ 0 1 2    2   ] ;
 mesh.conecCell{ 3, 1 } = [ 1 2 0    1 2   ] ;
 %md
 %md Execute ONSAS and save the results:
-[matUsNewmark, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsNewmark, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md
 %md### Numerical case 2: truss model with nodal masses, using $\alpha$-HHT method and user loads function
 %md
@@ -181,7 +186,11 @@ analysisSettings.alphaHHT   =   0        ;
 otherParams.problemName = 'springMass_case2'     ;
 %md
 %md Execute ONSAS and save the results:
-[matUsHHT, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsHHT, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 %md
 %md
 %md### Numerical case 3: beam element model
@@ -229,7 +238,12 @@ otherParams.problemName = 'springMass_case3'     ;
 %md
 analysisSettings.methodName    = 'newmark' ;
 %md
-[matUsBending, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUsBending, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
 valsBending = matUsBending(6+3,:) ;
 %md
 %md## Verification
