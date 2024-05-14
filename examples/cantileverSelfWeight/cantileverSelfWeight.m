@@ -8,7 +8,7 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % scalar parameters
 E = 200e9 ; nu = 0.3 ; Lx = 2 ; Ly = .02 ; Lz = .2 ; rho = 8e3 ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md#### materials
 %md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as

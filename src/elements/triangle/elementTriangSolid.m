@@ -1,4 +1,4 @@
-% Copyright 2023, ONSAS Authors (see documentation)
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% 
+%
 %md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with elastic-linear and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
 %md
 

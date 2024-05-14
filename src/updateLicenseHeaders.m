@@ -1,4 +1,4 @@
-% Copyright 2023, ONSAS Authors (see documentation)
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -18,7 +18,13 @@
 
 % Recursive function for updating headers of source files in src and downwards ...
 
-function updateLicenseHeaders( folder )
+function updateLicenseHeaders( folder, root )
+
+lengthOfCurrentHeader = 17 ;
+
+if root==true && exist('newFileHeader.txt')~=2
+  system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' updateLicenseHeaders.m > newFileHeader.txt' ] );
+end
 
 folder
 files = dir( folder ) ;
@@ -28,18 +34,19 @@ for i = 1:length( files )
   if files(i).isdir
     if ~strcmp(files(i).name(1),'.')
       files(i).name
-      updateLicenseHeaders( [ folder '/' files(i).name ] )
+      updateLicenseHeaders( [ folder '/' files(i).name ], false )
     end 
   else
     completeFilename = [ folder '/' files(i).name ] 
-    showHeaderAndReplace( completeFilename )
+    showHeaderAndReplace( completeFilename, lengthOfCurrentHeader )
   end
 end
 
+if root==true && exist('newFileHeader.txt')==2
+  system( [ 'rm newFileHeader.txt' ] );
+end
 
-function showHeaderAndReplace( filename )
-
-lengthOfCurrentHeader = 17 ;
+function showHeaderAndReplace( filename, lengthOfCurrentHeader )
 
 system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' ' filename ] );
 

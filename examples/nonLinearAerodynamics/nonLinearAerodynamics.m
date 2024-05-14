@@ -59,7 +59,7 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %md### mesh parameters
 %mdThe coordinates of the mesh nodes are given by the matrix:
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. For (I) no non-homogeneous initial condition is considered (then zero is used) and finally the node is assigned:
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1 ] ;
@@ -168,7 +168,7 @@ print(fig2, namefig2,'-dpng')
 %md Now a large displacements 2D case is solved. The solution is computed using the co-rotational beam element formulation proposed in [this reference](https://www.sciencedirect.com/science/article/abs/pii/S0045782513003022)
 %md### Numerical solution static case
 %md---------------------
-%md### MEBI parameters
+%md### MEB parameters
 %md---------------------
 %md
 %md### materials
@@ -263,7 +263,7 @@ print(fig3, namefig3,'-dpng') ;
 %md## Large displacements 3D case
 %md--------------------
 %md A large displacements dynamic 3D case is presented as follows. This example is inspired on Vortex shedding  exposed at [![Youtbue Video](https://img.shields.io/badge/script-url-blue)](https://www.youtube.com/watch?v=Lf9Ffj5rGh8&ab_channel=FrederickGosselin)
-%md### MEBI parameters
+%md### MEB parameters
 %md---------------------
 %md
 %md### materials  
