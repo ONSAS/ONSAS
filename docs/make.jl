@@ -18,7 +18,7 @@ makedocs(
       "Plane strain ring"=>"examples/ringPlaneStrain.md",
       # "Linear aerodynamics"     => "examples/linearAerodynamics.md",
       "Reconfiguration beam"=>"examples/dragBeamReconfiguration.md",
-      "Propeller model"=>"examples/simplePropeller.md",
+      "Propeller model"=>"examples/simplePropeller.md"],
       # "Non-linear aerodynamics"=>"examples/nonLinearAerodynamics.md"],
       "User guide" => Any["Installation"=>"install.md",
       "Creating Models"=>"creatingModels.md",
