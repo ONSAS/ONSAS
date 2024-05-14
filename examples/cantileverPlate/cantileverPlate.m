@@ -70,7 +70,7 @@ Ly = .5;
 Lx = 1 ;
 qlin = q*Ly;
 I = Ly*tz^3/12;
-analy_wmax = -qlin*Lx^4/(8*E*I) ;
-numer_wmax = min(matUs(5:6:end)) ;
+analy_wmax = -qlin*Lx^4/(8*E*I) 
+numer_wmax = min(matUs(5:6:end)) 
 verifBoolean = (abs( analy_wmax - numer_wmax ) / abs(analy_wmax)) < 1e-3 
 

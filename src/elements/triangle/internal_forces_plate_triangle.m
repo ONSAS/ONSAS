@@ -29,7 +29,7 @@ DET = ( B(1) * C(2) - B(2) * C(1) ) * 24 ;
 % isotropic
 D = thickness^3/12 * E/(1-nu^2) * [1 nu 0; nu 1 0; 0 0 (1-nu)*.5 ] ;
 
-PP = 1/24 * [ 12 4 4 ; 4 2 1; 4 1 2 ];
+PP = [ 12 4 4 ; 4 2 1; 4 1 2 ];
   
 DD =  zeros(9,9);
 i = 1; j = 1;  DD( nodes2dofs(i,3), nodes2dofs(j,3)) = D(i,j)*PP/DET ;
@@ -112,7 +112,7 @@ aux(1,0+(1:3)) = gamma_vec ;
 aux(2,3+(1:3)) = gamma_vec ;
 aux(3,6+(1:3)) = gamma_vec ;
 vec_xis = 1/DET* aux * ( XYZ * elemDisps ) ;
-Moments = D * vec_xis ;
+Moments = 24* D * vec_xis ;
 Mx = Moments(1) 
 
 fint = K * elemDisps ;
