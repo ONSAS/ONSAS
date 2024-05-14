@@ -1,6 +1,22 @@
-
+% Copyright 2023, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
 % implementation of the DKT plate triangle element based on https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620210709
-
+%
 function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, modelName, modelParams, thickness )
 
 % assertions
@@ -9,24 +25,17 @@ assert( strcmp( modelName, 'elastic-linear'), ' linear elastic model is implemen
 
 E = modelParams(1)  ;  nu = modelParams(2) ;
 
-x1G = elemCoords(0*3+1);  y1G = elemCoords(0*3+2);
-x2G = elemCoords(1*3+1);  y2G = elemCoords(1*3+2);
-x3G = elemCoords(2*3+1);  y3G = elemCoords(2*3+2);
-
-x1 = x1G ; y1 = y1G ; 
-x2 = x2G ; y2 = y2G ; 
-x3 = x3G ; y3 = y3G ; 
+x1 = elemCoords(0*3+1);  y1 = elemCoords(0*3+2);
+x2 = elemCoords(1*3+1);  y2 = elemCoords(1*3+2);
+x3 = elemCoords(2*3+1);  y3 = elemCoords(2*3+2);
 
 mat_cross = [ x2-x3 x3-x1; y2-y3 y3-y1; 0 0 ] ;
 
-det( mat_cross(1:2,:) );
-
-B=[y2-y3; y3-y1; y1-y2];
-C=[x3-x2; x1-x3; x2-x1];
+B=[y2-y3; y3-y1; y1-y2]; C=[x3-x2; x1-x3; x2-x1];
 
 DET = ( B(1) * C(2) - B(2) * C(1) ) * 24 ;
 
-% isotropic
+% isotropic behaviour
 D = thickness^3/12 * E/(1-nu^2) * [1 nu 0; nu 1 0; 0 0 (1-nu)*.5 ] ;
 
 PP = [ 12 4 4 ; 4 2 1; 4 1 2 ];
@@ -118,11 +127,3 @@ Mx = Moments(1)
 fint = K * elemDisps ;
 
 fs = {fint};  ks = {K};
-
-% fout = zeros(18,1);
-% fout(dofs_sort) = fint ;
-
-% Kout = zeros(18,18) ;
-% Kout(dofs_sort,dofs_sort) = K ;
-
-% fs = {fout};  ks = {Kout};

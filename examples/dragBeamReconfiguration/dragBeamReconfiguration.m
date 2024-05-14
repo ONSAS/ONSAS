@@ -32,7 +32,7 @@ addpath( genpath( [ pwd '/../../src'] ) );
 %md The number of elements employed to discretize the beam is:
 numElements = 10 ;
 %md
-%md### MEBI parameters
+%md### MEB parameters
 %md
 %md### materials
 %md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
@@ -69,7 +69,7 @@ initialConds = struct() ;
 %mdThe coordinates of the mesh nodes are given by the matrix:
 mesh = struct() ;
 mesh.nodesCoords = [ (0:(numElements))' * L/numElements  zeros(numElements+1,2) ] ;
-%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEBI parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
+%mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of nodes that compose the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
 mesh.conecCell = { } ;
 %md then the first welded node is defined with material (M) zero since nodes don't have material, the first element (E) type (the first entry of the `elements` struct), and (B) is the first entry of the the `boundaryConds` struct. Finally the node is assigned:
 mesh.conecCell{ 1, 1 } = [ 0 1 1   1 ] ;

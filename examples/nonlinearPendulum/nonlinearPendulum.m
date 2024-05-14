@@ -28,9 +28,9 @@ m   = 10     ; g = 9.80 ;
 %mdIn the example presented in [(K.J Bathe 2006)] the force $m*g$ is applied at the end node, consequently a syntheticall coherent densitiy to generate the same effect is:
 rho = 2*m / ( A * l0 )  ;
 %md##Numerical solution
-%md### MEBI parameters
+%md### MEB parameters
 %md
-%mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEBI) parameters.
+%mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEB) parameters.
 %md
 %md### materials
 %mdSince the first case contains only one type of material the fields of the `materials` struct will have only one entry.
@@ -78,7 +78,7 @@ mesh.nodesCoords = [   0  0   l0 ; ...
 mesh.conecCell = { } ;
 %md Then the entry of node $1$ is introduced:
 mesh.conecCell{ 1, 1 } = [ 0 1 1  1   ] ;
-%md the first MEBI parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used.
+%md the first MEB parameter (Material) is set as _zero_ (since nodes dont have material). The second parameter corresponds to the Element, and a _1_ is set since `node` is the first entry of the  `elements.elemType` cell. For the BC index, we consider that node $1$ is simple fixed, then the first index of the `boundaryConds` struct is used.
 mesh.conecCell{ 2, 1 } = [ 0 1 2  2   ] ;
 %md and for node $2$ only the boundary condition is changed, because it is lodaded.
 %md Regarding the truss elements, the first material is considered, the second type of element, and no boundary conditions are applied.

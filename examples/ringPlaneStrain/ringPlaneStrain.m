@@ -74,7 +74,7 @@ boundaryConds(3).loadsBaseVals = [ 0 p ]  ;
 %md```@raw html
 %md<img src="../../assets/linearCylinderPlaneStrain/meshCylinderPlaneStrain.png" alt="mesh plot" width="500"/>
 %md```
-%md The element properties are set using labels into GMSH follwing the MEBI nomenclature. First `triangle` elements have linear elastic material so entry $1$ of the _materialṣ_ struct is assigned. Then for both `node` and `edge` elements any material is set. 
+%md The element properties are set using labels into GMSH follwing the MEB nomenclature. First `triangle` elements have linear elastic material so entry $1$ of the _materialṣ_ struct is assigned. Then for both `node` and `edge` elements any material is set. 
 %md Next displacement boundary conditions are assigned to the element, since the problem is modeled into $x-y$ plane, a constrain to avoid rotation along $z$ is necessary. This is done fixing $y$ and $x$ displacements (using `boundaryConds(1)` and `boundaryConds(2)` as labels) on points 2 3 4 5.
 %md Finally the internal pressure is applied on the `edge` elements linked with curves from one to four (Circles 1-4 in Figure). In accordance with the orientation of the curve set in GMSH, the normal vector obtained in local coordinates is $e_r$ so the internal pressure is assigned using `boundaryConds(3)`. Once the mesh is created is read using:
 base_msh='';

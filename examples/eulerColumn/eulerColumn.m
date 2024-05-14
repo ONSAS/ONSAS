@@ -12,7 +12,7 @@ tz = .1 ; %m
 % the number of elements of the mesh
 numElements = 8 ;
 
-% MEBI parameters
+% MEB parameters
 % Materials
 % ----------------------------------------------------------------------
 materials  = struct();
