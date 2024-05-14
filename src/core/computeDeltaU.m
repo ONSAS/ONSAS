@@ -45,8 +45,9 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   
   elseif arcLengthFlag == 2 % Jirasek approach
 		
-  	
-		% Variables to be defined by user
+    cMatrix = zeros(size( convDeltau )) ; % Jirasek  	
+
+    % Variables to be defined by user
 		dominantDofs = analysisSettings.ALdominantDOF(1);
 		scalingProjection = analysisSettings.ALdominantDOF(2);
 		% Projection matrix
