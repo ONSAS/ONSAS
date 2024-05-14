@@ -1,4 +1,4 @@
-% Copyright 2023, Joaquin Viera, Jorge M. Perez Zerpa.
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-
+%
 function checkONSASFields( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
   checkFields(materials, {'modelName', 'modelParams', 'density', 'nodalMass'})

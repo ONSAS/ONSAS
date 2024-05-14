@@ -1,4 +1,4 @@
-% Copyright 2023, ONSAS Authors (see documentation)
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% 
+%
 % --------------------------------------------------------------------------------------------------
 
 function R=RotationMatrix(ndofpnode,locglomat)

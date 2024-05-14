@@ -1,4 +1,4 @@
-% Copyright 2023, ONSAS Authors (see documentation)
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,7 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-% 
+%
 % function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes 
 %tetraedron element with different constitutive behaviors. 
 %The hyperelastic behavior cased is based on equation 4.9.25 from belytschko 2nd edition.

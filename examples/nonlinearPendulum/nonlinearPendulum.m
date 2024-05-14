@@ -30,7 +30,7 @@ rho = 2*m / ( A * l0 )  ;
 %md##Numerical solution
 %md### MEB parameters
 %md
-%mdThe modelling of the structure begins with the definition of the material-Element-BoundaryConditions-InitialConditions (MEB) parameters.
+%mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 %md
 %md### materials
 %mdSince the first case contains only one type of material the fields of the `materials` struct will have only one entry.
