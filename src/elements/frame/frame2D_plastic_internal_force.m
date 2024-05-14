@@ -26,7 +26,7 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [ fs , ks, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
     elemCrossSecParams    , ...
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
@@ -159,4 +159,5 @@ params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
-end
+
+fintLocCoord = [ Mnp1' tM_np1 ] ;

@@ -211,19 +211,14 @@ for elem = 1:nElems
 
       params_plastic_2Dframe = previousStateCell(elem,:) ;
 
-      [ fs, ks, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+      [ fs, ks, fintLocCoord, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...
                                                                     modelParams , ...
                                                                     elemDisps , params_plastic_2Dframe) ;
       
       Finte = fs{1} ;  Ke = ks{1} ;
       
-	%~ if norm(aux)>0, 
-	%~ aux
-	%~ elemNodesxyzRefCoords
-	%~ end
-    
-    stateCellnp1(elem,:) = aux ;
+      stateCellnp1(elem,:) = aux ;
 	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
