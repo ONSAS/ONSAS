@@ -131,15 +131,30 @@ analysisSettings.stopTolIts    =   10   ;
 %md### otherParams
 otherParams = struct() ;
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
+%md
 %md ONSAS execution
-[coRotMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[coRotMatUs , loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 %md
 %md The second analysis case implements the linear elastic formulation
 materials.modelName  = 'elastic-linear' ;
 otherParams.problemName = 'elastic-linearuniformDynamicBeam';
 %md
 %md ONSAS execution
-[linElasMatUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[linElasMatUs , loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
+
 %md
 %md### Error estimation
 dofYendNode = 6*(appNode) - 3;     dofZendNode = 6*(appNode) - 1;

@@ -70,8 +70,15 @@ analysisSettings.addedMassBool = true  ;
 otherParams = struct();
 otherParams.problemName     = 'addedMassPedulum';
 otherParams.plots_format       = 'vtk' ;
-
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%md
+%mdFirst the input structs are converted to structs with the model information
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 times  = (0:size(matUs,2)-1) * analysisSettings.deltaT ;
 theta_ana = angle_init * cos( 2*pi / T_analy .* times);

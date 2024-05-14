@@ -58,8 +58,10 @@ otherParams.problemName = 'rectangularPlate' ;
 otherParams.plots_format = 'vtk' ;
 %md The ONSAS software is executed for the parameters defined above and the displacement solution of each load(time) step is saved in `matUs`matrix:
 %md
-[matUs, loadFactorsMat, ~, cellStress ] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 Lx = max( mesh.nodesCoords(:,1) ) ;
 Ly = max( mesh.nodesCoords(:,2) ) ;

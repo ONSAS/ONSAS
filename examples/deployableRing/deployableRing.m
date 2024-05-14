@@ -61,8 +61,14 @@ otherParams.problemName  = 'deployableRing' ;
 otherParams.plots_format = 'vtk' ;
 otherParams.plots_deltaTs_separation = 5 ;
 
-[matUs, loadFactorsMat] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
+%md Execute ONSAS and save the results:
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+%md
+%md the report is generated
+outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 figure
 plot(matUs((Nelem/2+1)*6-4,:), loadFactorsMat(:,2))
