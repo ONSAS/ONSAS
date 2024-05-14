@@ -18,11 +18,10 @@
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
   systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
-global arcLengthFlag % 1: cylindrical 2: jirasek
 if isempty( analysisSettings.ALdominantDOF )
-  arcLengthFlag = 1 ;
+  arcLengthFlag = 1 ; % cylindrical
 else
-  arcLengthFlag = 2 ;
+  arcLengthFlag = 2 ; % dominant-dof
 end
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
@@ -44,7 +43,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     end
   
   elseif arcLengthFlag == 2 % Jirasek approach
-		
+		convDeltau
     cMatrix = zeros(size( convDeltau )) ; % Jirasek  	
 
     % Variables to be defined by user

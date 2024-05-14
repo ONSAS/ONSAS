@@ -161,7 +161,9 @@ otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
 otherParams.plots_format = 'vtk' ;
 
-[matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
