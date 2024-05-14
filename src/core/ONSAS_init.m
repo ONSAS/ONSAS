@@ -91,7 +91,6 @@ matFint = zeros(size(Conec,1),4*6) ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-modelProperties.exportFirstMatrices
 %md call assembler
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
