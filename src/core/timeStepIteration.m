@@ -129,14 +129,13 @@ elseif ~isempty( BEMbool ) && BEMbool
 end
 
 if ~BEMbool
-    global normForcesAero  ; normForcesAero = [ normForcesAero, fnorms ] ;  
-    global iterationsAero  ; iterationsAero = [ iterationsAero, dispIters ] ;
+    global normForcesAero  ; normForcesAero = [ normForcesAero, fnormsGlobal ] ;  
+    global iterationsAero  ; iterationsAero = [ iterationsAero, dispIters    ] ;
 elseif BEMbool
     global nGen;
-    global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnorms     ] ;
-    global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters  ] ;
-    global lastGenTrq      ; lastGenTrq     = [ lastGenTrq    , FextG/nGen ] ;
-    global check           ; check          = [ Udottp1(6), FextG(6)       ] ;
+    global normForcesUBEM  ; normForcesUBEM = [ normForcesUBEM, fnormsGlobal ] ;
+    global iterationsUBEM  ; iterationsUBEM = [ iterationsUBEM, dispIters    ] ;
+    global lastGenTrq      ; lastGenTrq     = [ lastGenTrq    , -FextG/nGen  ] ;
 end
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
@@ -176,7 +175,10 @@ Udot       = Udottp1  ;
 Udotdot    = Udotdottp1 ;
 convDeltau = Utp1 - Ut ;
 
-global UdotOut         ; UdotOut    = [UdotOut, Udot] ;
+if ~isempty( BEMbool ) && BEMbool
+    global UdotOut      ; UdotOut = [UdotOut, Udot] ;
+    global UOut         ; UOut    = [UOut   , U   ] ;
+end
 %
 Stress     = Stresstp1 ;
 
@@ -201,6 +203,9 @@ modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
                                    systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, Waket1p, WakeQSt1p, WakeINTt1p ) ;
+
+global outputReport;
+outputReport = [outputReport, modelNextSol];
 
 % ==============================================================================
 % ==============================================================================

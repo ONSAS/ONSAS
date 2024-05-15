@@ -127,17 +127,17 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
       modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Ut, Udott, Udotdott, modelProperties.analysisSettings, [1 0 0 0], modelProperties.nodalDispDamping, nextTime - modelProperties.analysisSettings.deltaT, previousStateCell, Wake  ) ;
 
     Fintt = fs{1} ;  Fvist =  fs{2};  Fmast = fs{3} ; Faerot = fs{4} ;
+   
+    [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), [], {Ut, Udott, Udotdott} ) ;  % Evaluate external generator torque in previous step
+    [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
     
     BEMbool = modelProperties.analysisSettings.modelBEM;
     if BEMbool
-        global lastGenTrq; global nGen;
-        [ FextGt ]  = nGen*lastGenTrq(: , end) ;  % Evaluate external generator torque in previous step
-        [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
-        FextG       = FextG*nGen ;
+        global nGen;
+        FextGt = -FextGt*nGen ;
+        FextG  = -FextG*nGen  ;
         global aeroBEMForce    ; aeroBEMForce   = [aeroBEMForce, Faero]   ;
     else
-        [ FextGt ]  = computeFext( modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT , length(Fint), [], {Ut, Udott, Udotdott} ) ;  % Evaluate external generator torque in previous step
-        [ FextG  ]  = computeFext( modelProperties, BCsData, nextTime                                           , length(Fint), [], {Utp1, Udottp1, Udotdottp1}) ;
         global aerocorotForce  ; aerocorotForce = [aerocorotForce, Faero] ; 
     end
     
@@ -166,7 +166,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     deltaT   = analysisSettings.deltaT  ;
 
     deltaNM = (1 - 2 * alphaHHT ) / 2 ;
-    alphaNM = (1 - alphaHHT ^ 2 ) / 4 ;
+    alphaNM = (1 - alphaHHT  )^ 2 / 4 ;
 
     systemDeltauMatrix = (1 + alphaHHT )                                 * KT         ( neumdofs, neumdofs ) ...
                        + (1 + alphaHHT ) * deltaNM / ( alphaNM*deltaT  ) * dampingMat ( neumdofs, neumdofs )  ...

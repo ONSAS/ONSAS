@@ -131,6 +131,7 @@ if isnan(  norm( VpiRelG)  ),
 cosBeta  = dot( tch, td ) / ( norm(td) * norm(tch) ) ;
 sinBeta  = dot( cross(td, tch), [1 0 0] ) / ( norm( td ) * norm( tch ) ) ;
 betaRelG = sign( sinBeta ) * acos( cosBeta ) ;
+%global betaCheck; betaCheck = [betaCheck, betaRelG];
 
 % ------------------------------------------------------------------
 
@@ -143,18 +144,18 @@ if ~isempty( BEMbool ) && BEMbool
     cdstat  = polarAeroCoefs{3} ;
     cmstat  = polarAeroCoefs{4} ;
 
-    claoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG)) ;
-    cdaoa  = interp1(aoastat(:,1), cdstat, rad2deg(betaRelG)) ;
-    cmaoa  = interp1(aoastat(:,1), cmstat, rad2deg(betaRelG)) ;
+    claoa  = interp1(aoastat(:,1), clstat, rad2deg(betaRelG), 'linear', 'extrap') ;
+    cdaoa  = interp1(aoastat(:,1), cdstat, rad2deg(betaRelG), 'linear', 'extrap') ;
+    cmaoa  = interp1(aoastat(:,1), cmstat, rad2deg(betaRelG), 'linear', 'extrap') ;
 
     if bladeThick(1) == bladeThick(2) % only for first example
         c_l = ( claoa(1) + claoa(2) )/2 ;
         c_d = ( cdaoa(1) + cdaoa(2) )/2 ;
         c_m = ( cmaoa(1) + cmaoa(2) )/2 ;
     else
-        c_l = interp1( bladeThick', claoa, tThick ) ;
-        c_d = interp1( bladeThick', cdaoa, tThick ) ;
-        c_m = interp1( bladeThick', cmaoa, tThick ) ;
+        c_l = interp1( bladeThick', claoa, tThick, 'linear', 'extrap')  ;
+        c_d = interp1( bladeThick', cdaoa, tThick, 'linear', 'extrap')  ;
+        c_m = interp1( bladeThick', cmaoa, tThick, 'linear', 'extrap')  ;
     end
 else
   %-----------------------------------------------------------------

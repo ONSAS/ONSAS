@@ -80,9 +80,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
       bladeThick     = BEMparams{3}(:) ;
       bladeAeroTws   = BEMparams{4}(:) ;
       bladestrucTws  = BEMparams{5}(1) ;
-      %global Theta ;
-      %global bladePitch; 
-      %Theta = deg2rad( [bladestrucTws(1), 0, 0] - [bladeAeroTws(1), 0, 0] + bladePitch );
       dimCharacteristic = [];
   else
       bladeRadio    = [] ;
