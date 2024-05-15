@@ -21,22 +21,17 @@ G_bar = -(1+3*(1-2*xd/l)*(1-2*x/l))/l ;
 % smooth curvature
 kappa_bar = Bv1*v1 + Bv2*v2 + Bt1*theta1 + Bt2*theta2 + G_bar*alpha ;
 
-
-
 kappa_plas_test = kappa_plas_n ;
-
 
 Mn1_test = E*Iy*(kappa_bar - kappa_plas_test) ;
 
-alpha
-
 % ----------------------------------------
-% softening 
+% softening
 if alpha > 0 || any(Mn1_test) > Mc
   hola
 
 % ----------------------------------------
-% hardening 
+% hardening
 else
 
   % hardening function
