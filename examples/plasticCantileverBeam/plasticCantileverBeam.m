@@ -106,7 +106,7 @@ analysisSettings.ALdominantDOF      = [ (num_elem+1)*6-3  -1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-# otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
