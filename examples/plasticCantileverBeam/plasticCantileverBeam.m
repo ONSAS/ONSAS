@@ -154,7 +154,7 @@ end
 
 % Plots
 
-lw = 2 ; ms = 1 ; plotfontsize = 14 ;
+lw = 1.4 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
@@ -176,8 +176,8 @@ hold on, grid on
 plot(abs(girosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(abs(girosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices', 1:12:length(Mn1_semianalytic), 'LineWidth', lw, "Color", "#0072BD") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices', 1:12:length(Mn1_semianalytic), 'LineWidth', lw, "color", "#EDB120") ;
+plot(abs(girosUltimoNodo(1:15:length(Mn1_semianalytic))), abs(Mn1_semianalytic(1:15:length(Mn1_semianalytic))), '^', 'linewidth', lw, 'markersize', ms*3, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo(1:15:length(Mn1_semianalytic))), abs(Mn1_semianalytic(1:15:length(Mn1_semianalytic))), '^', 'linewidth', lw, 'markersize', ms*3, "Color", "#EDB120") ;
 
 %{
 
