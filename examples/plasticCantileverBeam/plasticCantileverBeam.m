@@ -1,4 +1,3 @@
-
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
 % 

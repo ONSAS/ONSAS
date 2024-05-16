@@ -1,4 +1,3 @@
-
 % algorithm for the update of the internal variables for elastoplasticity with hardening
 % and for the computation of the moment in the bulk Mn1
 
