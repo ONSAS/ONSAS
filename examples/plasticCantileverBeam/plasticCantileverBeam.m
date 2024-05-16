@@ -176,8 +176,8 @@ hold on, grid on
 plot(abs(girosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(abs(girosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize',3,'MarkerIndices',1:12:length(Mn1_semianalytic),'LineWidth', lw, "Color", "#0072BD") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices',1:12:length(Mn1_semianalytic),'LineWidth', lw, "color", "#EDB120") ;
+plot(abs(girosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices', 1:12:length(Mn1_semianalytic), 'LineWidth', lw, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices', 1:12:length(Mn1_semianalytic), 'LineWidth', lw, "color", "#EDB120") ;
 
 %{
 
