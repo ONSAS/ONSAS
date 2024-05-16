@@ -173,11 +173,11 @@ title('Cantilever Beam / Plasticity (load factors)') ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_semianalytic), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_semianalytic), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(abs(girosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "color", "#A2142F" ) ;
-plot(abs(descensosUltimoNodo), abs(moments_hist(1,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(abs(girosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize',3,'MarkerIndices',1:12:length(Mn1_semianalytic),'LineWidth', lw, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_semianalytic), '^', 'MarkerSize', 3, 'MarkerIndices',1:12:length(Mn1_semianalytic),'LineWidth', lw, "color", "#EDB120") ;
 
 %{
 
@@ -195,7 +195,9 @@ plot(abs(descensosUltimoNodo), abs(moments_hist(4,:)), '-x' , 'linewidth', lw, '
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 legend('Semi-Analytic Mp1 [\theta]', 'Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [\theta]', 'ONSAS Mp1 [y]', 'location', 'Southeast') ;
+
 %  'ONSAS Mp2 [\theta]', 'ONSAS Mp2 [y]', 'ONSAS Mp3 [\theta]', 'ONSAS Mp3 [y]'
+
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
