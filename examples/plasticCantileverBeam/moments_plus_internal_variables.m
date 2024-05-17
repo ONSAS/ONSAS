@@ -26,8 +26,7 @@ Mn1_test = E*Iy*(kappa_bar - kappa_plas_test) ;
 
 % ----------------------------------------
 % softening
-if alpha > 0 || any(Mn1_test) > Mc
-  hola
+if alpha > 0 || any(abs(Mn1_test)) > Mc
 
 % ----------------------------------------
 % hardening

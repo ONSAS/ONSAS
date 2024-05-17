@@ -1,7 +1,8 @@
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
-% 
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+%
+close all,
+if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
 
 % assumed XY plane
