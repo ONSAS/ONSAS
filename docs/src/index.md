@@ -102,7 +102,7 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 [Marcelo Forets](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) made contributions through the application of software technology tools in the documentation generation workflow.
 
-[Santiago Correa](https://github.com/santiago-correa-89) made contributions to examples, currently available at the documentation site.
+[Santiago Correa](https://github.com/santiago-correa-89) made contributions to examples, mainly beamLinearVibration, and [corrected the expression of a parameter](https://github.com/ONSAS/ONSAS/pull/699) of the $\alpha$-HHT method.
 
 The functions in `linearStiffMatPlate3D.m` and `assemblyUniform.m` use part of the [fem_plate_example.m](https://www.fing.edu.uy/~jorgepz/files/fem_plate_example.m) code developed by Jorge Pérez Zerpa and [**Pablo Castrillo**](https://www.fing.edu.uy/~pabloc/). Professor [**Sebastian Toro**](https://scholar.google.com/citations?user=7Z3ruPAAAAAJ&hl=es), provided functions for reading dxf files, which were part of ONSAS until version 0.2.6.
 
