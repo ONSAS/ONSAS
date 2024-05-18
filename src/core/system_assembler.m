@@ -151,8 +151,9 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     alphaHHT = analysisSettings.alphaHHT ;
     deltaT   = analysisSettings.deltaT  ;
 
+    % parameters taken from: Crisfield, Non-linear Finite Element Analysis of solids and Structures Vol2. page: 456
     deltaNM = (1 - 2 * alphaHHT ) / 2 ;
-    alphaNM = (1 - alphaHHT ^ 2 ) / 4 ;
+    alphaNM = (1 - alphaHHT )^ 2  / 4 ;
 
     systemDeltauMatrix = (1 + alphaHHT )                                 * KT         ( neumdofs, neumdofs ) ...
                        + (1 + alphaHHT ) * deltaNM / ( alphaNM*deltaT  ) * dampingMat ( neumdofs, neumdofs )  ...
