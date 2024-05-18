@@ -123,6 +123,7 @@ for i =1:length(cellFint)
 end
 
 Mn1_numeric = moments_hist(1,:);
+Mn1max = max(abs(Mn1_numeric)) ;
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % semi-analitic validation / ONSAS with the function moments_plus_internal_variables
@@ -130,7 +131,7 @@ Mn1_numeric = moments_hist(1,:);
 xd = 0 ;
 alpha = 0 ;
 xin1val = zeros(1,length(matUs(1,:))) ;
-kappa_plas_n = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n = cell(1,length(matUs(1,:))) ;
 kappa_plas_n1 = zeros(1,3) ;
 xin11val = zeros(1,3) ;
 
@@ -144,10 +145,10 @@ for i = 1:length(matUs(1,:))
     theta1 = matUs(6,i) ;
     theta2 = matUs(12,i) ;
 
-    kappa_plas_n(i) = kappa_plas_n1(1) ;
+    kappa_plas_n{i} = kappa_plas_n1 ;
     xin1val(i) = xin11val(1) ;
 
-    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n{i}, Mc, My, Mn1max, kh1, kh2, E, Inertia, l) ;
 
     Mn1_semianalytic(i) = Mn1(1) ;
 

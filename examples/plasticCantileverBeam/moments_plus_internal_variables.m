@@ -4,7 +4,7 @@
 % displacements in time n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
 % plastic curvature in time n / kappa_plas_n
 
-function [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, kh1, kh2, E, Iy, l)
+function [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables( v1, v2, theta1, theta2 , xd, alpha, xin1, kappa_plas_n, Mc, My, Mn1max, kh1, kh2, E, Iy, l)
 
 % integration points
 x = [0 l/2 l] ;
@@ -26,7 +26,46 @@ Mn1_test = E*Iy*(kappa_bar - kappa_plas_test) ;
 
 % ----------------------------------------
 % softening
-if alpha > 0 || any(abs(Mn1_test)) > Mc
+if max(abs(Mn1_test)) >= Mn1max*10
+
+% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
+
+%{
+
+function [alfan1, xin21, xd, SH_boole_np1] ...
+  = plastic_softening_step(SH_boole_n, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
+
+SH_boole_np1 = true ;
+
+qfailxpi = min(-Ks*xin2, Mu) ;
+
+phifailxpi = abs(tM)-(Mu-qfailxpi) ;
+
+if phifailxpi <= 0
+
+    alfan1 = alfan ;
+    xin21 = xin2 ;
+
+else
+    
+    if  xin2 <= -Mu/Ks
+
+        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
+
+    else
+
+        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
+    
+    end
+
+    alfan1      = alfan     + gamma2*sign(tM) ;
+    xin21       = xin2      + gamma2 ;
+
+end
+
+%}
+
+% /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
 % ----------------------------------------
 % hardening
