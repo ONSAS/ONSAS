@@ -25,7 +25,7 @@ function [ matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCur
 matUs          = modelCurrSol.U                   ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
 matUdots       = modelCurrSol.Udot                ;
-cellFint       = {modelCurrSol.matFint} ; % cell with a matrix with all elements stresses at each time 
+cellFint       = {modelCurrSol.localInternalForces} ; 
 cellStress     = {modelCurrSol.Stress}  ; % cell with a matrix with all elements stresses at each time
 
 % Incremental time analysis
@@ -67,7 +67,7 @@ while finalTimeReachedBoolean == false
   modelCurrSol   	=  	modelNextSol ;
   matUs          	= [ matUs          modelCurrSol.U                     ] ;
   loadFactorsMat 	= [ loadFactorsMat ; modelCurrSol.currLoadFactorsVals ] ;	
-	cellFint{end+1}  	= modelCurrSol.matFint ;
+	cellFint{end+1}  	= modelCurrSol.localInternalForces ;
 	cellStress{end+1}	= modelCurrSol.Stress ;
 		
   % generate vtk file for the new state

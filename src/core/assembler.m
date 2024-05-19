@@ -16,10 +16,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
-                                                           materials, KS, Ut, Udott, Udotdott,...
-                                                           analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previousStateCell )
+function [ fsCell, stressMat, tangMatsCell, ... 
+            localInternalForces, strain_vec, acum_plas_strain_vec ] ...
+            = assembler( Conec, elements, Nodes,...
+                         materials, KS, Ut, Udott, Udotdott,...
+                         analysisSettings, outputBooleans, nodalDispDamping,...
+                         timeVar, previousStateCell )
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -71,6 +73,8 @@ if matFintBool
 else
 	matFint = [] ;
 end
+
+localInternalForces = struct();
 
 % Previous state
 stress_n_vec           =  previousStateCell(:,1) ;
@@ -157,22 +161,15 @@ for elem = 1:nElems
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
-    fintLocCoord = norm( Finte ) ;
+
+    localInternalForces(elem).nx = norm( Finte ) ;
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
-    
-    global temperature
-    if length( temperature )>0
-      timeVar
-      thermalExpansion = materials( mebVec( 1 ) ).thermalExpansion
-      temperatureVal = temperature( timeVar) 
-      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, modelParams(1), A, thermalExpansion, temperatureVal )
-    end
-
+  
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
     
@@ -248,7 +245,7 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
     
-    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
+    [ fs, ks, fintLocCoord ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
       modelParams, thickness ) ;
 
     Finte = fs{1};
@@ -333,10 +330,6 @@ for elem = 1:nElems
       acum_plas_strain_vec{ elem } = acum_plas_strain ;
     end
   end % if stress
-
-	if matFintBool && ~isempty(fintLocCoord)
-		matFint( elem, 1:length(fintLocCoord) ) = fintLocCoord' ;
-	end
 
 end % for elements ----
 

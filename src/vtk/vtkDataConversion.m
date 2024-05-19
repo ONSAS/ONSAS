@@ -55,10 +55,13 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       currVtkNodalDisps = [] ;
 
     elseif strcmp( elemTypeString, 'truss' )
+      modS.localInternalForces
+      elemIndsElemType
+      aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'nx'} )      
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U, modS.matFint( elemIndsElemType,1)  ) ;
+        elemCrossSecParams, modS.U, aux  ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
 
@@ -122,7 +125,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
-    vtkNormalForces = [ vtkNormalForces ;  currVtkNormalForces ] ;
+    vtkInternalForces = [ vtkNormalForces ;  currVtkNormalForces ] ;
 
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
 
@@ -136,7 +139,6 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   end
 
   cellDataCounter = 0;
-
   if length( vtkNormalForces ) > 0
     cellDataCounter = cellDataCounter+1;
     vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;

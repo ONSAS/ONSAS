@@ -85,7 +85,9 @@ previousStateCell(:,3) = {0} ;
 
 % TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
 Stress = [] ; 
-matFint = zeros(size(Conec,1),4*6) ; 
+localInternalForces = struct() ;
+localInternalForces(1).nx=1; 
+localInternalForces(2).nx=2; 
 
 [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
@@ -95,7 +97,7 @@ nextTime = currTime + analysisSettings.deltaT ;
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell ) ;
 % =================================================================
 
 %md prints headers for solver output file
