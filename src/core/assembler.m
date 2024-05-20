@@ -158,13 +158,11 @@ for elem = 1:nElems
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
-
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
-    localInternalForces(elem).Nx = norm( Finte ) ;
-    stop
+    localInternalForces(elem).Nx = norm( Finte(1:3) ) ;
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;

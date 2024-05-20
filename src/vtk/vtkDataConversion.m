@@ -16,9 +16,11 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-%md This function creates the point and cell data matrices for writing
-%md vtk files of the solids or structures.
-
+%md This function provides the matrices and cells for posterior 
+%md writing of vtk files with the solution of the structure.
+%md The inputs are the structs of the solution (at a given time)
+%md and the properties of the model.
+ 
 function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modS, modP )
 
   nelems       = size( modP.Conec, 1 ) ;
@@ -28,51 +30,54 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
   %md create empty matrices for node coordinates and cell connectivities
   vtkConec = [] ;             vtkNodes = [] ;
+
   %md create cells for point and cell data (displacemets)
-  vtkPointDataCell = {} ;     vtkCellDataCell  = {} ;
+  vtkPointDataCell = {} ;  vtkCellDataCell  = {} ;  cellDataCounter = 0;
+
   vtkNodalDisps         = [] ;  % after filling the matrix it is assigned to the third column of the cell
-  vtkNormalForces = [] ;
+  
+  vtkInternalForcesNames   = fieldnames( modS.localInternalForces) ;
+  nIntForces = length(vtkInternalForcesNames) ;
+  vtkInternalForcesVectorsCell = cell(nIntForces,1) ;
 
   %md loop in element types and add nodes and cells considering the specific
   %md structure and connectivity for each type of element/cell
+  totalNodes = 0 ;
   %md
-	totalNodes = 0 ;
-
-
   for indType = 1:length( elemTypeInds )
 
-		elemTypeInds(indType) ;
-    elemTypeString = modP.elements( elemTypeInds(indType) ).elemType       ;
-    elemCrossSecParams   = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
+		elemTypeString     = modP.elements( elemTypeInds(indType) ).elemType       ;
+    elemCrossSecParams = modP.elements( elemTypeInds(indType) ).elemCrossSecParams ;
 
     % gets all the element numbers corresponding to the current elemType
-    elemIndsElemType = find( modP.Conec(:,2)==elemTypeInds(indType) ) ;
+    elemIndsElemType = find( modP.Conec(:,2) == elemTypeInds(indType) ) ;
 
+    localIntForces = modS.localInternalForces(elemIndsElemType) ;
+
+    % ----------------------------------------------------------
+    % elem dispatch
     if strcmp( elemTypeString, 'node' )
 
       currVtkNodes = [] ;
       currVtkConec = [] ;
       currVtkNodalDisps = [] ;
-
+      currVtkInternalForcesNamesCell = {} ; % matrix with as many rows as cells are added and with as many cols as 
+    
     elseif strcmp( elemTypeString, 'truss' )
-      aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'Nx'} ) ;
 
-      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkInternalForcesCell ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U, aux  ) ;
+        elemCrossSecParams, modS.U, localIntForces  ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
-      aux = [];
-      if isfield(modS.localInternalForces,'Nx')
-        aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'Nx'} ) ;
-      end
-      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
+      
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkInternalForcesCell ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U,  aux      ) ;
+        elemCrossSecParams, modS.U, localIntForces ) ;
 
     elseif strcmp( elemTypeString, 'triangle' )
 
-      currVtkNormalForces = [] ;
+      currVtkInternalForcesCell = {} ;
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
@@ -88,7 +93,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'triangle-plate' )
 
-      currVtkNormalForces = [] ;
+      currVtkInternalForcesCell = {} ;
       [ currVtkNodes, currVtkConec, currVtkNodalDisps ] ...
         = shellVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
         elemCrossSecParams, modS.U ) ;
@@ -97,7 +102,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'tetrahedron' )
 
-      currVtkNormalForces = [] ;
+      currVtkNormalForcesCell = {} ;
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
@@ -112,26 +117,37 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
 
     end % if: type
+    % ----------------------------------------------------------
 
+
+    % ----------------------------------------------------------
     % add entries from current element type
+    % add nodes
     vtkNodes      = [ vtkNodes ;  currVtkNodes ]           ;
 
-    if size( vtkConec, 1 ) > 0
-      vtkConec( ...
-        (size(vtkConec,1)+1):(size(vtkConec,1)+size(currVtkConec,1)), 1:(size(currVtkConec,2)) ) ...
-        = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
-    elseif size( currVtkConec, 1 ) > 0
+    % add cells
+    nVtkCells = size( vtkConec, 1 ) ;   nCurrVtkCells = size(currVtkConec,1) ;
+    if nVtkCells > 0 % not the first time in elemtype loop
+      vtkConec( (nVtkCells+1):(nVtkCells+nCurrVtkCells), 1:(size(currVtkConec,2)) ) ...
+        = [ currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
+    elseif nCurrVtkCells > 0
       vtkConec = [currVtkConec(:,1) currVtkConec(:,2:end)+totalNodes] ;
     end
 
+    % add nodal disps
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
-    vtkInternalForces = [ vtkNormalForces ;  currVtkNormalForces ] ;
+    # vtkInternalForces{end+1} currVtkInternalForces{1};
 
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
 
+    if length( currVtkInternalForcesCell ) > 0
+      for i = 1:nIntForces
+        vtkInternalForcesVectorsCell{i} = [ vtkInternalForcesVectorsCell{i}; currVtkInternalForcesCell{i}] ;
+      end
+    end
+  
   end % for: elemTypeInds
-
 
   if length( vtkNodalDisps ) > 0
     vtkPointDataCell{1,1} = 'VECTORS'       ;
@@ -139,16 +155,17 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     vtkPointDataCell{1,3} = vtkNodalDisps ;
   end
 
-  cellDataCounter = 0;
-  if length( vtkNormalForces ) > 0
-    cellDataCounter = cellDataCounter+1;
-    vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;
-    vtkCellDataCell{cellDataCounter,2} = 'Normal_Forces'   ;
-    vtkCellDataCell{cellDataCounter,3} = vtkNormalForces ;
+  if length( vtkInternalForcesVectorsCell ) > 0
+    for i = 1:nIntForces
+      cellDataCounter = cellDataCounter+1;
+      vtkCellDataCell{cellDataCounter,1} = 'SCALARS' ;
+      vtkCellDataCell{cellDataCounter,2} = vtkInternalForcesNames{i}   ;
+      vtkCellDataCell{cellDataCounter,3} = vtkInternalForcesVectorsCell{i} ;
+    end
   end
 
-  stressMat =   modS.Stress ;
 
+  stressMat =   modS.Stress ;
 
 %   % Scalars vals
 %   svm             = [] ;

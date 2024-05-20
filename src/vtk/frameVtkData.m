@@ -16,14 +16,14 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, localFint )
+function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
    
   vtkNodes        = [] ;
   vtkConec        = [] ;
   vtkNodalDisps   = [] ;
-  vtkNormalForces = [] ;
+  vtkInternalForces = struct() ;
 
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
@@ -72,11 +72,6 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     valsLocThetaYSubElements = interFuncQuad   * [ 0; thetaLocIniElem(2); 0; thetaLocEndElem(2) ] ;
     valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ] ;
 
-    currNormalForce = abs(localFint(i,1));
-    if currNormalForce ~= abs(localFint(i,7))
-      error("error in normal forces")
-    end
-
     for j = 1:nPlotSubElements,
 
       dispLocIniSubElem = [ valsLocDispXSubElements( j   ) ; ...
@@ -105,7 +100,8 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
       vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
       vtkConec             = [ vtkConec ;     Conecvtk ] ;
       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
-      vtkNormalForces      = [ vtkNormalForces; currNormalForce ] ;
+      
+      vtkInternalForces    = [ vtkInternalForces internalForces ] ;
 
       counterNodes = counterNodes + (size(Conecvtk,2)-1) ;
 
