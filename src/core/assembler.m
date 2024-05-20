@@ -138,6 +138,7 @@ for elem = 1:nElems
   stressElem = [] ;
   fintLocCoord = [] ;
 
+
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
     nodalMass = materials( mebVec( 1 ) ).nodalMass ;
@@ -162,7 +163,8 @@ for elem = 1:nElems
 
     Finte = fs{1} ;  Ke = ks{1} ;
 
-    localInternalForces(elem).nx = norm( Finte ) ;
+    localInternalForces(elem).Nx = norm( Finte ) ;
+    stop
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
@@ -247,6 +249,10 @@ for elem = 1:nElems
     
     [ fs, ks, fintLocCoord ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
       modelParams, thickness ) ;
+
+    localInternalForces(elem).Mx  = fintLocCoord(1) ;
+    localInternalForces(elem).My  = fintLocCoord(2) ;
+    localInternalForces(elem).Mxy = fintLocCoord(3) ;
 
     Finte = fs{1};
 		Ke    = ks{1};

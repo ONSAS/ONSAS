@@ -9,6 +9,8 @@ nu = 0.0 ;
 tz = .05 ;
 q  = 1e3 ; % 1kN/m^2 
 %md
+Ly = .5;
+Lx = 1 ;
 %md## Numerical solution using plate elements
 %md
 %md### Materials
@@ -42,6 +44,8 @@ if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
   base_dir=['.' filesep 'examples' filesep  'cantileverPlate' filesep];
 end
 [ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [base_dir 'geometry_cantileverPlate.msh'] ) ;
+assert( max(mesh.nodesCoords(:,1)) == Lx && max(mesh.nodesCoords(:,2)) == Ly )
+
 %md### Initial conditions
 initialConds                  = struct() ;
 %md
@@ -63,20 +67,19 @@ otherParams.problemName  = 'cantileverPlate' ;
 otherParams.plots_format = 'vtk' ;
 %md
 %md Execute ONSAS and save the results:
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
-
+%md## verification
+nelem=size(modelProperties.Conec,1);
+matSolic = getInternalForces( modelSolutions{end}.localInternalForces, 1:nelem, {'Mx','My','Mxy'} );
+numer_maxMx = max(max(matSolic));
+numer_wmax = min(matUs(5:6:end)) ;
 %md
-Ly = .5;
-Lx = 1 ;
-qlin = q*Ly;
-I = Ly*tz^3/12;
-analy_wmax = -qlin*Lx^4/(8*E*I) 
-numer_wmax = min(matUs(5:6:end)) 
-verifBoolean = (abs( analy_wmax - numer_wmax ) / abs(analy_wmax)) < 1e-3 
-
+analy_maxMx = q*Lx/2 ;
+qlin = q*Ly;  I = Ly*tz^3/12;
+analy_wmax = -qlin*Lx^4/(8*E*I)  ;
+%md
+verifBoolean = (abs( analy_wmax - numer_wmax ) / abs(analy_wmax)) < 1e-3  && (abs( analy_maxMx - numer_maxMx ) / abs(analy_maxMx)) < 5e-3 ;

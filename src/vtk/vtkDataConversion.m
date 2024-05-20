@@ -55,19 +55,20 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       currVtkNodalDisps = [] ;
 
     elseif strcmp( elemTypeString, 'truss' )
-      modS.localInternalForces
-      elemIndsElemType
-      aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'nx'} )      
+      aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'Nx'} ) ;
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
         elemCrossSecParams, modS.U, aux  ) ;
 
     elseif strcmp( elemTypeString, 'frame' )
-
+      aux = [];
+      if isfield(modS.localInternalForces,'Nx')
+        aux = getInternalForces( modS.localInternalForces, elemIndsElemType, {'Nx'} ) ;
+      end
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkNormalForces ] ...
         = frameVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U, modS.matFint( elemIndsElemType,1:12) ) ;
+        elemCrossSecParams, modS.U,  aux      ) ;
 
     elseif strcmp( elemTypeString, 'triangle' )
 

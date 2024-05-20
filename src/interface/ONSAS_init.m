@@ -83,11 +83,8 @@ previousStateCell(:,1) = {zeros( 1, 3 )} ;
 previousStateCell(:,2) = {zeros( 1, 3 )} ;
 previousStateCell(:,3) = {0} ;
 
-% TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
-Stress = [] ; 
-localInternalForces = struct() ;
-localInternalForces(1).nx=1; 
-localInternalForces(2).nx=2; 
+% comput internal forces and stresses
+[~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, currTime, previousStateCell ) ;
 
 [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 

@@ -33,7 +33,6 @@ modelCurrSol = struct ( 'timeIndex'          , timeIndex,...
                         'systemDeltauRHS'    , systemDeltauRHS, ...
                         'timeStepStopCrit'   , timeStepStopCrit , ...
                         'timeStepIters'      , timeStepIters);
-localInternalForces
-                        modelCurrSol.localInternalForces = localInternalForces ;
-
+                        
+modelCurrSol.localInternalForces = localInternalForces ;
 modelCurrSol.previousStateCell = previousStateCell ;
