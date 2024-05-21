@@ -74,13 +74,13 @@ initialConds = struct() ;
 analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-# analysisSettings.incremArcLen       = [1e-3*ones(1,460) 1e-4*ones(1,1000) 1e-5*ones(1,500)] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,460) 1e-4*ones(1,1000) 1e-5*ones(1,500)] ;
 
-# analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
-# analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
+% analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
 analysisSettings.incremArcLen       = [.2e-3*ones(1,20) 1e-3*ones(1,22)  ] ;
-# analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
-#analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -102,15 +102,15 @@ girosUltimoNodo     = matUs((1+1)*6,:) ;
 descensosUltimoNodo = matUs((1+1)*6-3,:) ;
 factorescargaONSAS  = loadFactorsMat(:,2) ;
 
-moments_hist = zeros(4,length(cellFint));
+moments_hist = zeros(4,length(cellFint)) ;
 for i =1:length(cellFint)
-    aux = cellFint{1,i};
+    aux = cellFint{1,i} ;
     moments_hist(:,i) = aux(1:4) ;
 end
-Mn1_numericONSAS = moments_hist(1,:);
-Mn2_numericONSAS = moments_hist(2,:);
-Mn3_numericONSAS = moments_hist(3,:);
-tMn_numericONSAS = moments_hist(4,:);
+Mn1_numericONSAS = moments_hist(1,:) ;
+Mn2_numericONSAS = moments_hist(2,:) ;
+Mn3_numericONSAS = moments_hist(3,:) ;
+tMn_numericONSAS = moments_hist(4,:) ;
 
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
@@ -147,7 +147,7 @@ end
 % ----------------------------------------------------------------------------------
 % numerical solution B
 
-[ Mn_numer, Fn, matdes ] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks);
+[ Mn_numer, Fn, matdes ] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks) ;
 
 desp_numer = matdes(4,:) ;
 
@@ -157,28 +157,28 @@ desp_numer = matdes(4,:) ;
 
 lw = 1.4 ; ms = 1 ; plotfontsize = 14 ;
 
-# figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
-# hold on, grid on
+% figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
+% hold on, grid on
 
-# plot(abs(girosUltimoNodo),     factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-# plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+% plot(abs(girosUltimoNodo),     factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+% plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-# labx = xlabel('Generalized displacements in free node (m, rad)') ;
-# laby = ylabel('Forces') ;
-# legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'location', 'Southeast') ;
-# set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
-# set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-# title('Cantilever Beam / Plasticity (load factors)') ;
+% labx = xlabel('Generalized displacements in free node (m, rad)') ;
+% laby = ylabel('Forces') ;
+% legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'location', 'Southeast') ;
+% set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+% set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+% title('Cantilever Beam / Plasticity (load factors)') ;
 
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-paso = 2;
+paso = 2 ;
 
-# plot(-girosUltimoNodo(1:paso:length(Mn1_semianalytic)), -Mn1_semianalytic(1:paso:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*10, "Color", "#77AC30") ;
+% plot(-girosUltimoNodo(1:paso:length(Mn1_semianalytic)), -Mn1_semianalytic(1:paso:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*10, "Color", "#77AC30") ;
 plot(-descensosUltimoNodo(1:paso:length(Mn1_semianalytic)), -Mn1_semianalytic(1:paso:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*10, "Color", "#EDB120") ;
 
-# plot(-girosUltimoNodo, -Mn1_numericONSAS, '-x' , 'linewidth', lw, 'markersize', ms*5, "Color", "#EDB120") ;
+% plot(-girosUltimoNodo, -Mn1_numericONSAS, '-x' , 'linewidth', lw, 'markersize', ms*5, "Color", "#EDB120") ;
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x' , 'linewidth', lw, 'markersize', ms*5, "Color", "#0072BD") ;
 
 plot(-descensosUltimoNodo, -Mn2_numericONSAS, 'k-s' , 'linewidth', lw, 'markersize', ms*5) ;
@@ -207,7 +207,7 @@ plot(abs(descensosUltimoNodo), abs(moments_hist(4,:)), '-x' , 'linewidth', lw, '
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
-# legend('Semi-Analytic Mp1 [\theta]', 'Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [\theta]', 'ONSAS Mp1 [y]', 'location', 'Southeast') ;
+% legend('Semi-Analytic Mp1 [\theta]', 'Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [\theta]', 'ONSAS Mp1 [y]', 'location', 'Southeast') ;
 legend('Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [y]', 'ONSAS Mp2 [y]', 'ONSAS Mp3 [y]', 'tMn', 'factorcarga onsas', 'location', 'Southeast') ;
 
 %  'ONSAS Mp2 [\theta]', 'ONSAS Mp2 [y]', 'ONSAS Mp3 [\theta]', 'ONSAS Mp3 [y]'
