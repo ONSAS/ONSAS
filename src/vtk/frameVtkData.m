@@ -25,6 +25,19 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
   vtkNodalDisps   = [] ;
   vtkInternalForces = struct() ;
 
+  indNx = 0; indMy = 0; indMz = 0; i=1;
+  while i<=length(vtkInternalForcesNames)
+    if strcmp( vtkInternalForcesNames{i},'Nx')
+      indNx = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'My')
+      indMy = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'Mz')
+      indMz = i ;
+    end
+    i=i+1;
+  end
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
+
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
   nelem            = size(Conec,1) ;
@@ -101,8 +114,16 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
       vtkConec             = [ vtkConec ;     Conecvtk ] ;
       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
       
-      vtkInternalForces    = [ vtkInternalForces internalForces ] ;
-
+      if indNx>0
+        vtkInternalForces{indNx} = [ vtkInternalForces{indNx}; internalForces(i).Nx*ones(size(Conecvtk,1),1)] ; 
+      end
+      if indMy>0
+        vtkInternalForces{indMy} = [ vtkInternalForces{indMy}; internalForces(i).My*ones(size(Conecvtk,1),1)] ; 
+      end
+      if indMz>0
+        vtkInternalForces{indMz} = [ vtkInternalForces{indMz}; internalForces(i).Mz*ones(size(Conecvtk,1),1)] ; 
+      end
+  
       counterNodes = counterNodes + (size(Conecvtk,2)-1) ;
 
     end % for plot points
