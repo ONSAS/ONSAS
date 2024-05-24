@@ -179,6 +179,7 @@ for elem = 1:nElems
       
       Finte = fs{1} ;  Ke = ks{1} ;
 
+      Nx = fintLocCoord(1);   My = fintLocCoord(4);   Mz = fintLocCoord(6);
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
@@ -203,6 +204,10 @@ for elem = 1:nElems
     else
       error('wrong modelName for frame element.')
     end
+
+    localInternalForces(elem).Nx = Nx ;
+    localInternalForces(elem).My = My ;
+    localInternalForces(elem).Mz = Mz ;
 
     %md compute fluid forces on the element
     if aeroBool && fsBool

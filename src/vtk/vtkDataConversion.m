@@ -52,8 +52,10 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2) == elemTypeInds(indType) ) ;
 
+    modS.localInternalForces
     localIntForces = modS.localInternalForces(elemIndsElemType) ;
 
+    elemTypeString
     % ----------------------------------------------------------
     % elem dispatch
     if strcmp( elemTypeString, 'node' )
@@ -141,9 +143,13 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
 
+
     if length( currVtkInternalForcesCell ) > 0
       for i = 1:nIntForces
+        # i
+        # currVtkInternalForcesCell{i}
         vtkInternalForcesVectorsCell{i} = [ vtkInternalForcesVectorsCell{i}; currVtkInternalForcesCell{i}] ;
+        # vtkInternalForcesVectorsCell{i}
       end
     end
   
@@ -154,7 +160,11 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     vtkPointDataCell{1,2} = 'Displacements' ;
     vtkPointDataCell{1,3} = vtkNodalDisps ;
   end
-
+  size(vtkInternalForcesVectorsCell)
+  size(vtkInternalForcesVectorsCell{1})
+  size(vtkInternalForcesVectorsCell{2})
+  size(vtkInternalForcesVectorsCell{3})
+  stop
   if length( vtkInternalForcesVectorsCell ) > 0
     for i = 1:nIntForces
       cellDataCounter = cellDataCounter+1;
