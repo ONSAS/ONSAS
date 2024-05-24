@@ -146,10 +146,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     if length( currVtkInternalForcesCell ) > 0
       for i = 1:nIntForces
-        # i
-        # currVtkInternalForcesCell{i}
         vtkInternalForcesVectorsCell{i} = [ vtkInternalForcesVectorsCell{i}; currVtkInternalForcesCell{i}] ;
-        # vtkInternalForcesVectorsCell{i}
       end
     end
   
@@ -160,11 +157,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     vtkPointDataCell{1,2} = 'Displacements' ;
     vtkPointDataCell{1,3} = vtkNodalDisps ;
   end
-  size(vtkInternalForcesVectorsCell)
-  size(vtkInternalForcesVectorsCell{1})
-  size(vtkInternalForcesVectorsCell{2})
-  size(vtkInternalForcesVectorsCell{3})
-  stop
+
   if length( vtkInternalForcesVectorsCell ) > 0
     for i = 1:nIntForces
       cellDataCounter = cellDataCounter+1;

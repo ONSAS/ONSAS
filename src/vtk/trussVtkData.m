@@ -19,23 +19,24 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
   = trussVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
-  vtkNodes = [] ;
-  vtkConec = [] ;
+  vtkNodes        = [] ;   vtkConec        = [] ;
 
   vtkNodalDisps   = [] ;
-  vtkInternalForcesNames   = fieldnames( internalForces);
-  
-  indNx = 0; i=1;
-  while indNx == 0 && i<=length(vtkInternalForcesNames)
-    if strcmp( vtkInternalForcesNames{i},'Nx')
-      indNx = i ;
-    end
-    i=i+1;
-  end
-  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
-  
+  vtkInternalForcesNames   = fieldnames( internalForces ) ;
+
   nelem = size(Conec,1) ;
 
+  indNx = 0;
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
+
+  for i=1:length(vtkInternalForcesNames)
+    if strcmp( vtkInternalForcesNames{i},'Nx')
+      indNx = i ;
+    else
+      vtkInternalForces{i}=zeros(nelem,1);
+    end
+  end
+  
   counterNodes     = 0 ;
 
   for i=1:nelem

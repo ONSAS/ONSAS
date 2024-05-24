@@ -46,14 +46,12 @@ boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 %mdloaded BC:
-boundaryConds(2).imposDispDofs = [ 2 3 6 ] ;
-boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) 1e4 * t ;
 boundaryConds(2).loadsBaseVals = [ 0 0 0 0 1 0 ] ;
 %mdsupport BC for node at the base of the truss:
-boundaryConds(3).imposDispDofs = [ 1 2 3 4 5 ] ;
-boundaryConds(3).imposDispVals = [ 0 0 0 0 0 ] ;
+boundaryConds(3).imposDispDofs = [ 1 3 5 ] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 %md
 %md### mesh parameters
 %md
@@ -91,7 +89,7 @@ initialConds                = struct() ;
 analysisSettings            = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
-analysisSettings.deltaT        =   0.1  ;
+analysisSettings.deltaT        =   0.5  ;
 analysisSettings.finalTime     =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
@@ -109,9 +107,8 @@ otherParams.plots_format = 'vtk'            ;
 %mdAfter that the structs are used to perform the numerical time analysis
 [ matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
 
+modelSolutions{3}.localInternalForces(11)
 
 %md Its important to oultine analytical solution considering large dispalcements is not aviable. Thus the load applied is sleceted to produce amplitude displacements ($<0.05lt$). Consequently the small displacment solution of $uz$ is given by:
 analyticFunc            = @(w)( Et*At/lt + 3*Eb*Ib/lb^3 )*w ;

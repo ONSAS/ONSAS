@@ -19,28 +19,31 @@
 function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
    = frameVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
-  vtkInternalForcesNames = fieldnames( internalForces );
   vtkNodes        = [] ;
   vtkConec        = [] ;
+
   vtkNodalDisps   = [] ;
-  vtkInternalForces = struct() ;
-# stop
-  indNx = 0; indMy = 0; indMz = 0; i=1;
-  while i<=length(vtkInternalForcesNames)
+  vtkInternalForcesNames = fieldnames( internalForces );
+
+  nelem = size(Conec,1) ;
+
+  indNx = 0; indMy = 0; indMz = 0; 
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
+  
+  for i=1:length(vtkInternalForcesNames)
     if strcmp( vtkInternalForcesNames{i},'Nx')
       indNx = i ;
     elseif strcmp( vtkInternalForcesNames{i},'My')
       indMy = i ;
     elseif strcmp( vtkInternalForcesNames{i},'Mz')
       indMz = i ;
+    else
+      vtkInternalForces{i} = zeros( nelem, 1 );
     end
-    i=i+1;
   end
-  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
 
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
-  nelem            = size(Conec,1) ;
 
   for i=1:nelem
 
