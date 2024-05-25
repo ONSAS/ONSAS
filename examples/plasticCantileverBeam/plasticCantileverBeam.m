@@ -88,7 +88,7 @@ analysisSettings.deltaT             = 1 ;
 
 % analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
 % analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
-analysisSettings.incremArcLen       = [.2e-3*ones(1,120) 1e-4*ones(1,22)] ;
+analysisSettings.incremArcLen       = [.1e-3*ones(1,4000)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
@@ -183,6 +183,6 @@ laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
 legend('Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
 
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
