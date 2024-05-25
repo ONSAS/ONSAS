@@ -82,7 +82,7 @@ analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-8 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 15 ;
-analysisSettings.ALdominantDOF      = [2*6-3  -1] ;
+analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;

@@ -113,7 +113,7 @@ end
 
 for ii = 1:npi
 
-if M1(ii) >= Mu && soft_hinge_boolean == false
+if abs(M1(ii)) >= Mu && soft_hinge_boolean == false
 
     soft_hinge_boolean = true ;
 

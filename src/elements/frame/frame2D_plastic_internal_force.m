@@ -101,8 +101,21 @@ max_abs_mom = max(abs(Mnp1)) ;
 % solve local equations
 % ==========================================================
 
+for ii = 1:npi
+
+if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
+
+    SH_boole_np1 = true ;
+
+    xd_np1 = xpi(ii) ;
+    xdi_np1 = ii ;
+
+end
+
+end
+
 % if in time tn+1 the hinge is initiated or it was already formed in time tn
-if (SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_n == true
+if SH_boole_n == true || SH_boole_np1 == true
 
   % solve softening step
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
