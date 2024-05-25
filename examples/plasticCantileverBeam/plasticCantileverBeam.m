@@ -88,7 +88,7 @@ analysisSettings.deltaT             = 1 ;
 
 % analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
 % analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
-analysisSettings.incremArcLen       = [.1e-3*ones(1,4000)] ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,30) ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
@@ -98,7 +98,7 @@ analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-8 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 15 ;
-analysisSettings.ALdominantDOF      = [ 2*6-3  -1] ;
+analysisSettings.ALdominantDOF      = [2*6-3  -1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;

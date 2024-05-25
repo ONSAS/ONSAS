@@ -42,7 +42,7 @@ alfan = 0 ;
 xd = 0 ;
 xdi = 1 ;
 
-Final_force = 140 ; % value of the final force
+Final_force = 125 ; % value of the final force
 
 load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
 load_factors = 0:Final_force ;
