@@ -71,6 +71,16 @@ mesh.conecCell{ end+1, 1 } = [ 1 2 0  1 2 ] ; % frame
 
 initialConds = struct() ;
 
+%{
+analysisSettings               = struct() ;
+analysisSettings.methodName    = 'newtonRaphson' ;
+analysisSettings.deltaT        = 1e-1 ;
+analysisSettings.finalTime     = 180 ;
+analysisSettings.stopTolDeltau = 1e-8 ;
+analysisSettings.stopTolForces = 1e-8 ;
+analysisSettings.stopTolIts    = 15 ;
+%}
+
 analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
@@ -78,7 +88,7 @@ analysisSettings.deltaT             = 1 ;
 
 % analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
 % analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
-analysisSettings.incremArcLen       = [.2e-3*ones(1,20) 1e-3*ones(1,22)  ] ;
+analysisSettings.incremArcLen       = [.2e-3*ones(1,20) 1e-4*ones(1,22)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
@@ -157,60 +167,20 @@ desp_numer = matdes(4,:) ;
 
 lw = 1.4 ; ms = 1 ; plotfontsize = 14 ;
 
-% figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
-% hold on, grid on
-
-% plot(abs(girosUltimoNodo),     factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-% plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-
-% labx = xlabel('Generalized displacements in free node (m, rad)') ;
-% laby = ylabel('Forces') ;
-% legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'location', 'Southeast') ;
-% set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
-% set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-% title('Cantilever Beam / Plasticity (load factors)') ;
-
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-paso = 2 ;
+step = 1 ;
 
-% plot(-girosUltimoNodo(1:paso:length(Mn1_semianalytic)), -Mn1_semianalytic(1:paso:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*10, "Color", "#77AC30") ;
-plot(-descensosUltimoNodo(1:paso:length(Mn1_semianalytic)), -Mn1_semianalytic(1:paso:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*10, "Color", "#EDB120") ;
+plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*4, "Color", "#77AC30") ;
+plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw*4, 'markersize', ms, "Color", "#0072BD") ;
 
-% plot(-girosUltimoNodo, -Mn1_numericONSAS, '-x' , 'linewidth', lw, 'markersize', ms*5, "Color", "#EDB120") ;
-plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x' , 'linewidth', lw, 'markersize', ms*5, "Color", "#0072BD") ;
-
-plot(-descensosUltimoNodo, -Mn2_numericONSAS, 'k-s' , 'linewidth', lw, 'markersize', ms*5) ;
-plot(-descensosUltimoNodo, -Mn3_numericONSAS, 'r-o' , 'linewidth', lw, 'markersize', ms*5) ;
-
-plot(-descensosUltimoNodo, -tMn_numericONSAS, 'g-^' , 'linewidth', lw, 'markersize', ms*10) ;
-
-plot(-descensosUltimoNodo, factorescargaONSAS*l, 'c-v' , 'linewidth', lw, 'markersize', ms*10) ;
-
-final = round(length(Mn_numer)/8) ;
-plot(desp_numer(1:final), Mn_numer(1:final), 'r-+' , 'linewidth', lw, 'markersize', ms*10) ;
-
-%{
-
-plot(abs(girosUltimoNodo), abs(moments_hist(2,:)), '-x' , 'linewidth', lw, 'markersize', ms, "color", "#A2142F") ;
-plot(abs(descensosUltimoNodo), abs(moments_hist(2,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
-
-plot(abs(girosUltimoNodo), abs(moments_hist(3,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
-plot(abs(descensosUltimoNodo), abs(moments_hist(3,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#4DBEEE") ;
-
-plot(abs(girosUltimoNodo), abs(moments_hist(4,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo), abs(moments_hist(4,:)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
-
-%}
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-+' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
-% legend('Semi-Analytic Mp1 [\theta]', 'Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [\theta]', 'ONSAS Mp1 [y]', 'location', 'Southeast') ;
-legend('Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [y]', 'ONSAS Mp2 [y]', 'ONSAS Mp3 [y]', 'tMn', 'factorcarga onsas', 'location', 'Southeast') ;
-
-%  'ONSAS Mp2 [\theta]', 'ONSAS Mp2 [y]', 'ONSAS Mp3 [\theta]', 'ONSAS Mp3 [y]'
+legend('Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
