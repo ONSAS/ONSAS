@@ -88,7 +88,7 @@ analysisSettings.deltaT             = 1 ;
 
 % analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
 % analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
-analysisSettings.incremArcLen       = [.2e-3*ones(1,20) 1e-4*ones(1,22)] ;
+analysisSettings.incremArcLen       = [.2e-3*ones(1,120) 1e-4*ones(1,22)] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
 % analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
@@ -172,8 +172,9 @@ hold on, grid on
 
 step = 1 ;
 
-plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*4, "Color", "#77AC30") ;
-plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw*4, 'markersize', ms, "Color", "#0072BD") ;
+plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*6, "Color", "#77AC30") ;
+
+plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-+' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
