@@ -73,17 +73,16 @@ SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active th
 xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
 alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
 tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
-xdi_n        = params_plastic_2Dframe(12) ; % number of the integration point where is the hinge
+xdi_n       = params_plastic_2Dframe(12) ;  % number of the integration point where is the hinge
 
 % candidates for state var for time n + 1
 kp_np1      = kp_n ;
 xi1_np1     = xi1_n ;
 xi2_np1     = xi2_n ;
-SH_boole_np1 = SH_boole_n ;
+SH_boole_np1= SH_boole_n ;
 xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
-
 tM_np1      = tM_n ;        % hinge moment
 
 % ==========================================================

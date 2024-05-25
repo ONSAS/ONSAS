@@ -35,9 +35,6 @@ Mu = 376 ;
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS solution with 1 element
 
-% at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
-
 % material
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
