@@ -71,26 +71,10 @@ mesh.conecCell{ end+1, 1 } = [ 1 2 0  1 2 ] ; % frame
 
 initialConds = struct() ;
 
-%{
-analysisSettings               = struct() ;
-analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        = 1e-1 ;
-analysisSettings.finalTime     = 180 ;
-analysisSettings.stopTolDeltau = 1e-8 ;
-analysisSettings.stopTolForces = 1e-8 ;
-analysisSettings.stopTolIts    = 15 ;
-%}
-
 analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,460) 1e-4*ones(1,1000) 1e-5*ones(1,500)] ;
-
-% analysisSettings.incremArcLen       = [1e-3*ones(1,30)  ] ;
-% analysisSettings.incremArcLen       = [.2e-3*ones(1,2)   ] ;
 analysisSettings.incremArcLen       = 1e-3*ones(1,30) ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,428)  ] ;
-% analysisSettings.incremArcLen       = [1e-3*ones(1,425) 1e-4*ones(1,40) ] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
