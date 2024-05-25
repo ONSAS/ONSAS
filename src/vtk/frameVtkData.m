@@ -28,8 +28,7 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
   nelem = size(Conec,1) ;
 
   indNx = 0; indMy = 0; indMz = 0; 
-  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
-  
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;  
   for i=1:length(vtkInternalForcesNames)
     if strcmp( vtkInternalForcesNames{i},'Nx')
       indNx = i ;

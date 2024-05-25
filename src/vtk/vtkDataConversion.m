@@ -52,10 +52,8 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2) == elemTypeInds(indType) ) ;
 
-    modS.localInternalForces
     localIntForces = modS.localInternalForces(elemIndsElemType) ;
 
-    elemTypeString
     % ----------------------------------------------------------
     % elem dispatch
     if strcmp( elemTypeString, 'node' )
@@ -71,6 +69,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
         = trussVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
         elemCrossSecParams, modS.U, localIntForces  ) ;
 
+        
     elseif strcmp( elemTypeString, 'frame' )
       
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkInternalForcesCell ] ...
@@ -84,22 +83,15 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
       currVtkNodes   = modP.Nodes + currVtkNodalDisps ;
+      currVtkConec = [ 5*ones( nelems, 1 )     modP.Conec(:, 4:6 )-1 ] ;
       vtkStress  = {} ;
-      % vtkStress{3,1} = stressMat ;
 
-      % if nargout > numminout
-        % add the tetrahedron vtk cell type to the first column
-        currVtkConec = [ 5*ones( nelems, 1 )     modP.Conec(:, 4:6 )-1 ] ;
-        elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
-      % end
 
     elseif strcmp( elemTypeString, 'triangle-plate' )
 
-      currVtkInternalForcesCell = {} ;
-      [ currVtkNodes, currVtkConec, currVtkNodalDisps ] ...
+      [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkInternalForcesCell ] ...
         = shellVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...
-        elemCrossSecParams, modS.U ) ;
-      % vtkStress{3,1} = stressMat ;
+        elemCrossSecParams, modS.U, localIntForces ) ;
 
 
     elseif strcmp( elemTypeString, 'tetrahedron' )
@@ -116,7 +108,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
             % if nargout > numminout
               % add the tetrahedron vtk cell type to the first column
       currVtkConec    = [ 10*ones( nelems, 1 )     modP.Conec(:, 4:7 )-1 ] ;
-      elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
+      # elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
 
     end % if: type
     % ----------------------------------------------------------

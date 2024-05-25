@@ -153,7 +153,7 @@ mesh.conecCell{ 3, 1 } = [ 1 2 0    1 2   ] ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsNewmark, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsNewmark, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 %md
 %md### Numerical case 2: truss model with nodal masses, using $\alpha$-HHT method and user loads function

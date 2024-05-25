@@ -39,6 +39,6 @@ if abs( plot_ind_float-plot_ind_round) < 1e-10,
   %md nodes and data conversion
   [ vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modelCurrSol, modelProperties ) ;
   %md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
-  # stop
+  
   vtkFileWriter( filename, vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ) ;
 end

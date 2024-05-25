@@ -88,7 +88,7 @@ analysisSettings.incremArcLen = [ 2e-4 4e-5*ones(1,100)];
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsB, loadFactorsMatB, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsB, loadFactorsMatB, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 deltasB = -matUsB(6+5,:)' ;
 
