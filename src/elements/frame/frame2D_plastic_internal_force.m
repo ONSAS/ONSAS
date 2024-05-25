@@ -156,5 +156,4 @@ params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
-
 fintLocCoord = [ Mnp1' tM_np1 ] ;
