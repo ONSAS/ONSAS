@@ -72,7 +72,7 @@ xi2_n       = params_plastic_2Dframe(7) ;
 SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active the softening state
 xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
 alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
-% tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
+tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
 xdi_n        = params_plastic_2Dframe(12) ; % number of the integration point where is the hinge
 
 % candidates for state var for time n + 1
@@ -84,7 +84,7 @@ xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 
-% tM_np1      = tM_n ;      % hinge moment
+tM_np1      = tM_n ;        % hinge moment
 
 % ==========================================================
 % moments calculation
@@ -94,7 +94,7 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-[ Mnp1, tM_np1, ~] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+[Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 max_abs_mom = max(abs(Mnp1)) ;
 
@@ -103,17 +103,17 @@ max_abs_mom = max(abs(Mnp1)) ;
 % ==========================================================
 
 % if in time tn+1 the hinge is initiated or it was already formed in time tn
-if ( SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_n == true
+if (SH_boole_n == false && max_abs_mom > Mu ) || SH_boole_n == true
 
   % solve softening step
-  [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(SH_boole_n, xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+  [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1) * E*Iy ;
 
 else % elastic/plastic case without softening
     
   % solve plastic bending step
-   [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
  
 end
 

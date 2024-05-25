@@ -31,7 +31,7 @@
 % softening criterion (failure function) at integration points
 
 function [alfan1, xin21, xd, SH_boole_np1] ...
-  = plastic_softening_step(SH_boole_n, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
+  = plastic_softening_step(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
 
 SH_boole_np1 = true ;
 
