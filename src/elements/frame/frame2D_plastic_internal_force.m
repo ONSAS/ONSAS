@@ -79,11 +79,20 @@ xdi_n       = params_plastic_2Dframe(12) ;  % number of the integration point wh
 kp_np1      = kp_n ;
 xi1_np1     = xi1_n ;
 xi2_np1     = xi2_n ;
-SH_boole_np1= SH_boole_n ;
 xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 tM_np1      = tM_n ;        % hinge moment
+
+if SH_boole_n == false
+
+   SH_boole_np1 = false ;
+   
+else
+
+   SH_boole_np1 = true ;
+
+end
 
 % ==========================================================
 % moments calculation
@@ -95,20 +104,39 @@ tM_np1      = tM_n ;        % hinge moment
 % initial values of bulk moments
 [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-max_abs_mom = max(abs(Mnp1)) ;
-
 % ==========================================================
 % solve local equations
 % ==========================================================
 
+if SH_boole_n == false
+
+  % elastic/plastic case without softening
+    
+  % solve plastic bending step
+  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+ 
+  [Mnp1, ~, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+
+end
+
 for ii = 1:npi
 
-if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
+if abs(Mnp1(ii)) > Mu && SH_boole_n == false
 
     SH_boole_np1 = true ;
 
     xd_np1 = xpi(ii) ;
     xdi_np1 = ii ;
+
+    if sign(Mnp1(ii)) > 0
+
+        Mnp1(ii) = Mu ;
+
+    elseif sign(Mnp1(ii)) < 0
+        
+        Mnp1(ii) = -Mu ;
+
+    end
 
 end
 
@@ -122,14 +150,9 @@ if SH_boole_n == true || SH_boole_np1 == true
 
   Cep_np1 = ones(3,1) * E*Iy ;
 
-else % elastic/plastic case without softening
-    
-  % solve plastic bending step
-  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
- 
-end
+  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-[ Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+end
 
 % ==========================================================
 % solve global equations

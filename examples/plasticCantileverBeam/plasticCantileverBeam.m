@@ -72,9 +72,9 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-% analysisSettings.incremArcLen       = [1e-3*ones(1,459) 1e-4*ones(1,3532) 1e-5*ones(1,3086) 1e-6*ones(1,3006) eps*ones(1,1)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,459) 1e-4*ones(1,3532) 1e-5*ones(1,3086) 1e-6*ones(1,3006) eps*ones(1,1)] ;
 
-analysisSettings.incremArcLen       = 1e-3*ones(1,30) ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,846) 1e-5*ones(1,1000)] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
