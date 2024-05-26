@@ -29,7 +29,7 @@ E = EI/Inertia ;        % KN/m^2 [KPa]
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
 My = 268 ;
-Mu = 376 ;
+Mu = 374 ;
 
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
@@ -72,7 +72,7 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-analysisSettings.incremArcLen       = [1e-3*ones(1,850)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -152,13 +152,13 @@ lw = 1.6 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-step = 1 ;
+step = 4 ;
 
-plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*4, "Color", "#77AC30") ;
+plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*6, "Color", "#0072BD") ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
