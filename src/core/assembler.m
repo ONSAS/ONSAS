@@ -16,10 +16,11 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, matFint, strain_vec, acum_plas_strain_vec ] = assembler( Conec, elements, Nodes,...
-                                                           materials, KS, Ut, Udott, Udotdott,...
-                                                           analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previousStateCell )
+function [ fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler( ...
+             Conec, elements, Nodes,...
+             materials, KS, Ut, Udott, Udotdott,...
+             analysisSettings, outputBooleans, nodalDispDamping,...
+             timeVar, previousStateCell )
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -71,6 +72,8 @@ if matFintBool
 else
 	matFint = [] ;
 end
+
+localInternalForces = struct();
 
 % Previous state
 stress_n_vec           =  previousStateCell(:,1) ;
@@ -134,6 +137,7 @@ for elem = 1:nElems
   stressElem = [] ;
   fintLocCoord = [] ;
 
+
   % -----------   node element   ------------------------------
   if strcmp( elemType, 'node')
     nodalMass = materials( mebVec( 1 ) ).nodalMass ;
@@ -153,26 +157,18 @@ for elem = 1:nElems
     A  = crossSectionProps ( elemCrossSecParams, density ) ;
     previous_state = { stress_n_vec{elem}; strain_n_vec{elem}; acum_plas_strain_n_vec{elem} } ;
 
-
     [ fs, ks, stressElem, ~, strain, acum_plas_strain ] = elementTrussInternForce( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, A, previous_state ) ;
 
     Finte = fs{1} ;  Ke = ks{1} ;
-    fintLocCoord = norm( Finte ) ;
+
+    localInternalForces(elem).Nx = norm( Finte(1:3) ) ;
 
     if dynamicProblemBool
       [ Fmase, Mmase ] = elementTrussMassForce( elemNodesxyzRefCoords, density, A, massMatType, dotdotdispsElem ) ;
       %
       Ce = zeros( size( Mmase ) ) ; % only global damping considered (assembled after elements loop)
     end
-    
-    global temperature
-    if length( temperature )>0
-      timeVar
-      thermalExpansion = materials( mebVec( 1 ) ).thermalExpansion
-      temperatureVal = temperature( timeVar) 
-      Fthere = elementTrussThermalForce( elemNodesxyzRefCoords, elemDisps, modelParams(1), A, thermalExpansion, temperatureVal )
-    end
-
+  
   % -----------   frame element   ------------------------------------
   elseif strcmp( elemType, 'frame')
     
@@ -182,17 +178,20 @@ for elem = 1:nElems
       
       Finte = fs{1} ;  Ke = ks{1} ;
 
+      Nx = fintLocCoord(1);   My = fintLocCoord(4);   Mz = fintLocCoord(6);
       if dynamicProblemBool
         Fmase = fs{3} ; Mmase = ks{3} ;
       end
 
 		elseif strcmp( modelName, 'elastic-rotEngStr')
 
-      [ fs, ks, stress, rotData ] = frame_internal_force( elemNodesxyzRefCoords , ...
+      [ fs, ks, stress, rotData, fintLocCoord ] = frame_internal_force( elemNodesxyzRefCoords , ...
                                                              elemCrossSecParams    , ...
                                                              [ 1 modelParams ] , ...
                                                              elemDisps ) ;
       Finte = fs{1} ;  Ke = ks{1} ;
+
+      Nx = fintLocCoord(1);   My = fintLocCoord(2);   Mz = fintLocCoord(3);
 
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
@@ -206,6 +205,10 @@ for elem = 1:nElems
     else
       error('wrong modelName for frame element.')
     end
+
+    localInternalForces(elem).Nx = Nx ;
+    localInternalForces(elem).My = My ;
+    localInternalForces(elem).Mz = Mz ;
 
     %md compute fluid forces on the element
     if aeroBool && fsBool
@@ -234,7 +237,11 @@ for elem = 1:nElems
 		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
 																										modelName, [1 modelParams], 2, thickness, planeStateFlag, ...
 																										dotdotdispsElem, density, previous_state ) ;
-		%
+
+    localInternalForces(elem).Mx  = 0 ;
+    localInternalForces(elem).My  = 0 ;
+    localInternalForces(elem).Mxy = 0 ;
+
     Finte = fs{1};
 		Ke    = ks{1};
 		
@@ -248,8 +255,12 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
     
-    [ fs, ks ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
+    [ fs, ks, fintLocCoord ] = 	internal_forces_plate_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
       modelParams, thickness ) ;
+
+    localInternalForces(elem).Mx  = fintLocCoord(1) ;
+    localInternalForces(elem).My  = fintLocCoord(2) ;
+    localInternalForces(elem).Mxy = fintLocCoord(3) ;
 
     Finte = fs{1};
 		Ke    = ks{1};
@@ -266,6 +277,10 @@ for elem = 1:nElems
       modelName
       error('material not implemented yet! open an issue.')
     end
+
+    localInternalForces(elem).Mx  = 0 ;
+    localInternalForces(elem).My  = 0 ;
+    localInternalForces(elem).Mxy = 0 ;
 
    if isempty(elemTypeParams)
      % (1 analytic 2 complex step)
@@ -334,10 +349,6 @@ for elem = 1:nElems
     end
   end % if stress
 
-	if matFintBool && ~isempty(fintLocCoord)
-		matFint( elem, 1:length(fintLocCoord) ) = fintLocCoord' ;
-	end
-
 end % for elements ----
 
 % ============================================================================
@@ -403,17 +414,16 @@ end
 %
 % ==============================================================================
 
-function nodesmat = conv ( conec, coordsElemsMat )
-nodesmat  = [] ;
-nodesread = [] ;
-
-for i=1:size(conec,1)
-  for j=1:2
-    if length( find( nodesread == conec(i,j) ) ) == 0
-      nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
-    end
-  end
-end
+% function nodesmat = conv ( conec, coordsElemsMat )
+% nodesmat  = [] ;
+% nodesread = [] ;
+% for i=1:size(conec,1)
+%   for j=1:2
+%     if length( find( nodesread == conec(i,j) ) ) == 0
+%       nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
+%     end
+%   end
+% end
 
 % ==============================================================================
 %
@@ -422,5 +432,5 @@ end
 % ==============================================================================
 % _____&&&&&&&&&&&&&& GENERALIZAR PARA RELEASES &&&&&&&&&&&&&&&
 function elemDisps = u2ElemDisps( U, dofselem)
-
 elemDisps = U( dofselem ) ;
+

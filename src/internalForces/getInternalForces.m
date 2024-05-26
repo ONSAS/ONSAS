@@ -15,29 +15,16 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-% function for computation of the normal force and tanget matrix
-% of 3D truss elements using engineering strain.
 
+function matFint = getInternalForces( forcesStruct, elems, fieldNames )
 
-function Fther = elementTrussThermalForce( Xe, Ue, E, A, thermalExpansion, temperature )
+nElems  = length( elems      ) ;
+nFields = length( fieldNames ) ;
 
-  Xe    = Xe'     ;
-  Xedef = Xe + Ue ;
+matFint = zeros( nElems, nFields );
 
-  Bdif = [ -eye(3) eye(3) ] ;
-  Ge   = Bdif' * Bdif       ;
-
-  % initial/deformed lengths
-  lini = sqrt( sum( ( Bdif * Xe    ).^2 ) ) ;
-  ldef = sqrt( sum( ( Bdif * Xedef ).^2 ) ) ;
-
-  % normalized reference and deformed co-rotational vector
-  e1ref = Bdif * Xe    / lini ;
-  e1def = Bdif * Xedef / ldef ;
-
-  b1 = 1/(lini^2) * Xe' * Ge ;
-
-  TTcl              = Bdif' * e1def ;
-
-  Fther  =  thermalExpansion * temperature * E * A * TTcl ;
-
+for i =1:nElems
+    for j = 1:nFields
+        matFint(i,j) = getfield( forcesStruct(elems(i)), fieldNames{j} );
+    end
+end

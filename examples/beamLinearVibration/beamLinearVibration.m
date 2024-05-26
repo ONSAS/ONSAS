@@ -136,10 +136,8 @@ otherParams.problemName = 'coRotationaluniformDynamicBeam';
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[coRotMatUs , loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[coRotMatUs , loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 %md
 %md The second analysis case implements the linear elastic formulation
@@ -150,7 +148,7 @@ otherParams.problemName = 'elastic-linearuniformDynamicBeam';
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[linElasMatUs , loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[linElasMatUs , loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
 %md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )

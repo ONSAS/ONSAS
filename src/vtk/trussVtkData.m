@@ -16,16 +16,27 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = trussVtkData( Nodes, Conec, elemCrossSecParams, U, normalForces )
+function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
+  = trussVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
-  vtkNodes = [] ;
-  vtkConec = [] ;
+  vtkNodes        = [] ;   vtkConec        = [] ;
+
   vtkNodalDisps   = [] ;
-  vtkNormalForces = normalForces ;
+  vtkInternalForcesNames   = fieldnames( internalForces ) ;
 
   nelem = size(Conec,1) ;
 
+  indNx = 0;
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;
+
+  for i=1:length(vtkInternalForcesNames)
+    if strcmp( vtkInternalForcesNames{i},'Nx')
+      indNx = i ;
+    else
+      vtkInternalForces{i}=zeros(nelem,1);
+    end
+  end
+  
   counterNodes     = 0 ;
 
   for i=1:nelem
@@ -54,11 +65,12 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( coordsElemNodes, ...
        dispsElem, coordLocSubElem, dispLocIniSubElem, dispLocEndSubElem, thetaLocIniSubElem, thetaLocEndSubElem, sectPar, Rr, R0 ) ;
 
-       Conecvtk( :, 2:end ) = Conecvtk(:,2:end)+counterNodes ;
-       vtkNodes             = [ vtkNodes ;     Nodesvtk ]    ;
-       vtkConec             = [ vtkConec ;     Conecvtk ]    ;
-       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ]    ;
-
-       counterNodes = counterNodes + size( Nodesvtk, 1 ) ;
-
+    Conecvtk( :, 2:end ) = Conecvtk(:,2:end)+counterNodes ;
+    vtkNodes             = [ vtkNodes ;     Nodesvtk ]    ;
+    vtkConec             = [ vtkConec ;     Conecvtk ]    ;
+    vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ]    ;
+    if indNx>0
+      vtkInternalForces{indNx} = [ vtkInternalForces{indNx}; internalForces(i).Nx*ones(size(Conecvtk,1),1)] ; 
+    end
+    counterNodes = counterNodes + size( Nodesvtk, 1 ) ;
   end % for plot element subdivision

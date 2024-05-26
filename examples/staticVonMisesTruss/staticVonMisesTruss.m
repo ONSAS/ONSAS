@@ -105,8 +105,8 @@ analysisSettings.methodName    = 'newtonRaphson' ;
 %md and the following parameters correspond to the iterative numerical analysis settings
 analysisSettings.deltaT        =   0.1  ;
 analysisSettings.finalTime     =   1    ;
-analysisSettings.stopTolDeltau =   1e-8 ;
-analysisSettings.stopTolForces =   1e-8 ;
+analysisSettings.stopTolDeltau =   1e-9 ;
+analysisSettings.stopTolForces =   1e-9 ;
 analysisSettings.stopTolIts    =   15   ;
 %md
 %md### otherParams
@@ -121,7 +121,7 @@ otherParams.plots_deltaTs_separation = 2 ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNREngRot =  -matUs(11,:) ;
 loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
@@ -135,7 +135,7 @@ analysisSettings.finalTime  =   1.5    ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 %md the displacements are extracted
 controlDispsNRlinearElastic =  -matUs(11,:) ;
@@ -162,7 +162,7 @@ boundaryConds(2).loadsTimeFact = @(t) 1.5e8*t ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md and the displacements are extracted
 controlDispsNRGreen =  -matUs(11,:) ;
 loadFactorsNRGreen  =  loadFactorsMat(:,2) ;
@@ -188,7 +188,7 @@ analysisSettings.posVariableLoadBC = 2 ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNRALGreen =  -matUs(11,:) ;
 loadFactorsNRALGreen  =  loadFactorsMat(:,2) ;
@@ -205,7 +205,7 @@ analysisSettings.ALdominantDOF = [ 11 -1 ] ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNRAL_Jirasek_Green =  -matUs(11,:) ;
 loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:,2) ;

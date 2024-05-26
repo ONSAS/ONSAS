@@ -15,8 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ vtkNodes, vtkConec, vtkNodalDisps ] ...
-   = shellVtkData( Nodes, Conec, elemCrossSecParams, U )
+function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
+   = shellVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
   vtkNodes        = [] ;
   vtkConec        = [] ;
@@ -24,11 +24,26 @@ function [ vtkNodes, vtkConec, vtkNodalDisps ] ...
 
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
+  vtkInternalForcesNames = fieldnames( internalForces );
+
   nelem            = size(Conec,1) ;
 
   % thickness
   tz = elemCrossSecParams{2};
 
+  indMx = 0; indMy = 0; indMxy = 0; 
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;  
+  for i=1:length(vtkInternalForcesNames)
+    if strcmp( vtkInternalForcesNames{i},'Mx')
+      indMx  = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'My')
+      indMy  = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'Mxy')
+      indMxy = i ;
+    else
+      vtkInternalForces{i} = zeros( nelem, 1 );
+    end
+  end
 
   for i=1:nelem
 
@@ -58,6 +73,16 @@ function [ vtkNodes, vtkConec, vtkNodalDisps ] ...
     vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
     vtkConec             = [ vtkConec ;     Conecvtk ] ;
     vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
+
+    if indMx>0
+      vtkInternalForces{indMx}  = [ vtkInternalForces{indMx};  internalForces(i).Mx*ones(size(Conecvtk,1),1)] ; 
+    end
+    if indMy>0
+      vtkInternalForces{indMy}  = [ vtkInternalForces{indMy};  internalForces(i).My*ones(size(Conecvtk,1),1)] ; 
+    end
+    if indMxy>0
+      vtkInternalForces{indMxy} = [ vtkInternalForces{indMxy}; internalForces(i).Mxy*ones(size(Conecvtk,1),1)] ; 
+    end
 
   end % for elements
 

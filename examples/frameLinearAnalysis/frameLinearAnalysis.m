@@ -61,7 +61,7 @@ otherParams.plots_format = 'vtk' ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
 %md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
@@ -83,13 +83,11 @@ numerDeflz = matUs(6*2+5,2) ;
 verifDisps = ( abs( numerThetax1 - analyThetax1 ) < 1e-8 ) && ...
                ( abs( numerDeflz     - analyDeflz     ) < 1e-8 ) ;
 
-analyFintElem1 = [ 0  Pz*L2 -Py -L1*Pz  Pz -Py*L1 ...
-              0 -Pz*L2 +Py      0 -Pz      0 ]  ;
-numerFintElem1 = cellFint{2}(1,1:12) ;
+analyFintElem1 = [ -L1*Pz  ] ;  
+numerFintElem1 = modelSolutions{end}.localInternalForces(1).My ;
 
-analyFintElem2 = [ -Py 0 0 -Pz*L2  Pz 0 ...
-                    Py 0 0      0 -Pz 0 ] ;
-numerFintElem2 = cellFint{2}(2,1:12) ;
+analyFintElem2 = [ -Py ] ;
+numerFintElem2 = modelSolutions{end}.localInternalForces(2).Nx ;
 
 verifFints = ( norm( numerFintElem1 - analyFintElem1 ) < ( 1e-8 * norm(analyFintElem1) ) ) && ...
              ( norm( numerFintElem2 - analyFintElem2 ) < ( 1e-8 * norm(analyFintElem2) ) ) ;

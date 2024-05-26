@@ -86,11 +86,8 @@ Pcrit = pi()^2*E*I/l^2 ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
-
 
 Dof      		 = (numElements/2 + 1)*6 - 5 	;
 controlDisps =  matUs(Dof, :) 						;
@@ -101,6 +98,5 @@ figure
 grid on
 plot( controlDisps, loadFactors, 'k-o' , 'linewidth', lw,'markersize',ms )
 labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-
 
 verifBoolean = ( abs(controlDisps(end) - 1.7406)/1.7406 ) < 1e-3 ;

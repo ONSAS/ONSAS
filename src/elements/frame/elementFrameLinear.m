@@ -22,7 +22,7 @@ function [ fs, ks, finteLocalCoor ] = elementFrameLinear(elemCoords, elemCrossSe
   
   ndofpnode = 6 ;
   
-  % --- material constit params ---
+  % constitutive model params
 	E   = modelParams(1) ;
 	nu  = modelParams(2) ;
 	G   = E/(2*(1+nu)) ;

@@ -17,7 +17,7 @@
 %
 % implementation of the DKT plate triangle element based on https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620210709
 %
-function [ fs, ks ] = internal_forces_plate_triangle( elemCoords, elemDisps, modelName, modelParams, thickness )
+function [ fs, ks, fintLocCoord ] = internal_forces_plate_triangle( elemCoords, elemDisps, modelName, modelParams, thickness )
 
 % assertions
 assert( norm( elemCoords(3:3:end))==0, 'only plates in x-y plane are considered' )
@@ -122,7 +122,8 @@ aux(2,3+(1:3)) = gamma_vec ;
 aux(3,6+(1:3)) = gamma_vec ;
 vec_xis = 1/DET* aux * ( XYZ * elemDisps ) ;
 Moments = 24* D * vec_xis ;
-Mx = Moments(1) 
+
+fintLocCoord = Moments ;
 
 fint = K * elemDisps ;
 

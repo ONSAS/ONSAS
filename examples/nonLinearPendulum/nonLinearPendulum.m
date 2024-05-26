@@ -103,10 +103,8 @@ otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase1, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase1, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 % ------------------------------------
 %md### Analysis case 2: Solution using HHT with truss element, mass lumped according to Bathe problem and self weight boolean activated:
@@ -122,10 +120,8 @@ otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase2, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase2, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 % ------------------------------------
 %md### Analysis case 3: Solution using HHT using frame element, mass lumped at the final element and self weight boolean is activated. For this case denisity is null for the rest of the elements and rhoF =  m / ( A * (lNEWelem * l0) ) for the new one in order to produce the same force that is considered by [(K.J Bathe 2006)]
@@ -156,7 +152,7 @@ otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase3, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase3, loadFactorsMat, modelSolutions] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
 %md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
