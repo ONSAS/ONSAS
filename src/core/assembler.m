@@ -432,6 +432,8 @@ end
 %
 % ==============================================================================
 % _____&&&&&&&&&&&&&& GENERALIZAR PARA RELEASES &&&&&&&&&&&&&&&
-function elemDisps = u2ElemDisps( U, dofselem)
+  function elemDisps = u2ElemDisps( U, dofselem)
+    elemDisps = U( dofselem ) ;
+  end
 
-  elemDisps = U( dofselem ) ;
+end
