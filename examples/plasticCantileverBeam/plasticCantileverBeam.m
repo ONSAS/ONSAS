@@ -139,7 +139,7 @@ end
 % ----------------------------------------------------------------------------------
 % numerical solution ALGOL
 
-[ Mn_numer, Fn, matdes ] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks) ;
+[Mn_numer, Fn, matdes] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks) ;
 
 desp_numer = matdes(4,:) ;
 
@@ -147,18 +147,18 @@ desp_numer = matdes(4,:) ;
 % ----------------------------------------------------------------------------------
 % Plots
 
-lw = 1.4 ; ms = 1 ; plotfontsize = 14 ;
+lw = 1.6 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-step = 20 ;
+step = 1 ;
 
-plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*6, "Color", "#77AC30") ;
+plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), '^', 'linewidth', lw, 'markersize', ms*4, "Color", "#77AC30") ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-+' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;

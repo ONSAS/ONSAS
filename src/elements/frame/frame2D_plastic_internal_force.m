@@ -102,7 +102,7 @@ end
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-[Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+[Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 % ==========================================================
 % solve local equations
