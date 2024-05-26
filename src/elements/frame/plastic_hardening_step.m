@@ -29,7 +29,7 @@
 % plastic hardening
 % the standard trial-corrector (return mapping) algorithm is used
 
-function [ kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
+function [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
 
 kp_np1  = kp_n ;
 xi1_np1 = xi1_n ;
@@ -40,6 +40,7 @@ phis_test = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
 
 for ip = 1:npi
+  
   % yield criterion
   if xi1_n(ip) <= (My-Mc)/kh1
 
@@ -59,7 +60,7 @@ for ip = 1:npi
   if phitest <= 0 % elastic increment
     
       gamma = 0 ;
-
+      
   else
 
     if ( xi1_n(ip) + phitest/(kh1+E*Iy) ) <= (My-Mc)/kh1
