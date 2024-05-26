@@ -138,8 +138,6 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     % add nodal disps
     vtkNodalDisps = [ vtkNodalDisps ;  currVtkNodalDisps ] ;
 
-    # vtkInternalForces{end+1} currVtkInternalForces{1};
-
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
 
     if length( currVtkInternalForcesCell ) > 0

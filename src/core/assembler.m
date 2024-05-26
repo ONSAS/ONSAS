@@ -415,17 +415,16 @@ end
 %
 % ==============================================================================
 
-function nodesmat = conv ( conec, coordsElemsMat )
-nodesmat  = [] ;
-nodesread = [] ;
-
-for i=1:size(conec,1)
-  for j=1:2
-    if length( find( nodesread == conec(i,j) ) ) == 0
-      nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
-    end
-  end
-end
+% function nodesmat = conv ( conec, coordsElemsMat )
+% nodesmat  = [] ;
+% nodesread = [] ;
+% for i=1:size(conec,1)
+%   for j=1:2
+%     if length( find( nodesread == conec(i,j) ) ) == 0
+%       nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
+%     end
+%   end
+% end
 
 % ==============================================================================
 %
