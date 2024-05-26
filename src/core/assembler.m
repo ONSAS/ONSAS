@@ -238,7 +238,11 @@ for elem = 1:nElems
 		[ fs, ks, stressElem, strain, acum_plas_strain ] = 	elementTriangSolid( elemNodesxyzRefCoords, elemDisps, ...
 																										modelName, [1 modelParams], 2, thickness, planeStateFlag, ...
 																										dotdotdispsElem, density, previous_state ) ;
-		%
+
+    localInternalForces(elem).Mx  = 0 ;
+    localInternalForces(elem).My  = 0 ;
+    localInternalForces(elem).Mxy = 0 ;
+
     Finte = fs{1};
 		Ke    = ks{1};
 		
@@ -274,6 +278,10 @@ for elem = 1:nElems
       modelName
       error('material not implemented yet! open an issue.')
     end
+
+    localInternalForces(elem).Mx  = 0 ;
+    localInternalForces(elem).My  = 0 ;
+    localInternalForces(elem).Mxy = 0 ;
 
    if isempty(elemTypeParams)
      % (1 analytic 2 complex step)

@@ -52,7 +52,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     % gets all the element numbers corresponding to the current elemType
     elemIndsElemType = find( modP.Conec(:,2) == elemTypeInds(indType) ) ;
 
-    localIntForces = modS.localInternalForces(elemIndsElemType) ;
+    localIntForces = modS.localInternalForces( elemIndsElemType ) ;
 
     % ----------------------------------------------------------
     % elem dispatch
@@ -78,7 +78,12 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'triangle' )
 
-      currVtkInternalForcesCell = {} ;
+      assert(nelems==length(elemIndsElemType),'plane models do not accept mixed types of elements. create an issue to ask for new feature allowing this')
+
+      currVtkInternalForcesCell = cell(length(localIntForces),1) ;  
+      for i=1:length(currVtkInternalForcesCell)
+        currVtkInternalForcesCell{i} = zeros( nelems, 1 );
+      end
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
@@ -96,19 +101,21 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
 
     elseif strcmp( elemTypeString, 'tetrahedron' )
 
-      currVtkNormalForcesCell = {} ;
+      assert(nelems==length(elemIndsElemType),'plane models do not accept mixed types of elements. create an issue to ask for new feature allowing this')
+
+      currVtkInternalForcesCell = cell(length(localIntForces),1) ;  
+      for i=1:length(currVtkInternalForcesCell)
+        currVtkInternalForcesCell{i} = zeros( nelems, 1 );
+      end
+
       % reshape the displacements vector
       currVtkNodalDisps = reshape( modS.U(1:2:end)', [3, size(modP.Nodes,1) ])' ;
       % and add it to the nodes matrix
       currVtkNodes = modP.Nodes + currVtkNodalDisps ;
 
       vtkStress = {} ;
-      % vtkStress{3,1} = stressMat ;
 
-            % if nargout > numminout
-              % add the tetrahedron vtk cell type to the first column
       currVtkConec    = [ 10*ones( nelems, 1 )     modP.Conec(:, 4:7 )-1 ] ;
-      # elem2VTKCellMap = (1:nelems)' ; % default: i-to-i . Columns should be changed.
 
     end % if: type
     % ----------------------------------------------------------
@@ -134,7 +141,6 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
     # vtkInternalForces{end+1} currVtkInternalForces{1};
 
 		totalNodes = totalNodes + size(currVtkNodes, 1) ;
-
 
     if length( currVtkInternalForcesCell ) > 0
       for i = 1:nIntForces
