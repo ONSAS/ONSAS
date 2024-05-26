@@ -4,7 +4,7 @@
 % displacements in time n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
 % plastic curvature in time n / kappa_plas_n
 
-function [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticalSol( v1, v2, theta1, theta2 , xd, alfan, xin1, xin2, kappa_plas_n, Mc, My, Mu, kh1, kh2, Ks, E, Iy, l)
+function [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticSol( v1, v2, theta1, theta2 , xd, alfan, xin1, xin2, kappa_plas_n, Mc, My, Mu, kh1, kh2, Ks, E, Iy, l)
 
 % integration points
 x = [0 l/2 l] ;

@@ -130,7 +130,7 @@ for i = 1:length(matUs(1,:))
     kappa_plas_n{i} = kappa_plas_n1 ;
     xin1val(i) = xin11val(1) ;
 
-    [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticalSol(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), xin2val(i), kappa_plas_n{i}, Mc, My, Mu, kh1, kh2, Ks, E, Inertia, l) ;
+    [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticSol(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), xin2val(i), kappa_plas_n{i}, Mc, My, Mu, kh1, kh2, Ks, E, Inertia, l) ;
 
     Mn1_semianalytic(i) = Mn1(1) ;
 
