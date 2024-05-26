@@ -121,22 +121,12 @@ end
 
 for ii = 1:npi
 
-if abs(Mnp1(ii)) > Mu && SH_boole_n == false
+if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
 
     SH_boole_np1 = true ;
 
     xd_np1 = xpi(ii) ;
     xdi_np1 = ii ;
-
-    if sign(Mnp1(ii)) > 0
-
-        Mnp1(ii) = Mu ;
-
-    elseif sign(Mnp1(ii)) < 0
-        
-        Mnp1(ii) = -Mu ;
-
-    end
 
 end
 
