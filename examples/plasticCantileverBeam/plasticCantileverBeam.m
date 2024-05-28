@@ -72,7 +72,11 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
+% sergio 28 mayo
+%analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
+
+% juntos 28 mayo
+analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -152,7 +156,7 @@ lw = 1.6 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-step = 4 ;
+step = 1 ;
 
 plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*6, "Color", "#0072BD") ;
 
