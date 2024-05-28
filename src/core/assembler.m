@@ -218,6 +218,10 @@ for elem = 1:nElems
 
       Nx = 0;   My = 0;   Mz = fintLocCoord(1) ;
 
+      localInternalForces(elem).Mz2 = fintLocCoord(2);
+      localInternalForces(elem).Mz3 = fintLocCoord(3);
+      localInternalForces(elem).tM  = fintLocCoord(4);
+
       Finte = fs{1} ;  Ke = ks{1} ;
 
       stateCellnp1(elem,:) = aux ;

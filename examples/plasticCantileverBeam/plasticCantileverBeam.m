@@ -90,16 +90,14 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-modelSolutions{40}.localInternalForces
-stop
 girosUltimoNodo     = matUs((1+1)*6,:) ;
 descensosUltimoNodo = matUs((1+1)*6-3,:) ;
 factorescargaONSAS  = loadFactorsMat(:,2) ;
 
-moments_hist = zeros(4,length(cellFint)) ;
-for i =1:length(cellFint)
-    aux = cellFint{1,i} ;
-    moments_hist(:,i) = aux(1:4) ;
+moments_hist = zeros(4,length(modelSolutions)) ;
+for i =1:length(modelSolutions)
+    aux = modelSolutions{i}.localInternalForces(1) ;
+    moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
 Mn2_numericONSAS = moments_hist(2,:) ;
