@@ -55,7 +55,7 @@ while finalTimeReachedBoolean == false
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
-historic_parameters = [ historic_parameters ;  modelNextSol.previousStateCell ] ;
+  historic_parameters = [ historic_parameters ;  modelNextSol.previousStateCell ] ;
 
   % iterations average
   iterations_average = ...

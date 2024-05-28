@@ -110,7 +110,7 @@ Udotdottp1 = Udotdottp1k ;
 KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
-[~, Stresstp1, ~, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
+[~, Stresstp1, ~, localInternalForces, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
 %{
 if stateCellnp1(1,12)>0

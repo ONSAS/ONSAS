@@ -93,6 +93,7 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 %  --- 2 loop assembly ---
 % ====================================================================
 
+
 stateCellnp1 = zeros( size(previousStateCell) ) ;
 
 for elem = 1:nElems
@@ -214,9 +215,11 @@ for elem = 1:nElems
                                                                     elemCrossSecParams    , ...
                                                                     modelParams , ...
                                                                     elemDisps , params_plastic_2Dframe) ;
-      
+
+      Nx = 0;   My = 0;   Mz = fintLocCoord(1) ;
+
       Finte = fs{1} ;  Ke = ks{1} ;
-      
+
       stateCellnp1(elem,:) = aux ;
 	
       if dynamicProblemBool

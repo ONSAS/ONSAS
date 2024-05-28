@@ -88,8 +88,10 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-[matUs, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
+modelSolutions{40}.localInternalForces
+stop
 girosUltimoNodo     = matUs((1+1)*6,:) ;
 descensosUltimoNodo = matUs((1+1)*6-3,:) ;
 factorescargaONSAS  = loadFactorsMat(:,2) ;
