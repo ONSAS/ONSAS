@@ -80,9 +80,8 @@ convDeltau   = zeros( size(U) ) ;
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 previousStateCell = zeros( size(Conec,1), 12 ) ;  % ahora es la matriz que tiene todos los params plas para todos los elementos
 
-% TO DO  https://github.com/ONSAS/ONSAS/issues/649 compute intial stress and internal forces
-Stress = [] ; 
-matFint = zeros(size(Conec,1),4*6) ; 
+% comput internal forces and stresses
+[~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, currTime, previousStateCell ) ;
 
 [FextG, currLoadFactorsVals ]  = computeFext( modelProperties, BCsData, 0, length(U), [] , {U, Udot, Udotdot})  ;
 
@@ -92,7 +91,7 @@ nextTime = currTime + analysisSettings.deltaT ;
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
+    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell ) ;
 % =================================================================
 
 

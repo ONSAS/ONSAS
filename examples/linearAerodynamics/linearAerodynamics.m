@@ -129,10 +129,8 @@ otherParams.plots_format = '' ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase1, loadFactorsMat, cellFint, cellStress ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase1, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 %md
-%md the report is generated
-outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 %md
 %md### Case 2: user load function 

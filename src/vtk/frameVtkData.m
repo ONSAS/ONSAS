@@ -16,18 +16,33 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
-   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, localFint )
+function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
+   = frameVtkData( Nodes, Conec, elemCrossSecParams, U, internalForces )
 
-   
   vtkNodes        = [] ;
   vtkConec        = [] ;
+
   vtkNodalDisps   = [] ;
-  vtkNormalForces = [] ;
+  vtkInternalForcesNames = fieldnames( internalForces );
+
+  nelem = size(Conec,1) ;
+
+  indNx = 0; indMy = 0; indMz = 0; 
+  vtkInternalForces = cell(length(vtkInternalForcesNames),1) ;  
+  for i=1:length(vtkInternalForcesNames)
+    if strcmp( vtkInternalForcesNames{i},'Nx')
+      indNx = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'My')
+      indMy = i ;
+    elseif strcmp( vtkInternalForcesNames{i},'Mz')
+      indMz = i ;
+    else
+      vtkInternalForces{i} = zeros( nelem, 1 );
+    end
+  end
 
   nPlotSubElements = 10 ; % number of plot subsegments
   counterNodes     = 0 ;
-  nelem            = size(Conec,1) ;
 
   for i=1:nelem
 
@@ -72,11 +87,6 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
     valsLocThetaYSubElements = interFuncQuad   * [ 0; thetaLocIniElem(2); 0; thetaLocEndElem(2) ] ;
     valsLocThetaZSubElements = interFuncQuad   * [ 0; thetaLocIniElem(3); 0; thetaLocEndElem(3) ] ;
 
-    currNormalForce = abs(localFint(i,1));
-    if currNormalForce ~= abs(localFint(i,7))
-      error("error in normal forces")
-    end
-
     for j = 1:nPlotSubElements,
 
       dispLocIniSubElem = [ valsLocDispXSubElements( j   ) ; ...
@@ -105,8 +115,17 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkNormalForces ] ...
       vtkNodes             = [ vtkNodes ;     Nodesvtk ] ;
       vtkConec             = [ vtkConec ;     Conecvtk ] ;
       vtkNodalDisps        = [ vtkNodalDisps; Dispsvtk ] ;
-      vtkNormalForces      = [ vtkNormalForces; currNormalForce ] ;
-
+      
+      if indNx>0
+        vtkInternalForces{indNx} = [ vtkInternalForces{indNx}; internalForces(i).Nx*ones(size(Conecvtk,1),1)] ; 
+      end
+      if indMy>0
+        vtkInternalForces{indMy} = [ vtkInternalForces{indMy}; internalForces(i).My*ones(size(Conecvtk,1),1)] ; 
+      end
+      if indMz>0
+        vtkInternalForces{indMz} = [ vtkInternalForces{indMz}; internalForces(i).Mz*ones(size(Conecvtk,1),1)] ; 
+      end
+  
       counterNodes = counterNodes + (size(Conecvtk,2)-1) ;
 
     end % for plot points

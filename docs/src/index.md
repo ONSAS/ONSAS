@@ -63,8 +63,7 @@ This problem is based on one of the examples presented in [(Vanzulli and Pérez 
 
 ## Contact
 
-You can send an e-mail to _jorgepz [AT] fing.edu.uy_ .
-
+You can publicly post in the [discussion section](https://github.com/ONSAS/ONSAS/discussions) or contact privately sending an e-mail to _jorgepz [AT] fing.edu.uy_ .
 
 ## Contributors and License
 
