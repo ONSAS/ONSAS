@@ -39,21 +39,31 @@ qs        = zeros(npi,1) ;
 phis_test = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
 
+
+disp("||||||||||||||||||||||||||| HARDEGNINNNNNNNNNNNNNNNNNNNNNGGGGGGGGGGGGGGGGG")
+xi1_n(1)
+
 for ip = 1:npi
   
   % yield criterion
   if xi1_n(ip) <= (My-Mc)/kh1
-
-    qs(ip) = -kh1*xi1_n(ip) ;
+disp(" FEKLJLFEEEEEEEEELKJFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+disp(" FEKLJLFEEEEEEEEELKJFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+    qs(ip) = -kh1*xi1_n(ip) 
 
   else
 
-    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) ;
+    disp(" ??????????????????????????? ")
+
+    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) 
 
   end
 
+  abs(Ms(ip))
+  (Mc -qs(ip))
   phitest = abs(Ms(ip)) - (Mc - qs(ip)) ;
-  phis_test(ip) = phitest ;
+  phis_test(ip) = phitest 
+
 
   % gamma values calculations (gamma derivative is the plastic multiplier)
   % the new values of internal variables are computed
@@ -80,7 +90,7 @@ for ip = 1:npi
 
   % elastoplastic tangent bending modulus
   
-   if gamma == 0
+  if gamma == 0
       
       Cep_np1(ip) = E*Iy ;
 

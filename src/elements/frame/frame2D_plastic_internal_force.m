@@ -31,6 +31,9 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
+elemDisps
+params_plastic_2Dframe
+
 % \/
 % called by the function assembler
 % /\
@@ -84,14 +87,11 @@ alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 tM_np1      = tM_n ;        % hinge moment
 
+% initialization
 if SH_boole_n == false
-
    SH_boole_np1 = false ;
-   
 else
-
    SH_boole_np1 = true ;
-
 end
 
 % ==========================================================
@@ -104,6 +104,8 @@ end
 % initial values of bulk moments
 [Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
+Mnp1
+
 % ==========================================================
 % solve local equations
 % ==========================================================
@@ -114,8 +116,10 @@ if SH_boole_n == false
     
   % solve plastic bending step
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
- 
-  [Mnp1, ~, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+  Cep_np1
+
+  disp("AAACTUALIOZZZZZZZZZZZZZZZZZZZZZZZZ MOMZ================")
+  [Mnp1, ~, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) 
 
 end
 
