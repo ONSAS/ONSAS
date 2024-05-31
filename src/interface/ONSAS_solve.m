@@ -49,9 +49,9 @@ plotted_bars = 0 ; aux_time = cputime() ;
 
 while finalTimeReachedBoolean == false
 
-  disp(' ==========================================')
-  disp(' ========================= NUEVO TIEMPO ==================')
-  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
+  % disp(' ====================================================') ;
+  % disp(' /\  /\  /\  /\  /\  NEW TIME STEP /\  /\  /\  /\  /\') ;
+  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars) ;
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
@@ -79,7 +79,7 @@ while finalTimeReachedBoolean == false
 	cellFint{end+1}  	= modelCurrSol.localInternalForces ;
 	cellStress{end+1}	= modelCurrSol.Stress ;
 
-  modelSolutions{end+1} = modelCurrSol;
+  modelSolutions{end+1} = modelCurrSol ;
 
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )

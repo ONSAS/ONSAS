@@ -38,48 +38,43 @@ npi       = length(xpi) ;
 qs        = zeros(npi,1) ;
 phis_test = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
+Mnp1      = zeros(npi,1) ;
 
 
-disp("||||||||||||||||||||||||||| HARDEGNINNNNNNNNNNNNNNNNNNNNNGGGGGGGGGGGGGGGGG")
-xi1_n(1)
+% disp(' /\  /\  /\  /\  /\  HARDENING /\  /\  /\  /\  /\') ;
 
 for ip = 1:npi
   
   % yield criterion
   if xi1_n(ip) <= (My-Mc)/kh1
-disp(" FEKLJLFEEEEEEEEELKJFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-disp(" FEKLJLFEEEEEEEEELKJFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-    qs(ip) = -kh1*xi1_n(ip) 
+
+    qs(ip) = -kh1*xi1_n(ip) ;
 
   else
 
-    disp(" ??????????????????????????? ")
-
-    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) 
+    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) ;
 
   end
 
-  abs(Ms(ip))
-  (Mc -qs(ip))
   phitest = abs(Ms(ip)) - (Mc - qs(ip)) ;
-  phis_test(ip) = phitest 
+  phis_test(ip) = phitest ;
 
 
   % gamma values calculations (gamma derivative is the plastic multiplier)
   % the new values of internal variables are computed
-  if phitest <= 0 % elastic increment
+  if phis_test(ip) <= 0 % elastic increment
     
       gamma = 0 ;
       
   else
 
-    if ( xi1_n(ip) + phitest/(kh1+E*Iy) ) <= (My-Mc)/kh1
+    if (xi1_n(ip) + phis_test(ip)/(kh1+E*Iy)) <= (My-Mc)/kh1
         
-        gamma = phitest/(kh1+E*Iy) ;
+        gamma = phis_test(ip)/(kh1+E*Iy) ;
     
     else
         
-        gamma = phitest/(kh2+E*Iy) ;    
+        gamma = phis_test(ip)/(kh2+E*Iy) ;
     
     end
 
@@ -105,3 +100,7 @@ disp(" FEKLJLFEEEEEEEEELKJFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
   end
 
 end
+
+     % AA = kh1*xi1_n(1)+ Mc ;
+     % BB = (xi1_n(1) + phis_test(1)/(kh1+E*Iy))*kh1 + Mc ;
+     % CC = kh1*xi1_np1(1) + Mc ;

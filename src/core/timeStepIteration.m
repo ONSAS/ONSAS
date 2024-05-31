@@ -63,22 +63,23 @@ systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 previousStateCell  = modelCurrSol.previousStateCell  ;
 
 % --- assemble system of equations ---
-Ut
-previousStateCell
+% Ut
+% previousStateCell
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
 booleanConverged = false ;
 dispIters        = 0     ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
-disp("================== ARRANCANDO ITERACION====================== ")
+% disp(' ==========================================================') ;
+% disp(' /\  /\  /\  /\  /\  BEGIN NEW ITERATION /\  /\  /\  /\  /\') ;
 
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
 
-  disp("--------------------------------------\n iter \n -------------------- ")
+% disp(' =================== ||  ITERATION N || ===================') ;
 
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
@@ -106,7 +107,7 @@ while  booleanConverged == 0
 end % iteration while
 % --------------------------------------------------------------------
 
-disp("================== TERMINE ITERACION====================== ")
+% disp( '=================== ||  END ITERATION N || ===================') ;
 
 Utp1       = Utp1k ;
 Udottp1    = Udottp1k ;

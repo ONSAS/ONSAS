@@ -31,8 +31,8 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
-elemDisps
-params_plastic_2Dframe
+% elemDisps
+% params_plastic_2Dframe
 
 % \/
 % called by the function assembler
@@ -104,7 +104,7 @@ end
 % initial values of bulk moments
 [Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-Mnp1
+% Mnp1
 
 % ==========================================================
 % solve local equations
@@ -116,10 +116,8 @@ if SH_boole_n == false
     
   % solve plastic bending step
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
-  Cep_np1
 
-  disp("AAACTUALIOZZZZZZZZZZZZZZZZZZZZZZZZ MOMZ================")
-  [Mnp1, ~, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) 
+  [Mnp1, ~, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 end
 
@@ -142,10 +140,10 @@ if SH_boole_n == true || SH_boole_np1 == true
   % solve softening step
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
-  Cep_np1 = ones(3,1) * E*Iy ;
-
   [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
+  Cep_np1 = ones(3,1) * E*Iy ;
+  
 end
 
 % ==========================================================
