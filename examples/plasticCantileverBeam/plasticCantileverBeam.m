@@ -73,10 +73,10 @@ analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
 % One step after softening hinge is activated
-% analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
 
 % second stage of plastic hardening
-analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
+% analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
 
 % first stage of plastic hardening
 % analysisSettings.incremArcLen       = [.3e-3*ones(1,6) ] ;

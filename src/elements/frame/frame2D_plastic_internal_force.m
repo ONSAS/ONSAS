@@ -110,7 +110,7 @@ end
 % solve local equations
 % ==========================================================
 
-if SH_boole_n == false
+if SH_boole_n == false && SH_boole_np1 == false
 
   % elastic/plastic case without softening
     
