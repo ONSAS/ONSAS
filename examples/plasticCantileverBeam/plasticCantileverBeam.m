@@ -72,14 +72,14 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-% sergio 28 mayo
-%analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
+% One step after softening hinge is activated
+% analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
 
-% juntos 28 mayo   segundo quiebre plastic
+% second stage of plastic hardening
 analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
 
-% juntos 28 mayo   primer quiebre plastic
-%analysisSettings.incremArcLen       = [.3e-3*ones(1,6) ] ;
+% first stage of plastic hardening
+% analysisSettings.incremArcLen       = [.3e-3*ones(1,6) ] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -160,11 +160,11 @@ hold on, grid on
 
 step = 1 ;
 
-plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*6, "Color", "#0072BD") ;
+plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
 
-plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', 5*ms, "Color", "#0072BD") ;
+plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', 7*ms, "Color", "#A2142F") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;

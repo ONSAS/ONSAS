@@ -20,6 +20,9 @@
 % user.
 function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
+global booleanConverged
+global timeIndex
+
 % assign current time (t) variables
 % ---------------------------------
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;

@@ -21,7 +21,8 @@ function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateC
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
-
+global booleanConverged
+global timeIndex
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -224,7 +225,60 @@ for elem = 1:nElems
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
-      stateCellnp1(elem,:) = aux ;
+      if isempty(timeIndex) == true
+
+          time = 1 ;
+
+      else
+          
+          time = timeIndex ;
+
+      end
+
+      Kafka{time} = Ke ;
+
+      % /\
+      % 
+      % if booleanConverged is not true, the plastic parameters are frozen
+
+      % split procedure is activated at each iteration
+
+      % First, the nodal variables are computed for frozen values of internal variables
+
+      % Second, the evolution equations are solved for internal variables
+      % for frozen values of nodal variables
+
+      % /\
+
+      if booleanConverged == true
+          
+          stateCellnp1(elem,:) = aux ;
+
+      else
+
+          stateCellnp1(elem,:) = previousStateCell ;
+
+      end
+
+      if isempty(booleanConverged)
+
+          Converged = false ;
+
+      else
+
+          Converged = booleanConverged ;
+
+      end
+
+      if Converged == 0 && time > 1 && isempty(Kafka{time-1}) == false
+
+          Ke = Kafka{time-1} ;
+
+      else
+
+          Ke = Kafka{time} ;
+
+      end
 	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
