@@ -140,9 +140,12 @@ if SH_boole_n == true || SH_boole_np1 == true
   % solve softening step
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
-  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-  Cep_np1 = ones(3,1) * E*Iy ;
+  Cep_np1 = ones(3,1)*E*Iy ;
+
+  kp_np1 = kp_n ;
+  xi1_np1 = xi1_n ;
   
 end
 
@@ -183,4 +186,4 @@ params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
-fintLocCoord = [ Mnp1' tM_np1 ] ;
+fintLocCoord = [Mnp1' tM_np1] ;
