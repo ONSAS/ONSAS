@@ -31,6 +31,8 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
+    elemDisps
+    
 % elemDisps
 % params_plastic_2Dframe
 
@@ -171,6 +173,7 @@ dofsconv = [1 1+6 3 3+6 6 6+6] ;
 Fintout(dofsconv) = Fint ;
 KTout(dofsconv, dofsconv) = Kelement ;
 
+Fint
 fs = {Fintout} ;
 ks = {KTout} ;
 
@@ -185,4 +188,5 @@ params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
-fintLocCoord = [Mnp1' tM_np1] ;
+Mzs_integrados = [ Fintout(6) Fintout(12)]
+fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;
