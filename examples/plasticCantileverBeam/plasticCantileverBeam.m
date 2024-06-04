@@ -85,7 +85,7 @@ analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-10 ;
+analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
 
