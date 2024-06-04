@@ -222,20 +222,22 @@ for elem = 1:nElems
       localInternalForces(elem).Mz2 = fintLocCoord(2);
       localInternalForces(elem).Mz3 = fintLocCoord(3);
       localInternalForces(elem).tM  = fintLocCoord(4);
+      localInternalForces(elem).Mz_integrado_izq  = fintLocCoord(5);
+      localInternalForces(elem).Mz_integrado_der  = fintLocCoord(6);
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
       if isempty(timeIndex) == true
 
-          time = 1 ;
+          timeSerg = 1 ;
 
       else
           
-          time = timeIndex ;
+          timeSerg = timeIndex ;
 
       end
 
-      Kafka{time} = Ke ;
+      Kafka{timeSerg} = Ke ;
 
       % /\
       % 
@@ -250,15 +252,13 @@ for elem = 1:nElems
 
       % /\
 
-      if booleanConverged == true
-          
+      # if booleanConverged == true
           stateCellnp1(elem,:) = aux ;
 
-      else
+      # else
+          # stateCellnp1(elem,:) = previousStateCell ;
 
-          stateCellnp1(elem,:) = previousStateCell ;
-
-      end
+      # end
 
       if isempty(booleanConverged)
 
@@ -270,13 +270,13 @@ for elem = 1:nElems
 
       end
 
-      if Converged == 0 && time > 1 && isempty(Kafka{time-1}) == false
+      if Converged == 0 && timeSerg > 1 && isempty(Kafka{timeSerg-1}) == false
 
-          Ke = Kafka{time-1} ;
+          Ke = Kafka{timeSerg-1} ;
 
       else
 
-          Ke = Kafka{time} ;
+          Ke = Kafka{timeSerg} ;
 
       end
 	

@@ -31,6 +31,8 @@ Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 374 ;
 
+
+nelem = 2; nnodes = nelem+1;
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS solution with 1 element
@@ -57,14 +59,28 @@ boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
+boundaryConds(3).imposDispDofs = [ 2 4 5] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = struct() ;
-mesh.nodesCoords = [ 0 0 0 ; l 0 0 ] ;
+mesh.nodesCoords = [ linspace(0,l,nnodes)' zeros(nnodes,2)] ;
+mesh.nodesCoords(1,2)=-l;
+
+mesh.nodesCoords
+
 
 mesh.conecCell = {} ;
 mesh.conecCell{ 1,     1 } = [ 0 1 1  1   ] ; % node
-mesh.conecCell{ end+1, 1 } = [ 0 1 2  2   ] ; % node
-mesh.conecCell{ end+1, 1 } = [ 1 2 0  1 2 ] ; % frame
+mesh.conecCell{ end+1, 1 } = [ 0 1 2  nnodes   ] ; % loaded node
+for i=2:nnodes-1
+    mesh.conecCell{ end+1, 1 } = [ 0 1 3  i   ] ; % intermediate node
+end
+
+for i=1:nelem
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0  i i+1 ] ; % 
+end
+
 
 initialConds = struct() ;
 
@@ -72,14 +88,16 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-% the softening hinge is activated
-analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1) 1e-3*ones(1,100)] ;
+% the softening hinge is activated  1 elem
+# analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1) 1e-3*ones(1,100)] ;
+
+analysisSettings.incremArcLen       = [1e-3*ones(1,432) ] ;
 
 % second stage of plastic hardening
-% analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
+# analysisSettings.incremArcLen       = [.2e-3*ones(1,320) .8e-4*ones(1,1000) .1e-4*ones(1,500)  ] ;
 
 % first stage of plastic hardening
-% analysisSettings.incremArcLen       = [.3e-3*ones(1,6) ] ;
+#  analysisSettings.incremArcLen       = [.3e-3*ones(1,2) ] ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -87,21 +105,25 @@ analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
+analysisSettings.ALdominantDOF      = [nnodes*6-3 -1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-otherParams.plots_format = 'vtk' ;
+# otherParams.plots_format = 'vtk' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-girosUltimoNodo     = matUs((1+1)*6,:) ;
-descensosUltimoNodo = matUs((1+1)*6-3,:) ;
+girosUltimoNodo     = matUs((nnodes)*6,:) ;
+descensosUltimoNodo = matUs((nnodes)*6-3,:) ;
 factorescargaONSAS  = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
+
+moments_integrados_izq = zeros(nelem,length(modelSolutions)) ;
+moments_integrados_der = zeros(nelem,length(modelSolutions)) ;
+
 for i =1:length(modelSolutions)
     aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
@@ -110,6 +132,14 @@ Mn1_numericONSAS = moments_hist(1,:) ;
 Mn2_numericONSAS = moments_hist(2,:) ;
 Mn3_numericONSAS = moments_hist(3,:) ;
 tMn_numericONSAS = moments_hist(4,:) ;
+
+for i =1:length(modelSolutions)
+  for j=1:nelem
+    aux = modelSolutions{i}.localInternalForces(j) ;
+    moments_integrados_izq(j,i) = aux.Mz_integrado_izq ;
+    moments_integrados_der(j,i) = aux.Mz_integrado_der ;
+  end
+end
 
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
@@ -162,17 +192,23 @@ step = 1 ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
 
+
 plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+
+plot(-descensosUltimoNodo, -Mn2_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
 
 % plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#EDB120") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
-legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
+legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]','onsas mp2', 'location', 'Southeast') ;
 
 % 'Semi-Analytic Mp1 [y]', 
 
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
+
+figure
+plot(-descensosUltimoNodo , factorescargaONSAS )
