@@ -104,8 +104,6 @@ end
 % initial values of bulk moments
 [Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-% Mnp1
-
 % ==========================================================
 % solve local equations
 % ==========================================================
@@ -121,6 +119,7 @@ if SH_boole_n == false && SH_boole_np1 == false
 
 end
 
+% condition for the activation of softening hinges / label SH_boole_np1 = true
 for ii = 1:npi
 
 if abs(Mnp1(ii)) >= Mu && SH_boole_n == false

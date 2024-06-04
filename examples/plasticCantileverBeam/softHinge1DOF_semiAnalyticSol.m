@@ -117,12 +117,12 @@ end
 kappa_plas_n1 = kappa_plas_n ;
 xin11val = xin1 ;
 
+end
+
+end
+
 % smooth curvature
 
 kappa_bar = Bv1*v1 + Bv2*v2 + Bt1*theta1 + Bt2*theta2 + G_bar*alfan1 ;
  
 Mn1 = E*Iy*(kappa_bar - kappa_plas_n1) ;
-
-end
-
-end

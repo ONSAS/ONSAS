@@ -72,8 +72,8 @@ analysisSettings                    = struct() ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
-% One step after softening hinge is activated
-analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
+% the softening hinge is activated
+analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1) 1e-3*ones(1,100)] ;
 
 % second stage of plastic hardening
 % analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
@@ -84,9 +84,9 @@ analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-8 ;
-analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 15 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolForces      = 1e-10 ;
+analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
 
 otherParams              = struct() ;
@@ -136,7 +136,7 @@ for i = 1:length(matUs(1,:))
 
     kappa_plas_n{i} = kappa_plas_n1 ;
     xin1val(i) = xin11val(1) ;
-
+    
     [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticSol(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), xin2val(i), kappa_plas_n{i}, Mc, My, Mu, kh1, kh2, Ks, E, Inertia, l) ;
 
     Mn1_semianalytic(i) = Mn1(1) ;
@@ -160,16 +160,18 @@ hold on, grid on
 
 step = 1 ;
 
-plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
-
-plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
 
 plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+
+% plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#EDB120") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
-legend('Semi-Analytic Mp1 [y]', 'ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
+legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
+
+% 'Semi-Analytic Mp1 [y]', 
 
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
