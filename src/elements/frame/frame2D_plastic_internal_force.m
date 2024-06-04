@@ -31,7 +31,6 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
-    elemDisps
     
 % elemDisps
 % params_plastic_2Dframe
@@ -56,7 +55,7 @@ kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
 
 % kinematic variables
-uvector     = elemDisps([1,7]) ;    % x
+uvector     = elemDisps([1,7])   ;  % x
 vvector     = elemDisps([3,9])  ;   % y
 thetavector = elemDisps([6,12]) ;   % theta z
 
@@ -173,7 +172,6 @@ dofsconv = [1 1+6 3 3+6 6 6+6] ;
 Fintout(dofsconv) = Fint ;
 KTout(dofsconv, dofsconv) = Kelement ;
 
-Fint
 fs = {Fintout} ;
 ks = {KTout} ;
 
@@ -188,5 +186,5 @@ params_plastic_2Dframe_np1(10)  = alfa_np1 ;
 params_plastic_2Dframe_np1(11)  = tM_np1 ;
 params_plastic_2Dframe_np1(12)  = xdi_np1 ;
 
-Mzs_integrados = [ Fintout(6) Fintout(12)]
+Mzs_integrados = [ Fintout(6) Fintout(12)];
 fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;

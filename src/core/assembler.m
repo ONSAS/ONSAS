@@ -99,7 +99,6 @@ stateCellnp1 = zeros( size(previousStateCell) ) ;
 
 for elem = 1:nElems
 
-  elem
   mebVec = Conec( elem, 1:3) ;
 
   %md extract element properties

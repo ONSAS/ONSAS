@@ -32,7 +32,7 @@ My = 268 ;
 Mu = 374 ;
 
 
-nelem = 10; nnodes = nelem+1;
+nelem = 2; nnodes = nelem+1;
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS solution with 1 element
@@ -65,6 +65,10 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = struct() ;
 mesh.nodesCoords = [ linspace(0,l,nnodes)' zeros(nnodes,2)] ;
+mesh.nodesCoords(1,2)=-l;
+
+mesh.nodesCoords
+
 
 mesh.conecCell = {} ;
 mesh.conecCell{ 1,     1 } = [ 0 1 1  1   ] ; % node
@@ -87,10 +91,10 @@ analysisSettings.deltaT             = 1 ;
 % the softening hinge is activated  1 elem
 # analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1) 1e-3*ones(1,100)] ;
 
-# analysisSettings.incremArcLen       = [1e-3*ones(1,432) ] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,432) ] ;
 
 % second stage of plastic hardening
-analysisSettings.incremArcLen       = [.2e-3*ones(1,320) .8e-4*ones(1,1000) .1e-4*ones(1,500)  ] ;
+# analysisSettings.incremArcLen       = [.2e-3*ones(1,320) .8e-4*ones(1,1000) .1e-4*ones(1,500)  ] ;
 
 % first stage of plastic hardening
 #  analysisSettings.incremArcLen       = [.3e-3*ones(1,2) ] ;
@@ -137,7 +141,6 @@ for i =1:length(modelSolutions)
   end
 end
 
-stop
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % semi-analitic validation / ONSAS with the function moments_plus_internal_variables
