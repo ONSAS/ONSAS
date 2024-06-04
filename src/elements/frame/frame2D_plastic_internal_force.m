@@ -119,20 +119,6 @@ if SH_boole_n == false && SH_boole_np1 == false
 
 end
 
-% condition for the activation of softening hinges / label SH_boole_np1 = true
-for ii = 1:npi
-
-if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
-
-    SH_boole_np1 = true ;
-
-    xd_np1 = xpi(ii) ;
-    xdi_np1 = ii ;
-
-end
-
-end
-
 % if in time tn+1 the hinge is initiated or it was already formed in time tn
 if SH_boole_n == true || SH_boole_np1 == true
 
@@ -146,6 +132,20 @@ if SH_boole_n == true || SH_boole_np1 == true
   kp_np1 = kp_n ;
   xi1_np1 = xi1_n ;
   
+end
+
+% condition for the softening hinges activation / label SH_boole_np1 = true
+for ii = 1:npi
+
+if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
+
+    SH_boole_np1 = true ;
+
+    xd_np1 = xpi(ii) ;
+    xdi_np1 = ii ;
+
+end
+
 end
 
 % ==========================================================
