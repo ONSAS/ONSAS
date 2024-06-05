@@ -149,13 +149,13 @@ analysisSettings.stopTolIts         = 15 ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-# otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-# [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo_10 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_10 = matUs((num_elem+1)*6-3,:) ;

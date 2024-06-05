@@ -71,5 +71,5 @@ for ip = 1:npi
 end
 
 Khalfa = Khalfa + Ks ;
-# Fint
+
 end

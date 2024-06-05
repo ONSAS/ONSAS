@@ -252,13 +252,13 @@ for elem = 1:nElems
 
       % /\
 
-      # if booleanConverged == true
+      % if booleanConverged == true
           stateCellnp1(elem,:) = aux ;
 
-      # else
-          # stateCellnp1(elem,:) = previousStateCell ;
+      % else
+          % stateCellnp1(elem,:) = previousStateCell ;
 
-      # end
+      % end
 
       if isempty(booleanConverged)
 
