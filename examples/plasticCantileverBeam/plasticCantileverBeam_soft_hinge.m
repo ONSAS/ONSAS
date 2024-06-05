@@ -61,6 +61,7 @@ Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 376 ;
 
+%{
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 10)
 
@@ -249,13 +250,19 @@ analysisSettings.stopTolIts         = 15 ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
-[matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo_5 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_5 = matUs((num_elem+1)*6-3,:) ;
 factorescarga_5 = loadFactorsMat(:,2) ;
+
+%}
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 2)
@@ -335,7 +342,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-2*ones(1,1) 1e-3*ones(1,36) 1e-4*ones(1,6000)] ;
+analysisSettings.incremArcLen       = [1e-2*ones(1,10) 1e-3*ones(1,400) 1e-4*ones(1,800)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -345,9 +352,14 @@ analysisSettings.stopTolIts         = 15 ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
-[matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+
+% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo_2 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_2 = matUs((num_elem+1)*6-3,:) ;
@@ -431,33 +443,40 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,460) 1e-4*ones(1,1000) 1e-5*ones(1,500)] ;
+analysisSettings.incremArcLen       = [1e-2*ones(1,10) 1e-3*ones(1,800) 1e-4*ones(1,800)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-8 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 15 ;
+analysisSettings.stopTolIts         = 30 ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
-[matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
 
-% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% validation pseudo analitic / ONSAS with the function moments_plus_internal_variables
+% ----------------------------------------------------------------------------------
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% semi-analitic validation / ONSAS with the function moments_plus_internal_variables
 
 xd = 0 ;
 alpha = 0 ;
 xin1val = zeros(1,length(matUs(1,:))) ;
-kappa_plas_n = zeros(1,length(matUs(1,:))) ;
+xin2val = zeros(1,length(matUs(1,:))) ;
+kappa_plas_n = cell(1,length(matUs(1,:))) ;
 kappa_plas_n1 = zeros(1,3) ;
 xin11val = zeros(1,3) ;
+xin21val = zeros(1,3) ;
 
 Mn1_validation = zeros(1,length(matUs(1,:))) ;
 
@@ -469,10 +488,10 @@ for i = 1:length(matUs(1,:))
     theta1 = matUs(6,i) ;
     theta2 = matUs(12,i) ;
 
-    kappa_plas_n(i) = kappa_plas_n1(1) ;
+    kappa_plas_n{i} = kappa_plas_n1 ;
     xin1val(i) = xin11val(1) ;
-
-    [kappa_plas_n1, xin11val, Mn1] = moments_plus_internal_variables(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), kappa_plas_n(i), Mc, My, kh1, kh2, E, Inertia, l) ;
+    
+    [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticSol(v1, v2, theta1, theta2 , xd, alpha, xin1val(i), xin2val(i), kappa_plas_n{i}, Mc, My, Mu, kh1, kh2, Ks, E, Inertia, l) ;
 
     Mn1_validation(i) = Mn1(1) ;
 
@@ -638,11 +657,13 @@ plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize
 plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
+%{
 plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+%}
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
@@ -654,8 +675,8 @@ title('Cantilever Beam / Plasticity (load factors)') ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+% plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw*2, 'markersize', ms*4, "Color", "#EDB120") ;
+% plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw*2, 'markersize', ms*4, "Color", "#0072BD") ;
 
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
@@ -667,5 +688,5 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
 
-print('-f1','../tex/imagenes/Load_factors.pdf','-dpdf') ;
-print('-f2','../tex/imagenes/Validation.pdf','-dpdf') ;
+print('-f1','../../../Tesis/tex/imagenes/Load_factors.pdf','-dpdf') ;
+print('-f2','../../../Tesis/tex/imagenes/Validation.pdf','-dpdf') ;
