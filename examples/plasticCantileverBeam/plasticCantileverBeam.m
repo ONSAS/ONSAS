@@ -181,11 +181,26 @@ figure('Name','Cantilever Beam / Plasticity (Hinge Moment)','NumberTitle','off')
 hold on, grid on
 
 plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(-girosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
-labx = xlabel('Displacements in free node (m)') ;
+labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Hinge Moment (KN.m)') ;
 
-legend('ONSAS tMn [y]', 'location', 'Southeast') ;
+legend('ONSAS tMn [y]', 'ONSAS tMn [\theta]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (Hinge Moment)') ;
+
+figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
+hold on, grid on
+
+plot(-descensosUltimoNodo, factorescargaONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(-girosUltimoNodo, factorescargaONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+
+labx = xlabel('Generalized displacements in free node (m, rad)') ;
+laby = ylabel('Force (KN)') ;
+
+legend('ONSAS F [y]', 'ONSAS F [\theta]', 'location', 'Southeast') ;
+set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity') ;
