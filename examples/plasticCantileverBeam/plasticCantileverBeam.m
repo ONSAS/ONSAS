@@ -5,7 +5,7 @@
 % ----------------------------------------------------------------------------------
 %
 close all,
-if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear, end
 addpath( genpath( [ pwd '/../../src'] ) );
 %
 % ----------------------------------------------------------------------------------
@@ -162,14 +162,14 @@ step = 1 ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 
 % plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#EDB120") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moments at the integration points (KN.m)') ;
 
-legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
+legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southwest') ;
 
 % 'Semi-Analytic Mp1 [y]', 
 
@@ -180,7 +180,7 @@ title('Cantilever Beam / Plasticity (validation)') ;
 figure('Name','Cantilever Beam / Plasticity (Hinge Moment)','NumberTitle','off') ;
 hold on, grid on
 
-plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 labx = xlabel('Displacements in free node (m)') ;
 laby = ylabel('Hinge Moment (KN.m)') ;
