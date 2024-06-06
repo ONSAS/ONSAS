@@ -61,7 +61,6 @@ Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 376 ;
 
-%{
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 10)
 
@@ -155,8 +154,6 @@ otherParams.problemName  = 'plastic_2dframe' ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-
-% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo_10 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_10 = matUs((num_elem+1)*6-3,:) ;
@@ -256,13 +253,9 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
-
 girosUltimoNodo_5 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_5 = matUs((num_elem+1)*6-3,:) ;
 factorescarga_5 = loadFactorsMat(:,2) ;
-
-%}
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 2)
@@ -357,9 +350,6 @@ otherParams.problemName  = 'plastic_2dframe' ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-
-
-% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo_2 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_2 = matUs((num_elem+1)*6-3,:) ;
@@ -458,8 +448,6 @@ otherParams.problemName  = 'plastic_2dframe' ;
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-
-% [matUs, loadFactorsMat, internalforces] = ONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
@@ -657,13 +645,11 @@ plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize
 plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
-%{
 plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-%}
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
@@ -675,15 +661,15 @@ title('Cantilever Beam / Plasticity (load factors)') ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-% plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw*2, 'markersize', ms*4, "Color", "#EDB120") ;
-% plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw*2, 'markersize', ms*4, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moment at the first integration point (KN.m)') ;
-legend('Pseudo Analytic (1 elem) [\theta]', 'Pseudo Analytic (1 elem) [y]', 'MATLAB ALG (1 elem) [\theta]', 'MATLAB ALG (1 elem) [y]', 'location', 'Southeast') ;
+legend('Semi Analytic (1 elem) [\theta]', 'Semi Analytic (1 elem) [y]', 'ALGOL (1 elem) [\theta]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;

@@ -253,12 +253,16 @@ for elem = 1:nElems
       % /\
 
       % if booleanConverged == true
-          stateCellnp1(elem,:) = aux ;
+      
+      % stateCellnp1(elem,:) = aux ;
 
       % else
-          % stateCellnp1(elem,:) = previousStateCell ;
+      
+      %  stateCellnp1(elem,:) = previousStateCell ;
 
       % end
+
+      stateCellnp1(elem,:) = aux ;
 
       if isempty(booleanConverged)
 
@@ -269,7 +273,7 @@ for elem = 1:nElems
           Converged = booleanConverged ;
 
       end
-
+      
       if Converged == 0 && timeSerg > 1 && isempty(Kafka{timeSerg-1}) == false
 
           Ke = Kafka{timeSerg-1} ;

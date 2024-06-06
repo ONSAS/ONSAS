@@ -160,7 +160,7 @@ hold on, grid on
 
 step = 1 ;
 
-plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms*4, "Color", "#0072BD") ;
+plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
 
@@ -176,3 +176,16 @@ legend('ONSAS Mp1 [y]', 'ALGOL Mp1 [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
+
+figure('Name','Cantilever Beam / Plasticity (Hinge Moment)','NumberTitle','off') ;
+hold on, grid on
+
+plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
+
+labx = xlabel('Displacements in free node (m)') ;
+laby = ylabel('Hinge Moment (KN.m)') ;
+
+legend('ONSAS tMn [y]', 'location', 'Southeast') ;
+set(gca, 'linewidth', 1, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Cantilever Beam / Plasticity (Hinge Moment)') ;
