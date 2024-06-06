@@ -34,7 +34,7 @@
 
 % =========================================================================
 
-close all ; clear all ;
+close all ; clear all;
 addpath( genpath( [ pwd '/../src'] ) ) ;
 
 % assumed XY plane
@@ -66,7 +66,7 @@ Mu = 376 ;
 % ONSAS (NUMBER OF ELEMENTS 10)
 
 % at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
+% soft_hinge_boolean = false ;
 
 % number of finite elements
 num_elem = 10 ;
