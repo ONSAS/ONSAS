@@ -162,7 +162,7 @@ step = 1 ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 % plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#EDB120") ;
 
@@ -180,7 +180,7 @@ title('Cantilever Beam / Plasticity (validation)') ;
 figure('Name','Cantilever Beam / Plasticity (Hinge Moment)','NumberTitle','off') ;
 hold on, grid on
 
-plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(-descensosUltimoNodo, -tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements in free node (m)') ;
 laby = ylabel('Hinge Moment (KN.m)') ;

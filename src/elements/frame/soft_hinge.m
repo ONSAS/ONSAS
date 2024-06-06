@@ -16,13 +16,16 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 % Euler-Bernoulli element with embeded discontinuity
+
 % Numerical modeling of softening hinges in thin Euler–Bernoulli beams
 % Francisco Armero, David Ehrlich / University of California, Berkeley
+
 % Embedded discontinuity finite element formulation
 % For failure analysis of planar reinforced concrete beams and frames
 % Miha Jukić, Boštjan Brank / University of Ljubljana
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
+
 % plastic softening at the discontinuity
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 % softening criterion (failure function) at integration points
