@@ -73,13 +73,7 @@ analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
 
 % the softening hinge is activated
-analysisSettings.incremArcLen       = [1e-3*ones(1,832) eps*ones(1,1) 1e-3*ones(1,100)] ;
-
-% second stage of plastic hardening
-% analysisSettings.incremArcLen       = [1e-3*ones(1,25) ] ;
-
-% first stage of plastic hardening
-% analysisSettings.incremArcLen       = [.3e-3*ones(1,6) ] ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,1000) ;
 
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -162,7 +156,7 @@ step = 1 ;
 
 plot(-descensosUltimoNodo, -Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 % plot(-descensosUltimoNodo(1:step:length(Mn1_semianalytic)), -Mn1_semianalytic(1:step:length(Mn1_semianalytic)), 'b^', 'linewidth', lw, 'markersize', ms*4, "Color", "#EDB120") ;
 
@@ -195,7 +189,7 @@ figure('Name','Cantilever Beam / Plasticity','NumberTitle','off') ;
 hold on, grid on
 
 plot(-descensosUltimoNodo, factorescargaONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(-girosUltimoNodo, factorescargaONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(-girosUltimoNodo, factorescargaONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Force (KN)') ;

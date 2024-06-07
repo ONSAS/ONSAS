@@ -34,8 +34,8 @@
 
 % =========================================================================
 
-close all ; clear all;
-addpath( genpath( [ pwd '/../src'] ) ) ;
+close all ; clear ;
+addpath( genpath( [ pwd '/../..src'] ) ) ;
 
 % assumed XY plane
 
@@ -60,8 +60,9 @@ E = EI/Inertia ;        % KN/m^2 [KPa]
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
 My = 268 ;
-Mu = 376 ;
+Mu = 374 ;
 
+%{
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 10)
 
@@ -262,7 +263,7 @@ factorescarga_5 = loadFactorsMat(:,2) ;
 % ONSAS (NUMBER OF ELEMENTS 2)
 
 % at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
+% soft_hinge_boolean = false ;
 
 % number of finite elements
 num_elem = 2 ;
@@ -356,30 +357,16 @@ girosUltimoNodo_2 = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo_2 = matUs((num_elem+1)*6-3,:) ;
 factorescarga_2 = loadFactorsMat(:,2) ;
 
+%}
+
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% ONSAS (NUMBER OF ELEMENTS 1)
+% ONSAS (NUMBER OF ELEMENTS 5)
 
 % at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
+% soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 1 ;
-
-global historic_parameters
-
-global arcLengthFlag % 1: cylindrical 2: jirasek
-arcLengthFlag = 2 ;
-
-global dominantDofs
-dominantDofs = (num_elem+1)*6-3 ;
-
-global scalingProjection
-scalingProjection = -1 ;
-
-global sizecmatrix
-sizecmatrix = 6*(num_elem+1) ;
-
-historic_parameters = [] ;
+num_elem = 5 ;
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -407,7 +394,7 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = {} ;
 xs = linspace(0,l,num_elem+1);
-mesh.nodesCoords = [  xs' zeros(num_elem + 1, 2) ] ;
+mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
 
 mesh.conecCell = {} ;
 
@@ -434,13 +421,14 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-2*ones(1,10) 1e-3*ones(1,800) 1e-4*ones(1,800)] ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,2000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-8 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
+analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
@@ -643,37 +631,48 @@ hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+% plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+% plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
+%{
 plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
 
 plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+%}
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
-legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'ONSAS (2 elem) [\theta]', 'ONSAS (2 elem) [y]', 'ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
+legend('ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'location', 'Southeast') ;
+%  'ONSAS (2 elem) [\theta]', 'ONSAS (2 elem) [y]', 'ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]',
+
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (load factors)') ;
 
+%{
+
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+% plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+% plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moment at the first integration point (KN.m)') ;
-legend('Semi Analytic (1 elem) [\theta]', 'Semi Analytic (1 elem) [y]', 'ALGOL (1 elem) [\theta]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
+legend('ALGOL (1 elem) [\theta]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
+
+% 'Semi Analytic (1 elem) [\theta]', 'Semi Analytic (1 elem) [y]',
+
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
 
+%}
+
 print('-f1','../../../Tesis/tex/imagenes/Load_factors.pdf','-dpdf') ;
-print('-f2','../../../Tesis/tex/imagenes/Validation.pdf','-dpdf') ;
+% print('-f2','../../../Tesis/tex/imagenes/Validation.pdf','-dpdf') ;
