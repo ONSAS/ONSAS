@@ -360,13 +360,13 @@ factorescarga_2 = loadFactorsMat(:,2) ;
 %}
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% ONSAS (NUMBER OF ELEMENTS 5)
+% ONSAS (NUMBER OF ELEMENTS 10)
 
 % at the beginning..., there was no softening hinge
 % soft_hinge_boolean = false ;
 
 % number of finite elements
-num_elem = 5 ;
+num_elem = 10 ;
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -421,7 +421,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-4*ones(1,2000) ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,10) 1e-5*ones(1,3000) 1e-4*ones(1,1000)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -644,7 +644,7 @@ plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'mark
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
-legend('ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'location', 'Southeast') ;
+legend('ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
 %  'ONSAS (2 elem) [\theta]', 'ONSAS (2 elem) [y]', 'ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]',
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
