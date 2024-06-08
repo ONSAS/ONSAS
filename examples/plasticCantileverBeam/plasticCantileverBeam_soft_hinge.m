@@ -146,6 +146,172 @@ descensosUltimoNodo_10 = matUs((num_elem+1)*6-3,:) ;
 factorescarga_10 = loadFactorsMat(:,2) ;
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% ONSAS (NUMBER OF ELEMENTS 5)
+
+% at the beginning..., there was no softening hinge
+% soft_hinge_boolean = false ;
+
+% number of finite elements
+num_elem = 5 ;
+
+materials             = struct() ;
+materials.modelName   = 'plastic-2Dframe' ;
+materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
+
+elements             = struct() ;
+elements(1).elemType = 'node' ;
+
+elements(2).elemType = 'frame' ;
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
+
+boundaryConds                  = {} ;
+boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
+
+boundaryConds(2).imposDispDofs = [ 2 4 5] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global' ;
+boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsTimeFact = @(t) t ;
+
+boundaryConds(3).imposDispDofs = [ 2 4 5] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+
+% The coordinates of the nodes of the mesh are given by the matrix:
+mesh = {} ;
+xs = linspace(0,l,num_elem+1);
+mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
+
+mesh.conecCell = {} ;
+
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+
+if num_elem>1
+
+    for k=2:num_elem
+        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
+    end
+
+end
+
+for k=1:num_elem
+
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+
+end
+
+mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
+
+initialConds = {} ;
+
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,1400)] ;
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 30 ;
+analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
+
+otherParams              = struct() ;
+otherParams.problemName  = 'plastic_2dframe' ;
+% otherParams.plots_format = 'vtk' ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, ~ ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+girosUltimoNodo_5 = matUs((num_elem+1)*6,:) ;
+descensosUltimoNodo_5 = matUs((num_elem+1)*6-3,:) ;
+factorescarga_5 = loadFactorsMat(:,2) ;
+
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% ONSAS (NUMBER OF ELEMENTS 2)
+
+% at the beginning..., there was no softening hinge
+% soft_hinge_boolean = false ;
+
+% number of finite elements
+num_elem = 2 ;
+
+materials             = struct() ;
+materials.modelName   = 'plastic-2Dframe' ;
+materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
+
+elements             = struct() ;
+elements(1).elemType = 'node' ;
+
+elements(2).elemType = 'frame' ;
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
+
+boundaryConds                  = {} ;
+boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
+
+boundaryConds(2).imposDispDofs = [ 2 4 5] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global' ;
+boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsTimeFact = @(t) t ;
+
+boundaryConds(3).imposDispDofs = [ 2 4 5] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+
+% The coordinates of the nodes of the mesh are given by the matrix:
+mesh = {} ;
+xs = linspace(0,l,num_elem+1);
+mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
+
+mesh.conecCell = {} ;
+
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+
+if num_elem>1
+
+    for k=2:num_elem
+        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
+    end
+
+end
+
+for k=1:num_elem
+
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+
+end
+
+mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
+
+initialConds = {} ;
+
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,3200) ;
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 30 ;
+analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
+
+otherParams              = struct() ;
+otherParams.problemName  = 'plastic_2dframe' ;
+% otherParams.plots_format = 'vtk' ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, ~ ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+girosUltimoNodo_2 = matUs((num_elem+1)*6,:) ;
+descensosUltimoNodo_2 = matUs((num_elem+1)*6-3,:) ;
+factorescarga_2 = loadFactorsMat(:,2) ;
+
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 % ONSAS (NUMBER OF ELEMENTS 1)
 
 % at the beginning..., there was no softening hinge
@@ -417,20 +583,20 @@ hold on, grid on
 plot(abs(girosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-% plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-% plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#4DBEEE") ;
 
-% plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-% plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
-plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
 
-legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]','ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
+legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'ONSAS (2 elem) [\theta]', 'ONSAS (2 elem) [y]', 'ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
