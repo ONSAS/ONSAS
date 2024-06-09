@@ -22,7 +22,7 @@ jobs:
         with:
           version: 1
       - name: Install julia dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.resolve(); Pkg.instantiate()'
+        run: julia --project=docs/ -e 'using Pkg; Pkg.instantiate();'
       - name: Build and deploy
         env:
           url: https://onsas.github.io/
