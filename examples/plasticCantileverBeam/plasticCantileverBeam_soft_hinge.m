@@ -17,7 +17,7 @@
 
 % =========================================================================
 
-% Euler-Bernoulli element with embeded discontinuity
+% Euler-Bernoulli element with embedded discontinuity
 
 % Numerical modeling of softening hinges in thin Euler–Bernoulli beams
 % Francisco Armero, David Ehrlich / University of California, Berkeley

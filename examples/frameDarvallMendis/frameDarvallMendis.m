@@ -1,12 +1,13 @@
 % =========================================================================
 
-% Darvall-Mendis Frame
-% Elements with embeded discontinuity
+% Elastoplastic analysis of Darvall-Mendis Frame
+% Elements with embedded discontinuity
+% Softening hinges
 
 % Elastic-Plastic-Softening Analysis of Plane Frames
 % Peter LePoer Darvall and Priyantha Anumddha Mendis
 % Dept. of Civ. Engrg., Monash Univ., Victoria, Australia
-% Journal of Structural Engineering, Vol. Ill, No. 4, April, 1985.
+% Journal of Structural Engineering, Vol. III, No. 4, April, 1985.
 
 % =========================================================================
 
