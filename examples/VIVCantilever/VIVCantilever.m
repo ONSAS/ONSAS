@@ -96,7 +96,7 @@ qvect =  zeros(numElements*2,round(finalTime/dt)+1);
 qvect(1:2:end,1) = (2*rand(numElements, 1)-1)*0.001 ;
 % fluid properties
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel} ;
-%If drag reconfiguration then analysisSettings.geometricNonLinearAero  = true!! also it if is false then the lift direction will be constant
+%If drag reconfiguration then `analysisSettings.geometricNonLinearAero` should be set to `true`. Also it if is `false` then the lift direction will be constant.
 analysisSettings.geometricNonLinearAero = true;
 % time parameters
 analysisSettings.finalTime   = finalTime ;
