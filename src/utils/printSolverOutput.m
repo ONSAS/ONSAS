@@ -75,7 +75,7 @@ elseif lineData(1) == 2 %end of iteration information
     stoptCritString = '';
   else
     lineData(5)
-    error('check stop crit');
+    error('check stop criteria');
   end
 
   fprintf( fileIncrements, timeStepEndLine, lineData(2), lineData(3), lineData(4), stoptCritString );
