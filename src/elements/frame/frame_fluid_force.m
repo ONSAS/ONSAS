@@ -251,16 +251,15 @@ end
 
 
 % This function returns the tangent matrix of the hydrodinamic force vector with respect to u
-% employing a simple central difference alg.
+% employing a simple central difference algorithm.
 function dispTangMatElem = dispTangMatElem( fHydroElem                                ,...
                                             elemCoords, elemCrossSecParams            ,...
                                             Ue, Udote, Udotdote                       ,...
                                             aeroCoefs, chordVector, aeroNumericalParams ,... 
                                             analysisSettings , nextTime, currElem )
-  % disp("entre")
   % initialize aerodynamic tangent matrix
   dispTangMatElem = zeros(12,12) ;
-  % numerical step to compute the tangets
+  % numerical step to compute the tangents
   h = 1e-10           ;
   elemTypeAero(5) = 0 ; % set compute tangents to false
   for indexIncrementU = 1:12

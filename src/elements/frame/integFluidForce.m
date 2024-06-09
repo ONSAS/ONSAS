@@ -17,7 +17,7 @@
 %
 % This function returns Drag, lift and pitch moment forces of an inner point in a frame element.
 % cross section considered in global coordinates.
-% the computation is done according to (M.C. Vanzilli, J.M. Perez Zerpa, 2022)
+% the computation is done according to (M.C. Vanzulli, J.M. Pérez Zerpa, 2022)
 
 function integFluidForce = integFluidForce( x, ddotg, udotFlowElem                                    ,...
                                             l0, tl1, tl2, Rr                                          ,...
@@ -70,9 +70,6 @@ function integFluidForce = integFluidForce( x, ddotg, udotFlowElem              
   % ------------ Compute relative incidence angle  ------------
   % the chord vector orientation in the deformed coordinates to compute incidence flow angle is:
   tch = (vecChordUndef / norm( vecChordUndef )) ;
-
-  %disp('vpi')
-  %norm( VpiRelG)
 
   % Calculate relative incidence angle in the deformed configuration
   if( norm( VpiRelG ) == 0 )

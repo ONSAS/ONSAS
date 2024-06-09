@@ -81,7 +81,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
         Fz = 0 ;
       elseif strcmp( loadCoordSys, 'local' )
         % consider a 90 degrees rotation of the oriented vector of the line element
-        % tanget unitary vector
+        % tangent unitary vector
         tangUniVec = directionVector / lengthElem ;
         % normal unitary vector
         normalUniVec = cross( [ 0 0 1 ] , tangUniVec ) ;
@@ -147,7 +147,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
                     nodes'  elemNodeLoadsMatrix ] ;
   end % for elements
 
-  %md convert to assembled fext vetor
+  %md convert to assembled fext vector
   if exist( 'loadedNodes' ) ~= 0
     for i=1:size( loadedNodes ,1)
       aux = nodes2dofs ( loadedNodes(i,1), 6 ) ;
