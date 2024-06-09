@@ -20,7 +20,7 @@ jobs:
           command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
         with:
-          version: 1.8
+          version: 1
       - name: Install julia dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.resolve(); Pkg.instantiate()'
       - name: Build and deploy
