@@ -18,7 +18,7 @@
 % Cosserat tensor considering a new Neo-Hookean with the following strain energy:
 %  phi(J) = (I1 - ln(J)) + K/2 (J-1)^2 
 
-% This function returns the cosserat stress tensor S and its derivatives respecto 
+% This function returns the cosserat stress tensor S and its derivatives respect 
 % to the tensor Egreen, which is the Green-Lagrange strain tensor.
 function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
 

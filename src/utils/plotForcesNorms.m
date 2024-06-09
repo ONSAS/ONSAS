@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % This functions reads a text file with the norms of the forces at
-%  each iteation of the code execution and generates a series of plots
+%  each iteration of the code execution and generates a series of plots
 
 function plotForcesNorms(outputDir, problemName )
 
