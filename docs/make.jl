@@ -1,8 +1,7 @@
 
 using Documenter, ONSAS_docs
 
-DocMeta.setdocmeta!(ONSAS_docs, :DocTestSetup,
-  :(using ONSAS_docs); recursive=true)
+DocMeta.setdocmeta!(ONSAS_docs, :DocTestSetup, :(using ONSAS_docs); recursive=true)
 
 makedocs(
   sitename="ONSAS",
@@ -19,8 +18,8 @@ makedocs(
       # "Linear aerodynamics"     => "examples/linearAerodynamics.md",
       "Reconfiguration beam"=>"examples/dragBeamReconfiguration.md",
       "Propeller model"=>"examples/simplePropeller.md"],
-      # "Non-linear aerodynamics"=>"examples/nonLinearAerodynamics.md"],
-      "User guide" => Any["Installation"=>"install.md",
+    # "Non-linear aerodynamics"=>"examples/nonLinearAerodynamics.md"],
+    "User guide" => Any["Installation"=>"install.md",
       "Creating Models"=>"creatingModels.md",
       "References"=>"references.md"]
     #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
