@@ -35,7 +35,7 @@
 % =========================================================================
 
 close all ; clear ;
-addpath( genpath( [ pwd '/../..src'] ) ) ;
+addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
 
