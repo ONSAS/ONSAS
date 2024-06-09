@@ -1,7 +1,7 @@
 Name: ONSAS
-Version: 0.2.9
-Date: 2023-11-23
-Author: Pérez Zerpa, J. M. and Vanzulli, M. and Viera, J. and Villie, A. and Battini, J.-M. and Bazzano, J. B. 
+Version: 0.3.0
+Date: 2024-05-28
+Author: Pérez Zerpa, J. M. and Vanzulli, M. and Viera, J. and Villie, A. and Forets, M. and Battini, J.-M. and Bazzano, J. B. 
 Maintainer: Pérez Zerpa, J. M. (jorgepz@fing.edu.uy)
 Title: ONSAS: an Open Nonlinear Structural Analysis Solver
 Description: ONSAS is a GNU-Octave code for static/dynamic and linear/non-linear analysis of solids, beams, truss or plane structures.
