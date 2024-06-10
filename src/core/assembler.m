@@ -21,8 +21,8 @@ function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateC
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
-global booleanConverged
-global timeIndex
+% global booleanConverged
+% global timeIndex
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -227,6 +227,8 @@ for elem = 1:nElems
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
+      %{
+
       if isempty(timeIndex) == true
 
           timeSerg = 1 ;
@@ -262,7 +264,11 @@ for elem = 1:nElems
 
       % end
 
+      %}
+
       stateCellnp1(elem,:) = aux ;
+
+      %{
 
       if isempty(booleanConverged)
 
@@ -283,6 +289,8 @@ for elem = 1:nElems
           Ke = Kafka{timeSerg} ;
 
       end
+
+      %}
 	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...

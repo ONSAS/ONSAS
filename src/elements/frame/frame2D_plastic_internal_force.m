@@ -32,10 +32,6 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
-    
-% elemDisps
-% params_plastic_2Dframe
-
 % \/
 % called by the function assembler
 % /\
@@ -77,7 +73,7 @@ xi2_n       = params_plastic_2Dframe(7) ;
 SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active the softening state
 xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
 alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
-tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
+% tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
 xdi_n       = params_plastic_2Dframe(12) ;  % number of the integration point where is the hinge
 
 % candidates for state var for time n + 1
@@ -87,7 +83,7 @@ xi2_np1     = xi2_n ;
 xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
-tM_np1      = tM_n ;        % hinge moment
+% tM_np1      = tM_n ;        % hinge moment
 
 % initialization
 if SH_boole_n == false
@@ -139,14 +135,14 @@ end
 % condition for the softening hinges activation / label SH_boole_np1 = true
 for ii = 1:npi
 
-if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
+    if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
 
-    SH_boole_np1 = true ;
+        SH_boole_np1 = true ;
 
-    xd_np1 = xpi(ii) ;
-    xdi_np1 = ii ;
+        xd_np1 = xpi(ii) ;
+        xdi_np1 = ii ;
 
-end
+    end
 
 end
 
