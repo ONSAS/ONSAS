@@ -12,41 +12,28 @@
 % =========================================================================
 
 close all ; clear ;
-addpath( genpath( [ pwd '/../..src'] ) ) ;
+addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
+% geometry
+l = 3           ;   % m
+Inertia = 1*1e3 ;   % m^4
+E = 20.7*1e6    ;   % KN/m^2 [KPa]
+EI = E*Inertia  ;   % KN.m^2
+A  = 0.10       ;   % m^2
 
-% -------------------------------------------
-% scalar parameters
 % material
-EI  = 77650 ;       % KN.m^2
-kh1 = 29400 ;       % KN.m^2
-kh2 = 273 ;
-Ks  = -18000 ;      % KN.m
 
+kh1 = 0 ;           % KN.m^2
+kh2 = 0 ;
+Ks  = -1089 ;       % KN.m
 nu = 0.3 ;          % Poisson's ratio
 
-% geometry
-l  = 2.5 ;              % m
-ty = 0.3 ;              % width cross section
-tz = 0.4 ;              % height cross section
-Inertia = tz*ty^3/12 ;  % m^4
-
-E = EI/Inertia ;        % KN/m^2 [KPa]
-
-A  = ty*tz ;            % m^2
-Mc = 37.9 ;             % KN.m
-My = 268 ;
-Mu = 374 ;
+Mc = 100 ;
+My = 100 ;
+Mu = 100 ;          % KN.m
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% ONSAS (NUMBER OF ELEMENTS 10)
-
-% at the beginning..., there was no softening hinge
-% soft_hinge_boolean = false ;
-
-% number of finite elements
-num_elem = 10 ;
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
@@ -59,49 +46,62 @@ elements(2).elemType = 'frame' ;
 elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
 
 boundaryConds                  = {} ;
+% supports
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 
-boundaryConds(2).imposDispDofs = [ 2 4 5] ;
+boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+
+boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+
+% loads
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
-boundaryConds(3).imposDispDofs = [ 2 4 5] ;
-boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
-
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = {} ;
-xs = linspace(0,l,num_elem+1);
-mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
+mesh.nodesCoords = [0  0       0    ; ...
+					0  0.5*l   0    ; ...
+					0  l       0    ; ...
+              0.275*l  l       0    ; ...
+               0.55*l  l       0    ; ...
+              0.775*l  l       0    ; ...
+                    l  l       0    ; ...
+                    l  0.5*l   0    ; ...
+					l  0       0]   ;
 
 mesh.conecCell = {} ;
 
-mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+% nodes
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node 1 fixed end support
+mesh.conecCell{ 2, 1 } = [ 0 1 3 2 ] ; % node 2
+mesh.conecCell{ 3, 1 } = [ 0 1 3 3 ] ; % node 3
+mesh.conecCell{ 4, 1 } = [ 0 1 3 4 ] ; % node 4
+mesh.conecCell{ 5, 1 } = [ 0 1 2 5 ] ; % node 5 with vertical load applied
+mesh.conecCell{ 6, 1 } = [ 0 1 3 6 ] ; % node 6
+mesh.conecCell{ 7, 1 } = [ 0 1 3 7 ] ; % node 7
+mesh.conecCell{ 8, 1 } = [ 0 1 3 8 ] ; % node 8
+mesh.conecCell{ 9, 1 } = [ 0 1 1 9 ] ; % node 9 fixed end support
 
-if num_elem>1
-
-    for k=2:num_elem
-        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
-    end
-
-end
-
-for k=1:num_elem
-
-    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
-
-end
-
-mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
+% frame elements
+mesh.conecCell{ 10, 1 } = [ 1 2 0   1 2] ;
+mesh.conecCell{ 11, 1 } = [ 1 2 0   2 3] ;
+mesh.conecCell{ 12, 1 } = [ 1 2 0   3 4] ;
+mesh.conecCell{ 13, 1 } = [ 1 2 0   4 5] ;
+mesh.conecCell{ 14, 1 } = [ 1 2 0   5 6] ;
+mesh.conecCell{ 15, 1 } = [ 1 2 0   6 7] ;
+mesh.conecCell{ 16, 1 } = [ 1 2 0   7 8] ;
+mesh.conecCell{ 17, 1 } = [ 1 2 0   8 9] ;
 
 initialConds = {} ;
 
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,10) 1e-5*ones(1,3000) 1e-4*ones(1,1000)] ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,100) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -118,59 +118,27 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, ~ ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-girosUltimoNodo_10 = matUs((num_elem+1)*6,:) ;
-descensosUltimoNodo_10 = matUs((num_elem+1)*6-3,:) ;
-factorescarga_10 = loadFactorsMat(:,2) ;
-
-%{
+rotations = matUs((4+1)*6,:) ;
+displacements = matUs((4+1)*6-3,:) ; % node with vertical load applied
+loadfactors = loadFactorsMat(:,2) ;
 
 % GRAPHICS
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
-figure('Name','Cantilever Beam / Plasticity (load factors)','NumberTitle','off') ;
+figure('Name','Darvall-Mendis Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-
-plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(descensosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#4DBEEE") ;
-
-plot(abs(girosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
-plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
-
-plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-
+plot(abs(rotations), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;
 
-legend('ONSAS (1 elem) [\theta]', 'ONSAS (1 elem) [y]', 'ONSAS (2 elem) [\theta]', 'ONSAS (2 elem) [y]', 'ONSAS (5 elem) [\theta]', 'ONSAS (5 elem) [y]', 'ONSAS (10 elem) [\theta]', 'ONSAS (10 elem) [y]', 'location', 'Southeast') ;
+legend('ONSAS (8 elem) [\theta]', 'ONSAS (8 elem) [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plasticity (load factors)') ;
+title('Darvall-Mendis Frame / Plasticity (load factors)') ;
 
-figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
-hold on, grid on
-
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-
-plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
-
-labx = xlabel('Generalized displacements in free node (m, rad)') ;
-laby = ylabel('Bulk Moment at the first integration point (KN.m)') ;
-legend('Semi Analytic (1 elem) [\theta]', 'Semi Analytic (1 elem) [y]', 'ALGOL (1 elem) [\theta]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
-
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Cantilever Beam / Plasticity (validation)') ;
-
-print('-f1','../../../Tesis/tex/imagenes/Load_factors.pdf','-dpdf') ;
-print('-f2','../../../Tesis/tex/imagenes/Validation.pdf','-dpdf') ;
-
-%}
+print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;

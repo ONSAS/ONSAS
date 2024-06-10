@@ -101,7 +101,7 @@ mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
 
 mesh.conecCell = {} ;
 
-mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node with fixed end support
 
 if num_elem>1
 
