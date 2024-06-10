@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-% This function retrevies drag for circular cross section  
+% This function retrieves drag for circular cross section  
 % Reference for the drag formulation.
 % https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722
 

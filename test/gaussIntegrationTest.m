@@ -44,7 +44,6 @@ function resultBoolean = gaussIntegrationTest()
     plot(point_nums_to_test, analyInt*ones(size(point_nums_to_test)),'r-o')
   end
 
-disp('debugging')
 int_values(3:end)
 analyInt*ones(1,length(point_nums_to_test)-2)
 
