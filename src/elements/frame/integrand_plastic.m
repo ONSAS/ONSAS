@@ -56,7 +56,7 @@ khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfan ;
 kenxpi = khatxpi - kpn(jj) ;
 
 % moment
-Mxpi = E*Iy*kenxpi ;
+Mxpi = E*Iy*kenxpi 
 
 % yield criterion
 if xin1(jj) <= (My-Mc)/kh1
