@@ -388,11 +388,93 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, ~ ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 girosUltimoNodo = matUs((num_elem+1)*6,:) ;
 descensosUltimoNodo = matUs((num_elem+1)*6-3,:) ;
 factorescarga = loadFactorsMat(:,2) ;
+
+% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% ONSAS (NUMBER OF ELEMENTS 1)
+
+% at the beginning..., there was no softening hinge
+% soft_hinge_boolean = false ;
+
+% number of finite elements
+num_elem = 1 ;
+
+materials             = struct() ;
+materials.modelName   = 'plastic-2Dframe' ;
+materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
+
+elements             = struct() ;
+elements(1).elemType = 'node' ;
+
+elements(2).elemType = 'frame' ;
+elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
+
+boundaryConds                  = {} ;
+boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
+
+boundaryConds(2).imposDispDofs = [ 2 4 5] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global' ;
+boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsTimeFact = @(t) t ;
+
+boundaryConds(3).imposDispDofs = [ 2 4 5] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+
+% The coordinates of the nodes of the mesh are given by the matrix:
+mesh = {} ;
+xs = linspace(0,l,num_elem+1);
+mesh.nodesCoords = [ xs' zeros(num_elem + 1, 2) ] ;
+
+mesh.conecCell = {} ;
+
+mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node
+
+if num_elem>1
+
+    for k=2:num_elem
+        mesh.conecCell{ end+1, 1 } = [ 0 1 3 k ] ;
+    end
+
+end
+
+for k=1:num_elem
+
+    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+
+end
+
+mesh.conecCell{ end+1, 1 } = [ 0 1 2 num_elem+1 ] ; % loaded node
+
+initialConds = {} ;
+
+analysisSettings                    = {} ;
+analysisSettings.methodName         = 'arcLength' ;
+analysisSettings.deltaT             = 1 ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,830) ;
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
+analysisSettings.iniDeltaLamb       = 1 ;
+analysisSettings.posVariableLoadBC  = 2 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolIts         = 30 ;
+analysisSettings.ALdominantDOF      = [2*6-3 -1] ;
+
+otherParams              = struct() ;
+otherParams.problemName  = 'plastic_2dframe' ;
+% otherParams.plots_format = 'vtk' ;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+rotations = matUs((num_elem+1)*6,:) ;
+displacements = matUs((num_elem+1)*6-3,:) ;
 
 % ----------------------------------------------------------------------------------
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
@@ -426,154 +508,16 @@ for i = 1:length(matUs(1,:))
 
 end
 
-% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
-% Algorithm without ONSAS (NUMBER OF ELEMENTS 1)
+% ----------------------------------------------------------------------------------
+% numerical solution ALGOL
 
-addpath( genpath( [ pwd '/../../src'] ) ) ;
+[Mn_numer, Fn, matdes] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks) ;
 
-% Mc, My, Mu / from the moment-curvature diagram
-% kh1, kh2   / hardening modules
-% Ks         / from the moment-rotation jump diagram
+desp_numer = matdes(4,:) ;
 
-l = 2.5 ;           % m
-A = 0.4*0.3 ;       % m^2
-E = 30000000 ;      % KN/m^2 KPa
-EI = 77650 ;        % KN.m^2
-Iy = EI/E ;         % m^4
-Mc = 37.9 ;         % KN.m
-My = 268 ;
-Mu = 374 ;
-kh1 = 29400 ;       % KN.m^2
-kh2 = 272 ;
-Ks = -18000 ;       % KN.m
+% ----------------------------------------------------------------------------------
 
-freedofs = [2 4 6]; % u2 v2 theta2
-
-% at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
-
-% Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-npi = 3 ;
-xpi = [0 l/2 l] ;
-wpi = [1/3 4/3 1/3] * l * 0.5 ;
-
-nu   = 0.3 ;
-tol1 = 1e-8;
-tol2 = 1e-8 ;
-tolk = 15 ;
-
-% initial values
-dn   = [0 0 0 0 0 0]' ;
-Fint = [0 0 0 0 0 0]' ;
-tM   = 0 ;
-
-kpn  = zeros(npi,1) ;
-xin1 = zeros(npi,1) ;
-xin2 = 0 ;
-
-kpn1  = zeros(npi,1) ;
-xin11 = zeros(npi,1) ;
-xin21 = 0 ;
-
-khat1 = zeros(npi,1) ;
-
-M1 = zeros(npi,1) ;
-Fn = zeros(npi,1) ;
-
-alfan = 0 ;
-
-xd = 0 ;
-xdi = 1 ;
-
-Final_force = 183 ; % value of the final force
-
-load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
-load_factors = 0:Final_force ;
-
-% --- element params ---
-elemParams = [l A Iy] ;
-
-% --- elastoplastic params ---
-elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
-
-matdes = zeros (6, Final_force+1) ;
-
-matdes(:,1) = dn ;
-
-gxin = zeros(Final_force, 1) ;
-gxin2 = zeros(Final_force, 1) ;
-gkpn = zeros(Final_force, 1) ;
-
-Mn = zeros(Final_force, 1) ;
-TM = zeros(Final_force, 1) ;
-
-Alf = zeros(Final_force, 1) ;
-
-for ind = 2:length(load_factors)
-
-    curr_load_factor = load_factors(ind) ;
-
-    Fext = load_case * curr_load_factor ;
-
-    dnk = matdes(:,ind-1) ;
-
-    % iteration vars
-    converged_boolean = false ;
-    
-    % set iterations zero
-    k = 0 ;
-
-    gxin(ind-1,1)   = xin1(1)   ;
-    gxin2(ind-1,1)  = xin2      ;
-    gkpn(ind-1,1)   = kpn(1)    ;
-    Mn(ind-1,1)     = M1(1)     ;
-    TM(ind-1,1)     = tM        ;
-    Fn(ind-1,1)     = Fint(4)   ;
-    Alf(ind-1,1)    = alfan     ;
-
-    while converged_boolean == false && k < tolk
-
-        k = k + 1 ;
-
-        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, xdi, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, xdi, tM, elemParams, elastoplasticParams) ;
-
-        residualForce = Fext - Fint ;
-
-        Krelement = Kelement(freedofs,freedofs) ;
-
-        residualForceRed = residualForce(freedofs) ;
-
-        % system of equilibrium equations
-
-        deltadred = Krelement\residualForceRed ;
-
-        % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-
-        deltad = zeros(6,1) ;
-        deltad(freedofs) = deltadred ;
-
-        dnk1 = dnk + deltad ;
-
-        dnk     = dnk1   ;
-
-        kpn     = kpn1   ;
-        xin1    = xin11  ;
-
-        xin2    = xin21  ;
-        alfan   = alfan1 ;
-
-        norm1 = norm(deltadred) ;
-        norm2 = norm(residualForceRed) ;
-
-        converged_boolean = norm1 < tol1 || norm2 < tol2 ;
-
-    end
-
-    matdes(:,ind) = dnk1 ;
-
-end
-
-% GRAPHICS
+% Plots
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
@@ -605,15 +549,17 @@ title('Cantilever Beam / Plasticity (load factors)') ;
 figure('Name','Cantilever Beam / Plasticity (validation)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(girosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(descensosUltimoNodo), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+% plot(abs(rotations), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(displacements), abs(Mn1_validation), '-x' , 'linewidth', lw, 'markersize', ms*6, "Color", "#0072BD") ;
 
-plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(desp_numer(1:length(Mn_numer)), Mn_numer(1:length(Mn_numer)), '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#7E2F8E") ;
+
+% plot(abs(matdes(6,1:length(load_factors)-1)), Mn,'-x' , 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+% plot(abs(matdes(4,1:length(load_factors)-1)), Mn, '-x' , 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Bulk Moment at the first integration point (KN.m)') ;
-legend('Semi Analytic (1 elem) [\theta]', 'Semi Analytic (1 elem) [y]', 'ALGOL (1 elem) [\theta]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
+legend('Semi Analytic (1 elem) [y]', 'ALGOL (1 elem) [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
