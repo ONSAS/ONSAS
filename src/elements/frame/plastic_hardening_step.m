@@ -45,7 +45,8 @@ Mnp1      = zeros(npi,1) ;
 % disp(' /\  /\  /\  /\  /\  HARDENING /\  /\  /\  /\  /\') ;
 
 for ip = 1:npi
-  
+  # xi1_n(ip)
+  # (My-Mc)/kh1
   % yield criterion
   if xi1_n(ip) <= (My-Mc)/kh1
 
