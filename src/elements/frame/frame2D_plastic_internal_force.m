@@ -108,8 +108,8 @@ end
 
 if SH_boole_n == false && SH_boole_np1 == false
 
-  % elastic/plastic case witshout softening
-    # stop
+  % elastic/plastic case without softening
+  
   % solve plastic bending step
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
 

@@ -41,12 +41,8 @@ phis_test = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
 Mnp1      = zeros(npi,1) ;
 
-
-% disp(' /\  /\  /\  /\  /\  HARDENING /\  /\  /\  /\  /\') ;
-
 for ip = 1:npi
-  # xi1_n(ip)
-  # (My-Mc)/kh1
+
   % yield criterion
   if xi1_n(ip) <= (My-Mc)/kh1
 
@@ -102,7 +98,3 @@ for ip = 1:npi
   end
 
 end
-
-     % AA = kh1*xi1_n(1)+ Mc ;
-     % BB = (xi1_n(1) + phis_test(1)/(kh1+E*Iy))*kh1 + Mc ;
-     % CC = kh1*xi1_np1(1) + Mc ;
