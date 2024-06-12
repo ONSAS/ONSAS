@@ -4,7 +4,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % assumed XY plane
 
-% /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  
+% /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
 EI  = 77650 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
@@ -27,7 +27,7 @@ Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 374 ;
 
-% /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
+% /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
 materials = struct();
 materials(1).modelName = 'plastic-2Dframe'  ;
@@ -97,8 +97,8 @@ otherParams.problemName = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((1)*6+6,:) ;
-displacements = matUs((1)*6+3,:) ; % node with vertical load applied
+rotations = matUs((2)*6+6,:) ;
+displacements = matUs((2)*6+3,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
