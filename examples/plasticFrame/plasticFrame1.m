@@ -96,13 +96,13 @@ analysisSettings.ALdominantDOF      = [2*6+3 -1] ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+3,:) ; % node with vertical load applied
+rotations = matUs((1)*6+6,:) ;
+displacements = matUs((1)*6+3,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(2) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
