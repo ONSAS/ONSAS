@@ -1,3 +1,4 @@
+
 % =========================================================================
 
 % Elastoplastic analysis of plane frame
@@ -53,7 +54,7 @@ boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
 boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 % loads
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
 boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
@@ -82,14 +83,14 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-3*ones(1,2000) ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,1000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6+3 -1] ;
+analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
 
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
@@ -97,7 +98,7 @@ analysisSettings.ALdominantDOF      = [2*6+3 -1] ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+3,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -117,8 +118,8 @@ lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(rotations), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(rotations), abs(loadfactors), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(displacements), abs(loadfactors), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;

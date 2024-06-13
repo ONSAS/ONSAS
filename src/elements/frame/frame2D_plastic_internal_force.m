@@ -42,6 +42,12 @@ l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
 A  = elemCrossSecParams{2}(1) ;
 Iy = elemCrossSecParams{2}(3) ;
 
+% Rotation of coordinates
+local2globalMats = beamParameters(elemNodesxyzRefCoords) ;
+dofsconv = [1 1+6 3 3+6 6 6+6] ;
+R = RotationMatrix(6, local2globalMats) ;
+RMat = R(dofsconv, dofsconv) ;
+
 % --- elastoplastic params ---
 E   = modelParams(1) ;
 Mc  = modelParams(2) ;
@@ -52,9 +58,12 @@ kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
 
 % kinematic variables
-uvector     = elemDisps([1,7])   ;  % x
-vvector     = elemDisps([3,9])  ;   % y
-thetavector = elemDisps([6,12]) ;   % theta z
+
+Uvector = RMat'*[elemDisps([1,7]); elemDisps([3,9]); elemDisps([6,12])] ;
+
+uvector     = Uvector([1,2]) ;     % x
+vvector     = Uvector([3,4]) ;     % y
+thetavector = Uvector([5,6]) ;     % theta z
 
 % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
 xpi = [0 l/2 l] ;
@@ -166,8 +175,8 @@ Fintout = zeros(12,1) ;
 KTout   = zeros(12,12) ;
 
 dofsconv = [1 1+6 3 3+6 6 6+6] ;
-Fintout(dofsconv) = Fint ;
-KTout(dofsconv, dofsconv) = Kelement ;
+Fintout(dofsconv) = RMat*Fint ;
+KTout(dofsconv, dofsconv) = RMat*Kelement*RMat' ;
 
 fs = {Fintout} ;
 ks = {KTout} ;
