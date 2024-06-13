@@ -17,10 +17,10 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % assumed XY plane
 % geometry
 l = 3           ;   % m
-# Inertia = 1e-3       % m^4
+% Inertia = 1e-3       % m^4
 E = 28.6e3 * 1e3    ;   % KN/m^2 [KPa]
-# EI = E*Inertia  ;   % KN.m^2
-# A  = 0.10       ;   % m^2
+% EI = E*Inertia  ;   % KN.m^2
+% A  = 0.10       ;   % m^2
 
 % material
 kh1 = 12450 ;           % KN.m^2
@@ -36,7 +36,7 @@ Mu = 265 ;          % KN.m
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
-# materials.modelName   = 'elastic-linear' ;
+% materials.modelName   = 'elastic-linear' ;
 materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 
 elements             = struct() ;
@@ -107,25 +107,25 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-1*ones(1,350) ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,1400) 1e-6*ones(1,400) ] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 30 ;
+analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [2*6+1 +1] ;
 
 otherParams              = struct() ;
 otherParams.problemName  = 'plastic_2dframe' ;
-# otherParams.plots_format = 'vtk' ;
+% otherParams.plots_format = 'vtk' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -138,20 +138,12 @@ Mn2_numericONSAS = moments_hist(2,:) ;
 Mn3_numericONSAS = moments_hist(3,:) ;
 tMn_numericONSAS = moments_hist(4,:) ;
 
-
-figure
-plot(Mn1_numericONSAS)
-hold on
-plot(Mn2_numericONSAS)
-
-
-% GRAPHICS
+% Plots
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
 figure('Name','Darvall-Mendis Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
-
 
 plot(abs(rotations), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
@@ -165,4 +157,4 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Darvall-Mendis Frame / Plasticity (load factors)') ;
 
-# print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
+% print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
