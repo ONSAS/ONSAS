@@ -92,7 +92,6 @@ analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
 analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
 
-
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
@@ -130,6 +129,8 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
+%{
+
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
@@ -143,5 +144,7 @@ legend('ONSAS tMn [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
+
+%}
 
 print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
