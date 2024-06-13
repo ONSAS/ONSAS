@@ -21,8 +21,6 @@ function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateC
                                                            materials, KS, Ut, Udott, Udotdott,...
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
-% global booleanConverged
-% global timeIndex
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -227,20 +225,6 @@ for elem = 1:nElems
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
-      %{
-
-      if isempty(timeIndex) == true
-
-          timeSerg = 1 ;
-
-      else
-          
-          timeSerg = timeIndex ;
-
-      end
-
-      Kafka{timeSerg} = Ke ;
-
       % /\
       % 
       % if booleanConverged is not true, the plastic parameters are frozen
@@ -254,43 +238,7 @@ for elem = 1:nElems
 
       % /\
 
-      % if booleanConverged == true
-      
-      % stateCellnp1(elem,:) = aux ;
-
-      % else
-      
-      %  stateCellnp1(elem,:) = previousStateCell ;
-
-      % end
-
-      %}
-
       stateCellnp1(elem,:) = aux ;
-
-      %{
-
-      if isempty(booleanConverged)
-
-          Converged = false ;
-
-      else
-
-          Converged = booleanConverged ;
-
-      end
-      
-      if Converged == 0 && timeSerg > 1 && isempty(Kafka{timeSerg-1}) == false
-
-          Ke = Kafka{timeSerg-1} ;
-
-      else
-
-          Ke = Kafka{timeSerg} ;
-
-      end
-
-      %}
 	
       if dynamicProblemBool
         [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...

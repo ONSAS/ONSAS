@@ -63,8 +63,8 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = {} ;
 mesh.nodesCoords = [0  0       0    ; ...
-					0  l       0    ; ...
-					l  l       0]   ;
+					l  0       0    ; ...
+				    l  l       0]   ;
 
 mesh.conecCell = {} ;
 
