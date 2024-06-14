@@ -108,13 +108,6 @@ See the `crossSectionProps.m` function for more details.
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
 
-### `elements.aeroNumericalParams`
-A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration) for each element. 
-```math
-\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
-```
-where the default cell is `{4, false, true}`
-
 ### `elements.aeroCoefFunctions`
 If a frame aerodynamic analysis is desired, the drag, lift and pitch moment functions should be defined using this field. This field should contain a cell with either the strings of the functions or the definition of anonymous functions for draf lif and pitch moment in that order. Each function must receive as first input the incidence angle and as second the Reynolds number. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default thus there is no need to set this field.
 
@@ -208,6 +201,9 @@ the aerodynamic-frame element parameters set are
 ```math
 \{ \rho_f; \,\, \nu_f; \,\, 'fluidVelocity'\}
 ```
+ * `geometricNonLinearAero`: a boolean to take into account geometric nonlinearities or (reconfiguration) for each element.
+ * `numGaussPointsAeroForce`:  number of Gauss integration points per element for the aerodynamic forces vector. Default is 4. 
+ * `computeAeroStiffnessMatrix`: a boolean to compute the aerodynamic forces stiffness matrix using a central difference algorithm. Default is `'false'`, since can affect performance.  
 
 ## The `otherParams` struct
 

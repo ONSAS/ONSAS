@@ -16,24 +16,24 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %Integration Gauss Points based on https://keisan.casio.com/exec/system/1329114617
-function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
-  if numGaussPoints == 1    
+function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPointsAeroForce )
+  if numGaussPointsAeroForce == 1    
     xIntPoints = 0;
     wIntPoints = 2;
   
-  elseif numGaussPoints == 2
+  elseif numGaussPointsAeroForce == 2
       
     xIntPoints = [ -sqrt(1/3) sqrt(1/3) ];
 
     wIntPoints = [     1          1     ];        
   
-  elseif numGaussPoints == 3
+  elseif numGaussPointsAeroForce == 3
       
     xIntPoints = [ -sqrt(3/5)     0  sqrt(3/5) ];
 
     wIntPoints = [     5/9	    8/9     5/9    ];
 
-  elseif numGaussPoints == 4
+  elseif numGaussPointsAeroForce == 4
       
     xIntPoints = [ -sqrt( 3 - 2 * sqrt(6 / 5) ) / sqrt(7),  sqrt( 3 - 2 * sqrt(6 / 5) ) / sqrt(7) ...
                    -sqrt( 3 + 2 * sqrt(6 / 5) ) / sqrt(7),  sqrt( 3 + 2 * sqrt(6 / 5) ) / sqrt(7)   ];
@@ -41,7 +41,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
     wIntPoints = [ ( 18 + sqrt(30) ) / 36                   ( 18 + sqrt(30) ) / 36      ... 
                    ( 18 - sqrt(30) ) / 36                   ( 18 - sqrt(30) ) / 36                  ];
   
-  elseif numGaussPoints == 5
+  elseif numGaussPointsAeroForce == 5
       
     xIntPoints = [ -0.9061798459386639927976, -0.5384693101056830910363, 0                       , ...
                     0.5384693101056830910363,  0.9061798459386639927976                                 ] ;
@@ -49,7 +49,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
     wIntPoints = [  0.2369268850561890875143,  0.4786286704993664680413, 0.5688888888888888888889, ...
                     0.4786286704993664680413,  0.2369268850561890875143                                 ] ;
   
-  elseif numGaussPoints == 6
+  elseif numGaussPointsAeroForce == 6
       
     xIntPoints = [ -0.9324695142031520278123, -0.661209386466264513661, -0.2386191860831969086305, ...
                     0.238619186083196908631 ,  0.661209386466264513661, 0.9324695142031520278123        ] ;
@@ -57,7 +57,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
     wIntPoints = [  0.1713244923791703450403, 0.3607615730481386075698, 0.4679139345726910473899,  ...
                     0.46791393457269104739,   0.3607615730481386075698, 0.1713244923791703450403        ] ;
   
-  elseif numGaussPoints == 7
+  elseif numGaussPointsAeroForce == 7
   
     xIntPoints = [ -0.9491079123427585245262, -0.7415311855993944398639, -0.4058451513773971669066, ...
                     0                       ,  0.4058451513773971669066,  0.7415311855993944398639, ...
@@ -67,7 +67,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
                    0.417959183673469387755  ,  0.38183005050511894495  ,  0.279705391489276667901, ...
                    0.129484966168869693271                                                             ] ;
   
-  elseif numGaussPoints == 8
+  elseif numGaussPointsAeroForce == 8
 
     xIntPoints = [ -0.9602898564975362316836, -0.7966664774136267395916, -0.5255324099163289858177, ...
                    -0.1834346424956498049395, 0.1834346424956498049395, 0.5255324099163289858177, ...
@@ -77,7 +77,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
                     0.3626837833783619829652, 0.3626837833783619829652, 0.313706645877887287338, ...
                     0.222381034453374470544, 0.1012285362903762591525                                   ] ;
   
-  elseif numGaussPoints == 9
+  elseif numGaussPointsAeroForce == 9
       
     xIntPoints = [ -0.9681602395076260898356, -0.8360311073266357942994, -0.6133714327005903973087, ...
                    -0.3242534234038089290385,  0                       ,  0.3242534234038089290385, ...
@@ -87,7 +87,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
                     0.312347077040002840069,   0.330239355001259763165 ,  0.312347077040002840069 , ...
                     0.260610696402935462319,   0.1806481606948574040585,  0.081274388361574411972       ] ;
   
-  elseif numGaussPoints == 10
+  elseif numGaussPointsAeroForce == 10
       
     xIntPoints = [ -0.973906528517171720078,  -0.8650633666889845107321, -0.6794095682990244062343, ...
                    -0.4333953941292471907993, -0.1488743389816312108848,  0.1488743389816312108848, ...
@@ -99,7 +99,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
                    0.269266719309996355091,    0.2190863625159820439955,  0.1494513491505805931458, ...
                    0.0666713443086881375936                                                             ] ;  
   
-  elseif numGaussPoints == 12
+  elseif numGaussPointsAeroForce == 12
 		
 	xIntPoints = [ -0.98156063424672E+00, ... 
 	               -0.90411725637047E+00, ...
@@ -127,7 +127,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
 					0.10693932599532E+00, ...
 					0.47175336386511E-01 ] ;	
 				
-  elseif numGaussPoints == 14
+  elseif numGaussPointsAeroForce == 14
 		
 	xIntPoints = [ 	-9.86283808696812e-01,... 
 					-9.28434883663574e-01,... 
@@ -159,7 +159,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
 					8.01580871597602e-02,... 
 					3.51194603317519e-02 ] ; 
 							
-  elseif numGaussPoints == 16
+  elseif numGaussPointsAeroForce == 16
 		
     xIntPoints = [ 	-9.89400934991650e-01,... 
 					-9.44575023073233e-01,... 
@@ -196,7 +196,7 @@ function [xIntPoints, wIntPoints] = gaussPointsAndWeights ( numGaussPoints )
 					2.71524594117541e-02 ] ; 
 
 
-  elseif numGaussPoints == 28
+  elseif numGaussPointsAeroForce == 28
 
     xIntPoints = [ -0.9964424975739544, ...
                    -0.9813031653708728, ...

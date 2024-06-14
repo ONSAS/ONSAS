@@ -51,8 +51,6 @@ elements(2).elemCrossSecParams{1,1} = 'circle' ;
 elements(2).elemCrossSecParams{2,1} = [ d ]    ;
 %md where the aerodynamic coefficents and the chord vector are set by default for `'circle'` cross sections type. For the validation case a constant drag coefficients $c_d =1.2" is used, this is defined in the `'dragCircular'` function:   
 elements(2).aeroCoefFunctions = {'dragCircular',[],[]} ;
-%md The geometrical non-linear effects and the aerodynamic stiffness matrix are considered in this case to compute the aerodynamic force vector:
-elements(2).aeroNumericalParams = {4, true, true} ;
 %md
 %md### boundaryConds
 %md
@@ -83,6 +81,9 @@ end
 %md The fluid properties are set into _fluidProps_ field into `analysisSettings` struct. In this field the fluid velocity, viscosity and density are defined, This will apply a external fluid loads according to the quasi-steady theory for each element with aerodynamic coefficients fields into the `elements` struct. The name of the fluid velocity function located on the same example path is introduced as a string `'windVelCircStatic'`: 
 analysisSettings = struct() ;
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircStatic'} ;
+%md The geometrical non-linear effects and the aerodynamic stiffness matrix are considered in this case to compute the aerodynamic force vector:
+analysisSettings.geometricNonLinearAero = true     ;
+analysisSettings.computeAeroStiffnessMatrix = true ;
 %md since this problem is static, then a N-R method is employed. The time step `deltaT` is 1 since the time here is an index in the fluid velocity vector `uydot_vec` untile the length of this vector `NR` is reached:
 analysisSettings.deltaT        =   1             ;
 analysisSettings.finalTime     =   NR            ;
