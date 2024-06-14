@@ -29,7 +29,7 @@ Nodes  = mesh.nodesCoords ;
 nnodes = size( Nodes,1);
 KS     = sparse( 6*nnodes, 6*nnodes );
 
-%md Since we want to process the BCs, we keep only the non-zeros at the third colum of the Conec matrix
+%md Since we want to process the BCs, we keep only the non-zeros at the third column of the Conec matrix
 %md Computes the number of elements and BCs we have
 boundaryTypes  = unique( Conec( :, 3) ) ;
 if boundaryTypes(1) == 0,
@@ -110,7 +110,7 @@ diriDofs = unique( diriDofs) ;
 elemsToRemove = find( Conec( :, 1 ) == 0 ) ;
 Conec( elemsToRemove, :  ) = [] ;
 
-%md construction of a vector with the neumann degrees of freedom
+%md construction of a vector with the Neumann degrees of freedom
 
 %md a zeros-filled vector is created
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector

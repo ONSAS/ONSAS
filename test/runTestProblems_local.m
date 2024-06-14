@@ -1,4 +1,4 @@
-% Copyright 2023 Jorge M. Perez Zerpa, Joaquin Viera, Mauricio Vanzulli.
+% Copyright 2024, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -14,6 +14,9 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
+% This functions reads a text file with the norms of the forces at
+%  each iteration of the code execution and generates a series of plots
 
 close all, clear all;
 addpath( genpath( [ pwd filesep '..' filesep  'src' filesep ]) ); octaveBoolean = isThisOctave ;
