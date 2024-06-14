@@ -42,12 +42,6 @@ l = sqrt(sum((Bdif*elemNodesxyzRefCoords').^2)) ;
 A  = elemCrossSecParams{2}(1) ;
 Iy = elemCrossSecParams{2}(3) ;
 
-% Rotation of coordinates
-local2globalMats = beamParameters(elemNodesxyzRefCoords) ;
-dofsconv = [1 1+6 3 3+6 6 6+6] ;
-R = RotationMatrix(6, local2globalMats) ;
-RMat = R(dofsconv, dofsconv) ;
-
 % --- elastoplastic params ---
 E   = modelParams(1) ;
 Mc  = modelParams(2) ;
@@ -58,6 +52,11 @@ kh2 = modelParams(6) ;
 Ks  = modelParams(7) ;
 
 % kinematic variables
+% Rotation of coordinates
+local2globalMats = beamParameters(elemNodesxyzRefCoords) ;
+dofsconv = [1 1+6 3 3+6 6 6+6] ;
+R = RotationMatrix(6, local2globalMats) ;
+RMat = R(dofsconv, dofsconv) ;
 
 Uvector = RMat'*[elemDisps([1,7]); elemDisps([3,9]); elemDisps([6,12])] ;
 
