@@ -103,7 +103,7 @@ loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(2) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -111,7 +111,7 @@ Mn2_numericONSAS = moments_hist(2,:) ;
 Mn3_numericONSAS = moments_hist(3,:) ;
 tMn_numericONSAS = moments_hist(4,:) ;
 
-% PLOTS
+% Plots
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 

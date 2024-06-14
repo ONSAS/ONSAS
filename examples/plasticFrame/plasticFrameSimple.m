@@ -102,7 +102,7 @@ loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(2) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -129,8 +129,6 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
-%{
-
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
@@ -144,7 +142,5 @@ legend('ONSAS tMn [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
-
-%}
 
 print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
