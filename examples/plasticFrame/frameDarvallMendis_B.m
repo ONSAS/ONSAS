@@ -11,19 +11,16 @@
 
 % =========================================================================
 
-close all ; clear all;
+close all ; clear ;
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
 % geometry
 l = 3           ;   % m
-% Inertia = 1e-3       % m^4
-E = 28.6e3 * 1e3    ;   % KN/m^2 [KPa]
-% EI = E*Inertia  ;   % KN.m^2
-% A  = 0.10       ;   % m^2
+E = 28.6e3*1e3  ;   % KN/m^2 [KPa]
 
 % material
-kh1 = 12450 ;           % KN.m^2
+kh1 = 12450 ;       % KN.m^2
 kh2 = 195   ;
 Ks  = -2410 ;       % KN.m
 nu = 0.3 ;          % Poisson's ratio
@@ -36,7 +33,6 @@ Mu = 265 ;          % KN.m
 
 materials             = struct() ;
 materials.modelName   = 'plastic-2Dframe' ;
-% materials.modelName   = 'elastic-linear' ;
 materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
 
 elements             = struct() ;
@@ -130,7 +126,7 @@ loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(3) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -157,4 +153,20 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Darvall-Mendis Frame / Plasticity (load factors)') ;
 
-% print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
+figure('Name','Darvall-Mendis Frame / Plasticity (Hinge Moment)','NumberTitle','off') ;
+hold on, grid on
+
+plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+
+labx = xlabel('Generalized displacements in free node (m, rad)') ;
+laby = ylabel('Hinge Moment') ;
+
+legend('ONSAS (8 elem) tMn [y]', 'location', 'Southeast') ;
+
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
+set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
+title('Darvall-Mendis Frame / Plasticity (Hinge Moment)') ;
+
+print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
+print('-f2','../../../Tesis/tex/imagenes/DarvallMendisFrameHingeMoment.pdf','-dpdf') ;
+

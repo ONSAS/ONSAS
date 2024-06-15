@@ -11,7 +11,7 @@
 
 % =========================================================================
 
-close all ; clear all;
+close all ; clear ;
 addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
@@ -102,12 +102,12 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1000)] ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,300) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-8 ;
+analysisSettings.stopTolForces      = 1e-14 ;
 analysisSettings.stopTolIts         = 30 ;
 analysisSettings.ALdominantDOF      = [4*6+3 -1] ;
 
@@ -119,8 +119,8 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((2+1)*6,:) ;
-displacements = matUs((2+1)*6-5,:) ; % node with vertical load applied
+rotations = matUs((4)*6+6,:) ;
+displacements = matUs((4)*6+3,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -155,9 +155,7 @@ title('Darvall-Mendis Frame / Plasticity (load factors)') ;
 figure('Name','Darvall-Mendis Frame / Plasticity (Hinge Moment)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), abs(Mn1_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(displacements), abs(Mn2_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
-plot(abs(displacements), abs(Mn3_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Hinge Moment') ;
@@ -166,7 +164,7 @@ legend('ONSAS (8 elem) tMn [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('Darvall-Mendis Frame / Plasticity (load factors)') ;
-
+title('Darvall-Mendis Frame / Plasticity (Hinge Moment)') ;
 
 print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
+print('-f2','../../../Tesis/tex/imagenes/DarvallMendisFrameHingeMoment.pdf','-dpdf') ;
