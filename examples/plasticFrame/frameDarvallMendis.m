@@ -7,7 +7,10 @@
 % Elastic-Plastic-Softening Analysis of Plane Frames
 % Peter LePoer Darvall and Priyantha Anumddha Mendis
 % Dept. of Civ. Engrg., Monash Univ., Victoria, Australia
-% Journal of Structural Engineering, Vol. III, No. 4, April, 1985.
+% Journal of Structural Engineering, Vol. III, No. 4, April, 1985
+
+% Numerical modeling of softening hinges in thin Euler–Bernoulli beams
+% Francisco Armero, David Ehrlich / University of California, Berkeley
 
 % =========================================================================
 
@@ -18,25 +21,32 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 % geometry
 l = 3           ;   % m
 Inertia = 1e-3  ;   % m^4
-E = 20.7e6      ;   % KN/m^2 [KPa]
+E = 2.07e7      ;   % KN/m^2 [KPa]
 EI = E*Inertia  ;   % KN.m^2
-A  = 0.10       ;   % m^2
+A  = 0.1        ;   % m^2
+
+a = -0.04 ;
 
 % material
-kh1 = 29400 ;       % KN.m^2
-kh2 = 272   ;
-Ks  = -1089 ;       % KN.m
-nu = 0.3 ;          % Poisson's ratio
+kh1 = 0.5*EI        ;   % KN.m^2
+kh2 = 0.01*EI       ;
+Ks  = a*EI/10/l     ;   % KN.m
+nu  = 0.3           ;   % Poisson's ratio
 
-Mc = 100 ;
-My = 110 ;
-Mu = 120 ;          % KN.m
+Mu_columns  = 158       ;   % KN.m
+Mu_beams    = 169       ;   % KN.m
+
+My = 10000              ;
+Mc = 10000              ;
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 
 materials             = struct() ;
-materials.modelName   = 'plastic-2Dframe' ;
-materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
+materials(1).modelName   = 'plastic-2Dframe' ;
+materials(1).modelParams = [ E Mc My Mu_beams kh1 kh2 Ks nu ] ;
+
+materials(2).modelName   = 'plastic-2Dframe' ;
+materials(2).modelParams = [ E Mc My Mu_columns kh1 kh2 Ks nu ] ;
 
 elements             = struct() ;
 elements(1).elemType = 'node' ;
@@ -75,7 +85,7 @@ mesh.nodesCoords = [0  0       0    ; ...
 mesh.conecCell = {} ;
 
 % nodes
-mesh.conecCell{ 1, 1 } = [ 0 1 1 1 ] ; % node 1 fixed end support
+mesh.conecCell{ 1, 1 }     = [ 0 1 1 1 ] ; % node 1 fixed end support
 mesh.conecCell{ end+1, 1 } = [ 0 1 1 9 ] ; % node 9 fixed end support
 
 mesh.conecCell{ end+1, 1 } = [ 0 1 2 5 ] ; % node 5 with vertical load applied
@@ -88,27 +98,27 @@ mesh.conecCell{ end+1, 1 } = [ 0 1 3 7 ] ; % node 7
 mesh.conecCell{ end+1, 1 } = [ 0 1 3 8 ] ; % node 8
 
 % frame elements
-mesh.conecCell{ end+1, 1 } = [ 1 2 0   1 2] ;
-mesh.conecCell{ end+1, 1 } = [ 1 2 0   2 3] ;
+mesh.conecCell{ end+1, 1 } = [ 2 2 0   1 2] ;
+mesh.conecCell{ end+1, 1 } = [ 2 2 0   2 3] ;
 mesh.conecCell{ end+1, 1 } = [ 1 2 0   3 4] ;
 mesh.conecCell{ end+1, 1 } = [ 1 2 0   4 5] ;
 mesh.conecCell{ end+1, 1 } = [ 1 2 0   5 6] ;
 mesh.conecCell{ end+1, 1 } = [ 1 2 0   6 7] ;
-mesh.conecCell{ end+1, 1 } = [ 1 2 0   7 8] ;
-mesh.conecCell{ end+1, 1 } = [ 1 2 0   8 9] ;
+mesh.conecCell{ end+1, 1 } = [ 2 2 0   7 8] ;
+mesh.conecCell{ end+1, 1 } = [ 2 2 0   8 9] ;
 
 initialConds = {} ;
 
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-4*ones(1,300) ;
+analysisSettings.incremArcLen       = [1e-5*ones(1,1600)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-14 ;
-analysisSettings.stopTolIts         = 30 ;
+analysisSettings.stopTolDeltau      = 1e-12 ;
+analysisSettings.stopTolForces      = 1e-12 ;
+analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [4*6+3 -1] ;
 
 otherParams              = struct() ;
@@ -119,8 +129,7 @@ otherParams.problemName  = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((4)*6+6,:) ;
-displacements = matUs((4)*6+3,:) ; % node with vertical load applied
+displacements = matUs(4*6+3,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -140,13 +149,12 @@ lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Darvall-Mendis Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(rotations), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-labx = xlabel('Generalized displacements in free node (m, rad)') ;
-laby = ylabel('Forces') ;
+labx = xlabel('Vertical displacements in free node (m, rad)') ;
+laby = ylabel('\lambdaF') ;
 
-legend('ONSAS (8 elem) [\theta]', 'ONSAS (8 elem) [y]', 'location', 'Southeast') ;
+legend('ONSAS \lambdaF [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -160,7 +168,7 @@ plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersi
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Hinge Moment') ;
 
-legend('ONSAS (8 elem) tMn [y]', 'location', 'Southeast') ;
+legend('ONSAS tMn [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
