@@ -200,7 +200,7 @@ the aerodynamic-frame element parameters set are
 ```math
 \{ \rho_f; \,\, \nu_f; \,\, 'fluidVelocity'\}
 ```
- * `geometricNonLinearAero`: a boolean to take into account geometric nonlinearities or (reconfiguration) for each element.
+ * `geometricNonLinearAero`: a boolean parameter. If it is set as `true` geometric nonlinearity (or reconfiguration) is considered in the computation of the aerodynamic forces vector of all frame elements of the model.
  * `numGaussPointsAeroForce`:  number of Gauss integration points per element for the aerodynamic forces vector. Default is 4. 
  * `computeAeroStiffnessMatrix`: a boolean to compute the aerodynamic forces stiffness matrix using a central difference algorithm. Default is `'false'`, since can affect performance.  
 
