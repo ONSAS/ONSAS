@@ -29,14 +29,14 @@ A  = 0.1        ;   % m^2
 kh1 = 1         ;   % KN.m^2
 kh2 = 1         ;
 
-% Ks  = -18000        ;   % KN.m
+% Ks  = -18000          ;   % KN.m
 
 % a     = -0.04         ;
 % a     = -0.06         ;
-a     = -0.0718       ;
-Ks    = a*EI/10/l     ;   % KN.m
+a       = -0.0718       ;
+Ks      = a*EI/10/l     ;   % KN.m
 
-nu  = 0.3           ;   % Poisson's ratio
+nu  = 0.3               ;   % Poisson's ratio
 
 Mu_columns  = 158       ;   % KN.m
 Mu_beams    = 169       ;   % KN.m
@@ -73,7 +73,6 @@ boundaryConds(2).loadsTimeFact = @(t) t ;
 
 boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
 boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
-
 
 % The coordinates of the nodes of the mesh are given by the matrix:
 mesh = {} ;
@@ -117,7 +116,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-5*ones(1,1650) ;
+analysisSettings.incremArcLen       = [1e-5*ones(1,1650) 1e-6*ones(1,1285) 1e-8*ones(1,200)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -147,7 +146,7 @@ Mn2_numericONSAS = moments_hist(2,:) ;
 Mn3_numericONSAS = moments_hist(3,:) ;
 tMn_numericONSAS = moments_hist(4,:) ;
 
-% GRAPHICS
+% Plots
 
 lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 
