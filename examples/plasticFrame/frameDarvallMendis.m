@@ -36,7 +36,7 @@ kh2 = 1         ;
 % a       = -0.06         ;
 % a       = -0.0718       ;
 
-a       = 1e-2          ;
+a       = -1e-10        ;   % almost zero
 Ks      = a*EI/10/l     ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
