@@ -198,7 +198,7 @@ the aerodynamic-frame element parameters set are
 * `fluidProps`: is a row cell with the density $\rho_f$, viscosity $\nu_f$ and the function with the fluid velocity  
 
 ```math
-\{ \rho_f; \,\, \nu_f; \,\, 'fluidVelocity'\}
+\{ \rho_f, \,\, \nu_f, \,\, fluidVelocity\}
 ```
  * `geometricNonLinearAero`: a boolean parameter. If it is set as `true` geometric nonlinearity (or reconfiguration) is considered in the computation of the aerodynamic forces vector of all frame elements of the model.
  * `numGaussPointsAeroForce`:  number of Gauss integration points per element for the aerodynamic forces vector. Default is 4. 
