@@ -25,12 +25,17 @@ E = 2.07e7      ;   % KN/m^2 [KPa]
 EI = E*Inertia  ;   % KN.m^2
 A  = 0.1        ;   % m^2
 
-a = -0.04 ;
-
 % material
-kh1 = 0.5*EI        ;   % KN.m^2
-kh2 = 0.01*EI       ;
-Ks  = a*EI/10/l     ;   % KN.m
+kh1 = 1         ;   % KN.m^2
+kh2 = 1         ;
+
+% Ks  = -18000        ;   % KN.m
+
+% a     = -0.04         ;
+% a     = -0.06         ;
+a     = -0.0718       ;
+Ks    = a*EI/10/l     ;   % KN.m
+
 nu  = 0.3           ;   % Poisson's ratio
 
 Mu_columns  = 158       ;   % KN.m
@@ -112,7 +117,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,1600)] ;
+analysisSettings.incremArcLen       = 1e-5*ones(1,1650) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
