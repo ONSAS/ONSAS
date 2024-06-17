@@ -187,7 +187,6 @@ This struct contains the parameters required to apply the numerical method for t
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
  * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
  * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
- * `geometricNonLinearAero`: takes into account geometric nonlinearities or (reconfiguration) in the aerodynamic forces vector.
 
 another additional optional parameters are:
 
