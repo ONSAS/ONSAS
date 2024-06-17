@@ -31,9 +31,12 @@ kh2 = 1         ;
 
 % Ks  = -18000          ;   % KN.m
 
-% a     = -0.04         ;
-% a     = -0.06         ;
-a       = -0.0718       ;
+
+% a       = -0.04         ;
+% a       = -0.06         ;
+% a       = -0.0718       ;
+
+a       = 1e-2          ;
 Ks      = a*EI/10/l     ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
@@ -116,7 +119,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,1650) 1e-6*ones(1,1285) 1e-8*ones(1,200)] ;
+analysisSettings.incremArcLen       = [1e-5*ones(1,1650)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
