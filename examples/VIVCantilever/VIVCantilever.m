@@ -122,7 +122,6 @@ matUs = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 % Extract numerical solution
 uz = matUs(5:6:end, :);
-%save('testSolution', 'uzTest')
 if length(uz) == length(uzsol)
     verifBoolean = norm(uz - uzsol) < 6e-08
 else 
