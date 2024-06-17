@@ -31,12 +31,10 @@ kh2 = 1         ;
 
 % Ks  = -18000          ;   % KN.m
 
+% a     = -0.06         ;
+% a     = -0.0718       ;
 
-% a       = -0.04         ;
-% a       = -0.06         ;
-% a       = -0.0718       ;
-
-a       = -1e-10        ;   % almost zero
+a       = -0.04         ;
 Ks      = a*EI/10/l     ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
@@ -119,13 +117,13 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,1650)] ;
+analysisSettings.incremArcLen       = 1e-5*ones(1,1650) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-12 ;
 analysisSettings.stopTolForces      = 1e-12 ;
-analysisSettings.stopTolIts         = 50 ;
+analysisSettings.stopTolIts         = 10 ;
 analysisSettings.ALdominantDOF      = [4*6+3 -1] ;
 
 otherParams              = struct() ;
