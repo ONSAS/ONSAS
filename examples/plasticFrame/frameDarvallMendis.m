@@ -19,11 +19,11 @@ addpath( genpath( [ pwd '/../../src'] ) ) ;
 
 % assumed XY plane
 % geometry
-l = 3           ;   % m
+l = 3.048           ;   % m
 Inertia = 1e-3  ;   % m^4
-E = 2.07e7      ;   % KN/m^2 [KPa]
+E = 2.068e7      ;   % KN/m^2 [KPa]
 EI = E*Inertia  ;   % KN.m^2
-A  = 0.1        ;   % m^2
+A  = 0.103        ;   % m^2
 
 % material
 kh1 = 1         ;   % KN.m^2
@@ -39,8 +39,8 @@ Ks      = a*EI/10/l     ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
 
-Mu_columns  = 158       ;   % KN.m
-Mu_beams    = 169       ;   % KN.m
+Mu_columns  = 158.18       ;   % KN.m
+Mu_beams    = 169.48       ;   % KN.m
 
 My = 10000              ;
 Mc = 10000              ;
