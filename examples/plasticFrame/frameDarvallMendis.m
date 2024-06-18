@@ -29,21 +29,19 @@ A  = 0.103      ;   % m^2
 kh1 = 1         ;   % KN.m^2
 kh2 = 1         ;
 
-% Ks  = -18000          ;   % KN.m
+% Ks    = -18000        ;   % KN.m
+% a     = -0.04         ;
+% Ks    = a*EI/10/l     ;   % KN.m
 
-% a     = -0.06         ;
-% a     = -0.0718       ;
-
-a       = -0.04         ;
-Ks      = a*EI/10/l     ;   % KN.m
+Ks  = -1e-6             ;   % almost zero
 
 nu  = 0.3               ;   % Poisson's ratio
 
 Mu_columns  = 158.18    ;   % KN.m
 Mu_beams    = 169.48    ;   % KN.m
 
-My = 10000              ;
-Mc = 10000              ;
+My = 1e18               ; % almost infinite
+Mc = 1e18               ; % almost infinite
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 
@@ -117,7 +115,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-5*ones(1,1650) ;
+analysisSettings.incremArcLen       = 1e-5*ones(1,1839) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
