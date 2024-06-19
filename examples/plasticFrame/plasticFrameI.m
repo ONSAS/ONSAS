@@ -15,8 +15,7 @@ nu = 0.3 ;          % Poisson's ratio
 
 % geometry
 L1 = 2.5 ;              % m
-L2 = 5  ;
-L3 = 5   ;
+L2 = 5 ;
 ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
@@ -44,16 +43,16 @@ boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 
-boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
-boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 
 % Loads
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
-boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
-boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 
 % Mesh
 % Mesh nodes
@@ -61,8 +60,8 @@ mesh = struct();
 mesh.nodesCoords = [ 0      0       0 ; ...
                      0      L1/2    0 ; ...
                      0      L1      0 ; ...
-					 L3     L1      0 ; ...
-                     L3     0       0] ;
+					 L2     L1      0 ; ...
+                     L2     0       0] ;
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
@@ -107,7 +106,7 @@ otherParams.problemName = 'plastic_2dframe' ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -153,4 +152,4 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
 print('-f1','../../../Tesis/tex/imagenes/plasticFrameLoadFactors.pdf','-dpdf') ;
-print('-f1','../../../Tesis/tex/imagenes/plasticFrameMomentstMn','-dpdf') ;
+print('-f1','../../../Tesis/tex/imagenes/plasticFrameMomentstMn.pdf','-dpdf') ;

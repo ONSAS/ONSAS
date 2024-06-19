@@ -9,16 +9,15 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 EI  = 77650 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
-Ks  = -kh1 ;        % KN.m
+Ks  = -18000 ;      % KN.m
 
 nu = 0.3 ;          % Poisson's ratio
 
 % geometry
-L1 = 2.5 ;              % m
-L2 = 5  ;
-L3 = 5   ;
+L1 = 5 ;              % m
+L2 = 5 ;
 ty = 0.3 ;              % width cross section
-tz = 0.4 ;              % height cross section
+tz = 0.3 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
 
 E = EI/Inertia ;        % KN/m^2 [KPa]
@@ -44,16 +43,16 @@ boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 
-boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
-boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
+boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 
 % Loads
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
-boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
-boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).imposDispDofs = [ 2 4 5 ] ;
+boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 
 % Mesh
 % Mesh nodes
@@ -61,10 +60,10 @@ mesh = struct();
 mesh.nodesCoords = [ 0      0       0 ; ...
                      0      L1/2    0 ; ...
                      0      L1      0 ; ...
-					 L3/2   L1      0 ; ...
-                     L3     L1      0 ; ...
-                     L3     L1/2    0 ; ...
-                     L3     0       0 ] ;
+					 L2/2   L1      0 ; ...
+                     L2     L1      0 ; ...
+                     L2     L1/2    0 ; ...
+                     L2     0       0 ] ;
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
@@ -72,8 +71,8 @@ mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
 mesh.conecCell{7, 1 } = [ 0 1 1   7 ] ;
 
 mesh.conecCell{2, 1 } = [ 0 1 3   2 ] ;
-mesh.conecCell{3, 1 } = [ 0 1 3   3 ] ;
-mesh.conecCell{4, 1 } = [ 0 1 2   4 ] ;
+mesh.conecCell{3, 1 } = [ 0 1 2   3 ] ;
+mesh.conecCell{4, 1 } = [ 0 1 3   4 ] ;
 mesh.conecCell{5, 1 } = [ 0 1 3   5 ] ;
 mesh.conecCell{6, 1 } = [ 0 1 3   6 ] ;
 
@@ -94,14 +93,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,6000)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,2500)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [3*6+3 -1] ;
+analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
 
 %
 otherParams = struct() ;
@@ -159,4 +158,4 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
 print('-f1','../../../Tesis/tex/imagenes/plasticFrameLoadFactors.pdf','-dpdf') ;
-print('-f1','../../../Tesis/tex/imagenes/plasticFrameMomentstMn','-dpdf') ;
+print('-f2','../../../Tesis/tex/imagenes/plasticFrameMomentstMn.pdf','-dpdf') ;

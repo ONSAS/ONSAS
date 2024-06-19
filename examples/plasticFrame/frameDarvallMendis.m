@@ -26,24 +26,24 @@ EI = E*Inertia  ;   % KN.m^2
 A  = 0.103      ;   % m^2
 
 % material
-kh1 = 29400     ;   % KN.m^2
-kh2 = 273       ;
+kh1 = 0.01 ;       % KN.m^2
+kh2 = 0.01 ;
 
 % Ks  = -1e-6           ;   % almost zero
 
 a  = -0.04              ;
-Ks = a*EI/10/l          ;   % KN.m
+Ks = a*EI               ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
 
-Mc_columns = 156 ;
-My_columns = 157 ;
+Mc_columns = 158.06 ;
+My_columns = 158.12 ;
 
-Mc_beams = 168 ;
-My_beams = 169 ;
+Mc_beams = 169.16 ;
+My_beams = 169.32 ;
 
-Mu_columns  = 158.18    ;   % KN.m
-Mu_beams    = 169.48    ;   % KN.m
+Mu_columns = 158.18    ;   % KN.m
+Mu_beams   = 169.48    ;   % KN.m
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 
@@ -117,13 +117,13 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-5*ones(1,600) ;
+analysisSettings.incremArcLen       = 1e-4*ones(1,1000) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 10 ;
+analysisSettings.stopTolIts         = 100 ;
 analysisSettings.ALdominantDOF      = [4*6+3 -1] ;
 
 otherParams              = struct() ;
@@ -168,7 +168,7 @@ title('Darvall-Mendis Frame / Plasticity (load factors)') ;
 figure('Name','Darvall-Mendis Frame / Plasticity (Hinge Moment)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
+plot(abs(displacements), tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Hinge Moment') ;
