@@ -15,7 +15,8 @@ nu = 0.3 ;          % Poisson's ratio
 
 % geometry
 L1 = 2.5 ;              % m
-L2 = 2.5 ;
+L2 = 5  ;
+L3 = 5   ;
 ty = 0.3 ;              % width cross section
 tz = 0.4 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
@@ -48,7 +49,7 @@ boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 
 % Loads
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
 boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
@@ -57,18 +58,26 @@ boundaryConds(3).imposDispVals = [ 0 0 0 ] ;
 % Mesh
 % Mesh nodes
 mesh = struct();
-mesh.nodesCoords = [ 0   0  0 ; ...
-					 L1  0  0 ; ...
-					 L1  L2 0 ] ;
+mesh.nodesCoords = [ 0      0       0 ; ...
+                     0      L1/2    0 ; ...
+                     0      L1      0 ; ...
+					 L3     L1      0 ; ...
+                     L3     0       0] ;
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
 mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
+mesh.conecCell{5, 1 } = [ 0 1 1   5 ] ;
+
 mesh.conecCell{2, 1 } = [ 0 1 3   2 ] ;
 mesh.conecCell{3, 1 } = [ 0 1 2   3 ] ;
+mesh.conecCell{4, 1 } = [ 0 1 3   4 ] ;
+
 % and frame elements
-mesh.conecCell{4, 1 } = [ 1 2 0   1 2 ] ;
-mesh.conecCell{5, 1 } = [ 1 2 0   2 3 ] ;
+mesh.conecCell{6, 1 } = [ 1 2 0   1 2 ] ;
+mesh.conecCell{7, 1 } = [ 1 2 0   2 3 ] ;
+mesh.conecCell{8, 1 } = [ 1 2 0   3 4 ] ;
+mesh.conecCell{9, 1 } = [ 1 2 0   4 5 ] ;
 
 % InitialConditions
 % empty struct
@@ -79,14 +88,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-3*ones(1,3000) ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,4820) 1e-5*ones(1,3100) 1e-6*ones(1,500) 1e-7*ones(1,300) 1e-8*ones(1,1600) 1e-9*ones(1,1000)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6+3 -1] ;
+analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
 
 %
 otherParams = struct() ;
@@ -98,7 +107,7 @@ otherParams.problemName = 'plastic_2dframe' ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+3,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with vertical load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
@@ -118,13 +127,12 @@ lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(rotations), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), abs(loadfactors), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-labx = xlabel('Generalized displacements in free node (m, rad)') ;
-laby = ylabel('Forces') ;
+labx = xlabel('Displacements (m)') ;
+laby = ylabel('\lambdaF') ;
 
-legend('ONSAS [\theta]', 'ONSAS [y]', 'location', 'Southeast') ;
+legend('ONSAS \lambdaF[y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
@@ -135,7 +143,7 @@ hold on, grid on
 
 plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
-labx = xlabel('Generalized displacements in free node (m, rad)') ;
+labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments tMn') ;
 
 legend('ONSAS tMn [y]', 'location', 'Southeast') ;
