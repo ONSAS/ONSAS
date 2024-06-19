@@ -49,7 +49,7 @@ boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 
 % Loads
 boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
+boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 
 boundaryConds(3).imposDispDofs = [ 2 4 5 ] ;
@@ -61,23 +61,30 @@ mesh = struct();
 mesh.nodesCoords = [ 0      0       0 ; ...
                      0      L1/2    0 ; ...
                      0      L1      0 ; ...
-					 L3     L1      0 ; ...
-                     L3     0       0] ;
+					 L3/2   L1      0 ; ...
+                     L3     L1      0 ; ...
+                     L3     L1/2    0 ; ...
+                     L3     0       0 ] ;
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
 mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
-mesh.conecCell{5, 1 } = [ 0 1 1   5 ] ;
+mesh.conecCell{7, 1 } = [ 0 1 1   7 ] ;
 
 mesh.conecCell{2, 1 } = [ 0 1 3   2 ] ;
-mesh.conecCell{3, 1 } = [ 0 1 2   3 ] ;
-mesh.conecCell{4, 1 } = [ 0 1 3   4 ] ;
+mesh.conecCell{3, 1 } = [ 0 1 3   3 ] ;
+mesh.conecCell{4, 1 } = [ 0 1 2   4 ] ;
+mesh.conecCell{5, 1 } = [ 0 1 3   5 ] ;
+mesh.conecCell{6, 1 } = [ 0 1 3   6 ] ;
+
 
 % and frame elements
-mesh.conecCell{6, 1 } = [ 1 2 0   1 2 ] ;
-mesh.conecCell{7, 1 } = [ 1 2 0   2 3 ] ;
-mesh.conecCell{8, 1 } = [ 1 2 0   3 4 ] ;
-mesh.conecCell{9, 1 } = [ 1 2 0   4 5 ] ;
+mesh.conecCell{8, 1 }  = [ 1 2 0   1 2 ] ;
+mesh.conecCell{9, 1 }  = [ 1 2 0   2 3 ] ;
+mesh.conecCell{10, 1 } = [ 1 2 0   3 4 ] ;
+mesh.conecCell{11, 1 } = [ 1 2 0   4 5 ] ;
+mesh.conecCell{12, 1 } = [ 1 2 0   5 6 ] ;
+mesh.conecCell{12, 1 } = [ 1 2 0   6 7 ] ;
 
 % InitialConditions
 % empty struct
@@ -94,7 +101,7 @@ analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
+analysisSettings.ALdominantDOF      = [3*6+3 -1] ;
 
 %
 otherParams = struct() ;

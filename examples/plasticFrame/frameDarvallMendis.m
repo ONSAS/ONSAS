@@ -26,31 +26,33 @@ EI = E*Inertia  ;   % KN.m^2
 A  = 0.103      ;   % m^2
 
 % material
-kh1 = 1         ;   % KN.m^2
-kh2 = 1         ;
+kh1 = 29400     ;   % KN.m^2
+kh2 = 273       ;
 
-% Ks    = -18000        ;   % KN.m
-% a     = -0.04         ;
-% Ks    = a*EI/10/l     ;   % KN.m
+% Ks  = -1e-6           ;   % almost zero
 
-Ks  = -1e-6             ;   % almost zero
+a  = -0.04              ;
+Ks = a*EI/10/l          ;   % KN.m
 
 nu  = 0.3               ;   % Poisson's ratio
 
+Mc_columns = 156 ;
+My_columns = 157 ;
+
+Mc_beams = 168 ;
+My_beams = 169 ;
+
 Mu_columns  = 158.18    ;   % KN.m
 Mu_beams    = 169.48    ;   % KN.m
-
-My = 1e18               ; % almost infinite
-Mc = 1e18               ; % almost infinite
 
 % /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\   /\
 
 materials             = struct() ;
 materials(1).modelName   = 'plastic-2Dframe' ;
-materials(1).modelParams = [ E Mc My Mu_beams kh1 kh2 Ks nu ] ;
+materials(1).modelParams = [ E Mc_beams My_beams Mu_beams kh1 kh2 Ks nu ] ;
 
 materials(2).modelName   = 'plastic-2Dframe' ;
-materials(2).modelParams = [ E Mc My Mu_columns kh1 kh2 Ks nu ] ;
+materials(2).modelParams = [ E Mc_columns My_columns Mu_columns kh1 kh2 Ks nu ] ;
 
 elements             = struct() ;
 elements(1).elemType = 'node' ;
@@ -115,12 +117,12 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-5*ones(1,1839) ;
+analysisSettings.incremArcLen       = 1e-5*ones(1,600) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-12 ;
-analysisSettings.stopTolForces      = 1e-12 ;
+analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 10 ;
 analysisSettings.ALdominantDOF      = [4*6+3 -1] ;
 
@@ -162,48 +164,6 @@ legend('ONSAS \lambdaF [y]', 'location', 'Southeast') ;
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Darvall-Mendis Frame / Plasticity (load factors)') ;
-
-% Create arrow
-annotation(figure(1),'arrow',[0.416071428571428 0.471428571428571],...
-    [0.707142857142858 0.616666666666667]);
-
-% Create textarrow
-annotation(figure(1),'textarrow',[0.758928571428571 0.732142857142857],...
-    [0.86904761904762 0.780952380952382]);
-
-% Create textbox
-annotation(figure(1),'textbox',...
-    [0.470642857142857 0.571428571428575 0.157928571428572 0.0595238095238096],...
-    'String','FIRST HINGE',...
-    'LineStyle','none',...
-    'FontWeight','bold',...
-    'FontSize',12,...
-    'FontName','Helvetica Neue',...
-    'FitBoxToText','off');
-
-% Create textbox
-annotation(figure(1),'textbox',...
-    [0.670642857142854 0.721428571428574 0.15614285714286 0.054761904761909],...
-    'String',{'SECOND','HINGE'},...
-    'LineStyle','none',...
-    'FontWeight','bold',...
-    'FontSize',12,...
-    'FontName','Helvetica Neue',...
-    'FitBoxToText','off');
-
-% Create textbox
-annotation(figure(1),'textbox',...
-    [0.817857142857138 0.726190476190483 0.130357142857147 0.0595238095238095],...
-    'String',{'THIRD HINGE'},...
-    'LineStyle','none',...
-    'FontWeight','bold',...
-    'FontSize',12,...
-    'FontName','Helvetica Neue',...
-    'FitBoxToText','off');
-
-% Create arrow
-annotation(figure(1),'arrow',[0.873214285714286 0.841071428571429],...
-    [0.888095238095238 0.780952380952381]);
 
 figure('Name','Darvall-Mendis Frame / Plasticity (Hinge Moment)','NumberTitle','off') ;
 hold on, grid on
