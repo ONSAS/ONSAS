@@ -84,7 +84,6 @@ mesh.conecCell{9, 1 } = [ 1 2 0   4 5 ] ;
 initialConds = struct() ;
 
 % Analysis settings
-
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
@@ -107,7 +106,7 @@ otherParams.problemName = 'plastic_2dframe' ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;

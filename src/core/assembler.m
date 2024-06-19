@@ -225,19 +225,6 @@ for elem = 1:nElems
 
       Finte = fs{1} ;  Ke = ks{1} ;
 
-      % /\
-      % 
-      % if booleanConverged is not true, the plastic parameters are frozen
-
-      % split procedure is activated at each iteration
-
-      % First, the nodal variables are computed for frozen values of internal variables
-
-      % Second, the evolution equations are solved for internal variables
-      % for frozen values of nodal variables
-
-      % /\
-
       stateCellnp1(elem,:) = aux ;
 	
       if dynamicProblemBool
