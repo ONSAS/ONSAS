@@ -152,4 +152,4 @@ set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
 print('-f1','../../../Tesis/tex/imagenes/plasticFrameLoadFactors.pdf','-dpdf') ;
-print('-f1','../../../Tesis/tex/imagenes/plasticFrameMomentstMn.pdf','-dpdf') ;
+print('-f2','../../../Tesis/tex/imagenes/plasticFrameMomentstMn.pdf','-dpdf') ;

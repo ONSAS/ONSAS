@@ -9,7 +9,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 EI  = 77650 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
 kh2 = 273 ;
-Ks  = -18000 ;      % KN.m
+Ks  = -kh1 ;% KN.m
 
 nu = 0.3 ;          % Poisson's ratio
 
@@ -83,7 +83,7 @@ mesh.conecCell{9, 1 }  = [ 1 2 0   2 3 ] ;
 mesh.conecCell{10, 1 } = [ 1 2 0   3 4 ] ;
 mesh.conecCell{11, 1 } = [ 1 2 0   4 5 ] ;
 mesh.conecCell{12, 1 } = [ 1 2 0   5 6 ] ;
-mesh.conecCell{12, 1 } = [ 1 2 0   6 7 ] ;
+mesh.conecCell{13, 1 } = [ 1 2 0   6 7 ] ;
 
 % InitialConditions
 % empty struct
@@ -93,14 +93,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,2500)] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,12000)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
+analysisSettings.ALdominantDOF      = [1*6+1 -1] ;
 
 %
 otherParams = struct() ;

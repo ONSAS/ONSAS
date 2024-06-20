@@ -97,7 +97,7 @@ analysisSettings.ALdominantDOF      = [2*6+1 -1] ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with vertical load applied
+displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
