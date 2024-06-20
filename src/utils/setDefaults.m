@@ -65,6 +65,9 @@ end
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag'      , 0              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean'       , 0              ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'ALdominantDOF'              , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'incremArcLen'               , 1.5            ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'iniDeltaLamb'               , 1e-3           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'posVariableLoadBC'          , []             ) ;
 % =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;

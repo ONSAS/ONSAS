@@ -26,7 +26,7 @@ jobs:
         with:
           file: ./coverage.xml
           verbose: true
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           use_oidc: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

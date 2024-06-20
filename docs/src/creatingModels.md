@@ -180,13 +180,13 @@ This struct contains the parameters required to apply the numerical method for t
  * `stopTolIts`: integer with maximum number of iterations per time step
  * `deltaT`: time step
  * `finalTime`: final time of simulation
- * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. 
+ * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. Default is $0.15$. 
  * `ALdominantDOF`: if this is not set or set as `[]` (zero) then the cylindical ArcLength method based on DeSouzaNeto's Computational Methods for plasticity is used, if a non-empty vector is provided, then the dominant dof arc length variant based on Jirásek & Bazant, Inelastic Analysis of Structures, 2002, Chapter 22, is used, the first entry is the dof and the second the scaling factor
  * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark delta = $1/2$ is set.
  * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark alpha = $1/4$ is set.
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
- * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
- * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
+ * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor. Default is `[]`.
+ * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$. Default is $1e-3$.
 
 another additional optional parameters are:
 

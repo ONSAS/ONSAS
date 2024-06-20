@@ -22,10 +22,27 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
 
-%   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
-%                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
-%                             checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
-%                             'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
+   analysisSettingsDefaultFields = {'geometricNonLinearAero', 'numGaussPointsAeroForce','computeAeroStiffnessMatrix',...
+    'fluidProps','addedMassBool','booleanSelfWeight','methodName','deltaT', 'finalTime', 'incremArcLen', 'iniDeltaLamb',...
+     'stopTolDeltau', 'stopTolForces', 'stopTolIts','stabilityAnalysisFlag', 'modalAnalysisBoolean','posVariableLoadBC',...
+      'ALdominantDOF'};
+    if isfield(analysisSettings, 'methodName')
+        if strcmp( analysisSettings.methodName, 'newmark' )
+            analysisSettingsDefaultFields{end +1} = 'alphaNM' ; 
+            analysisSettingsDefaultFields{end +1} = 'deltaNM' ; 
+        end
+        if strcmp( analysisSettings.methodName, 'alphaHHT' ) || isfield(analysisSettings, 'alphaHHT')
+            analysisSettingsDefaultFields{end +1} = 'alphaHHT' ;
+        end                      
+    end
+    analysisSettings
+    if isfield(analysisSettings, 'alphaHHT')
+        analysisSettingsDefaultFields{end +1} = 'alphaHHT'
+    end
+    analysisSettingsDefaultFields
+
+  checkFields(analysisSettings, analysisSettingsDefaultFields)
+
 
 function checkFields(mystruct, expectedFields)
 
