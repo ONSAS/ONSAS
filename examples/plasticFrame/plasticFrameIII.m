@@ -8,14 +8,15 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 % material
 EI  = 77650 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
-kh2 = 273 ;
+kh2 = 2730 ;
 Ks  = -kh1 ;        % KN.m
 
 nu = 0.3 ;          % Poisson's ratio
 
 % geometry
-L1 = 5 ;              % m
-L2 = 5 ;
+L1 = 3 ;              % m
+L2 = 6 ;
+L3 = 3 ;
 ty = 0.3 ;              % width cross section
 tz = 0.3 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
@@ -58,32 +59,29 @@ boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 % Mesh nodes
 mesh = struct();
 mesh.nodesCoords = [ 0      0       0 ; ...
-                     0      L1/2    0 ; ...
                      0      L1      0 ; ...
-					 L2/2   L1      0 ; ...
-                     L2     L1      0 ; ...
-                     L2     L1/2    0 ; ...
-                     L2     0       0 ] ;
+                     0      L2      0 ; ...
+					 L3     L2      0 ; ...
+                     L3     L1      0 ; ...
+                     L3     0       0 ] ;
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
 mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
-mesh.conecCell{7, 1 } = [ 0 1 1   7 ] ;
+mesh.conecCell{6, 1 } = [ 0 1 1   6 ] ;
 
 mesh.conecCell{2, 1 } = [ 0 1 3   2 ] ;
 mesh.conecCell{3, 1 } = [ 0 1 2   3 ] ;
 mesh.conecCell{4, 1 } = [ 0 1 3   4 ] ;
 mesh.conecCell{5, 1 } = [ 0 1 3   5 ] ;
-mesh.conecCell{6, 1 } = [ 0 1 3   6 ] ;
-
 
 % and frame elements
-mesh.conecCell{8, 1 }  = [ 1 2 0   1 2 ] ;
-mesh.conecCell{9, 1 }  = [ 1 2 0   2 3 ] ;
-mesh.conecCell{10, 1 } = [ 1 2 0   3 4 ] ;
-mesh.conecCell{11, 1 } = [ 1 2 0   4 5 ] ;
-mesh.conecCell{12, 1 } = [ 1 2 0   5 6 ] ;
-mesh.conecCell{13, 1 } = [ 1 2 0   6 7 ] ;
+mesh.conecCell{7, 1 }  = [ 1 2 0   1 2 ] ;
+mesh.conecCell{8, 1 }  = [ 1 2 0   2 3 ] ;
+mesh.conecCell{9, 1 }  = [ 1 2 0   3 4 ] ;
+mesh.conecCell{10, 1 } = [ 1 2 0   4 5 ] ;
+mesh.conecCell{11, 1 } = [ 1 2 0   5 6 ] ;
+mesh.conecCell{12, 1 } = [ 1 2 0   2 5 ] ;
 
 % InitialConditions
 % empty struct
@@ -93,13 +91,13 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1200)] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,1050)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 30 ;
+analysisSettings.stopTolIts         = 100 ;
 analysisSettings.ALdominantDOF      = [1*6+1 1] ;
 
 %
@@ -117,7 +115,7 @@ loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(1) ;
+    aux = modelSolutions{i}.localInternalForces(5) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -132,7 +130,7 @@ lw = 2 ; ms = 1 ; plotfontsize = 14 ;
 figure('Name','Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), abs(loadfactors), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), loadfactors, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('\lambdaF') ;
@@ -146,7 +144,7 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), Mn3_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments tMn') ;
