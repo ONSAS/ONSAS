@@ -52,7 +52,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
 
 ### `materials.modelParams`
 
-A cell structure with vectors with the material properties of each material used in the model. The $i$-th entry of the cell, contains a vector like this:
+A vector with the material properties of each material used in the model. The $i$-th entry of the vector, contains:
 ```math
 [ p_1 \dots p_{n_P} ]
 ```
@@ -60,7 +60,7 @@ where $n_P$ is the number of parameters of the constitutive model and $\mathbf{p
 
 ### `material.density`
 
-This is a cell with the scalar values of the densities of the materials used in the model.
+This is a value of the density considered in the material model.
 
 ### `material.nodalMass`
 
@@ -72,10 +72,10 @@ The elements struct contains the information about the type of finite elements u
 
 ### `elements.elemType`
 
-A cell structure with the string-names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
+A string with the names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
 
 ### `elements.elemTypeParams`
-A cell structure with auxiliar params information, required for some element types:
+A scalar or vector with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
 
@@ -135,10 +135,10 @@ where $f_i$ are the components of forces and $m_i$ are the moments. Both forces 
 string with the filename of the `.m` function file provided by the user that can be used to apply forces not given by time-varying loadFactors. This function file should be placed in the example folder and it must receive two arguments:  t (the time) and UsCell (a cell with: {the current displacement, velocity and acceleration} ). The function should one forces vector with the size of all the degrees of freedom of the problem (in global coordinates).
 
 ### `boundaryConds.imposDispDofs`
-cell with vectors of the local degrees of freedom imposed (integers from 1 to 6)
+vector or single local degree/s of freedom imposed (integers from 1 to 6)
 
 ### `boundaryConds.imposDispVals`
-cell with vectors of the values of displacements imposed.
+vectors containing the value/s of the displacements imposed.
 
 ### `boundaryConds.springDofs`
 vector with the local degrees of freedom of the node with springs (integers from 1 to 6)
