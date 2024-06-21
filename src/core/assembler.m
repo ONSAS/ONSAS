@@ -112,11 +112,11 @@ for elem = 1:nElems
   %md extract aerodynamic properties
   aeroCoefs           = elements( mebVec( 2 ) ).aeroCoefFunctions       ;
   chordVector         = elements( mebVec( 2 ) ).chordVector         ;
-  aeroNumericalParams = elements( mebVec( 2 ) ).aeroNumericalParams ;
 
   %md compute aerodynamic force booleans
   aeroBool = ~isempty(analysisSettings.fluidProps) ;
-
+  computeAeroStiffnessMatrix = analysisSettings.computeAeroStiffnessMatrix ;
+  
   %md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
@@ -252,9 +252,9 @@ for elem = 1:nElems
                                      elemDisps   ,        ...
                                      dotdispsElem   ,        ...
                                      dotdotdispsElem   ,        ...
-                                     aeroCoefs, chordVector, aeroNumericalParams,  ...
+                                     aeroCoefs, chordVector,   ...
                                      analysisSettings, timeVar, elem, ...
-                                     aeroNumericalParams{2}  ) ;
+                                     computeAeroStiffnessMatrix  ) ;
                                      
 
     end
@@ -356,7 +356,7 @@ for elem = 1:nElems
       indsIK ( entriesSparseStorVecs )  = dofselemRed( indRow ) ;
       indsJK ( entriesSparseStorVecs )  = dofselemRed ;
 
-      if aeroBool && strcmp(elemType,'frame') && aeroNumericalParams{2}
+      if aeroBool && strcmp(elemType,'frame') && computeAeroStiffnessMatrix
         % add displacements minus since is an external force
         valsK  ( entriesSparseStorVecs )  = Ke( indRow, : )' - MataeroEelem( indRow, : )' ;
       else

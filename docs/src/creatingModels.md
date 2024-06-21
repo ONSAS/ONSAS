@@ -102,17 +102,11 @@ For `edge` elements the thickness is expected (for 2D load computations).
 
 See the `crossSectionProps.m` function for more details.
 
+
+
 #### 2D elements
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
-
-
-### `elements.aeroNumericalParams`
-A cell with the number of Gauss integration points `numGauss`, the boolean `computeStiffnessAeroTangent` for computing the aerodynamic stiffness matrix and `geometricNonLinearAero` to take into account geometric nonlinearities or (reconfiguration).  
-```math
-\{  numGauss \,\,stiffnessAeroTangent\, \,geometricNonLinearAero \}
-```
-where the default cell is `{4, false, true}`
 
 ### `elements.aeroCoefFunctions`
 If a frame aerodynamic analysis is desired, the drag, lift and pitch moment functions should be defined using this field. This field should contain a cell with either the strings of the functions or the definition of anonymous functions for draf lif and pitch moment in that order. Each function must receive as first input the incidence angle and as second the Reynolds number. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default thus there is no need to set this field.
@@ -186,13 +180,13 @@ This struct contains the parameters required to apply the numerical method for t
  * `stopTolIts`: integer with maximum number of iterations per time step
  * `deltaT`: time step
  * `finalTime`: final time of simulation
- * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. 
+ * `incremArcLen`: radius of the cylinder for the arcLength method. if scalar is provided then this is fixed during all times. if a vector is provided then for each time $t_i$ the entry $i$ of the vector will be used as radius. Default is $0.15$. 
  * `ALdominantDOF`: if this is not set or set as `[]` (zero) then the cylindical ArcLength method based on DeSouzaNeto's Computational Methods for plasticity is used, if a non-empty vector is provided, then the dominant dof arc length variant based on Jirásek & Bazant, Inelastic Analysis of Structures, 2002, Chapter 22, is used, the first entry is the dof and the second the scaling factor
  * `deltaNM`: delta parameter of newmark method. If this parameter is not declared then the classic Trapezoidal Newmark delta = $1/2$ is set.
  * `alphaNM`: alpha parameter of newmark method. If this parameter is not declared then the classic  Trapezoidal Newmark alpha = $1/4$ is set.
  * `alphaHHT`: alpha parameter of alpha-HHT method. If this parameter is not declared then alpha=$-0.05$ is set.
- * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor
- * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$.
+ * `posVariableLoadBC`: (parameter used by the arcLength method) this parameter is an integer with the entry of the _boundaryConds_ cell corresponding with the loads vector affected by the load factor. Default is `[]`.
+ * `iniDeltaLamb`: (parameter used by the arcLength method) this parameter sets the initial increment for the load factor $\lambda$. Default is $1e-3$.
 
 another additional optional parameters are:
 
@@ -204,8 +198,11 @@ the aerodynamic-frame element parameters set are
 * `fluidProps`: is a row cell with the density $\rho_f$, viscosity $\nu_f$ and the function with the fluid velocity  
 
 ```math
-\{ \rho_f; \,\, \nu_f; \,\, 'fluidVelocity'\}
+\{ \rho_f, \,\, \nu_f, \,\, fluidVelocity\}
 ```
+ * `geometricNonLinearAero`: a boolean parameter. If it is set as `true` geometric nonlinearity (or reconfiguration) is considered in the computation of the aerodynamic forces vector of all frame elements of the model.
+ * `numGaussPointsAeroForce`:  number of Gauss integration points per element for the aerodynamic forces vector. Default is 4. 
+ * `computeAeroStiffnessMatrix`: a boolean to compute the aerodynamic forces stiffness matrix using a central difference algorithm. Default is `'false'`, since can affect performance.  
 
 ## The `otherParams` struct
 

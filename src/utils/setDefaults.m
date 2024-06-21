@@ -30,7 +30,6 @@ elements = checkOrSetDefault( elements, 'elemTypeParams'     , [] ) ;
 elements = checkOrSetDefault( elements, 'elemCrossSecParams' , [] ) ;
 elements = checkOrSetDefault( elements, 'chordVector'        , []         ) ;
 elements = checkOrSetDefault( elements, 'aeroCoefFunctions'  , {[],[],[]} ) ;
-elements = checkOrSetDefault( elements, 'aeroNumericalParams', {4, false, true} ) ;
 
 elements = setDefauAeroCrossSecProps( elements );
 
@@ -43,17 +42,19 @@ boundaryConds    =  checkOrSetDefault ( boundaryConds    , 'springDofs' , [] ) ;
 
 % =========================================
 % analysisSettings
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero' , true            ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'             , []              ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'addedMassBool'          , false           ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'      , false           ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                  , []              ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'             , 'newtonRaphson' ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'                 , 1               ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'              , 1               ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'          , 1e-6            ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'          , 1e-6            ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'             , 15              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'geometricNonLinearAero'     , true           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'numGaussPointsAeroForce'    , 4              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'computeAeroStiffnessMatrix' , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'fluidProps'                 , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'addedMassBool'              , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'booleanSelfWeight'          , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'Utp10'                      , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'methodName'                 , 'newtonRaphson') ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'deltaT'                     , 1              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'finalTime'                  , 1              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolDeltau'              , 1e-6           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolForces'              , 1e-6           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stopTolIts'                 , 15             ) ;
 if strcmp( analysisSettings.methodName, 'newmark' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaNM', 0.25 ) ;
   analysisSettings = checkOrSetDefault( analysisSettings , 'deltaNM', 0.50 ) ;
@@ -61,10 +62,12 @@ end
 if strcmp( analysisSettings.methodName, 'alphaHHT' )
   analysisSettings = checkOrSetDefault( analysisSettings , 'alphaHHT', -0.05 ) ;
 end
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag', 0              ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean' , 0              ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'ALdominantDOF'        , []             ) ;
-
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'stabilityAnalysisFlag'      , 0              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'modalAnalysisBoolean'       , 0              ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'ALdominantDOF'              , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'incremArcLen'               , 1.5            ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'iniDeltaLamb'               , 1e-3           ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'posVariableLoadBC'          , []             ) ;
 % =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;
