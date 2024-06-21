@@ -15,7 +15,7 @@ nu = 0.3 ;          % Poisson's ratio
 
 % geometry
 L1 = 3 ;              % m
-L2 = 6 ;
+L2 = 3 ;
 L3 = 3 ;
 ty = 0.3 ;              % width cross section
 tz = 0.3 ;              % height cross section
@@ -58,30 +58,50 @@ boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
 % Mesh
 % Mesh nodes
 mesh = struct();
-mesh.nodesCoords = [ 0      0       0 ; ...
-                     0      L1      0 ; ...
-                     0      L2      0 ; ...
-					 L3     L2      0 ; ...
-                     L3     L1      0 ; ...
-                     L3     0       0 ] ;
+mesh.nodesCoords = [ 0      0           0 ; ...
+                     0      L1/2        0 ; ...
+                     0      L1          0 ; ...
+                     0      L1 + L2/2   0 ; ...
+                     0      L1 + L2     0 ; ...
+                     L3/2   L1 + L2     0 ; ...
+                     L3/2   L1          0 ; ...
+                     L3     L1 + L2     0 ; ...
+                     L3     L1 + L2/2   0 ; ...
+                     L3     L1          0 ; ...
+                     L3     L1/2        0 ; ...
+                     L3     0           0 ] ;
+
 % Conec Cell
 mesh.conecCell = { } ;
 % nodes
-mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
-mesh.conecCell{6, 1 } = [ 0 1 1   6 ] ;
+mesh.conecCell{ 1, 1 } = [ 0 1 1   1 ] ;
+mesh.conecCell{12, 1 } = [ 0 1 1  12 ] ;
 
-mesh.conecCell{2, 1 } = [ 0 1 3   2 ] ;
-mesh.conecCell{3, 1 } = [ 0 1 2   3 ] ;
-mesh.conecCell{4, 1 } = [ 0 1 3   4 ] ;
-mesh.conecCell{5, 1 } = [ 0 1 3   5 ] ;
+mesh.conecCell{2, 1 }  = [ 0 1 3   2 ] ;
+mesh.conecCell{3, 1 }  = [ 0 1 3   3 ] ;
+mesh.conecCell{4, 1 }  = [ 0 1 3   4 ] ;
+mesh.conecCell{5, 1 }  = [ 0 1 2   5 ] ; % node with horizontal load applied
+mesh.conecCell{6, 1 }  = [ 0 1 3   6 ] ;
+mesh.conecCell{7, 1 }  = [ 0 1 3   7 ] ;
+mesh.conecCell{8, 1 }  = [ 0 1 3   8 ] ;
+mesh.conecCell{9, 1 }  = [ 0 1 3   9 ] ;
+mesh.conecCell{10, 1 } = [ 0 1 3  10 ] ;
+mesh.conecCell{11, 1 } = [ 0 1 3  11 ] ;
 
 % and frame elements
-mesh.conecCell{7, 1 }  = [ 1 2 0   1 2 ] ;
-mesh.conecCell{8, 1 }  = [ 1 2 0   2 3 ] ;
-mesh.conecCell{9, 1 }  = [ 1 2 0   3 4 ] ;
-mesh.conecCell{10, 1 } = [ 1 2 0   4 5 ] ;
-mesh.conecCell{11, 1 } = [ 1 2 0   5 6 ] ;
-mesh.conecCell{12, 1 } = [ 1 2 0   2 5 ] ;
+mesh.conecCell{13, 1 } = [ 1 2 0   1  2 ] ;
+mesh.conecCell{14, 1 } = [ 1 2 0   2  3 ] ;
+mesh.conecCell{15, 1 } = [ 1 2 0   3  4 ] ;
+mesh.conecCell{16, 1 } = [ 1 2 0   4  5 ] ;
+mesh.conecCell{17, 1 } = [ 1 2 0   5  6 ] ;
+mesh.conecCell{18, 1 } = [ 1 2 0   6  8 ] ;
+mesh.conecCell{19, 1 } = [ 1 2 0   3  7 ] ;
+mesh.conecCell{20, 1 } = [ 1 2 0   7 10 ] ;
+mesh.conecCell{21, 1 } = [ 1 2 0   8  9 ] ;
+mesh.conecCell{22, 1 } = [ 1 2 0   9 10 ] ;
+mesh.conecCell{23, 1 } = [ 1 2 0  10 11 ] ;
+mesh.conecCell{24, 1 } = [ 1 2 0  11 12 ] ;
+
 
 % InitialConditions
 % empty struct
@@ -91,13 +111,13 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1050) 1e-5*ones(1,1690) ] ;
+analysisSettings.incremArcLen       = [1e-5*ones(1,12000) ] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 100 ;
+analysisSettings.stopTolIts         = 30 ;
 analysisSettings.ALdominantDOF      = [1*6+1 1] ;
 
 %
@@ -109,13 +129,24 @@ otherParams.problemName = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
+rotations = matUs((4)*6+6,:) ;
+displacements = matUs((4)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(6) ;
+    for jj = 1:12
+    aux = modelSolutions{i}.localInternalForces(jj) ;
+    moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
+    if max(abs(moments_hist(1:3,i))) >= Mu
+       fprintf('Hinge in the element %2f at displacement %4.2f\r\n',jj,i) ;
+    end
+    end
+end
+
+moments_hist = zeros(4,length(modelSolutions)) ;
+for i =1:length(modelSolutions)
+    aux = modelSolutions{i}.localInternalForces(8) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
