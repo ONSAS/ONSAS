@@ -12,11 +12,11 @@ The data and properties of each structural model are defined through a set of de
 
 Each struct has its own _fields_ with specific names, used to store each corresponding property or information. Each field is obtained or assigned using _structName.fieldName_. A description of each struct and its fields follows at next. It is highly recommended to read the current sectiong following one of the examples presented in the documentation. 
 
-## The `materials` struct
+## `materials`
 
-The materials struct contains the information of the material behavior considered for each element.
+The materials vector of structs contains the information of the material behavior considered for each element.
 
-### `material.modelName`
+### `materials(i).modelName`
 
 This is field contains a string of the material model used to compute the internal forces of the structure. The models implemented in ONSAS are:
 
@@ -44,13 +44,13 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
 
  * `'elastic-rotLogStr'`: used for 1D elements (truss) under large displacements.
 
- * `'plastic'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: REVISAR!! $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
+ * `'plastic'`: an ElastoPlastic material with isotropic hardening given by the von mises flow rule for the plane strain element. The parameters are introduced as: $p_1=E$ , $p_2 = K$ and $p_3=\sigma_{Y,0}$.
 
  * `'plastic-rotEngStr'`: an ElastoPlastic material .
 
  * `'plastic-rotLogStr'`: an ElastoPlastic material .
 
-### `materials.modelParams`
+### `materials(i).modelParams`
 
 A vector with the properties of this material model.
 ```math
@@ -58,31 +58,31 @@ A vector with the properties of this material model.
 ```
 where $n_P$ is the number of parameters of the constitutive model and $\mathbf{p}$ is the vector of constitutive parameters.
 
-### `material.density`
+### `materials(i).density`
 
 This is the scalar value of the density of the material.
 
-### `material.nodalMass`
+### `materials(i).nodalMass`
 
 This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is assigned to nodes.
 
-## The `elements` struct
+## `elements`
 
-The elements struct contains the information about the type of finite elements used and their corresponding parameters.
+The element vector of structs contains the information about the type of finite elements used and their corresponding parameters.
 
-### `elements.elemType`
+### `elements(i).elemType`
 
 A string with the names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
 
-### `elements.elemTypeParams`
+### `elements(i).elemTypeParams`
 A scalar or vector with auxiliar params information, required for some element types:
 
  * `triangle` vector with parameters, the first parameter is an integer indicating if plane stress (1) or plane strain (2) case is considered.
 
-### `elements.massMatType`
+### `elements(i).massMatType`
 The `massMatType` field sets, for frame or truss elements, whether consistent or lumped mass matrix is used for the inertial term in dynamic analyses. The `massMatType` field should be set as a string variable: `'consistent'` or `'lumped'`,  and if it is not declared then by default the `'lumped'` mass matrix is set.
  
-### `elements.elemCrossSecParams`
+### `elements(i).elemCrossSecParams`
 This is a cell structure with the information of the geometry of the element.
 
 #### 1D elements
@@ -103,47 +103,48 @@ For `edge` elements the thickness is expected (for 2D load computations).
 See the `crossSectionProps.m` function for more details.
 
 
-
 #### 2D elements
 
 For 2D elements such as `triangle` in this field a float number representing the thickness of the element is set.   
 
-### `elements.aeroCoefFunctions`
+### `elements(i).aeroCoefFunctions`
 If a frame aerodynamic analysis is desired, the drag, lift and pitch moment functions should be defined using this field. This field should contain a cell with either the strings of the functions or the definition of anonymous functions for draf lif and pitch moment in that order. Each function must receive as first input the incidence angle and as second the Reynolds number. For some `elemCrossSecParams` like `'circle'` internal built-in functions are set as default thus there is no need to set this field.
 
 
-### `elements.chordVector`
+### `elements(i).chordVector`
 A vector with the three coordinates of the aerodynamic chord vector (the system of coordinates considered for this is the local reference system at the undeformed configuration)
 
 
-## The `boundaryConds` struct
+## `boundaryConds`
 
-### `boundaryConds.loadsCoordSys`
+The materials vector of structs contains the information of the boundary conditions of the finite element model.
+
+### `boundaryConds(i).loadsCoordSys`
 cell containing the coordinates system for the loads applied in each BC, each entry should be a `'global'` string or a `'local'`, or an empty array if no load is applied in that BC setting `[]`.
 
-### `boundaryConds.loadsTimeFact`
+### `boundaryConds(i).loadsTimeFact`
 cell with the inline function definitions of load factors of the loads applied of an empty array.
 
-### `boundaryConds.loadsBaseVals`
+### `boundaryConds(i).loadsBaseVals`
 cell with the (row) vector of the components of the load case
 ```math
 [ f_x,  \, m_x, \, f_y, \, m_y, \, f_z, \, m_z ]
 ```
 where $f_i$ are the components of forces and $m_i$ are the moments. Both forces or moments are considered per unit of length in the case of `truss`/`frame`/`edge` elements, or per unit of area in the case of `triangle`.
 
-### `boundaryConds.userLoadsFileName`
+### `boundaryConds(i).userLoadsFileName`
 string with the filename of the `.m` function file provided by the user that can be used to apply forces not given by time-varying loadFactors. This function file should be placed in the example folder and it must receive two arguments:  t (the time) and UsCell (a cell with: {the current displacement, velocity and acceleration} ). The function should one forces vector with the size of all the degrees of freedom of the problem (in global coordinates).
 
-### `boundaryConds.imposDispDofs`
+### `boundaryConds(i).imposDispDofs`
 vector or single local degree/s of freedom imposed (integers from 1 to 6)
 
-### `boundaryConds.imposDispVals`
+### `boundaryConds(i).imposDispVals`
 vector/s containing the value/s of the displacements imposed.
 
-### `boundaryConds.springDofs`
+### `boundaryConds(i).springDofs`
 vector with the local degrees of freedom of the node with springs (integers from 1 to 6)
 
-### `boundaryConds.springVals`
+### `boundaryConds(i).springVals`
 vector with the values of the springs stiffnesses.
 
 ## The `mesh` struct
