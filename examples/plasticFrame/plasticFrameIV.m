@@ -111,7 +111,7 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,63) 1e-4*ones(1,20)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,63) 1e-5*ones(1,69)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
@@ -191,7 +191,7 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments (KN.m)') ;
