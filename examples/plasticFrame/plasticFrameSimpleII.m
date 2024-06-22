@@ -6,25 +6,25 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
-EI  = 10000 ;           % KN.m^2
+EI  = 77650 ;           % KN.m^2
 kh1 = 29400 ;           % KN.m^2
-kh2 = 2730 ;
-Ks  = -kh1 ;            % KN.m
+kh2 = 273 ;
+Ks  = -18000 ;            % KN.m
 
 nu = 0.3 ;              % Poisson's ratio
 
 % geometry
-L1 = 3 ;                % m
-ty = 0.1 ;              % width cross section
-tz = 0.1 ;              % height cross section
+L1 = 2.5 ;                % m
+ty = 0.3 ;              % width cross section
+tz = 0.4 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
 
 E = EI/Inertia ;        % KN/m^2 [KPa]
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
-My = 50 ;
-Mu = 70 ;
+My = 268 ;
+Mu = 374 ;
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
@@ -86,14 +86,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,539) 1e-6*ones(1,3) 1e-7*ones(1,8)] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,1000)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [2*6+3 -1] ;
+analysisSettings.ALdominantDOF      = [1*6+3 -1] ;
 
 %
 otherParams = struct() ;
@@ -102,7 +102,7 @@ otherParams.problemName = 'plastic_2dframe' ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[ matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 rotations = matUs((2)*6+6,:) ;
 displacements = matUs((2)*6+3,:) ; % node with horizontal load applied
@@ -137,7 +137,7 @@ disp(Hinges) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(2) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -166,7 +166,7 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments (KN.m)') ;
