@@ -6,15 +6,15 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
-EI  = 10000 ;       % KN.m^2
-kh1 = 29400 ;       % KN.m^2
+EI  = 10000 ;           % KN.m^2
+kh1 = 29400 ;           % KN.m^2
 kh2 = 2730 ;
-Ks  = -kh1 ;        % KN.m
+Ks  = -kh1 ;            % KN.m
 
-nu = 0.3 ;          % Poisson's ratio
+nu = 0.3 ;              % Poisson's ratio
 
 % geometry
-L1 = 3 ;              % m
+L1 = 3 ;                % m
 L2 = 3 ;
 L3 = 3 ;
 ty = 0.1 ;              % width cross section
@@ -111,7 +111,7 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,63) 1e-5*ones(1,69)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,63) 1e-5*ones(1,100)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
