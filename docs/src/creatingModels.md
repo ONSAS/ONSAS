@@ -60,7 +60,7 @@ where $n_P$ is the number of parameters of the constitutive model and $\mathbf{p
 
 ### `material.density`
 
-This is a value of the density considered in the material model.
+This is the scalar value of the density of the material.
 
 ### `material.nodalMass`
 
