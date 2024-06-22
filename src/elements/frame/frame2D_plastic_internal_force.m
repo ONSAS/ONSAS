@@ -94,11 +94,7 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 tM_np1      = tM_n ;        % hinge moment
 
 % initialization
-if SH_boole_n == false
-   SH_boole_np1 = false ;
-else
-   SH_boole_np1 = true ;
-end
+SH_boole_np1 = SH_boole_n ;
 
 % ==========================================================
 % moments calculation
