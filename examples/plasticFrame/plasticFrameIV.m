@@ -6,7 +6,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
-EI  = 77650 ;       % KN.m^2
+EI  = 10000 ;       % KN.m^2
 kh1 = 29400 ;       % KN.m^2
 kh2 = 2730 ;
 Ks  = -kh1 ;        % KN.m
@@ -17,16 +17,16 @@ nu = 0.3 ;          % Poisson's ratio
 L1 = 3 ;              % m
 L2 = 3 ;
 L3 = 3 ;
-ty = 0.3 ;              % width cross section
-tz = 0.3 ;              % height cross section
+ty = 0.1 ;              % width cross section
+tz = 0.1 ;              % height cross section
 Inertia = tz*ty^3/12 ;  % m^4
 
 E = EI/Inertia ;        % KN/m^2 [KPa]
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
-My = 268 ;
-Mu = 374 ;
+My = 50 ;
+Mu = 70 ;
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
@@ -111,14 +111,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,12000) ] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,65) 1e-4*ones(1,20)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
 analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [1*6+1 1] ;
+analysisSettings.ALdominantDOF      = [4*6+1 1] ;
 
 %
 otherParams = struct() ;
@@ -133,20 +133,36 @@ rotations = matUs((4)*6+6,:) ;
 displacements = matUs((4)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
-moments_hist = zeros(4,length(modelSolutions)) ;
-for i =1:length(modelSolutions)
-    for jj = 1:12
-    aux = modelSolutions{i}.localInternalForces(jj) ;
-    moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
-    if max(abs(moments_hist(1:3,i))) >= Mu
-       fprintf('Hinge in the element %2f at displacement %4.2f\r\n',jj,i) ;
-    end
-    end
-end
+Hinges = zeros(12,3) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(8) ;
+    for jj = 1:12
+    
+        aux = modelSolutions{i}.localInternalForces(jj) ;
+        moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
+
+        if abs(moments_hist(1,i)) >= Mu && Hinges(jj,1) == false
+        
+            Hinges(jj,1) = true ;
+
+        elseif abs(moments_hist(2,i)) >= Mu && Hinges(jj,2) == false
+        
+            Hinges(jj,2) = true ;
+
+        elseif abs(moments_hist(3,i)) >= Mu && Hinges(jj,3) == false
+        
+            Hinges(jj,3) = true ;
+
+        end
+    end
+end
+
+disp(Hinges) ;
+
+moments_hist = zeros(4,length(modelSolutions)) ;
+for i =1:length(modelSolutions)
+    aux = modelSolutions{i}.localInternalForces(7) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -175,10 +191,10 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
-laby = ylabel('Moments tMn') ;
+laby = ylabel('Moments (KN.m)') ;
 
 legend('ONSAS tMn [y]', 'location', 'Southeast') ;
 
