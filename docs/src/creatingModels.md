@@ -52,7 +52,7 @@ p_2 = \frac{ E }{ 2 (1+\nu) }
 
 ### `materials.modelParams`
 
-A vector with the material properties of each material used in the model. The $i$-th entry of the vector, contains:
+A vector with the properties of this material model.
 ```math
 [ p_1 \dots p_{n_P} ]
 ```
