@@ -40,17 +40,16 @@ for ip = 1:npi
   Bv = [N(1) N(3)] ;
   Btheta = [N(2) N(4)] ;
   
-  Ghat = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ip)/l)) ;
+  Ghats(ip) = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ip)/l)) ;
 
-  khatxpi = Bv*vvector + Btheta*thetavector + Ghat*alfa ;
+  khatxpi = Bv*vvector + Btheta*thetavector + Ghats(ip)*alfa ;
   kenxpi = khatxpi - kp(ip) ;
 
   % moments Mn at integration points, corresponding to time n + 1
   Mnp1(ip) = E*Iy*kenxpi ;
 
   % tM calculated with the moments Mn corresponding to time n + 1
-  tM = tM - Ghat*Mnp1(ip)*wpi(ip) ;
-  Ghats(ip) = Ghat ;
+  tM = tM - Ghats(ip)*Mnp1(ip)*wpi(ip) ;
 
 end
 
