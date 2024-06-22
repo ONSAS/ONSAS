@@ -81,7 +81,7 @@ xi2_n       = params_plastic_2Dframe(7) ;
 SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active the softening state
 xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
 alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
-tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
+% tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
 xdi_n       = params_plastic_2Dframe(12) ;  % number of the integration point where is the hinge
 
 % candidates for state var for time n + 1
@@ -91,7 +91,7 @@ xi2_np1     = xi2_n ;
 xd_np1      = xd_n ;
 alfa_np1    = alfa_n ;      % alpha in time n
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
-tM_np1      = tM_n ;        % hinge moment
+% tM_np1      = tM_n ;        % hinge moment
 
 % initialization
 SH_boole_np1 = SH_boole_n ;
@@ -104,7 +104,7 @@ SH_boole_np1 = SH_boole_n ;
 % and calculation of values of internal parameters at integration points
 
 % initial values of bulk moments
-[Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 % ==========================================================
 % solve local equations
