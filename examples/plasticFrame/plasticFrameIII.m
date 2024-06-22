@@ -7,6 +7,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
 EI  = 77650 ;       % KN.m^2
+EI  = 10000 ;
 kh1 = 29400 ;       % KN.m^2
 kh2 = 2730 ;
 Ks  = -kh1 ;        % KN.m
@@ -19,6 +20,8 @@ L2 = 6 ;
 L3 = 3 ;
 ty = 0.3 ;              % width cross section
 tz = 0.3 ;              % height cross section
+ty = 0.1 ;
+Tz = 0.1 ;
 Inertia = tz*ty^3/12 ;  % m^4
 
 E = EI/Inertia ;        % KN/m^2 [KPa]
@@ -27,6 +30,9 @@ A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 374 ;
+
+My = 50 ;
+Mu = 70 ;
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
@@ -91,13 +97,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1050) 1e-5*ones(1,1690) ] ;
+% analysisSettings.incremArcLen       = [1e-4*ones(1,1050) 1e-5*ones(1,1690) ] ;
+analysisSettings.incremArcLen       = 1e-3*ones(1,300) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-14 ;
+analysisSettings.stopTolDeltau      = 1e-8 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 100 ;
+analysisSettings.stopTolIts         = 30 ;
 analysisSettings.ALdominantDOF      = [1*6+1 1] ;
 
 %
