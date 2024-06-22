@@ -39,7 +39,6 @@ npi       = length(xpi) ;
 qs        = zeros(npi,1) ;
 phis_test = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
-Mnp1      = zeros(npi,1) ;
 
 for ip = 1:npi
 

@@ -131,7 +131,7 @@ if SH_boole_n == true || SH_boole_np1 == true
 
   Cep_np1 = ones(3,1)*E*Iy ;
 
-  kp_np1 = kp_n ;
+  kp_np1  = kp_n ;
   xi1_np1 = xi1_n ;
   
 end
@@ -143,7 +143,7 @@ for ii = 1:npi
 
         SH_boole_np1 = true ;
 
-        xd_np1 = xpi(ii) ;
+        xd_np1  = xpi(ii) ;
         xdi_np1 = ii ;
 
     end
