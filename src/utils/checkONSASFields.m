@@ -36,11 +36,9 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
             analysisSettingsDefaultFields{end +1} = 'alphaHHT' ;
         end                      
     end
-    analysisSettings
     if isfield(analysisSettings, 'alphaHHT')
         analysisSettingsDefaultFields{end +1} = 'alphaHHT'
     end
-    analysisSettingsDefaultFields
 
   checkFields(analysisSettings, analysisSettingsDefaultFields)
 
