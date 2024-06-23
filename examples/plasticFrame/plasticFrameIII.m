@@ -120,6 +120,33 @@ rotations = matUs((2)*6+6,:) ;
 displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
+Hinges = zeros(6,3) ;
+
+moments_hist = zeros(4,length(modelSolutions)) ;
+for i =1:length(modelSolutions)
+    for jj = 1:6
+    
+        aux = modelSolutions{i}.localInternalForces(jj) ;
+        moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
+
+        if abs(moments_hist(1,i)) >= Mu && Hinges(jj,1) == false
+        
+            Hinges(jj,1) = true ;
+
+        elseif abs(moments_hist(2,i)) >= Mu && Hinges(jj,2) == false
+        
+            Hinges(jj,2) = true ;
+
+        elseif abs(moments_hist(3,i)) >= Mu && Hinges(jj,3) == false
+        
+            Hinges(jj,3) = true ;
+
+        end
+    end
+end
+
+disp(Hinges) ;
+
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
     aux = modelSolutions{i}.localInternalForces(6) ;
