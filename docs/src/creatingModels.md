@@ -14,7 +14,7 @@ Each struct has its own _fields_ with specific names, used to store each corresp
 
 ## `materials`
 
-The materials vector of structs contains the information of the material behavior considered for each element.
+The materials vector of structs contains at each entry $i$ the information of the $i$-th material used in the `mesh.conecCell` for each element.
 
 ### `materials(i).modelName`
 
