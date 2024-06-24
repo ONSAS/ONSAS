@@ -68,7 +68,7 @@ This fields sets a vector of nodal masses components $[m_x, m_y, m_z]$ that is a
 
 ## `elements`
 
-The element vector of structs contains the information about the type of finite elements used and their corresponding parameters.
+The elements vector of structs contains at each entry $i$ the information of the $i$-th finte element type used in the `mesh.conecCell` for each element.
 
 ### `elements(i).elemType`
 
