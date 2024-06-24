@@ -117,7 +117,7 @@ A vector with the three coordinates of the aerodynamic chord vector (the system 
 
 ## `boundaryConds`
 
-The materials vector of structs contains the information of the boundary conditions of the finite element model.
+The boundary condtion vector of structs contains at each entry $i$ the information of the $i$-th boundary condtion used in the `mesh.conecCell` for each element.
 
 ### `boundaryConds(i).loadsCoordSys`
 cell containing the coordinates system for the loads applied in each BC, each entry should be a `'global'` string or a `'local'`, or an empty array if no load is applied in that BC setting `[]`.
