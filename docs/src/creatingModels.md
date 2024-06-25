@@ -136,7 +136,7 @@ where $f_i$ are the components of forces and $m_i$ are the moments. Both forces 
 string with the filename of the `.m` function file provided by the user that can be used to apply forces not given by time-varying loadFactors. This function file should be placed in the example folder and it must receive two arguments:  t (the time) and UsCell (a cell with: {the current displacement, velocity and acceleration} ). The function should one forces vector with the size of all the degrees of freedom of the problem (in global coordinates).
 
 ### `boundaryConds(i).imposDispDofs`
-vector or single local degree/s of freedom imposed (integers from 1 to 6)
+vector with the local degrees of freedom imposed (integers from 1 to 6)
 
 ### `boundaryConds(i).imposDispVals`
 vector/s containing the value/s of the displacements imposed.
