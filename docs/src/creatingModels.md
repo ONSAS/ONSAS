@@ -72,7 +72,7 @@ The elements vector of structs contains at each entry $i$ the information of the
 
 ### `elements(i).elemType`
 
-A string with the names of the elements used: `node`, `truss`, `frame`, `triangle` or `tetrahedron`. Other auxiliar types such as `edge` are also available
+A string representing the type of element. The possible strings are: `node`, `truss`, `frame`, `edge`, `triangle` or `tetrahedron`.
 
 ### `elements(i).elemTypeParams`
 A scalar or vector with auxiliar params information, required for some element types:
