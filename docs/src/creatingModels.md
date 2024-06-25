@@ -139,7 +139,7 @@ string with the filename of the `.m` function file provided by the user that can
 vector with the local degrees of freedom imposed (integers from 1 to 6)
 
 ### `boundaryConds(i).imposDispVals`
-vector/s containing the value/s of the displacements imposed.
+vector with the values of the imposed displacements at the corresponding `imposDispDofs`.
 
 ### `boundaryConds(i).springDofs`
 vector with the local degrees of freedom of the node with springs (integers from 1 to 6)
