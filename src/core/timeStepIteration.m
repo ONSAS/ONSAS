@@ -122,17 +122,6 @@ KTtp1red = systemDeltauMatrix ;
 % compute stress at converged state
 [~, Stresstp1, ~, localInternalForces, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
-% localInternalForces
-%{
-if stateCellnp1(1,12)>0
-  disp("==========================================\n resultados convergidos }n ==========================")
-  stateCellnp1
-  fprintf(" alfa: ")
-  stateCellnp1(7)
-  stateCellnp1(10:11)
-end
-%}
-
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
 if stabilityAnalysisFlag == 2
