@@ -33,7 +33,7 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     elemDisps , params_plastic_2Dframe )
 
 % \/
-% called by the function assembler
+% called by assembler function 
 % /\
 
 % initial/deformed lengths
@@ -70,9 +70,7 @@ wpi = [1/3 4/3 1/3]*l*0.5 ;
 
 npi = length(xpi) ;
 
-% ==========================================================
 % candidate state variables
-% ==========================================================
 
 % renaming as local variables
 kp_n        = params_plastic_2Dframe(1:3) ;
@@ -96,64 +94,50 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 % initialization
 SH_boole_np1 = SH_boole_n ;
 
-% ==========================================================
-% moments calculation
-% ==========================================================
+% elastoplastic
+if SH_boole_n == false
 
-% integration (Gauss-Lobatto)
-% and calculation of values of internal parameters at integration points
-
-% initial values of bulk moments
-[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-% ==========================================================
-% solve local equations
-% ==========================================================
-
-if SH_boole_n == false && SH_boole_np1 == false
-
-  % elastic/plastic case without softening
+    % initial values of bulk moments
+    [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
   
-  % solve plastic bending step
-  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+    % solve plastic bending step
+    [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+    
+    [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-end
-
-% if in time tn+1 the hinge is initiated or it was already formed in time tn
-if SH_boole_n == true || SH_boole_np1 == true
-
-  % solve softening step
-  [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
-
-  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-  Cep_np1 = ones(3,1)*E*Iy ;
-
-  kp_np1  = kp_n ;
-  xi1_np1 = xi1_n ;
   
-end
+    % condition for the softening hinges activation / label SH_boole_np1 = true
+    for ii = 1:npi
 
-% condition for the softening hinges activation / label SH_boole_np1 = true
-for ii = 1:npi
+        if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
 
-    if abs(Mnp1(ii)) >= Mu && SH_boole_n == false
+            SH_boole_np1 = true ;
 
-        SH_boole_np1 = true ;
+            xd_np1  = xpi(ii) ;
+            xdi_np1 = ii ;
 
-        xd_np1  = xpi(ii) ;
-        xdi_np1 = ii ;
+        end
 
     end
 
+% softening
+else
+
+% initial values of bulk moments
+[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+  
+% solve softening step
+[alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+
+Cep_np1 = ones(3,1)*E*Iy ;
+kp_np1  = kp_n ;
+xi1_np1 = xi1_n ;
+
 end
 
-% ==========================================================
-% solve global equations
-% ==========================================================
-
+% stiffness matrices and internal forces
 [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats) ;
 
 if SH_boole_np1 == true
@@ -162,10 +146,7 @@ else
     Kelement = Kfd ;
 end
 
-% ==========================================================
 % outputs
-% ==========================================================
-
 Fintout = zeros(12,1) ;
 KTout   = zeros(12,12) ;
 
