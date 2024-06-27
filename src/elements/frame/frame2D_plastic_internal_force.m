@@ -98,7 +98,7 @@ SH_boole_np1 = SH_boole_n ;
 if SH_boole_n == false
 
 % initial values of bulk moments
-[Mnp1, ~, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+[Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 % solve plastic bending step
 [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
