@@ -78,7 +78,7 @@ nNodes = size( mesh.nodesCoords, 1 ) ;
 convDeltau   = zeros( size(U) ) ; 
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-previousStateCell = zeros( size(Conec,1), 12 ) ;  % ahora es la matriz que tiene todos los params plas para todos los elementos
+previousStateCell = zeros( size(Conec,1), 12 ) ;  % matrix of plastic parameters for all elements
 
 % comput internal forces and stresses
 [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, currTime, previousStateCell ) ;
