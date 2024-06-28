@@ -79,10 +79,11 @@ mesh.conecCell{5, 1 } = [ 0 1 3   5 ] ;
 % and frame elements
 mesh.conecCell{7, 1 }  = [ 1 2 0   1 2 ] ;
 mesh.conecCell{8, 1 }  = [ 1 2 0   2 3 ] ;
-mesh.conecCell{9, 1 }  = [ 1 2 0   3 4 ] ;
-mesh.conecCell{10, 1 } = [ 1 2 0   4 5 ] ;
-mesh.conecCell{11, 1 } = [ 1 2 0   5 6 ] ;
-mesh.conecCell{12, 1 } = [ 1 2 0   2 5 ] ;
+mesh.conecCell{9, 1 }  = [ 1 2 0   2 5 ] ;
+mesh.conecCell{10, 1 } = [ 1 2 0   3 4 ] ;
+mesh.conecCell{11, 1 } = [ 1 2 0   4 5 ] ;
+mesh.conecCell{12, 1 } = [ 1 2 0   5 6 ] ;
+
 
 % InitialConditions
 % empty struct
@@ -143,7 +144,7 @@ disp(Hinges) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(6) ;
+    aux = modelSolutions{i}.localInternalForces(3) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
