@@ -111,13 +111,13 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-5*ones(1,1400)] ;
+analysisSettings.incremArcLen       = 1e-5*ones(1,1400) ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 100 ;
+analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [2*6+1 1] ;
 
 %
