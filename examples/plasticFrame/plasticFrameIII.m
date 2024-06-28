@@ -143,7 +143,7 @@ disp(Hinges) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(1) ;
+    aux = modelSolutions{i}.localInternalForces(6) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
