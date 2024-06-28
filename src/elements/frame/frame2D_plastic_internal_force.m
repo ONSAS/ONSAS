@@ -80,18 +80,16 @@ xi1_n       = params_plastic_2Dframe(4:6) ;
 xi2_n       = params_plastic_2Dframe(7) ;
 SH_boole_n  = params_plastic_2Dframe(8) ;   % true if in the n time is active the softening state
 xd_n        = params_plastic_2Dframe(9) ;   % hinge coordinate
-alfa_n      = params_plastic_2Dframe(10) ;  % alpha in time n
-% tM_n        = params_plastic_2Dframe(11) ;  % hinge moment
-xdi_n       = params_plastic_2Dframe(12) ;  % number of the integration point where is the hinge
+xdi_n       = params_plastic_2Dframe(10) ;  % number of the integration point where is the hinge
+alfa_n      = params_plastic_2Dframe(11) ;  % alpha in time n
 
 % candidates for state var for time n + 1
-kp_np1      = kp_n ;
+kp_np1      = kp_n  ;
 xi1_np1     = xi1_n ;
 xi2_np1     = xi2_n ;
-xd_np1      = xd_n ;
-alfa_np1    = alfa_n ;      % alpha in time n
+xd_np1      = xd_n  ;
 xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
-% tM_np1      = tM_n ;        % hinge moment
+alfa_np1    = alfa_n ;      % alpha in time n
 
 % initialization
 SH_boole_np1 = SH_boole_n ;
@@ -176,16 +174,15 @@ KTout(dofsconv, dofsconv) = RMat*Kelement*RMat' ;
 fs = {Fintout} ;
 ks = {KTout} ;
 
-params_plastic_2Dframe_np1 = zeros(1,12) ;
+params_plastic_2Dframe_np1 = zeros(1,11) ;
 
 params_plastic_2Dframe_np1(1:3) = kp_np1 ;
 params_plastic_2Dframe_np1(4:6) = xi1_np1 ;
 params_plastic_2Dframe_np1(7)   = xi2_np1 ;
 params_plastic_2Dframe_np1(8)   = SH_boole_np1 ;
 params_plastic_2Dframe_np1(9)   = xd_np1 ;
-params_plastic_2Dframe_np1(10)  = alfa_np1 ;
-params_plastic_2Dframe_np1(11)  = tM_np1 ;
-params_plastic_2Dframe_np1(12)  = xdi_np1 ;
+params_plastic_2Dframe_np1(10)  = xdi_np1 ;
+params_plastic_2Dframe_np1(11)  = alfa_np1 ;
 
 Mzs_integrados = [ Fintout(6) Fintout(12)];
 fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;
