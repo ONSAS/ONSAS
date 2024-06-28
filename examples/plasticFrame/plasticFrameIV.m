@@ -8,8 +8,8 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 % material
 EI  = 77650 ;           % KN.m^2
 kh1 = 29400 ;           % KN.m^2
-kh2 = 2730 ;
-Ks  = -kh1 ;            % KN.m
+kh2 = 2730  ;
+Ks  = -18000;           % KN.m
 
 nu = 0.3 ;              % Poisson's ratio
 
@@ -111,14 +111,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,350) 1e-6*ones(1,500)] ;
+analysisSettings.incremArcLen       = [1e-5*ones(1,1400)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 50 ;
-analysisSettings.ALdominantDOF      = [4*6+1 1] ;
+analysisSettings.stopTolIts         = 100 ;
+analysisSettings.ALdominantDOF      = [2*6+1 1] ;
 
 %
 otherParams = struct() ;
