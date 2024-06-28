@@ -6,8 +6,8 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
-EI  = 40000 ;           % KN.m^2
-kh1 = 9400 ;           % KN.m^2
+EI  = 77650 ;           % KN.m^2
+kh1 = 29400 ;           % KN.m^2
 kh2 = 2730 ;
 Ks  = -kh1 ;            % KN.m
 

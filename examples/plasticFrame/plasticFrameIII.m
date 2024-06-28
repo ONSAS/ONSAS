@@ -7,7 +7,6 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 % material
 EI  = 77650 ;       % KN.m^2
-EI  = 10000 ;
 kh1 = 29400 ;       % KN.m^2
 kh2 = 2730 ;
 Ks  = -kh1 ;        % KN.m
@@ -20,8 +19,7 @@ L2 = 6 ;
 L3 = 3 ;
 ty = 0.3 ;              % width cross section
 tz = 0.3 ;              % height cross section
-ty = 0.1 ;
-Tz = 0.1 ;
+
 Inertia = tz*ty^3/12 ;  % m^4
 
 E = EI/Inertia ;        % KN/m^2 [KPa]
@@ -30,9 +28,6 @@ A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
 My = 268 ;
 Mu = 374 ;
-
-My = 50 ;
-Mu = 70 ;
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
@@ -97,14 +92,13 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-% analysisSettings.incremArcLen       = [1e-4*ones(1,1050) 1e-5*ones(1,1690) ] ;
-analysisSettings.incremArcLen       = [1e-4*ones(1,1000) ] ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,1050) 1e-5*ones(1,1700) ] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
 analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 30 ;
+analysisSettings.stopTolIts         = 50 ;
 analysisSettings.ALdominantDOF      = [1*6+1 1] ;
 
 %
@@ -149,7 +143,7 @@ disp(Hinges) ;
 
 moments_hist = zeros(4,length(modelSolutions)) ;
 for i =1:length(modelSolutions)
-    aux = modelSolutions{i}.localInternalForces(6) ;
+    aux = modelSolutions{i}.localInternalForces(1) ;
     moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 end
 Mn1_numericONSAS = moments_hist(1,:) ;
@@ -178,7 +172,7 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), tMn_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments tMn') ;
