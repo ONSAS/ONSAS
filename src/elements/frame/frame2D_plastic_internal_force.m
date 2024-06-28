@@ -58,7 +58,7 @@ dofsconv = [1 1+6 3 3+6 6 6+6] ;
 R = RotationMatrix(6, local2globalMats) ;
 RMat = R(dofsconv, dofsconv) ;
 
-Uvector = RMat'*[elemDisps([1,7]); elemDisps([3,9]); elemDisps([6,12])] ;
+Uvector = RMat'*elemDisps(dofsconv) ;
 
 uvector     = Uvector([1,2]) ;     % x
 vvector     = Uvector([3,4]) ;     % y
