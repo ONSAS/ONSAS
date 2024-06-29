@@ -143,4 +143,4 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
-print('-f1','../../../Tesis/tex/imagenes/DarvallMendisFrameLoadFactors.pdf','-dpdf') ;
+print('-f1','../../../Tesis/tex/imagenes/plasticFrameSimple.pdf','-dpdf') ;
