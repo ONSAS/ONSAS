@@ -184,5 +184,5 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Frame / Plasticity (load factors)') ;
 
-print('-f1','../../../Tesis/tex/imagenes/plasticFrameIIILoadFactors.pdf','-dpdf') ;
-print('-f2','../../../Tesis/tex/imagenes/plasticFrameIIIMomentstMn.pdf','-dpdf') ;
+print('-f1','../../../Tesis/tex/imagenes/plasticFrameIIILoadFactors.png','-dpng') ;
+print('-f2','../../../Tesis/tex/imagenes/plasticFrameIIIMomentstMn.png','-dpng') ;

@@ -565,5 +565,5 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
 title('Cantilever Beam / Plasticity (validation)') ;
 
-print('-f1','../../../Tesis/tex/imagenes/Load_factors.pdf','-dpdf') ;
-print('-f2','../../../Tesis/tex/imagenes/Validation.pdf','-dpdf') ;
+print('-f1','../../../Tesis/tex/imagenes/Load_factors.png','-dpng') ;
+print('-f2','../../../Tesis/tex/imagenes/Validation.png','-dpng') ;
