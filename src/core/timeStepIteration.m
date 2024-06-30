@@ -20,6 +20,9 @@
 % user.
 function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
+% global booleanConverged
+% global timeIndex
+
 % assign current time (t) variables
 % ---------------------------------
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
@@ -63,16 +66,22 @@ systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
 previousStateCell  = modelCurrSol.previousStateCell  ;
 
 % --- assemble system of equations ---
+
 [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
 
 booleanConverged = false ;
 dispIters        = 0     ;
 currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 
+% disp(' ==========================================================') ;
+% disp(' /\  /\  /\  /\  /\  BEGIN NEW ITERATION /\  /\  /\  /\  /\') ;
+
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
+
+% disp(' =================== ||  ITERATION N || ===================') ;
 
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
@@ -100,6 +109,8 @@ while  booleanConverged == 0
 end % iteration while
 % --------------------------------------------------------------------
 
+% disp( '=================== ||  END ITERATION N || ===================') ;
+
 Utp1       = Utp1k ;
 Udottp1    = Udottp1k ;
 Udotdottp1 = Udotdottp1k ;
@@ -108,7 +119,7 @@ Udotdottp1 = Udotdottp1k ;
 KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
-[~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
+[~, Stresstp1, ~, localInternalForces, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
@@ -136,17 +147,18 @@ currTime   = nextTime ;
 timeStepStopCrit = stopCritPar ;
 timeStepIters = dispIters ;
 
-for i = 1:size(Stress,1)
-	previousStateCell(i,1) = {Stress(i,:)} ;
-end
+%~ for i = 1:size(Stress,1)
+	%~ previousStateCell(i,1) = {Stress(i,:)} ;
+%~ end
 
-previousStateCell(:,2) = strain_vec ;
-previousStateCell(:,3) = acum_plas_strain_vec ;
+%~ previousStateCell(:,2) = strain_vec ;
+%~ previousStateCell(:,3) = acum_plas_strain_vec ;
+%~ previousStateCell(:,4) = params_plastic_2Dframe ;
 
 modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, stateCellnp1 ) ;
 
 % ==============================================================================
 % ==============================================================================

@@ -18,18 +18,17 @@
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
   systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
-global arcLengthFlag % 1: cylindrical 2: jirasek
 if isempty( analysisSettings.ALdominantDOF )
-  arcLengthFlag = 1 ;
+  arcLengthFlag = 1 ; % cylindrical
 else
-  arcLengthFlag = 2 ;
+  arcLengthFlag = 2 ; % dominant-dof
 end
 
 if strcmp( analysisSettings.methodName, 'arcLength' )
 
   arcLengthNorm = args{1} ;
   incremArcLen = args{2} ;
-
+  
   aux = systemDeltauMatrix \ systemDeltauRHS ;
 					
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
@@ -44,17 +43,17 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     end
   
   elseif arcLengthFlag == 2 % Jirasek approach
-		
-  	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+	
+    cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek  	
 
-		% Variables to be defined by user
+    % Variables to be defined by user
 		dominantDofs = analysisSettings.ALdominantDOF(1);
 		scalingProjection = analysisSettings.ALdominantDOF(2);
 		% Projection matrix
 		cMatrix(dominantDofs) = scalingProjection ;
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
-	
-		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
+
+    deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
   
   elseif arcLengthFlag == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
@@ -97,5 +96,8 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   deltaured = deltauast + deltalambda(1) * deltaubar ;
 
   else   % incremental displacement
+  
+  %~ full(systemDeltauMatrix)
+  
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
   end
