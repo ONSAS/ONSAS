@@ -9,7 +9,7 @@ addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
 EI  = 77650 ;           % KN.m^2
 kh1 = 29400 ;           % KN.m^2
 kh2 = 2730  ;
-Ks  = -18000;           % KN.m
+Ks  = -kh1;           % KN.m
 
 nu = 0.3 ;              % Poisson's ratio
 
@@ -25,8 +25,8 @@ E = EI/Inertia ;        % KN/m^2 [KPa]
 
 A  = ty*tz ;            % m^2
 Mc = 37.9 ;             % KN.m
-My = 50 ;
-Mu = 70 ;
+My = 268 ;
+Mu = 374 ;
 
 % /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
@@ -111,13 +111,13 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = 1e-5*ones(1,1400) ;
+analysisSettings.incremArcLen       = [1e-4*ones(1,500) 1e-5*ones(1,90) 1e-6*ones(1,7)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
 analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 50 ;
+analysisSettings.stopTolForces      = 1e-12 ;
+analysisSettings.stopTolIts         = 1000 ;
 analysisSettings.ALdominantDOF      = [2*6+1 1] ;
 
 %
@@ -142,15 +142,15 @@ for i =1:length(modelSolutions)
         aux = modelSolutions{i}.localInternalForces(jj) ;
         moments_hist(:,i) = [ aux.Mz; aux.Mz2; aux.Mz3; aux.tM ] ;
 
-        if abs(moments_hist(1,i)) >= Mu && Hinges(jj,1) == false
+        if abs(moments_hist(1,i)) > Mu && any(Hinges(jj,:)) == false
         
             Hinges(jj,1) = true ;
 
-        elseif abs(moments_hist(2,i)) >= Mu && Hinges(jj,2) == false
+        elseif abs(moments_hist(2,i)) > Mu && any(Hinges(jj,:)) == false
         
             Hinges(jj,2) = true ;
 
-        elseif abs(moments_hist(3,i)) >= Mu && Hinges(jj,3) == false
+        elseif abs(moments_hist(3,i)) > Mu && any(Hinges(jj,:)) == false
         
             Hinges(jj,3) = true ;
 

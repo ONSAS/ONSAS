@@ -96,14 +96,14 @@ initialConds = struct() ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-analysisSettings.incremArcLen       = [1e-3*ones(1,171) 1e-5*ones(1,1130) 1e-7*ones(1,5000)] ;
+analysisSettings.incremArcLen       = [1e-3*ones(1,160) 1e-4*ones(1,250)] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
 analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [3*6+1 1] ;
+analysisSettings.stopTolDeltau      = 1e-10 ;
+analysisSettings.stopTolForces      = 1e-10 ;
+analysisSettings.stopTolIts         = 200 ;
+analysisSettings.ALdominantDOF      = [4*6+1 1] ;
 
 %
 otherParams = struct() ;
@@ -114,8 +114,8 @@ otherParams.problemName = 'plastic_2dframe' ;
 
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
-rotations = matUs((2)*6+6,:) ;
-displacements = matUs((2)*6+1,:) ; % node with horizontal load applied
+rotations = matUs((3)*6+6,:) ;
+displacements = matUs((3)*6+1,:) ; % node with horizontal load applied
 loadfactors = loadFactorsMat(:,2) ;
 
 Hinges = zeros(7,3) ;
@@ -157,7 +157,7 @@ tMn_numericONSAS = moments_hist(4,:) ;
 
 % Plots
 
-lw = 2 ; ms = 1 ; plotfontsize = 14 ;
+lw = 2 ; ms = 1 ; plotfontsize = 14 ; step = 10 ;
 
 figure('Name','Frame / Plasticity (load factors)','NumberTitle','off') ;
 hold on, grid on
@@ -176,12 +176,15 @@ title('Frame / Plasticity (load factors)') ;
 figure('Name','Frame / Plasticity (Moments)','NumberTitle','off') ;
 hold on, grid on
 
-plot(abs(displacements), abs(tMn_numericONSAS), '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
+plot(abs(displacements(1:step:length(tMn_numericONSAS))), tMn_numericONSAS(1:step:length(tMn_numericONSAS)), '-x', 'linewidth', lw, 'markersize', ms*6, "Color", "#0072BD") ;
+plot(abs(displacements), Mn1_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+plot(abs(displacements), Mn2_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#77AC30") ;
+plot(abs(displacements), Mn3_numericONSAS, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#A2142F") ;
 
 labx = xlabel('Displacements (m)') ;
 laby = ylabel('Moments tMn') ;
 
-legend('ONSAS tMn [y]', 'location', 'Southeast') ;
+legend('ONSAS tMn [y]', 'ONSAS Mn1 [y]', 'ONSAS Mn2 [y]', 'ONSAS Mn3 [y]', 'location', 'Southeast') ;
 
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize ) ;
 set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
