@@ -40,6 +40,16 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
       deltalambda = analysisSettings.iniDeltaLamb ;
     else 
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+
+      % Follow the sign of the predictor work increment
+      % Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
+      % sign(deltaubar'*Fext)
+     
+      % Follow the sign of the stiffness determinant
+      % detKT = det(systemDeltauMatrix) ;
+      
+      % deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+    
     end
   
   elseif arcLengthFlag == 2 % Jirasek approach
@@ -100,4 +110,4 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   %~ full(systemDeltauMatrix)
   
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
-  end
+end
