@@ -53,7 +53,7 @@ Ks  = modelParams(7) ;
 
 % kinematic variables
 % Rotation of coordinates
-local2globalMats = beamParameters(elemNodesxyzRefCoords') ;
+local2globalMats = beamParameters(elemNodesxyzRefCoords)' ;
 dofsconv = [1 1+6 3 3+6 6 6+6] ;
 R = RotationMatrix(6, local2globalMats) ;
 RMat = R(dofsconv, dofsconv) ;
