@@ -184,5 +184,5 @@ params_plastic_2Dframe_np1(9)   = xd_np1 ;
 params_plastic_2Dframe_np1(10)  = xdi_np1 ;
 params_plastic_2Dframe_np1(11)  = alfa_np1 ;
 
-Mzs_integrados = [ Fintout(6) Fintout(12)];
+Mzs_integrados = [ Fintout(6) Fintout(12) ];
 fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;
