@@ -31,6 +31,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   
   % cond(systemDeltauMatrix)
   % det(systemDeltauMatrix)
+  
   % if det(systemDeltauMatrix)<0
   %    det(systemDeltauMatrix)
   %    stop
@@ -84,8 +85,8 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
       disc = cb^2 - 4 * ca * cc ;
 
       if disc < 0
-        cc
-        disc
+        disp(cc) ;
+        disp(disc) ;
         num_reductions = num_reductions + 1 ;
         incremArcLen = incremArcLen * .5 ;
         warning( 'negative discriminant, reducing arc length time : %3i', num_reductions );
@@ -96,7 +97,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     end
 
     if disc < 0
-      disc, error( 'negative discriminant');
+      disp(disc), error( 'negative discriminant');
     end
 
     sols = -cb/(2*ca) + sqrt(disc) / (2*ca)*[-1 +1]' ;
