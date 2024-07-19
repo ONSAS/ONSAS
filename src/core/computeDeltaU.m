@@ -49,14 +49,15 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     else 
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
 
-      % Follow the sign of the predictor work increment
+      % Follow the sign of the predictor work increment (incremental work)
       % Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
       % sign(deltaubar'*Fext)
      
       % Follow the sign of the stiffness determinant
-      % detKT = det(systemDeltauMatrix) ;
+      detKT = det(systemDeltauMatrix) ;
+      % sign(detKT)
       
-      % deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+      deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     
     end
   
