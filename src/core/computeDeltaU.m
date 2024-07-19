@@ -28,7 +28,13 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 
   arcLengthNorm = args{1} ;
   incremArcLen = args{2} ;
-  
+  %cond(systemDeltauMatrix)
+  %det(systemDeltauMatrix)
+  %if det(systemDeltauMatrix)<0
+  %    det(systemDeltauMatrix)
+  %    stop
+  %end
+
   aux = systemDeltauMatrix \ systemDeltauRHS ;
 					
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
