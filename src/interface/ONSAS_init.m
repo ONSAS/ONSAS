@@ -78,10 +78,7 @@ nNodes = size( mesh.nodesCoords, 1 ) ;
 convDeltau   = zeros( size(U) ) ; 
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
-previousStateCell = cell( size(Conec,1), 3) ;
-previousStateCell(:,1) = {zeros( 1, 3 )} ;
-previousStateCell(:,2) = {zeros( 1, 3 )} ;
-previousStateCell(:,3) = {0} ;
+previousStateCell = zeros( size(Conec,1), 11 ) ;  % matrix of plastic parameters for all elements
 
 % comput internal forces and stresses
 [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, currTime, previousStateCell ) ;
@@ -96,6 +93,7 @@ nextTime = currTime + analysisSettings.deltaT ;
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell ) ;
 % =================================================================
+
 
 %md prints headers for solver output file
 printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  , [] ) ;

@@ -16,11 +16,11 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 %mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [ fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler( ...
-             Conec, elements, Nodes,...
-             materials, KS, Ut, Udott, Udotdott,...
-             analysisSettings, outputBooleans, nodalDispDamping,...
-             timeVar, previousStateCell )
+
+function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateCellnp1 ] = assembler( Conec, elements, Nodes,...
+                                                           materials, KS, Ut, Udott, Udotdott,...
+                                                           analysisSettings, outputBooleans, nodalDispDamping,...
+                                                           timeVar, previousStateCell )
 
 % ====================================================================
 %  --- 1 declarations ---
@@ -76,12 +76,12 @@ end
 localInternalForces = struct();
 
 % Previous state
-stress_n_vec           =  previousStateCell(:,1) ;
-strain_n_vec           =  previousStateCell(:,2) ;
-acum_plas_strain_n_vec =  previousStateCell(:,3) ;
+%~ stress_n_vec           =  previousStateCell(:,1) ;
+%~ strain_n_vec           =  previousStateCell(:,2) ;
+%~ acum_plas_strain_n_vec =  previousStateCell(:,3) ;
 
-strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
-acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
+%~ strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
+%~ acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
                   || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
@@ -91,6 +91,9 @@ dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
 % ====================================================================
 %  --- 2 loop assembly ---
 % ====================================================================
+
+
+stateCellnp1 = zeros( size(previousStateCell) ) ;
 
 for elem = 1:nElems
 
@@ -202,6 +205,38 @@ for elem = 1:nElems
 
         Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
       end
+
+		elseif strcmp( modelName, 'plastic-2Dframe')
+
+      params_plastic_2Dframe = previousStateCell(elem,:) ;
+
+      [ fs, ks, fintLocCoord, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
+                                                                    elemCrossSecParams    , ...
+                                                                    modelParams , ...
+                                                                    elemDisps , params_plastic_2Dframe) ;
+
+      Nx = 0;   My = 0;   Mz = fintLocCoord(1) ;
+
+      localInternalForces(elem).Mz2 = fintLocCoord(2);
+      localInternalForces(elem).Mz3 = fintLocCoord(3);
+      localInternalForces(elem).tM  = fintLocCoord(4);
+      localInternalForces(elem).Mz_integrado_izq  = fintLocCoord(5);
+      localInternalForces(elem).Mz_integrado_der  = fintLocCoord(6);
+
+      Finte = fs{1} ;  Ke = ks{1} ;
+
+      stateCellnp1(elem,:) = aux ;
+	
+      if dynamicProblemBool
+        [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
+                                            [ 1 modelParams ], elemDisps, ...
+                                            dotdispsElem, dotdotdispsElem  , ...
+                                            density, massMatType, analysisSettings ) ;
+
+
+        Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
+      end
+
     else
       error('wrong modelName for frame element.')
     end
@@ -433,4 +468,3 @@ end
 % _____&&&&&&&&&&&&&& GENERALIZAR PARA RELEASES &&&&&&&&&&&&&&&
 function elemDisps = u2ElemDisps( U, dofselem)
 elemDisps = U( dofselem ) ;
-

@@ -21,6 +21,8 @@
 %
 function [ matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
+global historic_parameters
+
 % initialize structures to store solutions
 matUs          = modelCurrSol.U                   ;
 loadFactorsMat = modelCurrSol.currLoadFactorsVals ;
@@ -46,10 +48,15 @@ iterations_strop_crit_vec = [ 0 0 0 ] ;
 plotted_bars = 0 ; aux_time = cputime() ;
 
 while finalTimeReachedBoolean == false
-  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars);
+
+  % disp(' ====================================================') ;
+  % disp(' /\  /\  /\  /\  /\  NEW TIME STEP /\  /\  /\  /\  /\') ;
+  plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars) ;
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+
+  historic_parameters = [ historic_parameters ;  modelNextSol.previousStateCell ] ;
 
   % iterations average
   iterations_average = ...
@@ -72,7 +79,7 @@ while finalTimeReachedBoolean == false
 	cellFint{end+1}  	= modelCurrSol.localInternalForces ;
 	cellStress{end+1}	= modelCurrSol.Stress ;
 
-  modelSolutions{end+1} = modelCurrSol;
+  modelSolutions{end+1} = modelCurrSol ;
 
   % generate vtk file for the new state
   if strcmp( modelProperties.plots_format, 'vtk' )
