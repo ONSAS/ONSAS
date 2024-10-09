@@ -18,10 +18,12 @@
 function Mat = myCell2Mat( Cell )
 
 if iscell( Cell )
-  nCellRows = size(  Cell,      1 ) ;
+  [a,b] = size(  Cell); % checks that either cell is a "column" or a "row"
+  assert(min(a,b)==1) ;
+  nCellRows = max(a,b) ;
   Mat       = zeros( nCellRows, 1 ) ;
   for i = 1:nCellRows
-    aux                   = Cell{i,1} ;
+    aux                   = Cell{i} ;
     Mat ( i,1:length(aux)) = aux ;
   end
 elseif ismatrix( Cell )
