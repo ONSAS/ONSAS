@@ -44,7 +44,6 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     end
   
   elseif arcLengthFlag == 2 % Jirasek approach
-		
   	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
 
 		% Variables to be defined by user
@@ -52,6 +51,8 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 		scalingProjection = analysisSettings.ALdominantDOF(2);
 		% Projection matrix
 		cMatrix(dominantDofs) = scalingProjection ;
+    neumDofs
+    stop
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
 	
 		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
