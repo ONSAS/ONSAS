@@ -114,9 +114,9 @@ Conec( elemsToRemove, :  ) = [] ;
 
 %md a zeros-filled vector is created
 neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
-nnodes
-length(neumDofs)
-stop
+# nnodes
+# length(neumDofs)
+# stop
 %md loop for construction of vector of dofs
 for elemNum = 1:length( elementTypes )
 

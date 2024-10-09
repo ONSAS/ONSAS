@@ -8,10 +8,10 @@ Kplas = E*.1 ;
 sigma_Y_0 = 25e6 ;
 
 Lx = 2 ; Ly = 2 ;
-n_cells_x = 6 ;
+n_cells_x = 8 ;
 
 % 
-n_cells_y = round(n_cells_x*Ly/Lx);
+n_cells_y = round(n_cells_x*Ly/Lx) ;
 
 materials = struct();
 materials.modelName  = 'plastic-rotEngStr' ;
@@ -63,6 +63,8 @@ assert(mod(n_cells_x,2)==0)
 loadednode = n_nodes_x*n_nodes_y - n_cells_x/2 ;
 
 aux{ loadednode } = [ 0 1 3    loadednode ] ;
+aux{ loadednode-1 } = [ 0 1 3    loadednode-1 ] ;
+aux{ loadednode+1 } = [ 0 1 3    loadednode+1 ] ;
 
 for i=1:n_cells_x
     for j=1:n_cells_y
@@ -73,6 +75,7 @@ for i=1:n_cells_x
 
         aux{ end+1 } = [ 1 2 0  n1 n2 ] ;
         aux{ end+1 } = [ 1 2 0  n1 n3 ] ;
+        aux{ end+1 } = [ 1 2 0  n2 n3 ] ;
         aux{ end+1 } = [ 1 2 0  n1 n4 ] ;
     end
 end
@@ -93,12 +96,12 @@ initialConds                = struct() ;
 analysisSettings = struct();
 analysisSettings.methodName    = 'arcLength' ;
 analysisSettings.deltaT        =   1  ;
-analysisSettings.finalTime     =   30    ;
+analysisSettings.finalTime     =   300    ;
 
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   15   ;
-analysisSettings.incremArcLen  =   1e-4   ;
+analysisSettings.incremArcLen  =   [1e-4*ones(1,20) 1e-3*ones(1,280) ]   ;
 
 analysisSettings.posVariableLoadBC = 3 ;
 analysisSettings.ALdominantDOF = [ (loadednode-1)*6+3 -1];
@@ -114,7 +117,6 @@ otherParams.plots_format = 'vtk' ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-stop
 
 deltas = -matUs(6+5,:)' ;
 eles = sqrt( x2^2 + (z2-deltas).^2 ) ;
