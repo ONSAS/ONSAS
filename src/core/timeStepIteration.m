@@ -73,7 +73,7 @@ while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
   dispIters = dispIters + 1 ;
-  
+
   % solve system
   [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
 
