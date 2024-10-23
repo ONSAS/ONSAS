@@ -197,6 +197,7 @@ difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md
 %md### Analysis case 5: NR-AL Jirasek variant
 %md
+elements(2).elemCrossSecParams = { 'rectangle' , [sqrt(A) sqrt(A)] } ;
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
 analysisSettings.incremArcLen = 0.15                                     ;
 %md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
