@@ -150,6 +150,7 @@ difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactor
 %md
 %md### Analysis case 3: NR with Green Strain
 %md In order to perform a SVK case analysis, the material is changed and the problemName is also updated
+elements(2).elemCrossSecParams = { 'generic' , [A 1 1 1] } ;
 otherParams.problemName  = 'staticVonMisesTruss_NR_Green';
 materials.modelName      = 'elastic-SVK' ;
 analysisSettings.finalTime =   1.0    ;

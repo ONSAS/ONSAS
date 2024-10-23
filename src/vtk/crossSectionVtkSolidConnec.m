@@ -50,8 +50,5 @@ function [ iniNodes, midNodes, endNodes, secc ] = crossSectionVtkSolidConnec( el
     endNodes = [ 5 6 7 8  ] ;
 
   else
-    iniNodes = [ ] ;
-    midNodes = [          ] ;
-    endNodes = [   ] ;
-
+    iniNodes = [ ]; midNodes = [ ]; endNodes = [ ];
   end
