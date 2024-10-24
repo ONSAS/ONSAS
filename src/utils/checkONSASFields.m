@@ -20,41 +20,49 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
   checkFields(materials, {'modelName', 'modelParams', 'density', 'nodalMass'})
 
   checkFields(elements, {'elemType', 'elemTypeParams','massMatType',...
-                            'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
+                         'elemCrossSecParams','aeroNumericalParams','aeroCoefFunctions','chordVector'});
 
-   analysisSettingsDefaultFields = {'geometricNonLinearAero', 'numGaussPointsAeroForce','computeAeroStiffnessMatrix',...
+  checkFields(boundaryConds, {'loadsCoordSys', 'loadsTimeFact','loadsBaseVals',...
+                         'userLoadsFilename','imposDispDofs','imposDispVals','springDofs','springVals'});
+
+  if length(initialConds)>0
+    checkFields(initialConds, {'U', 'Udot', 'Udotdot'});
+  end
+
+  analysisSettingsDefaultFields = ...
+   {'geometricNonLinearAero', 'numGaussPointsAeroForce','computeAeroStiffnessMatrix',...
     'fluidProps','addedMassBool','booleanSelfWeight','methodName','deltaT', 'finalTime', 'incremArcLen', 'iniDeltaLamb',...
      'stopTolDeltau', 'stopTolForces', 'stopTolIts','stabilityAnalysisFlag', 'modalAnalysisBoolean','posVariableLoadBC',...
       'ALdominantDOF'};
       
-    if isfield(analysisSettings, 'methodName')
-        if strcmp( analysisSettings.methodName, 'newmark' )
-            analysisSettingsDefaultFields{end +1} = 'alphaNM' ; 
-            analysisSettingsDefaultFields{end +1} = 'deltaNM' ; 
-        end
-        if strcmp( analysisSettings.methodName, 'alphaHHT' ) || isfield(analysisSettings, 'alphaHHT')
-            analysisSettingsDefaultFields{end +1} = 'alphaHHT' ;
-        end                      
-    end
-    analysisSettings
-    if isfield(analysisSettings, 'alphaHHT')
-        analysisSettingsDefaultFields{end +1} = 'alphaHHT'
-    end
-    analysisSettingsDefaultFields
+  if isfield(analysisSettings, 'methodName')
+    if strcmp( analysisSettings.methodName, 'newmark' )
+      analysisSettingsDefaultFields{end +1} = 'alphaNM' ; 
+      analysisSettingsDefaultFields{end +1} = 'deltaNM' ; 
+    elseif strcmp( analysisSettings.methodName, 'alphaHHT' ) || isfield(analysisSettings, 'alphaHHT')
+      analysisSettingsDefaultFields{end +1} = 'alphaHHT' ;
+    end                      
+  end
+  
+  if isfield(analysisSettings, 'alphaHHT')
+    analysisSettingsDefaultFields{end +1} = 'alphaHHT';
+  end
 
   checkFields(analysisSettings, analysisSettingsDefaultFields)
 
-
+  checkFields(otherParams, {'problemName', 'plots_format', ...
+    'plots_deltaTs_separation', 'controlDofs', 'storeBoolean', 'nodalDispDamping', 'exportFirstMatrices'});
+  
 function checkFields(mystruct, expectedFields)
 
-    myfields = fieldnames(mystruct);
-    len = length(expectedFields) ; % cell with expected fields
-    for i = 1:length(myfields)
-        j = 1;
-        while (j <= len) && (strcmp(myfields{i},expectedFields{j}) ~= 1)
-            j = j+1;
-        end
-        if j == (len+1)
-            error('The field %s is not a correct field name', myfields{i}) 
-        end     
+  myfields = fieldnames(mystruct);
+  len = length(expectedFields) ; % cell with expected fields
+  for i = 1:length(myfields)
+    j = 1;
+    while (j <= len) && (strcmp(myfields{i},expectedFields{j}) ~= 1)
+        j = j+1;
     end
+    if j == (len+1)
+      error('The field %s is not a correct field name', myfields{i}) 
+    end     
+  end

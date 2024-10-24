@@ -150,6 +150,7 @@ difLoadEngRot = analyticLoadFactorsNREngRot( controlDispsNREngRot)' - loadFactor
 %md
 %md### Analysis case 3: NR with Green Strain
 %md In order to perform a SVK case analysis, the material is changed and the problemName is also updated
+elements(2).elemCrossSecParams = { 'generic' , [A 1 1 1] } ;
 otherParams.problemName  = 'staticVonMisesTruss_NR_Green';
 materials.modelName      = 'elastic-SVK' ;
 analysisSettings.finalTime =   1.0    ;
@@ -197,6 +198,7 @@ difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen ;
 %md
 %md### Analysis case 5: NR-AL Jirasek variant
 %md
+elements(2).elemCrossSecParams = { 'rectangle' , [sqrt(A) sqrt(A)] } ;
 otherParams.problemName       = 'staticVonMisesTruss_NRAL_Jirasek_Green' ;
 analysisSettings.incremArcLen = 0.15                                     ;
 %md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
