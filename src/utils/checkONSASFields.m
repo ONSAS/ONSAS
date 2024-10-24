@@ -33,7 +33,7 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
    {'geometricNonLinearAero', 'numGaussPointsAeroForce','computeAeroStiffnessMatrix',...
     'fluidProps','addedMassBool','booleanSelfWeight','methodName','deltaT', 'finalTime', 'incremArcLen', 'iniDeltaLamb',...
      'stopTolDeltau', 'stopTolForces', 'stopTolIts','stabilityAnalysisFlag', 'modalAnalysisBoolean','posVariableLoadBC',...
-      'ALdominantDOF', 'exportFirstMatrices'};
+      'ALdominantDOF'};
       
   if isfield(analysisSettings, 'methodName')
     if strcmp( analysisSettings.methodName, 'newmark' )
@@ -51,7 +51,7 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
   checkFields(analysisSettings, analysisSettingsDefaultFields)
 
   checkFields(otherParams, {'problemName', 'plots_format', ...
-    'plots_deltaTs_separation', 'controlDofs', 'storeBoolean', 'nodalDispDamping'});
+    'plots_deltaTs_separation', 'controlDofs', 'storeBoolean', 'nodalDispDamping', 'exportFirstMatrices'});
   
 function checkFields(mystruct, expectedFields)
 
