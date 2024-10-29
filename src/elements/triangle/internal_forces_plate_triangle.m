@@ -47,7 +47,7 @@ i = 2; j = 2;  DD( nodes2dofs(i,3), nodes2dofs(j,3)) = D(i,j)*PP/DET ;
 i = 3; j = 3;  DD( nodes2dofs(i,3), nodes2dofs(j,3)) = D(i,j)*PP/DET ;
 i = 2; j = 1;  DD( nodes2dofs(i,3), nodes2dofs(j,3)) = D(i,j)*PP/DET ;
   
-ALS = 2*B.^2 + C.^2;
+ALS = B.^2 + C.^2;
 PT = [ (6*C./ALS)' ; (6*B./ALS)'] ;
 RS = [ (3*(C.^2)./ALS)' ; (3*(B.^2)./ALS)' ];
 Q = 3 * B .* C ./ ALS ;
