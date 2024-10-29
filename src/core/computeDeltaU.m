@@ -101,5 +101,6 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   deltaured = deltauast + deltalambda(1) * deltaubar ;
 
   else   % incremental displacement
-    deltaured = systemDeltauMatrix \ systemDeltauRHS ;
+    opts = struct(); opts.SYM = true; opts.POSDEF = true;
+    deltaured = linsolve(systemDeltauMatrix, systemDeltauRHS, opts) ;
   end
