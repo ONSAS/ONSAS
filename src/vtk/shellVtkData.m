@@ -22,8 +22,6 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
   vtkConec        = [] ;
   vtkNodalDisps   = [] ;
 
-  nPlotSubElements = 10 ; % number of plot subsegments
-  counterNodes     = 0 ;
   vtkInternalForcesNames = fieldnames( internalForces );
 
   nelem            = size(Conec,1) ;
@@ -57,16 +55,27 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
         ) ;
     normalVector = crossVector / norm(crossVector) ;
 
+    coordsThickness = tz*.5*[ ones(3,1);-ones(3,1)] * normalVector ;
+
     Nodesvtk =   [ Nodes( nodesElem,:) ; ...
                    Nodes( nodesElem,:) ] ... 
-               + tz*.5*[ ones(3,1);-ones(3,1)] * normalVector ;
+               +   coordsThickness ;
 
     % column vector with displacements of the dofs of the current element
     dispsElem  = U( dofsElem ) ;
 
-    aux = reshape( dispsElem(1:2:end)', [3, 3 ])' ;
+    aux  = reshape( dispsElem(1:2:end)', [3, 3 ])' ;
+    rots = reshape( dispsElem(2:2:end)', [3, 3 ])' ;
 
-    Dispsvtk = [aux; aux];
+    Dispsvtk = ...
+    [ (expon( rots(1,:) )*coordsThickness(1,:)')'; ...
+      (expon( rots(2,:) )*coordsThickness(2,:)')'; ...
+      (expon( rots(3,:) )*coordsThickness(3,:)')'; ...
+      (expon( rots(1,:) )*coordsThickness(4,:)')'; ...
+      (expon( rots(2,:) )*coordsThickness(5,:)')'; ...
+      (expon( rots(3,:) )*coordsThickness(6,:)')'] ...
+    - coordsThickness ...
+    + [aux; aux];
 
     Conecvtk = [ 13  (nodes2dofs(i,6)-1)' ] ;
 
