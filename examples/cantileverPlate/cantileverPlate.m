@@ -77,10 +77,26 @@ nelem=size(modelProperties.Conec,1);
 matSolic = getInternalForces( modelSolutions{end}.localInternalForces, 1:nelem, {'Mx','My','Mxy'} );
 numer_maxMx = max(max(matSolic));
 numer_wmax = min(matUs(5:6:end)) ;
+
+
+qx  = 1e3 ; % 1kN/m^2 
+
+elements(1).elemType = 'edge' ;
+elements(1).elemCrossSecParams = tz         ;
+
+elements(2).elemType           = 'triangle';
+elements(2).elemTypeParams     = 2         ;
+elements(2).elemCrossSecParams = tz         ;
+
 %md
 analy_maxMx = q*Lx/2 ;
 qlin = q*Ly;  I = Ly*tz^3/12;
 analy_wmax = -qlin*Lx^4/(8*E*I)  ;
+
+
+
+
+
 %md
 verifBoolean = (abs( analy_wmax - numer_wmax   ) / abs(analy_wmax))  < 1e-3  ...
             && (abs( analy_maxMx - numer_maxMx ) / abs(analy_maxMx)) < 5e-3 ;
