@@ -7,7 +7,8 @@ addpath( genpath( [ pwd '/../../src'] ) );
 E = 200e9 ;
 nu = 0.0 ;
 tz = .05 ;
-q  = 1e3 ; % 1kN/m^2 
+qx  = 1e3 ; % kN/m^2 
+qz  = 1e3 ; % kN/m^2 
 %md
 Ly = .5;
 Lx = 1 ;
@@ -23,6 +24,7 @@ materials(1).modelParams = [ E nu ] ;
 %md
 elements             = struct() ;
 elements(1).elemType = 'edge' ;
+elements(1).elemCrossSecParams = tz         ;
 elements(2).elemType = 'triangle-plate' ;
 elements(2).elemCrossSecParams = {'thickness', tz } ;
 %md
@@ -34,7 +36,11 @@ boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0 ] ;
 %
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsTimeFact = @(t) t  ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 0 -q 0 ] ;
+boundaryConds(2).loadsBaseVals = [0 0 0 0 -qz 0 ] ;
+%
+boundaryConds(3).loadsCoordSys = 'global' ;
+boundaryConds(3).loadsTimeFact = @(t) t  ;
+boundaryConds(3).loadsBaseVals = [ qx 0 0 0 0 0 ] ;
 %md
 %md### mesh
 %md
@@ -79,24 +85,25 @@ numer_maxMx = max(max(matSolic));
 numer_wmax = min(matUs(5:6:end)) ;
 
 
-qx  = 1e3 ; % 1kN/m^2 
-
-elements(1).elemType = 'edge' ;
-elements(1).elemCrossSecParams = tz         ;
+%md
+analy_maxMx = qz*Lx/2 ;
+qlin = qz*Ly;  I = Ly*tz^3/12;
+analy_wmax = -qlin*Lx^4/(8*E*I)  ;
 
 elements(2).elemType           = 'triangle';
 elements(2).elemTypeParams     = 2         ;
 elements(2).elemCrossSecParams = tz         ;
 
-%md
-analy_maxMx = q*Lx/2 ;
-qlin = q*Ly;  I = Ly*tz^3/12;
-analy_wmax = -qlin*Lx^4/(8*E*I)  ;
+[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+%mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
 
+numer_dxmax = max(matUs(1:6:end)) ;
 
-
-
+analy_dxmax = qx*Lx/E ;
 
 %md
 verifBoolean = (abs( analy_wmax - numer_wmax   ) / abs(analy_wmax))  < 1e-3  ...
-            && (abs( analy_maxMx - numer_maxMx ) / abs(analy_maxMx)) < 5e-3 ;
+            && (abs( analy_maxMx - numer_maxMx ) / abs(analy_maxMx)) < 5e-3 ...
+            && (abs( analy_dxmax - numer_dxmax ) / abs(analy_dxmax)) < 1e-3 ;
