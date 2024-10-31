@@ -26,13 +26,13 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  % Declare booleans for VIV model
-  global VIVBool
-  global ILVIVBool
-  global constantLiftDir
+  % fixed (by now) parameters
+  ILVIVBool       = false;
+  constantLiftDir = false;
+  % -------------------------------
+    
   global uniformUdot
   global fluidFlowBool
-
 
   AMBool = analysisSettings.addedMassBool ;
 
@@ -43,6 +43,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   densityFluid   = analysisSettings.fluidProps{1,1} ;
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
+  VIVBool        = analysisSettings.VIVBool         ;
 
   % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )
