@@ -105,13 +105,12 @@ analy_dxmax = qx*Lx/E ;
 
 
 elements(2).elemType           = 'triangle-shell';
+elements(2).elemCrossSecParams = {'thickness', tz } ;
 
 [ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 %mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
-
-stop
 
 %md
 verifBoolean = (abs( analy_wmax - numer_wmax   ) / abs(analy_wmax))  < 1e-3  ...

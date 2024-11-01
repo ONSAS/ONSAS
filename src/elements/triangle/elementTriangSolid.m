@@ -58,7 +58,7 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 
 		dstressdeps = De ;
 		stress = dstressdeps * strain ;
-		stress_n           = previous_state{1,:}(1:3)  ;
+		% stress_n           = previous_state{1,:}(1:3)  ;
 		
 	elseif strcmp( modelName, 'isotropicHardening') 
 		
