@@ -20,7 +20,7 @@ materials(1).modelParams = [ E nu ] ;
 %md
 elements             = struct() ;
 elements(1).elemType = 'node' ;
-elements(2).elemType = 'triangle-plate' ;
+elements(2).elemType = 'triangle-shell' ;
 elements(2).elemCrossSecParams = {'thickness', tz } ;
 %md
 %md### Boundary conditions
@@ -37,14 +37,14 @@ boundaryConds(2).loadsBaseVals = [1 0 0 0 -1 0 ] ;
 %md### mesh
 %md
 mesh = struct() ;
-mesh.nodesCoords = [ 0 0 0 ; 1 0 1; 1 1 1; 0 1 1 ];
+mesh.nodesCoords = [ 0 0 0 ; 1 0 1; 1 1 1; 0 1 0 ];
 mesh.conecCell = {
     [ 0 1 1 1 ];
     [ 0 1 1 4 ];
     [ 0 1 2 2 ];
     [ 0 1 2 3 ];
     [ 1 2 0 1 2 3 ];
-    [ 1 2 0 2 3 4 ];
+    [ 1 2 0 1 3 4 ];
 }
 ;
 
@@ -65,7 +65,7 @@ analysisSettings.stopTolIts    =   10      ;
 otherParams                  = struct() ;
 %md The name of the problem is:
 %md
-otherParams.problemName  = 'cantileverPlate' ;
+otherParams.problemName  = 'brinquedo' ;
 otherParams.plots_format = 'vtk' ;
 %md
 %md Execute ONSAS and save the results:
