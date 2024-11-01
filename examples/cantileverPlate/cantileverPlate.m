@@ -84,7 +84,6 @@ matSolic = getInternalForces( modelSolutions{end}.localInternalForces, 1:nelem, 
 numer_maxMx = max(max(matSolic));
 numer_wmax = min(matUs(5:6:end)) ;
 
-
 %md
 analy_maxMx = qz*Lx/2 ;
 qlin = qz*Ly;  I = Ly*tz^3/12;
@@ -100,7 +99,6 @@ elements(2).elemCrossSecParams = tz         ;
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
 
 numer_dxmax = max(matUs(1:6:end)) ;
-
 analy_dxmax = qx*Lx/E ;
 
 
@@ -112,7 +110,12 @@ elements(2).elemCrossSecParams = {'thickness', tz } ;
 %mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
 
+numer_dxmax_shell = max(matUs(1:6:end)) ;
+numer_wmax_shell  = min(matUs(5:6:end)) ;
+
 %md
 verifBoolean = (abs( analy_wmax - numer_wmax   ) / abs(analy_wmax))  < 1e-3  ...
             && (abs( analy_maxMx - numer_maxMx ) / abs(analy_maxMx)) < 5e-3 ...
-            && (abs( analy_dxmax - numer_dxmax ) / abs(analy_dxmax)) < 1e-3 ;
+            && (abs( analy_dxmax - numer_dxmax ) / abs(analy_dxmax)) < 1e-3 ...
+            && (abs( analy_wmax  - numer_wmax_shell  ) / abs(analy_wmax)) < 1e-3 ...
+            && (abs( analy_dxmax - numer_dxmax_shell ) / abs(analy_dxmax)) < 1e-3 ;
