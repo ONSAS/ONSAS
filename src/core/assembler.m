@@ -265,6 +265,22 @@ for elem = 1:nElems
     Finte = fs{1};
 		Ke    = ks{1};
 
+  elseif strcmp( elemType, 'triangle-shell')
+
+    thickness = elemCrossSecParams;
+    
+    [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, ...
+      modelParams, thickness ) ;
+
+    localInternalForces(elem).Mx  = fintLocCoord(1) ;
+    localInternalForces(elem).My  = fintLocCoord(2) ;
+    localInternalForces(elem).Mxy = fintLocCoord(3) ;
+
+    fs
+    stop
+    Finte = fs{1};
+		Ke    = ks{1};
+
   % ---------  tetrahedron solid element -----------------------------
   elseif strcmp( elemType, 'tetrahedron')
 

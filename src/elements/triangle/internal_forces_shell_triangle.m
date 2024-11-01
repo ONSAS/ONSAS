@@ -19,21 +19,9 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 
-
-#clear all
-#addpath(genpath('../..'))
-
-#elemCoords = [0,0,0, 2,0,0, 1,1,0]
-#modelName = 'elastic-linear'
-#modelParams = [1.e9, 0.0]
-#thickness = 1
-#elemDisps = zeros(18,1)
-#elemDisps([7, 13]) = [1, .5] 
-
 function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
     
     %calculating local coordinates and coordinates transformation matrix [T]
-
     p1 = elemCoords(1:3);
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
