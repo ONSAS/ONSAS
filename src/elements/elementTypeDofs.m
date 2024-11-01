@@ -50,5 +50,9 @@ elseif strcmp( elemType, 'triangle-plate')
   numNodes = 3 ;
   nodalDofsEntries = [5 2 4]' ; % assumed plate surface in x-y
 
+elseif strcmp( elemType, 'triangle-shell')
+  numNodes = 3 ;
+  nodalDofsEntries = [1 2 3 4 5 6]' ; % assumed plate surface in x-y
+
 end
 
