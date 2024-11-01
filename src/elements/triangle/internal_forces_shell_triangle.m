@@ -18,16 +18,19 @@
 % Implementation of a triangular finite element with 6 dfos (3 translations and 3 rotations) per node for the analysis of linear elastic isotropic shells with constant thickness.
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
-clear all
-addpath(genpath('../..'))
 
-elemCoords = [0,0,0, 2,0,0, 1,1,0]
-modelName = 'elastic-linear'
-modelParams = [1.e9, 0.0]
-thickness = 1
-elemDisps = zeros(18,1)
-elemDisps([7, 13]) = [1, .5] 
-%[ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+
+#clear all
+#addpath(genpath('../..'))
+
+#elemCoords = [0,0,0, 2,0,0, 1,1,0]
+#modelName = 'elastic-linear'
+#modelParams = [1.e9, 0.0]
+#thickness = 1
+#elemDisps = zeros(18,1)
+#elemDisps([7, 13]) = [1, .5] 
+
+function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
     
     %calculating local coordinates and coordinates transformation matrix [T]
 
@@ -102,3 +105,5 @@ elemDisps([7, 13]) = [1, .5]
 
     K = Ke(aux_onsas, aux_onsas);
     f = fe(aux_onsas);
+
+    ks = {K} ; fs = {f};
