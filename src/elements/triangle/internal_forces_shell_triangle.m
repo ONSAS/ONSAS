@@ -108,7 +108,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     ks = {K} ; fs = {f};
 
-    fintLocCoord = [ 0 0 0];
+    fintLocCoord = fintLocCoord_p;
 
 function [T] = local_axis_shell_triangle(p1,p2,p3);
 
