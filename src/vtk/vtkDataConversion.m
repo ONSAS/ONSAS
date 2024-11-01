@@ -92,7 +92,7 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
       vtkStress  = {} ;
 
 
-    elseif strcmp( elemTypeString, 'triangle-plate' )
+    elseif strcmp( elemTypeString, 'triangle-plate' ) || strcmp( elemTypeString, 'triangle-shell' )
 
       [ currVtkNodes, currVtkConec, currVtkNodalDisps, currVtkInternalForcesCell ] ...
         = shellVtkData( modP.Nodes, modP.Conec( elemIndsElemType, 4:end ), ...

@@ -18,22 +18,15 @@
 % Implementation of a triangular finite element with 6 dfos (3 translations and 3 rotations) per node for the analysis of linear elastic isotropic shells with constant thickness.
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
-clear all
-addpath(genpath('../..'))
 
-elemCoords = [0,0,0, 2,0,0, 1,1,0]
-modelName = 'elastic-linear'
-modelParams = [1.e9, 0.0]
-thickness = 1
-elemDisps = zeros(18,1)
-elemDisps([7, 13]) = [1, .5] 
-%[ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
     
     %calculating local coordinates and coordinates transformation matrix [T]
-
     p1 = elemCoords(1:3);
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
+
+
     
     p12 = p2 - p1;
     p13 = p3 - p1;
@@ -52,13 +45,18 @@ elemDisps([7, 13]) = [1, .5]
     planeStateFlag = 1; %plane stress
     dotdotdispsElem = 0;
     density = 0;
-    previous_state = {[0,0,0] , 0, 0};
+    previous_state = cell( 1, 3) ;
+    previous_state(:,1) = {zeros( 1, 3 )} ;
+    previous_state(:,2) = {zeros( 1, 3 )} ;
+    previous_state(:,3) = {0} ;
+
     elemDisps_m = elemDisps(1:2:end);
     [ fsm, ksm ] = elementTriangSolid( ...
     elemCoords_l, elemDisps_m, modelName, [0,modelParams], paramOut, thickness, planeStateFlag, dotdotdispsElem, density, previous_state );
 
     %plate: calculation of internal forces and stiffness matrix
-    aux_plate = [2,4,5, 8,10,11, 14, 16,17];
+    # aux_plate = [2,4,5, 8,10,11, 14, 16,17];
+    aux_plate = [5, 2,4, 11,8,10, 17, 14, 16];
     elemDisps_p = elemDisps(aux_plate) ;
 
     [ fsp, ksp ] = internal_forces_plate_triangle( elemCoords_l, elemDisps_p, modelName, modelParams, thickness );
@@ -94,11 +92,15 @@ elemDisps([7, 13]) = [1, .5]
     Te = blkdiag(T,T,T,T,T,T);
 
     Ke = Te' * ks *Te;
-    fe = Te' * fint;
 
     %shifting lines and coluns to onsas convention of dofs order
     aux_r = [1,4,2,5,3,6];
     aux_onsas = [aux_r, aux_r+6 , aux_r+12];
 
     K = Ke(aux_onsas, aux_onsas);
-    f = fe(aux_onsas);
+
+    f = K*elemDisps;
+
+    ks = {K} ; fs = {f};
+
+    fintLocCoord = [ 0 0 0];
