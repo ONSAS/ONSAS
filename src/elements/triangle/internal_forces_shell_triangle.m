@@ -25,16 +25,18 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p1 = elemCoords(1:3);
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
-
-
     
     p12 = p2 - p1;
     p13 = p3 - p1;
     au_zl =  cross(p12,p13);
-
-    u_xl = p12 / norm(p12);
+    
     u_zl = au_zl / norm(au_zl);
-    u_yl = cross(u_zl, u_xl);
+    u_xl = cross( [0,1,0] , u_zl)
+    u_yl = cross( u_zl , u_xl)
+
+    %u_xl = p12 / norm(p12);
+    %u_zl = au_zl / norm(au_zl);
+    %u_yl = cross(u_zl, u_xl);
 
     T = [ u_xl; u_yl; u_zl];
 
