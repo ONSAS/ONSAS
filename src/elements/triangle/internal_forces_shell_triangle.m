@@ -39,6 +39,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     T = [ u_xl; u_yl; u_zl];
 
     elemCoords_l = [ 0,0,0, (T*p12')' , (T*p13')' ];
+    elemCoords_l([3, 6, 9] ) = 0;
     
     %membrane: interal forces and stiffness matrix
     paramOut = [] ;%not used
@@ -55,11 +56,11 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     elemCoords_l, elemDisps_m, modelName, [0,modelParams], paramOut, thickness, planeStateFlag, dotdotdispsElem, density, previous_state );
 
     %plate: calculation of internal forces and stiffness matrix
-    # aux_plate = [2,4,5, 8,10,11, 14, 16,17];
+    % aux_plate = [2,4,5, 8,10,11, 14, 16,17];
     aux_plate = [5, 2,4, 11,8,10, 17, 14, 16];
     elemDisps_p = elemDisps(aux_plate) ;
 
-    [ fsp, ksp ] = internal_forces_plate_triangle( elemCoords_l, elemDisps_p, modelName, modelParams, thickness );
+    [ fsp, ksp , fintLocCoord_p] = internal_forces_plate_triangle( elemCoords_l, elemDisps_p, modelName, modelParams, thickness );
 
     %assembling the shell element
     ks = zeros(18,18);

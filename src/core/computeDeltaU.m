@@ -102,7 +102,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 
   else   % incremental displacement
 
-# systemDeltauRHS
-# full(systemDeltauMatrix)
+% systemDeltauRHS
+% full(systemDeltauMatrix)
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
   end
