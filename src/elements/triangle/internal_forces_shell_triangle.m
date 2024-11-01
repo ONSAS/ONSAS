@@ -28,17 +28,19 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     
     p12 = p2 - p1;
     p13 = p3 - p1;
-    au_zl =  cross(p12,p13);
+    %au_zl =  cross(p12,p13);
     
-    u_zl = au_zl / norm(au_zl);
-    u_xl = cross( [0,1,0] , u_zl)
-    u_yl = cross( u_zl , u_xl)
+    %u_zl = au_zl / norm(au_zl);
+    %u_xl = cross( [0,1,0] , u_zl)
+    %u_yl = cross( u_zl , u_xl)
 
     %u_xl = p12 / norm(p12);
     %u_zl = au_zl / norm(au_zl);
     %u_yl = cross(u_zl, u_xl);
 
-    T = [ u_xl; u_yl; u_zl];
+    %T = [ u_xl; u_yl; u_zl];
+    
+    T = local_axis_shell_triangle(p1,p2,p3)
 
     elemCoords_l = [ 0,0,0, (T*p12')' , (T*p13')' ];
     elemCoords_l([3, 6, 9] ) = 0;
@@ -107,3 +109,19 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     ks = {K} ; fs = {f};
 
     fintLocCoord = [ 0 0 0];
+
+function [T] = local_axis_shell_triangle(p1,p2,p3);
+
+    p12 = p2 - p1;
+    p13 = p3 - p1;
+    au_zl =  cross(p12,p13);
+    u_zl = au_zl / norm(au_zl);
+
+    if abs(u_zl[2]) < 1 - 1.e-3 ;
+        u_xl = cross( [0,1,0] , u_zl)
+    else
+        u_xl = [1,0,0]
+    else;
+        u_yl = cross( u_zl , u_xl)
+
+    T = [ u_xl; u_yl; u_zl];
