@@ -11,11 +11,11 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2
       - name: run matlab test problems
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v1
         with:
           command: cd test, runTestProblems_local
       - name: extract markdown from example scripts
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v1
         with:
           command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
