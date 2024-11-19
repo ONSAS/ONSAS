@@ -111,7 +111,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     fintLocCoord = fintLocCoord_p;
 
-function [T] = local_axis_shell_triangle__(p1,p2,p3);
+function [T] = local_axis_shell_triangle(p1,p2,p3);
 
     p12 = p2 - p1;
     p13 = p3 - p1;
@@ -127,29 +127,4 @@ function [T] = local_axis_shell_triangle__(p1,p2,p3);
     u_yl = cross( u_zl , u_xl);
 
     T = [ u_xl; u_yl; u_zl];
-
-function [T] = local_axis_shell_triangle(p1,p2,p3);
-
-
-    %Calculates the matrix for transformation of basis between global and local axis;
-%p1, p2 and p3 are the position vector for the nodes in global coordinates;
-%the local x axis is paralel to the side connecting nodes 1 and 2
-%the local z axis is normal to the element plane;
-%the origin of local axis is located at node 1
-    
-    p12 = p2 - p1;
-    p13 = p3 - p1;
-    
-    au_zl =  cross(p12,p13);
-    u_zl = au_zl / norm(au_zl);
-    
-    x02 = norm(p12);
-    u_xl = p12 / x02;
-
-    u_yl = cross(u_zl, u_xl);
-
-    T = [ u_xl; u_yl; u_zl];
-
-    x03 = dot(u_xl, p13);
-    y03 = dot(u_yl, p13);
 
