@@ -9,13 +9,8 @@ addpath( genpath( [ pwd '/../../src'] ) );
 % declare global variables
 %
 global qvect; %VIV boolean is called inside hydroFrameForces 
-global VIVBool; %VIV boolean is called inside hydroFrameForces
-global constantLiftDir; %constantLiftDir is called inside hydroFrameForces
 global uniformUdot; %constantLiftDir is called inside hydroFrameForces
-VIVBool = true;
-if VIVBool
-  constantLiftDir = false; uniformUdot = false; 
-end
+uniformUdot = false; 
 %
 % Numerical parameters
 %
@@ -53,16 +48,16 @@ uzsol = 1.0e-07 *[ 0         0         0         0         0         0         0
 %
 % materials
 %
+materials = struct();
 materials.modelParams = [ E nu ] ;
 materials.density         = rho      ;
 materials.modelName  = 'elastic-rotEngStr' ; 
 %
 elements = struct();
-% node
+% node 
 elements(1).elemType = 'node' ;
-% hydro frame
+% frame element
 elements(2).elemType = 'frame' ;
-% cross section params
 elements(2).elemCrossSecParams = {'circle' ; d } ;
 elements(2).aeroCoefFunctions = {nameDragFunc, nameLiftFunc, []};
 elements(2).chordVector = [0 0 -d];
@@ -108,10 +103,14 @@ analysisSettings.stopTolDeltau  =   1e-10      ;
 analysisSettings.stopTolForces  =   1e-5      ; 
 % load settings
 analysisSettings.booleanSelfWeight = false ;
+analysisSettings.VIVBool        = true;
+
 % otherParams
 otherParams = struct() ;
 otherParams.nodalDispDamping = cu ;
-otherParams.problemName      = strcat('VIVTest') ;
+otherParams.problemName      = 'vivCantilever' ;
+otherParams.plots_format = 'vtk' ;
+
 %
 % Run ONSAS
 %
@@ -122,9 +121,4 @@ matUs = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 
 % Extract numerical solution
 uz = matUs(5:6:end, :);
-if length(uz) == length(uzsol)
-    verifBoolean = norm(uz - uzsol) < 6e-08
-else 
-    verifBoolean = 0;
-end
-%-----------------------------------------------------------------------------------------------------
+verifBoolean = norm(uz - uzsol) < 6e-08 ;
