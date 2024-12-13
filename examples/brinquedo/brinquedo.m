@@ -37,14 +37,15 @@ boundaryConds(2).loadsBaseVals = [1 0 0 0 -1 0 ] ;
 %md### mesh
 %md
 mesh = struct() ;
-mesh.nodesCoords = [ 0 0 0 ; 1 0 1; 1 1 1; 0 1 0 ];
+Lz = 0;
+mesh.nodesCoords = [ 0 0 0 ; 1 0 Lz; 1 1 Lz; 0 1 0 ];
 mesh.conecCell = {
     [ 0 1 1 1 ];
     [ 0 1 1 4 ];
     [ 0 1 2 2 ];
     [ 0 1 2 3 ];
     [ 1 2 0 1 2 3 ];
-    [ 1 2 0 1 3 4 ];
+    [ 1 2 0 3 4 1 ];
 }
 ;
 

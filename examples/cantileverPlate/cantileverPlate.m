@@ -1,4 +1,4 @@
-%md# Plate-element cantilever model
+%md# Cantilever problem using plate and shell elements
 %md
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
@@ -69,7 +69,7 @@ analysisSettings.stopTolIts    =   10      ;
 otherParams                  = struct() ;
 %md The name of the problem is:
 %md
-otherParams.problemName  = 'cantileverPlate' ;
+otherParams.problemName  = 'cantileverPlate-plateElem' ;
 otherParams.plots_format = 'vtk' ;
 %md
 %md Execute ONSAS and save the results:
@@ -92,6 +92,7 @@ analy_wmax = -qlin*Lx^4/(8*E*I)  ;
 elements(2).elemType           = 'triangle';
 elements(2).elemTypeParams     = 2         ;
 elements(2).elemCrossSecParams = tz         ;
+otherParams.problemName  = 'cantileverPlate-CSTElem' ;
 
 [ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
@@ -101,9 +102,9 @@ elements(2).elemCrossSecParams = tz         ;
 numer_dxmax = max(matUs(1:6:end)) ;
 analy_dxmax = qx*Lx/E ;
 
-
 elements(2).elemType           = 'triangle-shell';
 elements(2).elemCrossSecParams = {'thickness', tz } ;
+otherParams.problemName  = 'cantileverPlate-shellElem' ;
 
 [ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
