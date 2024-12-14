@@ -15,14 +15,19 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function B = switchToBattiniNom(O)
-%---------------- Change of basis Le and Battini 2014 -> ONSAS matrix  -------------------
-  permutIndxs = [1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ] ;
 
-	if size(O,2)>1
-		B = O(permutIndxs, permutIndxs)
-		else
-		B = O(permutIndxs);
-	end
+% This function applies a permutation to switch a vector/matrix of displacements/rotations from nodal to type
+function B = switchToTypeIndexing(O)
 
+  assert( mod(size(O,1),6)==0)
+  permutIndxs = [ ];
+  for i=1:(size(O,1)/6)
+    permutIndxs = [ permutIndxs ([1:2:5]+6*(i-1)) ([2:2:6]+6*(i-1)) ] ;
+  end
+
+  if size(O,2)>1
+	B = O(permutIndxs, permutIndxs)
+  else
+	B = O(permutIndxs);
+  end
 end
