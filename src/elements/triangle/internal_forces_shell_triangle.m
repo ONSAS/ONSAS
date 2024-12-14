@@ -58,7 +58,11 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     fintLocCoord = zeros(1,3);
 
     dispTe = Te*elemDisps_sortT ;
+ 
+    
+    % TODO: temporal FIXX generalize!
     TM = T(1:2,1:2);
+    % ------------------------------
 
     Kb = zeros(9,9);
     wgt = area/3.d0;
