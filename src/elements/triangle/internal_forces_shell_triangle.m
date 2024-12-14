@@ -30,10 +30,13 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
 
+    elemDisps
+
     elemDisps_sortT = switchToTypeIndexing( elemDisps ) ;
 
     [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
 
+    T
     Te = blkdiag(T,T,T,T,T,T) ;
 
     area = x02*y03 / 2;
@@ -44,7 +47,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
 
     Bm = CST_B(x02, x03, y03);
-    Km = area * Bm' * Dm * Bm;
+    Km = area * Bm' * Dm * Bm ;
 
     % bending stiffness
     aux1 = E * h^3 / (12 * ( 1- nu^2) ); 
@@ -57,6 +60,10 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     ib = [3,4,5, 9,10,11, 15,16,17];
 
     fintLocCoord = zeros(1,3);
+
+    elemDisps_sortT
+    dispTe = Te*elemDisps_sortT ;
+    TM = T(1:2,1:2);
 
     Kb = zeros(9,9);
     wgt = area/3.d0;
@@ -71,9 +78,12 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
         # DbBb(:,:) = 0.0;
         # Db = Db + DbBb ;
 
-        fintLocCoord = fintLocCoord + T'* ( ( Db * Bb * (Te*elemDisps_sortT)(ib) )) /3 ;
+        fint_ip = Db * Bb * dispTe(ib) ;
+        Mmat = TM' * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
+        fint_ip = [ Mmat(1,1) Mmat(2,2) Mmat(1,2) ] ;
+        fintLocCoord = fintLocCoord + fint_ip * wgt/area ;
     end
-
+    
     %assembling the stiffness matrix of the shell element in local coordinates
     Ke = zeros(18,18);
 
