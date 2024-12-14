@@ -30,13 +30,9 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
 
-    elemDisps
-
     elemDisps_sortT = switchToTypeIndexing( elemDisps ) ;
 
     [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
-
-    T
     Te = blkdiag(T,T,T,T,T,T) ;
 
     area = x02*y03 / 2;
@@ -61,7 +57,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     fintLocCoord = zeros(1,3);
 
-    elemDisps_sortT
     dispTe = Te*elemDisps_sortT ;
     TM = T(1:2,1:2);
 
@@ -71,15 +66,11 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
         Bb = DKT_B(psi, eta, x02, x03, y03);
-        # DbBb(1,:) = ( wgt * Db(1,1) ) * Bb(1,:) + ( wgt * Db(1,2) ) * Bb(2,:);
-        # DbBb(2,:) = ( wgt * Db(2,1) ) * Bb(1,:) + ( wgt * Db(2,2) ) * Bb(2,:);
-        # DbBb(3,:) = ( wgt * Db(3,3) ) * Bb(3,:);
+
         Kb = Kb + wgt * Bb' * Db * Bb;
-        # DbBb(:,:) = 0.0;
-        # Db = Db + DbBb ;
 
         fint_ip = Db * Bb * dispTe(ib) ;
-        Mmat = TM' * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
+        Mmat    = (TM') * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
         fint_ip = [ Mmat(1,1) Mmat(2,2) Mmat(1,2) ] ;
         fintLocCoord = fintLocCoord + fint_ip * wgt/area ;
     end
