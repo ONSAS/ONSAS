@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "utils"
+version = "0.1.0"
+description = "ONSAS.m utilities in Python"
+authors = ["mvanzulli <mcvanzulli@gmail.com>", "jorgepz <jorgepz@fing.edu.uy>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+miss-hit = "^0.9.44"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
