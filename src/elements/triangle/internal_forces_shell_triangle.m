@@ -19,7 +19,12 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness )
+%function [ fs, ks, fintLocCoord, current_stae ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness,  previous_state)
+
+    #---------
+    previous_state = { zeros(9,1) , zeros(3,3)};
+    #---------
 
     %material and geometric parameters
     E = modelParams(1);  
@@ -30,10 +35,20 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
 
+    Ulb_ps = previous_state{1};
+    curv_ps = previous_state{2};
+    
+    ig = [1,3,6,2,5,4];
+    ig = [ig, ig+6, ig+12];
+    Ug = elemDisps(ig);
+
     elemDisps_sortT = switchToTypeIndexing( elemDisps ) ;
 
     [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
-    Te = blkdiag(T,T,T,T,T,T) ;
+    
+    Te = blkdiag(T,T,T,T,T,T);
+    Ul = Te * Ug;
+    
 
     area = x02*y03 / 2;
 
@@ -41,19 +56,26 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     aux1 = h *  E / ( 1 - nu^2) ; 
     aux2 = nu*aux1;
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
-
+    im = [1, 2, 7, 8, 13, 14];
+    Ulm = Ul(im);
     Bm = CST_B(x02, x03, y03);
     Km = area * Bm' * Dm * Bm ;
+    N = Dm * Bm * Ulm;
+    Na = [ N(1), N(3); N(2), N(3)];
+    Nh = blkdiag(Na,Na,Na);
+    B_NL = B_nonlinear(x02, x03, y03);
+    Km_nl = area * B_NL' * Nh * B_NL;
+    Fm = Km * Ulm;
 
     % bending stiffness
     aux1 = E * h^3 / (12 * ( 1- nu^2) ); 
     aux2 = nu*aux1;
     Db = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
+    ib = [3,4,5, 9,10,11, 15,16,17];
+    Ulb = Ul(ib);
+    dUlb = Ulb - Ulb_ps;
 
     int_point = [ [1./6. 1./6.]; [2./3., 1./6.]; [1./6., 2./3.]];
-
-    im = [1, 2, 7, 8, 13, 14];
-    ib = [3,4,5, 9,10,11, 15,16,17];
 
     fintLocCoord = zeros(1,3);
 
@@ -66,32 +88,44 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     Kb = zeros(9,9);
     wgt = area/3.d0;
+    curv = zeros(3,3);
+    M = zeros(3,3);
+    Fb = zeros(9,1);
+
+
     for ipt = 1:3;
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
         Bb = DKT_B(psi, eta, x02, x03, y03);
-
+        curv(:,ipt) = Bb * dUlb + curv_ps(:,ipt);
+        M(:,ipt) = Db * curv(:,ipt);
         Kb = Kb + wgt * Bb' * Db * Bb;
+        Fb = Fb + wgt * Bb' * M(:,ipt);
 
         fint_ip = Db * Bb * dispTe(ib) ;
         Mmat    = (TM') * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
         fint_ip = [ Mmat(1,1) Mmat(2,2) Mmat(1,2) ] ;
         fintLocCoord = fintLocCoord + fint_ip * wgt/area ;
     end
-    
-    %assembling the stiffness matrix of the shell element in local coordinates
+
+    %assembling the stiffness matrix and the internal force vector of the shell element in local coordinates
     Ke = zeros(18,18);
 
     Ke(im,im) = Km;
-    Ke(ib,ib) = Kb;
+    Ke(ib,ib) = Kb + Km_nl;
     
     k_dr = min( min( abs( Kb ) ) ) * 1.e-4;
     Ke(6 , 6) = k_dr;
     Ke(12,12) = k_dr;
     Ke(18,18) = k_dr;
 
-    % calculating the stiffness matrix of the shell element in global coordinates
-    Ke = Te' * Ke *Te ;
+    Fe = zeros(18,1);
+    Fe(im) = Fm;
+    Fe(ib) = Fb;
+
+    % calculating the stiffness matrix and internal foce vector of the shell element in global coordinates
+    Ke = Te' * Ke * Te ;
+    Fe = Te' * Fe;
 
     %shifting lines and coluns to onsas convention of dofs order
     aux_r = [1,4,2,5,3,6];
@@ -99,9 +133,10 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     K = Ke(aux_onsas, aux_onsas);
 
-    f = K*elemDisps;
+    #f = K*elemDisps;
+    F = Fe(aux_onsas) ;
 
-    ks = {K} ; fs = {f};
+    ks = {K} ; fs = {F}; current_state = {Ulb, curv};
 
 end
 
@@ -131,7 +166,7 @@ end
 
 
 function [ B ] = CST_B(x02, x03, y03)
-    %calculate the stress-displacement matrix for the constant stress triangular element (CST)
+    %calculate the strain-displacement matrix for the constant stress triangular element (CST)
     %x02, x03 and y03 are the local coordinates of the nodes 2 and 3 
 
     area02 = x02*y03;
@@ -154,7 +189,7 @@ function [ B ] = CST_B(x02, x03, y03)
 end
 
 function [ B ] = DKT_B(PSI, ETA, x02, x03, y03)
-    %calculate the stress-displacement matrix for the triangular plate element (DKT)
+    %calculate the strain-displacement matrix for the triangular plate element (DKT)
     %psi and eta are the area coordinates of the triangular element
     %x02, x03 and y03 are the local coordinates of the nodes 2 and 3 
 
@@ -256,5 +291,23 @@ function [ B ] = DKT_B(PSI, ETA, x02, x03, y03)
     B(1,9) = y03 * BXP9 / area02    ;                                       
     B(2,9) = (-x03 * BYP9 + x02 * BYE9) / area02    ;                            
     B(3,9) = (-x03 * BXP9 + x02 * BXE9 + y03 * BYP9) / area02  ;        
+
+end
+
+function [ B_NL ] = B_nonlinear(x02, x03, y03)
+    area02 = x02*y03;
+    La = [- y03/area02,  y03/area02];
+    Lb = [(x03 - x02)/area02,  - x03/area02, x02/area02];
+
+    B_NL = zeros(6,9);
+    ra = [1,4];
+    rb = [1,4,7];
+
+    B_NL(1,  ra) = La;
+    B_NL(2,  rb) = Lb;
+    B_NL(3,1+ra) = La;
+    B_NL(4,1+rb) = Lb;
+    B_NL(5,2+ra) = La;
+    B_NL(6,2+rb) = Lb;
 
 end
