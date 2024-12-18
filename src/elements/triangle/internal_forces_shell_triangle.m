@@ -22,9 +22,9 @@
 function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness )
 %function [ fs, ks, fintLocCoord, current_stae ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness,  previous_state)
 
-    #---------
+    %---------
     previous_state = { zeros(9,1) , zeros(3,3)};
-    #---------
+    %---------
 
     %material and geometric parameters
     E = modelParams(1);  
@@ -133,7 +133,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     K = Ke(aux_onsas, aux_onsas);
 
-    #f = K*elemDisps;
+    %f = K*elemDisps;
     F = Fe(aux_onsas) ;
 
     ks = {K} ; fs = {F}; current_state = {Ulb, curv};
