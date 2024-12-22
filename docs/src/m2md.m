@@ -35,7 +35,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
       currentLine = fgetl(fidIn);
     end
 
-    if length(currentLine) >= 7 && strcmp(currentLine((end - 6):end), '% hidden')
+    if length(currentLine) >= 8 && strcmp(currentLine((end - 7):end), '% hidden')
       % hidden line do not do anything
 
     elseif length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md') % not code

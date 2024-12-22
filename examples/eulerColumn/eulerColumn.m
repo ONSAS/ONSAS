@@ -73,7 +73,7 @@ analysisSettings.finalTime     =   125    ;
 analysisSettings.stopTolDeltau =   1e-8 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
-%md
+% md
 otherParams  = struct();
 otherParams.problemName = 'EulerColumn';
 otherParams.controlDofs = [ numElements+1  5 ] ;
@@ -85,9 +85,9 @@ Pcrit = pi()^2*E*I/l^2 ;
 
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
-%mdAfter that the structs are used to perform the numerical time analysis
+% mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-%md
+% md
 
 Dof      		 = (numElements/2 + 1)*6 - 5 	;
 controlDisps =  matUs(Dof, :) 						;
