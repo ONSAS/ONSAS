@@ -15,3 +15,24 @@ You can process the outputs using Octave, however, the open-source software [Par
 ## Generation of geometries/meshes
 
 The user can provide the geometry of the structure using two optional formats: .msh or .dxf.  [GMSH](https://gmsh.info/) is an open-source tool that allows to generate high-quality meshes. The dxf files can be used using any CAD tool.
+
+## Development tools
+
+If you want to contribute you should install python -> poetry -> miss-hit, to check the styling of the code before pushing. It is **recommended but not mandatory** to install poetry in a specific directory doing this in linux's bash or [whatever corresponds to you OS](https://docs.python.org/3/library/venv.html): 
+
+```
+cd ONSAS/utils
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Then install poetry, install miss-hit and check
+
+```
+pip install poetry
+make install
+make format_check
+```
+
+
+
