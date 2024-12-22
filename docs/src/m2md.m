@@ -38,7 +38,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
     if length(currentLine) >= 8 && strcmp(currentLine((end - 7):end), '% hidden')
       % hidden line do not do anything
 
-    elseif length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md') % not code
+    elseif length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md') % not code goes for markdown
 
       if isInCodeBlock % closes code block before writing comment
         if includeCodeBoolean
@@ -46,7 +46,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
         end
         isInCodeBlock = false;
       end
-      fprintf(fidOut, '%s\n', currentLine(4:end));
+      fprintf(fidOut, '%s\n', currentLine(5:end));
 
     else
       if ~isInCodeBlock % open code block
