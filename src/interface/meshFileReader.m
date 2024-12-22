@@ -20,10 +20,10 @@ function [ nodesMat, conecMat ] = meshFileReader( fileName )
 fileExtension = fileName( (end-2):end ) ;
 
 if strcmp( fileExtension , 'msh' )
-  %md reads data from msh file
+  % md reads data from msh file
   [ nodesMatinp, conecMatinp, physicalNames ] = mshFormatReader( fileName ) ;
 
-  %md converts strings to integers indexes matrix
+  % md converts strings to integers indexes matrix
   matInds = zeros( length( physicalNames), 3 ) ;
   for i=1:size( matInds, 1)
     for j=1:3
@@ -37,7 +37,7 @@ if strcmp( fileExtension , 'msh' )
   conecMat = zeros( size( conecMatinp, 1 ), 3+4 ) ;
   conecMat( :, 3+(1:4)) = conecMatinp(:, 1:4) ;
 
-  %md adds MEB parameters to elements with params defined
+  % md adds MEB parameters to elements with params defined
   indsNZ = find( conecMatinp(:,5) ) ;
   conecMat( indsNZ, 1:3 ) = matInds( conecMatinp( indsNZ, 5), :) ;
 

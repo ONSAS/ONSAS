@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
+% mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
 function [ fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec ] = assembler( ...
              Conec, elements, Nodes,...
              materials, KS, Ut, Udott, Udotdott,...
@@ -96,7 +96,7 @@ for elem = 1:nElems
 
   mebVec = Conec( elem, 1:3) ;
 
-  %md extract element properties
+  % md extract element properties
   modelName          = materials( mebVec( 1 ) ).modelName   ;
   modelParams        = materials( mebVec( 1 ) ).modelParams  ;
   density            = materials( mebVec( 1 ) ).density          ;
@@ -106,15 +106,15 @@ for elem = 1:nElems
   massMatType        = elements( mebVec( 2 ) ).massMatType       ;
   elemCrossSecParams = elements( mebVec( 2 ) ).elemCrossSecParams;
 
-  %md extract aerodynamic properties
+  % md extract aerodynamic properties
   aeroCoefs           = elements( mebVec( 2 ) ).aeroCoefFunctions       ;
   chordVector         = elements( mebVec( 2 ) ).chordVector         ;
 
-  %md compute aerodynamic force booleans
+  % md compute aerodynamic force booleans
   aeroBool = ~isempty(analysisSettings.fluidProps) ;
   computeAeroStiffnessMatrix = analysisSettings.computeAeroStiffnessMatrix ;
   
-  %md obtain element info
+  % md obtain element info
   [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
 
   % obtains nodes and dofs of element
@@ -127,7 +127,7 @@ for elem = 1:nElems
   dofselemRed = dofselem( auxA+auxB )   ;
 
 
-  %md elemDisps contains the displacements corresponding to the dofs of the element
+  % md elemDisps contains the displacements corresponding to the dofs of the element
   elemDisps       = u2ElemDisps( Ut      , dofselemRed ) ;
   dotdispsElem    = u2ElemDisps( Udott   , dofselemRed ) ;
   dotdotdispsElem = u2ElemDisps( Udotdott, dofselemRed ) ;
@@ -210,7 +210,7 @@ for elem = 1:nElems
     localInternalForces(elem).My = My ;
     localInternalForces(elem).Mz = Mz ;
 
-    %md compute fluid forces on the element
+    % md compute fluid forces on the element
     if aeroBool && fsBool
       [FaeroElem, MataeroEelem] = frame_fluid_force( elemNodesxyzRefCoords,        ...
                                      elemCrossSecParams                   ,        ...
@@ -308,8 +308,8 @@ for elem = 1:nElems
   end   % case in type of element ----
   % -------------------------------------------
 
-  %md### Assembly
-  %md
+  % md### Assembly
+  % md
   if fsBool
     % internal loads vector assembly
     if norm( Finte ) > 0.0

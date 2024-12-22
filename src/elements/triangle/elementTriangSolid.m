@@ -15,8 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with elastic-linear and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
-%md
+% md Function for computation of nodal forces and tangent stiffness matrix for 2D 3 nodes triangle element with elastic-linear and linear isotropic hardening with von Mises flow rule models. The dofs are assumed to be on x-y.
+% md
 
 function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
   elemCoords, elemDisps, modelName, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state )
@@ -37,7 +37,7 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 	% Plastic strain
 	acum_plas_strain =  previous_state{3} ;
 
-	%md### compute internal loads and stiffness matrix
+	% md### compute internal loads and stiffness matrix
 
 	E  = elemConstitutiveParams(2) ;
 	nu = elemConstitutiveParams(3) ;
@@ -140,7 +140,7 @@ function [ fs, ks, stress, strain, acum_plas_strain ] = elementTriangSolid( ...
 	% Internal force
 	Finte = B' * stress * A * t ;
 
-	%md### compute inertial loads and mass matrix
+	% md### compute inertial loads and mass matrix
 	Mmase = density*A/3.0 * speye(9,9);
 	Fmase = Mmase * dotdotdispsElem ;
 

@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-%md function that creates the hexahedron element to visualize results with vtk file
+% md function that creates the hexahedron element to visualize results with vtk file
 function [ Nodesvtk, Conecvtk, Dispsvtk ] = vtkBeam2SolidConverter( ...
   coordsElemNodes, dispsElem, coordLocSubElem, dispLocIni, dispLocEnd, ...
   locRotIni, locRotEnd, sectPar, Rr, R0 ) ;
