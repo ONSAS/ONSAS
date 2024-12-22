@@ -45,16 +45,16 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes )
   %     initialCondsTypes(1) = [] ;
   %   end
     
-  %   %md loop over the types of initial conditions added in the mesh
+  %   % md loop over the types of initial conditions added in the mesh
   %   for indIC = 1:length( initialCondsTypes ) ;
 
   %     % number of current IC processed
   %     indIC = initialCondsTypes( indIC ) ;
      
-  %     %md find the elements with the current initial condition
+  %     % md find the elements with the current initial condition
   %     elemsWithIC = find( Conec(:,4) == indIC ) ;
      
-  %     %md values and imposed dofs of current IC
+  %     % md values and imposed dofs of current IC
   %     impoUDofs = initialConds(indIC).nonHomogeneousUDofs ;
   %     impoUVals = initialConds(indIC).nonHomogeneousUVals ;
      
@@ -80,16 +80,16 @@ function [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes )
   %     initialCondsTypes(1) = [] ;
   %   end
     
-  %   %md loop over the types of initial conditions added in the mesh
+  %   % md loop over the types of initial conditions added in the mesh
   %   for indIC = 1:length( initialCondsTypes ) ;
 
   %     % number of current IC processed
   %     indIC = initialCondsTypes( indIC ) ;
      
-  %     %md find the elements with the current initial condition
+  %     % md find the elements with the current initial condition
   %     elemsWithIC = find( Conec(:,4) == indIC ) ;
      
-  %     %md values and imposed dofs of current IC
+  %     % md values and imposed dofs of current IC
   %     impoUDofs = initialConds(indIC).nonHomogeneousUdotDofs ;
   %     impoUVals = initialConds(indIC).nonHomogeneousUdotVals ;
      

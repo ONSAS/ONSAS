@@ -1,3 +1,21 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
+
 function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
 
   fidIn  = fopen(fileIn, 'r');
@@ -7,7 +25,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
     currentLine = fgetl(fidIn);
   end
 
-  isInCodeBlock = ~(length(currentLine) >= 3 && strcmp(currentLine(1:3), '% md'));
+  isInCodeBlock = ~(length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md'));
   lineCount = 0;
 
   while ~feof(fidIn)
@@ -17,10 +35,10 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
       currentLine = fgetl(fidIn);
     end
 
-    if length(currentLine) >= 7 && strcmp(currentLine((end - 6):end), '% hidden')
+    if length(currentLine) >= 8 && strcmp(currentLine((end - 7):end), '% hidden')
       % hidden line do not do anything
 
-    elseif length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md') % not code
+    elseif length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md') % not code goes for markdown
 
       if isInCodeBlock % closes code block before writing comment
         if includeCodeBoolean
@@ -28,7 +46,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
         end
         isInCodeBlock = false;
       end
-      fprintf(fidOut, '%s\n', currentLine(4:end));
+      fprintf(fidOut, '%s\n', currentLine(5:end));
 
     else
       if ~isInCodeBlock % open code block
