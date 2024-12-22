@@ -25,7 +25,7 @@ function m2md(fileIn, fileOut, includeCodeBoolean, iniLine)
     currentLine = fgetl(fidIn);
   end
 
-  isInCodeBlock = ~(length(currentLine) >= 3 && strcmp(currentLine(1:3), '% md'));
+  isInCodeBlock = ~(length(currentLine) >= 4 && strcmp(currentLine(1:4), '% md'));
   lineCount = 0;
 
   while ~feof(fidIn)
