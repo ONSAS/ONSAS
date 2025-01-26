@@ -18,10 +18,10 @@
 
 % function for testing ONSAS using moxunit
 % ----------------------------------------
-function test_suite = runTestProblems_moxunit_disp
+function test_suite = runTestProblemsMoxunitDisplacements
   % initialize tests
   try
-    test_functions = localfunctions();
+    test_functions = localFunctions();
   catch
   end
 
@@ -31,89 +31,89 @@ function test_suite = runTestProblems_moxunit_disp
   % initialize the MOxUnit test suite
   initTestSuite;
 
-function test_1
+function test1
   beamLinearVibration;
   assertEqual(verifBoolean, true);
 
-function test_2
+function test2
   cantileverModalAnalysis;
   assertEqual(verifBoolean, true);
 
-function test_3
+function test3
   cantileverSelfWeight;
   assertEqual(verifBoolean, true);
 
-function test_4
+function test4
   dragBeamReconfiguration;
   assertEqual(verifBoolean, true);
 
-function test_5
+function test5
   eulerColumn;
   assertEqual(verifBoolean, true);
 
-function test_6
+function test6
   frameLinearAnalysis;
   assertEqual(verifBoolean, true);
 
-function test_7
+function test7
   linearAerodynamics;
   assertEqual(verifBoolean, true);
 
-function test_8
+function test8
   ringPlaneStrain;
   assertEqual(verifBoolean, true);
 
-function test_9
+function test9
   nonLinearPendulum;
   assertEqual(verifBoolean, true);
 
-function test_10
+function test10
   springMass;
   assertEqual(verifBoolean, true);
 
-function test_11
+function test11
   simplePropeller;
   assertEqual(verifBoolean, true);
 
-function test_12
+function test12
   staticVonMisesTruss;
   assertEqual(verifBoolean, true);
 
-function test_13
+function test13
   uniaxialCompression;
   assertEqual(verifBoolean, true);
 
-function test_14
+function test14
   uniaxialExtension;
   assertEqual(verifBoolean, true);
 
-function test_15
+function test15
   uniformCurvatureCantilever;
   assertEqual(verifBoolean, true);
 
-function test_16
+function test16
   VIVCantilever;
   assertEqual(verifBoolean, true);
 
-function test_17
+function test17
   beamTrussJoint;
   assertEqual(verifBoolean, true);
 
-function test_18
+function test18
   staticPlasticVonMisesTruss;
   assertEqual(verifBoolean, true);
 
-function test_19
+function test19
   platePatchTest;
   assertEqual(verifBoolean, true);
 
-function test_20
+function test20
   cantileverPlate;
   assertEqual(verifBoolean, true);
 
-function test_21
+function test21
   addedMassPendulum;
   assertEqual(verifBoolean, true);
 
-function test_22
+function test22
   assertEqual(gaussIntegrationTest, true);
