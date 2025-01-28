@@ -37,13 +37,13 @@ function resultBoolean = gaussIntegrationTest()
   xs = -1.5:.02:1;
   ys = 0;
   for i = 1:length(xs)
-    ys(i) = test_fun_to_integrate(xs(i));
+    ys(i) = testFunctionToIntegrate(xs(i));
   end
 
   if plots_boolean
     figure;
     plot(xs, ys, 'g-x');
-    title('test_fun_to_integrate');
+    title('testFunctionToIntegrate');
   end
 
   for j = 1:length(point_nums_to_test)
@@ -51,12 +51,12 @@ function resultBoolean = gaussIntegrationTest()
 
     for k = 1:length(xIntPoints)
       int_values(j) = int_values(j) + ...
-                      wIntPoints(k) * test_fun_to_integrate((b - a) / 2 * xIntPoints(k) + (a + b) / 2) * ((b - a) / 2);
+                      wIntPoints(k) * testFunctionToIntegrate((b - a) / 2 * xIntPoints(k) + (a + b) / 2) * ((b - a) / 2);
     end
   end
 
   if plots_boolean
-    %    numericalInt = quadl( 'test_fun_to_integrate', a, b )
+    %    numericalInt = quadl( 'testFunctionToIntegrate', a, b )
     figure;
     plot(point_nums_to_test, int_values, 'b-x');
     hold on;
@@ -71,5 +71,5 @@ function resultBoolean = gaussIntegrationTest()
 
   % ========================================================================================
   % ========================================================================================
-function ys = test_fun_to_integrate(xinput)
+function ys = testFunctionToIntegrate(xinput)
   ys = 20 * xinput.^4;
