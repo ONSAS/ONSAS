@@ -1,61 +1,63 @@
-% Copyright 2024, ONSAS Authors (see documentation)
-%
-% This file is part of ONSAS.
-%
-% ONSAS is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% ONSAS is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-%
+% Recursive function for updating headers of source files in src and examples
 
-% Recursive function for updating headers of source files in src and downwards ...
+function updateLicenseHeaders(folder, root)
 
-function updateLicenseHeaders( folder, root )
+lengthOfCurrentHeader = 17; % Define expected header length
 
-lengthOfCurrentHeader = 17 ;
+% Only generate newFileHeader.txt once when root is true
+if root == true
+    if exist('newFileHeader.txt', 'file') ~= 2
+        system(['head -n ' num2str(lengthOfCurrentHeader) ' updateLicenseHeaders.m > newFileHeader.txt']);
+    end
+    % Process both 'src' and 'examples' from root
+    updateLicenseHeaders('../src', false);
 
-if root==true && exist('newFileHeader.txt')~=2
-  system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' updateLicenseHeaders.m > newFileHeader.txt' ] );
+    % Remove the temporary file at the end
+    if exist('newFileHeader.txt', 'file') == 2
+        system('rm newFileHeader.txt');
+    end
+
+    return; % Exit after processing both main folders
 end
 
-folder
-files = dir( folder ) ;
+% Process the given folder recursively
+disp(['Processing folder: ', folder]);
+files = dir(folder);
 
-for i = 1:length( files )
-  i
-  if files(i).isdir
-    if ~strcmp(files(i).name(1),'.')
-      files(i).name
-      updateLicenseHeaders( [ folder '/' files(i).name ], false )
-    end 
-  else
-    completeFilename = [ folder '/' files(i).name ] 
-    showHeaderAndReplace( completeFilename, lengthOfCurrentHeader )
-  end
+for i = 1:length(files)
+    if files(i).isdir
+        % Skip hidden folders like .git
+        if ~strcmp(files(i).name(1), '.')
+            subfolder = fullfile(folder, files(i).name);
+            disp(['Entering directory: ', subfolder]);
+            updateLicenseHeaders(subfolder, false);
+        end
+    else
+        completeFilename = fullfile(folder, files(i).name);
+        if endsWith(completeFilename, '.m') % Only process .m files
+            showHeaderAndReplace(completeFilename, lengthOfCurrentHeader);
+        end
+    end
+end
 end
 
-if root==true && exist('newFileHeader.txt')==2
-  system( [ 'rm newFileHeader.txt' ] );
+function showHeaderAndReplace(filename, lengthOfCurrentHeader)
+
+% Display current file header
+system(['head -n ' num2str(lengthOfCurrentHeader) ' ' filename]);
+
+% Ask user whether to replace the header
+reply = input('Replace header? (y/n): ', 's');
+
+if strcmp(reply, 'y')
+    % Create a new file with the updated header
+    system('cp newFileHeader.txt aux.txt');
+    system(['tail -n +' num2str(lengthOfCurrentHeader + 1) ' ' filename ' >> aux.txt']);
+    system(['mv aux.txt ' filename]);
+    disp(['Updated: ', filename]);
+else
+    disp(['Skipped: ', filename]);
 end
 
-function showHeaderAndReplace( filename, lengthOfCurrentHeader )
-
-system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' ' filename ] );
-
-reply = input('    replace yes or no? (y/n):','s' ) ;
-
-if strcmp( reply, 'y')
-  system( [ 'more currentFileHeader.txt > aux.txt' ] ) ;
-  system( [ 'tail  -n +' num2str(lengthOfCurrentHeader+1) ' ' filename ' >> aux.txt'] ) ;
-  system( [ 'mv aux.txt ' filename ] ) ;
-  disp('file updated.')
+pause; % Wait before moving to the next file
 end
-pause

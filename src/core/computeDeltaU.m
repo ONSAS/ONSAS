@@ -31,20 +31,20 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
   incremArcLen = args{2} ;
 
   aux = systemDeltauMatrix \ systemDeltauRHS ;
-					
+
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
-    
+
   posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
-    else 
+    else
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     end
-  
+
   elseif arcLengthFlag == 2 % Jirasek approach
-  	cMatrix = zeros(size( convDeltau )) ; % Jirasek	
+  	cMatrix = zeros(size( convDeltau )) ; % Jirasek
 
 		% Variables to be defined by user
 		dominantDofs      = analysisSettings.ALdominantDOF(1) ;
@@ -57,9 +57,9 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 
 		% Projection matrix
 		cMatrix( dominantDofsInd ) = scalingProjection ; % reduced projection matrix
-	
+
 		deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
-  
+
   elseif arcLengthFlag == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
     num_reductions = 0 ;
@@ -95,7 +95,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     % choose lambda that maximizes that scalar product
     deltalambda = sols( find( vals == max(vals) ) ) ;
   end
-  
+
   nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
 
   deltaured = deltauast + deltalambda(1) * deltaubar ;
