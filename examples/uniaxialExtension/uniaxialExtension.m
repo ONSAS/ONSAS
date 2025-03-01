@@ -1,3 +1,20 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
 % md# Uniaxial Extension Solid example
 % md
 % md[![Octave script](https://img.shields.io/badge/script-url-blue)](https://github.com/ONSAS/ONSAS/blob/master/examples/uniaxialExtension/uniaxialExtension.m)
@@ -63,45 +80,54 @@
 % md## Numerical solution: case 1
 % md---
 % mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+close all;
+if ~strcmp(getenv('TESTS_RUN'), 'yes')
+  clear all;
+end
 % add path
-addpath( genpath( [ pwd '/../../src'] ) ) ;
+addpath(genpath([pwd '/../../src']));
 % scalar parameters
-E = 1 ; nu = 0.3 ; p = 3 ; Lx = 2 ; Ly = 1 ; Lz = 1 ;
+E = 1;
+nu = 0.3;
+p = 3;
+Lx = 2;
+Ly = 1;
+Lz = 1;
 % md
 % md
 % md### MEB parameters
 % md
 % md#### materials
 % md The material of the solid considered is the Saint-Venant-Kirchhoff with Lamé parameters computed as
-lambda = E*nu/((1+nu)*(1-2*nu)) ; mu = E/(2*(1+nu)) ;
+lambda = E * nu / ((1 + nu) * (1 - 2 * nu));
+mu = E / (2 * (1 + nu));
 % md since only one material is considered, a scalar struct is defined as follows
-materials                 = struct() ;
-materials.modelName  = 'SVK' ;
-materials.modelParams = [ lambda mu ] ;
+materials                 = struct();
+materials.modelName  = 'SVK';
+materials.modelParams = [lambda mu];
 % md
 % md#### elements
 % md In this model two kinds of elements are used: `tetrahedron` for the solid and `triangle` for introducing the external loads. Since two kinds of elements are used, the struct have length 2:
-elements             = struct() ;
-elements(1).elemType = 'triangle' ;
-elements(2).elemType = 'tetrahedron' ;
+elements             = struct();
+elements(1).elemType = 'triangle';
+elements(2).elemType = 'tetrahedron';
 % md
 % md#### boundaryConds
 % md in this case four BCs are considered, one corresponding to a load and three to displacements.
 % md the first BC introduced is a load, then the coordinate system, loadfactor time function and base load vector are defined
-boundaryConditions             = struct() ;
+boundaryConditions             = struct();
 boundaryConds(1).loadsCoordSys = 'global';
-boundaryConds(1).loadsTimeFact = @(t) p*t ;
-boundaryConds(1).loadsBaseVals = [ 1 0 0 0 0 0 ] ;
+boundaryConds(1).loadsTimeFact = @(t) p * t;
+boundaryConds(1).loadsBaseVals = [1 0 0 0 0 0];
 % md the other BCs have imposed displacements
-boundaryConds(2).imposDispDofs = [1] ;
-boundaryConds(2).imposDispVals =  0  ;
+boundaryConds(2).imposDispDofs = [1];
+boundaryConds(2).imposDispVals =  0;
 %
-boundaryConds(3).imposDispDofs = [3] ;
-boundaryConds(3).imposDispVals =  0  ;
+boundaryConds(3).imposDispDofs = [3];
+boundaryConds(3).imposDispVals =  0;
 %
-boundaryConds(4).imposDispDofs = [5] ;
-boundaryConds(4).imposDispVals =  0  ;
+boundaryConds(4).imposDispDofs = [5];
+boundaryConds(4).imposDispVals =  0;
 %
 % md
 % md#### initialConds
@@ -121,119 +147,124 @@ initialConds = struct();
 % md\end{center}
 % md```
 % md The node coordinates matrix is given by the following
-mesh             = struct() ;
-mesh.nodesCoords = [ 0    0    0 ; ...
-                     0    0   Lz ; ...
-                     0   Ly   Lz ; ...
-                     0   Ly    0 ; ...
-                     Lx   0    0 ; ...
-                     Lx   0   Lz ; ...
-                     Lx  Ly   Lz ; ...
-                     Lx  Ly    0 ] ;
+mesh             = struct();
+mesh.nodesCoords = [0    0    0; ...
+                    0    0   Lz; ...
+                    0   Ly   Lz; ...
+                    0   Ly    0; ...
+                    Lx   0    0; ...
+                    Lx   0   Lz; ...
+                    Lx  Ly   Lz; ...
+                    Lx  Ly    0];
 % md and the connectivity cell is defined as follows with the four MEB parameters for each element followed by the indexes of the nodes of each element. All the eight triangle elements are considered with no material (since they are used only to include load) and the following six elements are solid SVK material tetrahedrons.
-mesh.conecCell = {[ 0 1 1     5 8 6   ]; ... % loaded face
-                  [ 0 1 1     6 8 7   ]; ... % loaded face
-                  [ 0 1 2     4 1 2   ]; ... % x=0 supp face
-                  [ 0 1 2     4 2 3   ]; ... % x=0 supp face
-                  [ 0 1 3     6 2 1   ]; ... % y=0 supp face
-                  [ 0 1 3     6 1 5   ]; ... % y=0 supp face
-                  [ 0 1 4     1 4 5   ]; ... % z=0 supp face
-                  [ 0 1 4     4 8 5   ]; ... % z=0 supp face
-                  [ 1 2 0     1 4 2 6 ]; ... % tetrahedron
-                  [ 1 2 0     6 2 3 4 ]; ... % tetrahedron
-                  [ 1 2 0     4 3 6 7 ]; ... % tetrahedron
-                  [ 1 2 0     4 1 5 6 ]; ... % tetrahedron
-                  [ 1 2 0     4 6 5 8 ]; ... % tetrahedron
-                  [ 1 2 0     4 7 6 8 ]  ... % tetrahedron
-                } ;
+mesh.conecCell = {[0 1 1     5 8 6]; ... % loaded face
+                  [0 1 1     6 8 7]; ... % loaded face
+                  [0 1 2     4 1 2]; ... % x=0 supp face
+                  [0 1 2     4 2 3]; ... % x=0 supp face
+                  [0 1 3     6 2 1]; ... % y=0 supp face
+                  [0 1 3     6 1 5]; ... % y=0 supp face
+                  [0 1 4     1 4 5]; ... % z=0 supp face
+                  [0 1 4     4 8 5]; ... % z=0 supp face
+                  [1 2 0     1 4 2 6]; ... % tetrahedron
+                  [1 2 0     6 2 3 4]; ... % tetrahedron
+                  [1 2 0     4 3 6 7]; ... % tetrahedron
+                  [1 2 0     4 1 5 6]; ... % tetrahedron
+                  [1 2 0     4 6 5 8]; ... % tetrahedron
+                  [1 2 0     4 7 6 8]  ... % tetrahedron
+                 };
 % md
 % md### Analysis parameters
 % md
-analysisSettings               = struct() ;
-analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.stopTolIts    = 30     ;
-analysisSettings.stopTolDeltau = 1.0e-8 ;
-  analysisSettings.stopTolForces = 1.0e-8 ;
-analysisSettings.finalTime      = 1      ;
-analysisSettings.deltaT        = .125   ;
+analysisSettings               = struct();
+analysisSettings.methodName    = 'newtonRaphson';
+analysisSettings.stopTolIts    = 30;
+analysisSettings.stopTolDeltau = 1.0e-8;
+analysisSettings.stopTolForces = 1.0e-8;
+analysisSettings.finalTime      = 1;
+analysisSettings.deltaT        = .125;
 % md
 % md### Output parameters
-otherParams              = struct() ;
-otherParams.plots_format = 'vtk' ;
-otherParams.problemName  = 'uniaxialExtension_HandMadeMesh' ;
+otherParams              = struct();
+otherParams.plots_format = 'vtk';
+otherParams.problemName  = 'uniaxialExtension_HandMadeMesh';
 % md
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
 
 % md
 % md### Analytic solution computation
-analyticFunc = @(w) 1/p *E * 0.5 * ( ( 1 + w/Lx ).^3 - ( 1 + w/Lx) ) ;
+analyticFunc = @(w) 1 / p * E * 0.5 * ((1 + w / Lx).^3 - (1 + w / Lx));
 % md
-analyticCheckTolerance = 1e-6 ;
-analyticFunc           = @(w) E * 0.5 * ( (1 + w/Lx).^3 - (1+w/Lx) ) ;
-controlDisps = matUs(6*6+1,:) ;
-analyticVals = analyticFunc( controlDisps ) ;
-controlDispsValsCase1         = controlDisps  ;
-loadFactorAnalyticalValsCase1 = analyticVals  ;
-loadFactorNumericalValsCase1  = loadFactorsMat ;
+analyticCheckTolerance = 1e-6;
+analyticFunc           = @(w) E * 0.5 * ((1 + w / Lx).^3 - (1 + w / Lx));
+controlDisps = matUs(6 * 6 + 1, :);
+analyticVals = analyticFunc(controlDisps);
+controlDispsValsCase1         = controlDisps;
+loadFactorAnalyticalValsCase1 = analyticVals;
+loadFactorNumericalValsCase1  = loadFactorsMat;
 % md
 % md## Numerical solution: case 2
 % mdIn this analysis case, the mesh information is read from a mesh file generated by
-% md the tool [GMSH](https://gmsh.info/). 
+% md the tool [GMSH](https://gmsh.info/).
 % md The pressure is applied using local coordinates and the stiffness
 % md matrix is computed using the complex-step method.
 % md
-otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep' ;
+otherParams.problemName = 'uniaxialExtension_GMSH_ComplexStep';
 % md this auxiliar line sets the right path to the testing environment
-base_msh='';
-if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
-  base_msh=['.' filesep 'examples' filesep 'uniaxialExtension' filesep];
+base_msh = '';
+if strcmp(getenv('TESTS_RUN'), 'yes') && isfolder('examples')
+  base_msh = ['.' filesep 'examples' filesep 'uniaxialExtension' filesep];
 end
 %
-[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [ base_msh 'geometry_uniaxialExtension.msh'] ) ;
+[mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_msh 'geometry_uniaxialExtension.msh']);
 boundaryConds(1).loadsCoordSys = 'local';
-boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0 ] ;
-elements(2).elemTypeParams = [ 2 ] ;
+boundaryConds(1).loadsBaseVals = [0 0 0 0 1 0];
+elements(2).elemTypeParams = [2];
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
 
+controlDisps = matUs(6 * 6 + 1, :);
+analyticVals = analyticFunc(controlDisps);
+controlDispsValsCase2         = controlDisps;
+loadFactorAnalyticalValsCase2 = analyticVals;
+loadFactorNumericalValsCase2  = loadFactorsMat;
 
-controlDisps = matUs(6*6+1,:) ;
-analyticVals = analyticFunc( controlDisps ) ;
-controlDispsValsCase2         = controlDisps  ;
-loadFactorAnalyticalValsCase2 = analyticVals  ;
-loadFactorNumericalValsCase2  = loadFactorsMat ;
-
-aux1 = loadFactorNumericalValsCase1' - loadFactorAnalyticalValsCase1 ;
-aux2 = loadFactorNumericalValsCase2' - loadFactorAnalyticalValsCase1 ;
+aux1 = loadFactorNumericalValsCase1' - loadFactorAnalyticalValsCase1;
+aux2 = loadFactorNumericalValsCase2' - loadFactorAnalyticalValsCase1;
 
 verifBoolean = ...
-     ( norm( aux1 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ...
-  && ( norm( aux2 ) / norm( loadFactorNumericalValsCase1 ) < analyticCheckTolerance ) ;
+      (norm(aux1) / norm(loadFactorNumericalValsCase1) < analyticCheckTolerance) && ...
+      (norm(aux2) / norm(loadFactorNumericalValsCase1) < analyticCheckTolerance);
 % md
 % md
 % md## Plot
 % mdThe numerical and analytic solutions are plotted.
-lw = 2.0 ; ms = 11 ; plotfontsize = 18 ;
-figure, hold on, grid on
-plot( controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o' , 'linewidth', lw,'markersize',ms )
-plot( controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s' , 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement');   laby = ylabel('\lambda(t)') ;
-legend( 'Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North' )
-set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-title('uniaxial extension test')
-if length(getenv('TESTS_RUN')) > 0 && strcmp( getenv('TESTS_RUN'), 'yes')
-  fprintf('\ngenerating output png for docs.\n')
-  print('output/verifUniaxial.png','-dpng')
+lw = 2.0;
+ms = 11;
+plotfontsize = 18;
+figure;
+hold on;
+grid on;
+plot(controlDispsValsCase1, loadFactorAnalyticalValsCase1, 'r-x', 'linewidth', lw, 'markersize', ms);
+plot(controlDispsValsCase1, loadFactorNumericalValsCase1,  'k-o', 'linewidth', lw, 'markersize', ms);
+plot(controlDispsValsCase2, loadFactorNumericalValsCase2,  'g-s', 'linewidth', lw, 'markersize', ms);
+labx = xlabel('Displacement');
+laby = ylabel('\lambda(t)');
+legend('Analytic', 'Numeric-1', 'Numeric-2', 'location', 'North');
+set(gca, 'linewidth', 1.0, 'fontsize', plotfontsize);
+set(labx, 'FontSize', plotfontsize);
+set(laby, 'FontSize', plotfontsize);
+title('uniaxial extension test');
+if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
+  fprintf('\ngenerating output png for docs.\n');
+  print('output/verifUniaxial.png', '-dpng');
 else
-  fprintf('\n === NOT in docs workflow. ===\n')
+  fprintf('\n === NOT in docs workflow. ===\n');
 end
 % md
 % md```@raw html

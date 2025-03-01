@@ -1,3 +1,20 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
 % md# Uniform curvature cantilever beam example
 % md---
 % md
@@ -10,15 +27,21 @@
 % md```
 % md
 % mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
-close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
+close all;
+if ~strcmp(getenv('TESTS_RUN'), 'yes')
+  clear all;
+end
 % add path
-addpath( genpath( [ pwd '/../../src'] ) );
+addpath(genpath([pwd '/../../src']));
 % material scalar parameters
-E = 200e9 ;  nu = 0.3 ;
+E = 200e9;
+nu = 0.3;
 % geometrical scalar parameters
-l = 10 ; ty = .1 ;  tz = .1 ;
+l = 10;
+ty = .1;
+tz = .1;
 % the number of elements of the mesh
-numElements = 10 ;
+numElements = 10;
 % md
 % md## Analytic solution
 % md The rotation of the right end, for a given moment $M$, can be computed as:
@@ -32,105 +55,108 @@ numElements = 10 ;
 % md
 % md### materials
 % md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
-materials                 = struct() ;
-materials.modelName  = 'elastic-rotEngStr' ;
-materials.modelParams = [ E nu ] ;
+materials                 = struct();
+materials.modelName  = 'elastic-rotEngStr';
+materials.modelParams = [E nu];
 % md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 % md
 % md### elements
 % md
 % mdTwo different types of elements are considered, node and beam. The nodes will be assigned in the first entry (index $1$) and the beam at the index $2$. The elemType field is then:
-elements             = struct() ;
-elements(1).elemType = 'node'  ;
-elements(2).elemType = 'frame' ;
+elements             = struct();
+elements(1).elemType = 'node';
+elements(2).elemType = 'frame';
 % md for the geometries, the node has not geometry to assign (empty array), and the truss elements will be set as a rectangular-cross section with $t_y$ and $t_z$ cross-section dimensions in $y$ and $z$ directions, then the elemCrossSecParams field is:
-elements(2).elemCrossSecParams{1,1} = 'rectangle' ;
-elements(2).elemCrossSecParams{2,1} = [ty tz]     ;
+elements(2).elemCrossSecParams{1, 1} = 'rectangle';
+elements(2).elemCrossSecParams{2, 1} = [ty tz];
 % md
 % md### boundaryConds
 % md
 % md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
-Iy = ty*tz^3/12 ;
-boundaryConds                  = struct() ;
-boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
-boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
+Iy = ty * tz^3 / 12;
+boundaryConds                  = struct();
+boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
+boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 % mdand the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam.
-boundaryConds(2).loadsCoordSys = 'global'        ;
-boundaryConds(2).loadsTimeFact = @(t) E*Iy*2*pi/l *t ;
-boundaryConds(2).loadsBaseVals = [ 0 0 0 -1 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global';
+boundaryConds(2).loadsTimeFact = @(t) E * Iy * 2 * pi / l * t;
+boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 % md
 % md
 % md### initial Conditions
 % md homogeneous initial conditions are considered, then an empty cell is set:
-initialConds = {} ;
+initialConds = {};
 % md
 % md### mesh parameters
 % mdThe coordinates of the nodes of the mesh are given by the matrix:
-mesh             = struct() ;
-mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
+mesh             = struct();
+mesh.nodesCoords = [(0:(numElements))' * l / numElements  zeros(numElements + 1, 2)];
 % mdThe connectivity is introduced using the _conecCell_. Each entry of the cell contains a vector with the four indexes of the MEB parameters, followed by the indexes of the nodes of the element (node connectivity). For didactical purposes each element entry is commented. First the cell is initialized:
-mesh.conecCell = { } ;
+mesh.conecCell = { };
 % md then the first two nodes are defined, both with material zero (since nodes dont have material), the first element type (the first entry of the cells of the _elements_ struct), and the first entry of the cells of the boundary conditions struct. Finally the node is included.
-mesh.conecCell{ 1, 1 } = [ 0 1 1   1   ] ;
+mesh.conecCell{ 1, 1 } = [0 1 1   1];
 % md the following case only differs in the boundary condition and the node number
-mesh.conecCell{ 2, 1 } = [ 0 1 2   numElements+1 ] ;
+mesh.conecCell{ 2, 1 } = [0 1 2   numElements + 1];
 % md the beam elements are formed by the first material, the second type of element, and no boundary conditions are applied to any element.
-for i=1:numElements,
-  mesh.conecCell{ i+2,1 } = [ 1 2 0  i i+1 ] ;
+for i = 1:numElements
+  mesh.conecCell{ i + 2, 1 } = [1 2 0  i i + 1];
 end
 % md
 % md### analysisSettings
-analysisSettings               = struct() ;
-analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   0.1  ;
-analysisSettings.finalTime      =   1    ;
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   10   ;
+analysisSettings               = struct();
+analysisSettings.methodName    = 'newtonRaphson';
+analysisSettings.deltaT        =   0.1;
+analysisSettings.finalTime      =   1;
+analysisSettings.stopTolDeltau =   1e-6;
+analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolIts    =   10;
 % md
 % md## otherParams
 otherParams             = struct();
 otherParams.problemName = 'uniformCurvatureCantilever';
-otherParams.controlDofs = [ numElements+1  4 ] ;
-otherParams.plots_format = 'vtk' ;
+otherParams.controlDofs = [numElements + 1  4];
+otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
 
 % md
 % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
-angleControlDof      = (numElements+1)*6 - 2;
-controlDispsNREngRot =  -matUs(angleControlDof,:) ;
-loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
+angleControlDof      = (numElements + 1) * 6 - 2;
+controlDispsNREngRot =  -matUs(angleControlDof, :);
+loadFactorsNREngRot  =  loadFactorsMat(:, 2);
 % md and the analytical value of the load factors is computed
-analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;
+analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
 % md
 % md## Verification
 % md
-verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ...
-                     - loadFactorsNREngRot' )  ...
-                    < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
 % md
-lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
-figure
-plot( controlDispsNREngRot, analyticLoadFactorsNREngRot( controlDispsNREngRot) ,'b-x' , 'linewidth', lw,'markersize',ms )
-hold on, grid on
-plot( controlDispsNREngRot, loadFactorsNREngRot, 'k-o' , 'linewidth', lw,'markersize',ms )
-labx = xlabel('Displacement');   laby = ylabel('$\lambda$') ;
-legend('analytic','NR-RotEng','location','North')
-set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize )
-set(labx, 'FontSize', plotfontsize); set(laby, 'FontSize', plotfontsize) ;
-print('output/verifCantileverBeam.png','-dpng')
+lw = 2.0;
+ms = 11;
+plotfontsize = 22;
+figure;
+plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+hold on;
+grid on;
+plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+labx = xlabel('Displacement');
+laby = ylabel('$\lambda$');
+legend('analytic', 'NR-RotEng', 'location', 'North');
+set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
+set(labx, 'FontSize', plotfontsize);
+set(laby, 'FontSize', plotfontsize);
+print('output/verifCantileverBeam.png', '-dpng');
 % md
 % md```@raw html
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
 % md
 % md
-verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot' )  < ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')  < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
