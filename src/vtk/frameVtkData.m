@@ -133,6 +133,9 @@ function [ vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces ] ...
   end % for elements
 
 
+  # vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces
+
+
   %
   %
   %       if j==1 % compute the first face of the first subelement

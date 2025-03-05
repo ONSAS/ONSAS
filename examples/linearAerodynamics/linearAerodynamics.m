@@ -44,9 +44,7 @@ addpath( genpath( [ pwd '/../../src'] ) );
 E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 % md
 % md Geometrical dimensions sketched in Fig 1 are:
-l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
-A = pi * (dext^2 - dint^2) / 4  ;
-J = pi * (dext^4 - dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
+l = 20 ; dext = .5 ;#  b = 1e-3  ; dint  = dext - 2*b    ;
 % md 
 % md The fluid properties are:
 rhoA = 1.225 ; nuA = 1.6e-5;
@@ -67,8 +65,8 @@ materials.modelParams = [ E nu ]        ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 % md The node type has no cross-section geometry to assign (an empty array is automatically set). Since the frame element has a hollow cylindrical cross-section, then a `'pipe'` cross-section (in $y$ and $z$) is used. Thus the _elemCrossSecParams_ field is:
-elements(2).elemCrossSecParams{1,1} = 'pipe'        ;
-elements(2).elemCrossSecParams{2,1} = [ dext dint ] ;
+elements(2).elemCrossSecParams{1,1} = 'circle'        ;
+elements(2).elemCrossSecParams{2,1} = [ dext ] ;
 % md Now the parameters to include aerodynamic forces automatically on the frame element are defined. The drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the aeroCoefFunctions field is a row cell defined as:
 elements(2).aeroCoefFunctions  = {'dragCoefFunctionLA', 'liftCoefFunctionLA', 'momentCoefFunctionLA'} ;
 % md Next the element field contain the information of the chord vector. This vector is defined first considering the orientation of the cross section set up in lift, drag and moment experiments, and then how that cross section is located for the example. In this case the orientation of the chord vector is along $y$. In general note that the chord vector $t_{ch}$ must be given in reference (non canonical configurations). In this example the cable is oriented along $y$ so the direction will be $[0~1~0]$ as it is shown in Fig 1. Also the length of the chord is added to the norm of the chord vector, for cylindrical cantilever beams is $d_{ext}$.
@@ -117,7 +115,7 @@ analysisSettings.stopTolIts    =   10            ;
 % md The name of the problem and the plots format: 
 otherParams = struct();
 otherParams.problemName  = 'linearAerodynamics';
-otherParams.plots_format = '' ;
+otherParams.plots_format = 'vtk' ;
 % md
 % md### Case 1: hydrodynamic ONSAS element 
 % md
