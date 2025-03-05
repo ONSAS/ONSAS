@@ -268,9 +268,16 @@ for elem = 1:nElems
   elseif strcmp( elemType, 'triangle-shell')
 
     thickness = elemCrossSecParams{2};
-    
-    [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
 
+    if strcmp(modelName, 'elastic-linear')
+    
+      [ fs, ks, fintLocCoord ] = 	internal_forces_linear_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
+
+    elseif strcmp( modelName, 'elastic-rotEngStr')
+      [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
+    else
+      error('material model not implemented');
+    end
 
     localInternalForces(elem).Mx  = fintLocCoord(1) ;
     localInternalForces(elem).My  = fintLocCoord(2) ;
