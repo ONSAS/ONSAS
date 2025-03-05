@@ -21,17 +21,17 @@ function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, ele
 % checks if the fields defined are correct or not
 checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
-%md set defaults
+% md set defaults
 [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams ) ;
 
-%md sets the current version and welcomes user
+% md sets the current version and welcomes user
 ONSASversion = '0.3.1'  ; welcome_message( ONSASversion, otherParams );
 
 % creates outputdir in current location
 create_outputDir( otherParams )
 
 % =================================================================
-%md process boundary conds information and construct BCsData struct
+% md process boundary conds information and construct BCsData struct
 [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename ] ...
   = boundaryCondsProcessing( mesh, materials, elements, boundaryConds, analysisSettings ) ;
 
@@ -49,7 +49,7 @@ nTimes = round( analysisSettings.finalTime / analysisSettings.deltaT ) + 1 ; % n
 timesPlotsVec = round( linspace( 1, nTimes, nplots )' ) ;
 
 % =================================================================
-%md construct modelProperties struct
+% md construct modelProperties struct
 modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, analysisSettings, otherParams, timesPlotsVec ) ;
 % =================================================================
 
@@ -66,7 +66,7 @@ end
 
 
 % =================================================================
-%md process initial conds and construct modelSol struct
+% md process initial conds and construct modelSol struct
 currTime  = 0 ; timeIndex = 1 ; 
 
 timeStepIters    = 0 ; timeStepStopCrit = 0 ;
@@ -90,18 +90,18 @@ previousStateCell(:,3) = {0} ;
 
 nextTime = currTime + analysisSettings.deltaT ;
 
-%md call assembler
+% md call assembler
 [ systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~ , modelProperties.exportFirstMatrices  ] = system_assembler( modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell ) ;
 
 modelCurrSol = construct_modelSol( timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
     currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell ) ;
 % =================================================================
 
-%md prints headers for solver output file
+% md prints headers for solver output file
 printSolverOutput( otherParams.outputDir, otherParams.problemName, 0                  , [] ) ;
 printSolverOutput( otherParams.outputDir, otherParams.problemName, [ 2 timeIndex currTime 0 0 ], [] ) ;
 
-%md writes vtk file
+% md writes vtk file
 if strcmp( modelProperties.plots_format, 'vtk' )
   vtkMainWriter( modelCurrSol, modelProperties )
 end

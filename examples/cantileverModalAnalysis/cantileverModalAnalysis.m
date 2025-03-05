@@ -1,45 +1,45 @@
-%md# Cantilever Modal Analysis
-%md
-%mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
+% md# Cantilever Modal Analysis
+% md
+% mdBefore defining the structs, the workspace is cleaned and the ONSAS directory is added to the path
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src'] ) );
-%md
-%mdThe material scalar parameters are set.
+% md
+% mdThe material scalar parameters are set.
 E = 200e9 ; nu = 0.3;  rho = 700;
-%mdThe cross-section of the beam is rectangular. The widths and other geometry scalar parameters are computed.
+% mdThe cross-section of the beam is rectangular. The widths and other geometry scalar parameters are computed.
 l = 10 ; diam = .01 ; 
 numElements = 16 ; % Number of elements
 
 tf     = 0.3     ; % s
 deltat = 0.1   ; % s
 
-%md### materials
+% md### materials
 materials             = struct()         ;
 materials.modelName   = 'elastic-rotEngStr' ;%'elastic-linear';%
 materials.modelParams = [ E nu ]         ;
 materials.density     = rho              ;
-%md
-%md### elements
+% md
+% md### elements
 elements = struct() ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 %elements(2).elemCrossSecParams = { 'rectangle' , [ty tz] } ;
 elements(2).elemCrossSecParams = { 'circle' , diam } ;
-%md The consistent mass approach is considered for the dynamic analysis
+% md The consistent mass approach is considered for the dynamic analysis
 elements(2).massMatType = 'consistent';
-%md
+% md
 boundaryConds                  = struct() ;
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
 boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
-%md and the second corresponds to a time dependant external force
+% md and the second corresponds to a time dependant external force
 boundaryConds(2).loadsCoordSys = 'global'        ;
 boundaryConds(2).loadsTimeFact = @(t) t ;
 boundaryConds(2).loadsBaseVals = [ 0 0 1 0 0 0 ] ;
-%md
-%md### initial Conditions
-%md homogeneous initial conditions are considered, then an empty struct is set:
+% md
+% md### initial Conditions
+% md homogeneous initial conditions are considered, then an empty struct is set:
 initialConds = struct() ;
-%md
+% md
 mesh = struct() ;
 mesh.nodesCoords = [ (0:(numElements))'*l/numElements  zeros(numElements+1,2) ] ;
 
@@ -51,7 +51,7 @@ for i=1:numElements
   mesh.conecCell{ i+2, 1 } = [ 1 2 0  i i+1 ] ;
 end
 
-%md### analysisSettings
+% md### analysisSettings
 analysisSettings = struct() ;
 analysisSettings.methodName    = 'newmark' ;
 analysisSettings.deltaT        =   deltat  ;
@@ -60,22 +60,22 @@ analysisSettings.stopTolDeltau =   1e-10 ;
 analysisSettings.stopTolForces =   1e-8 ;
 analysisSettings.stopTolIts    =   20   ;
 analysisSettings.modalAnalysisBoolean = true;
-%md
-%md## otherParams
+% md
+% md## otherParams
 otherParams = struct() ;
 otherParams.problemName = 'cantilever_modal_analysis';
 otherParams.exportFirstMatrices = true;
-%md ONSAS execution
-%mdFirst the input structs are converted to structs with the model information
+% md ONSAS execution
+% mdFirst the input structs are converted to structs with the model information
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
-%mdAfter that the structs are used to perform the numerical time analysis
+% mdAfter that the structs are used to perform the numerical time analysis
 [coRotMatUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-%md
-%md the report is generated
+% md
+% md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
 
-%md
+% md
 % load matrices file
 load( [ pwd filesep 'output' filesep 'matrices.mat'] );
 
