@@ -17,10 +17,10 @@
 %
  
 
-%md function for writing vtk files of deformed configurations of structures.
-%md Creates the file filename with the nodes coordinates given in nodes,
-%md the conectivity given in conect and with the point and element data
-%md given in cellPointData and cellCellData, respectively.
+% md function for writing vtk files of deformed configurations of structures.
+% md Creates the file filename with the nodes coordinates given in nodes,
+% md the conectivity given in conect and with the point and element data
+% md given in cellPointData and cellCellData, respectively.
 
 function vtkFileWriter( filename, nodes, conect, cellPointData, cellCellData )
 

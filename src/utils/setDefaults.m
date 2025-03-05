@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%md set optional fields defaults
+% md set optional fields defaults
 function [ materials, elements, boundaryConds, analysisSettings, otherParams ] = setDefaults( materials, elements, boundaryConds, analysisSettings, otherParams )
 
 % =========================================
@@ -78,8 +78,8 @@ otherParams       = checkOrSetDefault( otherParams      , 'nodalDispDamping', 0 
 otherParams       = checkOrSetDefault( otherParams      , 'outputDir', [ './output/' otherParams.problemName '/' ] ) ;
 otherParams       = checkOrSetDefault( otherParams      , 'exportFirstMatrices', false    ) ;
 
-%md function that checks if a field is defined in a (scalar or array) struct
-%md and sets a default value if it is not defined.
+% md function that checks if a field is defined in a (scalar or array) struct
+% md and sets a default value if it is not defined.
 function structName = checkOrSetDefault( structName, fieldName, default )
 
   if ~isfield( structName, fieldName )

@@ -15,17 +15,20 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function O = switchToONSASNom(B)
-%---------------- Change of basis Le and Battini 2014 -> ONSAS matrix  -------------------
 
+% This function applies a permutation to switch a vector/matrix of displacements/rotations from type to nodal
+function O = switchToNodalIndexing(B)
   O = zeros( size(B) );
 
-  permutIndxs = [1:2:5 2:2:6 ([1:2:5]+6) ([2:2:6]+6) ] ;
+  assert( mod(size(B,1),6)==0)
+  permutIndxs = [ ];
+  for i=1:(size(B,1)/6)
+    permutIndxs = [ permutIndxs ([1:2:5]+6*(i-1)) ([2:2:6]+6*(i-1)) ] ;
+  end
 
-	if size(B, 2)>1
-		O(permutIndxs, permutIndxs) = B ;
-	else
-		O( permutIndxs) = B ;
-	end
-
+  if size(B, 2)>1
+	O(permutIndxs, permutIndxs) = B ;
+  else
+	O( permutIndxs) = B ;
+  end
 end

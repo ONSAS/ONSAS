@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%md function that constructs the assembled Fext vector for one given BC
+% md function that constructs the assembled Fext vector for one given BC
 
 function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
@@ -39,7 +39,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
     elemInd   = Conec( elem, 2 )             ;
     elemType  = elements( elemInd ).elemType ;
 
-    %md nodal loads
+    % md nodal loads
     if strcmp( elemType, 'node') % node
 
       if strcmp( loadCoordSys, 'global' )
@@ -49,16 +49,16 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
       end
       elemNodeLoadsMatrix = loadvals ;
 
-    %md truss
+    % md truss
     elseif strcmp( elemType , 'truss') ; %
       error(' not yet.');
 
-    %md frame
+    % md frame
     elseif strcmp( elemType , 'frame') ; %
       error(' not yet.');
 
 
-    %md edge
+    % md edge
     elseif strcmp( elemType , 'edge') ; %
       nodes          = Conec( elem, 3+(1:2) ) ;
       
@@ -97,7 +97,7 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
 
       assert( size( elemNodeLoadsMatrix, 2)==6,'error, maybe missing thickness')
 
-    %md triangle tension
+    % md triangle tension
     elseif strcmp( elemType , 'triangle') || strcmp( elemType , 'triangle-plate') ...
       || strcmp( elemType , 'triangle-shell') ; %
 
@@ -143,12 +143,12 @@ function fext = elem2NodalLoads ( Conec, indBC, elements, boundaryCond, Nodes )
       elemNodeLoadsMatrix = ones( length(nodes), 1 ) * [ Fx 0 Fy 0 Fz 0 ] ;
 
     end %if elemTypes
-    %mdadd loads to matrix of loaded nodes
+    % mdadd loads to matrix of loaded nodes
     loadedNodes = [ loadedNodes ; ...
                     nodes'  elemNodeLoadsMatrix ] ;
   end % for elements
 
-  %md convert to assembled fext vector
+  % md convert to assembled fext vector
   if exist( 'loadedNodes' ) ~= 0
     for i=1:size( loadedNodes ,1)
       aux = nodes2dofs ( loadedNodes(i,1), 6 ) ;

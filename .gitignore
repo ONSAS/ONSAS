@@ -16,6 +16,9 @@ docs/src/examples/
 docs/src/assets/generated/
 test/aux.txt
 
+# utils
+utils/.venv/
+
 # editors and OSs
 *.DS_Store
 *.vscode

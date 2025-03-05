@@ -76,9 +76,9 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
 
   % --- global kinematics ---
   % switch indexes according to Battini's nomenclature
-  dg       = switchToBattiniNom( Ue ) ;
-  ddotg    = switchToBattiniNom( Udote ) ;
-  ddotdotg = switchToBattiniNom( Udotdote ) ;
+  dg       = switchToTypeIndexing( Ue ) ;
+  ddotg    = switchToTypeIndexing( Udote ) ;
+  ddotdotg = switchToTypeIndexing( Udotdote ) ;
   % -------------------------------
 
   % length and coords of the element

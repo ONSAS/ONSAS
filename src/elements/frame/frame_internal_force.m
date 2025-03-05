@@ -35,7 +35,7 @@ function  [ fs, ks, stress, rotData, localInternalForces ] = frame_internal_forc
 
   % --- global displacements ---
   % permut indexes according to Battini's nomenclature
-  dg = switchToBattiniNom( Ue ) ;
+  dg = switchToTypeIndexing( Ue ) ;
   % global thetas
   tg1 = dg(  4:6  ) ;
   tg2 = dg( 10:12 ) ;
@@ -162,7 +162,7 @@ function  [ fs, ks, stress, rotData, localInternalForces ] = frame_internal_forc
   Kt = ( Kt + Kt' ) / 2;
 
   % --- Write it back to ONSAS nomenclature [fx mx,....]  ---
-  Finte = switchToONSASNom(q) ;
+  Finte = switchToNodalIndexing(q) ;
 
   KTe = zeros( size(Kt) );
 
@@ -183,7 +183,7 @@ function  [ fs, ks, stress, rotData, localInternalForces ] = frame_internal_forc
 
   else
 
-    KTe = switchToONSASNom(Kt) ;
+    KTe = switchToNodalIndexing(Kt) ;
 
   end
   % -------------------------------------------------------

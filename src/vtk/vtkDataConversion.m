@@ -16,10 +16,10 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
  
-%md This function provides the matrices and cells for posterior 
-%md writing of vtk files with the solution of the structure.
-%md The inputs are the structs of the solution (at a given time)
-%md and the properties of the model.
+% md This function provides the matrices and cells for posterior 
+% md writing of vtk files with the solution of the structure.
+% md The inputs are the structs of the solution (at a given time)
+% md and the properties of the model.
  
 function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modS, modP )
 
@@ -28,10 +28,10 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   % get the indexes of elements used in the model
   elemTypeInds = unique( modP.Conec( :, 2 ) ) ;
 
-  %md create empty matrices for node coordinates and cell connectivities
+  % md create empty matrices for node coordinates and cell connectivities
   vtkConec = [] ;             vtkNodes = [] ;
 
-  %md create cells for point and cell data (displacemets)
+  % md create cells for point and cell data (displacemets)
   vtkPointDataCell = {} ;  vtkCellDataCell  = {} ;  cellDataCounter = 0;
 
   vtkNodalDisps         = [] ;  % after filling the matrix it is assigned to the third column of the cell
@@ -40,10 +40,10 @@ function [ vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell ] = vtkDataConv
   nIntForces = length(vtkInternalForcesNames) ;
   vtkInternalForcesVectorsCell = cell(nIntForces,1) ;
 
-  %md loop in element types and add nodes and cells considering the specific
-  %md structure and connectivity for each type of element/cell
+  % md loop in element types and add nodes and cells considering the specific
+  % md structure and connectivity for each type of element/cell
   totalNodes = 0 ;
-  %md
+  % md
   for indType = 1:length( elemTypeInds )
 
 		elemTypeString     = modP.elements( elemTypeInds(indType) ).elemType       ;

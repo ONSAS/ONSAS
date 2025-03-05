@@ -40,13 +40,13 @@ function  [ fs, ks ]= frame_inertial_force( elemCoords, ...
 
   % --- global kinematics ---
   % permut indexes according to Battini's nomenclature
-  dg = switchToBattiniNom( Ue ) ;
+  dg = switchToTypeIndexing( Ue ) ;
   % global thetas
   tg1 = dg(  4:6  ) ;
   tg2 = dg( 10:12 ) ;
   % global acel and vels
-  ddotg    = switchToBattiniNom( Udote ) ;
-  ddotdotg = switchToBattiniNom( Udotdote ) ;
+  ddotg    = switchToTypeIndexing( Udote ) ;
+  ddotdotg = switchToTypeIndexing( Udotdote ) ;
 
   % length and coords of the element  
   [x21, d21, l, l0] = corotLenCoords(xs ,dg) ;
