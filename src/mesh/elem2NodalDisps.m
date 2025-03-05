@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%md function that constructs the vectors of constrained degrees of freedom
+% md function that constructs the vectors of constrained degrees of freedom
 
 function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes )
 
@@ -27,17 +27,17 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
   % find not null indexes of impoVals
   locNonHomDofs = find( impoVals )       ;
 
-  %md loop in the elements to convert to nodal constraints
+  % md loop in the elements to convert to nodal constraints
   for elemInd = 1:length( elemsWithBC );
 
     elem        = elemsWithBC( elemInd )             ;
     nodesElem   = nonzeros( Conec(elem, 4:end ) )    ;
     elemType    = elements( Conec(elem,2) ).elemType ;
 
-    %md compute an auxiliar column vector with the global degrees of freedom of the nodes of the current element
+    % md compute an auxiliar column vector with the global degrees of freedom of the nodes of the current element
     auxDofs = nodes2dofs( nodesElem, 6 ) ; auxDofs = auxDofs(:);
 
-    %md nodal constraints
+    % md nodal constraints
     if strcmp( elemType, 'node') ; % node
       if ~isempty( locNonHomDofs)
         nonHomDiriDofs = [ nonHomDiriDofs; auxDofs(  locNonHomDofs) ];
@@ -45,7 +45,7 @@ function [ nonHomDiriVals, diriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec,
       end
       diriDofs = [ diriDofs ; auxDofs(impoDofs) ] ;
 
-    %md edge or triangle constraints
+    % md edge or triangle constraints
     elseif strcmp( elemType, 'triangle') || strcmp( elemType, 'edge')
 
       for j=1:length(impoDofs)

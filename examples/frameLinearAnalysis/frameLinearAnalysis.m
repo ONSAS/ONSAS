@@ -1,28 +1,28 @@
-%md# A Frame Linear Analysis Example
-%md
-%md## Previous definitions
+% md# A Frame Linear Analysis Example
+% md
+% md## Previous definitions
 close all, if ~strcmp( getenv('TESTS_RUN'), 'yes'), clear all, end
 addpath( genpath( [ pwd '/../../src' ] ) ) ; % add ONSAS directory to path
-%md
-%md scalar auxiliar parameters
+% md
+% md scalar auxiliar parameters
 E  = 210e9 ; nu = 0.3 ; %
 ty = 0.1   ; tz = 0.2 ; % cross-section widths
 L1 = 2     ; L2 = 1.5 ; %
 Pz = 2e3   ; Py = 1e3 ; % applied nodal loads
-%md
-%md## MEB parameters: Material-Element-BoundaryConditions
-%md
-%md### Materials
+% md
+% md## MEB parameters: Material-Element-BoundaryConditions
+% md
+% md### Materials
 materials = struct();
 materials(1).modelName = 'elastic-linear'  ;
 materials(1).modelParams = [ E, nu] ;
-%md### Elements
+% md### Elements
 elements = struct();
 elements(1).elemType  = 'node'  ;
 elements(2).elemType  = 'frame' ;
 elements(2).elemCrossSecParams = { 'rectangle'; [ ty tz ] };
 elements(2).massMatType     =  'consistent' ; 
-%md### BoundaryConditions
+% md### BoundaryConditions
 % Supports
 boundaryConds = struct();
 boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 6 ] ;
@@ -30,28 +30,28 @@ boundaryConds(1).imposDispVals = [ 0 0 0 0 0 0 ] ;
 % Loads
 boundaryConds(2).loadsCoordSys = 'global' ;
 boundaryConds(2).loadsBaseVals = [ 0 0 Py 0 -Pz 0] ;
-%md
-%md## Mesh
-%md Mesh nodes
+% md
+% md## Mesh
+% md Mesh nodes
 mesh = struct();
 mesh.nodesCoords = [ 0   0  0 ; ...
 					 L1  0  0 ; ...
 					 L1  L2 0 ] ;
-%md
-%md Conec Cell
+% md
+% md Conec Cell
 mesh.conecCell = { } ;
-%md nodes
+% md nodes
 mesh.conecCell{1, 1 } = [ 0 1 1   1 ] ;
 mesh.conecCell{2, 1 } = [ 0 1 2   3 ] ;
-%md and frame elements
+% md and frame elements
 mesh.conecCell{3, 1 } = [ 1 2 0   1 2 ] ;
 mesh.conecCell{4, 1 } = [ 1 2 0   2 3 ] ;
-%md
-%md### InitialConditions
-%md empty struct
+% md
+% md### InitialConditions
+% md empty struct
 initialConds = struct() ;
 %
-%md Analysis settings
+% md Analysis settings
 analysisSettings = struct() ;
 %
 otherParams = struct() ;
@@ -60,10 +60,10 @@ otherParams.plots_format = 'vtk' ;
 %
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
-%mdAfter that the structs are used to perform the numerical time analysis
+% mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
-%md
-%md the report is generated
+% md
+% md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
 
 mu = E /( 2*(1+nu) ) ;
