@@ -111,13 +111,9 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Fe = Te' * Fe;
 
     %shifting lines and coluns to onsas convention of dofs order
-    aux_r = [1,4,2,5,3,6];
-    aux_onsas = [aux_r, aux_r+6 , aux_r+12];
-
-    K = Ke(aux_onsas, aux_onsas);
-
-    F = Fe(aux_onsas) ;
-
+    K = switchToNodalIndexing( Ke );
+    F = switchToNodalIndexing( Fe );
+    
     ks = {K} ; fs = {F};
 
 end
