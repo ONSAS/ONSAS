@@ -41,81 +41,74 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % Calculate the area of the triangle
     area = x02 * y03 / 2;
 
+    % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
+    [Ke, ff] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
+    Fe = Ke * Ul;
+
+    % calculating the stiffness matrix and internal force vector of the shell element in global coordinates
+    Ke = Te' * Ke * Te ;
+    Fe = Te' * Fe;
+
+    % shifting lines and columns to onsas convention of dofs order
+    K = switchToNodalIndexing( Ke );
+    F = switchToNodalIndexing( Fe );
+
+    ks = {K}; 
+    fs = {F};
+
+end
+
+
+function [Kel,fintLocCoord] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
+
+    % Calculate the area of the triangle
+    area = x02 * y03 / 2;
+
     % membrane stiffness
     aux1 = h *  E / ( 1 - nu^2) ; 
     aux2 = nu*aux1;
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
-
     Bm = CST_B(x02, x03, y03);
     Km = area * Bm' * Dm * Bm ;
     im = [1, 2, 7, 8, 13, 14];
+    % membrane forces (constant)
     Ulm = Ul(im);
     N = Dm * Bm * Ulm;
-    Fm = Km * Ulm;
 
     % bending stiffness
     aux1 = E * h^3 / (12 * ( 1- nu^2) ); 
     aux2 = nu*aux1;
     Db = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
     ib = [3,4,5, 9,10,11, 15,16,17];
-    Ulb = Ul(ib);
-
     int_point = [ [1./6. 1./6.]; [2./3., 1./6.]; [1./6., 2./3.]];
-
-    fintLocCoord = zeros(1,3);
- 
-    
-    % TODO: temporal FIXX generalize!
-    TM = T(1:2,1:2);
-    % ------------------------------
-
     Kb = zeros(9,9);
     wgt = area / 3.0;
-    curv = zeros(3,3);
-    M = zeros(3,3);
-    Fb = zeros(9,1);
-
-
     for ipt = 1:3;
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
         Bb = DKT_B(psi, eta, x02, x03, y03);
-        curv(:,ipt) = Bb * Ulb;
-        M(:,ipt) = Db * curv(:,ipt);
         Kb = Kb + wgt * Bb' * Db * Bb;
-        Fb = Fb + wgt * Bb' * M(:,ipt);
-
-        fint_ip = Db * Bb * Ubl ;
-        Mmat    = (TM') * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
-        fint_ip = [ Mmat(1,1) Mmat(2,2) Mmat(1,2) ] ;
-        fintLocCoord = fintLocCoord + fint_ip * wgt/area ;
     end
+    % plate moments (calculated at the center of the element)
+    Ulb = Ul(ib);
+    Bb = DKT_B(1./3., 1./3., x02, x03, y03);
+    curv = Bb * Ulb;
+    M = Db * curv;    
 
-    %assembling the stiffness matrix and the internal force vector of the shell element in local coordinates
-    Ke = zeros(18,18);
+    % assembling the stiffness matrix of the shell element in local coordinates
+    Kel = zeros(18,18);
 
-    Ke(im,im) = Km;
-    Ke(ib,ib) = Kb;
+    Kel(im,im) = Km;
+    Kel(ib,ib) = Kb;
     
     k_dr = min( min( abs( Kb ) ) ) * 1.e-4;
-    Ke(6 , 6) = k_dr;
-    Ke(12,12) = k_dr;
-    Ke(18,18) = k_dr;
+    Kel(6 , 6) = k_dr;
+    Kel(12,12) = k_dr;
+    Kel(18,18) = k_dr;
 
-    Fe = zeros(18,1);
-    Fe(im) = Fm;
-    Fe(ib) = Fb;
-
-    % calculating the stiffness matrix and internal foce vector of the shell element in global coordinates
-    Ke = Te' * Ke * Te ;
-    Fe = Te' * Fe;
-
-    %shifting lines and coluns to onsas convention of dofs order
-    K = switchToNodalIndexing( Ke );
-    F = switchToNodalIndexing( Fe );
-
-    ks = {K} ; fs = {F};
-
+    % returning moments in local element coordiantes 
+    fintLocCoord = zeros(1,3);
+    fintLocCoord = fintLocCoord + M;  % Store the moments in fintLocCoord
 end
 
 function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
