@@ -113,12 +113,12 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     %shifting lines and coluns to onsas convention of dofs order
     K = switchToNodalIndexing( Ke );
     F = switchToNodalIndexing( Fe );
-    
+
     ks = {K} ; fs = {F};
 
 end
 
-function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3)
+function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
 %Calculates the matrix for transformation of basis between global and local axis;
 %p1, p2 and p3 are the position vector for the nodes in global coordinates;
 %the local x axis is paralel to the side connecting nodes 1 and 2
@@ -143,7 +143,7 @@ function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3)
 end
 
 
-function [ B ] = CST_B(x02, x03, y03)
+function [ B ] = CST_B(x02, x03, y03);
     %calculate the strain-displacement matrix for the constant stress triangular element (CST)
     %x02, x03 and y03 are the local coordinates of the nodes 2 and 3 
 
@@ -166,7 +166,7 @@ function [ B ] = CST_B(x02, x03, y03)
 
 end
 
-function [ B ] = DKT_B(PSI, ETA, x02, x03, y03)
+function [ B ] = DKT_B(PSI, ETA, x02, x03, y03);
     %calculate the strain-displacement matrix for the triangular plate element (DKT)
     %psi and eta are the area coordinates of the triangular element
     %x02, x03 and y03 are the local coordinates of the nodes 2 and 3 
@@ -272,20 +272,3 @@ function [ B ] = DKT_B(PSI, ETA, x02, x03, y03)
 
 end
 
-function [ B_NL ] = B_nonlinear(x02, x03, y03)
-    area02 = x02*y03;
-    La = [- y03/area02,  y03/area02];
-    Lb = [(x03 - x02)/area02,  - x03/area02, x02/area02];
-
-    B_NL = zeros(6,9);
-    ra = [1,4];
-    rb = [1,4,7];
-
-    B_NL(1,  ra) = La;
-    B_NL(2,  rb) = Lb;
-    B_NL(3,1+ra) = La;
-    B_NL(4,1+rb) = Lb;
-    B_NL(5,2+ra) = La;
-    B_NL(6,2+rb) = Lb;
-
-end
