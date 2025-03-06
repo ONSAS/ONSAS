@@ -23,31 +23,70 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
 
     %material and geometric parameters
-    E = modelParams(1);  
-    nu = modelParams(2) ;
+    young_modulus = modelParams(1);  
+    poisson_ratio = modelParams(2) ;
     h = thickness;
 
-    p1 = elemCoords(1:3);
-    p2 = elemCoords(4:6);
-    p3 = elemCoords(7:9);
+    r1g = elemCoords(1:3);
+    r2g = elemCoords(4:6);
+    r3g = elemCoords(7:9);
+    rog = (r1g + r2g + r3g) / 3;
 
     Ug = switchToTypeIndexing( elemDisps ) ;
 
-    [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
-    
-    Te = blkdiag(T,T,T,T,T,T);
-    Ul = Te * Ug;
+    u1g = Ug( 1: 3);
+    q1  = Ug( 4: 6);
+    u2g = Ug( 7: 9);
+    q2  = Ug(10:12);
+    u3g = Ug(13:15);
+    q3  = Ug(16:18);
+
+    p1g = r1g + u1g;
+    p2g = r2g + u2g;
+    p3g = r3g + u3g;
+    pog = (p1g + p2g + p3g) / 3;
+
+    [To, x02, x03, y03] = edge_local_axis_shell_triangle(r1g,r2g,r3g);
+    [Tr, x02, x03, y03] = edge_local_axis_shell_triangle(p1g,p2g,p3g);
+
+    Ro = To';
+    Rr = Tr';
+    E = blkdiag(Rr,Rr,Rr,Rr,Rr,Rr);
+
+    R1g = global_rotation_matrix(q1);
+    R2g = global_rotation_matrix(q2);
+    R3g = global_rotation_matrix(q3);
+
+    R1def = Tr*R1g*Ro;
+    R2def = Tr*R2g*Ro;
+    R3def = Tr*R3g*Ro;
+
+    Ta1 = matrix_Ta(R1def);
+    Ta2 = matrix_Ta(R2def);
+    Ta3 = matrix_Ta(R3def);
+
+    Tm1 = matrix_Tm(R1def);
+    Tm2 = matrix_Tm(R2def);
+    Tm3 = matrix_Tm(R3def);
+
+
+
+
+    Ul = E * Ug;
     
     % Calculate the area of the triangle
     area = x02 * y03 / 2;
 
     % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
-    [Ke, ff] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
+    [Kl_full, ff] = local_shell_triangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul);
+    index_full = [1,2, 4,5,6, 7,8, 10,11,12, 13,14, 16,17,18];
+    Kl = Kl_full( index_full, index_full);
+    
     Fe = Ke * Ul;
 
     % calculating the stiffness matrix and internal force vector of the shell element in global coordinates
-    Ke = Te' * Ke * Te ;
-    Fe = Te' * Fe;
+    Ke = E * Ke * E' ;
+    Fe = E * Fe;
 
     % shifting lines and columns to onsas convention of dofs order
     K = switchToNodalIndexing( Ke );
