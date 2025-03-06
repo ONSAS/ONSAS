@@ -63,8 +63,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     int_point = [ [1./6. 1./6.]; [2./3., 1./6.]; [1./6., 2./3.]];
 
     fintLocCoord = zeros(1,3);
-
-    dispTe = Te*elemDisps_sortT ;
  
     
     % TODO: temporal FIXX generalize!
@@ -72,7 +70,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % ------------------------------
 
     Kb = zeros(9,9);
-    wgt = area/3.d0;
+    wgt = area / 3.0;
     curv = zeros(3,3);
     M = zeros(3,3);
     Fb = zeros(9,1);
@@ -87,7 +85,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
         Kb = Kb + wgt * Bb' * Db * Bb;
         Fb = Fb + wgt * Bb' * M(:,ipt);
 
-        fint_ip = Db * Bb * dispTe(ib) ;
+        fint_ip = Db * Bb * Ubl ;
         Mmat    = (TM') * [ fint_ip(1) fint_ip(3) ; fint_ip(3) fint_ip(2) ] * TM ;
         fint_ip = [ Mmat(1,1) Mmat(2,2) Mmat(1,2) ] ;
         fintLocCoord = fintLocCoord + fint_ip * wgt/area ;
