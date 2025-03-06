@@ -20,11 +20,7 @@
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
 function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness )
-%function [ fs, ks, fintLocCoord, current_stae ] = internal_forces_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness,  previous_state)
 
-    %---------
-    previous_state = { zeros(9,1) , zeros(3,3)};
-    %---------
 
     %material and geometric parameters
     E = modelParams(1);  
@@ -35,36 +31,26 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p2 = elemCoords(4:6);
     p3 = elemCoords(7:9);
 
-    Ulb_ps = previous_state{1};
-    curv_ps = previous_state{2};
-    
-    ig = [1,3,6,2,5,4];
-    ig = [ig, ig+6, ig+12];
-    Ug = elemDisps(ig);
-
-    elemDisps_sortT = switchToTypeIndexing( elemDisps ) ;
+    Ug = switchToTypeIndexing( elemDisps ) ;
 
     [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
     
     Te = blkdiag(T,T,T,T,T,T);
     Ul = Te * Ug;
     
-
-    area = x02*y03 / 2;
+    % Calculate the area of the triangle
+    area = x02 * y03 / 2;
 
     % membrane stiffness
     aux1 = h *  E / ( 1 - nu^2) ; 
     aux2 = nu*aux1;
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
-    im = [1, 2, 7, 8, 13, 14];
-    Ulm = Ul(im);
+
     Bm = CST_B(x02, x03, y03);
     Km = area * Bm' * Dm * Bm ;
+    im = [1, 2, 7, 8, 13, 14];
+    Ulm = Ul(im);
     N = Dm * Bm * Ulm;
-    Na = [ N(1), N(3); N(2), N(3)];
-    Nh = blkdiag(Na,Na,Na);
-    B_NL = B_nonlinear(x02, x03, y03);
-    Km_nl = area * B_NL' * Nh * B_NL;
     Fm = Km * Ulm;
 
     % bending stiffness
@@ -73,7 +59,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Db = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
     ib = [3,4,5, 9,10,11, 15,16,17];
     Ulb = Ul(ib);
-    dUlb = Ulb - Ulb_ps;
 
     int_point = [ [1./6. 1./6.]; [2./3., 1./6.]; [1./6., 2./3.]];
 
@@ -97,7 +82,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
         Bb = DKT_B(psi, eta, x02, x03, y03);
-        curv(:,ipt) = Bb * dUlb + curv_ps(:,ipt);
+        curv(:,ipt) = Bb * Ulb;
         M(:,ipt) = Db * curv(:,ipt);
         Kb = Kb + wgt * Bb' * Db * Bb;
         Fb = Fb + wgt * Bb' * M(:,ipt);
@@ -112,7 +97,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Ke = zeros(18,18);
 
     Ke(im,im) = Km;
-    Ke(ib,ib) = Kb + Km_nl;
+    Ke(ib,ib) = Kb;
     
     k_dr = min( min( abs( Kb ) ) ) * 1.e-4;
     Ke(6 , 6) = k_dr;
@@ -133,10 +118,9 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     K = Ke(aux_onsas, aux_onsas);
 
-    %f = K*elemDisps;
     F = Fe(aux_onsas) ;
 
-    ks = {K} ; fs = {F}; current_state = {Ulb, curv};
+    ks = {K} ; fs = {F};
 
 end
 
