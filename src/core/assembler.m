@@ -290,7 +290,7 @@ for elem = 1:nElems
     localInternalForces(elem).My  = fintLocCoord(2) ;
     localInternalForces(elem).Mxy = fintLocCoord(3) ;
 
-    Finte = fs{1}
+    Finte = fs{1};
 		Ke    = ks{1};
 
   % ---------  tetrahedron solid element -----------------------------
