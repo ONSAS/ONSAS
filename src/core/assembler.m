@@ -269,7 +269,6 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
 
-    elemDisps
     
     if strcmp(modelName, 'elastic-linear')
     
