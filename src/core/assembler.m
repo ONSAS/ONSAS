@@ -269,12 +269,19 @@ for elem = 1:nElems
 
     thickness = elemCrossSecParams{2};
 
+    elemDisps
+    
     if strcmp(modelName, 'elastic-linear')
     
       [ fs, ks, fintLocCoord ] = 	internal_forces_linear_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
 
     elseif strcmp( modelName, 'elastic-rotEngStr')
       [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
+
+      if isnan(fintLocCoord) || isnan(fs{1})
+        
+        error("nan")
+      end
     else
       error('material model not implemented');
     end
@@ -283,7 +290,7 @@ for elem = 1:nElems
     localInternalForces(elem).My  = fintLocCoord(2) ;
     localInternalForces(elem).Mxy = fintLocCoord(3) ;
 
-    Finte = fs{1};
+    Finte = fs{1}
 		Ke    = ks{1};
 
   % ---------  tetrahedron solid element -----------------------------
