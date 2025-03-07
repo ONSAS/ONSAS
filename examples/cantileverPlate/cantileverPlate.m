@@ -7,8 +7,8 @@ addpath( genpath( [ pwd '/../../src'] ) );
 E = 200e9 ;
 nu = 0.0 ;
 tz = .05 ;
-qx  = 1e3 ; % kN/m^2 
-qz  = 1e3 ; % kN/m^2 
+qx  = 1e2 ; % kN/m^2 
+qz  = 1e2 ; % kN/m^2 
 % md
 Ly = .5;
 Lx = 1 ;
