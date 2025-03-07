@@ -112,17 +112,21 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Ba(13:15,13:15) = Ta3;
 
     % eq. (21) of 10.1016/j.cma.2006.10.006
-    Khi = matrix_Khi(R1def, fl);
     Kh = zeros(15,15);
-
+    Kh( 3: 5, 3: 5) = matrix_Khi(R1def, fl( 3: 5));
+    Kh( 8:10, 8:10) = matrix_Khi(R2def, fl( 8:10));
+    Kh(13:15,13:15) = matrix_Khi(R3def, fl(13:15));
 
     % eq. (20) of 10.1016/j.cma.2006.10.006
     %this could be done much more efficiently avoiding unecessary multiplications by zero or 1
-    
-    Ka = Ba' * Kl * Ba + 
+    Ka = Ba' * Kl * Ba + Kh;
 
+    a1 = u1def + r1o;
+    a2 = u2def + r2o;
+    a3 = u3def + r3o;
 
-
+    [G1,G2,G3] = matrix_Gi(a1, a2, a3, r1o, r2o, r3o);
+    P = matrix_P(a1, a2, a3, r1o, r2o, r3o);
 
 
     % eq. (37) of 10.1016/j.cma.2006.10.006
@@ -406,7 +410,7 @@ end
 
 function [Khi] = matrix_Khi(R, m);
     % Eq. (21) of 10.1016/j.cma.2006.10.006
-    
+
     Khi = 0.5 * [   [ ((R(2,3)-R(3,2))*m(1) + R(3,1)*m(2) - R(2,1)*m(3)),   (R(1,1)*m(3) - R(1,3)*m(1)),                            (R(1,2)*m(1) - R(1,1)*m(2)) ];
                     [ (R(2,3)*m(2) - R(2,2)*m(3)),                          ((R(3,1)-R(1,3))*m(2) + R(1,2)*m(3) - R(3,2)*m(1)),     (R(2,2)*m(1) - R(2,1)*m(2)) ];
                     [ (R(3,3)*m(2) - R(3,2)*m(3)),                          (R(3,1)*m(3) - R(3,3)*m(1)),                            ((R(1,2)-R(2,1))*m(3) + R(2,3)*m(1) - R(1,3)*m(2)) ] ];
@@ -445,10 +449,9 @@ function [G1,G2,G3] = matrix_Gi(a1, a2, a3, r1, r2, r3);
     
 end
 
-function [P] = matrix_P(a1, a2, a3, r1, r2, r3);
+function [P] = matrix_P(a1, a2, a3, G1, G2, G3);
     % Eq. (26) of 10.1016/j.cma.2006.10.006
 
-    [G1, G2, G3] = matrix_Gi(a1, a2, a3, r1, r2, r3);
     Ai = zeros(5,3);
     Ai(3,1) = 1;
     Ai(4,2) = 1;
