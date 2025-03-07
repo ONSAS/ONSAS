@@ -59,9 +59,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Ro = To';
     Rr = Tr';
 
-    # To
-    # r1g
-    # rog
     r1o = To*(r1g - rog);
     r2o = To*(r2g - rog);
     r3o = To*(r3g - rog);
@@ -130,9 +127,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
     Ka = Ba' * Kl * Ba + Kh;
 
-    # r1o
-    # u1def
-
     % eq. (7) of 10.1016/j.cma.2006.10.006
     a1 = u1def + r1o;
     a2 = u2def + r2o;
@@ -142,12 +136,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     [G1,G2,G3] = matrix_Gi(a1, a2, a3, r1o, r2o, r3o);
     G = [G1; G2; G3];
 
-    # a1
-    # a2
-    # G1
-    # G2
-    # G3
-
     % eq. (26) of 10.1016/j.cma.2006.10.006
     P = matrix_P(a1, a2, a3, G1, G2, G3);
 
@@ -155,15 +143,11 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     E = blkdiag(Rr,Rr,Rr,Rr,Rr,Rr);
 
     % eq. (30) of 10.1016/j.cma.2006.10.006
-    # P
-    # fa
     n = P' *fa; % eq. (31) of 10.1016/j.cma.2006.10.006
     [F1, F2] = matrix_F(n);
 
     % eq. (29) of 10.1016/j.cma.2006.10.006
     % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
-    # E
-    # n
     fg = E * n;
     Kg = E * ( P' * Ka * P  - G*F1'*P - F2*G') * E';
 
@@ -175,8 +159,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     % eq. (40) of 10.1016/j.cma.2006.10.006
     Kk = zeros(18,18);
-#     q1
-# fg(4:6)
     Kk( 4: 6, 4: 6) = matrix_Kki(q1, fg( 4: 6));
     Kk(10:12,10:12) = matrix_Kki(q2, fg(10:12));
     Kk(16:18,16:18) = matrix_Kki(q3, fg(16:18));
