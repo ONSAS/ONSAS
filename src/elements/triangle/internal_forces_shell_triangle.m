@@ -27,6 +27,8 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     poisson_ratio = modelParams(2) ;
     h = thickness;
 
+    elemCoords = elemCoords';
+
     r1g = elemCoords(1:3);
     r2g = elemCoords(4:6);
     r3g = elemCoords(7:9);
@@ -57,14 +59,17 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Ro = To';
     Rr = Tr';
 
+    # To
+    # r1g
+    # rog
     r1o = To*(r1g - rog);
     r2o = To*(r2g - rog);
     r3o = To*(r3g - rog);
 
     % eq. (1) of 10.1016/j.cma.2006.10.006
-    u1def = Tr*(p1g - r1g) - r1o;
-    u2def = Tr*(p2g - r2g) - r2o;
-    u3def = Tr*(p3g - r3g) - r3o;
+    u1def = Tr*(p1g - pog) - r1o;
+    u2def = Tr*(p2g - pog) - r2o;
+    u3def = Tr*(p3g - pog) - r3o;
 
     % eq. (2) of 10.1016/j.cma.2006.10.006
     R1def = Tr*R1g*Ro;
@@ -85,8 +90,12 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     pl(11:12) = u3def(1:2);
     pl(13:15) = v3def;
 
+    pl_full = zeros(18,1);
+    index_full = [1,2, 4,5,6, 7,8, 10,11,12, 13,14, 16,17,18];
+    pl_full(index_full) = pl;
+
     % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
-    [Kl_full, ff] = local_shell_triangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul);
+    [Kl_full, fintLocCoord] = local_shell_triangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
     index_full = [1,2, 4,5,6, 7,8, 10,11,12, 13,14, 16,17,18];
     % reducing to 15 dofs
     Kl = Kl_full( index_full, index_full);
@@ -100,7 +109,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Ta3 = matrix_Ta(R3def);
 
     % eq. (18) of 10.1016/j.cma.2006.10.006
-    fa = fl
+    fa = fl ;
     fa(3:5) = Ta1 * fl(3:5);
     fa(8:10) = Ta2 * fl(8:10);
     fa(13:15) = Ta3 * fl(13:15);
@@ -121,6 +130,9 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
     Ka = Ba' * Kl * Ba + Kh;
 
+    # r1o
+    # u1def
+
     % eq. (7) of 10.1016/j.cma.2006.10.006
     a1 = u1def + r1o;
     a2 = u2def + r2o;
@@ -130,6 +142,12 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     [G1,G2,G3] = matrix_Gi(a1, a2, a3, r1o, r2o, r3o);
     G = [G1; G2; G3];
 
+    # a1
+    # a2
+    # G1
+    # G2
+    # G3
+
     % eq. (26) of 10.1016/j.cma.2006.10.006
     P = matrix_P(a1, a2, a3, G1, G2, G3);
 
@@ -137,11 +155,15 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     E = blkdiag(Rr,Rr,Rr,Rr,Rr,Rr);
 
     % eq. (30) of 10.1016/j.cma.2006.10.006
+    # P
+    # fa
     n = P' *fa; % eq. (31) of 10.1016/j.cma.2006.10.006
     [F1, F2] = matrix_F(n);
 
     % eq. (29) of 10.1016/j.cma.2006.10.006
     % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
+    # E
+    # n
     fg = E * n;
     Kg = E * ( P' * Ka * P  - G*F1'*P - F2*G') * E';
 
@@ -153,9 +175,11 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
     % eq. (40) of 10.1016/j.cma.2006.10.006
     Kk = zeros(18,18);
-    Kk( 4: 6, 4: 6) = matrix_Khi(q1, fg( 4: 6));
-    Kk(10:12,10:12) = matrix_Khi(q2, fg(10:12));
-    Kk(16:18,16:18) = matrix_Khi(q3, fg(16:18));
+#     q1
+# fg(4:6)
+    Kk( 4: 6, 4: 6) = matrix_Kki(q1, fg( 4: 6));
+    Kk(10:12,10:12) = matrix_Kki(q2, fg(10:12));
+    Kk(16:18,16:18) = matrix_Kki(q3, fg(16:18));
 
     % eq.(38) of 10.1016/j.cma.2006.10.006
     % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
@@ -232,6 +256,7 @@ function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
     p13 = p3 - p1;
     
     au_zl =  cross(p12,p13);
+    # stop
     u_zl = au_zl / norm(au_zl);
     
     x02 = norm(p12);
@@ -239,7 +264,7 @@ function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
 
     u_yl = cross(u_zl, u_xl);
 
-    T = [ u_xl; u_yl; u_zl];
+    T = [ u_xl u_yl u_zl]';
 
     x03 = dot(u_xl, p13);
     y03 = dot(u_yl, p13);
@@ -380,7 +405,7 @@ function [R] = global_rotation_matrix(q);
     q1 = q(1);
     q2 = q(2);
     q3 = q(3);
-    q0 = sqrt( 1.0 - q(1)^2 - q(2)^2 - q(3)^2 )
+    q0 = sqrt( 1.0 - q(1)^2 - q(2)^2 - q(3)^2 ) ;
 
     R  = 2*[    [ (q0^2 + q1^2 - 0.5),  (q1*q2 - q0*q3),        (q1*q3 + q0*q2)     ];
                 [ (q1*q2 + q0*q3),      (q0^2 + q2^2 - 0.5),    (q2*q3 - q0*q1)     ];
@@ -408,7 +433,7 @@ function [Tm] = matrix_Tm(q)
     q1 = q(1);
     q2 = q(2);
     q3 = q(3);
-    q0 = sqrt( 1.0 - q(1)^2 - q(2)^2 - q(3)^2 )
+    q0 = sqrt( 1.0 - q(1)^2 - q(2)^2 - q(3)^2 ) ;
 
     Tm = 2/q0*[ [ (q0^2 + q1^2),    (q1*q2 - q0*q3),  (q1*q3 + q0*q2)];
                 [ (q1*q2 + q0*q3),  (q0^2 + q2^2),    (q2*q3 - q0*q1)];
@@ -465,16 +490,16 @@ function [P] = matrix_P(a1, a2, a3, G1, G2, G3);
     Ai(4,2) = 1;
     Ai(5,3) = 1;
     
-    I = zeros(5,6)
+    I = zeros(5,6) ;
     I(1,1) = 1;
     I(2,2) = 1;
     I(3,4) = 1;
     I(4,5) = 1;
     I(5,6) = 1;
     
-    P = zeros(15,18)
-    Ai(1,3) = - a1(2)
-    Ai(2,3) =   a1(1)
+    P = zeros(15,18) ;
+    Ai(1,3) = - a1(2) ;
+    Ai(2,3) =   a1(1) ;
     P1 = [ I - Ai*G1', -Ai*G2' , -Ai*G3' ];
 
     Ai(1,3) = - a2(2);
@@ -518,12 +543,13 @@ function [Kki] = matrix_Kki(q, m);
     % Eq. (41) of 10.1016/j.cma.2006.10.006
 
     q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
+    if q0s<0
+        q0s
+        error('ojo')
+    end
     q0 = sqrt(q0s);
     A = q(1)*m(1) + q(2)*m(2) + q(3)*m(3);
     
-    ii = 6*i;
-    m = f(ii-2: ii);
-
     H = zeros(3, 3);
     H(1, 1) = (q0s + q(1)^2) * A;
     H(2, 2) = (q0s + q(2)^2) * A;
