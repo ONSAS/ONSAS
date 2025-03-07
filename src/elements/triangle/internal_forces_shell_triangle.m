@@ -62,9 +62,9 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     r3o = To*(r3g - rog);
 
     % eq. (1) of 10.1016/j.cma.2006.10.006
-    u1def = Tr*(p1g - r1g); - r1o
-    u2def = Tr*(p2g - r2g); - r2o
-    u3def = Tr*(p3g - r3g); - r3o
+    u1def = Tr*(p1g - r1g) - r1o;
+    u2def = Tr*(p2g - r2g) - r2o;
+    u3def = Tr*(p3g - r3g) - r3o;
 
     % eq. (2) of 10.1016/j.cma.2006.10.006
     R1def = Tr*R1g*Ro;
@@ -165,7 +165,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % shifting lines and columns to onsas convention of dofs ordering
     ks = {switchToNodalIndexing( Km )}; 
     fs = {switchToNodalIndexing( fm )};
-    
+
 end
 
 
