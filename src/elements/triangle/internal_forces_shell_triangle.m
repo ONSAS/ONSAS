@@ -46,17 +46,26 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p3g = r3g + u3g;
     pog = (p1g + p2g + p3g) / 3;
 
+    R1g = global_rotation_matrix(q1);
+    R2g = global_rotation_matrix(q2);
+    R3g = global_rotation_matrix(q3);
+
     [To, x02, x03, y03] = edge_local_axis_shell_triangle(r1g,r2g,r3g);
     [Tr, x02, x03, y03] = edge_local_axis_shell_triangle(p1g,p2g,p3g);
 
     Ro = To';
     Rr = Tr';
-    E = blkdiag(Rr,Rr,Rr,Rr,Rr,Rr);
 
-    R1g = global_rotation_matrix(q1);
-    R2g = global_rotation_matrix(q2);
-    R3g = global_rotation_matrix(q3);
+    r1o = To*(r1g - rog);
+    r2o = To*(r2g - rog);
+    r3o = To*(r3g - rog);
 
+    % eqq. (1) of 10.1016/j.cma.2006.10.006
+    u1def = Tr*(p1g - r1g); - r1o
+    u2def = Tr*(p2g - r2g); - r2o
+    u3def = Tr*(p3g - r3g); - r3o
+
+    %eq. (2) of 10.1016/j.cma.2006.10.006
     R1def = Tr*R1g*Ro;
     R2def = Tr*R2g*Ro;
     R3def = Tr*R3g*Ro;
@@ -71,6 +80,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
 
 
 
+    E = blkdiag(Rr,Rr,Rr,Rr,Rr,Rr);
 
     Ul = E * Ug;
     
