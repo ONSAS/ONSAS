@@ -151,42 +151,21 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     Bm(10:12,10:12) = matrix_Tm(q2);
     Bm(16:18,16:18) = matrix_Tm(q3);
 
-    % eq. (39) of 10.1016/j.cma.2006.10.006
+    % eq. (40) of 10.1016/j.cma.2006.10.006
+    Kk = zeros(18,18);
+    Kk( 4: 6, 4: 6) = matrix_Khi(q1, fg( 4: 6));
+    Kk(10:12,10:12) = matrix_Khi(q2, fg(10:12));
+    Kk(16:18,16:18) = matrix_Khi(q3, fg(16:18));
 
+    % eq.(38) of 10.1016/j.cma.2006.10.006
+    % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
+    fm = Bm' * fg;
+    Km = Bm' * Kg * Bm + Kk;
 
-
-
-
-
-    % eq. (37) of 10.1016/j.cma.2006.10.006
-    Tm1 = matrix_Tm(R1def);
-    Tm2 = matrix_Tm(R2def);
-    Tm3 = matrix_Tm(R3def);
-
-
-
-
-
-    Ul = E * Ug;
+    % shifting lines and columns to onsas convention of dofs ordering
+    ks = {switchToNodalIndexing( Km )}; 
+    fs = {switchToNodalIndexing( fm )};
     
-    % Calculate the area of the triangle
-    area = x02 * y03 / 2;
-
-
-    
-    Fe = Ke * Ul;
-
-    % calculating the stiffness matrix and internal force vector of the shell element in global coordinates
-    Ke = E * Ke * E' ;
-    Fe = E * Fe;
-
-    % shifting lines and columns to onsas convention of dofs order
-    K = switchToNodalIndexing( Ke );
-    F = switchToNodalIndexing( Fe );
-
-    ks = {K}; 
-    fs = {F};
-
 end
 
 
@@ -537,7 +516,7 @@ end
 
 function [Kki] = matrix_Kki(q, m);
     % Eq. (41) of 10.1016/j.cma.2006.10.006
-    
+
     q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
     q0 = sqrt(q0s);
     A = q(1)*m(1) + q(2)*m(2) + q(3)*m(3);
