@@ -46,6 +46,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     p3g = r3g + u3g;
     pog = (p1g + p2g + p3g) / 3;
 
+    % eq. (35) of 10.1016/j.cma.2006.10.006
     R1g = global_rotation_matrix(q1);
     R2g = global_rotation_matrix(q2);
     R3g = global_rotation_matrix(q3);
@@ -60,20 +61,71 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     r2o = To*(r2g - rog);
     r3o = To*(r3g - rog);
 
-    % eqq. (1) of 10.1016/j.cma.2006.10.006
+    % eq. (1) of 10.1016/j.cma.2006.10.006
     u1def = Tr*(p1g - r1g); - r1o
     u2def = Tr*(p2g - r2g); - r2o
     u3def = Tr*(p3g - r3g); - r3o
 
-    %eq. (2) of 10.1016/j.cma.2006.10.006
+    % eq. (2) of 10.1016/j.cma.2006.10.006
     R1def = Tr*R1g*Ro;
     R2def = Tr*R2g*Ro;
     R3def = Tr*R3g*Ro;
 
+    % eq. (13) of 10.1016/j.cma.2006.10.006
+    v1def = rotation_vector(R1def);
+    v2def = rotation_vector(R2def);
+    v3def = rotation_vector(R3def);
+
+    % eq. (12) of 10.1016/j.cma.2006.10.006
+    pl = zeros(15,1);
+    pl(1:2) = u1def(1:2);
+    pl(3:5) = v1def;
+    pl(6:7) = u2def(1:2);
+    pl(8:10) = v2def;
+    pl(11:12) = u3def(1:2);
+    pl(13:15) = v3def;
+
+    % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
+    [Kl_full, ff] = local_shell_triangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul);
+    index_full = [1,2, 4,5,6, 7,8, 10,11,12, 13,14, 16,17,18];
+    % reducing to 15 dofs
+    Kl = Kl_full( index_full, index_full);
+
+    % local internal force vector
+    fl = Kl * pl;
+
+    % eq. (15) of 10.1016/j.cma.2006.10.006
     Ta1 = matrix_Ta(R1def);
     Ta2 = matrix_Ta(R2def);
     Ta3 = matrix_Ta(R3def);
 
+    % eq. (18) of 10.1016/j.cma.2006.10.006
+    fa = fl
+    fa(3:5) = Ta1 * fl(3:5);
+    fa(8:10) = Ta2 * fl(8:10);
+    fa(13:15) = Ta3 * fl(13:15);
+
+    % eq. (19) of 10.1016/j.cma.2006.10.006
+    Ba = eye(15);
+    Ba(3:5,3:5) = Ta1;
+    Ba(8:10,8:10) = Ta2;
+    Ba(13:15,13:15) = Ta3;
+
+    % eq. (21) of 10.1016/j.cma.2006.10.006
+    Khi = matrix_Khi(R1def, fl);
+    Kh = zeros(15,15);
+
+
+    % eq. (20) of 10.1016/j.cma.2006.10.006
+    %this could be done much more efficiently avoiding unecessary multiplications by zero or 1
+    
+    Ka = Ba' * Kl * Ba + 
+
+
+
+
+
+    % eq. (37) of 10.1016/j.cma.2006.10.006
     Tm1 = matrix_Tm(R1def);
     Tm2 = matrix_Tm(R2def);
     Tm3 = matrix_Tm(R3def);
@@ -87,10 +139,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     % Calculate the area of the triangle
     area = x02 * y03 / 2;
 
-    % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
-    [Kl_full, ff] = local_shell_triangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul);
-    index_full = [1,2, 4,5,6, 7,8, 10,11,12, 13,14, 16,17,18];
-    Kl = Kl_full( index_full, index_full);
+
     
     Fe = Ke * Ul;
 
@@ -326,6 +375,14 @@ function [R] = global_rotation_matrix(q);
                 [ (q1*q3 - q0*q2),      (q2*q3 + q0*q1),        (q0^2 + q3^2  -0.5) ] ];
 end
 
+function [v] = rotation_vector(R);
+    % Eq. (13) of 10.1016/j.cma.2006.10.006
+    v = zeros(3,1);
+    v(1) = .5 * ( R(3,2) - R(2,3));
+    v(2) = .5 * ( R(1,3) - R(3,1));
+    v(3) = .5 * ( R(2,1) - R(1,2));
+end
+
 function [Ta] = matrix_Ta(R);
     % Eq. (15) of 10.1016/j.cma.2006.10.006
     Ta = [  [  R(2,2) + R(3,3), -R(1,2),        -R(1,3)];
@@ -347,20 +404,13 @@ function [Tm] = matrix_Tm(R)
 end
 
 
-function [Khi] = matrix_Khi(R, f);
+function [Khi] = matrix_Khi(R, m);
     % Eq. (21) of 10.1016/j.cma.2006.10.006
+    
+    Khi = 0.5 * [   [ ((R(2,3)-R(3,2))*m(1) + R(3,1)*m(2) - R(2,1)*m(3)),   (R(1,1)*m(3) - R(1,3)*m(1)),                            (R(1,2)*m(1) - R(1,1)*m(2)) ];
+                    [ (R(2,3)*m(2) - R(2,2)*m(3)),                          ((R(3,1)-R(1,3))*m(2) + R(1,2)*m(3) - R(3,2)*m(1)),     (R(2,2)*m(1) - R(2,1)*m(2)) ];
+                    [ (R(3,3)*m(2) - R(3,2)*m(3)),                          (R(3,1)*m(3) - R(3,3)*m(1)),                            ((R(1,2)-R(2,1))*m(3) + R(2,3)*m(1) - R(1,3)*m(2)) ] ];
 
-    Khi = zeros(3,3,3);
-    for i = 1:3
-        ii = 5*(i-1);
-        m1 = f(ii+3);
-        m2 = f(ii+4);
-        m3 = f(ii+5);
-        Khi(:,:,i) = 0.5 * [    [ ((R(2,3)-R(3,2))*m1 + R(3,1)*m2 - R(2,1)*m3),   (R(1,1)*m3 - R(1,3)*m1),                        (R(1,2)*m1 - R(1,1)*m2) ];
-                                [ (R(2,3)*m2 - R(2,2)*m3),                        ((R(3,1)-R(1,3))*m2 + R(1,2)*m3 - R(3,2)*m1),   (R(2,2)*m1 - R(2,1)*m2) ];
-                                [ (R(3,3)*m2 - R(3,2)*m3),                        (R(3,1)*m3 - R(3,3)*m1),                        ((R(1,2)-R(2,1))*m3 + R(2,3)*m1 - R(1,3)*m2) ] ];
-
-    end
 end
 
 
