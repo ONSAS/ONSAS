@@ -145,9 +145,13 @@ function [ fs, ks, fintLocCoord ] = internal_forces_shell_triangle(elemCoords, e
     fg = E * n;
     Kg = E * ( P' * Ka * P  - G*F1'*P - F2*G') * E';
 
-    % eq. (37) of 10.1016/j.cma.2006.10.006
-    Tm1 = matrix_Tm(R1def);
-    Tm2 = matrix_Tm(R2def);
+    % eq. (39) of 10.1016/j.cma.2006.10.006
+    Bm = eye(18);
+    Bm( 4: 6, 4: 6) = matrix_Tm(q1);
+    Bm(10:12,10:12) = matrix_Tm(q2);
+    Bm(16:18,16:18) = matrix_Tm(q3);
+
+    % eq. (39) of 10.1016/j.cma.2006.10.006
 
 
 
@@ -531,39 +535,28 @@ end
 
 
 
-function [Kki] = matrix_Kki(q1, q2, q3, f);
+function [Kki] = matrix_Kki(q, m);
     % Eq. (41) of 10.1016/j.cma.2006.10.006
+    
+    q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
+    q0 = sqrt(q0s);
+    A = q(1)*m(1) + q(2)*m(2) + q(3)*m(3);
+    
+    ii = 6*i;
+    m = f(ii-2: ii);
 
-    Kki = zeros(3, 3, 3);
-    for i = 1:3
-        if i == 1;
-            q = q1;
-        elseif i == 2;
-            q = q2;
-        else
-            q = q3;
-        end
+    H = zeros(3, 3);
+    H(1, 1) = (q0s + q(1)^2) * A;
+    H(2, 2) = (q0s + q(2)^2) * A;
+    H(3, 3) = (q0s + q(3)^2) * A;
+    H(1, 2) = q0s * (q(1)*m(2) - q(2)*m(1) - q0*m(3)) + q(1)*q(2)*A;
+    H(1, 3) = q0s * (q(1)*m(3) - q(3)*m(1) + q0*m(2)) + q(1)*q(3)*A;
+    H(2, 1) = q0s * (q(2)*m(1) - q(1)*m(2) + q0*m(3)) + q(2)*q(1)*A;
+    H(2, 3) = q0s * (q(2)*m(3) - q(3)*m(2) - q0*m(1)) + q(2)*q(3)*A;
+    H(3, 1) = q0s * (q(3)*m(1) - q(1)*m(3) - q0*m(2)) + q(3)*q(1)*A;
+    H(3, 2) = q0s * (q(3)*m(2) - q(2)*m(3) + q0*m(1)) + q(3)*q(2)*A;
 
-        q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
-        q0 = sqrt(q0s);
-        A = q(1)*m(1) + q(2)*m(2) + q(3)*m(3);
-        
-        ii = 6*i;
-        m = f(ii-2: ii);
-
-        H = zeros(3, 3);
-        H(1, 1) = (q0s + q(1)^2) * A;
-        H(2, 2) = (q0s + q(2)^2) * A;
-        H(3, 3) = (q0s + q(3)^2) * A;
-        H(1, 2) = q0s * (q(1)*m(2) - q(2)*m(1) - q0*m(3)) + q(1)*q(2)*A;
-        H(1, 3) = q0s * (q(1)*m(3) - q(3)*m(1) + q0*m(2)) + q(1)*q(3)*A;
-        H(2, 1) = q0s * (q(2)*m(1) - q(1)*m(2) + q0*m(3)) + q(2)*q(1)*A;
-        H(2, 3) = q0s * (q(2)*m(3) - q(3)*m(2) - q0*m(1)) + q(2)*q(3)*A;
-        H(3, 1) = q0s * (q(3)*m(1) - q(1)*m(3) - q0*m(2)) + q(3)*q(1)*A;
-        H(3, 2) = q0s * (q(3)*m(2) - q(2)*m(3) + q0*m(1)) + q(3)*q(2)*A;
-
-        Kki(:,:,i) = (2/q0^3) * H;
-        
-    end
+    Kki = (2/q0^3) * H;
+    
 end
     
