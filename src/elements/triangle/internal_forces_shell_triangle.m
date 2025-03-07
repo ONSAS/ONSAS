@@ -187,7 +187,6 @@ function [T, x02, x03, y03] = edge_local_axis_shell_triangle(p1,p2,p3);
     p13 = p3 - p1;
     
     au_zl =  cross(p12,p13);
-    # stop
     u_zl = au_zl / norm(au_zl);
     
     x02 = norm(p12);
