@@ -15,32 +15,36 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( ...
-  analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS )
+function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest( ...
+                                                                                   analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS)
 
-  stopTolDeltau = analysisSettings.stopTolDeltau ;
-  stopTolForces = analysisSettings.stopTolForces ;
-  stopTolIts    = analysisSettings.stopTolIts    ;
+  stopTolDeltau = analysisSettings.stopTolDeltau;
+  stopTolForces = analysisSettings.stopTolForces;
+  stopTolIts    = analysisSettings.stopTolIts;
 
-  normaUk       = norm( redUk )               ;
-  normadeltau   = norm( redDeltaU         )   ;
+  normaUk       = norm(redUk);
+  normadeltau   = norm(redDeltaU);
 
-  deltaErrLoad  = norm( systemDeltauRHS )     ;
-  normFext      = norm( redFext         )     ;
+  deltaErrLoad  = norm(systemDeltauRHS);
+  normFext      = norm(redFext);
 
-  logicDispStop = ( normadeltau  < ( normaUk  * stopTolDeltau ) )  ;
-  logicForcStop = ( deltaErrLoad < ( (normFext+(normFext < stopTolForces)) * stopTolForces ) )  * ( deltaErrLoad > 0 ) ;
+  logicDispStop = (normadeltau  < (normaUk  * stopTolDeltau));
+  logicForcStop = (deltaErrLoad < ((normFext + (normFext < stopTolForces)) * stopTolForces))  * (deltaErrLoad > 0);
 
-  if isnan( norm(redDeltaU) )
-    error(' ERROR: the displacements are NOT A NUMBER!')
+  if isnan(norm(redDeltaU))
+    error(' ERROR: the displacements are NOT A NUMBER!');
   end
 
   if logicForcStop
-    stopCritPar = 1 ;      booleanConverged = 1 ;
+    stopCritPar = 1;
+    booleanConverged = 1;
   elseif logicDispStop
-    stopCritPar = 2 ;      booleanConverged = 1 ;
-  elseif ( dispIter >= stopTolIts )
-    stopCritPar = 3 ;      booleanConverged = 1 ;
+    stopCritPar = 2;
+    booleanConverged = 1;
+  elseif dispIter >= stopTolIts
+    stopCritPar = 3;
+    booleanConverged = 1;
   else
-    stopCritPar = 0 ;      booleanConverged = 0 ;
+    stopCritPar = 0;
+    booleanConverged = 0;
   end
