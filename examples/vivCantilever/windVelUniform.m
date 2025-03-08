@@ -15,14 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function cLift = liftCoefFunctionLA(betaRel, Re)
-  % Aeroelastic stability of a 3DOF system based on quasi-steady theory with reference to inertial coupling
-  % Emulation of lift extracted from the reference above
-  if max(betaRel) < deg2rad(210)
-    omega_drag = 2 * pi / deg2rad(180);
-    cLift = 0.5 + 1.5 * sin(omega_drag * betaRel);
-  else
-    betaRel;
-    error ("The angle must be between 0 and 210 to use this aerodynamic coefficients");
-  end
+function windVel = windVelUniform(x, t)
+  windx =  0.035;
+  windVel = [-windx 0 0]';
 end
