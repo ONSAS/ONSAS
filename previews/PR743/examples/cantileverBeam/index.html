@@ -5,7 +5,7 @@ addpath( genpath( [ pwd &#39;/../../src&#39;] ) );
 % material scalar parameters
 E = 200e9 ;  nu = 0.3 ;
 % geometrical scalar parameters
-l = 10 ; ty = .1 ;  tz = .1 ;
+l = 10 ; ty = 1.0 ;  tz = .1 ;
 % the number of elements of the mesh
 numElements = 10 ;</code></pre><h2 id="Analytic-solution"><a class="docs-heading-anchor" href="#Analytic-solution">Analytic solution</a><a id="Analytic-solution-1"></a><a class="docs-heading-anchor-permalink" href="#Analytic-solution" title="Permalink"></a></h2><p>The rotation of the right end, for a given moment <span>$M$</span>, can be computed as:</p><p class="math-container">\[ M( \theta ) = E I_y \frac{ \theta}{ l }  ;\]</p><h2 id="Numerical-solution"><a class="docs-heading-anchor" href="#Numerical-solution">Numerical solution</a><a id="Numerical-solution-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-solution" title="Permalink"></a></h2><h3 id="MEB-parameters"><a class="docs-heading-anchor" href="#MEB-parameters">MEB parameters</a><a id="MEB-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#MEB-parameters" title="Permalink"></a></h3><p>The modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.</p><h3 id="materials"><a class="docs-heading-anchor" href="#materials">materials</a><a id="materials-1"></a><a class="docs-heading-anchor-permalink" href="#materials" title="Permalink"></a></h3><p>Since the example contains only one rod the fields of the <code>materials</code> struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:</p><pre><code class="nohighlight hljs">materials                 = struct() ;
 materials.modelName  = &#39;elastic-rotEngStr&#39; ;
@@ -22,19 +22,51 @@ mesh.nodesCoords = [ (0:(numElements))&#39;*l/numElements  zeros(numElements+1,2
   mesh.conecCell{ i+2,1 } = [ 1 2 0  i i+1 ] ;
 end</code></pre><h3 id="analysisSettings"><a class="docs-heading-anchor" href="#analysisSettings">analysisSettings</a><a id="analysisSettings-1"></a><a class="docs-heading-anchor-permalink" href="#analysisSettings" title="Permalink"></a></h3><pre><code class="nohighlight hljs">analysisSettings               = struct() ;
 analysisSettings.methodName    = &#39;newtonRaphson&#39; ;
-analysisSettings.deltaT        =   0.1  ;
+analysisSettings.deltaT        =   0.2  ;
 analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
 analysisSettings.stopTolIts    =   10   ;</code></pre><h2 id="otherParams"><a class="docs-heading-anchor" href="#otherParams">otherParams</a><a id="otherParams-1"></a><a class="docs-heading-anchor-permalink" href="#otherParams" title="Permalink"></a></h2><pre><code class="nohighlight hljs">otherParams             = struct();
-otherParams.problemName = &#39;uniformCurvatureCantilever&#39;;
+otherParams.problemName = &#39;uniformCurvatureCantilever-frame&#39;;
 otherParams.controlDofs = [ numElements+1  4 ] ;
 otherParams.plots_format = &#39;vtk&#39; ;</code></pre><h2 id="Analysis-case-1:-NR-with-Rotated-Eng-Strain"><a class="docs-heading-anchor" href="#Analysis-case-1:-NR-with-Rotated-Eng-Strain">Analysis case 1: NR with Rotated Eng Strain</a><a id="Analysis-case-1:-NR-with-Rotated-Eng-Strain-1"></a><a class="docs-heading-anchor-permalink" href="#Analysis-case-1:-NR-with-Rotated-Eng-Strain" title="Permalink"></a></h2><p>In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:</p><pre><code class="nohighlight hljs">
 [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %</code></pre><p>After that the structs are used to perform the numerical time analysis</p><pre><code class="nohighlight hljs">[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
 </code></pre><p>the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:</p><pre><code class="nohighlight hljs">angleControlDof      = (numElements+1)*6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof,:) ;
-loadFactorsNREngRot  =  loadFactorsMat(:,2) ;</code></pre><p>and the analytical value of the load factors is computed</p><pre><code class="nohighlight hljs">analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;</code></pre><h2 id="Verification"><a class="docs-heading-anchor" href="#Verification">Verification</a><a id="Verification-1"></a><a class="docs-heading-anchor-permalink" href="#Verification" title="Permalink"></a></h2><pre><code class="nohighlight hljs">verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ...
+loadFactorsNREngRot  =  loadFactorsMat(:,2) ;</code></pre><p>and the analytical value of the load factors is computed</p><pre><code class="nohighlight hljs">analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;</code></pre><pre><code class="nohighlight hljs">
+
+
+elements             = struct() ;
+elements(1).elemType = &#39;edge&#39; ;
+elements(1).elemCrossSecParams = tz         ;
+elements(2).elemType = &#39;triangle-shell&#39; ;
+elements(2).elemCrossSecParams = {&#39;thickness&#39;, tz } ;
+
+boundaryConds                  = struct() ;
+boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0 ] ;
+%
+boundaryConds(2).loadsCoordSys = &#39;global&#39; ;
+boundaryConds(2).loadsTimeFact = @(t) E*Iy*2*pi/l *t  ;
+boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0 ] ;
+%
+
+mesh = struct() ;
+base_dir=&#39;&#39;;
+if strcmp( getenv(&#39;TESTS_RUN&#39;),&#39;yes&#39;) &amp;&amp; isfolder(&#39;examples&#39;),
+  base_dir=[&#39;.&#39; filesep &#39;examples&#39; filesep  &#39;uniformCurvatureCantilever&#39; filesep];
+end
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [base_dir &#39;geometry_cantilever.msh&#39;] ) ;
+assert( max(mesh.nodesCoords(:,1)) == l &amp;&amp; max(mesh.nodesCoords(:,2)) == ty )
+
+otherParams.problemName = &#39;uniformCurvatureCantilever-shell&#39;;
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%</code></pre><p>After that the structs are used to perform the numerical time analysis</p><pre><code class="nohighlight hljs">[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+
+</code></pre><h2 id="Verification"><a class="docs-heading-anchor" href="#Verification">Verification</a><a id="Verification-1"></a><a class="docs-heading-anchor-permalink" href="#Verification" title="Permalink"></a></h2><pre><code class="nohighlight hljs">verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ...
                      - loadFactorsNREngRot&#39; )  ...
                     &lt; ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;</code></pre><pre><code class="nohighlight hljs">lw = 2.0 ; ms = 11 ; plotfontsize = 22 ;
 figure
@@ -45,4 +77,4 @@ labx = xlabel(&#39;Displacement&#39;);   laby = ylabel(&#39;$\lambda$&#39;) ;
 legend(&#39;analytic&#39;,&#39;NR-RotEng&#39;,&#39;location&#39;,&#39;North&#39;)
 set(gca, &#39;linewidth&#39;, 1.2, &#39;fontsize&#39;, plotfontsize )
 set(labx, &#39;FontSize&#39;, plotfontsize); set(laby, &#39;FontSize&#39;, plotfontsize) ;
-print(&#39;output/verifCantileverBeam.png&#39;,&#39;-dpng&#39;)</code></pre><img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/><pre><code class="nohighlight hljs">verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot&#39; )  &lt; ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uniaxialCompression/">« Uniaxial compression</a><a class="docs-footer-nextpage" href="../beamLinearVibration/">Linear beam vibration »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Friday 7 March 2025 17:44">Friday 7 March 2025</span>. Using Julia version 1.11.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+print(&#39;output/verifCantileverBeam.png&#39;,&#39;-dpng&#39;)</code></pre><img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/><pre><code class="nohighlight hljs">verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) - loadFactorsNREngRot&#39; )  &lt; ( norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ) * 1e-4 ) ;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uniaxialCompression/">« Uniaxial compression</a><a class="docs-footer-nextpage" href="../beamLinearVibration/">Linear beam vibration »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Saturday 8 March 2025 00:26">Saturday 8 March 2025</span>. Using Julia version 1.11.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
