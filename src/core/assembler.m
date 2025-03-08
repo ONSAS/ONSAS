@@ -277,10 +277,6 @@ for elem = 1:nElems
     elseif strcmp( modelName, 'elastic-rotEngStr')
       [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
 
-      if isnan(fintLocCoord) || isnan(fs{1})
-        
-        error("nan")
-      end
     else
       error('material model not implemented');
     end
