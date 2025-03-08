@@ -26,11 +26,6 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   % Check all required parameters are defined
   assert( ~isempty( analysisSettings.fluidProps), ' empty analysisSettings.fluidProps.' )
 
-  % fixed (by now) parameters
-  ILVIVBool       = false;
-  constantLiftDir = false;
-  % -------------------------------
-    
   global uniformUdot
   global fluidFlowBool
 
@@ -44,6 +39,8 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force( elemCoords           
   viscosityFluid = analysisSettings.fluidProps{2,1} ;
   userFlowVel    = analysisSettings.fluidProps{3,1} ;
   VIVBool        = analysisSettings.VIVBool         ;
+  ILVIVBool      = analysisSettings.ILVIVBool       ;
+  constantLiftDir= analysisSettings.constantLiftDir ;
 
   % check user Flow Vel is not empty
   assert( ~isempty( userFlowVel ), 'empty user windvel' )

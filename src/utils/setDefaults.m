@@ -69,6 +69,8 @@ analysisSettings  = checkOrSetDefault ( analysisSettings , 'incremArcLen'       
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'iniDeltaLamb'               , 1e-3           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'posVariableLoadBC'          , []             ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'VIVBool'                    , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'ILVIVBool'                  , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'constantLiftDir'            , false          ) ;
 % =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;

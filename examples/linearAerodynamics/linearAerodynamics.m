@@ -65,7 +65,7 @@ materials.modelParams = [ E nu ]        ;
 elements(1).elemType = 'node'  ;
 elements(2).elemType = 'frame' ;
 % md The node type has no cross-section geometry to assign (an empty array is automatically set). Since the frame element has a hollow cylindrical cross-section, then a `'pipe'` cross-section (in $y$ and $z$) is used. Thus the _elemCrossSecParams_ field is:
-elements(2).elemCrossSecParams{1,1} = 'circle'        ;
+elements(2).elemCrossSecParams{1,1} = 'pipe'        ;
 elements(2).elemCrossSecParams{2,1} = [ dext ] ;
 % md Now the parameters to include aerodynamic forces automatically on the frame element are defined. The drag lift, and moment cross section functions are set in concordance with the function names located at the same example folder. Thus the aeroCoefFunctions field is a row cell defined as:
 elements(2).aeroCoefFunctions  = {'dragCoefFunctionLA', 'liftCoefFunctionLA', 'momentCoefFunctionLA'} ;
@@ -115,7 +115,7 @@ analysisSettings.stopTolIts    =   10            ;
 % md The name of the problem and the plots format: 
 otherParams = struct();
 otherParams.problemName  = 'linearAerodynamics';
-otherParams.plots_format = 'vtk' ;
+otherParams.plots_format = '' ;
 % md
 % md### Case 1: hydrodynamic ONSAS element 
 % md
