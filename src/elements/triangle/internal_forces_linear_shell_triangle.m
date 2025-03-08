@@ -90,14 +90,6 @@ function [ fs, ks, fintLocCoord ] = internal_forces_linear_shell_triangle(elemCo
     Ke(12,12) = k_dr;
     Ke(18,18) = k_dr;
 
-    [Kl_funcao , ~ ] = local_shell_triangle(x02, x03, y03, E, nu, h, zeros(18,1))
-
-    Ke
-    Kl_funcao
-    norm( Ke - Kl_funcao)
-stop
-
-
     % calculating the stiffness matrix of the shell element in global coordinates
     Ke = Te' * Ke *Te ;
 

@@ -117,11 +117,6 @@ numer_dxmax_shell = max(matUs(1:6:end)) ;
 numer_wmax_shell  = min(matUs(5:6:end)) ;
 
 
-
-
-
-
-
 materials(1).modelName  = 'elastic-rotEngStr' ;
 otherParams.problemName  = 'cantileverPlate-shell-nonlinear' ;
 
