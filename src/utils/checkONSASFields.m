@@ -33,8 +33,8 @@ function checkONSASFields( materials, elements, boundaryConds, initialConds, mes
    {'geometricNonLinearAero', 'numGaussPointsAeroForce','computeAeroStiffnessMatrix',...
     'fluidProps','addedMassBool','booleanSelfWeight','methodName','deltaT', 'finalTime', 'incremArcLen', 'iniDeltaLamb',...
      'stopTolDeltau', 'stopTolForces', 'stopTolIts','stabilityAnalysisFlag', 'modalAnalysisBoolean','posVariableLoadBC',...
-      'ALdominantDOF', 'VIVBool'};
-      
+      'ALdominantDOF', 'VIVBool','ILVIVBool', 'constantLiftDir'};
+
   if isfield(analysisSettings, 'methodName')
     if strcmp( analysisSettings.methodName, 'newmark' )
       analysisSettingsDefaultFields{end +1} = 'alphaNM' ; 

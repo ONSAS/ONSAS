@@ -68,9 +68,9 @@ analysisSettings  = checkOrSetDefault ( analysisSettings , 'ALdominantDOF'      
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'incremArcLen'               , 1.5            ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'iniDeltaLamb'               , 1e-3           ) ;
 analysisSettings  = checkOrSetDefault ( analysisSettings , 'posVariableLoadBC'          , []             ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'VIVBool'                    , false          ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'ILVIVBool'                  , false          ) ;
-analysisSettings  = checkOrSetDefault ( analysisSettings , 'constantLiftDir'            , false          ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'VIVBool'                    , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'ILVIVBool'                  , []             ) ;
+analysisSettings  = checkOrSetDefault ( analysisSettings , 'constantLiftDir'            , []             ) ;
 % =========================================
 % otherParams
 otherParams       = checkOrSetDefault( otherParams      , 'screenOutputBool', 1 ) ;
