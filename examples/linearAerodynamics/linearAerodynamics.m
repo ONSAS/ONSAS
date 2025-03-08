@@ -152,7 +152,7 @@ otherParams.plots_format = '' ;
 % md
 % md For such propose the angle of incidence and the wind properties are computed as:
 % then characteristic dimension is extracted executing: 
-A = pi * (dext^2) / 4  ; J = pi * (dext^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
+A = pi * (dext^2-dint^2) / 4  ; J = pi * (dext^4-dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
 
 dimCaracteristic = norm(elements(2).chordVector ) ;
 % the angle of attack is: 
