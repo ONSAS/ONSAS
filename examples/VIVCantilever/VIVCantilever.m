@@ -15,7 +15,7 @@ rho = 2*rhoFluid;
 nu = .3; 
 %
 nodalDamping = 0; 
-dt = 0.0028 ; finalTime = 1000*dt; numElements = 3;
+dt = 0.0028 ; finalTime = 10*dt; numElements = 3;
 l = 1 ; d = 0.001;
 St = 0.2; 
 
@@ -108,7 +108,6 @@ uzsol = 1.0e-07 *[ 0         0         0         0         0         0         0
                    0    0.0011    0.0047    0.0111    0.0214    0.0356    0.0524        0.0719    0.0970    0.1284    0.1637];
 %
 
-
 % Extract numerical solution
 uz = matUs(5:6:end, :);
-verifBoolean = norm(uz - uzsol) < 6e-08 
+verifBoolean = norm(uz - uzsol) < 6e-08 ;
