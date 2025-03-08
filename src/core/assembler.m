@@ -16,11 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler( ...
-                                                                                                              Conec, elements, Nodes, ...
-                                                                                                              materials, KS, Ut, Udott, Udotdott, ...
-                                                                                                              analysisSettings, outputBooleans, nodalDispDamping, ...
-                                                                                                              timeVar, previousStateCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell)
 
   % ====================================================================
   %  --- 1 declarations ---
@@ -85,8 +81,8 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   strain_vec = cell(size(strain_n_vec, 1), 1);
   acum_plas_strain_vec = cell(size(acum_plas_strain_n_vec, 1), 1);
 
-  dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ...
-                    || strcmp(analysisSettings.methodName, 'alphaHHT');
+  dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ||  ...
+                       strcmp(analysisSettings.methodName, 'alphaHHT');
   % ====================================================================
 
   % ====================================================================

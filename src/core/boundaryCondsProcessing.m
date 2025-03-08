@@ -92,8 +92,8 @@ function [Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neum
           for indn = 1:length(nodes_with_spring)
             nodedofs = nodes2dofs(nodes_with_spring(indn), 6);
             locdofs  = boundaryConds(BCnum).springDofs;
-            KS(nodedofs(locdofs), nodedofs(locdofs)) = KS(nodedofs(locdofs), nodedofs(locdofs)) ...
-              + spdiags(boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs));
+            KS(nodedofs(locdofs), nodedofs(locdofs)) = KS(nodedofs(locdofs), nodedofs(locdofs)) + ...
+              spdiags(boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs));
           end
         end
       end

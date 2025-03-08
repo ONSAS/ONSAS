@@ -4,7 +4,7 @@ MISS_HIT_LINT := $(POETRY) mh_lint
 MISS_HIT_METRIC := $(POETRY) mh_metric
 
 # Directories to analyze
-DIRECTORIES := ./../docs/ ./../test/ ./../src/core/
+DIRECTORIES := ./../docs/ ./../test/ ./../src/core/  ./../src/crossSections/ ./../src/interface/ ./../src/elements/
 
 .PHONY: all
 all: check

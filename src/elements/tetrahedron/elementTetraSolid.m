@@ -15,99 +15,98 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-% function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes 
-%tetraedron element with different constitutive behaviors. 
-%The hyperelastic behavior cased is based on equation 4.9.25 from belytschko 2nd edition.
-function [ Finte, KTe, stress ] = elementTetraSolid( ...
-  elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag )
+% function for computation of nodal forces and tangent stiffness matrix for 3D 4 nodes
+% tetraedron element with different constitutive behaviors.
+% The hyperelastic behavior cased is based on equation 4.9.25 from belytschko 2nd edition.
+function [Finte, KTe, stress] = elementTetraSolid( ...
+                                                    elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag)
 
   % Internal flag to compute the stiffness matrix of the element using an analytic expression
-  booleanKTAnalytic = 1 ;
+  booleanKTAnalytic = 1;
 
-  [ funder, ~, vol, tetCoordMat ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
+  [funder, ~, vol, tetCoordMat] = computeFuncDerivVolTetraSolid(elemCoords);
 
   % Displacements and coordinates element matrix (3dofs (ux,uy,uz) and 4 nodes)
-  eleDispsMat = reshape( elemDisps, 3, 4) ;
-  eleCoordSpa = tetCoordMat + eleDispsMat ;
+  eleDispsMat = reshape(elemDisps, 3, 4);
+  eleCoordSpa = tetCoordMat + eleDispsMat;
 
-  % Computes the gradients of the deformation function 
-  H = eleDispsMat * funder' ;
-  F = H + eye(3) ;
+  % Computes the gradients of the deformation function
+  H = eleDispsMat * funder';
+  F = H + eye(3);
 
   % Compute the Green-Lagrange strain tensor
-  Egreen = 0.5 * ( H + transpose( H ) + transpose( H ) * H ) ;
+  Egreen = 0.5 * (H + transpose(H) + transpose(H) * H);
 
   if elemConstitutiveParams(1) == 2 % Saint-Venant-Kirchhoff compressible solid
 
-    [ S, ConsMat ] = cosseratSVK( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
+    [S, ConsMat] = cosseratSVK(elemConstitutiveParams(2:3), Egreen, consMatFlag);
 
   elseif elemConstitutiveParams(1) == 3 % Neo-Hookean Compressible
 
-    [ S, ConsMat ] = cosseratNHC( elemConstitutiveParams(2:3), Egreen, consMatFlag ) ;
+    [S, ConsMat] = cosseratNHC(elemConstitutiveParams(2:3), Egreen, consMatFlag);
   end
 
   % Computes internal forces of the elemnt
-  matBgrande = BgrandeMats ( funder , F ) ;
-  Svoigt = mat2voigt( S, 1 ) ;
-  Finte    = transpose(matBgrande) * Svoigt * vol ;
+  matBgrande = BgrandeMats (funder, F);
+  Svoigt = mat2voigt(S, 1);
+  Finte    = transpose(matBgrande) * Svoigt * vol;
 
   % Computes element strain and stresses
-  strain = zeros(6,1);
-  stress = Svoigt ;
+  strain = zeros(6, 1);
+  stress = Svoigt;
 
-  KTe = zeros(12,12) ;
+  KTe = zeros(12, 12);
   % If paramOut == 2 the stifness matrix is returned
   if paramOut == 2
 
-    Kml        = matBgrande' * ConsMat * matBgrande * vol ;
+    Kml        = matBgrande' * ConsMat * matBgrande * vol;
 
-    matauxgeom = funder' * S * funder  * vol ;
-    Kgl        = zeros(12,12) ;
-    for i=1:4
-      for j=1:4
-        Kgl( (i-1)*3+1 , (j-1)*3+1 ) = matauxgeom(i,j);
-        Kgl( (i-1)*3+2 , (j-1)*3+2 ) = matauxgeom(i,j);
-        Kgl( (i-1)*3+3 , (j-1)*3+3 ) = matauxgeom(i,j);
+    matauxgeom = funder' * S * funder  * vol;
+    Kgl        = zeros(12, 12);
+    for i = 1:4
+      for j = 1:4
+        Kgl((i - 1) * 3 + 1, (j - 1) * 3 + 1) = matauxgeom(i, j);
+        Kgl((i - 1) * 3 + 2, (j - 1) * 3 + 2) = matauxgeom(i, j);
+        Kgl((i - 1) * 3 + 3, (j - 1) * 3 + 3) = matauxgeom(i, j);
       end
     end
 
-
-    KTe = Kml + Kgl ;
+    KTe = Kml + Kgl;
 
   end % if param out
 
-% ======================================================================
-% Auxiliar functions
-% ======================================================================
-function matBgrande = BgrandeMats ( deriv , F )
+  % ======================================================================
+  % Auxiliar functions
+  % ======================================================================
+function matBgrande = BgrandeMats (deriv, F)
 
-  matBgrande = zeros(6, 12) ;
+  matBgrande = zeros(6, 12);
 
-  matBgrande(1:3,:) = [ diag( deriv(:,1) )*F' diag( deriv(:,2) )*F' diag( deriv(:,3) )*F' diag( deriv(:,4) )*F' ];
+  matBgrande(1:3, :) = [diag(deriv(:, 1)) * F' diag(deriv(:, 2)) * F' diag(deriv(:, 3)) * F' diag(deriv(:, 4)) * F'];
 
-  for k=1:4
-      matBgrande ( 4:6 , (k-1)*3 + (1:3) ) = [ deriv(2,k)*F(:,3)'+deriv(3,k)*F(:,2)' ; ...
-                                               deriv(1,k)*F(:,3)'+deriv(3,k)*F(:,1)' ; ...
-                                               deriv(1,k)*F(:,2)'+deriv(2,k)*F(:,1)' ] ;
+  for k = 1:4
+    matBgrande (4:6, (k - 1) * 3 + (1:3)) = [deriv(2, k) * F(:, 3)' + deriv(3, k) * F(:, 2)'; ...
+                                            deriv(1, k) * F(:, 3)' + deriv(3, k) * F(:, 1)'; ...
+                                            deriv(1, k) * F(:, 2)' + deriv(2, k) * F(:, 1)'];
   end
 
-function BMat = BMats ( deriv )
+function BMat = BMats (deriv)
 
-  BMat = zeros(6,12) ;
+  BMat = zeros(6, 12);
 
   for k = 1:4
 
     for i = 1:3
-      BMat ( i , (k-1)*3 + i  ) = deriv(i,k) ;
+      BMat (i, (k - 1) * 3 + i) = deriv(i, k);
     end
 
-    BMat ( 4 , (k-1)*3 + 2   ) = deriv(3,k) ;
-    BMat ( 4 , (k-1)*3 + 3   ) = deriv(2,k) ;
+    BMat (4, (k - 1) * 3 + 2) = deriv(3, k);
+    BMat (4, (k - 1) * 3 + 3) = deriv(2, k);
 
-    BMat ( 5 , (k-1)*3 + 1   ) = deriv(3,k) ;
-    BMat ( 5 , (k-1)*3 + 3   ) = deriv(1,k) ;
+    BMat (5, (k - 1) * 3 + 1) = deriv(3, k);
+    BMat (5, (k - 1) * 3 + 3) = deriv(1, k);
 
-    BMat ( 6 , (k-1)*3 + 1   ) = deriv(2,k) ;
-    BMat ( 6 , (k-1)*3 + 2   ) = deriv(1,k) ;
+    BMat (6, (k - 1) * 3 + 1) = deriv(2, k);
+    BMat (6, (k - 1) * 3 + 2) = deriv(1, k);
 
   end

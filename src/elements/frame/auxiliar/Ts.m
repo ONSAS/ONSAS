@@ -15,16 +15,16 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Dg]=Ts(t);
+function [Dg] = Ts(t)
 
-nt=norm(t);
-I=eye(3,3);
+  nt = norm(t);
+  I = eye(3, 3);
 
-if nt==0
-  Dg=I;
-else
-  a=2*(sin(nt/2)/nt)^2;
-  b=(1-sin(nt)/nt)/nt^2;
-  M=skew(t);
-  Dg=I+a*M+b*M*M;
-end
+  if nt == 0
+    Dg = I;
+  else
+    a = 2 * (sin(nt / 2) / nt)^2;
+    b = (1 - sin(nt) / nt) / nt^2;
+    M = skew(t);
+    Dg = I + a * M + b * M * M;
+  end

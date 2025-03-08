@@ -17,13 +17,13 @@
 %
 % --------------------------------------------------------------------------------------------------
 
-function R=RotationMatrix(ndofpnode,locglomat)
+function R = RotationMatrix(ndofpnode, locglomat)
 
-R = zeros ( ndofpnode*2, ndofpnode*2 ) ;
+  R = zeros (ndofpnode * 2, ndofpnode * 2);
 
-for k=1:2
-    aux1 = [(1+(k-1)*6) : 2 : (1+(k-1)*6+4)] ; % displacement dofs
-    aux2 = [(2+(k-1)*6) : 2 : (2+(k-1)*6+4)] ; % rotation     dofs
-    R ( aux1, aux1 ) = locglomat ;
-    R ( aux2, aux2 ) = locglomat ;
-end
+  for k = 1:2
+    aux1 = [(1 + (k - 1) * 6):2:(1 + (k - 1) * 6 + 4)]; % displacement dofs
+    aux2 = [(2 + (k - 1) * 6):2:(2 + (k - 1) * 6 + 4)]; % rotation     dofs
+    R (aux1, aux1) = locglomat;
+    R (aux2, aux2) = locglomat;
+  end
