@@ -22,6 +22,6 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
 
-      - name: Run MissHINT Checks
+      - name: Run miss hint Checks
         working-directory: ./utils
         run: make ci_checks
