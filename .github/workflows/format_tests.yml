@@ -1,4 +1,4 @@
-name: formatter
+name: static_checks
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  miss_hint:
+  miss_hit:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,6 +22,6 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
 
-      - name: Run miss hint Checks
+      - name: Run Miss Hit Checks
         working-directory: ./utils
         run: make ci_checks
