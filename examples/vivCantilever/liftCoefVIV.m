@@ -15,7 +15,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-
-function cLift = liftCoefViv(betaRelG, Re)
-  cLift = 0.3;
+function liftCoef = liftCoefVIV(betaRelG, Re)
+  liftCoef = 0.3;
 end

@@ -16,6 +16,6 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 function windVel = windVelUniform(x, t)
-  windx =  0.0 - 35.0;
+  windx =  0.035;
   windVel = [-windx 0 0]';
 end

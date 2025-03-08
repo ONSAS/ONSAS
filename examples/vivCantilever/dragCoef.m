@@ -15,6 +15,6 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function cDrag = dragCoefViv(betaRel, Re)
-  cDrag = 2;
+function dragCoef = dragCoef(betaRel, Re)
+  dragCoef = 2;
 end
