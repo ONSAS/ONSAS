@@ -45,6 +45,8 @@ E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 % md
 % md Geometrical dimensions sketched in Fig 1 are:
 l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
+A = pi * (dext^2-dint^2) / 4  ;
+J = pi * (dext^4-dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
 % md 
 % md The fluid properties are:
 rhoA = 1.225 ; nuA = 1.6e-5;
@@ -152,7 +154,6 @@ otherParams.plots_format = '' ;
 % md
 % md For such propose the angle of incidence and the wind properties are computed as:
 % then characteristic dimension is extracted executing: 
-A = pi * (dext^2-dint^2) / 4  ; J = pi * (dext^4-dint^4) / 32 ; Iyy = J/2 ; Izz = Iyy ;
 
 dimCaracteristic = norm(elements(2).chordVector ) ;
 % the angle of attack is: 
