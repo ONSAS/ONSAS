@@ -44,7 +44,7 @@ addpath( genpath( [ pwd '/../../src'] ) );
 E = 70e9 ;  nu = 0.3 ; G = E / (2 * (1+nu)) ;
 % md
 % md Geometrical dimensions sketched in Fig 1 are:
-l = 20 ; dext = .5 ;#  b = 1e-3  ; dint  = dext - 2*b    ;
+l = 20 ; dext = .5 ;  b = 1e-3  ; dint  = dext - 2*b    ;
 % md 
 % md The fluid properties are:
 rhoA = 1.225 ; nuA = 1.6e-5;
