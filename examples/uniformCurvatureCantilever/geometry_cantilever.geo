@@ -1,9 +1,9 @@
 
 // Dimensions
-Lx = 1 ;
-Ly = 0.5 ;
+Lx = 10 ;
+Ly = 1.0 ;
 
-ms = 0.045 ;
+ms = 1.5 ;
 
 Point(1) = {0,0,0, ms} ;
 Point(2) = {Lx,0,0, ms} ;
@@ -19,5 +19,5 @@ Curve Loop(1) = {1, 2, 3, 4};
 Plane Surface(1) = {1};
 
 Physical Curve ("00_01_01") = {4};
-Physical Curve ("00_01_03") = {2};
-Physical Surface ("01_02_02") = {1};
+Physical Point ("00_01_02") = {2,3};
+Physical Surface ("01_02_00") = {1};

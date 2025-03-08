@@ -16,7 +16,7 @@ addpath( genpath( [ pwd '/../../src'] ) );
 % material scalar parameters
 E = 200e9 ;  nu = 0.3 ;
 % geometrical scalar parameters
-l = 10 ; ty = .1 ;  tz = .1 ;
+l = 10 ; ty = 1.0 ;  tz = .1 ;
 % the number of elements of the mesh
 numElements = 10 ;
 % md
@@ -82,7 +82,7 @@ end
 % md### analysisSettings
 analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newtonRaphson' ;
-analysisSettings.deltaT        =   0.1  ;
+analysisSettings.deltaT        =   0.2  ;
 analysisSettings.finalTime      =   1    ;
 analysisSettings.stopTolDeltau =   1e-6 ;
 analysisSettings.stopTolForces =   1e-6 ;
@@ -90,7 +90,7 @@ analysisSettings.stopTolIts    =   10   ;
 % md
 % md## otherParams
 otherParams             = struct();
-otherParams.problemName = 'uniformCurvatureCantilever';
+otherParams.problemName = 'uniformCurvatureCantilever-frame';
 otherParams.controlDofs = [ numElements+1  4 ] ;
 otherParams.plots_format = 'vtk' ;
 % md## Analysis case 1: NR with Rotated Eng Strain
@@ -109,6 +109,41 @@ loadFactorsNREngRot  =  loadFactorsMat(:,2) ;
 % md and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l ;
 % md
+
+
+
+elements             = struct() ;
+elements(1).elemType = 'edge' ;
+elements(1).elemCrossSecParams = tz         ;
+elements(2).elemType = 'triangle-shell' ;
+elements(2).elemCrossSecParams = {'thickness', tz } ;
+
+boundaryConds                  = struct() ;
+boundaryConds(1).imposDispDofs =  [ 1 2 3 4 5 6 ] ;
+boundaryConds(1).imposDispVals =  [ 0 0 0 0 0 0 ] ;
+%
+boundaryConds(2).loadsCoordSys = 'global' ;
+boundaryConds(2).loadsTimeFact = @(t) E*Iy*2*pi/l *t  ;
+boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0 ] ;
+%
+
+mesh = struct() ;
+base_dir='';
+if strcmp( getenv('TESTS_RUN'),'yes') && isfolder('examples'),
+  base_dir=['.' filesep 'examples' filesep  'uniformCurvatureCantilever' filesep];
+end
+[ mesh.nodesCoords, mesh.conecCell ] = meshFileReader( [base_dir 'geometry_cantilever.msh'] ) ;
+assert( max(mesh.nodesCoords(:,1)) == l && max(mesh.nodesCoords(:,2)) == ty )
+
+otherParams.problemName = 'uniformCurvatureCantilever-shell';
+
+[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+%
+% mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+
+
+
 % md## Verification
 % md
 verifBoolean = norm( analyticLoadFactorsNREngRot( controlDispsNREngRot) ...
