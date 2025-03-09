@@ -141,10 +141,10 @@ otherParams.plots_deltaTs_separation = 2;
 % md### Analysis case 1: Newton-Raphson with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof of interest is stored.
 
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, solutions] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNREngRot =  -matUs(11, :);
 loadFactorsNREngRot  =  loadFactorsMat(:, 2);
@@ -155,10 +155,10 @@ materials.modelName = 'elastic-linear';
 otherParams.problemName  = 'staticVonMisesTruss_elastic-linear';
 analysisSettings.finalTime  =   1.5;
 % md and the analysis is run again
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, solutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 % md the displacements are extracted
 controlDispsNRlinearElastic =  -matUs(11, :);
@@ -184,10 +184,10 @@ materials.modelParams = [lambda mu];
 boundaryConds(2).loadsTimeFact = @(t) 1.5e8 * t;
 % boundaryConds(2).userLoadsFilename = 'myVMLoadFunc' ;
 % md and the analysis is run
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, solutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md and the displacements are extracted
 controlDispsNRGreen =  -matUs(11, :);
 loadFactorsNRGreen  =  loadFactorsMat(:, 2);
@@ -210,10 +210,10 @@ analysisSettings.incremArcLen = [0.15 * ones(1, 8) 0.3 * ones(1, 2)];
 analysisSettings.iniDeltaLamb = boundaryConds(2).loadsTimeFact(.2) / 100;
 analysisSettings.posVariableLoadBC = 2;
 % md
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, solutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNRALGreen =  -matUs(11, :);
 loadFactorsNRALGreen  =  loadFactorsMat(:, 2);
@@ -228,10 +228,10 @@ analysisSettings.incremArcLen = 0.15;
 % md Sets arcLengthFlag = 2 to secifiy Jirasek constraint method.
 analysisSettings.ALdominantDOF = [11 -1];
 % md
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, solutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, solutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 controlDispsNRAL_Jirasek_Green =  -matUs(11, :);
 loadFactorsNRAL_Jirasek_Green  =  loadFactorsMat(:, 2);

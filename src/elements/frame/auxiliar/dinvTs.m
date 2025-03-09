@@ -15,20 +15,20 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Dh]=dinvTs(t,v);
+function [Dh] = dinvTs(t, v)
 
-nt = norm(t) ;
+  nt = norm(t);
 
-if nt==0
-  Dh=-1/2*skew(v);
-else
-  a=nt/2;
-  eta=(sin(a)-a*cos(a))/(nt^2*sin(a));
-  miu=(nt*(nt+sin(nt))-8*sin(a)^2)/(4*nt^4*sin(a)^2);
-  I3=eye(3);
-  M=skew(t);
-  M1=skew(v);
-  M2=t*v'-2*v*t'+(t'*v)*I3;
-  M3=M*M*v*t';
-  Dh=eta*M2+miu*M3-1/2*M1;
-end
+  if nt == 0
+    Dh = -1 / 2 * skew(v);
+  else
+    a = nt / 2;
+    eta = (sin(a) - a * cos(a)) / (nt^2 * sin(a));
+    miu = (nt * (nt + sin(nt)) - 8 * sin(a)^2) / (4 * nt^4 * sin(a)^2);
+    I3 = eye(3);
+    M = skew(t);
+    M1 = skew(v);
+    M2 = t * v' - 2 * v * t' + (t' * v) * I3;
+    M3 = M * M * v * t';
+    Dh = eta * M2 + miu * M3 - 1 / 2 * M1;
+  end

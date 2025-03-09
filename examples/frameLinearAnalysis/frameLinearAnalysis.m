@@ -82,10 +82,10 @@ otherParams = struct();
 otherParams.problemName = 'frameLinearAnalysis';
 otherParams.plots_format = 'vtk';
 %
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 % md the report is generated
 outputReport(modelProperties.outputDir, modelProperties.problemName);

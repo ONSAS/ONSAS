@@ -17,37 +17,37 @@
 %
 % --------------------------------------------------------------------------------------------------
 
-function N = bendingInterFuns (x , l, derivdeg )
+function N = bendingInterFuns (x, l, derivdeg)
 
-assert( iscolumn(x)   ,'x must be scalar or column' )
-assert( length(l)==1                                )
+  assert(iscolumn(x), 'x must be scalar or column');
+  assert(length(l) == 1);
 
-switch derivdeg
+  switch derivdeg
 
-case 0
-  N1 =  (2*x.^3 - 3*l*x.^2 + l.^3 )     / l^3 ;
-  N2 =  (x.^3 -2 * l * x.^2 + l.^2*x  ) / l^2 ;
-  N3 = -( 2*x.^3 - 3*l*x.^2 )           / l^3 ;
-  N4 =  (x.^3 - l*x.^2 )                / l^2 ;
+    case 0
+      N1 =  (2 * x.^3 - 3 * l * x.^2 + l.^3)     / l^3;
+      N2 =  (x.^3 - 2 * l * x.^2 + l.^2 * x) / l^2;
+      N3 = -(2 * x.^3 - 3 * l * x.^2)           / l^3;
+      N4 =  (x.^3 - l * x.^2)                / l^2;
 
-case 1
-  N1 =  (6*x.^2 - 6*x*l )     / l^3 ;
-  N2 =  (3*x.^2 -4*l*x +l.^2) / l^2 ;
-  N3 = -(6*x.^2 - 6*x*l)      / l^3 ;
-  N4 =  (3*x.^2 - 2*l*x )     / l^2 ;
+    case 1
+      N1 =  (6 * x.^2 - 6 * x * l)     / l^3;
+      N2 =  (3 * x.^2 - 4 * l * x + l.^2) / l^2;
+      N3 = -(6 * x.^2 - 6 * x * l)      / l^3;
+      N4 =  (3 * x.^2 - 2 * l * x)     / l^2;
 
-case 2
-  N1 =  (12*x-6*l )  / l^3 ;
-  N2 =  (6*x-4*l )   / l^2 ;
-  N3 = -(12*x - 6*l) / l^3 ;
-  N4 =  (6*x - 2*l ) / l^2 ;
+    case 2
+      N1 =  (12 * x - 6 * l)  / l^3;
+      N2 =  (6 * x - 4 * l)   / l^2;
+      N3 = -(12 * x - 6 * l) / l^3;
+      N4 =  (6 * x - 2 * l) / l^2;
 
-case 3
-  N1 =  (12)  / l^3 ;
-  N2 =  (6 )  / l^2 ;
-  N3 = -(12)  / l^3 ;
-  N4 =  (6 )  / l^2 ;
+    case 3
+      N1 =  (12)  / l^3;
+      N2 =  (6)  / l^2;
+      N3 = -(12)  / l^3;
+      N4 =  (6)  / l^2;
 
-end
+  end
 
-N= [N1 N2 N3 N4] ;
+  N = [N1 N2 N3 N4];

@@ -18,44 +18,44 @@
 
 % Recursive function for updating headers of source files in src and downwards ...
 
-function updateLicenseHeaders( folder, root )
+function updateLicenseHeaders(folder, root)
 
-lengthOfCurrentHeader = 17 ;
+  lengthOfCurrentHeader = 17;
 
-if root==true && exist('newFileHeader.txt')~=2
-  system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' updateLicenseHeaders.m > newFileHeader.txt' ] );
-end
-
-folder
-files = dir( folder ) ;
-
-for i = 1:length( files )
-  i
-  if files(i).isdir
-    if ~strcmp(files(i).name(1),'.')
-      files(i).name
-      updateLicenseHeaders( [ folder '/' files(i).name ], false )
-    end 
-  else
-    completeFilename = [ folder '/' files(i).name ] 
-    showHeaderAndReplace( completeFilename, lengthOfCurrentHeader )
+  if root == true && exist('newFileHeader.txt') ~= 2
+    system(['head -n ' num2str(lengthOfCurrentHeader) ' updateLicenseHeaders.m > newFileHeader.txt']);
   end
-end
 
-if root==true && exist('newFileHeader.txt')==2
-  system( [ 'rm newFileHeader.txt' ] );
-end
+  folder;
+  files = dir(folder);
 
-function showHeaderAndReplace( filename, lengthOfCurrentHeader )
+  for i = 1:length(files)
+    i;
+    if files(i).isdir
+      if ~strcmp(files(i).name(1), '.')
+        files(i).name;
+        updateLicenseHeaders([folder '/' files(i).name], false);
+      end
+    else
+      completeFilename = [folder '/' files(i).name];
+      showHeaderAndReplace(completeFilename, lengthOfCurrentHeader);
+    end
+  end
 
-system( [ 'head -n ' num2str(lengthOfCurrentHeader) ' ' filename ] );
+  if root == true && exist('newFileHeader.txt') == 2
+    system(['rm newFileHeader.txt']);
+  end
 
-reply = input('    replace yes or no? (y/n):','s' ) ;
+function showHeaderAndReplace(filename, lengthOfCurrentHeader)
 
-if strcmp( reply, 'y')
-  system( [ 'more currentFileHeader.txt > aux.txt' ] ) ;
-  system( [ 'tail  -n +' num2str(lengthOfCurrentHeader+1) ' ' filename ' >> aux.txt'] ) ;
-  system( [ 'mv aux.txt ' filename ] ) ;
-  disp('file updated.')
-end
-pause
+  system(['head -n ' num2str(lengthOfCurrentHeader) ' ' filename]);
+
+  reply = input('    replace yes or no? (y/n):', 's');
+
+  if strcmp(reply, 'y')
+    system(['more currentFileHeader.txt > aux.txt']);
+    system(['tail  -n +' num2str(lengthOfCurrentHeader + 1) ' ' filename ' >> aux.txt']);
+    system(['mv aux.txt ' filename]);
+    disp('file updated.');
+  end
+  pause;

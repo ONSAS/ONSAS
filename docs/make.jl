@@ -22,7 +22,7 @@ makedocs(
     "User guide" => Any["Installation"=>"install.md",
       "Creating Models"=>"creatingModels.md",
       "References"=>"references.md"]
-    #"Developer guide" => Any["ONSAS_solve" =>  "ONSAS_solve.md"]
+    #"Developer guide" => Any["solveONSAS" =>  "solveONSAS.md"]
   ]
 )
 
