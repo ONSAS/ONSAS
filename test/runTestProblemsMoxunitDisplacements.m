@@ -92,7 +92,7 @@ function test15
   assertEqual(verifBoolean, true);
 
 function test16
-  VIVCantilever;
+  vivCantilever;
   assertEqual(verifBoolean, true);
 
 function test17
