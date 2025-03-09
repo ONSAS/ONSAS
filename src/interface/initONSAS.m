@@ -36,7 +36,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   [Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename] ...
     = boundaryCondsProcessing(mesh, materials, elements, boundaryConds, analysisSettings);
 
-  BCsData = construct_BCsData(factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename);
+  BCsData = constructBCsData(factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename);
   % =================================================================
 
   nTimes = round(analysisSettings.finalTime / analysisSettings.deltaT) + 1; % number of times (including t=0)
@@ -50,7 +50,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
 
   % =================================================================
   % md construct modelProperties struct
-  modelProperties = construct_modelProperties(Nodes, Conec, materials, elements, analysisSettings, otherParams, timesPlotsVec);
+  modelProperties = constructModelProperties(Nodes, Conec, materials, elements, analysisSettings, otherParams, timesPlotsVec);
   % =================================================================
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,8 +93,8 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   % md call assembler
   [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell);
 
-  modelCurrSol = construct_modelSol(timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-                                    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell);
+  modelCurrSol = constructModelSol(timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
+                                   currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell);
   % =================================================================
 
   % md prints headers for solver output file

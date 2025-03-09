@@ -15,11 +15,10 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename )
+function BCsData = constructBCsData(factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename)
 
-BCsData.factorLoadsFextCell = factorLoadsFextCell ;
-BCsData.loadFactorsFuncCell = loadFactorsFuncCell ;
-BCsData.neumDofs            = neumDofs            ;
-BCsData.KS                  = KS                  ;
-BCsData.userLoadsFilename   = userLoadsFilename   ;
-
+  BCsData.factorLoadsFextCell = factorLoadsFextCell;
+  BCsData.loadFactorsFuncCell = loadFactorsFuncCell;
+  BCsData.neumDofs            = neumDofs;
+  BCsData.KS                  = KS;
+  BCsData.userLoadsFilename   = userLoadsFilename;
