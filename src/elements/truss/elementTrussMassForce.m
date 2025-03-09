@@ -16,8 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function [Fmasse, Me] = elementTrussMassForce (Xe, rho, A, massMatType, ...
-                                                 Udotdotte)
+function [Fmasse, Me] = elementTrussMassForce (Xe, rho, A, massMatType, Udotdotte)
 
   Xe = Xe(:);
   localAxisRef = Xe(4:6) - Xe(1:3);

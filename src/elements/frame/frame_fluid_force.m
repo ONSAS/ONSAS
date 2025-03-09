@@ -91,7 +91,7 @@ function [fHydroElem, tMatHydroElemU] = frame_fluid_force(elemCoords, ...
   qg  = (q1g + q2g) / 2;
 
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, G, P, EE] = corotVecMatAuxStatic( ...
-                                                                                R0, Rr, Rg1, Rg2, l, II, O3, O1);
+                                                                               R0, Rr, Rg1, Rg2, l, II, O3, O1);
   % -------------------------------
 
   % local rotations

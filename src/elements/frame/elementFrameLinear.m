@@ -47,7 +47,7 @@ function [fs, ks, finteLocalCoor] = elementFrameLinear(elemCoords, elemCrossSecP
   KL = zeros (2 * ndofpnode, 2 * ndofpnode);
 
   Kaxial = E * A / l * [1 -1; ...
-                    -1  1];
+                        -1  1];
   KL(LocAxialdofs, LocAxialdofs) = Kaxial;
 
   kBendReleaseRig = [3    3 * l   -3   0; ...
@@ -92,7 +92,7 @@ function [fs, ks, finteLocalCoor] = elementFrameLinear(elemCoords, elemCrossSecP
   end
 
   Ktorsn = G * J / l * [1 -1; ...
-                    -1  1];
+                        -1  1];
 
   KL(LocBendXYdofs, LocBendXYdofs) = KbendXY;
   KL(LocBendXZdofs, LocBendXZdofs) = KbendXZ;

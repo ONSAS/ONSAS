@@ -23,4 +23,4 @@ function [I3, O3, O1, II] = corotZeros()
   O1 = zeros(1, 3);
 
   II = [O3 I3 O3 O3
-      O3 O3 O3 I3];
+        O3 O3 O3 I3];

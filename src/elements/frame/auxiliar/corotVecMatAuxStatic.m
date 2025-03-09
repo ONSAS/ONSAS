@@ -46,6 +46,6 @@ function [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE] = corotVecMatA
   r = [-e1' O1  e1' O1]';
 
   EE = [Rr O3 O3 O3
-      O3 Rr O3 O3
-      O3 O3 Rr O3
-      O3 O3 O3 Rr];
+        O3 Rr O3 O3
+        O3 O3 Rr O3
+        O3 O3 O3 Rr];

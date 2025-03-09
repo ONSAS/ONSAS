@@ -17,7 +17,7 @@
 %
 
 function  [fs, ks, stress, rotData, localInternalForces] = frame_internal_force( ...
-                                                                                  elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue)
+                                                                                elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue)
 
   % element coordinates
   xs = elemCoords(:);
@@ -75,7 +75,7 @@ function  [fs, ks, stress, rotData, localInternalForces] = frame_internal_force(
   qg  = (q1g + q2g) / 2;
 
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE] = corotVecMatAuxStatic( ...
-                                                                                   R0, Rr, Rg1, Rg2, l, II, O3, O1);
+                                                                                  R0, Rr, Rg1, Rg2, l, II, O3, O1);
   % -------------------------------
 
   % --- local force vector and tangent stiffness matrix ---
@@ -125,31 +125,31 @@ function  [fs, ks, stress, rotData, localInternalForces] = frame_internal_force(
   F = P' * fe(2:7);
 
   sF = [skew(F(1:3))
-      skew(F(4:6))
-      skew(F(7:9))
-      skew(F(10:12))];
+        skew(F(4:6))
+        skew(F(7:9))
+        skew(F(10:12))];
 
   nab = [0
-       (nu * (fe(2) + fe(5)) + fe(3) + fe(6)) / l
-       (fe(4) + fe(7)) / l];
+         (nu * (fe(2) + fe(5)) + fe(3) + fe(6)) / l
+         (fe(4) + fe(7)) / l];
 
   Kg = B' * ke * B + Dr * fe(1) - EE * sF * Gaux' * EE' + EE * Gaux * nab * r';
 
-  Dg1 = Ts(tg1);
-  Dg2 = Ts(tg2);
+  Dg1 = funTs(tg1);
+  Dg2 = funTs(tg2);
 
   q = [fg(1:3)
-     Dg1' * fg(4:6)
-     fg(7:9)
-     Dg2' * fg(10:12)];
+       Dg1' * fg(4:6)
+       fg(7:9)
+       Dg2' * fg(10:12)];
 
   Dk1 = dTs(tg1, fg(4:6));
   Dk2 = dTs(tg2, fg(10:12));
 
   H = [I3 O3  O3 O3
-     O3 Dg1 O3 O3
-     O3 O3  I3 O3
-     O3 O3  O3 Dg2];
+       O3 Dg1 O3 O3
+       O3 O3  I3 O3
+       O3 O3  O3 Dg2];
 
   Kt = H' * Kg * H;
 

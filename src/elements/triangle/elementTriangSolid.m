@@ -19,7 +19,7 @@
 % md
 
 function [fs, ks, stress, strain, acum_plas_strain] = elementTriangSolid( ...
-                                                                           elemCoords, elemDisps, modelName, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state)
+                                                                         elemCoords, elemDisps, modelName, elemConstitutiveParams, paramOut, t, planeStateFlag, dotdotdispsElem, density, previous_state)
 
   x = elemCoords(1:3:end)';
   y = elemCoords(2:3:end)';
@@ -29,8 +29,8 @@ function [fs, ks, stress, strain, acum_plas_strain] = elementTriangSolid( ...
   assert(A >= 0, 'Element with negative area, check connectivity.');
 
   B = 1 / (2 * A) * [y(2) - y(3)  0         0   y(3) - y(1)  0         0   y(1) - y(2)  0         0
-                   0          x(3) - x(2) 0   0          x(1) - x(3) 0   0          x(2) - x(1) 0
-                   x(3) - x(2)  y(2) - y(3) 0   x(1) - x(3)  y(3) - y(1) 0   x(2) - x(1)  y(1) - y(2) 0];
+                     0          x(3) - x(2) 0   0          x(1) - x(3) 0   0          x(2) - x(1) 0
+                     x(3) - x(2)  y(2) - y(3) 0   x(1) - x(3)  y(3) - y(1) 0   x(2) - x(1)  y(1) - y(2) 0];
 
   % Compute strain
   strain = B * elemDisps;
@@ -45,8 +45,8 @@ function [fs, ks, stress, strain, acum_plas_strain] = elementTriangSolid( ...
 
   if planeStateFlag == 1
     De = E / (1 - nu^2) * [1   nu  0; ...
-                         nu  1   0; ...
-                         0   0   (1 - nu) / 2];
+                           nu  1   0; ...
+                           0   0   (1 - nu) / 2];
 
   elseif planeStateFlag == 2
     De = E * (1 - nu) / ((1 + nu) * (1 - 2 * nu)) * ...

@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Dg] = Ts(t)
+function [Dg] = funTs(t)
 
   nt = norm(t);
   I = eye(3, 3);

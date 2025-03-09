@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 function [P1, P2, N, N1, N2] = corotVecMatAuxDyn( ...
-                                                  N1, N2, N3, N4, N5, N6, N7, N8, tl1, tl2, Gaux, I3, O3, P)
+                                                 N1, N2, N3, N4, N5, N6, N7, N8, tl1, tl2, Gaux, I3, O3, P)
 
   % Auxiliary shape function matrices variables for the cross section:
   P1 = [0   0   0   0   0    0; ...

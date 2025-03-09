@@ -80,8 +80,8 @@ function [Finte, KTe, stress, dstressdeps, strain, acum_plas_strain] = ...
     b2    = 1 / (lini^2) * Ue' * Ge;
     Finte =  A * stress * lini * (b1 + b2)';
 
-    KTe   =   stress      * A / lini * Ge  ...
-            + dstressdeps * A * lini * ((b1 + b2)' * (b1 + b2));
+    KTe   =   stress      * A / lini * Ge  + ...
+              dstressdeps * A * lini * ((b1 + b2)' * (b1 + b2));
 
   elseif strcmp(modelName, 'elastic-rotEngStr') || strcmp(modelName, 'elastic-rotLogStr')
 

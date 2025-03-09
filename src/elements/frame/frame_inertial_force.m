@@ -17,8 +17,8 @@
 %
 
 function  [fs, ks] = frame_inertial_force(elemCoords, ...
-                                           elemCrossSecParams, elemConstitutiveParams, ...
-                                           Ue, Udote, Udotdote, elemrho, massMatType, analysisSettings)
+                                          elemCrossSecParams, elemConstitutiveParams, ...
+                                          Ue, Udote, Udotdote, elemrho, massMatType, analysisSettings)
 
   % element coordinates
   xs = elemCoords(:);
@@ -70,7 +70,7 @@ function  [fs, ks] = frame_inertial_force(elemCoords, ...
   qg  = (q1g + q2g) / 2;
 
   [nu, nu11, nu12, nu21, nu22, e1, e2, e3, r, Gaux, P, EE] = corotVecMatAuxStatic( ...
-                                                                                   R0, Rr, Rg1, Rg2, l, II, O3, O1);
+                                                                                  R0, Rr, Rg1, Rg2, l, II, O3, O1);
 
   if strcmp(massMatType, 'consistent')
     sumInterForce  = zeros (12, 1);
@@ -86,7 +86,7 @@ function  [fs, ks] = frame_inertial_force(elemCoords, ...
       xGauss = l0 / 2 * (xIntPoints(ind) + 1);
 
       [interTermInertialForce, interTermMassMatrix, interTermGyroMatrix] = interElementBeamForces ( ...
-                                                                                                    xGauss, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, R0, Jrho, rho, Area, Gaux);
+                                                                                                   xGauss, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, R0, Jrho, rho, Area, Gaux);
 
       sumInterForce = sumInterForce ...
         + l0 / 2 * wIntPoints(ind) * interTermInertialForce;
@@ -134,7 +134,7 @@ function  [fs, ks] = frame_inertial_force(elemCoords, ...
 end % endFunction
 
 function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix] = interElementBeamForces ( ...
-                                                                                                  x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux)
+                                                                                                 x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux)
 
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0);

@@ -23,12 +23,9 @@ function [Local2GlobalMats, ElemLengths] = beamParameters(elemCoords)
 
   % ----- local coordinate system setting -------------
 
-  dxLdls       = (elemCoords(4) - elemCoords(1)) ...
-                 ./ ElemLengths;
-  dyLdls       = (elemCoords(5) - elemCoords(2)) ...
-                 ./ ElemLengths;
-  dzLdls       = (elemCoords(6) - elemCoords(3)) ...
-                 ./ ElemLengths;
+  dxLdls       = (elemCoords(4) - elemCoords(1)) ./ ElemLengths;
+  dyLdls       = (elemCoords(5) - elemCoords(2)) ./ ElemLengths;
+  dzLdls       = (elemCoords(6) - elemCoords(3)) ./ ElemLengths;
 
   exL = [dxLdls dyLdls dzLdls]';
   if norm([dyLdls dxLdls]) > (1e-5 * ElemLengths)

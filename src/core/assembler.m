@@ -259,7 +259,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
       thickness = elemCrossSecParams{2};
 
-      [fs, ks, fintLocCoord] =  internal_forces_plate_triangle(elemNodesxyzRefCoords, elemDisps, modelName, ...
+      [fs, ks, fintLocCoord] =  internalForcesPlateTriangle(elemNodesxyzRefCoords, elemDisps, modelName, ...
                                                                modelParams, thickness);
 
       localInternalForces(elem).Mx  = fintLocCoord(1);
@@ -273,7 +273,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
       thickness = elemCrossSecParams{2};
 
-      [fs, ks, fintLocCoord] =  internal_forces_shell_triangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
+      [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
 
       localInternalForces(elem).Mx  = fintLocCoord(1);
       localInternalForces(elem).My  = fintLocCoord(2);

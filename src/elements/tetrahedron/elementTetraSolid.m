@@ -19,7 +19,7 @@
 % tetraedron element with different constitutive behaviors.
 % The hyperelastic behavior cased is based on equation 4.9.25 from belytschko 2nd edition.
 function [Finte, KTe, stress] = elementTetraSolid( ...
-                                                    elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag)
+                                                  elemCoords, elemDisps, elemConstitutiveParams, paramOut, consMatFlag)
 
   % Internal flag to compute the stiffness matrix of the element using an analytic expression
   booleanKTAnalytic = 1;
@@ -47,7 +47,7 @@ function [Finte, KTe, stress] = elementTetraSolid( ...
   end
 
   % Computes internal forces of the elemnt
-  matBgrande = BgrandeMats (funder, F);
+  matBgrande = bGrandeMats (funder, F);
   Svoigt = mat2voigt(S, 1);
   Finte    = transpose(matBgrande) * Svoigt * vol;
 
@@ -78,7 +78,7 @@ function [Finte, KTe, stress] = elementTetraSolid( ...
   % ======================================================================
   % Auxiliar functions
   % ======================================================================
-function matBgrande = BgrandeMats (deriv, F)
+function matBgrande = bGrandeMats (deriv, F)
 
   matBgrande = zeros(6, 12);
 
@@ -86,11 +86,11 @@ function matBgrande = BgrandeMats (deriv, F)
 
   for k = 1:4
     matBgrande (4:6, (k - 1) * 3 + (1:3)) = [deriv(2, k) * F(:, 3)' + deriv(3, k) * F(:, 2)'; ...
-                                            deriv(1, k) * F(:, 3)' + deriv(3, k) * F(:, 1)'; ...
-                                            deriv(1, k) * F(:, 2)' + deriv(2, k) * F(:, 1)'];
+                                             deriv(1, k) * F(:, 3)' + deriv(3, k) * F(:, 1)'; ...
+                                             deriv(1, k) * F(:, 2)' + deriv(2, k) * F(:, 1)'];
   end
 
-function BMat = BMats (deriv)
+function BMat = bMats (deriv)
 
   BMat = zeros(6, 12);
 
