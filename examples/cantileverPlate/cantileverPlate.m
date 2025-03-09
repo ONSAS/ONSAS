@@ -141,10 +141,10 @@ numer_wmax_shell  = min(matUs(5:6:end));
 materials(1).modelName  = 'elastic-rotEngStr' ;
 otherParams.problemName  = 'cantileverPlate-shell-nonlinear' ;
 
-[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelInitSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelInitSol, modelProperties, BCsData ) ;
 
 
 % md
