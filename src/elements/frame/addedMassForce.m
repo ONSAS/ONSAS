@@ -17,11 +17,11 @@
 %
 % This function returns the hydrodinamic mass force of the element in global coordinates.
 
-function fam = addedMassForce( AMBool                                   ,...
-                               l0, elemCoords, elemCrossSecParams       ,...
-                               deltaT, nextTime, userFlowVel, densityFluid ) ;
+function fam = addedMassForce(AMBool, ...
+                              l0, elemCoords, elemCrossSecParams, ...
+                              deltaT, nextTime, userFlowVel, densityFluid)
 
-  Aelem  = crossSectionProps( elemCrossSecParams, 0.0 ) ; % the 0.0 density does not affect A value
+  Aelem  = crossSectionProps(elemCrossSecParams, 0.0); % the 0.0 density does not affect A value
 
   if AMBool     % linear(node1_x)  angular(node1_x)   % linear(node2_z)  angular(node2_z)
 
@@ -34,10 +34,10 @@ function fam = addedMassForce( AMBool                                   ,...
 
     % lumped add mass formlation:
     % circular cross section implementation
-    assert(strcmp(elemCrossSecParams{1},'circle'))
-    Ca            = 1          ;
-    elementVolume = l0 * Aelem ;
-    massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2 ;
+    assert(strcmp(elemCrossSecParams{1}, 'circle'));
+    Ca            = 1;
+    elementVolume = l0 * Aelem;
+    massNodeAdded = (1 + Ca) * densityFluid * elementVolume / 2;
     fam = massNodeAdded * Udotdotflow(1:12);
 
   else
