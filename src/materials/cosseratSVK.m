@@ -16,23 +16,23 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function [S, ConsMat] = cosseratSVK( consParams, Egreen, consMatFlag )
+function [S, ConsMat] = cosseratSVK(consParams, Egreen, consMatFlag)
 
-lambda   = consParams(1) ;
-shear    = consParams(2) ;
+  lambda   = consParams(1);
+  shear    = consParams(2);
 
-S       = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen ;
+  S       = lambda * trace(Egreen) * eye(3)  +  2 * shear * Egreen;
 
-if consMatFlag == 0 % only stress computed
-  ConsMat = [] ;
+  if consMatFlag == 0 % only stress computed
+    ConsMat = [];
 
-elseif consMatFlag == 1 % analytical expression
-  ConsMat              = zeros(6,6);
-  ConsMat ( 1:3, 1:3 ) = 2*shear * eye(3) + lambda * ones(3) ;
-  ConsMat ( 4:6, 4:6 ) =   shear * eye(3)                   ;
+  elseif consMatFlag == 1 % analytical expression
+    ConsMat              = zeros(6, 6);
+    ConsMat (1:3, 1:3) = 2 * shear * eye(3) + lambda * ones(3);
+    ConsMat (4:6, 4:6) =   shear * eye(3);
 
-elseif consMatFlag == 2  % complex-step computation expression
-  ConsMat = zeros(6,6);
-  ConsMat = complexStepConsMat( 'cosseratSVK', consParams, Egreen ) ;
+  elseif consMatFlag == 2  % complex-step computation expression
+    ConsMat = zeros(6, 6);
+    ConsMat = complexStepConsMat('cosseratSVK', consParams, Egreen);
 
-end
+  end

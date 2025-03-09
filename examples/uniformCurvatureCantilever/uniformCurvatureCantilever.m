@@ -96,10 +96,10 @@ otherParams.plots_format = 'vtk' ;
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 % md
 % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:

@@ -91,10 +91,10 @@ otherParams.plots_format = 'vtk' ;
 
 % Run ONSAS
 %
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-matUs = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+matUs = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 %--------
 
 % Fluid properties

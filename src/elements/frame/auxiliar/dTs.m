@@ -15,27 +15,27 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Dk]=dTs(t,v);
+function [Dk] = dTs(t, v)
 
-nt=norm(t);
+  nt = norm(t);
 
-if nt==0
-  Dk=1/2*skew(v);
-else
-  e=t/nt;
-  ev=cross(e,v);
+  if nt == 0
+    Dk = 1 / 2 * skew(v);
+  else
+    e = t / nt;
+    ev = cross(e, v);
 
-  a1=(cos(nt)-sin(nt)/nt)/nt;
-  M1=v*e'-(e'*v)*e*e';
+    a1 = (cos(nt) - sin(nt) / nt) / nt;
+    M1 = v * e' - (e' * v) * e * e';
 
-  a2=(1-sin(nt)/nt)/nt;
-  M2=e*v'-2*(e'*v)*e*e'+(e'*v)*eye(3);
+    a2 = (1 - sin(nt) / nt) / nt;
+    M2 = e * v' - 2 * (e' * v) * e * e' + (e' * v) * eye(3);
 
-  a3=sin(nt)/nt-(2*sin(nt/2)/nt)^2;
-  M3=ev*e';
+    a3 = sin(nt) / nt - (2 * sin(nt / 2) / nt)^2;
+    M3 = ev * e';
 
-  a4=2*(sin(nt/2)/nt)^2;
-  M4=skew(v);
+    a4 = 2 * (sin(nt / 2) / nt)^2;
+    M4 = skew(v);
 
-  Dk=a1*M1+a2*M2-a3*M3+a4*M4;
-end
+    Dk = a1 * M1 + a2 * M2 - a3 * M3 + a4 * M4;
+  end

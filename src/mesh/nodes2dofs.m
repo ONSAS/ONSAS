@@ -18,10 +18,10 @@
 % Function that converts a vector of nodes indices to a vector of the
 % corresponding degrees of freedom.
 
-function [dofs] = nodes2dofs( nodes , degreespernode )
-nodes= nodes(:) ;
-n    = length(nodes);
-dofs = zeros( n*degreespernode , 1 ) ;
-for i=1:n
-  dofs( (i-1)*degreespernode + (1:degreespernode) ) = [ (degreespernode*(nodes(i)-1))+(1:degreespernode) ]' ;
-end
+function [dofs] = nodes2dofs(nodes, degreespernode)
+  nodes = nodes(:);
+  n    = length(nodes);
+  dofs = zeros(n * degreespernode, 1);
+  for i = 1:n
+    dofs((i - 1) * degreespernode + (1:degreespernode)) = [(degreespernode * (nodes(i) - 1)) + (1:degreespernode)]';
+  end

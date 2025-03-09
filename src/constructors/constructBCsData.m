@@ -15,15 +15,10 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-% --------------------------------------------------------------------------------------------------
+function BCsData = constructBCsData(factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename)
 
-function R=RotationMatrix(ndofpnode,locglomat)
-
-R = zeros ( ndofpnode*2, ndofpnode*2 ) ;
-
-for k=1:2
-    aux1 = [(1+(k-1)*6) : 2 : (1+(k-1)*6+4)] ; % displacement dofs
-    aux2 = [(2+(k-1)*6) : 2 : (2+(k-1)*6+4)] ; % rotation     dofs
-    R ( aux1, aux1 ) = locglomat ;
-    R ( aux2, aux2 ) = locglomat ;
-end
+  BCsData.factorLoadsFextCell = factorLoadsFextCell;
+  BCsData.loadFactorsFuncCell = loadFactorsFuncCell;
+  BCsData.neumDofs            = neumDofs;
+  BCsData.KS                  = KS;
+  BCsData.userLoadsFilename   = userLoadsFilename;
