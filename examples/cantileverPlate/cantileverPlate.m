@@ -155,5 +155,4 @@ verifBoolean = (abs(analy_wmax - numer_wmax) / abs(analy_wmax))  < 1e-3 && ...
             (abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
             (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3;
 
-assert( modelSolutions{2}.timeStepIters < 3);
-
+assert(modelSolutions{2}.timeStepIters < 3);
