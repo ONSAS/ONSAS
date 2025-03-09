@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
- 
+
 function isOctaveBoolean = isThisOctave
 
-isOctaveBoolean = exist('OCTAVE_VERSION','builtin') > 0 ;
+  isOctaveBoolean = exist('OCTAVE_VERSION', 'builtin') > 0;

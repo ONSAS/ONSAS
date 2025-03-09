@@ -174,10 +174,10 @@ mesh.conecCell{ 3, 1 } = [1 2 0    1 2];
 % md
 % md Execute ONSAS and save the results:
 
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsNewmark, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUsNewmark, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 % md
 % md### Numerical case 2: truss model with nodal masses, using $\alpha$-HHT method and user loads function
@@ -210,10 +210,10 @@ analysisSettings.alphaHHT   =   0;
 otherParams.problemName = 'springMass_case2';
 % md
 % md Execute ONSAS and save the results:
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsHHT, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUsHHT, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 % md
 % md
@@ -264,10 +264,10 @@ otherParams.problemName = 'springMass_case3';
 analysisSettings.methodName    = 'newmark';
 % md
 
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsBending, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUsBending, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 valsBending = matUsBending(6 + 3, :);
 % md

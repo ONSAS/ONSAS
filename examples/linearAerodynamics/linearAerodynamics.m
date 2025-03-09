@@ -152,10 +152,10 @@ otherParams.plots_format = '';
 % md The first case is executed used the internal ONSAS functions such as `hydroFrameForce.m`to compute the aerodynamic forces:
 % md
 % md The ONSAS software is executed for the parameters above defined and the displacement solution of each load(time) step is saved in `matUsCase1`matrix:
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase1, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUsCase1, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 
 % md

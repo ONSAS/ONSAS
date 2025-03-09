@@ -18,17 +18,17 @@
 
 % This function applies a permutation to switch a vector/matrix of displacements/rotations from type to nodal
 function O = switchToNodalIndexing(B)
-  O = zeros( size(B) );
+  O = zeros(size(B));
 
-  assert( mod(size(B,1),6)==0)
-  permutIndxs = [ ];
-  for i=1:(size(B,1)/6)
-    permutIndxs = [ permutIndxs ([1:2:5]+6*(i-1)) ([2:2:6]+6*(i-1)) ] ;
+  assert(mod(size(B, 1), 6) == 0);
+  permutIndxs = [];
+  for i = 1:(size(B, 1) / 6)
+    permutIndxs = [permutIndxs ([1:2:5] + 6 * (i - 1)) ([2:2:6] + 6 * (i - 1))];
   end
 
-  if size(B, 2)>1
-	O(permutIndxs, permutIndxs) = B ;
+  if size(B, 2) > 1
+    O(permutIndxs, permutIndxs) = B;
   else
-	O( permutIndxs) = B ;
+    O(permutIndxs) = B;
   end
 end

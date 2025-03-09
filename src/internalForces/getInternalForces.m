@@ -16,15 +16,15 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function matFint = getInternalForces( forcesStruct, elems, fieldNames )
+function matFint = getInternalForces(forcesStruct, elems, fieldNames)
 
-nElems  = length( elems      ) ;
-nFields = length( fieldNames ) ;
+  nElems  = length(elems);
+  nFields = length(fieldNames);
 
-matFint = zeros( nElems, nFields );
+  matFint = zeros(nElems, nFields);
 
-for i =1:nElems
+  for i = 1:nElems
     for j = 1:nFields
-        matFint(i,j) = getfield( forcesStruct(elems(i)), fieldNames{j} );
+      matFint(i, j) = getfield(forcesStruct(elems(i)), fieldNames{j});
     end
-end
+  end

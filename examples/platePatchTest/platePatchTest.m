@@ -111,10 +111,10 @@ otherParams.problemName = 'platePatchTest';
 otherParams.plots_format = 'vtk';
 % md
 % md
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 
 numeric_w3 = matUs(6 * 2 + 5, end);
 numeric_w5 = matUs(6 * 4 + 5, end);

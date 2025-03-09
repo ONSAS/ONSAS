@@ -160,10 +160,10 @@ otherParams = struct();
 otherParams.problemName = 'coRotationaluniformDynamicBeam';
 % md
 % md ONSAS execution
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[coRotMatUs, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[coRotMatUs , loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 
 % md
@@ -172,10 +172,10 @@ materials.modelName  = 'elastic-linear';
 otherParams.problemName = 'elastic-linearuniformDynamicBeam';
 % md
 % md ONSAS execution
-[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[linElasMatUs, loadFactorsMat, modelSolutions] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
+[linElasMatUs , loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 % md the report is generated
 outputReport(modelProperties.outputDir, modelProperties.problemName);

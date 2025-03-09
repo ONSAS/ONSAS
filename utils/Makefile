@@ -4,7 +4,11 @@ MISS_HIT_LINT := $(POETRY) mh_lint
 MISS_HIT_METRIC := $(POETRY) mh_metric
 
 # Directories to analyze
+<<<<<<< HEAD
 DIRECTORIES := ./../docs/ ./../test/ ./../examples
+=======
+DIRECTORIES := ./../docs/ ./../test/ ./../src/
+>>>>>>> master
 
 .PHONY: all
 all: check

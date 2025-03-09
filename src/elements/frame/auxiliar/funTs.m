@@ -15,11 +15,16 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function BCsData = construct_BCsData( factorLoadsFextCell, loadFactorsFuncCell, neumDofs, KS, userLoadsFilename )
+function [Dg] = funTs(t)
 
-BCsData.factorLoadsFextCell = factorLoadsFextCell ;
-BCsData.loadFactorsFuncCell = loadFactorsFuncCell ;
-BCsData.neumDofs            = neumDofs            ;
-BCsData.KS                  = KS                  ;
-BCsData.userLoadsFilename   = userLoadsFilename   ;
+  nt = norm(t);
+  I = eye(3, 3);
 
+  if nt == 0
+    Dg = I;
+  else
+    a = 2 * (sin(nt / 2) / nt)^2;
+    b = (1 - sin(nt) / nt) / nt^2;
+    M = skew(t);
+    Dg = I + a * M + b * M * M;
+  end
