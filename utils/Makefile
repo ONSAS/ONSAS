@@ -4,7 +4,7 @@ MISS_HIT_LINT := $(POETRY) mh_lint
 MISS_HIT_METRIC := $(POETRY) mh_metric
 
 # Directories to analyze
-DIRECTORIES := ./../docs/ ./../test/ ./../src/
+DIRECTORIES := ./../docs/ ./../test/ ./../src/ ./../examples
 
 .PHONY: all
 all: check
@@ -22,30 +22,28 @@ format:
 .PHONY: format_check
 format_check:
 	@echo "Checking code formatting in $(DIRECTORIES)..."
-	$(MISS_HIT_STYLE) $(DIRECTORIES)
+	@FORMAT_OUTPUT=$$($(MISS_HIT_STYLE) $(DIRECTORIES)); \
+	echo "$$FORMAT_OUTPUT"; \
+	echo "$$FORMAT_OUTPUT" | grep -q ", everything seems fine" && echo "✅ Formatting check passed!" || { echo "❌ Formatting issues found!"; exit 1; }
 
 .PHONY: lint
 lint:
 	@echo "Running lint checks on $(DIRECTORIES)..."
-	$(MISS_HIT_LINT) $(DIRECTORIES)
+	@LINT_OUTPUT=$$($(MISS_HIT_LINT) $(DIRECTORIES)); \
+	echo "$$LINT_OUTPUT"; \
+	echo "$$LINT_OUTPUT" | grep -q ", everything seems fine" && echo "✅ Linting check passed!" || { echo "❌ Linting issues found!"; exit 1; }
+
 .PHONY: metric
 metric:
 	@echo "Running code metrics for $(DIRECTORIES)..."
-	$(MISS_HIT_METRIC) $(DIRECTORIES) --ci
+	@METRIC_OUTPUT=$$($(MISS_HIT_METRIC) $(DIRECTORIES) --ci); \
+	echo "$$METRIC_OUTPUT"; \
+	echo "$$METRIC_OUTPUT" | grep -q ", everything seems fine" && echo "✅ Code metrics check passed!" || { echo "❌ Code metrics check failed!"; exit 1; }
 
 .PHONY: check
-check: format lint metric
-	@echo "All checks passed successfully."
+check: format_check lint metric
+	@echo "✅ All checks passed successfully."
 
-.PHONY: help
-help:
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Available targets:"
-	@echo "  install         Install project dependencies using Poetry"
-	@echo "  format          Format code in directories using mh_style"
-	@echo "  format_check    Check code formatting without making changes"
-	@echo "  lint            Run lint checks on the specified directories"
-	@echo "  metric          Run code metrics in CI mode"
-	@echo "  check           Run all checks (format_check, lint, metric)"
-	@echo "  help            Display this help message"
+.PHONY: ci_checks
+ci_checks: install check
+	@echo "🎯 CI checks completed successfully."
