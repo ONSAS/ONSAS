@@ -133,10 +133,10 @@ otherParams.plots_format = 'vtk';
 % md
 % md In order to validate this example the ONSAS code is run and the solution degree of freedom selected is the $uz$ displacement at the joint.
 % mdFirst the input structs are converted to structs with the model information
-[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[ matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 % md
 
 modelSolutions{3}.localInternalForces(11);

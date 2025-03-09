@@ -90,10 +90,10 @@ otherParams.problemName = 'cantilever_modal_analysis';
 otherParams.exportFirstMatrices = true;
 % md ONSAS execution
 % mdFirst the input structs are converted to structs with the model information
-[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[coRotMatUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
+[coRotMatUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 % md
 % md the report is generated
 outputReport(modelProperties.outputDir, modelProperties.problemName);
