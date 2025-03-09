@@ -100,10 +100,10 @@ analysisSettings.methodName = 'newmark'     ;
 otherParams.problemName     = 'nonlinearPendulumNewmarkTrussBathe';
 % md In the first case ONSAS is run and the solution at the dof of interest is stored.
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase1, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase1, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 
 % ------------------------------------
@@ -117,10 +117,10 @@ analysisSettings.alphaHHT   =  0        ;
 % mdthe new name of these problem is:
 otherParams.problemName     = 'nonlinearPendulumHHTTrussBathe';
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase2, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase2, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 
 % ------------------------------------
@@ -149,10 +149,10 @@ materials(2).modelParams = [ E nu ] ;
 materials(2).density = rhoF ;
 otherParams.problemName     = 'nonlinearPendulumHHTFrame';
 % ------------------------------------
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUsCase3, loadFactorsMat, modelSolutions] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUsCase3, loadFactorsMat, modelSolutions] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 % md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )

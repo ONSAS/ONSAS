@@ -15,15 +15,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function R = expon( t );
+function R = expon(t)
 
-  R = eye(3) ;
+  R = eye(3);
 
-  tMod = norm( t ) ;
+  tMod = norm(t);
 
   if tMod > 0
-    Rsk = skew(t) ;
-    R = R + sin( tMod ) / tMod * Rsk  +  2 * ( sin( tMod/2 ) / tMod )^2 * Rsk^2 ;
+    Rsk = skew(t);
+    R = R + sin(tMod) / tMod * Rsk  +  2 * (sin(tMod / 2) / tMod)^2 * Rsk^2;
   end
 
 end

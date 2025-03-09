@@ -73,10 +73,10 @@ otherParams.problemName  = 'cantileverPlate-plateElem' ;
 otherParams.plots_format = 'vtk' ;
 % md
 % md Execute ONSAS and save the results:
-[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelInitSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelInitSol, modelProperties, BCsData ) ;
 % md
 % md## verification
 nelem=size(modelProperties.Conec,1);
@@ -94,10 +94,10 @@ elements(2).elemTypeParams     = 2         ;
 elements(2).elemCrossSecParams = tz         ;
 otherParams.problemName  = 'cantileverPlate-CSTElem' ;
 
-[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelInitSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelInitSol, modelProperties, BCsData ) ;
 
 numer_dxmax = max(matUs(1:6:end)) ;
 analy_dxmax = qx*Lx/E ;
@@ -108,10 +108,10 @@ elements(2).elemType           = 'triangle-shell';
 elements(2).elemCrossSecParams = {'thickness', tz } ;
 otherParams.problemName  = 'cantileverPlate-shell-linear' ;
 
-[ modelInitSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelInitSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelInitSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelInitSol, modelProperties, BCsData ) ;
 
 numer_dxmax_shell = max(matUs(1:6:end)) ;
 numer_wmax_shell  = min(matUs(5:6:end)) ;

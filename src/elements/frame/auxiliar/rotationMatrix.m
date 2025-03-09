@@ -15,16 +15,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Dg]=Ts(t);
+% --------------------------------------------------------------------------------------------------
 
-nt=norm(t);
-I=eye(3,3);
+function R = rotationMatrix(ndofpnode, locglomat)
 
-if nt==0
-  Dg=I;
-else
-  a=2*(sin(nt/2)/nt)^2;
-  b=(1-sin(nt)/nt)/nt^2;
-  M=skew(t);
-  Dg=I+a*M+b*M*M;
-end
+  R = zeros (ndofpnode * 2, ndofpnode * 2);
+
+  for k = 1:2
+    aux1 = [(1 + (k - 1) * 6):2:(1 + (k - 1) * 6 + 4)]; % displacement dofs
+    aux2 = [(2 + (k - 1) * 6):2:(2 + (k - 1) * 6 + 4)]; % rotation     dofs
+    R (aux1, aux1) = locglomat;
+    R (aux2, aux2) = locglomat;
+  end

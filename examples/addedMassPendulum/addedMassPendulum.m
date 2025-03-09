@@ -72,10 +72,10 @@ otherParams.problemName     = 'addedMassPedulum';
 otherParams.plots_format       = 'vtk' ;
 % md
 % mdFirst the input structs are converted to structs with the model information
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[ modelCurrSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[ matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[ matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelCurrSol, modelProperties, BCsData ) ;
 % md
 % md the report is generated
 outputReport( modelProperties.outputDir, modelProperties.problemName )
