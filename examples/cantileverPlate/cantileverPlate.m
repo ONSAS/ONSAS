@@ -24,11 +24,11 @@ end
 addpath(genpath([pwd '/../../src']));
 % md
 % md## Scalars
-E = 200e9 ;
-nu = 0.0 ;
-tz = .05 ;
-qx  = 1e2 ; % kN/m^2 
-qz  = 1e2 ; % kN/m^2 
+E = 200e9;
+nu = 0.0;
+tz = .05;
+qx  = 1e2; % kN/m^2
+qz  = 1e2; % kN/m^2
 % md
 Ly = .5;
 Lx = 1;
@@ -123,11 +123,9 @@ otherParams.problemName  = 'cantileverPlate-CSTElem';
 numer_dxmax = max(matUs(1:6:end));
 analy_dxmax = qx * Lx / E;
 
-
-
 elements(2).elemType           = 'triangle-shell';
-elements(2).elemCrossSecParams = {'thickness', tz } ;
-otherParams.problemName  = 'cantileverPlate-shell-linear' ;
+elements(2).elemCrossSecParams = {'thickness', tz };
+otherParams.problemName  = 'cantileverPlate-shell-linear';
 
 [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
@@ -137,15 +135,13 @@ otherParams.problemName  = 'cantileverPlate-shell-linear' ;
 numer_dxmax_shell = max(matUs(1:6:end));
 numer_wmax_shell  = min(matUs(5:6:end));
 
+materials(1).modelName  = 'elastic-rotEngStr';
+otherParams.problemName  = 'cantileverPlate-shell-nonlinear';
 
-materials(1).modelName  = 'elastic-rotEngStr' ;
-otherParams.problemName  = 'cantileverPlate-shell-nonlinear' ;
-
-[ modelInitSol, modelProperties, BCsData ] = initONSAS( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions ] = solveONSAS( modelInitSol, modelProperties, BCsData ) ;
-
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
 
 % md
 verifBoolean = (abs(analy_wmax - numer_wmax) / abs(analy_wmax))  < 1e-3 && ...
