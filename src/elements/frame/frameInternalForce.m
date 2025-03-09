@@ -16,8 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function  [fs, ks, stress, rotData, localInternalForces] = frame_internal_force( ...
-                                                                                elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue)
+function  [fs, ks, stress, rotData, localInternalForces] = frameInternalForce(elemCoords, elemCrossSecParams, elemConstitutiveParams, Ue)
 
   % element coordinates
   xs = elemCoords(:);

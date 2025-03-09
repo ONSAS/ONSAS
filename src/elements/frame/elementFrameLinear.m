@@ -31,7 +31,7 @@ function [fs, ks, finteLocalCoor] = elementFrameLinear(elemCoords, elemCrossSecP
 
   % --- elem lengths and rotation matrix
   [local2globalMats, l] = beamParameters(elemCoords);
-  R = RotationMatrix(ndofpnode, local2globalMats);
+  R = rotationMatrix(ndofpnode, local2globalMats);
 
   % temporary
   % ~ ------------------------

@@ -17,7 +17,7 @@
 %
 % --------------------------------------------------------------------------------------------------
 
-function R = RotationMatrix(ndofpnode, locglomat)
+function R = rotationMatrix(ndofpnode, locglomat)
 
   R = zeros (ndofpnode * 2, ndofpnode * 2);
 

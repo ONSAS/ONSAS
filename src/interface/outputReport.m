@@ -779,7 +779,7 @@ function outputReport(outputDir, problemName)
   % ~ m = indexesElems(i) ;
   % ~ fprintf(fileTables, '%3i', i) ;
 
-  % ~ R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
+  % ~ R = rotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
 
   % ~ localUelem = R' * dispsElemsMat(m,:,end)' ;
 
@@ -812,7 +812,7 @@ function outputReport(outputDir, problemName)
   % ~ m = indexesElems(i) ;
   % ~ fprintf(fileTables, '%3i', i) ;
 
-  % ~ R = RotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
+  % ~ R = rotationMatrix ( ndofpnode, Local2GlobalMats{m} ) ;
 
   % ~ localUelem = R' * dispsElemsMat(m,:,end)' ;
 

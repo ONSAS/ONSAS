@@ -16,9 +16,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function  [fs, ks] = frame_inertial_force(elemCoords, ...
-                                          elemCrossSecParams, elemConstitutiveParams, ...
-                                          Ue, Udote, Udotdote, elemrho, massMatType, analysisSettings)
+function  [fs, ks] = frameInertialForce(elemCoords, ...
+                                        elemCrossSecParams, elemConstitutiveParams, ...
+                                        Ue, Udote, Udotdote, elemrho, massMatType, analysisSettings)
 
   % element coordinates
   xs = elemCoords(:);
@@ -85,17 +85,13 @@ function  [fs, ks] = frame_inertial_force(elemCoords, ...
 
       xGauss = l0 / 2 * (xIntPoints(ind) + 1);
 
-      [interTermInertialForce, interTermMassMatrix, interTermGyroMatrix] = interElementBeamForces ( ...
-                                                                                                   xGauss, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, R0, Jrho, rho, Area, Gaux);
+      [interTermInertialForce, interTermMassMatrix, interTermGyroMatrix] = interElementBeamForces (xGauss, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, R0, Jrho, rho, Area, Gaux);
 
-      sumInterForce = sumInterForce ...
-        + l0 / 2 * wIntPoints(ind) * interTermInertialForce;
+      sumInterForce = sumInterForce + l0 / 2 * wIntPoints(ind) * interTermInertialForce;
 
-      sumGyro = sumGyro ...
-        + l0 / 2 * wIntPoints(ind) * interTermGyroMatrix;
+      sumGyro = sumGyro + l0 / 2 * wIntPoints(ind) * interTermGyroMatrix;
 
-      sumMass = sumMass ...
-        + l0 / 2 * wIntPoints(ind) * interTermMassMatrix;
+      sumMass = sumMass + l0 / 2 * wIntPoints(ind) * interTermMassMatrix;
     end
 
     Fine       = EE * sumInterForce;
@@ -133,8 +129,7 @@ function  [fs, ks] = frame_inertial_force(elemCoords, ...
 
 end % endFunction
 
-function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix] = interElementBeamForces ( ...
-                                                                                                 x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux)
+function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix] = interElementBeamForces (x, l0, l, tl1, tl2, ddotg, ddotdotg, r, P, EE, I3, O3, O1, Rr, Ro, Jrho, rho, Area, Gaux)
 
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0);
@@ -198,8 +193,8 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix] = interEl
   Irhoe = Rr' * Irho * Rr; % Ec 80
 
   % Calculate integral Force
-  IntegrandoForce  =      H1' * Rr' * Area * rho * udotdot ...
-                          + H2' * Rr' * (Irho * wdotdot + skew(wdot) * Irho * wdot);  % Eq 78
+  IntegrandoForce  =  H1' * Rr' * Area * rho * udotdot + ...
+                      H2' * Rr' * (Irho * wdotdot + skew(wdot) * Irho * wdot);  % Eq 78
 
   IntegrandoMassMatrix  = H1' * Area * rho * H1 + H2' * Irhoe * H2;
 
@@ -211,13 +206,13 @@ function [IntegrandoForce, IntegrandoMassMatrix, IntegrandoGyroMatrix] = interEl
 
   F1    = [skew(ddotg(1:3))' skew(ddotg(4:6))' skew(ddotg(7:9))' skew(ddotg(10:12))']';
 
-  C3    = -skew(h1) * Gaux'  + (N7 / l^2) * A1 * (ddotg * rElem) ...
-                + skewWdoter * P1 * P + H1 * F1 * Gaux'; % B13
+  C3    = -skew(h1) * Gaux'  + (N7 / l^2) * A1 * (ddotg * rElem) + ...
+                skewWdoter * P1 * P + H1 * F1 * Gaux'; % B13
 
   C4  = -skew(h2) * Gaux' + (N8 / l^2) * A2 * ddotg * rElem + H2 * F1 * Gaux'; % B14
 
   % Compute Gyroscopic Matrix
-  IntegrandoGyroMatrix  = H2' * ((skewWdoter * Irhoe) - skew(Irhoe * wdoter)) * H2 ...
-                          + H1' * Area * rho * (C1 + C3)  + H2' * Irhoe * (C2 + C4); % Ec88
+  IntegrandoGyroMatrix  = H2' * ((skewWdoter * Irhoe) - skew(Irhoe * wdoter)) * H2 + ...
+                          H1' * Area * rho * (C1 + C3)  + H2' * Irhoe * (C2 + C4); % Ec88
 
 end
