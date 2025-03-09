@@ -1,4 +1,4 @@
-function [Kel,fintLocCoord] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
+function [Kel,fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul);
 
     % Calculate the area of the triangle
     area = x02 * y03 / 2;
@@ -7,7 +7,7 @@ function [Kel,fintLocCoord] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
     aux1 = h *  E / ( 1 - nu^2) ; 
     aux2 = nu*aux1;
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
-    Bm = CST_B(x02, x03, y03);
+    Bm = cstB(x02, x03, y03);
     Km = area * Bm' * Dm * Bm ;
     im = [1, 2, 7, 8, 13, 14];
     % membrane forces (constant)
@@ -25,12 +25,12 @@ function [Kel,fintLocCoord] = local_shell_triangle(x02, x03, y03, E, nu, h, Ul);
     for ipt = 1:3;
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
-        Bb = DKT_B(psi, eta, x02, x03, y03);
+        Bb = dktB(psi, eta, x02, x03, y03);
         Kb = Kb + wgt * Bb' * Db * Bb;
     end
     % plate moments (calculated at the center of the element)
     Ulb = Ul(ib);
-    Bb = DKT_B(1./3., 1./3., x02, x03, y03);
+    Bb = dktB(1./3., 1./3., x02, x03, y03);
     curv = Bb * Ulb;
     M = Db * curv;    
 

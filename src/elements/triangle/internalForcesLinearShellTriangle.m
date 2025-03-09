@@ -19,7 +19,7 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [ fs, ks, fintLocCoord ] = internal_forces_linear_shell_triangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [ fs, ks, fintLocCoord ] = internalForcesLinearShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
 
     %material and geometric parameters
     E = modelParams(1);  
@@ -42,7 +42,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_linear_shell_triangle(elemCo
     aux2 = nu*aux1;
     Dm = [ [aux1, aux2 , 0 ]; [aux2, aux1, 0] ; [0, 0, aux1*(1-nu)/2] ];
 
-    Bm = CST_B(x02, x03, y03);
+    Bm = cstB(x02, x03, y03);
     Km = area * Bm' * Dm * Bm ;
 
     % bending stiffness
@@ -69,7 +69,7 @@ function [ fs, ks, fintLocCoord ] = internal_forces_linear_shell_triangle(elemCo
     for ipt = 1:3;
         psi = int_point(ipt,1);
         eta = int_point(ipt,2);
-        Bb = DKT_B(psi, eta, x02, x03, y03);
+        Bb = dktB(psi, eta, x02, x03, y03);
 
         Kb = Kb + wgt * Bb' * Db * Bb;
 

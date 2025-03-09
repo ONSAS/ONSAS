@@ -1,4 +1,4 @@
-function [ B ] = DKT_B(PSI, ETA, x02, x03, y03);
+function [ B ] = dktB(PSI, ETA, x02, x03, y03);
     %calculate the strain-displacement matrix for the triangular plate element (DKT)
     %psi and eta are the area coordinates of the triangular element
     %x02, x03 and y03 are the local coordinates of the nodes 2 and 3 

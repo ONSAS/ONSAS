@@ -275,10 +275,10 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
       if strcmp(modelName, 'elastic-linear')
 
-        [ fs, ks, fintLocCoord ] = 	internal_forces_linear_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
+        [ fs, ks, fintLocCoord ] = 	internalForcesLinearShellTriangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
   
       elseif strcmp( modelName, 'elastic-rotEngStr')
-        [ fs, ks, fintLocCoord ] = 	internal_forces_shell_triangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
+        [ fs, ks, fintLocCoord ] = 	internalForcesShellTriangle( elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness ) ;
   
       else
         error('material model not implemented');
