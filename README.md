@@ -1,8 +1,8 @@
 
 # ONSAS: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab
 
-![octave tests](https://github.com/ONSAS/ONSAS/workflows/octave_tests/badge.svg)
-![matlab tests](https://github.com/ONSAS/ONSAS/workflows/matlab_tests/badge.svg)
+![octave tests](https://github.com/ONSAS/ONSAS/actions/workflows/octave_tests/badge.svg)
+![matlab tests](https://github.com/ONSAS/ONSAS/actions/workflows/matlab_tests/badge.svg)
 [![codecov](https://codecov.io/gh/ONSAS/ONSAS/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS) 
 
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS/dev/)
