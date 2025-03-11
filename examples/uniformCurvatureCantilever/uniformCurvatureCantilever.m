@@ -28,9 +28,9 @@
 % md
 % mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 close all;
-if ~strcmp(getenv('TESTS_RUN'), 'yes')
+if ~strcmp(getenv('TESTS_RUN'), 'yes') % hidden
   clear all;
-end
+end % hidden
 % add path
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
@@ -56,7 +56,7 @@ numElements = 10;
 % md### materials
 % md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials                 = struct();
-materials.modelName  = 'elastic-rotEngStr';
+materials.modelName  = 'elastic-linear';
 materials.modelParams = [E nu];
 % md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 % md
@@ -105,8 +105,8 @@ end
 % md### analysisSettings
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.2;
-analysisSettings.finalTime      =   1;
+analysisSettings.deltaT        =   0.001;  % TEMPORARY
+analysisSettings.finalTime      =   .001;  % TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -159,14 +159,23 @@ assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 otherParams.problemName = 'uniformCurvatureCantilever-shell';
 
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+%
+controlDispShellLinear = -matUs(3*2+[1 4 5],:)
+%
+controlDispsNREngRot
 
+materials.modelName  = 'elastic-rotEngStr';
+
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+controlDispShellNonLinear = -matUs(3*2+[1 4 5],:)
+
+
+%
 % md## Verification
 % md
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
-% md
 % md
 lw = 2.0;
 ms = 11;
@@ -177,7 +186,7 @@ hold on;
 grid on;
 plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
 labx = xlabel('Displacement');
-laby = ylabel('$\lambda$');
+laby = ylabel('\lambda');
 legend('analytic', 'NR-RotEng', 'location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
@@ -188,6 +197,7 @@ print('output/verifCantileverBeam.png', '-dpng');
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
 % md
-% md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')  < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
