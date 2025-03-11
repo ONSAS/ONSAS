@@ -106,9 +106,9 @@ function [fs, ks, fintLocCoord] = internalForcesShellTriangle(elemCoords, elemDi
 
   % eq. (18) of 10.1016/j.cma.2006.10.006
   fa = fl;
-  fa(3:5) = Ta1 * fl(3:5);
-  fa(8:10) = Ta2 * fl(8:10);
-  fa(13:15) = Ta3 * fl(13:15);
+  fa(3:5) = Ta1' * fl(3:5);
+  fa(8:10) = Ta2' * fl(8:10);
+  fa(13:15) = Ta3' * fl(13:15);
 
   % eq. (19) of 10.1016/j.cma.2006.10.006
   Ba = eye(15);
@@ -346,7 +346,9 @@ function [F1, F2] = matrixF(n)
     sna = skew(n(j1:j2));
     snb = skew(n(j3:j4));
 
-    F1(j1:j2 - 1, :) = sna(1:2, :);
+    i1 = 5*(i - 1) + 1;
+    i2 = i1 + 1;
+    F1(i1:i2, :) = sna(1:2, :);
 
     F2(j1:j2, :) = sna;
     F2(j3:j4, :) = snb;
@@ -360,7 +362,7 @@ function [Kki] = matrixKki(q, m)
   q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
   if q0s < 0
     q0s;
-    q;
+    q
     error('ojo');
   end
   q0 = sqrt(q0s);
