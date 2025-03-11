@@ -17,13 +17,12 @@
 %
 % md# Simple Propeller example
 % mdIn this example a simple propeller problem, inspired in an example [this article](https://doi.org/10.1016/j.heliyon.2023.e19990), is considered.
-% md
+% mdBefore definit variable, the workspace is cleared and the src folder is added to the path
 close all;
-if ~strcmp(getenv('TESTS_RUN'), 'yes')
+if ~strcmp(getenv('TESTS_RUN'), 'yes') % hidden
   clear all;
 end % hidden
-addpath(genpath([pwd '/../../src'])); % hidden
-% md
+addpath(genpath([pwd '/../../src']));
 % md## Problem definition
 % md
 % mdThe propeller has three blades with circular cross section and a uniform constant fluid flow is assumed as shown in the figure. Only lift is considered.

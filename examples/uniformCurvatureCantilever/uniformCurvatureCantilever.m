@@ -28,9 +28,9 @@
 % md
 % mdBefore defining the structs, the workspace is cleaned, the ONSAS directory is added to the path and scalar geometry and material parameters are defined.
 close all;
-if ~strcmp(getenv('TESTS_RUN'), 'yes')
+if ~strcmp(getenv('TESTS_RUN'), 'yes') % hidden
   clear all;
-end
+end % hidden
 % add path
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
@@ -167,7 +167,6 @@ otherParams.problemName = 'uniformCurvatureCantilever-shell';
 % md
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
-% md
 lw = 2.0;
 ms = 11;
 plotfontsize = 22;
@@ -177,7 +176,7 @@ hold on;
 grid on;
 plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
 labx = xlabel('Displacement');
-laby = ylabel('$\lambda$');
+laby = ylabel('\lambda');
 legend('analytic', 'NR-RotEng', 'location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
@@ -187,7 +186,6 @@ print('output/verifCantileverBeam.png', '-dpng');
 % md```@raw html
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
-% md
 % md
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')  < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
