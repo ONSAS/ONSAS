@@ -36,12 +36,12 @@
 % md
 % md## Numerical solutions
 % md
-% mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path %hidden
+% mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path
 close all;
-if ~strcmp(getenv('TESTS_RUN'), 'yes')
+if ~strcmp(getenv('TESTS_RUN'), 'yes') %hidden
   clear all;
 end % hidden
-addpath(genpath([pwd '/../../src'])); % hidden
+addpath(genpath([pwd '/../../src']));
 % md First some scalar parameters are defined and computed
 % scalar parameters
 E = 210e9;
@@ -59,7 +59,7 @@ z2 = sin(ang1 * pi / 180) * L;
 % md
 % md#### materials
 % mdThe `materials` struct is initialized as empty.
-materials                 = {};
+materials                 = struct();
 % md Since for each model both bars are formed by the same material only one `materials` struct is defined. The constitutive behavior considered in the first analysis case is an elastic behavior for the Rotated Engineering strain, then:
 materials.modelName  = 'elastic-rotEngStr';
 % md and in the field `modelParams` a vector with the parameters of the Engineering Strain model is set
@@ -69,7 +69,7 @@ materials.modelParams = [E nu];
 % md
 % md#### elements
 % md The `elements` struct is initialized as empty
-elements             = {};
+elements             = struct();
 % mdTwo different types of elements are required to create the model: `node` and `truss`, thus, the `elements` struct will have two entries. The type of the first entry is
 elements(1).elemType = 'node';
 % md and the second entry is
@@ -83,7 +83,7 @@ elements(2).elemCrossSecParams = { 'circle', sqrt(A * 4 / pi) };
 % md The nodes $1$ and $3$ are fixed, without loads applied (this is the first BC), and node $2$ has a constraint in displacement and an applied load (second BC).
 % md For the displacements, the first BC corresponds to a xyz-fixed displacement,
 % md
-boundaryConds                  = {};
+boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs = [1 3 5];
 boundaryConds(1).imposDispVals = [0 0 0];
 % mdand the second BC corresponds to a zero displacement only in the $y$ direction.
@@ -98,7 +98,7 @@ boundaryConds(2).loadsBaseVals = [0 0 0 0 -1 0];
 % md### mesh parameters
 % md
 % mdThe coordinates of the nodes of the mesh are given by the matrix:
-mesh             = {};
+mesh             = struct();
 mesh.nodesCoords = [0  0   0; ...
                     x2  0  z2; ...
                     2 * x2  0   0];
@@ -119,7 +119,7 @@ mesh.conecCell{ 5, 1 } = [1 2 0   2 3];
 % md
 % md#### initial Conditions
 % md homogeneous initial conditions are considered, then an empty cell is set:
-initialConds = {};
+initialConds = struct();
 % md
 % md### analysisSettings
 % md The method used in the analysis is the Newton-Raphson, then the field `methodName` must be introduced as:
@@ -174,8 +174,8 @@ difLoadEngRot = analyticLoadFactorsNREngRot(controlDispsNREngRot)' - loadFactors
 % md### Analysis case 3: NR with Green Strain
 % md In order to perform a SVK case analysis, the material is changed and the problemName is also updated
 elements(2).elemCrossSecParams = { 'generic', [A 1 1 1] };
-otherParams.problemName  = 'staticVonMisesTruss_NR_Green';
-materials.modelName      = 'elastic-SVK';
+otherParams.problemName        = 'staticVonMisesTruss_NR_Green';
+materials.modelName            = 'elastic-SVK';
 analysisSettings.finalTime =   1.0;
 lambda = E * nu / ((1 + nu) * (1 - 2 * nu));
 mu = E / (2 * (1 + nu));
@@ -212,11 +212,12 @@ analysisSettings.posVariableLoadBC = 2;
 % md
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
-% mdAfter that the structs are used to perform the numerical time analysis
+% mdAfter that, the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, solutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-
+%mdand the control numerical displacements and loadfactors are extracted
 controlDispsNRALGreen =  -matUs(11, :);
 loadFactorsNRALGreen  =  loadFactorsMat(:, 2);
+%mdand compared with analytic solutions.
 analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
 difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen;
 % md
@@ -246,11 +247,11 @@ verifBoolean =  ((norm(difLoadEngRot) / norm(loadFactorsNREngRot)) <  1e-4) && .
                 ((norm(difLoadGreenNRAL_Jirasek) / norm(loadFactorsNRAL_Jirasek_Green)) <  1e-4);
 % md
 % md### Plots
-% md and solutions are plotted.
+% mdFinally the solutions are plotted.
 lw = 2.0;
 ms = 11;
 plotfontsize = 18;
-figure;
+figure
 plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
 hold on;
 grid on;

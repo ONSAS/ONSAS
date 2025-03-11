@@ -4,7 +4,7 @@
 export DOCSBUILD=yes
 
 cd ../test
-octave --eval runTestProblems_local
+octave --eval runTestProblemsLocal
 cd ../docs
 
 #Run the script to trsansform .m into .md
