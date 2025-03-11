@@ -88,7 +88,7 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
         % normal unitary vector
         normalUniVec = cross([0 0 1], tangUniVec);
         % tension vector
-        assert(norm(loadvals([2 4 5 6]))<eps);
+        assert(norm(loadvals([2 4 5 6])) < eps);
         tensionVec = (loadvals(1) * tangUniVec  + loadvals(3) * normalUniVec) * factor;
         % nodal forces in global coordinates
         Fx = tensionVec(1);

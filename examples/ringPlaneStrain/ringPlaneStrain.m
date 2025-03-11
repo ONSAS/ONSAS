@@ -86,7 +86,7 @@ boundaryConds(1).imposDispDofs = [1];
 boundaryConds(1).imposDispVals = [0];
 boundaryConds(2).imposDispDofs = [3];
 boundaryConds(2).imposDispVals = [0];
-% md then the third BC corresponds to the normal pressure. 
+% md then the third BC corresponds to the normal pressure.
 % md This is introduced in `local` coordinates so the first entry is the force along the local x coordinate of the edge
 % md (tangent) and the second towards the normal vector obtained by rotating the tangent vector 90 degrees in global axis $z$:
 boundaryConds(3).loadsCoordSys = 'local';
