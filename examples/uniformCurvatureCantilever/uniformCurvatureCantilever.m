@@ -56,7 +56,7 @@ numElements = 10;
 % md### materials
 % md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
 materials                 = struct();
-materials.modelName  = 'elastic-rotEngStr';
+materials.modelName  = 'elastic-linear';
 materials.modelParams = [E nu];
 % md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 % md
@@ -105,8 +105,8 @@ end
 % md### analysisSettings
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.2;
-analysisSettings.finalTime      =   .2;  %TEMPORARY
+analysisSettings.deltaT        =   0.001;  % TEMPORARY
+analysisSettings.finalTime      =   .001;  % TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -159,10 +159,20 @@ assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 otherParams.problemName = 'uniformCurvatureCantilever-shell';
 
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+%
+controlDispShellLinear = -matUs(3*2+[1 4 5],:)
+%
+controlDispsNREngRot
 
+materials.modelName  = 'elastic-rotEngStr';
+
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+controlDispShellNonLinear = -matUs(3*2+[1 4 5],:)
+
+
+%
 % md## Verification
 % md
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
@@ -187,5 +197,7 @@ print('output/verifCantileverBeam.png', '-dpng');
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
 % md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')  < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
