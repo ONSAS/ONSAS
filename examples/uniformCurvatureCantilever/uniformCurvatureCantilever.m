@@ -106,7 +106,7 @@ end
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   0.2;
-analysisSettings.finalTime      =   1;
+analysisSettings.finalTime      =   .2;  %TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -158,10 +158,10 @@ assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 
 otherParams.problemName = 'uniformCurvatureCantilever-shell';
 
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
-[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+# [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+# %
+# % mdAfter that the structs are used to perform the numerical time analysis
+# [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
 % md## Verification
 % md

@@ -19,5 +19,5 @@ Curve Loop(1) = {1, 2, 3, 4};
 Plane Surface(1) = {1};
 
 Physical Curve ("00_01_01") = {4};
-Physical Point ("00_01_02") = {2,3};
+Physical Curve ("00_01_02") = {2};
 Physical Surface ("01_02_00") = {1};
