@@ -38,7 +38,7 @@
 % md
 % mdBefore defining the structs, the workspace is cleared, the ONSAS directory is added to the path
 close all;
-if ~strcmp(getenv('TESTS_RUN'), 'yes') %hidden
+if ~strcmp(getenv('TESTS_RUN'), 'yes') % hidden
   clear all;
 end % hidden
 addpath(genpath([pwd '/../../src']));
@@ -214,10 +214,10 @@ analysisSettings.posVariableLoadBC = 2;
 %
 % mdAfter that, the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, solutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-%mdand the control numerical displacements and loadfactors are extracted
+% mdand the control numerical displacements and loadfactors are extracted
 controlDispsNRALGreen =  -matUs(11, :);
 loadFactorsNRALGreen  =  loadFactorsMat(:, 2);
-%mdand compared with analytic solutions.
+% mdand compared with analytic solutions.
 analyticLoadFactorsNRALGreen = analyticLoadFactorsGreen(controlDispsNRALGreen);
 difLoadGreenNRAL = analyticLoadFactorsNRALGreen' - loadFactorsNRALGreen;
 % md
@@ -251,7 +251,7 @@ verifBoolean =  ((norm(difLoadEngRot) / norm(loadFactorsNREngRot)) <  1e-4) && .
 lw = 2.0;
 ms = 11;
 plotfontsize = 18;
-figure
+figure;
 plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
 hold on;
 grid on;
