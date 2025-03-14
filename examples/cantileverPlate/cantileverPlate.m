@@ -27,8 +27,8 @@ addpath(genpath([pwd '/../../src']));
 E = 200e9;
 nu = 0.0;
 tz = .05;
-qx  = 1e3; % kN/m^2
-qz  = 1e3; % kN/m^2
+qx  = 1e2; % kN/m^2
+qz  = 1e2; % kN/m^2
 % md
 Ly = .5;
 Lx = 1;
@@ -125,19 +125,34 @@ analy_dxmax = qx * Lx / E;
 
 elements(2).elemType           = 'triangle-shell';
 elements(2).elemCrossSecParams = {'thickness', tz };
-otherParams.problemName  = 'cantileverPlate-shellElem';
+otherParams.problemName  = 'cantileverPlate-shell-linear';
 
 [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
 
-numer_dxmax_shell = max(matUs(1:6:end));
-numer_wmax_shell  = min(matUs(5:6:end));
+numer_dxmax_linear_shell = max(matUs(1:6:end));
+numer_wmax_linear_shell  = min(matUs(5:6:end));
+
+materials(1).modelName  = 'elastic-rotEngStr';
+otherParams.problemName  = 'cantileverPlate-shell-nonlinear';
+
+[modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+%
+% mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
+
+numer_dxmax_nonlin_shell = max(matUs(1:6:end));
+numer_wmax_nonlin_shell  = min(matUs(5:6:end));
 
 % md
 verifBoolean = (abs(analy_wmax - numer_wmax) / abs(analy_wmax))  < 1e-3 && ...
              (abs(analy_maxMx - numer_maxMx) / abs(analy_maxMx)) < 5e-3 && ...
             (abs(analy_dxmax - numer_dxmax) / abs(analy_dxmax)) < 1e-3 && ...
-            (abs(analy_wmax  - numer_wmax_shell) / abs(analy_wmax)) < 1e-3 && ...
-            (abs(analy_dxmax - numer_dxmax_shell) / abs(analy_dxmax)) < 1e-3;
+            (abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
+            (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 && ...
+            (abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
+            (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3;
+
+assert(modelSolutions{2}.timeStepIters < 3);

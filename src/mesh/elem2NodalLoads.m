@@ -76,8 +76,11 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
 
       if strcmp(loadCoordSys, 'global')
         Fx = loadvals(1) * factor;
-        Fy = loadvals(2) * factor;
-        Fz = 0;
+        Mx = loadvals(2) * factor;
+        Fy = loadvals(3) * factor;
+        My = loadvals(4) * factor;
+        Fz = loadvals(5) * factor;
+        Mz = loadvals(6) * factor;
       elseif strcmp(loadCoordSys, 'local')
         % consider a 90 degrees rotation of the oriented vector of the line element
         % tangent unitary vector
@@ -85,14 +88,18 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
         % normal unitary vector
         normalUniVec = cross([0 0 1], tangUniVec);
         % tension vector
-        tensionVec = (loadvals(1) * tangUniVec  + loadvals(2) * normalUniVec) * factor;
+        assert(norm(loadvals([2 4 5 6])) < eps);
+        tensionVec = (loadvals(1) * tangUniVec  + loadvals(3) * normalUniVec) * factor;
         % nodal forces in global coordinates
         Fx = tensionVec(1);
         Fy = tensionVec(2);
         Fz = 0;
+        Mx = 0;
+        My = 0;
+        Mz = 0;
       end % if global/local system
 
-      elemNodeLoadsMatrix = ones(length(nodes), 1) * [Fx 0 Fy 0 Fz 0];
+      elemNodeLoadsMatrix = ones(length(nodes), 1) * [Fx Mx Fy My Fz Mz];
 
       assert(size(elemNodeLoadsMatrix, 2) == 6, 'error, maybe missing thickness');
 
