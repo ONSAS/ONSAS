@@ -19,7 +19,7 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [fs, ks, fintLocCoord] = internalForcesLinearShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [fs, ks, fintLocCoord,Kefora ] = internalForcesLinearShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
 
   % material and geometric parameters
   E = modelParams(1);
@@ -90,6 +90,7 @@ function [fs, ks, fintLocCoord] = internalForcesLinearShellTriangle(elemCoords, 
   Ke(18, 18) = k_dr;
 
   % calculating the stiffness matrix of the shell element in global coordinates
+Kefora = Ke;
   Ke = Te' * Ke * Te;
 
   % shifting lines and coluns to onsas convention of dofs order
