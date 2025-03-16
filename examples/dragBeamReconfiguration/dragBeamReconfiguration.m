@@ -264,68 +264,68 @@ verifBoolean = verifBooleanR && all(verifBooleanDef);
 % md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
 % md```
 % md
-% % md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722)
-% % md
-% % md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
-% elements(2).aeroCoefFunctions = {[], [], []};
-% % md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2$ x $10^5$. Then the final load step, which is equivalent to the index in the velocity vector `uydot_vec`, is set to 5:
-% analysisSettings.finalTime = NR - 2;
-% % md*
-% % md### otherParams
-% % md The name of the problem and vtk format output are selected:
-% otherParams  = struct();
-% otherParams.problemName = 'staticReconfigurationCircleBuiltInDrag';
-% % md
-% % md### Numeric solution
-% % md
-% [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-% %
-% % md After that the structs are used to perform the numerical time analysis
-% [matUsCase2, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-% % md
-% % md the report is generated
-% outputReport(modelProperties.outputDir, modelProperties.problemName);
-
-% % md
-% % md Deformed configurations for different cauchy numbers
-% % md
-% for nr = 1:analysisSettings.finalTime
-%   % Numerical deformed coordinates solution
-%   xdefCase2 = xref + matUsCase2(1:6:end, nr + 1);
-%   ydefCase2 = yref + matUsCase2(3:6:end, nr + 1);
-%   zdefCase2 = zref + matUsCase2(5:6:end, nr + 1);
-%   thetaXdefCase2 = matUsCase2(2:6:end, nr + 1);
-%   thetaYdefCase2 = matUsCase2(4:6:end, nr + 1);
-%   thetaZdefCase2 = matUsCase2(6:6:end, nr + 1);
-%   % Plot
-%   plot(xdefCase2,  ydefCase2,  ONSASlineBuiltInDrag, 'linewidth', lw, 'markersize', ms);
-% end
-% % add legend
-% legend('Gosselin2010(cd = 1.2)', 'ONSAS(cd = 1.2)', 'ONSAS(Built-in c_d)');
-% % add legends and labels
-% labx = xlabel('x [m]');
-% laby = ylabel('y [m]');
-% % set fonts
-% set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location', 'eastOutside');
-% set(gca, 'linewidth', axislw, 'fontsize', curveFontSize);
-% set(labx, 'FontSize', axisFontSize);
-% set(laby, 'FontSize', axisFontSize);
-% % axis equal
-% % save fig
-% namefig3 = strcat(folderPathFigs, 'xy.png');
-% if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
-%   fprintf('\ngenerating output png for docs.\n');
-%   figure(3);
-%   print('output/defPlots.png', '-dpng');
-% else
-%   fprintf('\n === NOT in docs workflow. ===\n');
-% end
-% % md
-% % md```@raw html
-% % md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
-% % md```
-% % md
+% md### Case 2: case with drag coefficient formula proposed in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722)
 % md
+% md  Once `_elemCrossSecParams_` is defined in the `elements` struct then the drag lift and pitch moment are defined with bluit-in functions. As consequence if we want to use the default drag coefficient the `dragCoefFunction` field must be set:
+elements(2).aeroCoefFunctions = {[], [], []};
+% md moreover the drag formulation in [this reference](https://ascelibrary.org/doi/10.1061/%28ASCE%29HY.1943-7900.0000722) is valid with $Re < 2$ x $10^5$. Then the final load step, which is equivalent to the index in the velocity vector `uydot_vec`, is set to 5:
+analysisSettings.finalTime = NR - 2;
+% md
+% md### otherParams
+% md The name of the problem and vtk format output are selected:
+otherParams  = struct();
+otherParams.problemName = 'staticReconfigurationCircleBuiltInDrag';
+% md
+% md### Numeric solution
+% md
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+%
+% mdAfter that the structs are used to perform the numerical time analysis
+[matUsCase2, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+% md
+% md the report is generated
+outputReport(modelProperties.outputDir, modelProperties.problemName);
+
+% md
+% md Deformed configurations for different cauchy numbers
+% md
+for nr = 1:analysisSettings.finalTime
+  % Numerical deformed coordinates solution
+  xdefCase2 = xref + matUsCase2(1:6:end, nr + 1);
+  ydefCase2 = yref + matUsCase2(3:6:end, nr + 1);
+  zdefCase2 = zref + matUsCase2(5:6:end, nr + 1);
+  thetaXdefCase2 = matUsCase2(2:6:end, nr + 1);
+  thetaYdefCase2 = matUsCase2(4:6:end, nr + 1);
+  thetaZdefCase2 = matUsCase2(6:6:end, nr + 1);
+  % Plot
+  plot(xdefCase2,  ydefCase2,  ONSASlineBuiltInDrag, 'linewidth', lw, 'markersize', ms);
+end
+% add legend
+legend('Gosselin2010(cd = 1.2)', 'ONSAS(cd = 1.2)', 'ONSAS(Built-in c_d)');
+% add legends and labels
+labx = xlabel('x [m]');
+laby = ylabel('y [m]');
+% set fonts
+set(legend, 'linewidth', axislw, 'fontsize', legendFontSize, 'location', 'eastOutside');
+set(gca, 'linewidth', axislw, 'fontsize', curveFontSize);
+set(labx, 'FontSize', axisFontSize);
+set(laby, 'FontSize', axisFontSize);
+% axis equal
+% save fig
+namefig3 = strcat(folderPathFigs, 'xy.png');
+if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
+  fprintf('\ngenerating output png for docs.\n');
+  figure(3);
+  print('output/defPlots.png', '-dpng');
+else
+  fprintf('\n === NOT in docs workflow. ===\n');
+end
+% md
+% md```@raw html
+% md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
+% md```
+% md
+
 % md### Case 3: Dynamic Analysis Considering Vortex-Induced Vibrations (VIV)
 % md```@raw html
 % md<img src="../../assets/dragBeamReconfiguration/VIVilus.svg" alt="general sketch VIV case" width="450"/>
@@ -346,39 +346,36 @@ elements(2).aeroCoefFunctions = {'dragCircular', 'liftCoefVIV', []};
 % md
 % md### initial Conditions
 % md Initial conditions are dervided from case 1 at step `NR - 3` of previous static analysis, indicing VIV effects in the static equilibrium for the same drag forces. Null velocity and accelerations are set by default:
-initialConds = struct();
-initialConds.U = matUsCase1(:,  end - 3);
+initialConds    = struct();
+initialConds.U  = matUsCase1(:,  end - 3);
+% md We set initial values for the in-line and cross-flow wake variables
+% Declare qvect as global if used globally
+dofsWakeVariablesPerElement = 2;
+elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
+initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
+elementP0 = (2 * rand(numElements, 1) - 1) * 0.001;
+initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md### analysisSettings
 % md
-%md The $\alpha$-HHT algorightm is set with the following tolerances, time step, and final time:
-analysisSettings                        = struct();
-analysisSettings.finalTime              =   5.0;
-% analysisSettings.finalTime            =   5.0; % to reproduce annimation
-analysisSettings.deltaT                 =   0.01;
-analysisSettings.methodName             = 'alphaHHT';
-analysisSettings.stopTolIts             =   50;
-analysisSettings.geometricNonLinearAero = true;
-analysisSettings.stopTolDeltau          =   0;
-analysisSettings.stopTolForces          =   1e-5;
+% md The $\alpha$-HHT algorightm is set with the following tolerances, time step, and final time:
+analysisSettings = struct();
+analysisSettings.finalTime = 0.02;
+% analysisSettings.finalTime =   5.0; % to reproduce annimation
+analysisSettings.deltaT = 0.01;
+analysisSettings.methodName = 'alphaHHT';
+analysisSettings.stopTolIts = 50;
+analysisSettings.stopTolDeltau = 0;
+analysisSettings.stopTolForces = 1e-5;
 % md  The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'};
 % md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect on fluid forces.
 analysisSettings.crossFlowVIVBool = true;
 analysisSettings.inLineVIVBool = true;
 analysisSettings.addedMassBool = true;
-% md For now VIV is not fully integrated into the solver so the user is responsalbe for initalizing the
-% Declare qvect as global if used globally
-numTimeSteps = round(analysisSettings.finalTime / analysisSettings.deltaT) + 1;
-global qvect;
-qvect = zeros(numElements * 2, numTimeSteps);
-qvect(1:2:end, 1) = (2 * rand(numElements, 1) - 1) * 0.001;
-global pvect;
-pvect = zeros(numElements * 2, numTimeSteps);
-pvect(1:2:end, 1) = (2 * rand(numElements, 1) - 1) * 0.001;
 % % md### otherParams
 % % md The name of the problem is now VTK output is exported to generate an animation:
-otherParams  = struct();
+otherParams = struct();
 otherParams.problemName = 'vivBeamReconfiguration';
 otherParams.plots_format = 'vtk';
 % % md
@@ -391,9 +388,9 @@ otherParams.plots_format = 'vtk';
 % % md
 % % md Evolution of displacements of node A
 % % md
-finalNodeIndex = numElements + 1;
-zDisplacement = matUsDynamic(5:6:end, :);
-timeVector = 0:analysisSettings.deltaT:analysisSettings.finalTime;
+finalNodeIndex  = numElements + 1;
+zDisplacement   = matUsDynamic(5:6:end, :);
+timeVector      = 0:analysisSettings.deltaT:analysisSettings.finalTime;
 % Generate figure
 figZDisplacement = figure;
 plot(timeVector, zDisplacement(finalNodeIndex, :), 'b-', 'LineWidth', 2);
@@ -410,7 +407,6 @@ if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
   print(figZDisplacement, namefigZ, '-dpng');
 else
-  print(figZDisplacement, namefigZ, '-dpng');
   fprintf('\n === NOT in docs workflow. ===\n');
 end
 % % md

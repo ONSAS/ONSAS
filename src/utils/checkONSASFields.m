@@ -26,7 +26,15 @@ function checkONSASFields(materials, elements, boundaryConds, initialConds, mesh
                               'userLoadsFilename', 'imposDispDofs', 'imposDispVals', 'springDofs', 'springVals'});
 
   if length(initialConds) > 0
-    checkFields(initialConds, {'U', 'Udot', 'Udotdot'});
+    if isfield(analysisSettings, 'crossFlowVIVBool') && isfield(analysisSettings, 'inLineVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'Q0', 'P0'});
+    elseif isfield(analysisSettings, 'inLineVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'P0'});
+    elseif isfield(analysisSettings, 'crossFlowVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'Q0'});
+    else
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot'});
+    end
   end
 
   analysisSettingsDefaultFields = ...

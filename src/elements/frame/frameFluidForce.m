@@ -35,12 +35,14 @@ function [fHydroElem, tMatHydroElemU] = frameFluidForce(elemCoords, ...
   baseBool = false;
 
   % extract fluid properties
-  densityFluid   = analysisSettings.fluidProps{1, 1};
-  viscosityFluid = analysisSettings.fluidProps{2, 1};
-  userFlowVel    = analysisSettings.fluidProps{3, 1};
-  crossFlowVIVBool        = analysisSettings.crossFlowVIVBool;
-  inLineVIVBool      = analysisSettings.inLineVIVBool;
-  constantLiftDir = analysisSettings.constantLiftDir;
+  densityFluid        = analysisSettings.fluidProps{1, 1};
+  viscosityFluid      = analysisSettings.fluidProps{2, 1};
+  userFlowVel         = analysisSettings.fluidProps{3, 1};
+
+  % extract analysis properties
+  crossFlowVIVBool    = analysisSettings.crossFlowVIVBool;
+  inLineVIVBool       = analysisSettings.inLineVIVBool;
+  constantLiftDir     = analysisSettings.constantLiftDir;
 
   % check user Flow Vel is not empty
   assert(~isempty(userFlowVel), 'empty user windvel');

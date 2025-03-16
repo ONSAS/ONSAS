@@ -171,7 +171,7 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
     fll =  1 / 2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp; % note that if there is VIV effect q is 2
 
   end
-    % disp(q/2)
+  % disp(q/2)
   % disp(norm(fll)/ norm(fdl));
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll + fdl_il;
