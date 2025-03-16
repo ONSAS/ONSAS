@@ -325,31 +325,23 @@ end
 % md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
 % md```
 % md
-
 % md### Case 3: Dynamic Analysis Considering Vortex-Induced Vibrations (VIV)
 % md```@raw html
 % md<img src="../../assets/dragBeamReconfiguration/VIVilus.svg" alt="general sketch VIV case" width="450"/>
 % md```
 % md
-% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam according to the formulation proposed in [Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators paper by Villié et Al using ONSAS](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
+% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators by Villié et al. using ONSAS](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
 % md
 % md### elements
 % md
-% md The beam is subjected to a constant fluid flow in $c_2$ which induces drag and lift forces. The aerodynamic coefficients for drag and lift are defined using the `dragCircular` and `liftCoefVIV` functions, respectively.
+% md The beam is subjected to a constant fluid flow in $c_2$, which induces drag and lift forces. The aerodynamic coefficients for drag and lift are defined using the `dragCircular` and `liftCoefVIV` functions, respectively.
 elements(2).aeroCoefFunctions = {'dragCircular', 'liftCoefVIV', []};
-% md Initial conditions for the dynamic analysis are set based on the final state of a previous static analysis, ensuring continuity in the simulation.
-% md The analysis employs the `alphaHHT` method, a numerical integration scheme suitable for dynamic problems, to solve the equations of motion.
-% md
-% md The analysis settings include considerations for geometric non-linearities and the computation of the aerodynamic stiffness matrix, which are crucial for accurately capturing the dynamic response of the beam.
-% md
-% md The results of this analysis provide insights into the displacement behavior of the beam over time, particularly focusing on the \( z \)-direction displacement at the final node, which is plotted to visualize the effects of VIV.
 % md
 % md### initial Conditions
-% md Initial conditions are dervided from case 1 at step `NR - 3` of previous static analysis, indicing VIV effects in the static equilibrium for the same drag forces. Null velocity and accelerations are set by default:
+% md Initial conditions are derived from Case 1 at step `NR - 3` of the previous static analysis, inducing VIV effects in the static equilibrium for the same drag forces. Null velocity and accelerations are set by default:
 initialConds    = struct();
 initialConds.U  = matUsCase1(:,  end - 3);
-% md We set initial values for the in-line and cross-flow wake variables
-% Declare qvect as global if used globally
+% md We set initial values for the in-line and cross-flow wake variables:
 dofsWakeVariablesPerElement = 2;
 elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
 initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
@@ -358,36 +350,36 @@ initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md### analysisSettings
 % md
-% md The $\alpha$-HHT algorightm is set with the following tolerances, time step, and final time:
+% md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
 analysisSettings = struct();
-analysisSettings.finalTime = 0.02;
+analysisSettings.finalTime = 0.1;
 % analysisSettings.finalTime =   5.0; % to reproduce annimation
 analysisSettings.deltaT = 0.01;
 analysisSettings.methodName = 'alphaHHT';
 analysisSettings.stopTolIts = 50;
 analysisSettings.stopTolDeltau = 0;
 analysisSettings.stopTolForces = 1e-5;
-% md  The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
+% md The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'};
 % md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect on fluid forces.
 analysisSettings.crossFlowVIVBool = true;
 analysisSettings.inLineVIVBool = true;
 analysisSettings.addedMassBool = true;
-% % md### otherParams
-% % md The name of the problem is now VTK output is exported to generate an animation:
+% md### otherParams
+% md The name of the problem is set and VTK output is exported to generate an animation:
 otherParams = struct();
 otherParams.problemName = 'vivBeamReconfiguration';
 otherParams.plots_format = 'vtk';
-% % md
-% % md### Numeric solution
-% % md
+% md
+% md### Numeric solution
+% md
 % Initialize and solve the dynamic problem
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 % Perform the dynamic analysis
 [matUsDynamic, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-% % md
-% % md Evolution of displacements of node A
-% % md
+% md
+% md Evolution of displacements of node A
+% md
 finalNodeIndex  = numElements + 1;
 zDisplacement   = matUsDynamic(5:6:end, :);
 timeVector      = 0:analysisSettings.deltaT:analysisSettings.finalTime;
@@ -409,8 +401,8 @@ if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
-% % md
-% % md```@raw html
-% % md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
-% % md```
-% % md
+% md
+% md```@raw html
+% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
+% md```
+% md
