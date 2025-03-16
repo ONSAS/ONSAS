@@ -62,7 +62,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   end
 
   % Initialize VIV-related vectors if VIV is enabled
-  if analysisSettings.crossFlowVIVBool || analysisSettings.inLineVIVBool
+  if any(analysisSettings.crossFlowVIVBool) || any(analysisSettings.inLineVIVBool)
     numElements = size(modelProperties.Conec, 1);
     dofsPerElement = 2;
     numTimeSteps = round(analysisSettings.finalTime / analysisSettings.deltaT) + 1;
