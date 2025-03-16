@@ -352,7 +352,7 @@ initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
 analysisSettings = struct();
-analysisSettings.finalTime = 0.1;
+analysisSettings.finalTime = 0.7;
 % analysisSettings.finalTime =   5.0; % to reproduce annimation
 analysisSettings.deltaT = 0.01;
 analysisSettings.methodName = 'alphaHHT';
@@ -406,3 +406,6 @@ end
 % md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
 % md```
 % md
+% md```@raw html
+% md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
+% md```
