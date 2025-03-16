@@ -96,7 +96,7 @@ analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel};
 % If drag reconfiguration is considered then `analysisSettings.geometricNonLinearAero` should be set to `true`. On the other hand it this is set as `false` then the lift direction will be constant and given by the lift direction at the reference configuration.
 analysisSettings.geometricNonLinearAero = true;
 analysisSettings.booleanSelfWeight = false;
-analysisSettings.VIVBool        = true;
+analysisSettings.crossFlowVIVBool        = true;
 
 global qvect  % VIV boolean is called inside hydroFrameForces
 global uniformUdot  % constantLiftDir is called inside hydroFrameForces

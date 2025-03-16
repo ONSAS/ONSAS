@@ -38,8 +38,8 @@ function [fHydroElem, tMatHydroElemU] = frameFluidForce(elemCoords, ...
   densityFluid   = analysisSettings.fluidProps{1, 1};
   viscosityFluid = analysisSettings.fluidProps{2, 1};
   userFlowVel    = analysisSettings.fluidProps{3, 1};
-  VIVBool        = analysisSettings.VIVBool;
-  ILVIVBool      = analysisSettings.ILVIVBool;
+  crossFlowVIVBool        = analysisSettings.crossFlowVIVBool;
+  inLineVIVBool      = analysisSettings.inLineVIVBool;
   constantLiftDir = analysisSettings.constantLiftDir;
 
   % check user Flow Vel is not empty
@@ -117,8 +117,8 @@ function [fHydroElem, tMatHydroElemU] = frameFluidForce(elemCoords, ...
   [xIntPoints, wIntPoints] = gaussPointsAndWeights(numGaussPointsAeroForce);
 
   % WOM computation call for cases with VIVbool equal to true
-  if ~isempty(VIVBool)
-    if VIVBool && (norm(udotFlowNode1) * norm(udotFlowNode2)) > 0 % VIV with non null flow
+  if ~isempty(crossFlowVIVBool)
+    if crossFlowVIVBool && (norm(udotFlowNode1) * norm(udotFlowNode2)) > 0 % VIV with non null flow
       % extract accelerations and velocities (global coordinates) of the nodes
       % node 1
       udotFrame1 = Udote(1:2:6);
@@ -180,8 +180,8 @@ function [fHydroElem, tMatHydroElemU] = frameFluidForce(elemCoords, ...
       tlflow1 = VpiRelPerp1_defCords / norm(VpiRelPerp1_defCords);
       tlflow2 = VpiRelPerp2_defCords / norm(VpiRelPerp2_defCords);
       q = wom(VprojRel1, VprojRel2,  udotdotFrame1, udotdotFrame2, ...
-              tlflow1, tlflow2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, ILVIVBool);
-      if ~isempty(ILVIVBool) && ILVIVBool % In line VIV
+              tlflow1, tlflow2, dimCharacteristic, nextTime, analysisSettings.deltaT, currElem, inLineVIVBool);
+      if ~isempty(inLineVIVBool) && inLineVIVBool % In line VIV
         p = womIL(VprojRel1, VprojRel2, udotdotFrame1, udotdotFrame2, ...
                   dimCharacteristic, nextTime, analysisSettings.deltaT, currElem);
       else
@@ -218,7 +218,7 @@ function [fHydroElem, tMatHydroElemU] = frameFluidForce(elemCoords, ...
                                chordVector', dimCharacteristic, ...
                                I3, O3, P, G, EE, L2, L3, ...
                                aeroCoefs, densityFluid, viscosityFluid, ...
-                               VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool);
+                               crossFlowVIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, inLineVIVBool);
 
     if isnan(norm(fDragLiftPitchElem))
       error(' drag force is NaN');

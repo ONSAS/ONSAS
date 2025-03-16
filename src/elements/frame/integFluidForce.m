@@ -23,7 +23,7 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
                                            l0, tl1, tl2, Rr, ...
                                            vecChordUndef, dimCharacteristic, I3, O3, P, G, EE, L2, L3, ...
                                            aeroCoefs, densityFluid, viscosityFluid, ...
-                                           VIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, ILVIVBool)
+                                           crossFlowVIVBool, q, p, constantLiftDir, uniformUdot, tlift1, tlift2, fluidFlowBool, inLineVIVBool)
   % Bernoulli weight function
   [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0);
   % Auxiliary matrices
@@ -43,7 +43,7 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
   % ---------Kinematic velocities for the generic cross section------
   % cross section centroid rigid velocity in global coordinates:
   % if uniform
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+  if ~isempty(crossFlowVIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
     if uniformUdot
       udotG = (ddotg(1:3) + ddotg(7:9)) / 2; % nodal velocities averaged
     else
@@ -110,7 +110,7 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
   if ~isempty(userLiftCoef)
     c_l = feval(userLiftCoef, betaRelG, Re);
   else
-    ~isempty(VIVBool) && VIVBool && error('The lift CL0 coef function must be defined for VIVBool problems ');
+    ~isempty(crossFlowVIVBool) && crossFlowVIVBool && error('The lift CL0 coef function must be defined for crossFlowVIVBool problems ');
     c_l = 0;
   end
   if ~isempty(userMomentCoef)
@@ -136,13 +136,13 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
       stop;
     end
   end
-  if ~isempty(ILVIVBool) && ILVIVBool
+  if ~isempty(inLineVIVBool) && inLineVIVBool
     fdl_il =  1 / 2 * densityFluid * c_d_il * p / 2 * dimCharacteristic * norm(VpiRelGflow)^2 * td;  % U^2 along VpiRelG
   else
     fdl_il =  [0 0 0]';
   end
   % lift cross section force vector in deformed coordinates
-  if ~isempty(VIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
+  if ~isempty(crossFlowVIVBool) && ~isempty(constantLiftDir) && ~isempty(uniformUdot)
     if uniformUdot
       fll =  1 / 2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG)^2 * tlconst;
     elseif constantLiftDir % lift direction is constant
@@ -159,7 +159,7 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
     else % lift direction is variable
       if ~isempty(fluidFlowBool) && fluidFlowBool
         fll =  1 / 2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelGflow) * VpiRelGperp;
-        %        elseif ~isempty( ILVIVBool ) && ILVIVBool % Trim validation
+        %        elseif ~isempty( inLineVIVBool ) && inLineVIVBool % Trim validation
         %          fll =  1/2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm( VpiRelG ) * VpiRelGperp ;
       else % Trim validation
         fll =  1 / 2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp; % note that if there is VIV effect q is 2
@@ -171,7 +171,8 @@ function integFluidForce = integFluidForce(x, ddotg, udotFlowElem, ...
     fll =  1 / 2 * densityFluid * c_l * q / 2 * dimCharacteristic * norm(VpiRelG) * VpiRelGperp; % note that if there is VIV effect q is 2
 
   end
-
+    % disp(q/2)
+  % disp(norm(fll)/ norm(fdl));
   % drag + lift cross section force vector in deformed coordinates
   fal =  fdl + fll + fdl_il;
 
