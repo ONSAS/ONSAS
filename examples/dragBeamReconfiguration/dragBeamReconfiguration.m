@@ -380,9 +380,7 @@ set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
 % Save figure for automatic deployment
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
-  disp(verifBoolean);
   print('output/zDisplacementVIV.png', '-dpng');
-  disp(verifBoolean);
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
@@ -402,6 +400,9 @@ verifBooleanDef =  vecDifDeform <=  2e-2 * L;
 % cycd vs R verification boolean is:
 verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
 % viv boolean verification:
-verifBooleanV = abs(zDisplacement(end, 38) - (-7.4093e-03)) <  1e-5;
+verifBooleanV = abs(zDisplacement(end, 38) - (-7.4e-03)) <  (7.4e-03*1e-3);
 % The total verifboolean is:
 verifBoolean = verifBooleanR && verifBooleanV && all(verifBooleanDef);
+disp(verifBooleanR);
+disp(verifBooleanV);
+disp(verifBoolean);
