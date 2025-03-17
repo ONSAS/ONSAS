@@ -246,19 +246,6 @@ for nr = 1:analysisSettings.finalTime
   plot(xdefG, ydefG,  Gline, 'linewidth', lw, 'markersize', ms);
 end
 % md
-% md### Verification boolean
-% md
-% The verification boolean is computed as for the deformed configurations and the cycd curve
-% deformed coordinates dif norm
-vecDifDeform =  [norm(ydef - ydefG(1:numElements * 10:end)'); ...
-                 norm(xdef - xdefG(1:numElements * 10:end)')];
-
-% verification boolean deformed
-verifBooleanDef =  vecDifDeform <=  2e-2 * L;
-% cycd vs R verification boolean is:
-verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
-% The example verifboolean is:
-verifBoolean = verifBooleanR && all(verifBooleanDef);
 % md
 % md```@raw html
 % md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
@@ -352,11 +339,11 @@ initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
 analysisSettings = struct();
-analysisSettings.finalTime = 0.7;
-% analysisSettings.finalTime =   5.0; % to reproduce annimation
+analysisSettings.finalTime = 0.45;
+% analysisSettings.finalTime =   5.0; % to reproduce animation
 analysisSettings.deltaT = 0.01;
 analysisSettings.methodName = 'alphaHHT';
-analysisSettings.stopTolIts = 50;
+analysisSettings.stopTolIts = 15;
 analysisSettings.stopTolDeltau = 0;
 analysisSettings.stopTolForces = 1e-5;
 % md The constant velocity field corresponding to `NR - 3` step is set as well as density and viscosity of the fluid:
@@ -369,7 +356,7 @@ analysisSettings.addedMassBool = true;
 % md The name of the problem is set and VTK output is exported to generate an animation:
 otherParams = struct();
 otherParams.problemName = 'vivBeamReconfiguration';
-otherParams.plots_format = 'vtk';
+otherParams.plots_format = '';
 % md
 % md### Numeric solution
 % md
@@ -409,3 +396,18 @@ end
 % md```@raw html
 % md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
 % md```
+% md
+% md## Verification boolean
+% md
+% The verification boolean is computed considering the deformed configurations, the cycd curve
+% deformed coordinates dif norm and the viv movement as well.
+vecDifDeform =  [norm(ydef - ydefG(1:numElements * 10:end)'); ...
+                 norm(xdef - xdefG(1:numElements * 10:end)')];
+% verification boolean deformed
+verifBooleanDef =  vecDifDeform <=  2e-2 * L;
+% cycd vs R verification boolean is:
+verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
+% viv boolean verification:
+verifBooleanV = abs(zDisplacement(end,46) - (-5.6041e-03)) <  1e-5;
+% The total verifboolean is:
+verifBoolean = verifBooleanR && verifBooleanV && all(verifBooleanDef);
