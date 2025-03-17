@@ -330,9 +330,9 @@ initialConds    = struct();
 initialConds.U  = matUsCase1(:,  end - 3);
 % md We set initial values for the in-line and cross-flow wake variables:
 dofsWakeVariablesPerElement = 2;
-elementQ0 = (2 * (1:numElements)'/numElements - 1) * 0.001;
+elementQ0 = (2 * ((1:numElements)' / numElements) - 1) * 0.001;
 initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
-elementP0 = (2 * (1:numElements)'/numElements - 1) * 0.002;
+elementP0 = (2 * ((1:numElements)' / numElements) - 1) * 0.002;
 initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md### analysisSettings
