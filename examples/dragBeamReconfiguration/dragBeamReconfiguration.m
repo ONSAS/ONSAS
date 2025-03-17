@@ -380,12 +380,10 @@ set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
 % Save figure for automatic deployment
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
-  verifBoolean
-  print(figZDisplacement, 'output/zDisplacementVIV.png', '-dpng');
+  print('output/zDisplacementVIV.png', '-dpng');
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
-verifBoolean
 % md
 % md```@raw html
 % md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemnts in z direction of node A" width="500"/>
