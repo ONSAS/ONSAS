@@ -191,8 +191,6 @@ curveFontSize = 15;
 Gline = 'k-';
 ONSASline = 'bo';
 ONSASlineBuiltInDrag = 'rx';
-folderPathFigs = './output/figs/';
-mkdir(folderPathFigs);
 % md
 % md The modified Cauchy number vs R is plotted:
 % md
@@ -246,19 +244,6 @@ for nr = 1:analysisSettings.finalTime
   plot(xdefG, ydefG,  Gline, 'linewidth', lw, 'markersize', ms);
 end
 % md
-% md### Verification boolean
-% md
-% The verification boolean is computed as for the deformed configurations and the cycd curve
-% deformed coordinates dif norm
-vecDifDeform =  [norm(ydef - ydefG(1:numElements * 10:end)'); ...
-                 norm(xdef - xdefG(1:numElements * 10:end)')];
-
-% verification boolean deformed
-verifBooleanDef =  vecDifDeform <=  2e-2 * L;
-% cycd vs R verification boolean is:
-verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
-% The example verifboolean is:
-verifBoolean = verifBooleanR && all(verifBooleanDef);
 % md
 % md```@raw html
 % md<img src="../../assets/generated/RvsCyCd.png" alt="plot check deformed configurations" width="500"/>
@@ -312,7 +297,6 @@ set(labx, 'FontSize', axisFontSize);
 set(laby, 'FontSize', axisFontSize);
 % axis equal
 % save fig
-namefig3 = strcat(folderPathFigs, 'xy.png');
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
   figure(3);
@@ -330,7 +314,7 @@ end
 % md<img src="../../assets/dragBeamReconfiguration/VIVilus.svg" alt="general sketch VIV case" width="450"/>
 % md```
 % md
-% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators by Villié et al. using ONSAS](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
+% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [(Villié, et.al., 2024)](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
 % md
 % md### elements
 % md
@@ -343,25 +327,25 @@ initialConds    = struct();
 initialConds.U  = matUsCase1(:,  end - 3);
 % md We set initial values for the in-line and cross-flow wake variables:
 dofsWakeVariablesPerElement = 2;
-elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
+elementQ0 = (2 * ((1:numElements)' / numElements) - 1) * 0.001;
 initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
-elementP0 = (2 * rand(numElements, 1) - 1) * 0.001;
+elementP0 = (2 * ((1:numElements)' / numElements) - 1) * 0.002;
 initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md### analysisSettings
 % md
 % md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
 analysisSettings = struct();
-analysisSettings.finalTime = 0.7;
-% analysisSettings.finalTime =   5.0; % to reproduce annimation
+analysisSettings.finalTime = 0.4;
+% analysisSettings.finalTime =   5.0; % to reproduce animation
 analysisSettings.deltaT = 0.01;
 analysisSettings.methodName = 'alphaHHT';
-analysisSettings.stopTolIts = 50;
+analysisSettings.stopTolIts = 15;
 analysisSettings.stopTolDeltau = 0;
 analysisSettings.stopTolForces = 1e-5;
-% md The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
+% md The constant velocity field corresponding to `NR - 3` step is set as well as density and viscosity of the fluid:
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'};
-% md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect on fluid forces.
+% md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect for the fluid forces computation.
 analysisSettings.crossFlowVIVBool = true;
 analysisSettings.inLineVIVBool = true;
 analysisSettings.addedMassBool = true;
@@ -369,7 +353,7 @@ analysisSettings.addedMassBool = true;
 % md The name of the problem is set and VTK output is exported to generate an animation:
 otherParams = struct();
 otherParams.problemName = 'vivBeamReconfiguration';
-otherParams.plots_format = 'vtk';
+otherParams.plots_format = '';
 % md
 % md### Numeric solution
 % md
@@ -384,7 +368,7 @@ finalNodeIndex  = numElements + 1;
 zDisplacement   = matUsDynamic(5:6:end, :);
 timeVector      = 0:analysisSettings.deltaT:analysisSettings.finalTime;
 % Generate figure
-figZDisplacement = figure;
+figure;
 plot(timeVector, zDisplacement(finalNodeIndex, :), 'b-', 'LineWidth', 2);
 xlabel('Time [s]');
 ylabel('Displacement in z [m]');
@@ -394,18 +378,32 @@ set(gca, 'linewidth', axislw, 'fontsize', curveFontSize);
 set(get(gca, 'xlabel'), 'FontSize', axisFontSize);
 set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
 % Save figure for automatic deployment
-namefigZ = strcat(folderPathFigs, 'zDisplacementVIV.png');
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
-  print(figZDisplacement, namefigZ, '-dpng');
+  print('output/zDisplacementVIV.png', '-dpng');
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
 % md
 % md```@raw html
-% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
+% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemnts in z direction of node A" width="500"/>
 % md```
 % md
 % md```@raw html
 % md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
 % md```
+% md
+% md## Verification boolean
+% md
+% The verification boolean is computed considering the deformed configurations, the cycd curve
+% deformed coordinates dif norm and the viv movement as well.
+vecDifDeform =  [norm(ydef - ydefG(1:numElements * 10:end)'); ...
+                 norm(xdef - xdefG(1:numElements * 10:end)')];
+% verification boolean deformed
+verifBooleanDef =  vecDifDeform <=  2e-2 * L;
+% cycd vs R verification boolean is:
+verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
+% viv boolean verification:
+verifBooleanV = abs(zDisplacement(end, 38) - (-7.4e-03)) <  (7.4e-03 * 1e-1);
+% The total verifboolean is:
+verifBoolean = verifBooleanR && verifBooleanV && all(verifBooleanDef);
