@@ -330,16 +330,16 @@ initialConds    = struct();
 initialConds.U  = matUsCase1(:,  end - 3);
 % md We set initial values for the in-line and cross-flow wake variables:
 dofsWakeVariablesPerElement = 2;
-elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
+elementQ0 = (2 * (1:numElements)'/numElements - 1) * 0.001;
 initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
-elementP0 = (2 * rand(numElements, 1) - 1) * 0.001;
+elementP0 = (2 * (1:numElements)'/numElements - 1) * 0.002;
 initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
 % md
 % md### analysisSettings
 % md
 % md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
 analysisSettings = struct();
-analysisSettings.finalTime = 0.45;
+analysisSettings.finalTime = 0.4;
 % analysisSettings.finalTime =   5.0; % to reproduce animation
 analysisSettings.deltaT = 0.01;
 analysisSettings.methodName = 'alphaHHT';
@@ -408,6 +408,6 @@ verifBooleanDef =  vecDifDeform <=  2e-2 * L;
 % cycd vs R verification boolean is:
 verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
 % viv boolean verification:
-verifBooleanV = abs(zDisplacement(end,46) - (-5.6041e-03)) <  1e-5;
+verifBooleanV = abs(zDisplacement(end, 38) - (-7.4093e-03)) <  1e-5;
 % The total verifboolean is:
 verifBoolean = verifBooleanR && verifBooleanV && all(verifBooleanDef);
