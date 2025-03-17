@@ -330,7 +330,7 @@ end
 % md<img src="../../assets/dragBeamReconfiguration/VIVilus.svg" alt="general sketch VIV case" width="450"/>
 % md```
 % md
-% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators by Villié et al. using ONSAS](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
+% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [(Villié, et.al., 2024)](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
 % md
 % md### elements
 % md
@@ -359,9 +359,9 @@ analysisSettings.methodName = 'alphaHHT';
 analysisSettings.stopTolIts = 50;
 analysisSettings.stopTolDeltau = 0;
 analysisSettings.stopTolForces = 1e-5;
-% md The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
+% md The constant velocity field corresponding to `NR - 3` step is set as well as density and viscosity of the fluid:
 analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'};
-% md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect on fluid forces.
+% md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect for the fluid forces computation.
 analysisSettings.crossFlowVIVBool = true;
 analysisSettings.inLineVIVBool = true;
 analysisSettings.addedMassBool = true;
