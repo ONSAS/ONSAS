@@ -19,7 +19,7 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [fs, ks, fintLocCoord] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
 
   % material and geometric parameters
   young_modulus = modelParams(1);
@@ -53,7 +53,7 @@ function [fs, ks, fintLocCoord] = internalForcesShellTriangle(elemCoords, elemDi
   R3g = globalRotationMatrix(q3);
 
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
-  [Tr, x02, x03, y03] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
+  [Tr, x02_, x03_, y03_] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
 
   Ro = To';
   Rr = Tr';
@@ -124,6 +124,7 @@ function [fs, ks, fintLocCoord] = internalForcesShellTriangle(elemCoords, elemDi
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
+  Kl
   Ka = Ba' * Kl * Ba + Kh;
 
   % eq. (7) of 10.1016/j.cma.2006.10.006

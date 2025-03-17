@@ -40,6 +40,8 @@ nu = 0.3;
 l = 10;
 ty = 1.0;
 tz = .1;
+Iy = ty * tz^3 / 12;
+Mobj = E * Iy * 2 * pi / l ;
 % the number of elements of the mesh
 numElements = 10;
 % md
@@ -51,13 +53,20 @@ numElements = 10;
 % md## Numerical solution
 % md### MEB parameters
 % md
+
+materialsL                 = struct();
+materialsL.modelName  = 'elastic-linear';
+materialsL.modelParams = [E nu];
+
+
+
 % mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 % md
 % md### materials
 % md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
-materials                 = struct();
-materials.modelName  = 'elastic-linear';
-materials.modelParams = [E nu];
+materialsNL                 = struct();
+materialsNL.modelName  = 'elastic-rotEngStr';
+materialsNL.modelParams = [E nu];
 % md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 % md
 % md### elements
@@ -73,13 +82,12 @@ elements(2).elemCrossSecParams{2, 1} = [ty tz];
 % md### boundaryConds
 % md
 % md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
-Iy = ty * tz^3 / 12;
 boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 % mdand the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam.
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) E * Iy * 2 * pi / l * t;
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t;
 boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 % md
 % md
@@ -105,8 +113,8 @@ end
 % md### analysisSettings
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.001;  % TEMPORARY
-analysisSettings.finalTime      =   .001;  % TEMPORARY
+analysisSettings.deltaT        =   0.0001;  % TEMPORARY
+analysisSettings.finalTime      =   .0002;  % TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -119,7 +127,7 @@ otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
@@ -133,6 +141,12 @@ loadFactorsNREngRot  =  loadFactorsMat(:, 2);
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
 % md
 
+
+
+% ====================================================
+% shell linear
+% ====================================================
+
 elements             = struct();
 elements(1).elemType = 'edge';
 elements(1).elemCrossSecParams = tz;
@@ -144,10 +158,9 @@ boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 %
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) E * Iy * 2 * pi / l * t;
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t / ( ty * tz );
 boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 %
-
 mesh = struct();
 base_dir = '';
 if strcmp(getenv('TESTS_RUN'), 'yes') && isfolder('examples')
@@ -156,21 +169,26 @@ end
 [mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
 assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 
-otherParams.problemName = 'uniformCurvatureCantilever-shell';
+otherParams.problemName = 'uniformCurvatureCantilever-linearShell';
 
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 %
-controlDispShellLinear = -matUs(3*2+[1 4 5],:)
-%
+controldofs = 6+[1 4 5] ;
+controlDispShellLinear = -matUs(controldofs,:)
 controlDispsNREngRot
 
-materials.modelName  = 'elastic-rotEngStr';
-
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+% ====================================================
+% shell non linear
+% ====================================================
+otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
+%
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-controlDispShellNonLinear = -matUs(3*2+[1 4 5],:)
+controlDispShellNonLinear = -matUs(controldofs,:)
 
+controlDispShellNonLinear ./ controlDispShellLinear
 
 %
 % md## Verification
