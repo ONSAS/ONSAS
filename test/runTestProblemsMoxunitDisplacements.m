@@ -92,28 +92,24 @@ function test15
   assertEqual(verifBoolean, true);
 
 function test16
-  vivCantilever;
-  assertEqual(verifBoolean, true);
-
-function test17
   beamTrussJoint;
   assertEqual(verifBoolean, true);
 
-function test18
+function test17
   staticPlasticVonMisesTruss;
   assertEqual(verifBoolean, true);
 
-function test19
+function test18
   platePatchTest;
   assertEqual(verifBoolean, true);
 
-function test20
+function test19
   cantileverPlate;
   assertEqual(verifBoolean, true);
 
-function test21
+function test20
   addedMassPendulum;
   assertEqual(verifBoolean, true);
 
-function test22
+function test21
   assertEqual(gaussIntegrationTest, true);

@@ -191,8 +191,6 @@ curveFontSize = 15;
 Gline = 'k-';
 ONSASline = 'bo';
 ONSASlineBuiltInDrag = 'rx';
-folderPathFigs = './output/figs/';
-mkdir(folderPathFigs);
 % md
 % md The modified Cauchy number vs R is plotted:
 % md
@@ -381,20 +379,15 @@ set(gca, 'linewidth', axislw, 'fontsize', curveFontSize);
 set(get(gca, 'xlabel'), 'FontSize', axisFontSize);
 set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
 % Save figure for automatic deployment
-namefigZ = strcat(folderPathFigs, 'zDisplacementVIV.png');
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
-  print(figZDisplacement, namefigZ, '-dpng');
+  print(figZDisplacement, 'output/zDisplacementVIV.png', '-dpng');
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
 % md
 % md```@raw html
-% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
-% md```
-% md
-% md```@raw html
-% md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
+% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemnts in z direction of node A" width="500"/>
 % md```
 % md
 % md## Verification boolean
