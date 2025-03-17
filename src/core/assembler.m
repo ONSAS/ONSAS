@@ -273,7 +273,16 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
       thickness = elemCrossSecParams{2};
 
-      [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
+      if strcmp(modelName, 'elastic-linear')
+
+        [fs, ks, fintLocCoord] =  internalForcesLinearShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
+
+      elseif strcmp(modelName, 'elastic-rotEngStr')
+        [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
+
+      else
+        error('material model not implemented');
+      end
 
       localInternalForces(elem).Mx  = fintLocCoord(1);
       localInternalForces(elem).My  = fintLocCoord(2);
