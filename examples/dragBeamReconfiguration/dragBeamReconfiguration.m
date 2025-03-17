@@ -368,7 +368,7 @@ finalNodeIndex  = numElements + 1;
 zDisplacement   = matUsDynamic(5:6:end, :);
 timeVector      = 0:analysisSettings.deltaT:analysisSettings.finalTime;
 % Generate figure
-figZDisplacement = figure;
+figure;
 plot(timeVector, zDisplacement(finalNodeIndex, :), 'b-', 'LineWidth', 2);
 xlabel('Time [s]');
 ylabel('Displacement in z [m]');
@@ -380,10 +380,12 @@ set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
 % Save figure for automatic deployment
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
+  verifBoolean
   print(figZDisplacement, 'output/zDisplacementVIV.png', '-dpng');
 else
   fprintf('\n === NOT in docs workflow. ===\n');
 end
+verifBoolean
 % md
 % md```@raw html
 % md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemnts in z direction of node A" width="500"/>
