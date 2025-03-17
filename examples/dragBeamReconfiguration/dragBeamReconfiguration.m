@@ -297,7 +297,6 @@ set(labx, 'FontSize', axisFontSize);
 set(laby, 'FontSize', axisFontSize);
 % axis equal
 % save fig
-namefig3 = strcat(folderPathFigs, 'xy.png');
 if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
   fprintf('\ngenerating output png for docs.\n');
   figure(3);
