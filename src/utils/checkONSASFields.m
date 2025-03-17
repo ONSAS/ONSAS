@@ -26,14 +26,22 @@ function checkONSASFields(materials, elements, boundaryConds, initialConds, mesh
                               'userLoadsFilename', 'imposDispDofs', 'imposDispVals', 'springDofs', 'springVals'});
 
   if length(initialConds) > 0
-    checkFields(initialConds, {'U', 'Udot', 'Udotdot'});
+    if isfield(analysisSettings, 'crossFlowVIVBool') && isfield(analysisSettings, 'inLineVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'Q0', 'P0'});
+    elseif isfield(analysisSettings, 'inLineVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'P0'});
+    elseif isfield(analysisSettings, 'crossFlowVIVBool')
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot', 'Q0'});
+    else
+      checkFields(initialConds, {'U', 'Udot', 'Udotdot'});
+    end
   end
 
   analysisSettingsDefaultFields = ...
    {'geometricNonLinearAero', 'numGaussPointsAeroForce', 'computeAeroStiffnessMatrix', ...
     'fluidProps', 'addedMassBool', 'booleanSelfWeight', 'methodName', 'deltaT', 'finalTime', 'incremArcLen', 'iniDeltaLamb', ...
     'stopTolDeltau', 'stopTolForces', 'stopTolIts', 'stabilityAnalysisFlag', 'modalAnalysisBoolean', 'posVariableLoadBC', ...
-    'ALdominantDOF', 'VIVBool', 'ILVIVBool', 'constantLiftDir'};
+    'ALdominantDOF', 'crossFlowVIVBool', 'inLineVIVBool', 'constantLiftDir'};
 
   if isfield(analysisSettings, 'methodName')
     if strcmp(analysisSettings.methodName, 'newmark')
