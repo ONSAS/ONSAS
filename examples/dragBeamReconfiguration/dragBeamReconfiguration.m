@@ -400,6 +400,7 @@ verifBooleanDef =  vecDifDeform <=  2e-2 * L;
 % cycd vs R verification boolean is:
 verifBooleanR = abs(R(end) - resudrag(end, 2)) <  5e-3;
 % viv boolean verification:
+zDisplacement(end, :)
 verifBooleanV = abs(zDisplacement(end, 38) - (-7.4e-03)) <  (7.4e-03*1e-3);
 % The total verifboolean is:
 verifBoolean = verifBooleanR && verifBooleanV && all(verifBooleanDef);
