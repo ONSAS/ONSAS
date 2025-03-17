@@ -77,5 +77,5 @@ function bringONSASmFilesToONSASdocs
   movefile('../../examples/uniaxialExtension/output/verifUniaxial.png', './assets/generated/');
   movefile('../../examples/dragBeamReconfiguration/output/RvsCyCd.png', './assets/generated/');
   movefile('../../examples/dragBeamReconfiguration/output/defPlots.png', './assets/generated/');
-
+  movefile('../../examples/dragBeamReconfiguration/output/zDisplacementVIV.png', './assets/generated/');
 end
