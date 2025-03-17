@@ -23,17 +23,17 @@ if ~strcmp(getenv('TESTS_RUN'), 'yes')
   clear all;
 end
 addpath(genpath([pwd '/../../src']));
-%
+
 % ---------------------
-% scalar parameters
-% fluid
+% Scalar parameters
+% Fluid
 nuFluid = 1e-6;
 rhoFluid = 1000;
-% solid
+% Solid
 E = 5e10;
 rho = 2 * rhoFluid;
-nu = .3;
-%
+nu = 0.3;
+
 nodalDamping = 0;
 dt = 0.0028;
 finalTime = 10 * dt;
@@ -47,82 +47,67 @@ nameLiftFunc = 'liftCoefVIV';
 nameDragFunc = 'dragCoef';
 % ---------------------
 
-% material (structural solid)
-%
+% Material (structural solid)
 materials = struct();
 materials.modelParams = [E nu];
-materials.density         = rho;
-materials.modelName  = 'elastic-rotEngStr';
+materials.density = rho;
+materials.modelName = 'elastic-rotEngStr';
 
-% elements
-%
+% Elements
 elements = struct();
 elements(1).elemType = 'node';
 elements(2).elemType = 'frame';
-elements(2).elemCrossSecParams = {'circle'; d };
-elements(2).aeroCoefFunctions = { nameDragFunc, nameLiftFunc, []};
+elements(2).elemCrossSecParams = {'circle'; d};
+elements(2).aeroCoefFunctions = {nameDragFunc, nameLiftFunc, []};
 elements(2).chordVector = [0 0 -d];
 elements(2).massMatType = 'consistent';
 
-% boundaryConds
-%
-% md The first and unique BC corresponds to a welded condition for a cantilever beam
+% Boundary conditions
+% The first and unique BC corresponds to a welded condition for a cantilever beam
 boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 
-% initialConds
-%
+% Initial conditions
 initialConds = struct();
+% Initial conditions for cross-flow VIV constant per element
+elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
+initialConds.Q0 = repelem(elementQ0, 2);
 
-% mesh
-%
-mesh.nodesCoords = [zeros(numElements + 1, 1) (0:(numElements))' * l / numElements zeros(numElements + 1, 1)];
+% Mesh
+mesh.nodesCoords = [zeros(numElements + 1, 1), (0:numElements)' * l / numElements, zeros(numElements + 1, 1)];
 mesh.conecCell = { };
-mesh.conecCell{ 1, 1 } = [0 1 1   1];
+mesh.conecCell{ 1, 1 } = [0 1 1 1];
 for i = 1:numElements
-  mesh.conecCell{ i + 1, 1 } = [1 2 0  i i + 1];
+  mesh.conecCell{ i + 1, 1 } = [1 2 0 i i + 1];
 end
 
 % Numerical parameters
-%
-analysisSettings.methodName     = 'newmark';
-analysisSettings.finalTime      = finalTime;
-analysisSettings.deltaT         = dt;
-analysisSettings.stopTolIts     = 15;
-analysisSettings.stopTolDeltau  = 1e-10;
-analysisSettings.stopTolForces  = 1e-5;
+analysisSettings.methodName = 'newmark';
+analysisSettings.finalTime = finalTime;
+analysisSettings.deltaT = dt;
+analysisSettings.stopTolIts = 15;
+analysisSettings.stopTolDeltau = 1e-10;
+analysisSettings.stopTolForces = 1e-5;
 
 analysisSettings.fluidProps = {rhoFluid; nuFluid; nameFuncVel};
-% If drag reconfiguration is considered then `analysisSettings.geometricNonLinearAero` should be set to `true`. On the other hand it this is set as `false` then the lift direction will be constant and given by the lift direction at the reference configuration.
+% If drag reconfiguration is considered then `analysisSettings.geometricNonLinearAero` should be set to `true`.
+% On the other hand, if this is set as `false` then the lift direction will be constant and given by the lift direction at the reference configuration.
 analysisSettings.geometricNonLinearAero = true;
 analysisSettings.booleanSelfWeight = false;
-analysisSettings.VIVBool        = true;
+analysisSettings.crossFlowVIVBool = true;
 
-global qvect  % VIV boolean is called inside hydroFrameForces
-global uniformUdot  % constantLiftDir is called inside hydroFrameForces
-uniformUdot = false;
-
-% Initialize qvect
-qvect =  zeros(numElements * 2, round(finalTime / dt) + 1);
-qvect(1:2:end, 1) = (2 * rand(numElements, 1) - 1) * 0.001;
-
-% otherParams
+% Other parameters
 otherParams = struct();
 otherParams.nodalDispDamping = nodalDamping;
-otherParams.problemName      = 'vivCantilever';
+otherParams.problemName = 'vivCantilever';
 otherParams.plots_format = 'vtk';
 
 % Run ONSAS
-%
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
-matUs = solveONSAS(modelCurrSol, modelProperties, BCsData);
-% --------
 
-% Fluid properties
-cL0 = feval(nameLiftFunc, 0, 1);
-cD0 = feval(nameDragFunc, 0, 1);
+% After that, the structs are used to perform the numerical time analysis
+matUs = solveONSAS(modelCurrSol, modelProperties, BCsData);
+
 %
 %
 % --------

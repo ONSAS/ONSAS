@@ -46,7 +46,7 @@ addpath(genpath([pwd '/../../src']));
 % md
 % md The problem parameters are loaded:
 [L, d, Izz, E, nu, rhoS, rhoF, nuF, ~, NR, cycd_vec, uydot_vec] = loadParametersCirc();
-% md where $\rho_f$ and $\rho_s$ are the fluid and solid densities respectively, $\nu$ is the fluid kinematic viscosity, and  $NR$ is the number of load steps (or velocity cases solved):
+% md where $\rho_f$ and $\rho_s$ are the fluid and solid densities respectively, $\nu$ is the fluid eenematic viscosity, and  $NR$ is the number of load steps (or velocity cases solved):
 % md
 % md
 % md The number of elements employed to discretize the beam is:
@@ -56,10 +56,10 @@ numElements = 10;
 % md
 % md### materials
 % md Since the example contains only one material and co-rotational strain element so then `materials` struct is:
-materials                 = struct();
-materials.modelName  = 'elastic-rotEngStr';
+materials             = struct();
+materials.modelName   = 'elastic-rotEngStr';
 materials.modelParams = [E nu];
-materials.density         = rhoS;
+materials.density     = rhoS;
 % md
 % md### elements
 % md
@@ -325,3 +325,87 @@ end
 % md<img src="../../assets/generated/defPlots.png" alt="plot check deformed configurations" width="500"/>
 % md```
 % md
+% md### Case 3: Dynamic Analysis Considering Vortex-Induced Vibrations (VIV)
+% md```@raw html
+% md<img src="../../assets/dragBeamReconfiguration/VIVilus.svg" alt="general sketch VIV case" width="450"/>
+% md```
+% md
+% md In this case, we extend the analysis to include dynamic effects and Vortex-Induced Vibrations (VIV) on the cantilever beam, according to the formulation proposed in [Modeling vortex-induced vibrations of branched structures by coupling a 3D-corotational frame finite element formulation with wake-oscillators by Villié et al. using ONSAS](https://www.sciencedirect.com/science/article/abs/pii/S0889974624000094).
+% md
+% md### elements
+% md
+% md The beam is subjected to a constant fluid flow in $c_2$, which induces drag and lift forces. The aerodynamic coefficients for drag and lift are defined using the `dragCircular` and `liftCoefVIV` functions, respectively.
+elements(2).aeroCoefFunctions = {'dragCircular', 'liftCoefVIV', []};
+% md
+% md### initial Conditions
+% md Initial conditions are derived from Case 1 at step `NR - 3` of the previous static analysis, inducing VIV effects in the static equilibrium for the same drag forces. Null velocity and accelerations are set by default:
+initialConds    = struct();
+initialConds.U  = matUsCase1(:,  end - 3);
+% md We set initial values for the in-line and cross-flow wake variables:
+dofsWakeVariablesPerElement = 2;
+elementQ0 = (2 * rand(numElements, 1) - 1) * 0.001;
+initialConds.Q0 = repelem(elementQ0, dofsWakeVariablesPerElement);
+elementP0 = (2 * rand(numElements, 1) - 1) * 0.001;
+initialConds.P0 = repelem(elementP0, dofsWakeVariablesPerElement);
+% md
+% md### analysisSettings
+% md
+% md The $\alpha$-HHT algorithm is set with the following tolerances, time step, and final time:
+analysisSettings = struct();
+analysisSettings.finalTime = 0.7;
+% analysisSettings.finalTime =   5.0; % to reproduce annimation
+analysisSettings.deltaT = 0.01;
+analysisSettings.methodName = 'alphaHHT';
+analysisSettings.stopTolIts = 50;
+analysisSettings.stopTolDeltau = 0;
+analysisSettings.stopTolForces = 1e-5;
+% md The constasnt veliocity field corresponding to `NR - 3` step is set as well as density and viscvotiy of the fluid:
+analysisSettings.fluidProps = {rhoF; nuF; 'windVelCircDynamic'};
+% md The following parameters are set to configure the dynamic analysis considering VIV. The `analysisSettings.crossFlowVIVBool` parameter enables the consideration of cross-flow VIV in the analysis. The `analysisSettings.inLineVIVBool` parameter determines whether in-line VIV is considered, and it is set to `true` in this case. Lastly, the `analysisSettings.addedMassBool` parameter accounts for the added mass effect on fluid forces.
+analysisSettings.crossFlowVIVBool = true;
+analysisSettings.inLineVIVBool = true;
+analysisSettings.addedMassBool = true;
+% md### otherParams
+% md The name of the problem is set and VTK output is exported to generate an animation:
+otherParams = struct();
+otherParams.problemName = 'vivBeamReconfiguration';
+otherParams.plots_format = 'vtk';
+% md
+% md### Numeric solution
+% md
+% Initialize and solve the dynamic problem
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+% Perform the dynamic analysis
+[matUsDynamic, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+% md
+% md Evolution of displacements of node A
+% md
+finalNodeIndex  = numElements + 1;
+zDisplacement   = matUsDynamic(5:6:end, :);
+timeVector      = 0:analysisSettings.deltaT:analysisSettings.finalTime;
+% Generate figure
+figZDisplacement = figure;
+plot(timeVector, zDisplacement(finalNodeIndex, :), 'b-', 'LineWidth', 2);
+xlabel('Time [s]');
+ylabel('Displacement in z [m]');
+title('Displacement in z at A');
+grid on;
+set(gca, 'linewidth', axislw, 'fontsize', curveFontSize);
+set(get(gca, 'xlabel'), 'FontSize', axisFontSize);
+set(get(gca, 'ylabel'), 'FontSize', axisFontSize);
+% Save figure for automatic deployment
+namefigZ = strcat(folderPathFigs, 'zDisplacementVIV.png');
+if length(getenv('TESTS_RUN')) > 0 && strcmp(getenv('TESTS_RUN'), 'yes')
+  fprintf('\ngenerating output png for docs.\n');
+  print(figZDisplacement, namefigZ, '-dpng');
+else
+  fprintf('\n === NOT in docs workflow. ===\n');
+end
+% md
+% md```@raw html
+% md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemtns in z direction of node A" width="500"/>
+% md```
+% md
+% md```@raw html
+% md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
+% md```

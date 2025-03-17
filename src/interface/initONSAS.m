@@ -60,6 +60,23 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   if spitMatrices == true
     save('-mat', 'output/loads.mat', 'factorLoadsFextCell');
   end
+
+  % Initialize VIV-related vectors if VIV is enabled
+  if any(analysisSettings.crossFlowVIVBool) || any(analysisSettings.inLineVIVBool)
+    numElements = size(modelProperties.Conec, 1);
+    dofsPerElement = 2;
+    numTimeSteps = round(analysisSettings.finalTime / analysisSettings.deltaT) + 1;
+    if analysisSettings.crossFlowVIVBool
+      global qvect
+      qvect = zeros(numElements * dofsPerElement, numTimeSteps);
+      qvect(:, 1) = initialConds.Q0;
+    end
+    if analysisSettings.inLineVIVBool
+      global pvect
+      pvect = zeros(numElements * dofsPerElement, numTimeSteps);
+      pvect(:, 1) = initialConds.P0;
+    end
+  end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -84,7 +101,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   previousStateCell(:, 3) = {0};
 
   % comput internal forces and stresses
-  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell);
+  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell);
 
   [FextG, currLoadFactorsVals]  = computeFext(modelProperties, BCsData, 0, length(U), [], {U, Udot, Udotdot});
 

@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function qelem = wom(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2, tl1, tl2, D, tnp1, dt, Kelem, ILVIVBool)
+function qelem = wom(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2, tl1, tl2, D, tnp1, dt, Kelem, inLineVIVBool)
   % Computes the value of q for the element Kelem with random initial
   % conditions for q
   % vpr1, vpr2: relative velocities at nodes 1 and 2 (vpr = Ucos(theta0))
@@ -40,7 +40,7 @@ function qelem = wom(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2, tl1, tl2, D
     qn = qvect(1 + K * 2, n);
     dqn = qvect(2 + K * 2, n);
     % [qnp1elem dqnp1elem ] = computeq(ddY2, D, tnp1, dt, vprelem, qn, dqn);
-    [qnp1elem dqnp1elem] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, ILVIVBool);
+    [qnp1elem dqnp1elem] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, inLineVIVBool);
     qelem = qnp1elem;
     % Updating qvect
     qvect(1 + K * 2:2 + K * 2, n + 1) = [qnp1elem dqnp1elem];
@@ -48,13 +48,13 @@ function qelem = wom(vprvect1, vprvect2, Udotdottp1k1, Udotdottp1k2, tl1, tl2, D
 end
 
 % function computing q at node i
-function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, ILVIVBool) % at node i= 1,2
+function [qnp1 dqnp1] = computeq(ddYelem, D, tnp1, dt, vprelem, qn, dqn, inLineVIVBool) % at node i= 1,2
   global epsilony  % global Ay;
   % time increments
   N = 2; % Number of steps
   h = dt / N; % Time step
   t = tnp1 - dt:h:tnp1; % Interval on which ode45 solves the VdP equation
-  if ILVIVBool
+  if inLineVIVBool
     A = 12;
     epsilon = 0.04;
     %       A = 12; epsilon = 0.3;
