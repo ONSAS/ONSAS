@@ -389,6 +389,10 @@ end
 % md<img src="../../assets/generated/zDisplacementVIV.png" alt="Displacemnts in z direction of node A" width="500"/>
 % md```
 % md
+% md```@raw html
+% md<img src="https://github.com/ONSAS/ONSAS/blob/master/docs/src/assets/dragBeamReconfiguration/vivDragReconfigurartion.gif?raw=true" alt="viv animation">
+% md```
+% md
 % md## Verification boolean
 % md
 % The verification boolean is computed considering the deformed configurations, the cycd curve
