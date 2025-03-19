@@ -51,6 +51,13 @@ for ip = 1:npi
   % tM calculated with the moments Mn corresponding to time n + 1
   tM = tM - Ghats(ip)*Mnp1(ip)*wpi(ip) ;
 
+  if ip == 1 && abs(Mnp1(ip))>376
+    fprintf('Curvatura elástica %f\n', kenxpi) ;
+    fprintf('Curvatura plástica %f\n', kp(ip)) ;
+    fprintf('Curvatura total    %f\n', khatxpi(ip)) ;
+    fprintf('Alfa %f\n', alfa) ;
+  end
+
 end
 
 end
