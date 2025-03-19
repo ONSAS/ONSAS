@@ -58,6 +58,13 @@ for ip = 1:npi
     fprintf('Alfa %f\n', alfa) ;
   end
 
+  if ip == 2 % verifico curvatura en el punto medio del elemento (1 elemento)
+        fprintf('Curvatura total    %f\n', khatxpi) ;
+        fprintf('Curvatura elástica %f\n', kenxpi) ;
+        fprintf('Curvatura plástica %f\n', kp(ip)) ;
+        fprintf('Alfa %f\n',alfa) ;
+  end
+  
 end
 
 end
