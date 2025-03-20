@@ -51,6 +51,10 @@ for ip = 1:npi
   % tM calculated with the moments Mn corresponding to time n + 1
   tM = tM - Ghats(ip)*Mnp1(ip)*wpi(ip) ;
 
+  if alfa ~=0
+      disp(Mnp1);
+  end
+
   if ip == 1 && abs(Mnp1(ip))>376
     fprintf('Curvatura elástica %f\n', kenxpi) ;
     fprintf('Curvatura plástica %f\n', kp(ip)) ;
@@ -58,7 +62,7 @@ for ip = 1:npi
     fprintf('Alfa %f\n', alfa) ;
   end
 
-  if ip == 2 % verifico curvatura en el punto medio del elemento (1 elemento)
+  if ip == 3 % verifico curvatura en el punto medio del elemento (1 elemento)
         fprintf('Curvatura total    %f\n', khatxpi) ;
         fprintf('Curvatura elástica %f\n', kenxpi) ;
         fprintf('Curvatura plástica %f\n', kp(ip)) ;
