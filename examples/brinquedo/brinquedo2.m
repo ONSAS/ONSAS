@@ -21,12 +21,12 @@ clc; close all; clear all;
 addpath(genpath([pwd '/../../src']));
 % md
 % md## Scalars
-E = 100;
+E = 10000;
 nu = 0.0;
 tz = .1;
 
-Lz = 1;
-Lx = 1;
+lx = 10 ;
+ly = 1.0 ; 
 
 materials                    = struct();
 materials(1).modelName  = 'elastic-linear';
@@ -43,30 +43,17 @@ boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 
 boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
-P = .0001
-boundaryConds(2).loadsBaseVals = [0 0 P 0 0 0];
-# boundaryConds(2).loadsBaseVals = [0 0 0 0 1e-8 0];
-# boundaryConds(2).loadsBaseVals = [0 1e-8 0 0 0 0];
+P = -.0001
+boundaryConds(2).loadsBaseVals = [0 0 0 0 P 0];
 
 mesh = struct();
-% mesh.nodesCoords = [ 0 0 0 ; Lx 0 0; Lx/2 0 Lz ]; %triangulo
-% mesh.nodesCoords = [ 0 0 0 ; Lx 0 0; 0 0 Lz ; Lx 0 Lz ]; % cuadrado
-mesh.nodesCoords = [ 0 0 0 ; Lx 0 0; 0 0 Lz ; Lx 0 Lz ; 0 0 Lz*2 ; Lx 0 Lz*2]; % rectangulo
+base_dir = '';
+if strcmp(getenv('TESTS_RUN'), 'yes') && isfolder('examples')
+  base_dir = ['.' filesep 'examples' filesep  'brinquedo' filesep];
+end
+[mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
+assert(max(mesh.nodesCoords(:, 1)) == lx && max(mesh.nodesCoords(:, 2)) == ly);
 
-mesh.conecCell = {}
-mesh.conecCell{1,1} = [ 0 1 1  1  ];
-mesh.conecCell{2,1} = [ 0 1 1  2  ];
-mesh.conecCell{3,1} = [ 0 1 0  3  ];
-mesh.conecCell{4,1} = [ 0 1 0  4  ];
-mesh.conecCell{5,1} = [ 0 1 2  5  ];
-mesh.conecCell{6,1} = [ 0 1 2  6  ];
-
-
-
-mesh.conecCell{7,1} = [ 1 2 0  1 2 3  ];
-mesh.conecCell{8,1} = [ 1 2 0  2 4 3  ];
-mesh.conecCell{9,1} = [ 1 2 0  3 4 5  ];
-mesh.conecCell{10,1} = [ 1 2 0  4 6 5  ];
 
 % md### Initial conditions
 initialConds                  = struct();
@@ -98,22 +85,22 @@ nnodes = size(mesh.nodesCoords,1) ;
 us_5L=matUs( ((nnodes-2)*6+1):(nnodes-1)*6, end );
 us_6L=matUs( ((nnodes-1)*6+1):(nnodes)*6, end );
 
-% ========================================================
-otherParams.problemName  = 'brinquedo_naolinear';
-materials(1).modelName  = 'elastic-rotEngStr';
+% % ========================================================
+% otherParams.problemName  = 'brinquedo_naolinear';
+% materials(1).modelName  = 'elastic-rotEngStr';
 
 
- [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
- %
- % mdAfter that the structs are used to perform the numerical time analysis
- [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
+%  [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+%  %
+%  % mdAfter that the structs are used to perform the numerical time analysis
+%  [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
 
-I = Lx*tz^3/12 ;
-fz = 2*P*(2*Lz)^3/(3*E*I) 
-thetax = 2*P*(2*Lz)^2/(2*E*I) 
+I = ly*tz^3/12 ;
+fz = 3*P*(lx)^3/(3*E*I) 
+thetax = 3*P*(lx)^2/(2*E*I) 
 
-Mx = 2*P*Lz*2
-Fy = 2*P 
+Mx = 3*P*lx*2
+Fy = 3*P 
 
 uy_dof = [ 5*6-3 ] ;
 rotx_dof = 4*6+2 ;
@@ -121,14 +108,14 @@ rotx_dof = 4*6+2 ;
 disps_LIN_uy = matUs( uy_dof,end )
 disps_LIN_rotx = matUs( rotx_dof,end )
 
-disps_NLIN_uy = matUs( uy_dof,end )
-disps_NLIN_rotx = matUs( rotx_dof,end )
+% disps_NLIN_uy = matUs( uy_dof,end )
+% disps_NLIN_rotx = matUs( rotx_dof,end )
 
-us_5NL=matUs( ((nnodes-2)*6+1):(nnodes-1)*6, end );
-us_6NL=matUs( ((nnodes-1)*6+1):(nnodes)*6, end );
+% us_5NL=matUs( ((nnodes-2)*6+1):(nnodes-1)*6, end );
+% us_6NL=matUs( ((nnodes-1)*6+1):(nnodes)*6, end );
 
-[us_5L us_5NL]
-[us_6L us_6NL]
+% [us_5L us_5NL]
+% [us_6L us_6NL]
 
 #elemDisps = [zeros(12,1); zeros(4,1); 1e-4; 0 ]
 % elemDisps_rotx = [zeros(12,1); 0;  1e-4; 0; 0; 0; 0 ]
