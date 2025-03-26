@@ -79,7 +79,7 @@ currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
 while  booleanConverged == 0
 
   %fprintf(' ============== new iteration ====================\n')
-  dispIters = dispIters + 1 ;
+  dispIters = dispIters + 1 
 
 % disp(' =================== ||  ITERATION N || ===================') ;
 

@@ -53,6 +53,8 @@ while finalTimeReachedBoolean == false
   % disp(' /\  /\  /\  /\  /\  NEW TIME STEP /\  /\  /\  /\  /\') ;
   plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars) ;
 
+  modelCurrSol.currTime
+
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
 
