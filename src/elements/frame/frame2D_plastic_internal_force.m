@@ -32,7 +32,8 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     modelParams , ...
     elemDisps , params_plastic_2Dframe )
 
-    global entrosoft
+% global soft_activation
+
 % \/
 % called by the function assembler
 % /\
@@ -109,20 +110,19 @@ SH_boole_np1 = SH_boole_n ;
 % solve local equations
 % ==========================================================
 
-if entrosoft == true
-    SH_boole_np1 = true;
-end
+% if soft_activation == true
+%    SH_boole_np1 = true;
+%end
 
 % condition for the softening hinges activation / label SH_boole_np1 = true
-if SH_boole_np1 == false  % si el siguiente no esta en softening es porque el anterior tampoco.
-    if max ( abs(Mnp1) >= Mu ) == 1 % si algun momento de punt int supera mu
+if SH_boole_np1 == false
+    if max ( abs(Mnp1) >= Mu ) == 1
         SH_boole_np1 = true ;
         [~,ind] = max(abs(Mnp1));
         xd_np1  = xpi(ind) ;
         xdi_np1 = ind ;
 
-
-        entrosoft = true;
+        % soft_activation = true;
 
         disp(' =======  HOLA: primera activacion (tentativa) ======')
     else 
@@ -131,30 +131,27 @@ if SH_boole_np1 == false  % si el siguiente no esta en softening es porque el an
     end
 end
 
-
 if SH_boole_np1 == false
 
   % elastic/plastic case without softening
   
   % solve plastic bending step
+ 
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
-
-%  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 else
 
   % solve softening step
+  
+  [~, tM_np1, ~] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+  
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1)*E*Iy ;
 
-  kp_np1  = kp_n ;
-  xi1_np1 = xi1_n ;  
 end
 
 [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-
 
 % ==========================================================
 % solve global equations

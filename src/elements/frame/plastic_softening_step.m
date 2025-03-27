@@ -47,7 +47,7 @@ if phifailxpi <= 0
 
 else
     
-    if  xin2 <= -Mu/Ks
+    if  (xin2 + phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks)) <= -Mu/Ks
 
         gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
 
