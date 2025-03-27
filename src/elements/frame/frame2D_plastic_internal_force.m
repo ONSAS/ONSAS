@@ -124,9 +124,9 @@ if SH_boole_np1 == false
 
         % soft_activation = true;
 
-        disp(' =======  HOLA: primera activacion (tentativa) ======')
+        disp(' =======  First Activation (TEST) ======')
     else 
-        disp(' NO supera')
+        disp(' NO Activation')
 
     end
 end
@@ -148,6 +148,9 @@ else
   [alfa_np1, xi2_np1, xdi_np1, SH_boole_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1)*E*Iy ;
+
+  kp_np1 = kp_n ;
+  xi1_np1 = xi1_n ;
 
 end
 
