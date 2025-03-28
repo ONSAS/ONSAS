@@ -33,6 +33,8 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
     elemDisps , params_plastic_2Dframe )
 
 % global soft_activation
+global Timex ;
+global TZERO ;
 
 % \/
 % called by the function assembler
@@ -124,6 +126,9 @@ if SH_boole_np1 == false
 
         % soft_activation = true;
 
+        TZERO = Timex(:) ;
+        disp(TZERO) ;
+
         disp(' =======  First Activation (TEST) ======')
     else 
         disp(' NO Activation')
@@ -171,6 +176,8 @@ end
 % ==========================================================
 % outputs
 % ==========================================================
+
+disp(Timex) ;
 
 Fintout = zeros(12,1) ;
 KTout   = zeros(12,12) ;

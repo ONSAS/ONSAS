@@ -22,6 +22,7 @@
 function [ matUs, loadFactorsMat, modelSolutions ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData )
 
 global historic_parameters
+global Timex
 
 % initialize structures to store solutions
 matUs          = modelCurrSol.U                   ;
@@ -53,7 +54,7 @@ while finalTimeReachedBoolean == false
   % disp(' /\  /\  /\  /\  /\  NEW TIME STEP /\  /\  /\  /\  /\') ;
   plotted_bars = progressBarPlot( modelCurrSol, modelProperties, plotted_bars) ;
 
-  modelCurrSol.currTime
+  Timex = modelCurrSol.currTime ;
 
   % compute the model state at next time
   modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
