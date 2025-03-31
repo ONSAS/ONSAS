@@ -127,11 +127,11 @@ if SH_boole_np1 == false
         % soft_activation = true;
 
         TZERO = Timex(:) ;
-        disp(TZERO) ;
+        % disp(TZERO) ;
 
-        disp(' =======  First Activation (TEST) ======')
+        % disp(' =======  First Activation (TEST) ======')
     else 
-        disp(' NO Activation')
+        % disp(' NO Activation')
 
     end
 end
@@ -177,7 +177,7 @@ end
 % outputs
 % ==========================================================
 
-disp(Timex) ;
+% disp(Timex) ;
 
 Fintout = zeros(12,1) ;
 KTout   = zeros(12,12) ;
