@@ -118,7 +118,7 @@ SH_boole_np1 = SH_boole_n ;
 
 % condition for the softening hinges activation / label SH_boole_np1 = true
 if SH_boole_np1 == false
-    if max ( abs(Mnp1) >= Mu ) == 1
+    if (max(abs(Mnp1)) >= Mu) == 1
         SH_boole_np1 = true ;
         [~,ind] = max(abs(Mnp1));
         xd_np1  = xpi(ind) ;
