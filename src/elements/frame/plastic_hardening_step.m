@@ -33,7 +33,7 @@
 function [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step( E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
 
 kp_np1  = kp_n ;
-xi1_np1 = xi1_n ;
+xi1_np1 = xi1_n ; % test
 
 npi       = length(xpi) ;
 qs        = zeros(npi,1) ;
@@ -43,13 +43,13 @@ Cep_np1   = zeros(npi,1) ;
 for ip = 1:npi
 
   % yield criterion
-  if xi1_n(ip) <= (My-Mc)/kh1
+  if xi1_np1(ip) <= (My-Mc)/kh1
 
-    qs(ip) = -kh1*xi1_n(ip) ;
+    qs(ip) = -kh1*xi1_np1(ip) ;
 
   else
 
-    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_n(ip) ;
+    qs(ip) = -(My-Mc)*(1-kh2/kh1)-kh2*xi1_np1(ip) ;
 
   end
 
@@ -57,43 +57,44 @@ for ip = 1:npi
   phis_test(ip) = phitest ;
 
 
-  % gamma values calculations (gamma derivative is the plastic multiplier)
+  % gamma_val values calculations (gamma_val derivative is the plastic multiplier)
   % the new values of internal variables are computed
   if phis_test(ip) <= 0 % elastic increment
     
-      gamma = 0 ;
+      gamma_val = 0 ;
       
   else
 
     if (xi1_n(ip) + phis_test(ip)/(kh1+E*Iy)) <= (My-Mc)/kh1
         
-        gamma = phis_test(ip)/(kh1+E*Iy) ;
+        gamma_val = phis_test(ip)/(kh1+E*Iy) ;
     
     else
         
-        gamma = phis_test(ip)/(kh2+E*Iy) ;
+        gamma_val = phis_test(ip)/(kh2+E*Iy) ;
     
     end
 
-    kp_np1(ip)  = kp_n(ip)  + gamma*sign(Ms(ip)) ;
-    xi1_np1(ip) = xi1_n(ip) + gamma ;
+    kp_np1(ip)  = kp_n(ip)  + gamma_val*sign(Ms(ip)) ;
+    xi1_np1(ip) = xi1_n(ip) + gamma_val ;
   
   end
 
   % elastoplastic tangent bending modulus
   
-  if gamma == 0
+  if gamma_val == 0
       
       Cep_np1(ip) = E*Iy ;
 
-  elseif gamma > 0 && xi1_np1(ip) <= (My-Mc)/kh1
+  elseif gamma_val > 0 && xi1_np1(ip) <= (My-Mc)/kh1
     
       Cep_np1(ip) = E*Iy*kh1/(E*Iy + kh1) ;
 
-  elseif gamma > 0 && xi1_np1(ip) > (My-Mc)/kh1
+  elseif gamma_val > 0 && xi1_np1(ip) > (My-Mc)/kh1
     
       Cep_np1(ip) = E*Iy*kh2/(E*Iy + kh2) ;
-
+  else
+     error("missing case");
   end
 
 end

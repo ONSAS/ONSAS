@@ -31,12 +31,12 @@
 % the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
 % softening criterion (failure function) at integration points
 
-function [alfan1, xin21, xd, SH_boole_np1] ...
+function [alfan1, xin21, xd] ...
   = plastic_softening_step(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
 
-SH_boole_np1 = true ;
+assert(Ks<0);
 
-qfailxpi = min(-Ks*xin2, Mu) ;
+qfailxpi = min(-Ks*xin2, Mu) ; % test
 
 phifailxpi = abs(tM)-(Mu-qfailxpi) ;
 
@@ -46,14 +46,17 @@ if phifailxpi <= 0
     xin21 = xin2 ;
 
 else
-    
-    if  (xin2 + phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks)) <= -Mu/Ks
 
-        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
+    integral_conG = (4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2) ;
+    gamma_tent = phifailxpi / ( integral_conG + Ks) 
+
+    if  (xin2 + gamma_tent) <= -Mu/Ks
+
+        gamma2 = gamma_tent ;
 
     else
 
-        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
+        gamma2 = abs(tM) / integral_conG ;
     
     end
 
