@@ -99,7 +99,7 @@ alfa_np1    = alfa_n ;      % alpha in time n
 if isempty(TZERO)
     SH_boole_np1 = SH_boole_n ;
 else 
-    SH_boole_np1 =true;
+    SH_boole_np1 =true ;
 end
 % ==========================================================
 % moments calculation
@@ -114,15 +114,16 @@ if SH_boole_np1 == false
 
     [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-    [~,ind] = max(abs(Mnp1));
+    [~,ind] = max(abs(Mnp1)) ;
     xd_np1  = xpi(ind) ;
 
     [Mnp1, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 else
-    [Mnp1, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-end
 
+    [Mnp1, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+
+end
 
 % ==========================================================
 % solve local equations
@@ -136,16 +137,17 @@ end
 if SH_boole_np1 == false
     if (abs(tM_np1) >= Mu) == 1
         SH_boole_np1 = true ;
-        [~,ind] = max(abs(Mnp1));
+        [~,ind] = max(abs(Mnp1)) ;
         xd_np1  = xpi(ind) ;
         xdi_np1 = ind ;
         % soft_activation = true;
 
-        TZERO = Timex(:) 
+        TZERO = Timex(:) ;
         % disp(TZERO) ;
 
-        disp(' =======  First Activation (TEST) ======')
+        % disp(' =======  First Activation (TEST) ======')
     else 
+        
         % disp(' NO Activation')
 
     end
@@ -158,38 +160,25 @@ if SH_boole_np1 == false
   % solve plastic bending step
  
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+  
+  % assert(isempty(TZERO))
 
-#    assert(isempty(TZERO))
 else
 
-    kp_np1
-    [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-    Mnp1
-    tM_np1
-
-    xd_n, alfa_n, xi2_n
-    Ks
+  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
   % solve softening step  
   [alfa_np1, xi2_np1, xdi_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1)*E*Iy ;
-# alfa_np1
-# xi2_np1
-# xdi_np1
 
   kp_np1 = kp_n ;
-  xi1_np1 = xi1_n; 
+  xi1_np1 = xi1_n ;
+  
 end
 
 
 [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-if SH_boole_np1==true
-Mnp1
-tM_np1
-end
 
 % ==========================================================
 % solve global equations
@@ -197,12 +186,6 @@ end
 
 
 [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa_np1) ;
-
-
-if SH_boole_np1==true
-    Fint
-    # stop
-end
 
 if SH_boole_np1 == true
     Kelement = Kfd - Kfalfa*Khalfa^(-1)*Khd ;
@@ -236,5 +219,5 @@ params_plastic_2Dframe_np1(9)   = xd_np1 ;
 params_plastic_2Dframe_np1(10)  = xdi_np1 ;
 params_plastic_2Dframe_np1(11)  = alfa_np1 ;
 
-Mzs_integrados = [ Fintout(6) Fintout(12) ];
+Mzs_integrados = [ Fintout(6) Fintout(12) ] ;
 fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;

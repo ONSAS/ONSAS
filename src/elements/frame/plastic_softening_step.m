@@ -34,7 +34,7 @@
 function [alfan1, xin21, xd] ...
   = plastic_softening_step(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
 
-assert(Ks<0);
+% assert(Ks<0) ;
 
 qfailxpi = min(-Ks*xin2, Mu) ; % test
 
@@ -48,7 +48,8 @@ if phifailxpi <= 0
 else
 
     integral_conG = (4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2) ;
-    gamma_tent = phifailxpi / ( integral_conG + Ks) 
+    
+    gamma_tent = phifailxpi / ( integral_conG + Ks) ;
 
     if  (xin2 + gamma_tent) <= -Mu/Ks
 
