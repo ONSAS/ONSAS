@@ -18,6 +18,8 @@
 
 function [ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
+global TZERO
+
 % checks if the fields defined are correct or not
 checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams )
 
@@ -76,6 +78,8 @@ nNodes = size( mesh.nodesCoords, 1 ) ;
 [ U, Udot, Udotdot ] = initialCondsProcessing( initialConds, nNodes ) ;
 
 convDeltau   = zeros( size(U) ) ; 
+
+TZERO = zeros(1, size(Conec,1)) ;
 
 %~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
 previousStateCell = zeros( size(Conec,1), 11 ) ;  % matrix of plastic parameters for all elements

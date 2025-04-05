@@ -30,7 +30,7 @@
 function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
     elemCrossSecParams    , ...
     modelParams , ...
-    elemDisps , params_plastic_2Dframe )
+    elemDisps, params_plastic_2Dframe, element)
 
 % global soft_activation
 global Timex ;
@@ -96,7 +96,7 @@ xdi_np1     = xdi_n ;       % number of the integration point where is the hinge
 alfa_np1    = alfa_n ;      % alpha in time n
 
 % initialization
-if isempty(TZERO)
+if TZERO(1,element) == 0
     SH_boole_np1 = SH_boole_n ;
 else 
     SH_boole_np1 =true ;
@@ -117,11 +117,11 @@ if SH_boole_np1 == false
     [~,ind] = max(abs(Mnp1)) ;
     xd_np1  = xpi(ind) ;
 
-    [Mnp1, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+    [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 else
 
-    [Mnp1, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+    [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 end
 
@@ -129,9 +129,30 @@ end
 % solve local equations
 % ==========================================================
 
-% if soft_activation == true
-%    SH_boole_np1 = true;
-%end
+if SH_boole_np1 == false
+
+  % elastic/plastic case without softening
+  
+  % solve plastic bending step
+ 
+  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
+
+else
+
+  [~, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
+
+  % solve softening step  
+  
+  [alfa_np1, xi2_np1, xdi_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
+
+  Cep_np1 = ones(3,1)*E*Iy ;
+
+  kp_np1  = kp_n ;
+  xi1_np1 = xi1_n ;
+  
+end
+
+[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 % condition for the softening hinges activation / label SH_boole_np1 = true
 if SH_boole_np1 == false
@@ -142,8 +163,7 @@ if SH_boole_np1 == false
         xdi_np1 = ind ;
         % soft_activation = true;
 
-        TZERO = Timex(:) ;
-        % disp(TZERO) ;
+        TZERO(1,element) = Timex(:) ;
 
         % disp(' =======  First Activation (TEST) ======')
     else 
@@ -153,37 +173,10 @@ if SH_boole_np1 == false
     end
 end
 
-if SH_boole_np1 == false
-
-  % elastic/plastic case without softening
-  
-  % solve plastic bending step
- 
-  [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
-  
-  % assert(isempty(TZERO))
-
-else
-
-  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
-  % solve softening step  
-  [alfa_np1, xi2_np1, xdi_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
-
-  Cep_np1 = ones(3,1)*E*Iy ;
-
-  kp_np1 = kp_n ;
-  xi1_np1 = xi1_n ;
-  
-end
-
-
-[Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
 % ==========================================================
 % solve global equations
 % ==========================================================
-
 
 [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa_np1) ;
 
@@ -196,8 +189,6 @@ end
 % ==========================================================
 % outputs
 % ==========================================================
-
-% disp(Timex) ;
 
 Fintout = zeros(12,1) ;
 KTout   = zeros(12,12) ;

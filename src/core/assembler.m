@@ -22,6 +22,8 @@ function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateC
                                                            analysisSettings, outputBooleans, nodalDispDamping,...
                                                            timeVar, previousStateCell )
 
+global TZERO
+
 % ====================================================================
 %  --- 1 declarations ---
 % ====================================================================
@@ -82,6 +84,8 @@ localInternalForces = struct();
 
 %~ strain_vec = cell( size(strain_n_vec, 1), 1 ) ;
 %~ acum_plas_strain_vec = cell( size(acum_plas_strain_n_vec, 1), 1 ) ;
+
+params_plastic_2Dframe = zeros(nElems,11) ;
 
 dynamicProblemBool = strcmp( analysisSettings.methodName, 'newmark' ) ...
                   || strcmp( analysisSettings.methodName, 'alphaHHT' ) ;
@@ -208,12 +212,12 @@ for elem = 1:nElems
 
 		elseif strcmp( modelName, 'plastic-2Dframe')
 
-      params_plastic_2Dframe = previousStateCell(elem,:) ;
+      params_plastic_2Dframe(elem,:) = previousStateCell(elem,:) ;
 
       [ fs, ks, fintLocCoord, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
                                                                     elemCrossSecParams    , ...
                                                                     modelParams , ...
-                                                                    elemDisps , params_plastic_2Dframe) ;
+                                                                    elemDisps , params_plastic_2Dframe(elem,:), elem) ;
 
       Nx = 0;   My = 0;   Mz = fintLocCoord(1) ;
 
