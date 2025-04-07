@@ -117,8 +117,6 @@ if SH_boole_np1 == false
     [~,ind] = max(abs(Mnp1)) ;
     xd_np1  = xpi(ind) ;
 
-    [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
-
 else
 
     [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
@@ -156,23 +154,19 @@ end
 
 % condition for the softening hinges activation / label SH_boole_np1 = true
 if SH_boole_np1 == false
+
     if (abs(tM_np1) >= Mu) == 1
+
         SH_boole_np1 = true ;
         [~,ind] = max(abs(Mnp1)) ;
         xd_np1  = xpi(ind) ;
         xdi_np1 = ind ;
-        % soft_activation = true;
 
         TZERO(1,element) = Timex(:) ;
 
-        % disp(' =======  First Activation (TEST) ======')
-    else 
-        
-        % disp(' NO Activation')
-
     end
-end
 
+end
 
 % ==========================================================
 % solve global equations
