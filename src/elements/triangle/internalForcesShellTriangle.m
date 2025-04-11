@@ -53,7 +53,7 @@ function [fs, ks, fintLocCoord] = internalForcesShellTriangle(elemCoords, elemDi
   R3g = globalRotationMatrix(q3);
 
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
-  [Tr, x02, x03, y03] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
+  [Tr, x02_, x03_, y03_] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
 
   Ro = To';
   Rr = Tr';
