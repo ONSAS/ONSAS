@@ -37,7 +37,7 @@ xi1_np1 = xi1_n ; % test
 
 npi       = length(xpi) ;
 qs        = zeros(npi,1) ;
-phis_test = zeros(npi,1) ;
+phi_test  = zeros(npi,1) ;
 Cep_np1   = zeros(npi,1) ;
 
 for ip = 1:npi
@@ -53,44 +53,46 @@ for ip = 1:npi
 
   end
 
-  phitest = abs(Ms(ip)) - (Mc - qs(ip)) ;
-  phis_test(ip) = phitest ;
+  phi_test(ip) = abs(Ms(ip)) - (Mc - qs(ip)) ;
 
 
   % gamma_val values calculations (gamma_val derivative is the plastic multiplier)
   % the new values of internal variables are computed
-  if phis_test(ip) <= 0 % elastic increment
+  if phi_test(ip) <= 0 % elastic increment
     
-      gamma_val = 0 ;
+      gamma_value = 0 ;
       
   else
 
-    if (xi1_n(ip) + phis_test(ip)/(kh1+E*Iy)) <= (My-Mc)/kh1
+      ValueGamma = phi_test(ip)/(kh1+E*Iy) ;
+      ValueGamma2 = phi_test(ip)/(kh2+E*Iy) ;
+
+    if (xi1_n(ip) + ValueGamma) <= (My-Mc)/kh1
         
-        gamma_val = phis_test(ip)/(kh1+E*Iy) ;
+        gamma_value = ValueGamma ;
     
     else
         
-        gamma_val = phis_test(ip)/(kh2+E*Iy) ;
+        gamma_value = ValueGamma2 ;
     
     end
 
-    kp_np1(ip)  = kp_n(ip)  + gamma_val*sign(Ms(ip)) ;
-    xi1_np1(ip) = xi1_n(ip) + gamma_val ;
+    kp_np1(ip)  = kp_n(ip)  + gamma_value*sign(Ms(ip)) ;
+    xi1_np1(ip) = xi1_n(ip) + gamma_value ;
   
   end
 
   % elastoplastic tangent bending modulus
   
-  if gamma_val == 0
+  if gamma_value == 0
       
       Cep_np1(ip) = E*Iy ;
 
-  elseif gamma_val > 0 && xi1_np1(ip) <= (My-Mc)/kh1
+  elseif gamma_value > 0 && xi1_np1(ip) <= (My-Mc)/kh1
     
       Cep_np1(ip) = E*Iy*kh1/(E*Iy + kh1) ;
 
-  elseif gamma_val > 0 && xi1_np1(ip) > (My-Mc)/kh1
+  elseif gamma_value > 0 && xi1_np1(ip) > (My-Mc)/kh1
     
       Cep_np1(ip) = E*Iy*kh2/(E*Iy + kh2) ;
   else

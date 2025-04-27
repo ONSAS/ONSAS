@@ -47,17 +47,17 @@ if phifailxpi <= 0
 
 else
 
-    integral_conG = (4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2) ;
+    int_G = (4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2) ;
     
-    gamma_tent = phifailxpi / ( integral_conG + Ks) ;
+    gamma_test = phifailxpi / ( int_G + Ks) ;
 
-    if  (xin2 + gamma_tent) <= -Mu/Ks
+    if  (xin2 + gamma_test) <= -Mu/Ks
 
-        gamma2 = gamma_tent ;
+        gamma2 = gamma_test ;
 
     else
 
-        gamma2 = abs(tM) / integral_conG ;
+        gamma2 = abs(tM) / int_G ;
     
     end
 
