@@ -25,7 +25,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   [materials, elements, boundaryConds, analysisSettings, otherParams] = setDefaults(materials, elements, boundaryConds, analysisSettings, otherParams);
 
   % md sets the current version and welcomes user
-  ONSASversion = '0.3.1';
+  ONSASversion = '0.3.3';
   welcomeMessage(ONSASversion, otherParams);
 
   % creates outputdir in current location
