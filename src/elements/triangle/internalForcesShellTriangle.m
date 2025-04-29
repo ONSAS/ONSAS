@@ -26,15 +26,21 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   poisson_ratio = modelParams(2);
   h = thickness;
 
+  % elem nodal coords in global reference frame
   elemCoords = elemCoords';
 
+  % ==============================================================================
+
+  % Nodes position vector in global reference frame 
   r1g = elemCoords(1:3);
   r2g = elemCoords(4:6);
   r3g = elemCoords(7:9);
-  rog = (r1g + r2g + r3g) / 3;
+  rcg = (r1g + r2g + r3g) / 3;
 
+  % Nodal disps in global reference frame
   Ug = switchToTypeIndexing(elemDisps);
 
+  % Global disps and rotations
   u1g = Ug(1:3);
   q1  = Ug(4:6);
   u2g = Ug(7:9);
@@ -42,41 +48,67 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   u3g = Ug(13:15);
   q3  = Ug(16:18);
 
+  % Updated position vector in global reference frame
   p1g = r1g + u1g;
   p2g = r2g + u2g;
   p3g = r3g + u3g;
   pog = (p1g + p2g + p3g) / 3;
 
+  % ==============================================================================
+  
+  % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
   R1g = globalRotationMatrix(q1);
   R2g = globalRotationMatrix(q2);
   R3g = globalRotationMatrix(q3);
 
+  % Transformation matrices from global reference frame
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Tr debería calcularse rotando un angulo theta que surge de minimizar la norma de los desps locales
   [Tr, x02_, x03_, y03_] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  % Rotation matrix from global reference frame to local reference frame in initial configuration
   Ro = To';
+  % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
 
-  r1o = To * (r1g - rog);
-  r2o = To * (r2g - rog);
-  r3o = To * (r3g - rog);
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Estas posiciones deberian estar escritas en coord local de conf deformada
+  % Deberia usarse Tr o Rr'
+  % A discutir con Jorge y Felipe
+  r1o = To * (r1g - rcg);
+  r2o = To * (r2g - rcg);
+  r3o = To * (r3g - rcg);
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  % ==============================================================================
+
+  % nodal displacements in local reference frame in deformed configuration
   % eq. (1) of 10.1016/j.cma.2006.10.006
-  u1def = Tr * (p1g - pog) - r1o;
-  u2def = Tr * (p2g - pog) - r2o;
-  u3def = Tr * (p3g - pog) - r3o;
+  u1def = Rr' * (p1g - pog) - r1o;
+  u2def = Rr' * (p2g - pog) - r2o;
+  u3def = Rr' * (p3g - pog) - r3o;
 
+  % Rotation matrix from local reference frame to nodal reference frame in deformed configuration 
   % eq. (2) of 10.1016/j.cma.2006.10.006
-  R1def = Tr * R1g * Ro;
-  R2def = Tr * R2g * Ro;
-  R3def = Tr * R3g * Ro;
+  R1def = Rr' * R1g * Ro;
+  R2def = Rr' * R2g * Ro;
+  R3def = Rr' * R3g * Ro;
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Nodal rotations in local reference frame in deformed configuration 
   % eq. (13) of 10.1016/j.cma.2006.10.006
   v1def = rotationVector(R1def);
   v2def = rotationVector(R2def);
   v3def = rotationVector(R3def);
 
+  % ==============================================================================
+
+  % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
   pl = zeros(15, 1);
   pl(1:2) = u1def(1:2);
@@ -90,6 +122,8 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   index_full = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18];
   pl_full(index_full) = pl;
 
+  % ==============================================================================
+
   % calculating the stiffness matrix and internal force vector of the shell element in local coordinates
   [Kl_full, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
 
@@ -98,6 +132,8 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   % local internal force vector
   fl = Kl * pl;
+
+  % ==============================================================================
 
   % eq. (15) of 10.1016/j.cma.2006.10.006
   Ta1 = matrixTa(R1def);
@@ -115,6 +151,11 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   Ba(3:5, 3:5) = Ta1;
   Ba(8:10, 8:10) = Ta2;
   Ba(13:15, 13:15) = Ta3;
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % chequeo interno
+  
+  % ==============================================================================
 
   % eq. (21) of 10.1016/j.cma.2006.10.006
   Kh = zeros(15, 15);
@@ -226,7 +267,7 @@ function [R] = globalRotationMatrix(q)
   q1 = q(1);
   q2 = q(2);
   q3 = q(3);
-  q0 = sqrt(1.0 - q(1)^2 - q(2)^2 - q(3)^2);
+  q0 = sqrt(1.0 - q1^2 - q2^2 - q3^2);
 
   R  = 2 * [[(q0^2 + q1^2 - 0.5),  (q1 * q2 - q0 * q3),    (q1 * q3 + q0 * q2)]
             [(q1 * q2 + q0 * q3),  (q0^2 + q2^2 - 0.5),    (q2 * q3 - q0 * q1)]
@@ -243,9 +284,9 @@ end
 
 function [Ta] = matrixTa(R)
   % Eq. (15) of 10.1016/j.cma.2006.10.006
-  Ta = 0.5 * [[R(2, 2) + R(3, 3), -R(1, 2),        -R(1, 3)]
-              [-R(2, 1),           R(1, 1) + R(3, 3), -R(2, 3)]
-              [-R(3, 1),          -R(3, 2),         R(1, 1) + R(2, 2)]
+  Ta = 0.5 * [[R(2, 2) + R(3, 3), -R(1, 2)          , -R(1, 3)          ]
+              [-R(2, 1)         ,  R(1, 1) + R(3, 3), -R(2, 3)          ]
+              [-R(3, 1)         , -R(3, 2)          ,  R(1, 1) + R(2, 2)]
              ];
 end
 
