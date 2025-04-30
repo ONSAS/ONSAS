@@ -17,6 +17,7 @@
 %
 % md# Cantilever problem using plate and shell elements
 % md
+
 close all; clear all;
 addpath(genpath([pwd '/../../src']));
 % md
@@ -43,19 +44,24 @@ boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 
 boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
+
 boundaryConds(2).loadsBaseVals = [0 0 1e-8 0 0 0];
+
 # boundaryConds(2).loadsBaseVals = [0 0 0 0 1e-8 0];
 # boundaryConds(2).loadsBaseVals = [0 1e-8 0 0 0 0];
 
 mesh = struct();
+
 mesh.nodesCoords = [ 0 0 0 ; Lx 0 0; Lx/2 0 Lz ];
 
 mesh.conecCell = {}
 mesh.conecCell{1,1} = [ 0 1 1  1  ];
 mesh.conecCell{2,1} = [ 0 1 1  2  ];
+
 mesh.conecCell{3,1} = [ 0 1 2  3  ];
 
 mesh.conecCell{4,1} = [ 1 2 0  1 2 3  ];
+
 
 % md### Initial conditions
 initialConds                  = struct();
@@ -78,6 +84,7 @@ otherParams.problemName  = 'brinquedoLin';
 otherParams.plots_format = 'vtk';
 
 # % md Execute ONSAS and save the results:
+
 # [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 # %
 # % mdAfter that the structs are used to perform the numerical time analysis
@@ -129,10 +136,12 @@ dif = fsL - fsNL;
 
 % b = '-----------------------------------------------------'
 
+
 % norm(dif)
 
 
 % elemDisps_desy = [zeros(12,1); 0; 0; 1e-4; 0; 0; 0 ]
+
 
 
 % [fsNL,KlNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_desy , 'elastic-linear', [ E nu], tz);
@@ -140,6 +149,7 @@ dif = fsL - fsNL;
 % fsNL = fsNL{1};
 
 % [fsL,KeL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_desy , 'elastic-linear', [ E nu], tz);
+
 
 % fsL = fsL{1};
 
