@@ -116,9 +116,13 @@ fsNL = fsNL{1};
 ksNL = KNL{1};
 
 % Difference
+dif_f_case1 = fsL ./ fsNL
 dif_K_case1 = (ksL - ksNL)  ./ ksNL
 
+sym_kL = issymmetric(ksL, 1e-15)
+sym_kNL = issymmetric(ksNL,1e-15)
 
+aux = ksNL-ksNL'
 % fsLvsfsNL_rotx = [ fsL fsNL fsL./fsNL ]
 
 %dif = fsL - fsNL;

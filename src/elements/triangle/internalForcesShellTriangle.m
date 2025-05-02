@@ -67,17 +67,18 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Tr debería calcularse rotando un angulo theta que surge de minimizar la norma de los desps locales
-  [Tr, x02_, x03_, y03_] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
+  e1_parallel_side12 = 1 ;
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  [Tr, ~, ~, ~] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
 
   % Rotation matrix from global reference frame to local reference frame in initial configuration
   Ro = To';
   % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
-  
+
   Ro
   Rr
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Estas posiciones deberian estar escritas en coord local de conf deformada
   % Deberia usarse Tr o Rr'
@@ -88,13 +89,45 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % ==============================================================================
-
   % nodal displacements in local reference frame in deformed configuration
   % eq. (1) of 10.1016/j.cma.2006.10.006
   u1def = Rr' * (p1g - pog) - r1o;
   u2def = Rr' * (p2g - pog) - r2o;
   u3def = Rr' * (p3g - pog) - r3o;
+  
+  % eq. (7) of 10.1016/j.cma.2006.10.006
+  a1 = u1def + r1o;
+  a2 = u2def + r2o;
+  a3 = u3def + r3o;
+
+  if e1_parallel_side12 == 0
+  
+    % ri0 = Xi
+    % ai = xi
+    Num = 0 ;
+    Den = 0 ;
+    a = [a1,a2,a3] 
+    ro = [r1o,r2o,r3o] ;
+    for i = 1:3
+      ai = a(:,i) ;
+      rio = ro(:,i) ;
+      auxNum = ai(2)*rio(1) - ai(1)*rio(2) ;
+      Num = Num + auxNum ;
+
+      auxDen = ai(1)*rio(1) + ai(2)*rio(2) ;
+      Den = Den + auxDen ;
+    end  
+ 
+    tan_theta = Num/Den ;
+    theta=rad2deg(atan(tan_theta))
+  
+  % num = a1(2)*r1o(1) - a1(1)*r1o(2) + a2(2)*r2o(1) - a2(1)*r2o(2) + a3(2)*r3o(1) - a3(1)*r3o(2)
+  % den = a1(1)*r1o(1) + a1(2)*r1o(2) + a2(1)*r2o(1) + a2(2)*r2o(2) + a3(1)*r3o(1) + a3(2)*r3o(2)
+  end
+
+
+
+  % ==============================================================================
 
   % Rotation matrix from local reference frame to nodal reference frame in deformed configuration 
   % eq. (2) of 10.1016/j.cma.2006.10.006
@@ -168,13 +201,8 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
-  Kl
+  % Kl
   Ka = Ba' * Kl * Ba + Kh;
-
-  % eq. (7) of 10.1016/j.cma.2006.10.006
-  a1 = u1def + r1o;
-  a2 = u2def + r2o;
-  a3 = u3def + r3o;
 
   % eq. (27) of 10.1016/j.cma.2006.10.006
   [G1, G2, G3] = matrixGi(a1, a2, a3, r1o, r2o, r3o);
@@ -182,7 +210,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % G
   % eq. (26) of 10.1016/j.cma.2006.10.006
   P = matrixP(a1, a2, a3, G1, G2, G3);
-  P
+  % P
   % eq. (25) of 10.1016/j.cma.2006.10.006
   E = blkdiag(Rr, Rr, Rr, Rr, Rr, Rr);
 
@@ -218,10 +246,17 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   fm = Bm' * fg;
   Km = Bm' * Kg * Bm + Kk;
 
+  % Kk
+  % Bm
   % shifting lines and columns to onsas convention of dofs ordering
   ks = {switchToNodalIndexing(Km)};
   fs = {switchToNodalIndexing(fm)};
 
+  % fl
+  % fa
+  % fg
+  % fm
+  
 end
 
 function [R] = globalRotationMatrix(q) % ok
@@ -373,7 +408,7 @@ function [F1, F2] = matrixF(n) % ok
 
   F1 = [ skew(n1)(1:2,:)' zeros(3,3) skew(n3)(1:2,:)' zeros(3,3) skew(n5)(1:2,:)' zeros(3,3) ]'
   F2 = [ skew(n1)' skew(n2)' skew(n3)' skew(n4)' skew(n5)' skew(n6)' ]'
-stop
+
 end
 
 function [Kki] = matrixKki(q, m) % ok
