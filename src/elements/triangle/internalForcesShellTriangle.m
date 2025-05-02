@@ -75,7 +75,9 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   Ro = To';
   % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
-
+  
+  Ro
+  Rr
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Estas posiciones deberian estar escritas en coord local de conf deformada
   % Deberia usarse Tr o Rr'
@@ -177,28 +179,34 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % eq. (27) of 10.1016/j.cma.2006.10.006
   [G1, G2, G3] = matrixGi(a1, a2, a3, r1o, r2o, r3o);
   G = [G1; G2; G3];
-
+  % G
   % eq. (26) of 10.1016/j.cma.2006.10.006
   P = matrixP(a1, a2, a3, G1, G2, G3);
-
+  P
   % eq. (25) of 10.1016/j.cma.2006.10.006
   E = blkdiag(Rr, Rr, Rr, Rr, Rr, Rr);
 
   % eq. (30) of 10.1016/j.cma.2006.10.006
+  % fa
   n = P' * fa; % eq. (31) of 10.1016/j.cma.2006.10.006
+  % n
   [F1, F2] = matrixF(n);
 
   % eq. (29) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
   fg = E * n;
+  % F1
+  % F2
+
   Kg = E * (P' * Ka * P  - G * F1' * P - F2 * G') * E';
+  % Kg = E * (P' * Ka * P ) * E';
 
   % eq. (39) of 10.1016/j.cma.2006.10.006
   Bm = eye(18);
   Bm(4:6, 4:6) = matrixTm(q1);
   Bm(10:12, 10:12) = matrixTm(q2);
   Bm(16:18, 16:18) = matrixTm(q3);
-
+  
   % eq. (40) of 10.1016/j.cma.2006.10.006
   Kk = zeros(18, 18);
   Kk(4:6, 4:6) = matrixKki(q1, fg(4:6));
@@ -216,7 +224,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
 end
 
-function [R] = globalRotationMatrix(q)
+function [R] = globalRotationMatrix(q) % ok
   % Eq. (35) of 10.1016/j.cma.2006.10.006
   q1 = q(1);
   q2 = q(2);
@@ -228,7 +236,7 @@ function [R] = globalRotationMatrix(q)
             [(q1 * q3 - q0 * q2),  (q2 * q3 + q0 * q1),    (q0^2 + q3^2  - 0.5)]];
 end
 
-function [v] = rotationVector(R)
+function [v] = rotationVector(R) % ok
   % Eq. (13) of 10.1016/j.cma.2006.10.006
   v = zeros(3, 1);
   v(1) = .5 * (R(3, 2) - R(2, 3));
@@ -236,27 +244,28 @@ function [v] = rotationVector(R)
   v(3) = .5 * (R(2, 1) - R(1, 2));
 end
 
-function [Ta] = matrixTa(R)
+function [Ta] = matrixTa(R) % ok
   % Eq. (15) of 10.1016/j.cma.2006.10.006
-  Ta = 0.5 * [[R(2, 2) + R(3, 3), -R(1, 2)          , -R(1, 3)          ]
-              [-R(2, 1)         ,  R(1, 1) + R(3, 3), -R(2, 3)          ]
-              [-R(3, 1)         , -R(3, 2)          ,  R(1, 1) + R(2, 2)]
+  Ta = 0.5 * [[ R(2, 2) + R(3, 3) , -R(1, 2)          , -R(1, 3)          ]
+              [-R(2, 1)           ,  R(1, 1) + R(3, 3), -R(2, 3)          ]
+              [-R(3, 1)           , -R(3, 2)          ,  R(1, 1) + R(2, 2)]
              ];
 end
 
-function [Tm] = matrixTm(q)
+function [Tmi] = matrixTm(qi) % ok
   % Eq. (37) of 10.1016/j.cma.2006.10.006
-  q1 = q(1);
-  q2 = q(2);
-  q3 = q(3);
-  q0 = sqrt(1.0 - q(1)^2 - q(2)^2 - q(3)^2);
+  q1 = qi(1);
+  q2 = qi(2);
+  q3 = qi(3);
+  q0 = sqrt(1.0 - q1^2 - q2^2 - q3^2);
 
-  Tm = 2 / q0 * [[(q0^2 + q1^2),    (q1 * q2 - q0 * q3),  (q1 * q3 + q0 * q2)]
-                 [(q1 * q2 + q0 * q3),  (q0^2 + q2^2),    (q2 * q3 - q0 * q1)]
-                 [(q1 * q3 - q0 * q2),  (q2 * q3 + q0 * q1),  (q0^2 + q3^2)]];
+  Tmi = 2 / q0 * [[(q0^2 + q1^2)      ,  (q1 * q2 - q0 * q3)  ,  (q1 * q3 + q0 * q2)]
+                 [(q1 * q2 + q0 * q3) ,  (q0^2 + q2^2)        ,  (q2 * q3 - q0 * q1)]
+                 [(q1 * q3 - q0 * q2) ,  (q2 * q3 + q0 * q1)  ,  (q0^2 + q3^2)      ]
+                 ];
 end
 
-function [Khi] = matrixKhi(R, m)
+function [Khi] = matrixKhi(R, m) % ok
   % Eq. (21) of 10.1016/j.cma.2006.10.006
 
   Khi = 0.5 * [[((R(2, 3) - R(3, 2)) * m(1) + R(3, 1) * m(2) - R(2, 1) * m(3)),   (R(1, 1) * m(3) - R(1, 3) * m(1)),                            (R(1, 2) * m(1) - R(1, 1) * m(2))]
@@ -265,7 +274,7 @@ function [Khi] = matrixKhi(R, m)
 
 end
 
-function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3)
+function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3) % ok
   % Eq. (27) of 10.1016/j.cma.2006.10.006
 
   a21 = a2 - a1;
@@ -296,14 +305,15 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3)
 
 end
 
-function [P] = matrixP(a1, a2, a3, G1, G2, G3)
+function [P] = matrixP(a1, a2, a3, G1, G2, G3) % ok
   % Eq. (26) of 10.1016/j.cma.2006.10.006
 
+  % Matrix A
   Ai = zeros(5, 3);
   Ai(3, 1) = 1;
   Ai(4, 2) = 1;
   Ai(5, 3) = 1;
-
+  % Identity matrix
   I = zeros(5, 6);
   I(1, 1) = 1;
   I(2, 2) = 1;
@@ -311,6 +321,7 @@ function [P] = matrixP(a1, a2, a3, G1, G2, G3)
   I(4, 5) = 1;
   I(5, 6) = 1;
 
+  % Node 1
   P = zeros(15, 18);
   Ai(1, 3) = -a1(2);
   Ai(2, 3) =   a1(1);
@@ -327,32 +338,45 @@ function [P] = matrixP(a1, a2, a3, G1, G2, G3)
   P = [P1; P2; P3];
 end
 
-function [F1, F2] = matrixF(n)
+function [F1, F2] = matrixF(n) % ok
   % Eq. (30) of 10.1016/j.cma.2006.10.006
 
-  F1 = zeros(15, 3);
-  F2 = zeros(18, 3);
+  % F1 = zeros(15, 3);
+  % F2 = zeros(18, 3);
 
-  for i = 1:3
-    j1 = 6 * (i - 1) + 1;
-    j2 = j1 + 2;
-    j3 = j2 + 1;
-    j4 = 6 * i;
+  % for i = 1:3
+  %   j1 = 6 * (i - 1) + 1;
+  %   j2 = j1 + 2;
+  %   j3 = j2 + 1;
+  %   j4 = 6 * i;
 
-    sna = skew(n(j1:j2));
-    snb = skew(n(j3:j4));
+  %   sna = skew(n(j1:j2));
+  %   snb = skew(n(j3:j4));
 
-    i1 = 5*(i - 1) + 1;
-    i2 = i1 + 1;
-    F1(i1:i2, :) = sna(1:2, :);
+  %   i1 = 5*(i - 1) + 1;
+  %   i2 = i1 + 1;
+  %   F1(i1:i2, :) = sna(1:2, :);
 
-    F2(j1:j2, :) = sna;
-    F2(j3:j4, :) = snb;
+  %   F2(j1:j2, :) = sna;
+  %   F2(j3:j4, :) = snb;
 
-  end
+  % end
+  
+  n1 = n(1:3) ;
+  n2 = n(4:6) ;
+
+  n3 = n(7:9) ;
+  n4 = n(10:12) ;
+
+  n5 = n(13:15) ;
+  n6 = n(16:18) ; 
+
+  F1 = [ skew(n1)(1:2,:)' zeros(3,3) skew(n3)(1:2,:)' zeros(3,3) skew(n5)(1:2,:)' zeros(3,3) ]'
+  F2 = [ skew(n1)' skew(n2)' skew(n3)' skew(n4)' skew(n5)' skew(n6)' ]'
+stop
 end
 
-function [Kki] = matrixKki(q, m)
+function [Kki] = matrixKki(q, m) % ok
   % Eq. (41) of 10.1016/j.cma.2006.10.006
 
   q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
