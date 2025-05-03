@@ -59,6 +59,7 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
 
   k_dr = min(min(abs(Kb))) * 1.e-4;
   %k_dr = max(k_dr, 1.e-4);
+  % k_dr=0;
   Kel(6, 6) = k_dr;
   Kel(12, 12) = k_dr;
   Kel(18, 18) = k_dr;

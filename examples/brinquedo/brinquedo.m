@@ -83,46 +83,101 @@ otherParams.plots_format = 'vtk';
 
 
 
-a = '-----------------------------------------------------'
-
-%  
 nnodes = 3 ;
-elemDisps_case1 = zeros(nnodes*6,1) ;
+% fprintf('====================================================================================\n')
+% fprintf('First Case - Node 1 & 2 stretch parallel to line 1-2\n')
+% fprintf('====================================================================================\n')
 
-dof_ux_1 = 1*6-5 ;
-dof_ux_2 = 2*6-5 ;
+% elemDisps_case1 = zeros(nnodes*6,1) ;
+% dof_ux_1 = 1*6-5 ;
+% dof_ux_2 = 2*6-5 ;
+% ux_1 = -1e-8 ;
+% ux_2 =  1e-8 ;
 
-ux_1 = -1e-6 ;
-ux_2 =  1e-6 ;
+% elemDisps_case1(dof_ux_1,1) = ux_1 ;
+% elemDisps_case1(dof_ux_2,1) = ux_2 ;
 
-elemDisps_case1(dof_ux_1,1) = ux_1 ;
-elemDisps_case1(dof_ux_2,1) = ux_2 ;
+% % Linear
+% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-linear', [ E nu], tz);
+% fsL = fsL{1};
+% ksL = KL{1};
 
-elemDisps_case1 ;
+% % Non-Linear
+% materials(1).modelName  = 'elastic-rotEngStr';
+% [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-rotEngStr', [ E nu], tz);
+% fsNL = fsNL{1};
+% ksNL = KNL{1};
 
-% First Case - Node 1 & 2 stretch parallel to line 1-2
+% % Difference
+% dif_f_case1 = fsL ./ fsNL
+% dif_K_case1 = ksL ./ ksNL
+
+% fprintf('====================================================================================\n')
+% fprintf('Second Case - Node 3 stretch y-dir\n')
+% fprintf('====================================================================================\n')
+
+% elemDisps_case2 = zeros(nnodes*6,1) ;
+% dof_uy_3 = 3*6-4 ;
+
+% uy_3 = 1e-4 ;
+
+% elemDisps_case2(dof_uy_3,1) = uy_3 ;
+
+% % Linear
+% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case2 , 'elastic-linear', [ E nu], tz);
+% fsL = fsL{1};
+% ksL = KL{1};
+
+% % Non-Linear
+% materials(1).modelName  = 'elastic-rotEngStr';
+% [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case2 , 'elastic-rotEngStr', [ E nu], tz);
+% fsNL = fsNL{1};
+% ksNL = KNL{1};
+
+% % Difference
+% dif_f_case2 = fsL ./ fsNL
+% dif_K_case2 = ksL ./ ksNL
+
+fprintf('====================================================================================\n')
+fprintf('Third Case - Node 3 vertical disp z-dir\n')
+fprintf('====================================================================================\n')
+
+elemDisps_case3 = zeros(nnodes*6,1) ;
+dof_rx_1 = 1*6-2 ;
+dof_rx_2 = 2*6-2 ;
+dof_uz_3 = 3*6-3 ;
+
+uz_3 = 3e-3 ;
+
+tan_theta_1 = uz_3 / Ly ;
+theta_1 = atan(tan_theta_1) 
+
+rx_1 = theta_1 ;
+rx_2 = theta_1 ;
+
+Ly_def = sqrt(Ly^2 + uz_3^2)
+uy_3_bar = Ly_def - Ly
+
+Rr_ana = [  1   0               0               ;
+            0   cos(theta_1)    sin(theta_1)    ;
+            0   sin(theta_1)    cos(theta_1)    ] ;
+
+elemDisps_case3(dof_rx_1,1) = rx_1 ;
+elemDisps_case3(dof_rx_2,1) = rx_2 ;
+elemDisps_case3(dof_uz_3,1) = uz_3 ;
+
+
 % Linear
-[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-linear', [ E nu], tz);
-
+[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-linear', [ E nu], tz);
 fsL = fsL{1};
 ksL = KL{1};
 
 % Non-Linear
 materials(1).modelName  = 'elastic-rotEngStr';
-%[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_rotx , 'elastic-rotEngStr', [ E nu], tz);
-[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-rotEngStr', [ E nu], tz);
-
+[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-rotEngStr', [ E nu], tz);
 fsNL = fsNL{1};
 ksNL = KNL{1};
 
 % Difference
-dif_f_case1 = fsL ./ fsNL
-dif_K_case1 = (ksL - ksNL)  ./ ksNL
-
-sym_kL = issymmetric(ksL, 1e-15)
-sym_kNL = issymmetric(ksNL,1e-15)
-
-aux = ksNL-ksNL'
-% fsLvsfsNL_rotx = [ fsL fsNL fsL./fsNL ]
-
-%dif = fsL - fsNL;
+dif_f_case3 = fsL ./ fsNL
+dif_K_case3 = ksL ./ ksNL

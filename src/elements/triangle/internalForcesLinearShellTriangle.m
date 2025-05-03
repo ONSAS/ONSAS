@@ -32,7 +32,9 @@ function [fs, ks, fintLocCoord,Kefora ] = internalForcesLinearShellTriangle(elem
   r2g = elemCoords(4:6);
   r3g = elemCoords(7:9);
 
-  Ug = switchToTypeIndexing(elemDisps);
+  % elemDisps
+  % Ug = switchToTypeIndexing(elemDisps);
+  Ug = elemDisps;
 
   [T, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
   Te = blkdiag(T, T, T, T, T, T);
@@ -43,6 +45,9 @@ function [fs, ks, fintLocCoord,Kefora ] = internalForcesLinearShellTriangle(elem
 
 
   Kg = Te' * Kl * Te;
+  % Te
+  % Ug
+  % Kg*Ug
   fg = Kg * Ug;
 
   ks = {switchToNodalIndexing(Kg)};
