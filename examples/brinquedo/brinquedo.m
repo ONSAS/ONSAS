@@ -145,18 +145,20 @@ fprintf('=======================================================================
 elemDisps_case3 = zeros(nnodes*6,1) ;
 dof_rx_1 = 1*6-2 ;
 dof_rx_2 = 2*6-2 ;
+dof_rx_3 = 3*6-2 ;
 dof_uz_3 = 3*6-3 ;
 
-uz_3 = 3e-3 ;
+uz_3 = 1e-6 ;
 
 tan_theta_1 = uz_3 / Ly ;
-theta_1 = atan(tan_theta_1) 
+theta_1 = atan(tan_theta_1) ;
 
 rx_1 = theta_1 ;
 rx_2 = theta_1 ;
+rx_3 = theta_1 ;
 
-Ly_def = sqrt(Ly^2 + uz_3^2)
-uy_3_bar = Ly_def - Ly
+Ly_def = sqrt(Ly^2 + uz_3^2) ;
+uy_3_bar = Ly_def - Ly ;
 
 Rr_ana = [  1   0               0               ;
             0   cos(theta_1)    sin(theta_1)    ;
@@ -164,6 +166,7 @@ Rr_ana = [  1   0               0               ;
 
 elemDisps_case3(dof_rx_1,1) = rx_1 ;
 elemDisps_case3(dof_rx_2,1) = rx_2 ;
+elemDisps_case3(dof_rx_3,1) = rx_3 ;
 elemDisps_case3(dof_uz_3,1) = uz_3 ;
 
 
@@ -179,5 +182,9 @@ fsNL = fsNL{1};
 ksNL = KNL{1};
 
 % Difference
-dif_f_case3 = fsL ./ fsNL
-dif_K_case3 = ksL ./ ksNL
+% dif_f_case3 = fsL ./ fsNL
+% dif_K_case3 = ksL ./ ksNL
+
+f_NL = ksNL * elemDisps_case3;
+
+[ fsL fsNL f_NL ]

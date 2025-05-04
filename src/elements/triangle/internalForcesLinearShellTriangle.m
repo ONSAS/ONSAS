@@ -45,13 +45,13 @@ function [fs, ks, fintLocCoord,Kefora ] = internalForcesLinearShellTriangle(elem
 
 
   Kg = Te' * Kl * Te;
-  % Te
-  % Ug
-  % Kg*Ug
+
   fg = Kg * Ug;
 
-  ks = {switchToNodalIndexing(Kg)};
-  fs = {switchToNodalIndexing(fg)};
+  ks = {Kg};
+  fs = {fg};
+  % ks = {switchToNodalIndexing(Kg)};
+  % fs = {switchToNodalIndexing(fg)};
 
 end
 
