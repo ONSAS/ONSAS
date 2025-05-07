@@ -84,40 +84,43 @@ otherParams.plots_format = 'vtk';
 
 
 nnodes = 3 ;
-% fprintf('====================================================================================\n')
-% fprintf('First Case - Node 1 & 2 stretch parallel to line 1-2\n')
-% fprintf('====================================================================================\n')
+fprintf('====================================================================================\n')
+fprintf('First Case - Node 1 & 2 stretch parallel to line 1-2\n')
+fprintf('====================================================================================\n')
 
-% elemDisps_case1 = zeros(nnodes*6,1) ;
-% dof_ux_1 = 1*6-5 ;
-% dof_ux_2 = 2*6-5 ;
-% ux_1 = -1e-8 ;
-% ux_2 =  1e-8 ;
+elemDisps_case1 = zeros(nnodes*6,1) ;
+dof_ux_1 = 1*6-5 ;
+dof_ux_2 = 2*6-5 ;
+ux_1 = -1e-8 ;
+ux_2 =  1e-8 ;
 
-% elemDisps_case1(dof_ux_1,1) = ux_1 ;
-% elemDisps_case1(dof_ux_2,1) = ux_2 ;
+elemDisps_case1(dof_ux_1,1) = ux_1 ;
+elemDisps_case1(dof_ux_2,1) = ux_2 ;
 
-% % Linear
-% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-linear', [ E nu], tz);
-% fsL = fsL{1};
-% ksL = KL{1};
+% Linear
+[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-linear', [ E nu], tz);
+fsL = fsL{1};
+ksL = KL{1};
 
-% % Non-Linear
-% materials(1).modelName  = 'elastic-rotEngStr';
-% [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-rotEngStr', [ E nu], tz);
-% fsNL = fsNL{1};
-% ksNL = KNL{1};
+% Non-Linear
+materials(1).modelName  = 'elastic-rotEngStr';
+[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case1 , 'elastic-rotEngStr', [ E nu], tz);
+fsNL = fsNL{1};
+ksNL = KNL{1};
 
-% % Difference
-% dif_f_case1 = fsL ./ fsNL
-% dif_K_case1 = ksL ./ ksNL
+% Difference
+dif_f_case1 = fsL ./ fsNL
+dif_K_case1 = ksL ./ ksNL
+
+eig(ksL)
+stop
 
 % fprintf('====================================================================================\n')
 % fprintf('Second Case - Node 3 stretch y-dir\n')
 % fprintf('====================================================================================\n')
 
 % elemDisps_case2 = zeros(nnodes*6,1) ;
-% dof_uy_3 = 3*6-4 ;
+% dof_uy_3 = 3*6-3 ;
 
 % uy_3 = 1e-4 ;
 
@@ -138,53 +141,130 @@ nnodes = 3 ;
 % dif_f_case2 = fsL ./ fsNL
 % dif_K_case2 = ksL ./ ksNL
 
-fprintf('====================================================================================\n')
-fprintf('Third Case - Node 3 vertical disp z-dir\n')
-fprintf('====================================================================================\n')
+% fprintf('====================================================================================\n')
+% fprintf('Third Case - Node 3 vertical disp z-dir\n')
+% fprintf('====================================================================================\n')
 
-elemDisps_case3 = zeros(nnodes*6,1) ;
-dof_rx_1 = 1*6-2 ;
-dof_rx_2 = 2*6-2 ;
-dof_rx_3 = 3*6-2 ;
-dof_uz_3 = 3*6-3 ;
+% elemDisps_case3 = zeros(nnodes*6,1) ;
+% dof_rx_1 = 1*6-4 ;
+% dof_rx_2 = 2*6-4 ;
+% dof_rx_3 = 3*6-4 ;
+% dof_uz_3 = 3*6-1 ;
 
-uz_3 = 1e-6 ;
+% uz_3 = 1e-6 ;
 
-tan_theta_1 = uz_3 / Ly ;
-theta_1 = atan(tan_theta_1) ;
+% tan_theta_1 = uz_3 / Ly ;
+% theta_1 = atan(tan_theta_1) ;
 
-rx_1 = theta_1 ;
-rx_2 = theta_1 ;
-rx_3 = theta_1 ;
+% rx_1 = theta_1 ;
+% rx_2 = theta_1 ;
+% rx_3 = theta_1 ;
 
-Ly_def = sqrt(Ly^2 + uz_3^2) ;
-uy_3_bar = Ly_def - Ly ;
+% Ly_def = sqrt(Ly^2 + uz_3^2) ;
+% uy_3_bar = Ly_def - Ly 
 
-Rr_ana = [  1   0               0               ;
-            0   cos(theta_1)    sin(theta_1)    ;
-            0   sin(theta_1)    cos(theta_1)    ] ;
+% Rr_ana = [  1   0               0               ;
+%             0   cos(theta_1)    sin(theta_1)    ;
+%             0   sin(theta_1)    cos(theta_1)    ] ;
 
-elemDisps_case3(dof_rx_1,1) = rx_1 ;
-elemDisps_case3(dof_rx_2,1) = rx_2 ;
-elemDisps_case3(dof_rx_3,1) = rx_3 ;
-elemDisps_case3(dof_uz_3,1) = uz_3 ;
+% % elemDisps_case3(dof_rx_1,1) = rx_1 ;
+% % elemDisps_case3(dof_rx_2,1) = rx_2 ;
+% % elemDisps_case3(dof_rx_3,1) = rx_3 ;
+% elemDisps_case3(dof_uz_3,1) = uz_3 ;
 
 
-% Linear
-[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-linear', [ E nu], tz);
-fsL = fsL{1};
-ksL = KL{1};
+% % Linear
+% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-linear', [ E nu], tz);
+% fsL = fsL{1};
+% ksL = KL{1};
 
-% Non-Linear
-materials(1).modelName  = 'elastic-rotEngStr';
-[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-rotEngStr', [ E nu], tz);
-fsNL = fsNL{1};
-ksNL = KNL{1};
+% % Non-Linear
+% materials(1).modelName  = 'elastic-rotEngStr';
+% [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-rotEngStr', [ E nu], tz);
+% fsNL = fsNL{1};
+% ksNL = KNL{1};
 
-% Difference
+% % Difference
 % dif_f_case3 = fsL ./ fsNL
 % dif_K_case3 = ksL ./ ksNL
 
-f_NL = ksNL * elemDisps_case3;
+% f_NL = ksNL * elemDisps_case3;
 
-[ fsL fsNL f_NL ]
+% [ fsL fsNL f_NL ]
+
+
+
+
+
+
+
+
+
+# Nada que ver
+
+
+% materials = struct();
+% materials(1).modelName = 'elastic-linear';
+% materials(1).modelParams = [E, nu];
+% materials(1).density = 0;
+
+% % md### Elements
+% ty=0.1;
+% tz=0.1;
+% elements = struct();
+% elements(1).elemType  = 'node';
+% elements(2).elemType  = 'frame';
+% elements(2).elemCrossSecParams = { 'rectangle'; [ty tz] };
+% elements(2).massMatType     =  'consistent';
+% % md### BoundaryConditions
+% % Supports
+% boundaryConds = struct();
+% boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
+% boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
+% % Loads
+% boundaryConds(2).loadsCoordSys = 'global';
+% Py=0;
+% Pz=-1;
+% boundaryConds(2).loadsBaseVals = [0 0 Py 0 -Pz 0];
+% % md
+% % md## Mesh
+% % md Mesh nodes
+% mesh = struct();
+% L1=0;
+% L2=2;
+% mesh.nodesCoords = [0   0  0; ...
+%                     L2 0  0];
+
+
+% mesh.conecCell = { };
+% % md nodes
+% mesh.conecCell{1, 1 } = [0 1 1   1];
+% mesh.conecCell{2, 1 } = [0 1 2   3];
+% % md and frame elements
+% mesh.conecCell{3, 1 } = [1 2 0   1 2];
+% mesh.conecCell{4, 1 } = [1 2 0   2 3];
+% % md
+% % md### InitialConditions
+% % md empty struct
+% initialConds = struct();
+% %
+% % md Analysis settings
+% analysisSettings = struct();
+% %
+% otherParams = struct();
+
+% Conec = mesh.conecCell ;
+% mebVec = [1 2];
+
+% modelParams        = materials(mebVec(1)).modelParams;
+% modelName          = materials(mebVec(1)).modelName;
+% modelParams        = materials(mebVec(1)).modelParams;
+% density            = materials(mebVec(1)).density;
+
+% elemType           = elements(mebVec(2)).elemType;
+
+% massMatType        = elements(mebVec(2)).massMatType;
+% elemCrossSecParams = elements(mebVec(2)).elemCrossSecParams;
+% [fs, ks, finteLocalCoor] = elementFrameLinear(reshape(mesh.nodesCoords', 1, 6), elemCrossSecParams, massMatType, density, modelName, modelParams, zeros(12,1), zeros(12,1));
+
+% kl_frame = ks{1} ;

@@ -38,8 +38,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   rcg = (r1g + r2g + r3g) / 3;
 
   % Nodal disps in global reference frame
-  % Ug = switchToTypeIndexing(elemDisps);
-  Ug = elemDisps;
+  Ug = switchToTypeIndexing(elemDisps);
 
   % Global disps and rotations
   u1g = Ug(1:3);
@@ -68,56 +67,50 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   % Transformation matrices from global reference frame
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
+  [Tr, ~, ~, ~]       = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  % Tr debería calcularse rotando un angulo theta que surge de minimizar la norma de los desps locales
-  e1_parallel_side12 = 1 ;
-
-  [Tr, ~, ~, ~] = edgeLocalAxisShellTriangle(p1g, p2g, p3g);
+  
 
   % Rotation matrix from global reference frame to local reference frame in initial configuration
   Ro = To';
   % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
-
   % Ro
   % Rr
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  % Estas posiciones deberian estar escritas en coord local de conf deformada
-  % Deberia usarse Tr o Rr'
-  % A discutir con Jorge y Felipe
+  % nodal displacements in local reference frame in deformed configuration
+  % eq. (1) of 10.1016/j.cma.2006.10.006
   r1o = To * (r1g - rcg);
   r2o = To * (r2g - rcg);
   r3o = To * (r3g - rcg);
-  
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % nodal displacements in local reference frame in deformed configuration
-  % eq. (1) of 10.1016/j.cma.2006.10.006
   u1def = Rr' * (p1g - pog) - r1o
   u2def = Rr' * (p2g - pog) - r2o
   u3def = Rr' * (p3g - pog) - r3o
 
-% % Haugen
-%   u = u1g
-%   c = pog-rcg
-%   c_aux = ucg
-
-%   I = eye(3) ;
-%   Ro = Rr ;
-%   xo = r1g ;
-%   a = rcg ; 
-
-%   ud = u-c+(I-Ro)*(xo-a)
-%   ud_def = Rr'*ud
-%   stop
-  
   % eq. (7) of 10.1016/j.cma.2006.10.006
   a1 = u1def + r1o;
   a2 = u2def + r2o;
   a3 = u3def + r3o;
 
+  (u3def(2)-u2def(2))
+  % stop
+
+  % % Haugen
+  %   u = u1g
+  %   c = pog-rcg
+  %   c_aux = ucg
+
+  %   I = eye(3) ;
+  %   Ro = Rr ;
+  %   xo = r1g ;
+  %   a = rcg ; 
+
+  %   ud = u-c+(I-Ro)*(xo-a)
+  %   ud_def = Rr'*ud
+  %   stop
+
+  e1_parallel_side12 = 1 ;
   if e1_parallel_side12 == 0
   
     % ri0 = Xi
@@ -135,17 +128,22 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
       auxDen = ai(1)*rio(1) + ai(2)*rio(2) ;
       Den = Den + auxDen ;
     end  
- 
     tan_theta = Num/Den 
     theta=rad2deg(atan(tan_theta))
-  
-  % num = a1(2)*r1o(1) - a1(1)*r1o(2) + a2(2)*r2o(1) - a2(1)*r2o(2) + a3(2)*r3o(1) - a3(1)*r3o(2)
-  % den = a1(1)*r1o(1) + a1(2)*r1o(2) + a2(1)*r2o(1) + a2(2)*r2o(2) + a3(1)*r3o(1) + a3(2)*r3o(2)
-  % stop
-  % Falta rotar aun
+    % num = a1(2)*r1o(1) - a1(1)*r1o(2) + a2(2)*r2o(1) - a2(1)*r2o(2) + a3(2)*r3o(1) - a3(1)*r3o(2)
+    % den = a1(1)*r1o(1) + a1(2)*r1o(2) + a2(1)*r2o(1) + a2(2)*r2o(2) + a3(1)*r3o(1) + a3(2)*r3o(2)
+    % stop
+    % Falta rotar aun y escribir coordenadas de nodos actualizadas
   end
 
-
+  % eq. (27) of 10.1016/j.cma.2006.10.006
+  [G1, G2, G3] = matrixGi(a1, a2, a3, r1o, r2o, r3o, e1_parallel_side12);
+  G = [G1; G2; G3];
+  % G
+  % sum(G(:,1))
+  % sum(G(:,2))
+  % sum(G(:,3))
+  % stop
 
   % ==============================================================================
 
@@ -155,6 +153,11 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   R2def = Rr' * R2g * Ro;
   R3def = Rr' * R3g * Ro;
 
+  % R1g
+  % R2g
+  % R3g
+  % stop
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Nodal rotations in local reference frame in deformed configuration 
   % eq. (13) of 10.1016/j.cma.2006.10.006
@@ -162,9 +165,9 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   v2def = rotationVector(R2def);
   v3def = rotationVector(R3def);
 
-  % v1def
-  % v2def
-  % v3def
+  v1def 
+  v2def
+  v3def
   % stop
   % ==============================================================================
 
@@ -178,8 +181,12 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   pl(11:12) = u3def(1:2);
   pl(13:15) = v3def;
   
-  pl_full = zeros(18, 1);
-  index_full = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18];
+  pl_full = zeros(18, 1) ;
+  uz_dofs = [ 3, 9, 15 ] ;
+  % index_full = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18];
+  index_full = (1:18);
+  index_full(uz_dofs) = [];
+
   pl_full(index_full) = pl;
 
   % ==============================================================================
@@ -192,7 +199,6 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   % local internal force vector
   fl = Kl * pl;
-  
   % pl
   % fl
   % stop
@@ -202,27 +208,24 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   Ta1 = matrixTa(R1def);
   Ta2 = matrixTa(R2def);
   Ta3 = matrixTa(R3def);
-
   % Ta1
   % Ta2
   % Ta3
   % stop
-  % eq. (18) of 10.1016/j.cma.2006.10.006
-  fa = fl;
-  fa(3:5) = Ta1' * fl(3:5);
-  fa(8:10) = Ta2' * fl(8:10);
-  fa(13:15) = Ta3' * fl(13:15);
-
+  
   % eq. (19) of 10.1016/j.cma.2006.10.006
   Ba = eye(15);
   Ba(3:5, 3:5) = Ta1;
   Ba(8:10, 8:10) = Ta2;
   Ba(13:15, 13:15) = Ta3;
-
   % Ba
-  % stop
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  % chequeo interno
+
+  % eq. (18) of 10.1016/j.cma.2006.10.006
+  fa = Ba'*fl;
+  % fa = fl;
+  % fa(3:5) = Ta1' * fl(3:5);
+  % fa(8:10) = Ta2' * fl(8:10);
+  % fa(13:15) = Ta3' * fl(13:15);
   
   % ==============================================================================
 
@@ -231,37 +234,28 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   Kh(3:5, 3:5) = matrixKhi(R1def, fl(3:5));
   Kh(8:10, 8:10) = matrixKhi(R2def, fl(8:10));
   Kh(13:15, 13:15) = matrixKhi(R3def, fl(13:15));
-
   % Kh
   % stop
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
-  % Kl
   Ka = Ba' * Kl * Ba + Kh;
-
-  % dif_K = (Kl - Ka)  ./ Ka
+  % dif_K = Kl ./ Ka
   % stop
 
-  % eq. (27) of 10.1016/j.cma.2006.10.006
-  [G1, G2, G3] = matrixGi(a1, a2, a3, r1o, r2o, r3o);
-  G = [G1; G2; G3];
-  % G
-  % sum(G(:,1))
-  % sum(G(:,2))
-  % sum(G(:,3))
-  % stop
-  
   % eq. (26) of 10.1016/j.cma.2006.10.006
-  P   = matrixP(a1, a2, a3, G1, G2, G3);
+  P = matrixP(a1, a2, a3, G1, G2, G3);
   % P_f = matrixP_full(a1, a2, a3, G1, G2, G3);
   % P
+
   % eq. (25) of 10.1016/j.cma.2006.10.006
   E = blkdiag(Rr, Rr, Rr, Rr, Rr, Rr);
 
   % eq. (30) of 10.1016/j.cma.2006.10.006
   n = P' * fa; % eq. (31) of 10.1016/j.cma.2006.10.006
-  % n
+  % fa_aux = zeros(18,1) ;
+  % fa_aux(index_full) = fa ;
+  % [fa_aux n]
   % stop
 
   [F1, F2] = matrixF(n);
@@ -269,21 +263,23 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % eq. (29) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
   fg = E * n;
-
   %
-  % Kl_aux = (P' * Ka * P  - G * F1' * P - F2 * G') ;
+  Kl_aux = (P' * Ka * P  - G * F1' * P - F2 * G') ;
   %
   Kg = E * (P' * Ka * P  - G * F1' * P - F2 * G') * E';
   
-  im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
-  ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
-  drill_dofs = [6, 12, 18] ;              % (rz)
+  % Kl_full ./ Kl_aux
+  % stop
+
+  % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
+  % ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
+  % drill_dofs = [6, 12, 18] ;              % (rz)
   
   % Membrane matrix
   % ======================================================
   % K_linear_m  = Kl_full(im, im) ;
   % K_NL_m      = Kl_aux(im, im) ;
-  % dif_K_m     = (K_linear_m - K_NL_m)  ./ K_NL_m
+  % dif_K_m     = K_linear_m ./ K_NL_m
   % ======================================================
   % (K_linear_m - K_NL_m)
   % stop
@@ -291,14 +287,12 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % ======================================================
   % K_linear_b = Kl_full(ib,ib) ;
   % K_NL_b = Kl_aux(ib, ib) ;
-  % dif_K_b = (K_linear_b - K_NL_b)  ./ K_NL_b
   % dif_K_b = K_linear_b ./ K_NL_b
   % ======================================================
   % (K_linear_b - K_NL_b)
-
-  % dif_K = (Kl_full - Kl_aux)  ./ Kl_aux
-  % fL = Kl_full * Ug
-  % fNL = Kl_aux * Ug
+  % T_lin = blkdiag(To,To,To,To,To,To) ;
+  % fL = T_lin'* Kl_full * T_lin * Ug
+  % fNL = Kg * Ug
   % fL./fNL
   % stop
 
@@ -324,11 +318,11 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   Km = Bm' * Kg * Bm + Kk;
 
   % shifting lines and columns to onsas convention of dofs ordering
-  % ks = {switchToNodalIndexing(Km)};
-  % fs = {switchToNodalIndexing(fm)};
+  ks = {switchToNodalIndexing(Km)};
+  fs = {switchToNodalIndexing(fm)};
 
-  ks = {Km};
-  fs = {fm};
+  % ks = {Km};
+  % fs = {fm};
 
   % fl
   % fa
@@ -387,7 +381,7 @@ function [Khi] = matrixKhi(R, m) % ok
 
 end
 
-function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3) % ok
+function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag) % ok
   % Eq. (27) of 10.1016/j.cma.2006.10.006
 
   a21 = a2 - a1;
@@ -395,26 +389,43 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3) % ok
   a32 = a3 - a2;
   a13 = a1 - a3;
 
+  d = norm(a21);
   v = norm(cross(a21, a31));
   c = a1' * r1 + a2' * r2 + a3' * r3;
 
   G1 = zeros(6, 3);
-  G1(1, 3) = -r1(2) / c;
-  G1(2, 3) =   r1(1) / c;
-  G1(3, 1) =   a32(1) / v;
-  G1(3, 2) =   a32(2) / v;
+  G1(3, 1) = a32(1) / v;
+  G1(3, 2) = a32(2) / v;
 
   G2 = zeros(6, 3);
-  G2(1, 3) = -r2(2) / c;
-  G2(2, 3) =   r2(1) / c;
-  G2(3, 1) =   a13(1) / v;
-  G2(3, 2) =   a13(2) / v;
-
+  G2(3, 1) = a13(1) / v;
+  G2(3, 2) = a13(2) / v;
+  
   G3 = zeros(6, 3);
-  G3(1, 3) = -r3(2) / c;
-  G3(2, 3) =   r3(1) / c;
-  G3(3, 1) =   a21(1) / v;
-  G3(3, 2) =   a21(2) / v;
+  G3(3, 1) = a21(1) / v;
+  G3(3, 2) = a21(2) / v;
+  e1_flag
+  if e1_flag == 0
+    %
+    G1(1, 3) =  -r1(2) / c;
+    G1(2, 3) =   r1(1) / c;
+    %
+    G2(1, 3) =  -r2(2) / c;
+    G2(2, 3) =   r2(1) / c;
+    %
+    G3(1, 3) =  -r3(2) / c;
+    G3(2, 3) =   r3(1) / c;
+  
+  else
+    G1(1, 3) = 0;
+    G1(2, 3) = -1/d;
+    %
+    G2(1, 3) = 0;
+    G2(2, 3) = 1/d;
+    %
+    G3(1, 3) = 0;
+    G3(2, 3) = 0;    
+  end
 
 end
 
@@ -437,17 +448,20 @@ function [P] = matrixP(a1, a2, a3, G1, G2, G3) % ok
   % Projector Matrix
   P = zeros(15, 18);
   % Node 1
-  Ai(1, 3) = -a1(2);
-  Ai(2, 3) =  a1(1);
-  P1 = [I - Ai * G1', -Ai * G2', -Ai * G3'];
+  A1 = Ai ;
+  A1(1, 3) = -a1(2);
+  A1(2, 3) =  a1(1);
+  P1 = [I - A1 * G1', -A1 * G2', -A1 * G3'];
 
-  Ai(1, 3) = -a2(2);
-  Ai(2, 3) =   a2(1);
-  P2 = [-Ai * G1', I - Ai * G2', -Ai * G3'];
+  A2=Ai ;
+  A2(1, 3) = -a2(2);
+  A2(2, 3) =   a2(1);
+  P2 = [-A2 * G1', I - A2 * G2', -A2 * G3'];
 
-  Ai(1, 3) = -a3(2);
-  Ai(2, 3) =   a3(1);
-  P3 = [-Ai * G1', -Ai * G2', I - Ai * G3'];
+  A3 = Ai ;
+  A3(1, 3) = -a3(2);
+  A3(2, 3) =   a3(1);
+  P3 = [-A3 * G1', -A3 * G2', I - A3 * G3'];
 
   P = [P1; P2; P3];
 end
@@ -466,29 +480,34 @@ function [P] = matrixP_full(a1, a2, a3, G1, G2, G3) % ok
   % Projector Matrix
   P = zeros(18, 18);
   % Node 1
-  Ai(1, 3) = -a1(2);
-  Ai(2, 3) =  a1(1);
+  A1 = Ai ;
+  A1(1, 3) = -a1(2);
+  A1(2, 3) =  a1(1);
   %
-  Ai(3, 1) =  a1(2);
-  Ai(3, 2) = -a1(1);
+  A1(3, 1) =  a1(2);
+  A1(3, 2) = -a1(1);
   %
-  P1 = [I - Ai * G1', -Ai * G2', -Ai * G3'];
+  P1 = [I - A1 * G1', -A1 * G2', -A1 * G3'];
 
-  Ai(1, 3) = -a2(2);
-  Ai(2, 3) =   a2(1);
+  % Node 2
+  A2 = Ai;
+  A2(1, 3) = -a2(2);
+  A2(2, 3) =   a2(1);
   %
-  Ai(3, 1) =  a2(2);
-  Ai(3, 2) = -a2(1);
+  A2(3, 1) =  a2(2);
+  A2(3, 2) = -a2(1);
   %
-  P2 = [-Ai * G1', I - Ai * G2', -Ai * G3'];
+  P2 = [-A2 * G1', I - A2 * G2', -A2 * G3'];
 
-  Ai(1, 3) = -a3(2);
-  Ai(2, 3) =   a3(1);
+  % node 3
+  A3 = Ai ;
+  A3(1, 3) = -a3(2);
+  A3(2, 3) =   a3(1);
   %
-  Ai(3, 1) =  a3(2);
-  Ai(3, 2) = -a3(1);
+  A3(3, 1) =  a3(2);
+  A3(3, 2) = -a3(1);
   %
-  P3 = [-Ai * G1', -Ai * G2', I - Ai * G3'];
+  P3 = [-A3 * G1', -A3 * G2', I - A3 * G3'];
 
   P = [P1; P2; P3];
 end
