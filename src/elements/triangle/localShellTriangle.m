@@ -53,7 +53,9 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
 
   % assembling the stiffness matrix of the shell element in local coordinates
   Kel = zeros(18, 18);
-
+  % eig(Km)
+  % eig(Kb)
+  % stop
   Kel(im, im) = Km;
   Kel(ib, ib) = Kb;
 
