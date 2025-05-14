@@ -22,7 +22,7 @@ close all; clear all;
 addpath(genpath([pwd '/../../src']));
 % md
 % md## Scalars
-E = 2;
+E = 2100000000;
 nu = 0.0;
 tz = .1;
 
@@ -136,6 +136,59 @@ nnodes = 3 ;
 % dif_f_case2 = fsL ./ fsNL
 % dif_K_case2 = ksL ./ ksNL
 
+ fprintf('====================================================================================\n')
+ fprintf('Second Case 2.1 - Node 2 stretch x-dir // Node 1 stretch x-dir\n')
+ fprintf('====================================================================================\n')
+
+ elemDisps_case21 = zeros(nnodes*6,1) ;
+ dof_ux_1 = 2*6-5 ;
+
+ ux_1 = 1e-4 ;
+
+ elemDisps_case21(dof_ux_1,1) = ux_1 ;
+
+ % Linear
+ [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-linear', [ E nu], tz);
+ fsL_1 = fsL{1};
+ ksL_1 = KL{1};
+
+ % Non-Linear
+ materials(1).modelName  = 'elastic-rotEngStr';
+ [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-rotEngStr', [ E nu], tz);
+ fsNL_1 = fsNL{1};
+ ksNL_1 = KNL{1};
+
+ % Difference
+ dif_f_case2 = fsL_1 ./ fsNL_1
+ dif_K_case2 = ksL_1 ./ ksNL_1
+ 
+ 
+ elemDisps_case22 = zeros(nnodes*6,1) ;
+ dof_ux_2 = 2*6-5 ;
+
+ ux_2 = 1e-4 ;
+
+ elemDisps_case22(dof_ux_2,1) = ux_2 ;
+
+ % Linear
+ [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-linear', [ E nu], tz);
+ fsL_2 = fsL{1};
+ ksL_2 = KL{1};
+
+ % Non-Linear
+ materials(1).modelName  = 'elastic-rotEngStr';
+ [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-rotEngStr', [ E nu], tz);
+ fsNL_2 = fsNL{1};
+ ksNL_2 = KNL{1};
+
+ % Difference
+ dif_f_case2 = fsL_2 ./ fsNL_2
+ dif_K_case2 = ksL_2 ./ ksNL_2
+ 
+ [ fsL_1 fsNL_1 fsL_2 fsNL_2 ]
+ 
+ %stop
+
 fprintf('====================================================================================\n')
 fprintf('Third Case - Node 3 vertical disp z-dir\n')
 fprintf('====================================================================================\n')
@@ -145,8 +198,12 @@ dof_rx_1 = 1*6-4 ;
 dof_rx_2 = 2*6-4 ;
 dof_rx_3 = 3*6-4 ;
 dof_uz_3 = 3*6-1 ;
+dof_uz_2 = 2*6-1 ;
+dof_uz_1 = 1*6-1 ;
 
 uz_3 = 1e-8 ;
+uz_2 = 1e-8 ;
+uz_1 = 1e-8 ;
 
 tan_theta_1 = uz_3 / Ly ;
 theta_1 = atan(tan_theta_1) ;
@@ -162,10 +219,12 @@ Rr_ana = [  1   0               0               ;
             0   cos(theta_1)    sin(theta_1)    ;
             0   sin(theta_1)    cos(theta_1)    ] ;
 
-elemDisps_case3(dof_rx_1,1) = rx_1 ;
-elemDisps_case3(dof_rx_2,1) = rx_2 ;
-elemDisps_case3(dof_rx_3,1) = rx_3 ;
+%elemDisps_case3(dof_rx_1,1) = rx_1 ;
+%elemDisps_case3(dof_rx_2,1) = rx_2 ;
+%elemDisps_case3(dof_rx_3,1) = rx_3 ;
 elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
+%elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
+%elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
 
 
 % Linear
