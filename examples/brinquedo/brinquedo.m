@@ -136,62 +136,77 @@ nnodes = 3 ;
 % dif_f_case2 = fsL ./ fsNL
 % dif_K_case2 = ksL ./ ksNL
 
- fprintf('====================================================================================\n')
- fprintf('Second Case 2.1 - Node 2 stretch x-dir // Node 1 stretch x-dir\n')
- fprintf('====================================================================================\n')
+%  fprintf('====================================================================================\n')
+%  fprintf('Second Case 2.1 - Node 2 stretch x-dir // Node 1 stretch x-dir\n')
+%  fprintf('====================================================================================\n')
 
- elemDisps_case21 = zeros(nnodes*6,1) ;
- dof_ux_1 = 2*6-5 ;
+%  elemDisps_case21 = zeros(nnodes*6,1) ;
+%  dof_ux_1 = 2*6-5 ;
 
- ux_1 = 1e-4 ;
+%  ux_1 = 1e-4 ;
 
- elemDisps_case21(dof_ux_1,1) = ux_1 ;
+%  elemDisps_case21(dof_ux_1,1) = ux_1 ;
 
- % Linear
- [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-linear', [ E nu], tz);
- fsL_1 = fsL{1};
- ksL_1 = KL{1};
+%  % Linear
+%  [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-linear', [ E nu], tz);
+%  fsL_1 = fsL{1};
+%  ksL_1 = KL{1};
 
- % Non-Linear
- materials(1).modelName  = 'elastic-rotEngStr';
- [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-rotEngStr', [ E nu], tz);
- fsNL_1 = fsNL{1};
- ksNL_1 = KNL{1};
+%  % Non-Linear
+%  materials(1).modelName  = 'elastic-rotEngStr';
+%  [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case21 , 'elastic-rotEngStr', [ E nu], tz);
+%  fsNL_1 = fsNL{1};
+%  ksNL_1 = KNL{1};
 
- % Difference
- dif_f_case2 = fsL_1 ./ fsNL_1
- dif_K_case2 = ksL_1 ./ ksNL_1
+%  % Difference
+%  dif_f_case2 = fsL_1 ./ fsNL_1
+%  dif_K_case2 = ksL_1 ./ ksNL_1
  
  
- elemDisps_case22 = zeros(nnodes*6,1) ;
- dof_ux_2 = 2*6-5 ;
+%  elemDisps_case22 = zeros(nnodes*6,1) ;
+%  dof_ux_2 = 2*6-5 ;
 
- ux_2 = 1e-4 ;
+%  ux_2 = 1e-4 ;
 
- elemDisps_case22(dof_ux_2,1) = ux_2 ;
+%  elemDisps_case22(dof_ux_2,1) = ux_2 ;
 
- % Linear
- [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-linear', [ E nu], tz);
- fsL_2 = fsL{1};
- ksL_2 = KL{1};
+%  % Linear
+%  [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-linear', [ E nu], tz);
+%  fsL_2 = fsL{1};
+%  ksL_2 = KL{1};
 
- % Non-Linear
- materials(1).modelName  = 'elastic-rotEngStr';
- [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-rotEngStr', [ E nu], tz);
- fsNL_2 = fsNL{1};
- ksNL_2 = KNL{1};
+%  % Non-Linear
+%  materials(1).modelName  = 'elastic-rotEngStr';
+%  [fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case22 , 'elastic-rotEngStr', [ E nu], tz);
+%  fsNL_2 = fsNL{1};
+%  ksNL_2 = KNL{1};
 
- % Difference
- dif_f_case2 = fsL_2 ./ fsNL_2
- dif_K_case2 = ksL_2 ./ ksNL_2
+%  % Difference
+%  dif_f_case2 = fsL_2 ./ fsNL_2
+%  dif_K_case2 = ksL_2 ./ ksNL_2
  
- [ fsL_1 fsNL_1 fsL_2 fsNL_2 ]
+%  [ fsL_1 fsNL_1 fsL_2 fsNL_2 ]
  
- %stop
+%  stop
 
 fprintf('====================================================================================\n')
 fprintf('Third Case - Node 3 vertical disp z-dir\n')
 fprintf('====================================================================================\n')
+
+
+
+mesh.nodesCoords = [ -Lx/2  0       0  ; 
+                      Lx/2  0       0  ; 
+                      0     Ly      0 ];
+
+% r1_g = mesh.nodesCoords(1,:)';
+% r2_g = mesh.nodesCoords(2,:)';
+% r3_g = mesh.nodesCoords(3,:)';
+% rc_g = (r1_g+r2_g+r3_g) / 3 ;
+
+% mesh.nodesCoords = [ r1_g-rc_g  ; 
+%                      r2_g-rc_g  ; 
+%                      r3_g-rc_g  ];
 
 elemDisps_case3 = zeros(nnodes*6,1) ;
 dof_rx_1 = 1*6-4 ;
@@ -201,9 +216,9 @@ dof_uz_3 = 3*6-1 ;
 dof_uz_2 = 2*6-1 ;
 dof_uz_1 = 1*6-1 ;
 
-uz_3 = 1e-8 ;
-uz_2 = 1e-8 ;
-uz_1 = 1e-8 ;
+uz_3 = 1e-6 ;
+uz_2 = 1e-6 ;
+uz_1 = 1e-6 ;
 
 tan_theta_1 = uz_3 / Ly ;
 theta_1 = atan(tan_theta_1) ;
@@ -212,20 +227,12 @@ rx_1 = theta_1 ;
 rx_2 = theta_1 ;
 rx_3 = theta_1 ;
 
-Ly_def = sqrt(Ly^2 + uz_3^2) ;
-uy_3_bar = Ly_def - Ly 
-
-Rr_ana = [  1   0               0               ;
-            0   cos(theta_1)    sin(theta_1)    ;
-            0   sin(theta_1)    cos(theta_1)    ] ;
-
-%elemDisps_case3(dof_rx_1,1) = rx_1 ;
-%elemDisps_case3(dof_rx_2,1) = rx_2 ;
-%elemDisps_case3(dof_rx_3,1) = rx_3 ;
-elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
-%elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
-%elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
-
+% elemDisps_case3(dof_rx_1,1) = rx_1 ;
+% elemDisps_case3(dof_rx_2,1) = rx_2 ;
+% elemDisps_case3(dof_rx_3,1) = rx_3 ;
+% elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
+elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
+% elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
 
 % Linear
 [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-linear', [ E nu], tz);
@@ -239,13 +246,45 @@ fsNL = fsNL{1};
 ksNL = KNL{1};
 
 % % Difference
-dif_f_case3 = fsL ./ fsNL
-dif_K_case3 = ksL ./ ksNL
+dif_f_case3 = fsL ./ fsNL 
+dif_K_case3 = ksL ./ ksNL ;
 
 f_NL = ksNL * elemDisps_case3;
 
+% a = [ 'ux' ; 'rx' ; 'uy' ; 'ry' ; 'uz' ; 'rz' ] ;
 [ fsL fsNL f_NL ]
 
+% Rr_ana = [  1   0               0               ;
+%             0   cos(theta_1)    -sin(theta_1)    ;
+%             0   sin(theta_1)    cos(theta_1)    ] ;
+
+% Ly_def = sqrt(Ly^2 + uz_3^2) ;
+% uy_3_bar = Ly_def - Ly ;
+
+% r1_g = mesh.nodesCoords(1,:)';
+% r2_g = mesh.nodesCoords(2,:)';
+% r3_g = mesh.nodesCoords(3,:)';
+% rc_g = (r1_g+r2_g+r3_g) / 3 ;
+
+% u1_g = zeros(3,1) ;
+% u2_g = zeros(3,1) ;
+% u3_g = zeros(3,1) ;
+% u3_g(3) = uz_3 ;
+
+% p1_g = r1_g + u1_g ;
+% p2_g = r2_g + u2_g ;
+% p3_g = r3_g + u3_g ;
+% pc_g = (p1_g+p2_g+p3_g) / 3 ;
+
+% To = eye(3) ;
+
+% r1_o = To * (r1_g-rc_g) ;
+% r2_o = To * (r2_g-rc_g) ;
+% r3_o = To * (r3_g-rc_g) ;
+% [ r1_o r2_o r3_o ];
+
+% u1_def = Rr_ana'*(p1_g-pc_g) - r1_o ;
+% stop
 
 
 
@@ -278,3 +317,17 @@ f_NL = ksNL * elemDisps_case3;
 % Kl(ia,ia) = Ka ;
 % Kl(ib,ib) = Kb ;
 
+
+% % Haugen
+%   u = u1_g
+%   c = pog-rc_g
+%   c_aux = ucg
+
+%   I = eye(3) ;
+%   Ro = Rr ;
+%   xo = r1g ;
+%   a = rc_g ; 
+
+%   ud = u-c+(I-Ro)*(xo-a)
+%   ud_def = Rr'*ud
+%   stop
