@@ -3,12 +3,14 @@
 
 ![octave tests](https://github.com/ONSAS/ONSAS/actions/workflows/octave_docker_tests.yml/badge.svg)
 ![matlab tests](https://github.com/ONSAS/ONSAS/actions/workflows/matlab_tests_and_docs.yml/badge.svg)
-[![codecov](https://codecov.io/gh/ONSAS/ONSAS/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS) 
+[![codecov](https://codecov.io/gh/ONSAS/ONSAS/branch/master/graph/badge.svg)](https://codecov.io/gh/ONSAS/ONSAS)
 
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://onsas.github.io/ONSAS/dev/)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING)
 [![Release](https://img.shields.io/github/v/release/ONSAS/ONSAS?color=yellow&include_prereleases)](https://github.com/ONSAS/ONSAS/releases)
-[![DOI](https://zenodo.org/badge/170120732.svg)](https://zenodo.org/badge/latestdoi/170120732)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15290486.svg)](https://doi.org/10.5281/zenodo.15290486)
+
+
 
 
 ## About ONSAS <a name="aboutonsas"></a>
