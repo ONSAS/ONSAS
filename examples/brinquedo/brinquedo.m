@@ -247,7 +247,7 @@ ksNL = KNL{1};
 
 % % Difference
 dif_f_case3 = fsL ./ fsNL 
-dif_K_case3 = ksL ./ ksNL ;
+dif_K_case3 = ksL ./ ksNL 
 
 f_NL = ksNL * elemDisps_case3;
 

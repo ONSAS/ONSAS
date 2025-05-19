@@ -53,9 +53,7 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
 
   % assembling the stiffness matrix of the shell element in local coordinates
   Kel = zeros(18, 18);
-  % eig(Km)
-  % eig(Kb)
-  % stop
+
   Kel(im, im) = Km;
   Kel(ib, ib) = Kb;
 
@@ -65,7 +63,13 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
   Kel(6, 6) = k_dr;
   Kel(12, 12) = k_dr;
   Kel(18, 18) = k_dr;
-
+  
+  % sym_Km = issymmetric(Km)
+  % sym_Kb = issymmetric(Kb)
+  % sym_Kel = issymmetric(Kel)
+  % stop
+  
+  
   % returning moments in local element coordiantes
   fintLocCoord = zeros(1, 3);
   fintLocCoord = fintLocCoord + M;  % Store the moments in fintLocCoord

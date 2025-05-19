@@ -104,10 +104,10 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
 
   % (u3_def(2)-u2_def(2))
 
-  e1_parallel_side12 = 1  % 0 if battini modification is used - 1 if not
-  flag_first_mod  = 0 % 1 if battini modification is used - 0 if not
-  flag_second_mod = 0  % 1 if battini modification is used - 0 if not
-  flag_third_mod  = 0  % 1 if battini modification is used - 0 if not
+  e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
+  flag_first_mod  = 0; % 1 if battini modification is used - 0 if not
+  flag_second_mod = 0;  % 1 if battini modification is used - 0 if not
+  flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not
 
   if e1_parallel_side12 == 0
     Num = 0 ;
@@ -189,6 +189,9 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
   [Kl_full, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
 
+  % drill_dofs = [6, 12, 18] ;  % (rz)
+  % Kl_full(drill_dofs,drill_dofs) = 0 ;
+
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
 
@@ -244,7 +247,9 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % eq. (26) of 10.1016/j.cma.2006.10.006
   P = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
   % P
-
+% size(P)
+% P*P
+% stop
   % eq. (25) of 10.1016/j.cma.2006.10.006
   E = blkdiag(Rr, Rr, Rr, Rr, Rr, Rr);
 
@@ -272,12 +277,14 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % [ n fg ]
   % stop
   % Kl_aux = (P' * Ka * P  - G * F1' * P - F2 * G') ;
-  % Kl_aux = (P' * Kl * P) ;
+  % Kl_aux1 = (P' * Kl * P) ;
+  % Kl_aux2 = (P' * Ka * P) ;
   Kg = E * (P' * Ka * P  - G * F1' * P - F2 * G') * E';
   
+
   % G * F1' * P
   % F2 * G'
-  % Kl_full ./ Kl_aux
+  % Kg(drill_dofs,drill_dofs) = 0;
   % stop
 
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
@@ -504,6 +511,9 @@ function [P] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   A = [A1; A2; A3];
   G = [G1; G2; G3];
 
+  % PP=P*P
+  % PP-P
+  % PP./P
   % A'*G
   % G'*A
   % stop
