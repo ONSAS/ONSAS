@@ -230,8 +230,8 @@ rx_3 = theta_1 ;
 % elemDisps_case3(dof_rx_1,1) = rx_1 ;
 % elemDisps_case3(dof_rx_2,1) = rx_2 ;
 % elemDisps_case3(dof_rx_3,1) = rx_3 ;
-% elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
-elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
+elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
+% elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
 % elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
 
 % Linear
@@ -241,7 +241,8 @@ ksL = KL{1};
 
 % Non-Linear
 materials(1).modelName  = 'elastic-rotEngStr';
-[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-rotEngStr', [ E nu], tz);
+
+[fsNL,KNL,~] = internalForcesShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-rotEngStr', [ E nu], tz, []);
 fsNL = fsNL{1};
 ksNL = KNL{1};
 

@@ -19,7 +19,7 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness)
+function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness, rotMat)
 
   % material and geometric parameters
   young_modulus = modelParams(1);
@@ -61,15 +61,15 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   
   % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
-  % R1_g = globalRotationMatrix(rot1_g);
-  % R2_g = globalRotationMatrix(rot2_g);
-  % R3_g = globalRotationMatrix(rot3_g);
-  R1_g = expm(skew(rot1_g));
-  R2_g = expm(skew(rot2_g));
-  R3_g = expm(skew(rot3_g));
-  % R1_g
-  % R2_g
-  % R3_g
+  R1_g = rotMat{1};
+  R2_g = rotMat{2};
+  R3_g = rotMat{3};
+  % R1_g=eye(3);
+  % R2_g=eye(3);
+  % R3_g=eye(3);
+  % R1_g = expm(skew(rot1_g));
+  % R2_g = expm(skew(rot2_g));
+  % R3_g = expm(skew(rot3_g));
   % stop
 
   % Transformation matrices from global reference frame
@@ -81,8 +81,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
   % Ro
-  % Rr
-
+  
   % nodal displacements in local reference frame in deformed configuration
   % eq. (1) of 10.1016/j.cma.2006.10.006
   r1_o = To * (r1_g - rc_g);
@@ -97,12 +96,12 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % fprintf('u_def \n')
   % [ u1_def u2_def u3_def ] 
 
+  % stop
   % eq. (7) of 10.1016/j.cma.2006.10.006
   a1_def = u1_def + r1_o;
   a2_def = u2_def + r2_o;
   a3_def = u3_def + r3_o;
-
-  % (u3_def(2)-u2_def(2))
+  % [a1_def a2_def a3_def]
 
   e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
   flag_first_mod  = 0; % 1 if battini modification is used - 0 if not
@@ -134,7 +133,6 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % eq. (27) of 10.1016/j.cma.2006.10.006
   [G1, G2, G3] = matrixGi(a1_def, a2_def, a3_def, r1_o, r2_o, r3_o, e1_parallel_side12);
   G = [G1; G2; G3];
-  % G
   % [ sum(G(:,1)) sum(G(:,2)) sum(G(:,3)) ]
   % stop
 
@@ -143,6 +141,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   R1_def = Rr' * R1_g * Ro;
   R2_def = Rr' * R2_g * Ro;
   R3_def = Rr' * R3_g * Ro;
+  % stop
  
   % Nodal rotations in local reference frame in deformed configuration 
   % eq. (13) of 10.1016/j.cma.2006.10.006
@@ -155,7 +154,6 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % v1_def = [ sp1(3,2) ; sp1(1,3) ; sp1(2,1) ] ;
   % Rdef = expm(skew(v1_def))
   % stop
-  
   
   % ==============================================================================
   % Local displacement vector in local reference frame in deformed configuration
@@ -184,21 +182,19 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
     pl(16:18) = v3_def;
     pl_full(index_full) = pl;
   end
-  
+  % [ Ug pl ]
+  % stop
   % ==============================================================================
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
   [Kl_full, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
-
-  % drill_dofs = [6, 12, 18] ;  % (rz)
-  % Kl_full(drill_dofs,drill_dofs) = 0 ;
-
+  % Kl_full = 1/2*(Kl_full+Kl_full');
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
-
+  
   % local internal force vector
   fl = Kl * pl;
+  
   % ==============================================================================
-
   % eq. (15) of 10.1016/j.cma.2006.10.006
   Ta1 = matrixTa(R1_def);
   Ta2 = matrixTa(R2_def);
@@ -237,7 +233,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   end
   % Kh
   % stop
-
+  
   % eq. (20) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
   Ka = Ba' * Kl * Ba + Kh;
@@ -245,11 +241,8 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % stop
 
   % eq. (26) of 10.1016/j.cma.2006.10.006
-  P = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
-  % P
-% size(P)
-% P*P
-% stop
+  [P, A] = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
+
   % eq. (25) of 10.1016/j.cma.2006.10.006
   E = blkdiag(Rr, Rr, Rr, Rr, Rr, Rr);
 
@@ -257,34 +250,31 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   n = P' * fa; % eq. (31) of 10.1016/j.cma.2006.10.006
   % [ n fa ]
   % stop
-  % n_1 = n(1:3) ;
-  % m_1 = n(4:6) ;
-  % n_2 = n(7:9) ;
-  % m_2 = n(10:12) ;
-  % n_3 = n(13:15) ;
-  % m_3 = n(16:18) ;  
-  % n_1
-  % F1_1_jv = [ skew(n_1) ; zeros(3,3) ]
-
   [F1, F2] = matrixF(n, flag_second_mod);
-  % F1_1 = F1(1:6,:) 
-  % F2_1 = F1(1:6,:)
-
   % stop
+
   % eq. (29) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
   fg = E * n;
-  % [ n fg ]
+  % [ n fg fa fl]
   % stop
   % Kl_aux = (P' * Ka * P  - G * F1' * P - F2 * G') ;
-  % Kl_aux1 = (P' * Kl * P) ;
-  % Kl_aux2 = (P' * Ka * P) ;
   Kg = E * (P' * Ka * P  - G * F1' * P - F2 * G') * E';
-  
+  % Ke = (P' * Ka * P  - G * F1' * P - F2 * G');
 
-  % G * F1' * P
-  % F2 * G'
-  % Kg(drill_dofs,drill_dofs) = 0;
+  F = 1/2*(F1+F2);
+  Kg = E * ( P'*Ka*P - G*F' - P'*F*G' ) * E' ;  
+  Ke =     ( P'*Ka*P - G*F' - P'*F*G' );
+  % [ Ke*A -F2 ]
+  
+  issymmetric(Ka)
+  issymmetric(Kg)
+  issymmetric(Ke)
+  issymmetric(P'*Ka*P)
+  issymmetric(Ba)
+  issymmetric(Kh)
+
+  
   % stop
 
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
@@ -307,9 +297,9 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % fL = T_lin'* Kl_full * T_lin * Ug
   % fNL = Kg * Ug
   % fL./fNL
+  % [ fL fNL fg ]
   % stop
 
- 
   Bm = eye(18);
   Kk = zeros(18, 18);
   
@@ -333,7 +323,7 @@ function [fs, ks, fintLocCoord,Kl_full] = internalForcesShellTriangle(elemCoords
   % shifting lines and columns to onsas convention of dofs ordering
   ks = {switchToNodalIndexing(Km)};
   fs = {switchToNodalIndexing(fm)};
-
+  
 end
 
 function [R] = globalRotationMatrix(q) % ok
@@ -439,7 +429,7 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag) % ok
 
 end
 
-function [P] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
+function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   % Eq. (26) of 10.1016/j.cma.2006.10.006
   
   if flag_second_mod == 1
@@ -507,15 +497,26 @@ function [P] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   P2 = [-A2 * G1', I - A2 * G2', -A2 * G3'];
   P3 = [-A3 * G1', -A3 * G2', I - A3 * G3'];
   
+  % A1_jv = [-skew(a1) ; eye(3)]
+  % A2_jv = [-skew(a2) ; eye(3)]
+  % A3_jv = [-skew(a3) ; eye(3)]
+
   P = [P1; P2; P3];
   A = [A1; A2; A3];
   G = [G1; G2; G3];
 
   % PP=P*P
   % PP-P
+  % eye
   % PP./P
+  
+  
+  % eye
   % A'*G
   % G'*A
+
+  %zeros
+  % P*A
   % stop
 end
 

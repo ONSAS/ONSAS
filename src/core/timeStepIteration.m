@@ -64,8 +64,14 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   systemDeltauMatrix = modelCurrSol.systemDeltauMatrix;
   previousStateCell  = modelCurrSol.previousStateCell;
 
+  % ===========================================================================================================
+  % ===========================================================================================================
+  rotMatCell = modelCurrSol.rotMatCell;
+  % ===========================================================================================================
+  % ===========================================================================================================
+
   % --- assemble system of equations ---
-  [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell);
+  [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
 
   booleanConverged = false;
   dispIters        = 0;
@@ -80,15 +86,16 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
     [deltaured, nextLoadFactorsVals] = computeDeltaU(systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals, currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args);
 
     % updates: model variables and computes internal forces ---
-    [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau);
-
+    [Utp1k, currDeltau, rotMatCell] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau, rotMatCell);
+    % max(Utp1k(1:6:end))
+    % min(Utp1k(5:6:end))
     % --- update next time magnitudes ---
     [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
                                                    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
 
     % --- assemble system of equations ---
-    [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell);
-
+    [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
+    % norm(fint_{1}(BCsData.neumDofs))
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest(modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:, 1));
     % ---------------------------------------------------
@@ -101,16 +108,16 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
 
   end % iteration while
   % --------------------------------------------------------------------
-
+  % stop
   Utp1       = Utp1k;
   Udottp1    = Udottp1k;
   Udotdottp1 = Udotdottp1k;
-
+  % max(Utp1(1:6:end))
   % computes KTred at converged Uk
   KTtp1red = systemDeltauMatrix;
 
   % compute stress at converged state
-  [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, nextTime, previousStateCell);
+  [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, nextTime, previousStateCell, rotMatCell);
 
   printSolverOutput(modelProperties.outputDir, modelProperties.problemName, [2 (modelCurrSol.timeIndex) + 1 nextTime dispIters stopCritPar], []);
 
@@ -150,7 +157,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   modelNextSol = constructModelSol(timeIndex, currTime, U, Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell);
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, rotMatCell);
 
   % ==============================================================================
   % ==============================================================================
@@ -184,9 +191,18 @@ function [Udottp1, Udotdottp1, nextTime] = updateTime(Ut, Udott, Udotdott, Uk, a
   % update Uiter
   % ==============================================================================
 
-function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau)
+function [Uk, currDeltau, rotMatCell] = updateUiter(Uk, deltaured, neumdofs, currDeltau, rotMatCell)
   Uk(neumdofs) = Uk(neumdofs) + deltaured;
   currDeltau     = currDeltau     + deltaured;
+  deltau = zeros(size(Uk,1),1) ;
+  deltau(neumdofs) = deltaured ;
+  nnodes = size(Uk,1)/6 ;
+  for i = 1:nnodes
+    dofs = (i-1)*6 + (2:2:6) ; 
+    rot_i = deltau(dofs) ;
+    rotMat = rotMatCell{i} ;
+    rotMatCell(i) = expm(skew(rot_i)) * rotMat ;
+  end
 
 function vec = antiSkew(mat)
   vec = [mat(3, 2); mat(1, 3); mat(2, 1)];
