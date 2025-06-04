@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
+function [Kel, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
 
   % Calculate the area of the triangle
   area = x02 * y03 / 2;
@@ -53,7 +53,7 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
 
   % assembling the stiffness matrix of the shell element in local coordinates
   Kel = zeros(18, 18);
-
+  
   Kel(im, im) = Km;
   Kel(ib, ib) = Kb;
 
@@ -64,15 +64,15 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul)
   Kel(12, 12) = k_dr;
   Kel(18, 18) = k_dr;
   
-  sym_Km = issymmetric(Km)
-  sym_Kb = issymmetric(Kb)
-  Kb - Kb'
+  % sym_Km = issymmetric(Km)
+  % sym_Kb = issymmetric(Kb)
+  % Kb - Kb'
   % kb_sym = 1/2*(Kb+Kb');
   % Kb-kb_sym
 
 
   % sym_Kel = issymmetric(Kel)
-  stop
+  % stop
   % Kel=1/2*(Kel+Kel');
   
   

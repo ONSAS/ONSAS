@@ -96,6 +96,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
     % --- assemble system of equations ---
     [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
     % norm(fint_{1}(BCsData.neumDofs))
+    % fint_{1}
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest(modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:, 1));
     % ---------------------------------------------------

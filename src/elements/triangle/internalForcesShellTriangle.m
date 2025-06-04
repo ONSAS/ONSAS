@@ -43,10 +43,11 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % Global disps and rotations
   u1_g    = Ug(1:3);
-  rot1_g  = Ug(4:6);
   u2_g    = Ug(7:9);
-  rot2_g  = Ug(10:12);
   u3_g    = Ug(13:15);
+
+  rot1_g  = Ug(4:6);
+  rot2_g  = Ug(10:12);
   rot3_g  = Ug(16:18);
 
   % Updated position vector in global reference frame
@@ -61,15 +62,12 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   
   % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
-  R1_g = rotMat{1};
-  R2_g = rotMat{2};
-  R3_g = rotMat{3};
-  % R1_g=eye(3);
-  % R2_g=eye(3);
-  % R3_g=eye(3);
-  % R1_g = expm(skew(rot1_g));
-  % R2_g = expm(skew(rot2_g));
-  % R3_g = expm(skew(rot3_g));
+  % R1_g = rotMat{1};
+  % R2_g = rotMat{2};
+  % R3_g = rotMat{3};
+  R1_g = expm(skew(rot1_g));
+  R2_g = expm(skew(rot2_g));
+  R3_g = expm(skew(rot3_g));
   % stop
 
   % Transformation matrices from global reference frame
@@ -149,9 +147,10 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   v2_def = rotationVector(R2_def, flag_first_mod);
   v3_def = rotationVector(R3_def, flag_first_mod);
   % [ v1_def v2_def v3_def ] 
-
   % sp1 = logm(R1_def) ;
+  % sp3 = logm(R3_def) ;
   % v1_def = [ sp1(3,2) ; sp1(1,3) ; sp1(2,1) ] ;
+  % v3_def = [ sp3(3,2) ; sp3(1,3) ; sp3(2,1) ] 
   % Rdef = expm(skew(v1_def))
   % stop
   
@@ -171,7 +170,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     pl(11:12) = u3_def(1:2);
     pl(13:15) = v3_def;
     index_full(uz_dofs) = [];
-    pl_full(index_full) = pl;  
+    % pl_full(index_full) = pl;  
   else
     pl = zeros(18, 1);
     pl(1:3)   = u1_def;
@@ -180,13 +179,14 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     pl(10:12) = v2_def;
     pl(13:15) = u3_def;
     pl(16:18) = v3_def;
-    pl_full(index_full) = pl;
+    % pl_full(index_full) = pl;
   end
   % [ Ug pl ]
   % stop
   % ==============================================================================
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
-  [Kl_full, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
+  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
+
   % Kl_full = 1/2*(Kl_full+Kl_full');
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
@@ -237,8 +237,6 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % eq. (20) of 10.1016/j.cma.2006.10.006
   % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
   Ka = Ba' * Kl * Ba + Kh;
-  % dif_K = Ka ./ Kl
-  % stop
 
   % eq. (26) of 10.1016/j.cma.2006.10.006
   [P, A] = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
@@ -260,21 +258,15 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % stop
   % Kl_aux = (P' * Ka * P  - G * F1' * P - F2 * G') ;
   Kg = E * (P' * Ka * P  - G * F1' * P - F2 * G') * E';
-  % Ke = (P' * Ka * P  - G * F1' * P - F2 * G');
-
-  F = 1/2*(F1+F2);
-  Kg = E * ( P'*Ka*P - G*F' - P'*F*G' ) * E' ;  
-  Ke =     ( P'*Ka*P - G*F' - P'*F*G' );
+  
   % [ Ke*A -F2 ]
   
-  issymmetric(Ka)
-  issymmetric(Kg)
-  issymmetric(Ke)
-  issymmetric(P'*Ka*P)
-  issymmetric(Ba)
-  issymmetric(Kh)
-
-  
+  % issymmetric(Ka)
+  % issymmetric(Kg)
+  % issymmetric(Ke)
+  % issymmetric(P'*Ka*P)
+  % issymmetric(Ba)
+  % issymmetric(Kh)
   % stop
 
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
@@ -302,7 +294,6 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   Bm = eye(18);
   Kk = zeros(18, 18);
-  
   if flag_third_mod == 1
     % eq. (39) of 10.1016/j.cma.2006.10.006
     Bm(4:6, 4:6)      = matrixTm(rot1_g);
@@ -346,6 +337,7 @@ function [v] = rotationVector(R,flag_first_mod) % ok
   v(3) = .5 * (R(2, 1) - R(1, 2));
   if flag_first_mod == 0
     if norm(v) ~= 0
+      % asin(norm(v)) / norm(v)
       v = asin(norm(v)) / norm(v) * v ; 
     end
   end

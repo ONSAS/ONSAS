@@ -156,7 +156,7 @@ rotMat(:) = eye(3) ;
 fsNL = fsNL{1} ;
 
 [fsL fsNL]
-
+stop
 materials(1).modelName  = 'elastic-rotEngStr';
 otherParams.problemName  = 'cantileverPlate-shell-nonlinear';
 otherParams.plots_format = 'vtk';
