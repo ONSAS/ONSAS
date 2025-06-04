@@ -17,7 +17,7 @@
 %
 function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest( ...
                                                                                    analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS)
-
+  dispIter
   stopTolDeltau = analysisSettings.stopTolDeltau;
   stopTolForces = analysisSettings.stopTolForces;
   stopTolIts    = analysisSettings.stopTolIts;
@@ -29,6 +29,9 @@ function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTe
   normFext      = norm(redFext);
 
   logicDispStop = (normadeltau  < (normaUk  * stopTolDeltau));
+  
+  % (normFext < stopTolForces)
+  % (deltaErrLoad > 0)
   logicForcStop = (deltaErrLoad < ((normFext + (normFext < stopTolForces)) * stopTolForces))  * (deltaErrLoad > 0);
 
   if isnan(norm(redDeltaU))

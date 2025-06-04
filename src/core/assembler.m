@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
 
   % ====================================================================
   %  --- 1 declarations ---
@@ -83,6 +83,9 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
   dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ||  ...
                        strcmp(analysisSettings.methodName, 'alphaHHT');
+
+
+
   % ====================================================================
 
   % ====================================================================
@@ -278,8 +281,8 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         [fs, ks, fintLocCoord] =  internalForcesLinearShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
 
       elseif strcmp(modelName, 'elastic-rotEngStr')
-        [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
-
+        rotMat = rotMatCell(nodeselem) ;
+        [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness, rotMat);
       else
         error('material model not implemented');
       end
