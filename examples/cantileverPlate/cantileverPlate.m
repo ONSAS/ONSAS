@@ -17,6 +17,8 @@
 %
 % md# Cantilever problem using plate and shell elements
 % md
+clc
+clear all
 close all;
 if ~strcmp(getenv('TESTS_RUN'), 'yes')
   clear all;
@@ -24,11 +26,11 @@ end
 addpath(genpath([pwd '/../../src']));
 % md
 % md## Scalars
-E = 200e9;
+E = 200e6;
 nu = 0.0;
 tz = .05;
-qx  = 10e2; % kN/m^2
-qz  = 10e2; % kN/m^2
+qx  = 100 ; % kN/m^2
+qz  = 10 ; % kN/m^2
 % md
 Ly = .5;
 Lx = 1;
@@ -136,13 +138,13 @@ otherParams.plots_format = 'vtk';
 numer_dxmax_linear_shell = max(matUs(1:6:end))
 numer_wmax_linear_shell  = min(matUs(5:6:end))
 
-nodes_coords = mesh.nodesCoords([2;3;5],:) ;
+
 % Us_2 = matUs((2-1)*6+1:2*6,end);
 % Us_3 = matUs((3-1)*6+1:3*6,end);
 % Us_5 = matUs((5-1)*6+1:5*6,end);
 
 % [Us_2 Us_3 Us_5 ];
-Us = [Us_2 ; Us_3 ; Us_5] ;
+% Us = [Us_2 ; Us_3 ; Us_5] ;
 
 % [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
 % fsL = fsL{1} ;
@@ -161,12 +163,18 @@ otherParams.plots_format = 'vtk';
 numer_dxmax_nonlin_shell = max(matUs(1:6:end))
 numer_wmax_nonlin_shell  = min(matUs(5:6:end))
 
-Us_2 = matUs((2-1)*6+1:2*6,end);
-Us_3 = matUs((3-1)*6+1:3*6,end);
-Us_5 = matUs((5-1)*6+1:5*6,end);
+nod1 = 16;
+nod2 = 38;
+nod3 = 15; 
+nodes_coords = mesh.nodesCoords([nod1;nod2;nod3],:) ;
+Us_1 = matUs((nod1-1)*6+1:nod1*6,end);
+Us_2 = matUs((nod2-1)*6+1:nod2*6,end);
+Us_3 = matUs((nod3-1)*6+1:nod3*6,end);
 
-[Us_2 Us_3 Us_5 ];
-Us = [Us_2 ; Us_3 ; Us_5] ;
+
+
+[Us_1 Us_2 Us_3 ];
+Us = [Us_1 ; Us_2 ; Us_3] ;
 
 
 [fsNL,KNL,~] = internalForcesShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-rotEngStr', [ E nu], tz, []);
@@ -198,7 +206,7 @@ fsL = fsL{1} ;
 verifBoolean =(abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
             (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 ;
 
-
+[ numer_dxmax_linear_shell numer_dxmax_nonlin_shell numer_wmax_linear_shell numer_wmax_nonlin_shell ]
 analy_wmax
 analy_dxmax
 stop

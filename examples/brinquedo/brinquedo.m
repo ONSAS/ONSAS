@@ -227,12 +227,12 @@ rx_1 = theta_1 ;
 rx_2 = theta_1 ;
 rx_3 = theta_1 ;
 
-% elemDisps_case3(dof_rx_1,1) = rx_1 ;
+elemDisps_case3(dof_rx_1,1) = rx_1 ;
 % elemDisps_case3(dof_rx_2,1) = rx_2 ;
 % elemDisps_case3(dof_rx_3,1) = rx_3 ;
-elemDisps_case3(dof_uz_3,1) = uz_3*5 ;
+% elemDisps_case3(dof_uz_3,1) = uz_3 ;
 % elemDisps_case3(dof_uz_2,1) = uz_2*5 ;
-% elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
+elemDisps_case3(dof_uz_1,1) = uz_1*5 ;
 
 % Linear
 [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( mesh.nodesCoords', 1,9 ), elemDisps_case3 , 'elastic-linear', [ E nu], tz);
@@ -253,6 +253,11 @@ dif_K_case3 = ksL ./ ksNL
 f_NL = ksNL * elemDisps_case3;
 
 % a = [ 'ux' ; 'rx' ; 'uy' ; 'ry' ; 'uz' ; 'rz' ] ;
+maxDif = max(max(dif_K_case3));
+pos = find(maxDif==max(dif_K_case3));
+
+poss_max = [ pos maxDif ]
+
 [ fsL fsNL f_NL ]
 
 % Rr_ana = [  1   0               0               ;

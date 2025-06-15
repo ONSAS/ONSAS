@@ -64,18 +64,6 @@ function [Kel, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, E, nu, h, U
   Kel(12, 12) = k_dr;
   Kel(18, 18) = k_dr;
   
-  % sym_Km = issymmetric(Km)
-  % sym_Kb = issymmetric(Kb)
-  % Kb - Kb'
-  % kb_sym = 1/2*(Kb+Kb');
-  % Kb-kb_sym
-
-
-  % sym_Kel = issymmetric(Kel)
-  % stop
-  % Kel=1/2*(Kel+Kel');
-  
-  
   % returning moments in local element coordiantes
   fintLocCoord = zeros(1, 3);
   fintLocCoord = fintLocCoord + M;  % Store the moments in fintLocCoord

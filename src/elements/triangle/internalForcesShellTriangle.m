@@ -135,7 +135,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   v1_def = rotationVector(R1_def, flag_first_mod);
   v2_def = rotationVector(R2_def, flag_first_mod);
   v3_def = rotationVector(R3_def, flag_first_mod);
-  [ v1_def v2_def v3_def ] ;
+  % [ v1_def v2_def v3_def ] ;
 % stop
   % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
@@ -195,7 +195,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Ba(16:18, 16:18)  = invTs_3;
   end
   % Ba
-
+  % Ba = eye(18);
   % eq. (18) of 10.1016/j.cma.2006.10.006
   fa = Ba'*fl;
   
@@ -213,13 +213,10 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Kh(4:6, 4:6)      = Kh1;
     Kh(10:12, 10:12)  = Kh2;
     Kh(16:18, 16:18)  = Kh3;
-    % Kh(4:6, 4:6)      = matrixKhi(R1_def, fl(4:6));
-    % Kh(10:12, 10:12)  = matrixKhi(R2_def, fl(10:12));
-    % Kh(16:18, 16:18)  = matrixKhi(R3_def, fl(16:18));
   end
-  % Kh
-  % stop
+  % Kh = zeros(18, 18);
   
+
   % eq. (20) of 10.1016/j.cma.2006.10.006
   Ka = Ba' * Kl * Ba + Kh;
 
@@ -237,7 +234,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % eq. (29) of 10.1016/j.cma.2006.10.006
   fg = E * n;
-  % [ fg n fa fl]
+  % [ switchToNodalIndexing(fg) fg n fa fl]
   % stop
 
   Kl = (P'*Ka*P - G*F1'*P - F2*G') ;
@@ -262,7 +259,6 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
 
   fr = Br'* fg ;
-
   Kr = Br'*Kg*Br + Kv ;
 
   % Bm = eye(18);
