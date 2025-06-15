@@ -22,7 +22,7 @@ close all; clear all;
 addpath(genpath([pwd '/../../src']));
 % md
 % md## Scalars
-E = 100e9;
+E = 200e9;
 nu = 0.0;
 tz = .05;
 
@@ -45,8 +45,8 @@ boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
 
-Pz = -10 ;
-Py = 0 ;
+Pz = -0.1 ;
+Py =  0.1;
 
 boundaryConds(2).loadsBaseVals = [0 0 Py 0 Pz 0];
 
@@ -74,12 +74,12 @@ analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   1;
 analysisSettings.finalTime     =   1;
-analysisSettings.stopTolDeltau =   1e-10;
-analysisSettings.stopTolForces =   1e-10;
-analysisSettings.stopTolIts    =   2;
+analysisSettings.stopTolDeltau =   1e-9;
+analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolIts    =   20;
 
 otherParams                  = struct();
-otherParams.problemName  = 'extensionNonLin';
+otherParams.problemName  = 'emp';
 otherParams.plots_format = 'vtk';
 
 nnodes = 3 ;
@@ -104,8 +104,17 @@ nodes_coords = mesh.nodesCoords([1;2;3],:) ;
 
 fL = fsL{1};
 
+
 rotMat = cell(3,1) ;
-rotMat(:) = eye(3) ;
+rot1_g = Us(4:6) ;
+rot2_g = Us(10:12) ;
+rot3_g = Us(16:18) ;
+R1_g = expm(skew(rot1_g));
+R2_g = expm(skew(rot2_g));
+R3_g = expm(skew(rot3_g));
+rotMat(1) = R1_g ;
+rotMat(2) = R2_g ;
+rotMat(3) = R3_g ;
 [fsNL,KNL,~] = internalForcesShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-rotEngStr', [ E nu], tz, rotMat);
 fsNL = fsNL{1} ;
 
@@ -113,7 +122,7 @@ fsNL = fsNL{1} ;
 
 
 
-
+otherParams.problemName  = 'empNonLin';
 materials(1).modelName  = 'elastic-rotEngStr';
 [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
@@ -136,5 +145,4 @@ dy_max_NL = max(matUs(3:6:end));
 % tx_NL     = min(matUs(2:6:end));
 % dy_max_NL = max(matUs(3:6:end));
 
-% [ dz_max_L dz_max_NL  dy_max_L dy_max_NL tx_L tx_NL ]
-
+[ dz_max_L dz_max_NL  dy_max_L dy_max_NL tx_L tx_NL ]

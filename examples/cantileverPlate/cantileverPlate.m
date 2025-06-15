@@ -82,7 +82,7 @@ analysisSettings.deltaT        =   1;
 analysisSettings.finalTime     =   1;
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
-analysisSettings.stopTolIts    =   2;
+analysisSettings.stopTolIts    =   10;
 % md
 % md#### OtherParams
 % md The nodalDispDamping is added into the model using:
@@ -136,27 +136,20 @@ otherParams.plots_format = 'vtk';
 numer_dxmax_linear_shell = max(matUs(1:6:end))
 numer_wmax_linear_shell  = min(matUs(5:6:end))
 
-Us_2 = matUs((2-1)*6+1:2*6,end);
-Us_3 = matUs((3-1)*6+1:3*6,end);
-Us_5 = matUs((5-1)*6+1:5*6,end);
+nodes_coords = mesh.nodesCoords([2;3;5],:) ;
+% Us_2 = matUs((2-1)*6+1:2*6,end);
+% Us_3 = matUs((3-1)*6+1:3*6,end);
+% Us_5 = matUs((5-1)*6+1:5*6,end);
 
-
-[Us_2 Us_3 Us_5 ]
+% [Us_2 Us_3 Us_5 ];
 Us = [Us_2 ; Us_3 ; Us_5] ;
 
-nodes_coords = mesh.nodesCoords([2;3;5],:) 
-[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
-% [To, x02, x03, y03] = edgeLocalAxisShellTriangle(nodes_coords(1,:)', nodes_coords(2,:)', nodes_coords(3,:)');
+% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
+% fsL = fsL{1} ;
 
-fsL = fsL{1} ;
 
-rotMat = cell(3,1) ;
-rotMat(:) = eye(3) ;
-[fsNL,KNL,~] = internalForcesShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-rotEngStr', [ E nu], tz, rotMat);
-fsNL = fsNL{1} ;
 
-[fsL fsNL]
-stop
+
 materials(1).modelName  = 'elastic-rotEngStr';
 otherParams.problemName  = 'cantileverPlate-shell-nonlinear';
 otherParams.plots_format = 'vtk';
@@ -165,11 +158,24 @@ otherParams.plots_format = 'vtk';
 %
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
-
-
-
 numer_dxmax_nonlin_shell = max(matUs(1:6:end))
 numer_wmax_nonlin_shell  = min(matUs(5:6:end))
+
+Us_2 = matUs((2-1)*6+1:2*6,end);
+Us_3 = matUs((3-1)*6+1:3*6,end);
+Us_5 = matUs((5-1)*6+1:5*6,end);
+
+[Us_2 Us_3 Us_5 ];
+Us = [Us_2 ; Us_3 ; Us_5] ;
+
+
+[fsNL,KNL,~] = internalForcesShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-rotEngStr', [ E nu], tz, []);
+fsNL = fsNL{1} ;
+[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
+fsL = fsL{1} ;
+
+
+[fsL fsNL]
 
 % md
 % verifBoolean = (abs(analy_wmax - numer_wmax) / abs(analy_wmax))  < 1e-3 && ...
@@ -187,6 +193,10 @@ numer_wmax_nonlin_shell  = min(matUs(5:6:end))
 
 % verifBoolean =(abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
             % (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3
+
+
+verifBoolean =(abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
+            (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 ;
 
 
 analy_wmax

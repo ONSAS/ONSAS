@@ -17,7 +17,7 @@
 %
 function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest( ...
                                                                                    analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS)
-  dispIter
+  % dispIter
   stopTolDeltau = analysisSettings.stopTolDeltau;
   stopTolForces = analysisSettings.stopTolForces;
   stopTolIts    = analysisSettings.stopTolIts;

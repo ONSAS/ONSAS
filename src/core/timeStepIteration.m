@@ -76,7 +76,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   booleanConverged = false;
   dispIters        = 0;
   currDeltau       = zeros(length(BCsData.neumDofs), 1);
-
+modelCurrSol.timeIndex
   while  booleanConverged == 0
 
     % fprintf(' ============== new iteration ====================\n')
@@ -113,7 +113,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   Utp1       = Utp1k;
   Udottp1    = Udottp1k;
   Udotdottp1 = Udotdottp1k;
-  % max(Utp1(1:6:end))
+
   % computes KTred at converged Uk
   KTtp1red = systemDeltauMatrix;
 
@@ -198,12 +198,14 @@ function [Uk, currDeltau, rotMatCell] = updateUiter(Uk, deltaured, neumdofs, cur
   deltau = zeros(size(Uk,1),1) ;
   deltau(neumdofs) = deltaured ;
   nnodes = size(Uk,1)/6 ;
-  for i = 1:nnodes
-    dofs = (i-1)*6 + (2:2:6) ; 
-    rot_i = deltau(dofs) ;
-    rotMat = rotMatCell{i} ;
-    rotMatCell(i) = expm(skew(rot_i)) * rotMat ;
-  end
+  % for i = 1:nnodes
+  %   rotMat = rotMatCell{i} ;
+  %   dofs = (i-1)*6 + (2:2:6) ; 
+  %   rot_i = deltau(dofs) ;
+  %   rotMatCell(i) = expm(skew(rot_i)) * rotMat ;
+  %   rot_i = Uk(dofs) ;
+  %   rotMatCell(i) = expm(skew(rot_i))  ;
+  % end
 
 function vec = antiSkew(mat)
   vec = [mat(3, 2); mat(1, 3); mat(2, 1)];
