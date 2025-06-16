@@ -15,34 +15,17 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [inv_Ts] = invTs_jv(t)
+
+function [H] = matrixH(t)
+
+    spin_t = skew(t) ;
+    I = eye(3) ;
+
+    v = norm(t) ;
+
+    eta = ( 2*sin(v) - v*(1+cos(v)) ) / (2*v^2*sin(v)) ;
+
+    H = I -1/2*spin_t +eta*spin_t*spin_t ;
 
 
-  % nt = norm(t);
-  % I = eye(3, 3);
-
-  % if nt == 0
-  %   inv_Ts = I;
-  % else
-  %   b = nt / 2;
-  %   a = (sin(b) - b * cos(b)) / (nt^2 * sin(b));
-  %   M = skew(t);
-  %   inv_Ts = I - 1 / 2 * M + a * M * M;
-  % end
-% fprintf('=== \n')
-  % inv_Ts
-  % fprintf('--------------------------------- \n')
-  psi = norm(t);
-  I = eye(3, 3);
-
-  if psi == 0
-    inv_Ts = I;
-  else
-    u = t / psi ;
-    a = psi/2 / tan(psi/2) ;
-    inv_Ts = a*I + (1-a)*u*u' - 1/2*skew(t);
-  end
-
-  % inv_Ts2
-% fprintf('=== \n')
-
+end

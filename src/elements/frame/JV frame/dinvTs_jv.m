@@ -20,6 +20,26 @@ function [dinv_Ts] = dinvTs_jv(t, v)
     % t - local thetas (deformed reference frame)
     % v - moments
 
+  %     nt = norm(t);
+
+  % if nt == 0
+  %   dinv_Ts = -1 / 2 * skew(v);
+  % else
+  %   a = nt / 2;
+  %   eta = (sin(a) - a * cos(a)) / (nt^2 * sin(a));
+  %   miu = (nt * (nt + sin(nt)) - 8 * sin(a)^2) / (4 * nt^4 * sin(a)^2);
+  %   I3 = eye(3);
+  %   M = skew(t);
+  %   M1 = skew(v);
+  %   M2 = t * v' - 2 * v * t' + (t' * v) * I3;
+  %   M3 = M * M * v * t';
+  %   dinv_Ts = eta * M2 + miu * M3 - 1 / 2 * M1;
+  % end
+
+% fprintf('=== \n')
+  % dinv_Ts
+  % fprintf('--------------------------------- \n')
+
     a = norm(t) ;
 
     if a == 0
@@ -32,19 +52,5 @@ function [dinv_Ts] = dinvTs_jv(t, v)
         dinv_Ts = eta*( t*v' -2*v*t' + (t'*v)*I ) + mu*(skew(t)*skew(t))*(v*t') -1/2*skew(v) ;
     end
 
-% Mauricio
-%   nt = norm(t);
-
-%   if nt == 0
-%     Dh = -1 / 2 * skew(v);
-%   else
-%     a = nt / 2;
-%     eta = (sin(a) - a * cos(a)) / (nt^2 * sin(a));
-%     miu = (nt * (nt + sin(nt)) - 8 * sin(a)^2) / (4 * nt^4 * sin(a)^2);
-%     I3 = eye(3);
-%     M = skew(t);
-%     M1 = skew(v);
-%     M2 = t * v' - 2 * v * t' + (t' * v) * I3;
-%     M3 = M * M * v * t';
-%     Dh = eta * M2 + miu * M3 - 1 / 2 * M1;
-%   end
+% dinv_Ts
+% fprintf('=== \n')

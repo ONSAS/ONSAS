@@ -21,6 +21,12 @@
 %
 function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness, rotMat)
 
+  origin = 0 ;
+  e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
+  flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
+  flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
+  flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not / quaternions
+
   % material and geometric parameters
   young_modulus = modelParams(1);
   poisson_ratio = modelParams(2);
@@ -31,8 +37,12 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   r1_g = elemCoords(1:3);
   r2_g = elemCoords(4:6);
   r3_g = elemCoords(7:9);
-  rc_g = (r1_g + r2_g + r3_g) / 3;
-  
+  if origin == 0
+    rc_g = (r1_g + r2_g + r3_g) / 3;
+  elseif origin == 1
+    rc_g = r1_g ;
+  end
+
   % Disps and spatial rotations in global reference frame
   Ug = switchToTypeIndexing(elemDisps);
   u1_g    = Ug(1:3);
@@ -46,7 +56,11 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   p1_g = r1_g + u1_g;
   p2_g = r2_g + u2_g;
   p3_g = r3_g + u3_g;
-  pog = (p1_g + p2_g + p3_g) / 3;
+  if origin == 0
+    pog = (p1_g + p2_g + p3_g) / 3;
+  elseif origin == 1
+    pog = p1_g ;
+  end
   % fprintf('p_g \n')
   % [ p1_g p2_g p3_g pog ] 
   
@@ -58,11 +72,16 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   R1_g = expm(skew(t1_g));
   R2_g = expm(skew(t2_g));
   R3_g = expm(skew(t3_g));
+  % R1_g = expon(t1_g);
+  % R2_g = expon(t2_g);
+  % R3_g = expon(t3_g);
   % stop
 
   % Transformation matrices from global reference frame
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1_g, r2_g, r3_g);
   [Tr, ~, ~, ~]       = edgeLocalAxisShellTriangle(p1_g, p2_g, p3_g);
+
+
 
   % Rotation matrix from global reference frame to local reference frame in initial configuration
   Ro = To';
@@ -90,11 +109,6 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   a3_def = u3_def + r3_o;
   % [a1_def a2_def a3_def]
 
-  e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
-  flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
-  flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
-  flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not / quaternions
-
   if e1_parallel_side12 == 0
     Num = 0 ;
     Den = 0 ;
@@ -118,8 +132,8 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   end
 
   % eq. (27) of 10.1016/j.cma.2006.10.006
-  [G1, G2, G3] = matrixGi(a1_def, a2_def, a3_def, r1_o, r2_o, r3_o, e1_parallel_side12);
-  G = [G1; G2; G3];
+  [G1, G2, G3] = matrixGi(a1_def, a2_def, a3_def, r1_o, r2_o, r3_o, e1_parallel_side12, origin);
+  G = [G1; G2; G3] ;
   % [ sum(G(:,1)) sum(G(:,2)) sum(G(:,3)) ]
   % stop
 
@@ -171,8 +185,9 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
-  Kl =(Kl + Kl')/2 ;
+  % Kl =(Kl + Kl')/2 ;
   % local internal force vector
+  
   fl = Kl * pl;
   
   % eq. (19) of 10.1016/j.cma.2006.10.006
@@ -194,8 +209,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Ba(10:12, 10:12)  = invTs_2;
     Ba(16:18, 16:18)  = invTs_3;
   end
-  % Ba
-  % Ba = eye(18);
+
   % eq. (18) of 10.1016/j.cma.2006.10.006
   fa = Ba'*fl;
   
@@ -214,12 +228,10 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Kh(10:12, 10:12)  = Kh2;
     Kh(16:18, 16:18)  = Kh3;
   end
-  % Kh = zeros(18, 18);
-  
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   Ka = Ba' * Kl * Ba + Kh;
-
+   
   % eq. (26) of 10.1016/j.cma.2006.10.006
   [P, A] = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
 
@@ -230,6 +242,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   n = P' * fa; % eq. (31) of 10.1016/j.cma.2006.10.006
 
   [F1, F2] = matrixF(n, flag_second_mod);
+  % [F1, F2] = matrixF(fa, flag_second_mod);
   % stop
 
   % eq. (29) of 10.1016/j.cma.2006.10.006
@@ -239,12 +252,11 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   Kl = (P'*Ka*P - G*F1'*P - F2*G') ;
   Kg = E * Kl * E';
-  
+  % Kg = (Kg+Kg')/2 ;
   % Rankin
   % F = 1/2*(F1+F2);
   % Kg = E * (P'*Ka*P - G*F'*P - F*G') * E' ;
-  Kg = (Kg+Kg')/2;
-
+ 
 
   % change of variables to rotation vector
   Ts1   = Ts(t1_g);
@@ -257,10 +269,14 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   Kv3 = d_Ts(t3_g, fg(16:18)) ;
   Kv = blkdiag(zeros(3,3), Kv1, zeros(3,3), Kv2, zeros(3,3), Kv3) ;
 
-
-  fr = Br'* fg ;
+  fr = Br'*fg ;
   Kr = Br'*Kg*Br + Kv ;
 
+  % Kr= (Kr+Kr')/2 ;
+  
+  % fr = fg ;
+  % Kr = Kg ;
+  
   % Bm = eye(18);
   % Kk = zeros(18, 18);
   % if flag_third_mod == 1

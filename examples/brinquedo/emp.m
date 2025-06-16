@@ -46,7 +46,7 @@ boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
 
 Pz = -0.1 ;
-Py =  0.1;
+Py =  0.0;
 
 boundaryConds(2).loadsBaseVals = [0 0 Py 0 Pz 0];
 
