@@ -113,8 +113,8 @@ end
 % md### analysisSettings
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.02;  % TEMPORARY
-analysisSettings.finalTime      =   0.6;  % TEMPORARY
+analysisSettings.deltaT        =   0.1;  % TEMPORARY
+analysisSettings.finalTime      =   1;  % TEMPORARY
 % analysisSettings.finalTime      =   .0002;  % TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
@@ -185,13 +185,13 @@ assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 % ====================================================
 otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %
-analysisSettings               = struct();
-analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.001;  % TEMPORARY
-analysisSettings.finalTime      =   0.01;  % TEMPORARY
-% analysisSettings.finalTime      =   .0002;  % TEMPORARY
-analysisSettings.stopTolDeltau =   1e-6;
-analysisSettings.stopTolForces =   1e-4;
+%analysisSettings               = struct();
+%analysisSettings.methodName    = 'newtonRaphson';
+%analysisSettings.deltaT        =   0.;  % TEMPORARY
+%analysisSettings.finalTime      =   0.01;  % TEMPORARY
+ %analysisSettings.finalTime      =   .0002;  % TEMPORARY
+%analysisSettings.stopTolDeltau =   1e-6;
+%analysisSettings.stopTolForces =   1e-4;
 analysisSettings.stopTolIts    =   15;
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
@@ -200,7 +200,7 @@ controldofs = 3*6-2 ;
 controlDispShellNonLinear = -matUs(controldofs,:)
 
 controlDispShellNonLinear ./ controlDispShellLinear
-loadFactorsShell  =  loadFactorsMat(:, 2)/10000;
+loadFactorsShell  =  loadFactorsMat(:, 2);
 %
 % md## Verification
 % md
@@ -232,4 +232,16 @@ print('output/verifCantileverBeam.png', '-dpng');
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                     loadFactorsNREngRot')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean
+
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear)) * 1e-4);
+verifBoolean
 % md
+
+a =[ analyticLoadFactorsNREngRot(controlDispsNREngRot)' analyticLoadFactorsNREngRot(controlDispShellNonLinear)' ]
+b = loadFactorsNREngRot
+
+a-b
+[ analyticLoadFactorsNREngRot(controlDispsNREngRot)'-loadFactorsNREngRot  analyticLoadFactorsNREngRot(controlDispShellNonLinear)'-loadFactorsNREngRot  ]
