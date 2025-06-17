@@ -14,9 +14,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
-%
-% md# Cantilever problem using plate and shell elements
-% md
+
 clc
 clear all
 close all;
@@ -34,6 +32,14 @@ qz  = 10 ; % kN/m^2
 % md
 Ly = .5;
 Lx = 1;
+
+analy_maxMx = qz * Lx / 2;
+qlin = qz * Ly;
+I = Ly * tz^3 / 12;
+analy_wmax = -qlin * Lx^4 / (8 * E * I);
+analy_dxmax = qx * Lx / E;
+
+
 % md## Numerical solution using plate elements
 % md
 % md### Materials
@@ -89,43 +95,10 @@ analysisSettings.stopTolIts    =   10;
 % md#### OtherParams
 % md The nodalDispDamping is added into the model using:
 otherParams                  = struct();
-% md The name of the problem is:
-% md
-% otherParams.problemName  = 'cantileverPlate-plateElem';
-% otherParams.plots_format = 'vtk';
-% md
-% md Execute ONSAS and save the results:
-% [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
-% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
-% md
-% md## verification
-% nelem = size(modelProperties.Conec, 1);
-% matSolic = getInternalForces(modelSolutions{end}.localInternalForces, 1:nelem, {'Mx', 'My', 'Mxy'});
-% numer_maxMx = max(max(matSolic));
-% numer_wmax = min(matUs(5:6:end));
 
-% md
-analy_maxMx = qz * Lx / 2;
-qlin = qz * Ly;
-I = Ly * tz^3 / 12;
-analy_wmax = -qlin * Lx^4 / (8 * E * I);
-
-% elements(2).elemType           = 'triangle';
-elements(2).elemTypeParams     = 2;
-% elements(2).elemCrossSecParams = tz;
-% otherParams.problemName  = 'cantileverPlate-CSTElem';
-
-% [modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
-% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
-
-% numer_dxmax = max(matUs(1:6:end));
-analy_dxmax = qx * Lx / E;
-
+% ===========================================================================================================================================
 elements(2).elemType           = 'triangle-shell';
+elements(2).elemTypeParams     = 2;
 elements(2).elemCrossSecParams = {'thickness', tz };
 otherParams.problemName  = 'cantileverPlate-shell-linear';
 otherParams.plots_format = 'vtk';
@@ -138,20 +111,7 @@ otherParams.plots_format = 'vtk';
 numer_dxmax_linear_shell = max(matUs(1:6:end))
 numer_wmax_linear_shell  = min(matUs(5:6:end))
 
-
-% Us_2 = matUs((2-1)*6+1:2*6,end);
-% Us_3 = matUs((3-1)*6+1:3*6,end);
-% Us_5 = matUs((5-1)*6+1:5*6,end);
-
-% [Us_2 Us_3 Us_5 ];
-% Us = [Us_2 ; Us_3 ; Us_5] ;
-
-% [fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
-% fsL = fsL{1} ;
-
-
-
-
+% ===========================================================================================================================================
 materials(1).modelName  = 'elastic-rotEngStr';
 otherParams.problemName  = 'cantileverPlate-shell-nonlinear';
 otherParams.plots_format = 'vtk';
@@ -171,48 +131,94 @@ Us_1 = matUs((nod1-1)*6+1:nod1*6,end);
 Us_2 = matUs((nod2-1)*6+1:nod2*6,end);
 Us_3 = matUs((nod3-1)*6+1:nod3*6,end);
 
-
-
 [Us_1 Us_2 Us_3 ];
 Us = [Us_1 ; Us_2 ; Us_3] ;
-
-
-[fsNL,KNL,~] = internalForcesShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-rotEngStr', [ E nu], tz, []);
-fsNL = fsNL{1} ;
-[fsL,KL,~] = internalForcesLinearShellTriangle(reshape( nodes_coords', 1,9 ), Us , 'elastic-linear', [ E nu], tz);
-fsL = fsL{1} ;
-
-
-[fsL fsNL]
-
-% md
-% verifBoolean = (abs(analy_wmax - numer_wmax) / abs(analy_wmax))  < 1e-3 && ...
-%              (abs(analy_maxMx - numer_maxMx) / abs(analy_maxMx)) < 5e-3 && ...
-%             (abs(analy_dxmax - numer_dxmax) / abs(analy_dxmax)) < 1e-3 && ...
-%             (abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
-%             (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 && ...
-%             (abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
-%             (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3;
-
-% verifBoolean =(abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
-%             (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 && ...
-%             (abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
-%             (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3;
-
-% verifBoolean =(abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3 && ...
-            % (abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)) < 1e-3
-
-
-verifBoolean =(abs(analy_wmax  - numer_wmax_linear_shell) / abs(analy_wmax)) < 1e-3 && ...
-            (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 ;
 
 [ numer_dxmax_linear_shell numer_dxmax_nonlin_shell numer_wmax_linear_shell numer_wmax_nonlin_shell ]
 analy_wmax
 analy_dxmax
-stop
 
-(abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 1e-3
-abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax)
-(abs(analy_dxmax - numer_dxmax_nonlin_shell) / abs(analy_dxmax))< 1e-3
-modelSolutions{2}.timeStepIters
-assert(modelSolutions{2}.timeStepIters < 3);
+
+
+% geometrical scalar parameters
+l = Lx;
+ty = Ly;
+
+Qz = 
+
+% the number of elements of the mesh
+numElements = 10;
+materialsL                 = struct();
+materialsL.modelName  = 'elastic-linear';
+materialsL.modelParams = [E nu];
+
+materialsNL                 = struct();
+materialsNL.modelName  = 'elastic-rotEngStr';
+materialsNL.modelParams = [E nu];
+
+elements             = struct();
+elements(1).elemType = 'node';
+elements(2).elemType = 'frame';
+elements(2).elemCrossSecParams{1, 1} = 'rectangle';
+elements(2).elemCrossSecParams{2, 1} = [ty tz];
+
+
+boundaryConds                  = struct();
+boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
+boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
+
+boundaryConds(2).loadsCoordSys = 'global';
+boundaryConds(2).loadsTimeFact = @(t) t;
+boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
+
+initialConds = {};
+
+mesh             = struct();
+mesh.nodesCoords = [(0:(numElements))' * Lx / numElements  zeros(numElements + 1, 2)];
+mesh.conecCell = { };
+mesh.conecCell{ 1, 1 } = [0 1 1   1];
+mesh.conecCell{ 2, 1 } = [0 1 2   numElements + 1];
+for i = 1:numElements
+  mesh.conecCell{ i + 2, 1 } = [1 2 0  i i + 1];
+end
+
+
+analysisSettings               = struct();
+analysisSettings.methodName    = 'newtonRaphson';
+analysisSettings.deltaT        =   0.0001;  % TEMPORARY
+analysisSettings.finalTime      =   .0004;  % TEMPORARY
+analysisSettings.stopTolDeltau =   1e-6;
+analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolIts    =   10;
+
+
+otherParams             = struct();
+otherParams.problemName = 'uniformCurvatureCantilever-frame';
+otherParams.controlDofs = [numElements + 1  4];
+otherParams.plots_format = 'vtk';
+
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+
+angleControlDof      = (numElements + 1) * 6 - 2;
+controlDispsNREngRot =  -matUs(angleControlDof, :);
+loadFactorsNREngRot  =  loadFactorsMat(:, 2);
+analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
+
+% lw = 2.0;
+% ms = 11;
+% plotfontsize = 22;
+% figure;
+% plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+% hold on;
+% grid on;
+% plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+% labx = xlabel('Displacement');
+% laby = ylabel('\lambda');
+% legend('analytic', 'NR-RotEng', 'location', 'North');
+% set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
+% set(labx, 'FontSize', plotfontsize);
+% set(laby, 'FontSize', plotfontsize);
+% print('output/verifCantileverBeam.png', '-dpng');
+
+

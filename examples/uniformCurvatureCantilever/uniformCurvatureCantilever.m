@@ -113,8 +113,9 @@ end
 % md### analysisSettings
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.0001;  % TEMPORARY
-analysisSettings.finalTime      =   .0002;  % TEMPORARY
+analysisSettings.deltaT        =   0.1;  % TEMPORARY
+analysisSettings.finalTime      =   1;  % TEMPORARY
+% analysisSettings.finalTime      =   .0002;  % TEMPORARY
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -169,27 +170,37 @@ end
 [mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
 assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 
-otherParams.problemName = 'uniformCurvatureCantilever-linearShell';
+% otherParams.problemName = 'uniformCurvatureCantilever-linearShell';
 
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+% [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 
-[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-%
-controldofs = 6+[1 4 5] ;
-controlDispShellLinear = -matUs(controldofs,:)
-controlDispsNREngRot
+% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+% %
+% controldofs = 6+[1 4 5] ;
+% controlDispShellLinear = -matUs(controldofs,:)
+% controlDispsNREngRot
 
 % ====================================================
 % shell non linear
 % ====================================================
 otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %
+%analysisSettings               = struct();
+%analysisSettings.methodName    = 'newtonRaphson';
+%analysisSettings.deltaT        =   0.;  % TEMPORARY
+%analysisSettings.finalTime      =   0.01;  % TEMPORARY
+ %analysisSettings.finalTime      =   .0002;  % TEMPORARY
+%analysisSettings.stopTolDeltau =   1e-6;
+%analysisSettings.stopTolForces =   1e-4;
+analysisSettings.stopTolIts    =   15;
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+
+controldofs = 3*6-2 ;
 controlDispShellNonLinear = -matUs(controldofs,:)
 
 controlDispShellNonLinear ./ controlDispShellLinear
-
+loadFactorsShell  =  loadFactorsMat(:, 2);
 %
 % md## Verification
 % md
@@ -203,9 +214,12 @@ plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b
 hold on;
 grid on;
 plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+% plot(controlDispShellNonLinear, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
+
 labx = xlabel('Displacement');
 laby = ylabel('\lambda');
-legend('analytic', 'NR-RotEng', 'location', 'North');
+legend('analytic', 'NR-RotEng','location', 'North');
+% legend('analytic', 'NR-RotEng', 'Shell','location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
 set(laby, 'FontSize', plotfontsize);
@@ -218,4 +232,16 @@ print('output/verifCantileverBeam.png', '-dpng');
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                     loadFactorsNREngRot')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean
+
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear)) * 1e-4);
+verifBoolean
 % md
+
+a =[ analyticLoadFactorsNREngRot(controlDispsNREngRot)' analyticLoadFactorsNREngRot(controlDispShellNonLinear)' ]
+b = loadFactorsNREngRot
+
+a-b
+[ analyticLoadFactorsNREngRot(controlDispsNREngRot)'-loadFactorsNREngRot  analyticLoadFactorsNREngRot(controlDispShellNonLinear)'-loadFactorsNREngRot  ]
