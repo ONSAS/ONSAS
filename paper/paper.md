@@ -29,6 +29,7 @@ authors:
 
   - given-names: Bruno
     surname: Bazzano García
+    affiliation: '1'
 
 affiliations:
   - index: 1
