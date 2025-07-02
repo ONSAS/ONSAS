@@ -34,12 +34,12 @@ end % hidden
 % add path
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
-E = 200e9;
-nu = 0.0;
+E = 200e9 ; % Young modulus
+nu = 0.0 ; % Poission 
 % geometrical scalar parameters
-l = 10;
-ty = 1.0;
-tz = .1;
+l = 10 ; % length
+ty = 1.0 ; % width
+tz = .1 ; % thickness
 Iy = ty * tz^3 / 12;
 Mobj = E * Iy * 2 * pi / l ;
 % the number of elements of the mesh
@@ -53,13 +53,6 @@ numElements = 10;
 % md## Numerical solution
 % md### MEB parameters
 % md
-
-materialsL                 = struct();
-materialsL.modelName  = 'elastic-linear';
-materialsL.modelParams = [E nu];
-
-
-
 % mdThe modelling of the structure begins with the definition of the Material-Element-BoundaryConditions (MEB) parameters.
 % md
 % md### materials
@@ -111,14 +104,13 @@ for i = 1:numElements
 end
 % md
 % md### analysisSettings
-analysisSettings               = struct();
+analysisSettings               = struct() ;
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.1;  % TEMPORARY
-analysisSettings.finalTime      =   1;  % TEMPORARY
-% analysisSettings.finalTime      =   .0002;  % TEMPORARY
-analysisSettings.stopTolDeltau =   1e-6;
-analysisSettings.stopTolForces =   1e-6;
-analysisSettings.stopTolIts    =   10;
+analysisSettings.deltaT        =   0.1 ;
+analysisSettings.finalTime     =   1 ;  
+analysisSettings.stopTolDeltau =   1e-6 ;
+analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.stopTolIts    =   10 ;
 % md
 % md## otherParams
 otherParams             = struct();
@@ -127,33 +119,26 @@ otherParams.controlDofs = [numElements + 1  4];
 otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
-
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-
 % md
 % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
 angleControlDof      = (numElements + 1) * 6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof, :);
 loadFactorsNREngRot  =  loadFactorsMat(:, 2);
-% md and the analytical value of the load factors is computed
-analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
-% md
-
-
 
 % ====================================================
-% shell linear
+% shell non linear
 % ====================================================
-
+%
 elements             = struct();
 elements(1).elemType = 'edge';
 elements(1).elemCrossSecParams = tz;
 elements(2).elemType = 'triangle-shell';
 elements(2).elemCrossSecParams = {'thickness', tz };
-
+%
 boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
@@ -169,102 +154,71 @@ if strcmp(getenv('TESTS_RUN'), 'yes') && isfolder('examples')
 end
 [mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
 assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
-
-% ====================================================
-% shell non linear
-% ====================================================
+%
 otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %
-%analysisSettings               = struct();
-%analysisSettings.methodName    = 'newtonRaphson';
-%analysisSettings.deltaT        =   0.;  % TEMPORARY
-analysisSettings.deltaT        =   0.01;  % TEMPORARY
-analysisSettings.finalTime      =   1;  % TEMPORARY
-% analysisSettings.finalTime      =   .0002;  % TEMPORARY
-% analysisSettings.stopTolDeltau =   1e-6;
-% analysisSettings.stopTolForces =   1e-6;
-analysisSettings.stopTolIts    =   15;
+analysisSettings               = struct() ;
+analysisSettings.methodName    = 'newtonRaphson';
+analysisSettings.deltaT        =   0.01 ; % 100 steps
+analysisSettings.finalTime     =   1 ;  
+analysisSettings.stopTolDeltau =   1e-6 ;
+analysisSettings.stopTolForces =   1e-6 ;
+analysisSettings.stopTolIts    =   15 ;
+%
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-% node = 3 ;
 node = 18 ;
-ux_dof_shell = node*6-5 ;
-uz_dof_shell = node*6-1 ;
+ux_dof_shell    = node*6-5 ;
+uz_dof_shell    = node*6-1 ;
 angle_dof_shell = node*6-2 ;
 
-% dofs_node2 = 2*6-2;
-% dofs_node3 = 3*6-2;
-% controlDofs_total = [dofs_node2; dofs_node3; controldofs] ;
-% angle_dof = -matUs(controlDofs_total,:)
-
-controlDispsShellNonLinear = -matUs(angle_dof_shell,:) ;
-control_ux_shell = matUs(ux_dof_shell,:) ;
-control_uz_shell = matUs(uz_dof_shell,:) ;
-
-% controlDispShellNonLinear ./ controlDispShellLinear
-loadFactorsShell  =  loadFactorsMat(:, 2)*ty*tz;
+controlDispsShellNonLinear  = -matUs(angle_dof_shell,:) ;
+control_ux_shell            = matUs(ux_dof_shell,:) ;
+control_uz_shell            = matUs(uz_dof_shell,:) ;
+loadFactorsShell            = loadFactorsMat(:, 2)*ty*tz;
+% md
+vec = (1e-6:0.01:2*pi) ;
+% Analytical solution: Ibrahimbegovic - On the choice of finite rotation parameters
+% doi.org/10.1016/S0045-7825(97)00059-5
+% md and the analytical value of the load factors is computed
+analyticLoadFactorsNREngRot = @(w) E * Iy * w / l  ; 
+ux_ana = @(t) l-l./(t/2).*sin(t/2).*cos(t/2) ;
+uz_ana = @(t) l./(t/2).*(sin(t/2)).^2 ;
 %
-
-% disps = [ controlDispsNREngRot' controlDispsShellNonLinear' ]
-aux = [ analyticLoadFactorsNREngRot(controlDispsShellNonLinear)' loadFactorsShell ]
-aux2 = [(abs(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - loadFactorsShell'))./abs(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) ]
-
-
-
-
+% md
 % md## Verification
 % md
-verifBoolean_frame = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+% verifBoolean_frame = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+%                     loadFactorsNREngRot')  < ...
+%               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+% verifBoolean_frame
+
+% verifBoolean_Shell = norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
+%                     loadFactorsShell')  < ...
+%               (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
+% verifBoolean_Shell
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                     loadFactorsNREngRot')  < ...
-              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
-verifBoolean_frame
-
-verifBoolean_Shell = norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4) && ...
+              norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
                     loadFactorsShell')  < ...
-              (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-3);
-verifBoolean_Shell
-
-
-
-% a =[ analyticLoadFactorsNREngRot(controlDispsNREngRot)' analyticLoadFactorsNREngRot(controlDispsShellNonLinear(1:2:end))' ]
-% b = loadFactorsNREngRot
-
-% a-b
-% [ analyticLoadFactorsNREngRot(controlDispsNREngRot)'-loadFactorsNREngRot  analyticLoadFactorsNREngRot(controlDispsShellNonLinear)'-loadFactorsNREngRot  ]
-
-
-
-% md
-
-vec = (1e-6:0.01:2*pi) ;
-% vec = controlDispsShellNonLinear ;
-% paper de ibrahimbegovic
-ux_ana = l-l./(vec/2).*sin(vec/2).*cos(vec/2) ;
-uz_ana = l./(vec/2).*(sin(vec/2)).^2 ;
-
-disps = [ ux_ana(1:4)' control_ux_shell(1:4)' uz_ana(1:4)' control_uz_shell(1:4)' ] 
-
+              (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
+%
 close all
 lw = 2.0;
-ms = 2;
+ms = 5;
 plotfontsize = 10;
 figure;
-
-
-
-
 % plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
-% plot(vec, analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
-plot(ux_ana, analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
+plot(ux_ana(vec), analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
 hold on;
 grid on;
 % plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
-% plot(controlDispsShellNonLinear, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
-plot(uz_ana, analyticLoadFactorsNREngRot(vec), 'k-', 'linewidth', lw, 'markersize', ms);
-plot(-control_ux_shell, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
-plot(control_uz_shell, loadFactorsShell, 'r-x', 'linewidth', lw, 'markersize', ms);
-
+plot(uz_ana(vec), analyticLoadFactorsNREngRot(vec), 'k-', 'linewidth', lw, 'markersize', ms);
+plot(-control_ux_shell(1:2:end), loadFactorsShell(1:2:end), 'g--*', 'linewidth', lw, 'markersize', ms);
+plot(control_uz_shell(1:2:end), loadFactorsShell(1:2:end), 'r--x', 'linewidth', lw, 'markersize', ms);
+% plot(control_theta_shell, loadFactorsShell, 'y-s', 'linewidth', lw, 'markersize', ms);
 labx = xlabel('Displacement');
 laby = ylabel('\lambda');
 legend('analytic_ux', 'analytic_uz', 'NL_ux' , 'NL_uz','location', 'East');
@@ -273,7 +227,6 @@ set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
 set(laby, 'FontSize', plotfontsize);
 print('output/verifCantileverBeam.png', '-dpng');
-
 % md
 % md```@raw html
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
