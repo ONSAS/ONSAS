@@ -272,7 +272,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   fr = Br'*fg ;
   Kr = Br'*Kg*Br + Kv ;
 
-  % Kr= (Kr+Kr')/2 ;
+  Kr= (Kr+Kr')/2 ;
   
   % fr = fg ;
   % Kr = Kg ;

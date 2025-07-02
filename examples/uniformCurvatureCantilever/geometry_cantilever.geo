@@ -4,10 +4,11 @@ Lx = 10 ;
 Ly = 1.0 ;
 
 ms = 0.5 ;
+f = 1 ;
 
 Point(1) = {0,0,0, ms} ;
-Point(2) = {Lx,0,0, ms} ;
-Point(3) = {Lx,Ly,0, ms} ;
+Point(2) = {Lx,0,0, f*ms} ;
+Point(3) = {Lx,Ly,0, f*ms} ;
 Point(4) = {0,Ly,0, ms} ;
 
 Line(1) = {1, 2};

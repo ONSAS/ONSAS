@@ -35,7 +35,7 @@ end % hidden
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
 E = 200e9;
-nu = 0.3;
+nu = 0.0;
 % geometrical scalar parameters
 l = 10;
 ty = 1.0;
@@ -170,16 +170,6 @@ end
 [mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
 assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 
-% otherParams.problemName = 'uniformCurvatureCantilever-linearShell';
-
-% [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-
-% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-% %
-% controldofs = 6+[1 4 5] ;
-% controlDispShellLinear = -matUs(controldofs,:)
-% controlDispsNREngRot
-
 % ====================================================
 % shell non linear
 % ====================================================
@@ -188,60 +178,104 @@ otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %analysisSettings               = struct();
 %analysisSettings.methodName    = 'newtonRaphson';
 %analysisSettings.deltaT        =   0.;  % TEMPORARY
-%analysisSettings.finalTime      =   0.01;  % TEMPORARY
- %analysisSettings.finalTime      =   .0002;  % TEMPORARY
-%analysisSettings.stopTolDeltau =   1e-6;
-%analysisSettings.stopTolForces =   1e-4;
+analysisSettings.deltaT        =   0.01;  % TEMPORARY
+analysisSettings.finalTime      =   1;  % TEMPORARY
+% analysisSettings.finalTime      =   .0002;  % TEMPORARY
+% analysisSettings.stopTolDeltau =   1e-6;
+% analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   15;
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-controldofs = 3*6-2 ;
-controlDispShellNonLinear = -matUs(controldofs,:)
+% node = 3 ;
+node = 18 ;
+ux_dof_shell = node*6-5 ;
+uz_dof_shell = node*6-1 ;
+angle_dof_shell = node*6-2 ;
 
-controlDispShellNonLinear ./ controlDispShellLinear
-loadFactorsShell  =  loadFactorsMat(:, 2);
+% dofs_node2 = 2*6-2;
+% dofs_node3 = 3*6-2;
+% controlDofs_total = [dofs_node2; dofs_node3; controldofs] ;
+% angle_dof = -matUs(controlDofs_total,:)
+
+controlDispsShellNonLinear = -matUs(angle_dof_shell,:) ;
+control_ux_shell = matUs(ux_dof_shell,:) ;
+control_uz_shell = matUs(uz_dof_shell,:) ;
+
+% controlDispShellNonLinear ./ controlDispShellLinear
+loadFactorsShell  =  loadFactorsMat(:, 2)*ty*tz;
 %
+
+% disps = [ controlDispsNREngRot' controlDispsShellNonLinear' ]
+aux = [ analyticLoadFactorsNREngRot(controlDispsShellNonLinear)' loadFactorsShell ]
+aux2 = [(abs(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - loadFactorsShell'))./abs(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) ]
+
+
+
+
 % md## Verification
 % md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean_frame = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
+verifBoolean_frame
+
+verifBoolean_Shell = norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
+                    loadFactorsShell')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-3);
+verifBoolean_Shell
+
+
+
+% a =[ analyticLoadFactorsNREngRot(controlDispsNREngRot)' analyticLoadFactorsNREngRot(controlDispsShellNonLinear(1:2:end))' ]
+% b = loadFactorsNREngRot
+
+% a-b
+% [ analyticLoadFactorsNREngRot(controlDispsNREngRot)'-loadFactorsNREngRot  analyticLoadFactorsNREngRot(controlDispsShellNonLinear)'-loadFactorsNREngRot  ]
+
+
+
 % md
+
+vec = (1e-6:0.01:2*pi) ;
+% vec = controlDispsShellNonLinear ;
+% paper de ibrahimbegovic
+ux_ana = l-l./(vec/2).*sin(vec/2).*cos(vec/2) ;
+uz_ana = l./(vec/2).*(sin(vec/2)).^2 ;
+
+disps = [ ux_ana(1:4)' control_ux_shell(1:4)' uz_ana(1:4)' control_uz_shell(1:4)' ] 
+
+close all
 lw = 2.0;
-ms = 11;
-plotfontsize = 22;
+ms = 2;
+plotfontsize = 10;
 figure;
-plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+
+
+
+
+% plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+% plot(vec, analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
+plot(ux_ana, analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
 hold on;
 grid on;
-plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
-% plot(controlDispShellNonLinear, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
+% plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+% plot(controlDispsShellNonLinear, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
+plot(uz_ana, analyticLoadFactorsNREngRot(vec), 'k-', 'linewidth', lw, 'markersize', ms);
+plot(-control_ux_shell, loadFactorsShell, 'g-*', 'linewidth', lw, 'markersize', ms);
+plot(control_uz_shell, loadFactorsShell, 'r-x', 'linewidth', lw, 'markersize', ms);
 
 labx = xlabel('Displacement');
 laby = ylabel('\lambda');
-legend('analytic', 'NR-RotEng','location', 'North');
+legend('analytic_ux', 'analytic_uz', 'NL_ux' , 'NL_uz','location', 'East');
 % legend('analytic', 'NR-RotEng', 'Shell','location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
 set(laby, 'FontSize', plotfontsize);
 print('output/verifCantileverBeam.png', '-dpng');
+
 % md
 % md```@raw html
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
 % md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
-                    loadFactorsNREngRot')  < ...
-              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
-verifBoolean
-
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear) - ...
-                    loadFactorsNREngRot')  < ...
-              (norm(analyticLoadFactorsNREngRot(controlDispShellNonLinear)) * 1e-4);
-verifBoolean
-% md
-
-a =[ analyticLoadFactorsNREngRot(controlDispsNREngRot)' analyticLoadFactorsNREngRot(controlDispShellNonLinear)' ]
-b = loadFactorsNREngRot
-
-a-b
-[ analyticLoadFactorsNREngRot(controlDispsNREngRot)'-loadFactorsNREngRot  analyticLoadFactorsNREngRot(controlDispShellNonLinear)'-loadFactorsNREngRot  ]
