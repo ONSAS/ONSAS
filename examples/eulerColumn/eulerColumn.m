@@ -89,7 +89,7 @@ end
 analysisSettings  = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   2.5;
-analysisSettings.finalTime     =   70;
+analysisSettings.finalTime     =   140;
 analysisSettings.stopTolDeltau =   1e-8;
 analysisSettings.stopTolForces =   1e-8;
 analysisSettings.stopTolIts    =   20;
@@ -104,26 +104,26 @@ A = ty * tz;
 I = max(ty, tz) * min(ty, tz)^3 / 12;
 Pcrit = pi()^2 * E * I / l^2;
 
-% [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
-% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 % md
 
-% Dof          = (numElements / 2 + 1) * 6 - 5;
-% controlDisps =  matUs(Dof, :);
-% loadFactors  =  loadFactorsMat(:, 2);
+Dof          = (numElements / 2 + 1) * 6 - 5;
+controlDisps =  matUs(Dof, :);
+loadFactors  =  loadFactorsMat(:, 2);
 
-% lw = 2.0;
-% ms = 11;
-% plotfontsize = 22;
-% figure;
-% grid on;
-% plot(controlDisps, loadFactors, 'k-o', 'linewidth', lw, 'markersize', ms);
-% labx = xlabel('Displacement');
-% laby = ylabel('$\lambda$');
+lw = 2.0;
+ms = 11;
+plotfontsize = 22;
+figure;
+grid on;
+plot(controlDisps, loadFactors, 'k-o', 'linewidth', lw, 'markersize', ms);
+labx = xlabel('Displacement');
+laby = ylabel('$\lambda$');
 
-% verifBoolean = (abs(controlDisps(end) - 1.7406) / 1.7406) < 1e-3;
+verifBoolean = (abs(controlDisps(end) - 1.7406) / 1.7406) < 1e-3;
 % stop
 
 
