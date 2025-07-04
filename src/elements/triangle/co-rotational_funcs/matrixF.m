@@ -26,11 +26,12 @@ function [F1, F2] = matrixF(n, flag_second_mod) % ok
   n5 = n(13:15) ;
   n6 = n(16:18) ; 
   if flag_second_mod == 1
+    % F1 = [ skew(n1)(1:2,:)' zeros(3,3) skew(n3)(1:2,:)' zeros(3,3) skew(n5)(1:2,:)' zeros(3,3) ]' ;
     F1 = [ skew(n1)(1:2,:)' zeros(3,3) skew(n3)(1:2,:)' zeros(3,3) skew(n5)(1:2,:)' zeros(3,3) ]' ;
   else
-    F1 = [ skew(n1)' zeros(3,3) skew(n3)' zeros(3,3) skew(n5)' zeros(3,3) ]' ;
-    % F1 = [ skew(n1) ; zeros(3,3) ; skew(n3) ; zeros(3,3) ; skew(n5) ; zeros(3,3) ] ;
+    % F1 = [ skew(n1)' zeros(3,3) skew(n3)' zeros(3,3) skew(n5)' zeros(3,3) ]' ;
+    F1 = [ skew(n1) ; zeros(3,3) ; skew(n3) ; zeros(3,3) ; skew(n5) ; zeros(3,3) ] ;
   end
-  F2 = [ skew(n1)' skew(n2)' skew(n3)' skew(n4)' skew(n5)' skew(n6)' ]' ;
-    % F2 = [ skew(n1) ; skew(n2) ; skew(n3) ; skew(n4) ; skew(n5) ; skew(n6) ] ;
+  % F2 = [ skew(n1)' skew(n2)' skew(n3)' skew(n4)' skew(n5)' skew(n6)' ]' ;
+  F2 = [ skew(n1) ; skew(n2) ; skew(n3) ; skew(n4) ; skew(n5) ; skew(n6) ] ;
 end
