@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -28,6 +28,8 @@ function [vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces] ...
 
   % thickness
   tz = elemCrossSecParams{2};
+
+  Nodes = Nodes + reshape(U(1:2:end), 3, size(Nodes, 1))';
 
   indMx = 0;
   indMy = 0;

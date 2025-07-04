@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -25,7 +25,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   [materials, elements, boundaryConds, analysisSettings, otherParams] = setDefaults(materials, elements, boundaryConds, analysisSettings, otherParams);
 
   % md sets the current version and welcomes user
-  ONSASversion = '0.3.2';
+  ONSASversion = '0.3.3';
   welcomeMessage(ONSASversion, otherParams);
 
   % creates outputdir in current location
