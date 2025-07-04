@@ -29,7 +29,7 @@ function [vtkNodes, vtkConec, vtkNodalDisps, vtkInternalForces] ...
   % thickness
   tz = elemCrossSecParams{2};
 
-  Nodes = Nodes + reshape( U(1:2:end), 3, size(Nodes,1) )' ;
+  Nodes = Nodes + reshape(U(1:2:end), 3, size(Nodes, 1))';
 
   indMx = 0;
   indMy = 0;
