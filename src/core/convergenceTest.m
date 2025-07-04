@@ -30,8 +30,6 @@ function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTe
 
   logicDispStop = (normadeltau  < (normaUk  * stopTolDeltau));
   
-  % (normFext < stopTolForces)
-  % (deltaErrLoad > 0)
   logicForcStop = (deltaErrLoad < ((normFext + (normFext < stopTolForces)) * stopTolForces))  * (deltaErrLoad > 0);
 
   if isnan(norm(redDeltaU))

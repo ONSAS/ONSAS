@@ -76,7 +76,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   booleanConverged = false;
   dispIters        = 0;
   currDeltau       = zeros(length(BCsData.neumDofs), 1);
-modelCurrSol.timeIndex
+
   while  booleanConverged == 0
 
     % fprintf(' ============== new iteration ====================\n')
@@ -87,16 +87,14 @@ modelCurrSol.timeIndex
 
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau, rotMatCell] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau, rotMatCell);
-    % max(Utp1k(1:6:end))
-    % min(Utp1k(5:6:end))
+
     % --- update next time magnitudes ---
     [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
                                                    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
 
     % --- assemble system of equations ---
     [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
-    % norm(fint_{1}(BCsData.neumDofs))
-    % fint_{1}
+
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest(modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:, 1));
     % ---------------------------------------------------
@@ -109,7 +107,7 @@ modelCurrSol.timeIndex
 
   end % iteration while
   % --------------------------------------------------------------------
-  % stop
+
   Utp1       = Utp1k;
   Udottp1    = Udottp1k;
   Udotdottp1 = Udotdottp1k;

@@ -58,12 +58,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
                   Faero(BCsData.neumDofs);
 
     systemDeltauRHS = -rhat;
-    % 'resta'
-    % norm(Fint(BCsData.neumDofs))-norm(FextG(BCsData.neumDofs))
     systemDeltauMatrix = KT (neumdofs, neumdofs);
-
-    % Fint (BCsData.neumDofs)
-    % FextG(BCsData.neumDofs)
 
     % -----------------------------------------------------------------------------------
     % newmark
