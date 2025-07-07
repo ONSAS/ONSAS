@@ -24,6 +24,6 @@ function [inv_Ts] = invTsShell(t)
     inv_Ts = I;
   else
     u = t / psi;
-    a = psi / 2 / tan(psi/2);
-    inv_Ts = a * I + (1-a) * u * u' - 0.5 * skew(t);
+    a = psi / 2 / tan(psi / 2);
+    inv_Ts = a * I + (1 - a) * u * u' - 0.5 * skew(t);
   end

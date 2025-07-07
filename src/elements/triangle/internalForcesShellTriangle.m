@@ -100,7 +100,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   u2_def = Rr' * (p2_g - pog) - r2_o;
   u3_def = Rr' * (p3_g - pog) - r3_o;
   % fprintf('u_def \n')
-  % [ u1_def u2_def u3_def ] 
+  % [ u1_def u2_def u3_def ]
   % stop
 
   % eq. (7) of 10.1016/j.cma.2006.10.006
@@ -122,7 +122,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
       auxDen = ai(1) * rio(1) + ai(2) * rio(2);
       Den = Den + auxDen;
-    end  
+    end
     tan_theta = Num / Den;
     theta = rad2deg(atan(tan_theta));
     % num = a1_def(2)*r1_o(1) - a1_def(1)*r1_o(2) + a2_def(2)*r2_o(1) - a2_def(1)*r2_o(2) + a3_def(2)*r3_o(1) - a3_def(1)*r3_o(2)
@@ -150,7 +150,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   v2_def = rotationVector(R2_def, flag_first_mod);
   v3_def = rotationVector(R3_def, flag_first_mod);
   % [ v1_def v2_def v3_def ] ;
-% stop
+  % stop
   % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
   pl_full = zeros(18, 1);
@@ -168,7 +168,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     pl(8:10)  = v2_def;
     pl(11:12) = u3_def(1:2);
     pl(13:15) = v3_def;
-    index_full(uz_dofs) = [];  
+    index_full(uz_dofs) = [];
   else
     pl = zeros(18, 1);
     pl(1:3)   = u1_def;
@@ -187,9 +187,8 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   Kl = Kl_full(index_full, index_full);
   % Kl =(Kl + Kl')/2;
   % local internal force vector
-  
   fl = Kl * pl;
-  
+
   % eq. (19) of 10.1016/j.cma.2006.10.006
   if flag_first_mod == 1 && flag_second_mod == 1
     % eq. (15) of 10.1016/j.cma.2006.10.006
@@ -231,7 +230,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   Ka = Ba' * Kl * Ba + Kh;
-  
+
   % eq. (26) of 10.1016/j.cma.2006.10.006
   [P, A] = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
 
@@ -263,19 +262,18 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   Ts3   = funTsShell(t3_g);
   Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3);
 
-  Kv1 = d_Ts(t1_g, fg(4:6));
-  Kv2 = d_Ts(t2_g, fg(10:12));
-  Kv3 = d_Ts(t3_g, fg(16:18));
+  Kv1 = dTsShell(t1_g, fg(4:6));
+  Kv2 = dTsShell(t2_g, fg(10:12));
+  Kv3 = dTsShell(t3_g, fg(16:18));
   Kv = blkdiag(zeros(3, 3), Kv1, zeros(3, 3), Kv2, zeros(3, 3), Kv3);
 
   fr = Br' * fg;
   Kr = Br' * Kg * Br + Kv;
 
   % Kr= (Kr+Kr')/2;
-  
+
   % fr = fg;
   % Kr = Kg;
-  
   % Bm = eye(18);
   % Kk = zeros(18, 18);
   % if flag_third_mod == 1
@@ -300,5 +298,5 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   ks = {switchToNodalIndexing(Kr)};
   fs = {switchToNodalIndexing(fr)};
-  
+
 end

@@ -17,14 +17,14 @@
 
 function [F1, F2] = matrixF(n, flag_second_mod) % ok
   % Eq. (30) of 10.1016/j.cma.2006.10.006
-  n1 = n(1:3) ;
-  n2 = n(4:6) ;
+  n1 = n(1:3);
+  n2 = n(4:6);
   %
-  n3 = n(7:9) ;
-  n4 = n(10:12) ;
+  n3 = n(7:9);
+  n4 = n(10:12);
   %
-  n5 = n(13:15) ;
-  n6 = n(16:18) ; 
+  n5 = n(13:15);
+  n6 = n(16:18); 
 
   mat_n1 = skew(n1);
   mat_n2 = skew(n2);
@@ -34,12 +34,9 @@ function [F1, F2] = matrixF(n, flag_second_mod) % ok
   mat_n6 = skew(n6);
 
   if flag_second_mod == 1
-    % F1 = [ skew(n1)(1:2,:)' zeros(3,3) skew(n3)(1:2,:)' zeros(3,3) skew(n5)(1:2,:)' zeros(3,3) ]' ;
-    F1 = [ mat_n1(1:2,:) ; zeros(3,3) ; mat_n3(1:2,:) ; zeros(3,3) ; mat_n5(1:2,:) ; zeros(3,3) ] ;
+    F1 = [mat_n1(1:2, :) ; zeros(3, 3) ; mat_n3(1:2, :) ; zeros(3, 3) ; mat_n5(1:2, :) ; zeros(3, 3)];
   else
-    % F1 = [ skew(n1)' zeros(3,3) skew(n3)' zeros(3,3) skew(n5)' zeros(3,3) ]' ;
-    F1 = [ mat_n1 ; zeros(3,3) ; mat_n3 ; zeros(3,3) ; mat_n5 ; zeros(3,3) ] ;
+    F1 = [mat_n1 ; zeros(3, 3) ; mat_n3 ; zeros(3, 3) ; mat_n5 ; zeros(3, 3)];
   end
-  % F2 = [ skew(n1)' skew(n2)' skew(n3)' skew(n4)' skew(n5)' skew(n6)' ]' ;
-  F2 = [ mat_n1 ; mat_n2 ; mat_n3 ; mat_n4 ; mat_n5 ; mat_n6 ] ;
+    F2 = [mat_n1 ; mat_n2 ; mat_n3 ; mat_n4 ; mat_n5 ; mat_n6];
 end

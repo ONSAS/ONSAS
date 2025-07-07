@@ -25,7 +25,7 @@ function [Ts] = funTsShell(t)
   else
     u = t / psi;
     a = sin(psi) / psi;
-    Ts = a * I + (1-a) * u * u' + 0.5 * (sin(psi/2) / (psi/2))^2 * skew(t);
+    Ts = a * I + (1 - a) * u * u' + 0.5 * (sin(psi / 2) / (psi / 2))^2 * skew(t);
   end
 
 end

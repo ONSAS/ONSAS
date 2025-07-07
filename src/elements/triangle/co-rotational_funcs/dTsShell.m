@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [d_Ts] = d_Ts(t, v)
+function [d_Ts] = dTsShell(t, v)
 
   psi = norm(t);
   I = eye(3, 3);
@@ -25,11 +25,11 @@ function [d_Ts] = d_Ts(t, v)
   else
     u = t / psi;
     a = sin(psi) / psi;
-    b = (sin(psi/2) / (psi/2));
-    sum1 = -(a - b^2) * cross(u,v) * u';
+    b = (sin(psi / 2) / (psi / 2));
+    sum1 = -(a - b^2) * cross(u, v) * u';
     sum2 = 0.5 * b^2 * skew(v);
-    sum3 = (cos(psi)-a) * 1 / psi * (v * u'- (u' * v) * u * u');
-    sum4 = (1-a) * 1 / psi * (u * v' -2 * (u' * v) * u * u' + (u' * v) * I); 
+    sum3 = (cos(psi) - a) * 1 / psi * (v * u' - (u' * v) * u * u');
+    sum4 = (1 - a) * 1 / psi * (u * v' - 2 * (u' * v) * u * u' + (u' * v) * I); 
     d_Ts = sum1 + sum2 + sum3 + sum4;
   end
 
