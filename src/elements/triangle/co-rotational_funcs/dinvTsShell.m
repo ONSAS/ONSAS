@@ -20,14 +20,14 @@ function [dinv_Ts] = dinvTsShell(t, v)
   % t - local thetas (deformed reference frame)
   % v - moments
 
-  a = norm(t) ;
+  a = norm(t);
 
   if a == 0
-      dinv_Ts = -0.5 * skew(v);
+    dinv_Ts = -0.5 * skew(v);
   else
-      
-      eta = (2 * sin(a) - a * (1 + cos(a))) / (2 * a^2 * sin(a));
-      mu  = (a * (a + sin(a)) - 8 * sin(a / 2)^2) / (4 * a^4 * sin(a / 2)^2);
-      I = eye(3);
-      dinv_Ts = eta * (t * v' - 2 * v * t' + (t' * v) * I) + mu * (skew(t) * skew(t)) * (v * t') - 0.5 * skew(v);
+    eta = (2 * sin(a) - a * (1 + cos(a))) / (2 * a^2 * sin(a));
+    mu  = (a * (a + sin(a)) - 8 * sin(a / 2)^2) / (4 * a^4 * sin(a / 2)^2);
+    I = eye(3);
+    dinv_Ts = eta * (t * v' - 2 * v * t' + (t' * v) * I) + mu * (skew(t) * skew(t)) * (v * t') - 0.5 * skew(v);
   end
+  
