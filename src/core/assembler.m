@@ -196,7 +196,6 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         %                                                              elemCrossSecParams, ...
         %                                                              [1 modelParams], ...
         %                                                              elemDisps, rotMat);
-  
         Finte = fs{1};
         Ke = ks{1};
         Nx = fintLocCoord(1);

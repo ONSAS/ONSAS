@@ -63,7 +63,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   end
   % fprintf('p_g \n')
   % [ p1_g p2_g p3_g pog ]
-  
+
   % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
   % R1_g = rotMat{1};
@@ -81,13 +81,11 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1_g, r2_g, r3_g);
   [Tr, ~, ~, ~]       = edgeLocalAxisShellTriangle(p1_g, p2_g, p3_g);
 
-
-
   % Rotation matrix from global reference frame to local reference frame in initial configuration
   Ro = To';
   % Rotation matrix from global reference frame to local reference frame in deformed configuration
   Rr = Tr';
-  
+
   % nodal displacements in local reference frame in deformed configuration
   % eq. (1) of 10.1016/j.cma.2006.10.006
   r1_o = To * (r1_g - rc_g);
@@ -159,7 +157,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
   % ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
   % drill_dofs = [6, 12, 18];              % (rz)
-  
+
   if flag_second_mod == 1
     pl = zeros(15, 1);
     pl(1:2)   = u1_def(1:2);
