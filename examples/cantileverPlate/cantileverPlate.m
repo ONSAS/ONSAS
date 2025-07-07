@@ -28,7 +28,7 @@ E = 200e9;
 nu = 0.0;
 tz = .05;
 qx  = 1e3; % kN/m^2
-qz  = 3e6; % kN/m^2
+qz  = 1e3; % kN/m^2
 % md
 Ly = .5;
 Lx = 1;
