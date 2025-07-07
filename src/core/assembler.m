@@ -84,8 +84,6 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ||  ...
                        strcmp(analysisSettings.methodName, 'alphaHHT');
 
-
-
   % ====================================================================
 
   % ====================================================================
@@ -201,7 +199,6 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   
         Finte = fs{1};
         Ke = ks{1};
-
         Nx = fintLocCoord(1);
         My = fintLocCoord(2);
         Mz = fintLocCoord(3);
