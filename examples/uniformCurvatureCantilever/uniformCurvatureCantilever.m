@@ -202,10 +202,10 @@ verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                     loadFactorsNREngRot')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4) && ...
               norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
-                    loadFactorsShell')  < ...
+                  loadFactorsShell')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
 %
-close all
+close all;
 lw = 2.0;
 ms = 5;
 plotfontsize = 10;
@@ -221,7 +221,7 @@ plot(control_uz_shell(1:2:end), loadFactorsShell(1:2:end), 'r--x', 'linewidth', 
 % plot(control_theta_shell, loadFactorsShell, 'y-s', 'linewidth', lw, 'markersize', ms);
 labx = xlabel('Displacement');
 laby = ylabel('\lambda');
-legend('analytic_ux', 'analytic_uz', 'NL_ux' , 'NL_uz','location', 'East');
+legend('analytic_ux', 'analytic_uz', 'NL_ux', 'NL_uz', 'location', 'East');
 % legend('analytic', 'NR-RotEng', 'Shell','location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
