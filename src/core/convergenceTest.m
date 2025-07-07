@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -17,7 +17,7 @@
 %
 function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest( ...
                                                                                    analysisSettings, redFext, redDeltaU, redUk, dispIter, systemDeltauRHS)
-
+  % dispIter
   stopTolDeltau = analysisSettings.stopTolDeltau;
   stopTolForces = analysisSettings.stopTolForces;
   stopTolIts    = analysisSettings.stopTolIts;
@@ -29,6 +29,7 @@ function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTe
   normFext      = norm(redFext);
 
   logicDispStop = (normadeltau  < (normaUk  * stopTolDeltau));
+
   logicForcStop = (deltaErrLoad < ((normFext + (normFext < stopTolForces)) * stopTolForces))  * (deltaErrLoad > 0);
 
   if isnan(norm(redDeltaU))

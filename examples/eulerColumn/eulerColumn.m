@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -96,6 +96,7 @@ analysisSettings.stopTolIts    =   20;
 otherParams  = struct();
 otherParams.problemName = 'EulerColumn';
 otherParams.controlDofs = [numElements + 1  5];
+otherParams.plots_format = 'vtk';
 % otherParams.plots_format = 'vtk' ;
 
 A = ty * tz;

@@ -25,5 +25,5 @@ authors:
 - family-names: "Bazzano García"
   given-names: "J. B."
 title: "ONSAS: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab"
-version: 0.3.2
+version: 0.3.3
 url: "https://github.com/ONSAS/ONSAS"
