@@ -17,7 +17,7 @@
 
 function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   % Eq. (26) of 10.1016/j.cma.2006.10.006
-  
+
   if flag_second_mod == 1
     % Matrix A
     Ai = zeros(5, 3);
@@ -82,7 +82,7 @@ function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   P1 = [I - A1 * G1', -A1 * G2', -A1 * G3'];
   P2 = [-A2 * G1', I - A2 * G2', -A2 * G3'];
   P3 = [-A3 * G1', -A3 * G2', I - A3 * G3'];
-  
+
   % A1_jv = [-skew(a1) ; eye(3)]
   % A2_jv = [-skew(a2) ; eye(3)]
   % A3_jv = [-skew(a3) ; eye(3)]
@@ -94,12 +94,12 @@ function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
   % PP=P*P;
   % PP-P
   % stop
-  
+
   % eye
   % A'*G
   % G'*A
 
-  %zeros
+  % zeros
   % P*A
   % stop
 end

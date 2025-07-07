@@ -21,8 +21,7 @@ function [Kki] = matrixKki(q, m) % ok
   q0s = 1.0 - q(1)^2 - q(2)^2 - q(3)^2;
   if q0s < 0
     q0s;
-    q
-    error('ojo');
+    error('q0s <0 - ojo');
   end
   q0 = sqrt(q0s);
   A = q(1) * m(1) + q(2) * m(2) + q(3) * m(3);

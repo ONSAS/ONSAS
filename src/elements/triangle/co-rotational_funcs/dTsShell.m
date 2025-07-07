@@ -29,7 +29,7 @@ function [d_Ts] = dTsShell(t, v)
     sum1 = -(a - b^2) * cross(u, v) * u';
     sum2 = 0.5 * b^2 * skew(v);
     sum3 = (cos(psi) - a) * 1 / psi * (v * u' - (u' * v) * u * u');
-    sum4 = (1 - a) * 1 / psi * (u * v' - 2 * (u' * v) * u * u' + (u' * v) * I); 
+    sum4 = (1 - a) * 1 / psi * (u * v' - 2 * (u' * v) * u * u' + (u' * v) * I);
     d_Ts = sum1 + sum2 + sum3 + sum4;
   end
 

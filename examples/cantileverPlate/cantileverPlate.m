@@ -17,8 +17,8 @@
 %
 % md# Cantilever problem using plate and shell elements
 % md
-clc
-clear all
+clc;
+clear all;
 close all;
 if ~strcmp(getenv('TESTS_RUN'), 'yes')
   clear all;
@@ -33,10 +33,10 @@ Lx = 1;
 tz = .05;
 I = Ly * tz^3 / 12;
 %
-qx  = 100 ; % kN/m2
-qz  = 200 ; % kN/m2
+qx  = 100; % kN/m2
+qz  = 200; % kN/m2
 %
-Fz = qz * Ly * tz ;
+Fz = qz * Ly * tz;
 %
 % ====================================================
 % plate element
@@ -109,10 +109,10 @@ otherParams.plots_format = 'vtk';
 % md## verification
 nelem = size(modelProperties.Conec, 1);
 matSolic = getInternalForces(modelSolutions{end}.localInternalForces, 1:nelem, {'Mx', 'My', 'Mxy'});
-numer_maxMx_plate = max(max(matSolic)) ;
-numer_wmax_plate = min(matUs(5:6:end)) ;
+numer_maxMx_plate = max(max(matSolic));
+numer_wmax_plate = min(matUs(5:6:end));
 % md
-analy_maxMx = Fz * Lx / Ly ;
+analy_maxMx = Fz * Lx / Ly;
 analy_wmax = -Fz * Lx^3 / (3 * E * I);
 analy_dxmax = qx * Lx / E;
 %
@@ -162,16 +162,15 @@ otherParams.plots_format = 'vtk';
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
 
-node = 10 ;
-numer_dxmax_nonlin_shell = matUs(node*6-5,end);
-numer_wmax_nonlin_shell  = matUs(node*6-1,end);
-
+node = 10;
+numer_dxmax_nonlin_shell = matUs(node * 6 - 5, end);
+numer_wmax_nonlin_shell  = matUs(node * 6 - 1, end);
 
 % ====================================================
 % non linear frame element
 % ====================================================
 %
-numElements = 5 ;
+numElements = 5;
 %
 elements             = struct();
 elements(1).elemType = 'node';
@@ -184,8 +183,8 @@ boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 %
-Px = qx*Ly*tz ;
-Pz = qz*Ly*tz ;
+Px = qx*Ly*tz;
+Pz = qz*Ly*tz;
 boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
 boundaryConds(2).loadsBaseVals = [Px 0 0 0 -Pz 0];
@@ -209,17 +208,16 @@ otherParams.problemName = 'cantileverPlate-NL-frame';
 %
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-node = numElements+1;
-dofs=node*6-5:node*6;
+node = numElements + 1;
+dofs = node * 6 - (5:(node * 6));
+numer_dxmax_nonlin_frame = matUs(node * 6 - 5, end);
+numer_wmax_nonlin_frame = matUs(node * 6 - 1, end);
 
-numer_dxmax_nonlin_frame = matUs(node*6-5,end);
-numer_wmax_nonlin_frame = matUs(node*6-1,end);
+[numer_dxmax_linear_shell numer_dxmax_nonlin_shell numer_dxmax_nonlin_frame];
+[numer_wmax_linear_shell numer_wmax_nonlin_shell numer_wmax_nonlin_frame];
 
-[ numer_dxmax_linear_shell numer_dxmax_nonlin_shell numer_dxmax_nonlin_frame ];
-[ numer_wmax_linear_shell numer_wmax_nonlin_shell numer_wmax_nonlin_frame ];
-
-err_w = (numer_wmax_nonlin_shell-numer_wmax_nonlin_frame)/numer_wmax_nonlin_frame *100;
-err_x = (numer_dxmax_nonlin_shell-numer_dxmax_nonlin_frame)/numer_dxmax_nonlin_frame *100;
+err_w = (numer_wmax_nonlin_shell-numer_wmax_nonlin_frame) / numer_wmax_nonlin_frame * 100;
+err_x = (numer_dxmax_nonlin_shell-numer_dxmax_nonlin_frame) / numer_dxmax_nonlin_frame * 100;
 
 analy_wmax;
 analy_dxmax;

@@ -38,5 +38,5 @@ function [F1, F2] = matrixF(n, flag_second_mod) % ok
   else
     F1 = [mat_n1; zeros(3, 3); mat_n3; zeros(3, 3); mat_n5; zeros(3, 3)];
   end
-    F2 = [mat_n1; mat_n2; mat_n3; mat_n4; mat_n5; mat_n6];
+  F2 = [mat_n1; mat_n2; mat_n3; mat_n4; mat_n5; mat_n6];
 end

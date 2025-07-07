@@ -15,9 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [v] = rotationVector(R,flag_first_mod) % ok
+function [v] = rotationVector(R, flag_first_mod) % ok
   % Eq. (13) of 10.1016/j.cma.2006.10.006
-  
+
   if flag_first_mod == 0
     v = zeros(3, 1);
     v(1) = .5 * (R(3, 2) - R(2, 3));

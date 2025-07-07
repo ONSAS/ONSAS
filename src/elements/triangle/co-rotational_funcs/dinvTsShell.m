@@ -30,4 +30,4 @@ function [dinv_Ts] = dinvTsShell(t, v)
     I = eye(3);
     dinv_Ts = eta * (t * v' - 2 * v * t' + (t' * v) * I) + mu * (skew(t) * skew(t)) * (v * t') - 0.5 * skew(v);
   end
-  
+end

@@ -24,7 +24,7 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag, origin_flag) %
 
   % if origin_flag == 0
   % Eq. (27) of 10.1016/j.cma.2006.10.006
-  
+
   d = norm(a21);
   v = norm(cross(a21, a31));
   c = a1' * r1 + a2' * r2 + a3' * r3;
@@ -36,7 +36,7 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag, origin_flag) %
   G2 = zeros(6, 3);
   G2(3, 1) = a13(1) / v;
   G2(3, 2) = a13(2) / v;
-  
+
   G3 = zeros(6, 3);
   G3(3, 1) = a21(1) / v;
   G3(3, 2) = a21(2) / v;
@@ -54,16 +54,16 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag, origin_flag) %
     %
     G3(1, 3) =  -r3(2) / c;
     G3(2, 3) =   r3(1) / c;
-  
+
   else
     G1(1, 3) = 0;
-    G1(2, 3) = -1/d;
+    G1(2, 3) = -1 / d;
     %
     G2(1, 3) = 0;
-    G2(2, 3) = 1/d;
+    G2(2, 3) = 1 / d;
     %
     % G3(1, 3) = 0;
-    % G3(2, 3) = 0;    
+    % G3(2, 3) = 0;
   end
 
   % elseif origin_flag == 1
@@ -72,7 +72,7 @@ function [G1, G2, G3] = matrixGi(a1, a2, a3, r1, r2, r3, e1_flag, origin_flag) %
   %   G1(3,1) = a32(1)/(a3(2)*a2(1));
   %   G1(3,2) = 1/a2(1);
   %   G1(2,3) = -1/(a2(1));
-        
+
   %   G2 = zeros(6,3);
   %   G2(3,1) = -a3(1)/(a3(2)*a2(1));
   %   G2(3,2) = -1/a2(1);

@@ -18,11 +18,11 @@
 
 function [H] = matrixH(t)
 
-    spin_t = skew(t);
-    I = eye(3);
-    v = norm(t);
+  spin_t = skew(t);
+  I = eye(3);
+  v = norm(t);
 
-    eta = (2 * sin(v) - v * (1 + cos(v))) / (2 * v^2 * sin(v));
-    H = I - 0.5 * spin_t + eta * spin_t * spin_t;
+  eta = (2 * sin(v) - v * (1 + cos(v))) / (2 * v^2 * sin(v));
+  H = I - 0.5 * spin_t + eta * spin_t * spin_t;
 
 end
