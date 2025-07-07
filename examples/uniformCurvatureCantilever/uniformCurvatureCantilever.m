@@ -35,7 +35,7 @@ end % hidden
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
 E = 200e9; % Young modulus
-nu = 0.0; % Poission 
+nu = 0.0; % Poisson
 % geometrical scalar parameters
 l = 10; % length
 ty = 1.0; % width
@@ -107,7 +107,7 @@ end
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   0.1;
-analysisSettings.finalTime     =   1; 
+analysisSettings.finalTime     =   1;
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
@@ -144,7 +144,7 @@ boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 %
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) Mobj * t / ( ty * tz );
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t / (ty * tz);
 boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 %
 mesh = struct();
@@ -160,7 +160,7 @@ otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   0.01; % 100 steps
-analysisSettings.finalTime     =   1; 
+analysisSettings.finalTime     =   1;
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   15;
@@ -173,18 +173,18 @@ ux_dof_shell    = node * 6 - 5;
 uz_dof_shell    = node * 6 - 1;
 angle_dof_shell = node * 6 - 2;
 
-controlDispsShellNonLinear  = -matUs(angle_dof_shell,:);
-control_ux_shell            = matUs(ux_dof_shell,:);
-control_uz_shell            = matUs(uz_dof_shell,:);
+controlDispsShellNonLinear  = -matUs(angle_dof_shell, :);
+control_ux_shell            = matUs(ux_dof_shell, :);
+control_uz_shell            = matUs(uz_dof_shell, :);
 loadFactorsShell            = loadFactorsMat(:, 2) * ty * tz;
 % md
-vec = (1e-6:0.01:2*pi);
+vec = (1e-6:0.01:2 * pi);
 % Analytical solution: Ibrahimbegovic - On the choice of finite rotation parameters
 % doi.org/10.1016/S0045-7825(97)00059-5
 % md and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
-ux_ana = @(t) l-l./(t / 2).*sin(t / 2).*cos(t / 2);
-uz_ana = @(t) l./(t / 2).*(sin(t / 2)).^2;
+ux_ana = @(t) l - l . / (t / 2) . * sin(t / 2) . * cos(t / 2);
+uz_ana = @(t) l . / (t / 2) . * (sin(t / 2)).^2;
 %
 % md
 % md## Verification
