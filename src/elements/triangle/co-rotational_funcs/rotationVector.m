@@ -25,9 +25,9 @@ function [v] = rotationVector(R, flag_first_mod) % ok
     v(3) = .5 * (R(2, 1) - R(1, 2));
     if norm(v) ~= 0
       % asin(norm(v)) / norm(v)
-      v = asin(norm(v)) / norm(v) * v; 
+      v = asin(norm(v)) / norm(v) * v;
     end
   else
-    v = logar(R);  
+    v = logar(R);
   end
 end

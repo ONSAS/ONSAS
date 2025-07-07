@@ -34,14 +34,14 @@ end % hidden
 % add path
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
-E = 200e9 ; % Young modulus
-nu = 0.0 ; % Poission 
+E = 200e9; % Young modulus
+nu = 0.0; % Poission 
 % geometrical scalar parameters
-l = 10 ; % length
-ty = 1.0 ; % width
-tz = .1 ; % thickness
+l = 10; % length
+ty = 1.0; % width
+tz = .1; % thickness
 Iy = ty * tz^3 / 12;
-Mobj = E * Iy * 2 * pi / l ;
+Mobj = E * Iy * 2 * pi / l;
 % the number of elements of the mesh
 numElements = 10;
 % md
@@ -104,13 +104,13 @@ for i = 1:numElements
 end
 % md
 % md### analysisSettings
-analysisSettings               = struct() ;
+analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.1 ;
-analysisSettings.finalTime     =   1 ;  
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   10 ;
+analysisSettings.deltaT        =   0.1;
+analysisSettings.finalTime     =   1; 
+analysisSettings.stopTolDeltau =   1e-6;
+analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolIts    =   10;
 % md
 % md## otherParams
 otherParams             = struct();
@@ -157,34 +157,34 @@ assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
 %
 otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %
-analysisSettings               = struct() ;
+analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.01 ; % 100 steps
-analysisSettings.finalTime     =   1 ;  
-analysisSettings.stopTolDeltau =   1e-6 ;
-analysisSettings.stopTolForces =   1e-6 ;
-analysisSettings.stopTolIts    =   15 ;
+analysisSettings.deltaT        =   0.01; % 100 steps
+analysisSettings.finalTime     =   1; 
+analysisSettings.stopTolDeltau =   1e-6;
+analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolIts    =   15;
 %
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-node = 18 ;
-ux_dof_shell    = node*6-5 ;
-uz_dof_shell    = node*6-1 ;
-angle_dof_shell = node*6-2 ;
+node = 18;
+ux_dof_shell    = node * 6 - 5;
+uz_dof_shell    = node * 6 - 1;
+angle_dof_shell = node * 6 - 2;
 
-controlDispsShellNonLinear  = -matUs(angle_dof_shell,:) ;
-control_ux_shell            = matUs(ux_dof_shell,:) ;
-control_uz_shell            = matUs(uz_dof_shell,:) ;
-loadFactorsShell            = loadFactorsMat(:, 2)*ty*tz;
+controlDispsShellNonLinear  = -matUs(angle_dof_shell,:);
+control_ux_shell            = matUs(ux_dof_shell,:);
+control_uz_shell            = matUs(uz_dof_shell,:);
+loadFactorsShell            = loadFactorsMat(:, 2) * ty * tz;
 % md
-vec = (1e-6:0.01:2*pi) ;
+vec = (1e-6:0.01:2*pi);
 % Analytical solution: Ibrahimbegovic - On the choice of finite rotation parameters
 % doi.org/10.1016/S0045-7825(97)00059-5
 % md and the analytical value of the load factors is computed
-analyticLoadFactorsNREngRot = @(w) E * Iy * w / l  ; 
-ux_ana = @(t) l-l./(t/2).*sin(t/2).*cos(t/2) ;
-uz_ana = @(t) l./(t/2).*(sin(t/2)).^2 ;
+analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
+ux_ana = @(t) l-l./(t / 2).*sin(t / 2).*cos(t / 2);
+uz_ana = @(t) l./(t / 2).*(sin(t / 2)).^2;
 %
 % md
 % md## Verification

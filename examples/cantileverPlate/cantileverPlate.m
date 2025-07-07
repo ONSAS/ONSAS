@@ -183,8 +183,8 @@ boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 %
-Px = qx*Ly*tz;
-Pz = qz*Ly*tz;
+Px = qx * Ly * tz;
+Pz = qz * Ly * tz;
 boundaryConds(2).loadsCoordSys = 'global';
 boundaryConds(2).loadsTimeFact = @(t) t;
 boundaryConds(2).loadsBaseVals = [Px 0 0 0 -Pz 0];
@@ -216,8 +216,8 @@ numer_wmax_nonlin_frame = matUs(node * 6 - 1, end);
 [numer_dxmax_linear_shell numer_dxmax_nonlin_shell numer_dxmax_nonlin_frame];
 [numer_wmax_linear_shell numer_wmax_nonlin_shell numer_wmax_nonlin_frame];
 
-err_w = (numer_wmax_nonlin_shell-numer_wmax_nonlin_frame) / numer_wmax_nonlin_frame * 100;
-err_x = (numer_dxmax_nonlin_shell-numer_dxmax_nonlin_frame) / numer_dxmax_nonlin_frame * 100;
+err_w = (numer_wmax_nonlin_shell - numer_wmax_nonlin_frame) / numer_wmax_nonlin_frame * 100;
+err_x = (numer_dxmax_nonlin_shell - numer_dxmax_nonlin_frame) / numer_dxmax_nonlin_frame * 100;
 
 analy_wmax;
 analy_dxmax;
@@ -230,5 +230,3 @@ verifBoolean = (abs(analy_wmax - numer_wmax_plate) / abs(analy_wmax))  < 5e-3 &&
             (abs(analy_dxmax - numer_dxmax_linear_shell) / abs(analy_dxmax)) < 1e-3 && ...
             (abs(analy_wmax  - numer_wmax_nonlin_shell) / abs(analy_wmax)) < 5e-3 && ...
             (abs(analy_wmax - numer_wmax_nonlin_frame) / abs(analy_wmax)) < 5e-3;
-
-

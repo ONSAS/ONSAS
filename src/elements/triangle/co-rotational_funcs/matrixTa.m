@@ -15,10 +15,10 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 
-function [Ta] = matrixTa(R) % ok
+function [Ta] = matrixTa(R)
   % Eq. (15) of 10.1016/j.cma.2006.10.006
-  Ta = 0.5 * [[R(2, 2) + R(3, 3),  -R(1, 2),            -R(1, 3)          ]
-              [-R(2, 1),            R(1, 1) + R(3, 3),  -R(2, 3)          ]
+  Ta = 0.5 * [[R(2, 2) + R(3, 3),  -R(1, 2),            -R(1, 3)]
+              [-R(2, 1),            R(1, 1) + R(3, 3),  -R(2, 3)]
               [-R(3, 1),           -R(3, 2),             R(1, 1) + R(2, 2)]
              ];
 end

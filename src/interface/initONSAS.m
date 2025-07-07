@@ -105,7 +105,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   % Global rotation matrices for triangle elements
   rotMatCell = cell(size(U, 1) / 6);
   % Esto se tiene que mejorar, se asume que no hay rotaciones iniciales
-  rotMatCell(:) = {eye(3)}; 
+  rotMatCell(:) = {eye(3)};
   % ==========================================================================================
   % ==========================================================================================
 
