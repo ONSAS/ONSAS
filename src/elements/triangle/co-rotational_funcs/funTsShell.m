@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Ts] = Ts(t)
+function [Ts] = funTsShell(t)
 
   psi = norm(t);
   I = eye(3, 3);
@@ -25,7 +25,7 @@ function [Ts] = Ts(t)
   else
     u = t / psi;
     a = sin(psi) / psi;
-    Ts = a * I + (1-a) * u * u' + 1/2 * ( sin(psi/2) / (psi/2) )^2 * skew(t);
+    Ts = a * I + (1-a) * u * u' + 0.5 * (sin(psi/2) / (psi/2))^2 * skew(t);
   end
 
 end

@@ -1,3 +1,20 @@
+% Copyright 2024, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+%
 function [T, x02, x03, y03] = edgeLocalAxisShellTriangle(p1, p2, p3)
   % Calculates the matrix for transformation of basis between global and local axis;
   % p1, p2 and p3 are the position vector for the nodes in global coordinates;

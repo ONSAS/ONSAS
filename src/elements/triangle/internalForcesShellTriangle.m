@@ -32,7 +32,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   poisson_ratio = modelParams(2);
   h = thickness;
 
-  % Nodes position vector in global reference frame 
+  % Nodes position vector in global reference frame
   elemCoords = elemCoords';
   r1_g = elemCoords(1:3);
   r2_g = elemCoords(4:6);
@@ -49,8 +49,8 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   u2_g    = Ug(7:9);
   u3_g    = Ug(13:15);
   t1_g    = Ug(4:6);
-  t2_g    = Ug(10:12) ;
-  t3_g    = Ug(16:18) ;
+  t2_g    = Ug(10:12);
+  t3_g    = Ug(16:18);
 
   % Updated position vector in global reference frame
   p1_g = r1_g + u1_g;
@@ -62,7 +62,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     pog = p1_g;
   end
   % fprintf('p_g \n')
-  % [ p1_g p2_g p3_g pog ] 
+  % [ p1_g p2_g p3_g pog ]
   
   % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
@@ -115,16 +115,16 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     a   = [a1_def, a2_def, a3_def];
     ro  = [r1_o, r2_o, r3_o];
     for i = 1:3
-      ai = a(:,i);
-      rio = ro(:,i);
+      ai = a(:, i);
+      rio = ro(:, i);
       auxNum = ai(2) * rio(1) - ai(1) * rio(2);
       Num = Num + auxNum;
 
-      auxDen = ai(1) * rio(1) + ai(2) * rio(2) ;
+      auxDen = ai(1) * rio(1) + ai(2) * rio(2);
       Den = Den + auxDen;
     end  
-    tan_theta = Num/Den 
-    theta = rad2deg(atan(tan_theta))
+    tan_theta = Num / Den;
+    theta = rad2deg(atan(tan_theta));
     % num = a1_def(2)*r1_o(1) - a1_def(1)*r1_o(2) + a2_def(2)*r2_o(1) - a2_def(1)*r2_o(2) + a3_def(2)*r3_o(1) - a3_def(1)*r3_o(2)
     % den = a1_def(1)*r1_o(1) + a1_def(2)*r1_o(2) + a2_def(1)*r2_o(1) + a2_def(2)*r2_o(2) + a3_def(1)*r3_o(1) + a3_def(2)*r3_o(2)
     % stop
@@ -137,14 +137,14 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % [ sum(G(:,1)) sum(G(:,2)) sum(G(:,3)) ]
   % stop
 
-  % Rotation matrix from local reference frame to nodal reference frame in deformed configuration 
+  % Rotation matrix from local reference frame to nodal reference frame in deformed configuration
   % eq. (2) of 10.1016/j.cma.2006.10.006
   R1_def = Rr' * R1_g * Ro;
   R2_def = Rr' * R2_g * Ro;
   R3_def = Rr' * R3_g * Ro;
   % stop
 
-  % Nodal rotations in local reference frame in deformed configuration 
+  % Nodal rotations in local reference frame in deformed configuration
   % eq. (13) of 10.1016/j.cma.2006.10.006
   v1_def = rotationVector(R1_def, flag_first_mod);
   v2_def = rotationVector(R2_def, flag_first_mod);
@@ -154,7 +154,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
   pl_full = zeros(18, 1);
-  uz_dofs = [ 3, 9, 15 ];
+  uz_dofs = [3, 9, 15];
   index_full = (1:18);
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
   % ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
@@ -178,7 +178,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     pl(13:15) = u3_def;
     pl(16:18) = v3_def;
   end
-    pl_full(index_full) = pl;
+  pl_full(index_full) = pl;
 
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
   [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
@@ -211,8 +211,8 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   end
 
   % eq. (18) of 10.1016/j.cma.2006.10.006
-  fa = Ba'*fl;
-  
+  fa = Ba' * fl;
+
   % eq. (21) of 10.1016/j.cma.2006.10.006
   if flag_first_mod == 1 && flag_second_mod == 1
     Kh = zeros(15, 15);
@@ -231,7 +231,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % eq. (20) of 10.1016/j.cma.2006.10.006
   Ka = Ba' * Kl * Ba + Kh;
-   
+  
   % eq. (26) of 10.1016/j.cma.2006.10.006
   [P, A] = matrixP(a1_def, a2_def, a3_def, G1, G2, G3, flag_second_mod);
 
@@ -256,23 +256,22 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % Rankin
   % F = 1/2 * (F1+F2);
   % Kg = E * (P' * Ka * P - G * F' * P - F * G') * E';
- 
 
   % change of variables to rotation vector
-  Ts1   = Ts(t1_g);
-  Ts2   = Ts(t2_g);
-  Ts3   = Ts(t3_g);
+  Ts1   = funTsShell(t1_g);
+  Ts2   = funTsShell(t2_g);
+  Ts3   = funTsShell(t3_g);
   Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3);
 
   Kv1 = d_Ts(t1_g, fg(4:6));
   Kv2 = d_Ts(t2_g, fg(10:12));
   Kv3 = d_Ts(t3_g, fg(16:18));
-  Kv = blkdiag(zeros(3,3), Kv1, zeros(3,3), Kv2, zeros(3,3), Kv3);
+  Kv = blkdiag(zeros(3, 3), Kv1, zeros(3, 3), Kv2, zeros(3, 3), Kv3);
 
   fr = Br' * fg;
   Kr = Br' * Kg * Br + Kv;
 
-   % Kr= (Kr+Kr')/2;
+  % Kr= (Kr+Kr')/2;
   
   % fr = fg;
   % Kr = Kg;

@@ -58,13 +58,13 @@ function [Kel, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, E, nu, h, U
   Kel(ib, ib) = Kb;
 
   k_dr = min(min(abs(Kb))) * 1.e-4;
-  %k_dr = max(k_dr, 1.e-4);
+  % k_dr = max(k_dr, 1.e-4);
   % k_dr=0;
   Kel(6, 6) = k_dr;
   Kel(12, 12) = k_dr;
   Kel(18, 18) = k_dr;
 
-  Kel = real(Kel) ;
+  Kel = real(Kel);
 
   % returning moments in local element coordiantes
   fintLocCoord = zeros(1, 3);
