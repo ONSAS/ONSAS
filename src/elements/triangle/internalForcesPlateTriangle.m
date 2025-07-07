@@ -144,4 +144,3 @@ function [fs, ks, fintLocCoord, DD] = internalForcesPlateTriangle(elemCoords, el
 
   fs = {fint};
   ks = {K};
-  
