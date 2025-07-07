@@ -96,7 +96,6 @@ analysisSettings.stopTolIts    =   20;
 otherParams  = struct();
 otherParams.problemName = 'EulerColumn';
 otherParams.controlDofs = [numElements + 1  5];
-otherParams.plots_format = 'vtk';
 % otherParams.plots_format = 'vtk' ;
 
 A = ty * tz;

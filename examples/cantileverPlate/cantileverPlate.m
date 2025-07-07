@@ -17,8 +17,6 @@
 %
 % md# Cantilever problem using plate and shell elements
 % md
-clc;
-clear all;
 close all;
 if ~strcmp(getenv('TESTS_RUN'), 'yes')
   clear all;
@@ -88,8 +86,8 @@ analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   1;
 analysisSettings.finalTime     =   1;
-analysisSettings.stopTolDeltau =   1e-6;
-analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolDeltau =   1e-8;
+analysisSettings.stopTolForces =   1e-8;
 analysisSettings.stopTolIts    =   10;
 % md
 % md#### OtherParams
