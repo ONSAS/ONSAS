@@ -48,4 +48,3 @@ function [fs, ks, fintLocCoord, Kefora, Kb] = internalForcesLinearShellTriangle(
   fs = {switchToNodalIndexing(fg)};
 
 end
-
