@@ -205,7 +205,6 @@ verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                    loadFactorsShell')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
 %
-close all;
 lw = 2.0;
 ms = 5;
 plotfontsize = 10;
