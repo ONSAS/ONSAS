@@ -21,7 +21,7 @@
 %
 function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness, rotMat)
 
-  origin = 0 ;
+  origin = 0;
   e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
   flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
   flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
@@ -40,7 +40,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   if origin == 0
     rc_g = (r1_g + r2_g + r3_g) / 3;
   elseif origin == 1
-    rc_g = r1_g ;
+    rc_g = r1_g;
   end
 
   % Disps and spatial rotations in global reference frame
@@ -48,7 +48,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   u1_g    = Ug(1:3);
   u2_g    = Ug(7:9);
   u3_g    = Ug(13:15);
-  t1_g    = Ug(4:6) ;
+  t1_g    = Ug(4:6);
   t2_g    = Ug(10:12) ;
   t3_g    = Ug(16:18) ;
 
@@ -59,7 +59,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   if origin == 0
     pog = (p1_g + p2_g + p3_g) / 3;
   elseif origin == 1
-    pog = p1_g ;
+    pog = p1_g;
   end
   % fprintf('p_g \n')
   % [ p1_g p2_g p3_g pog ] 
@@ -96,9 +96,9 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % fprintf('ri_o \n')
   % [ r1_o r2_o r3_o ]
 
-  u1_def = Rr' * (p1_g - pog) - r1_o ;
-  u2_def = Rr' * (p2_g - pog) - r2_o ;
-  u3_def = Rr' * (p3_g - pog) - r3_o ;
+  u1_def = Rr' * (p1_g - pog) - r1_o;
+  u2_def = Rr' * (p2_g - pog) - r2_o;
+  u3_def = Rr' * (p3_g - pog) - r3_o;
   % fprintf('u_def \n')
   % [ u1_def u2_def u3_def ] 
   % stop
@@ -110,18 +110,18 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % [a1_def a2_def a3_def]
 
   if e1_parallel_side12 == 0
-    Num = 0 ;
-    Den = 0 ;
-    a   = [a1_def, a2_def, a3_def] ;
-    ro  = [r1_o, r2_o, r3_o] ;
+    Num = 0;
+    Den = 0;
+    a   = [a1_def, a2_def, a3_def];
+    ro  = [r1_o, r2_o, r3_o];
     for i = 1:3
-      ai = a(:,i) ;
-      rio = ro(:,i) ;
-      auxNum = ai(2)*rio(1) - ai(1)*rio(2) ;
-      Num = Num + auxNum ;
+      ai = a(:,i);
+      rio = ro(:,i);
+      auxNum = ai(2) * rio(1) - ai(1) * rio(2);
+      Num = Num + auxNum;
 
-      auxDen = ai(1)*rio(1) + ai(2)*rio(2) ;
-      Den = Den + auxDen ;
+      auxDen = ai(1) * rio(1) + ai(2) * rio(2) ;
+      Den = Den + auxDen;
     end  
     tan_theta = Num/Den 
     theta = rad2deg(atan(tan_theta))
@@ -133,7 +133,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % eq. (27) of 10.1016/j.cma.2006.10.006
   [G1, G2, G3] = matrixGi(a1_def, a2_def, a3_def, r1_o, r2_o, r3_o, e1_parallel_side12, origin);
-  G = [G1; G2; G3] ;
+  G = [G1; G2; G3];
   % [ sum(G(:,1)) sum(G(:,2)) sum(G(:,3)) ]
   % stop
 
@@ -153,12 +153,12 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 % stop
   % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
-  pl_full = zeros(18, 1) ;
-  uz_dofs = [ 3, 9, 15 ] ;
+  pl_full = zeros(18, 1);
+  uz_dofs = [ 3, 9, 15 ];
   index_full = (1:18);
   % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
   % ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
-  % drill_dofs = [6, 12, 18] ;              % (rz)
+  % drill_dofs = [6, 12, 18];              % (rz)
   
   if flag_second_mod == 1
     pl = zeros(15, 1);
@@ -185,7 +185,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
 
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
-  % Kl =(Kl + Kl')/2 ;
+  % Kl =(Kl + Kl')/2;
   % local internal force vector
   
   fl = Kl * pl;
@@ -202,9 +202,9 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Ba(13:15, 13:15)  = Ta3;
   else
     Ba = eye(18);
-    invTs_1 = invTs_jv(v1_def) ;
-    invTs_2 = invTs_jv(v2_def) ;
-    invTs_3 = invTs_jv(v3_def) ;
+    invTs_1 = invTsShell(v1_def);
+    invTs_2 = invTsShell(v2_def);
+    invTs_3 = invTsShell(v3_def);
     Ba(4:6, 4:6)      = invTs_1;
     Ba(10:12, 10:12)  = invTs_2;
     Ba(16:18, 16:18)  = invTs_3;
@@ -221,9 +221,9 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Kh(13:15, 13:15)  = matrixKhi(R3_def, fl(13:15));
   else
     Kh = zeros(18, 18);
-    Kh1 = dinvTs_jv(v1_def, fl(4:6))   * invTs_1 ;
-    Kh2 = dinvTs_jv(v2_def, fl(10:12)) * invTs_2 ;
-    Kh3 = dinvTs_jv(v3_def, fl(16:18)) * invTs_3 ;
+    Kh1 = dinvTsShell(v1_def, fl(4:6))   * invTs_1;
+    Kh2 = dinvTsShell(v2_def, fl(10:12)) * invTs_2;
+    Kh3 = dinvTsShell(v3_def, fl(16:18)) * invTs_3;
     Kh(4:6, 4:6)      = Kh1;
     Kh(10:12, 10:12)  = Kh2;
     Kh(16:18, 16:18)  = Kh3;
@@ -250,32 +250,32 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % [ switchToNodalIndexing(fg) fg n fa fl]
   % stop
 
-  Kl = (P'*Ka*P - G*F1'*P - F2*G') ;
+  Kl = (P' * Ka * P - G * F1' * P - F2 * G');
   Kg = E * Kl * E';
-  % Kg = (Kg+Kg')/2 ;
+  % Kg = (Kg+Kg')/2;
   % Rankin
-  % F = 1/2*(F1+F2);
-  % Kg = E * (P'*Ka*P - G*F'*P - F*G') * E' ;
+  % F = 1/2 * (F1+F2);
+  % Kg = E * (P' * Ka * P - G * F' * P - F * G') * E';
  
 
   % change of variables to rotation vector
   Ts1   = Ts(t1_g);
   Ts2   = Ts(t2_g);
   Ts3   = Ts(t3_g);
-  Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3) ;
+  Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3);
 
-  Kv1 = d_Ts(t1_g, fg(4:6)) ;
-  Kv2 = d_Ts(t2_g, fg(10:12)) ;
-  Kv3 = d_Ts(t3_g, fg(16:18)) ;
-  Kv = blkdiag(zeros(3,3), Kv1, zeros(3,3), Kv2, zeros(3,3), Kv3) ;
+  Kv1 = d_Ts(t1_g, fg(4:6));
+  Kv2 = d_Ts(t2_g, fg(10:12));
+  Kv3 = d_Ts(t3_g, fg(16:18));
+  Kv = blkdiag(zeros(3,3), Kv1, zeros(3,3), Kv2, zeros(3,3), Kv3);
 
-  fr = Br'*fg ;
-  Kr = Br'*Kg*Br + Kv ;
+  fr = Br' * fg;
+  Kr = Br' * Kg * Br + Kv;
 
-   % Kr= (Kr+Kr')/2 ;
+   % Kr= (Kr+Kr')/2;
   
-  % fr = fg ;
-  % Kr = Kg ;
+  % fr = fg;
+  % Kr = Kg;
   
   % Bm = eye(18);
   % Kk = zeros(18, 18);

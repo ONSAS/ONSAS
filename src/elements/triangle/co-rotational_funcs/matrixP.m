@@ -35,15 +35,15 @@ function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
     % Projector Matrix
     P = zeros(15, 18);
     % Node 1
-    A1 = Ai ;
+    A1 = Ai;
     A1(1, 3) = -a1(2);
     A1(2, 3) =  a1(1);
     % Node 2
-    A2 = Ai ;
+    A2 = Ai;
     A2(1, 3) = -a2(2);
     A2(2, 3) =   a2(1);
     % Node 3
-    A3 = Ai ;
+    A3 = Ai;
     A3(1, 3) = -a3(2);
     A3(2, 3) =   a3(1);
   else
@@ -53,12 +53,12 @@ function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
     Ai(5, 2) = 1;
     Ai(6, 3) = 1;
     % Identity matrix
-    I = eye(6) ;
+    I = eye(6);
 
     % Projector Matrix
     P = zeros(18, 18);
     % Node 1
-    A1 = Ai ;
+    A1 = Ai;
     A1(1, 3) = -a1(2);
     A1(2, 3) =  a1(1);
     %
@@ -72,7 +72,7 @@ function [P, A] = matrixP(a1, a2, a3, G1, G2, G3, flag_second_mod) % ok
     A2(3, 1) =  a2(2);
     A2(3, 2) = -a2(1);
     % Node 3
-    A3 = Ai ;
+    A3 = Ai;
     A3(1, 3) = -a3(2);
     A3(2, 3) =   a3(1);
     %

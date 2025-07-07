@@ -15,33 +15,15 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
+function [inv_Ts] = invTsShell(t)
 
-%
-function [Gt] = matrixGt_jv(q1g, q2g, Rr, l)
+  psi = norm(t);
+  I = eye(3, 3);
 
-    qg  = (q1g + q2g) / 2;
-
-    % local coords
-    q  = Rr' *  qg;
-    q1 = Rr' * q1g;
-    q2 = Rr' * q2g;
-
-    nu   = q(1) / q(2);
-    nu11 = q1(1) / q(2);
-    nu12 = q1(2) / q(2);
-
-    % nu21_jv = q2(1) / q(2);
-    % nu22_jv = q2(2) / q(2);
-
-    nu21 = 2 * nu - nu11;
-    nu22 = 2 - nu12;
-
-    % [ nu21_jv nu21 nu22_jv nu22 ]
-
-    Gt = [  0   0    nu/l  nu12/2  -nu11/2  0  0    0    -nu/l     nu22/2  -nu21/2  0 ;...
-            0   0    1/l     0        0     0  0    0    -1/l       0        0      0 ;...
-            0  -1/l  0       0        0     0  0  1/l       0       0        0      0   ];
-
-
-
-end
+  if psi == 0
+    inv_Ts = I;
+  else
+    u = t / psi;
+    a = psi/2 / tan(psi/2);
+    inv_Ts = a * I + (1-a) * u * u' - 1/2 * skew(t);
+  end

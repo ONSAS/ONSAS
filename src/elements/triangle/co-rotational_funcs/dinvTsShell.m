@@ -15,17 +15,19 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
+function [dinv_Ts] = dinvTsShell(t, v)
 
-%
-function [P] = matrixP_jv(Gt)
+  % t - local thetas (deformed reference frame)
+  % v - moments
 
-    OO = zeros(3,3) ;
-    I = eye(3) ;
-    
-    size(Gt)
-    
-    P1 = [ OO  I OO OO ] - Gt ;
-    P2 = [ OO OO OO  I ] - Gt ;
+  a = norm(t) ;
 
-    P = [P1 ; P2] ;
-end
+  if a == 0
+      dinv_Ts = -1/2 * skew(v);
+  else
+      
+      eta = (2 * sin(a) - a * (1+cos(a))) / (2 * a^2 * sin(a));
+      mu  = (a * (a + sin(a)) - 8 * sin(a/2)^2) / (4 * a^4 * sin(a/2)^2);
+      I = eye(3);
+      dinv_Ts = eta * ( t * v' -2 * v * t' + (t' * v) * I ) + mu * (skew(t) * skew(t)) * (v * t') -1/2 * skew(v);
+  end

@@ -287,7 +287,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         [fs, ks, fintLocCoord] =  internalForcesLinearShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
 
       elseif strcmp(modelName, 'elastic-rotEngStr')
-        rotMat = rotMatCell(nodeselem) ;
+        rotMat = rotMatCell(nodeselem);
         [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness, rotMat);
       else
         error('material model not implemented');

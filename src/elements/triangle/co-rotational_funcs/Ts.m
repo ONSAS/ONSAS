@@ -17,32 +17,15 @@
 %
 function [Ts] = Ts(t)
 
-
-  %   nt = norm(t);
-  % I = eye(3, 3);
-
-  % if nt == 0
-  %   Ts = I;
-  % else
-  %   a = 2 * (sin(nt / 2) / nt)^2;
-  %   b = (1 - sin(nt) / nt) / nt^2;
-  %   M = skew(t);
-  %   Ts = I + a * M + b * M * M;
-  % end
-  
-  % fprintf('=== \n')
-  % Ts
-  % fprintf('--------------------------------- \n')
   psi = norm(t);
   I = eye(3, 3);
 
   if psi == 0
     Ts = I;
   else
-    u = t / psi ;
-    a = sin(psi) / psi ;
-    Ts = a*I + (1-a)*u*u' + 1/2*( sin(psi/2) / (psi/2) )^2*skew(t);
+    u = t / psi;
+    a = sin(psi) / psi;
+    Ts = a * I + (1-a) * u * u' + 1/2 * ( sin(psi/2) / (psi/2) )^2 * skew(t);
   end
-% Ts2
-    % fprintf('=== \n')
+
 end

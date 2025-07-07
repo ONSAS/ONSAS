@@ -193,16 +193,16 @@ function [Udottp1, Udotdottp1, nextTime] = updateTime(Ut, Udott, Udotdott, Uk, a
 function [Uk, currDeltau, rotMatCell] = updateUiter(Uk, deltaured, neumdofs, currDeltau, rotMatCell)
   Uk(neumdofs) = Uk(neumdofs) + deltaured;
   currDeltau     = currDeltau     + deltaured;
-  deltau = zeros(size(Uk,1),1) ;
-  deltau(neumdofs) = deltaured ;
-  nnodes = size(Uk,1)/6 ;
+  deltau = zeros(size(Uk, 1), 1);
+  deltau(neumdofs) = deltaured;
+  nnodes = size(Uk, 1)/6;
   % for i = 1:nnodes
-  %   rotMat = rotMatCell{i} ;
-  %   dofs = (i-1)*6 + (2:2:6) ; 
-  %   rot_i = deltau(dofs) ;
-  %   rotMatCell(i) = expm(skew(rot_i)) * rotMat ;
-  %   rot_i = Uk(dofs) ;
-  %   rotMatCell(i) = expm(skew(rot_i))  ;
+  %   rotMat = rotMatCell{i};
+  %   dofs = (i-1)*6 + (2:2:6); 
+  %   rot_i = deltau(dofs);
+  %   rotMatCell(i) = expm(skew(rot_i)) * rotMat;
+  %   rot_i = Uk(dofs);
+  %   rotMatCell(i) = expm(skew(rot_i));
   % end
 
 function vec = antiSkew(mat)
