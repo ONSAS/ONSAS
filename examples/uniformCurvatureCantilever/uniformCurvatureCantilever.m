@@ -183,8 +183,8 @@ vec = (1e-6:0.01:2 * pi);
 % doi.org/10.1016/S0045-7825(97)00059-5
 % md and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
-ux_ana = @(t) l - l . / (t / 2) . * sin(t / 2) . * cos(t / 2);
-uz_ana = @(t) l . / (t / 2) . * (sin(t / 2)).^2;
+ux_ana = @(t) l - l ./ (t / 2) .* sin(t / 2) .* cos(t / 2);
+uz_ana = @(t) l ./ (t / 2) .* (sin(t / 2)).^2;
 %
 % md
 % md## Verification
