@@ -15,13 +15,12 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-
 % md function used to convert .m files in the ONSAS repo to .md files in this repo
 % md this function is executed from the makeAndPreview.sh file or can also be
 % md executed from the bash terminal: `octave --eval "bringONSASmFilesToONSAS_docs('$ONSAS_PATH')"`
 % md where \$ONSAS_PATH is the environment variable with the directory of ONSAS
 
-function bringONSASmFilesToONSASdocs
+function bringONSASmFilesToONSASdocs()
   disp('running bringONSASmFilesToONSASdocs script...');
   dirONSASdocs = './examples/';
   dirONSASm     = '../../examples/';
