@@ -159,10 +159,10 @@ otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
 %
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
-analysisSettings.deltaT        =   0.01; % 100 steps
+analysisSettings.deltaT        =   0.05; % 100 steps
 analysisSettings.finalTime     =   1;
-analysisSettings.stopTolDeltau =   1e-6;
-analysisSettings.stopTolForces =   1e-6;
+analysisSettings.stopTolDeltau =   1e-5;
+analysisSettings.stopTolForces =   1e-5;
 analysisSettings.stopTolIts    =   15;
 %
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
@@ -189,15 +189,6 @@ uz_ana = @(t) l ./ (t / 2) .* (sin(t / 2)).^2;
 % md
 % md## Verification
 % md
-% verifBoolean_frame = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
-%                     loadFactorsNREngRot')  < ...
-%               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
-% verifBoolean_frame
-
-% verifBoolean_Shell = norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
-%                     loadFactorsShell')  < ...
-%               (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
-% verifBoolean_Shell
 verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                     loadFactorsNREngRot')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4) && ...
