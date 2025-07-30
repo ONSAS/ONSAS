@@ -34,12 +34,14 @@ end % hidden
 % add path
 addpath(genpath([pwd '/../../src']));
 % material scalar parameters
-E = 200e9;
-nu = 0.3;
+E = 200e9; % Young modulus
+nu = 0.0; % Poisson
 % geometrical scalar parameters
-l = 10;
-ty = .1;
-tz = .1;
+l = 10; % length
+ty = 1.0; % width
+tz = .1; % thickness
+Iy = ty * tz^3 / 12;
+Mobj = E * Iy * 2 * pi / l;
 % the number of elements of the mesh
 numElements = 10;
 % md
@@ -55,9 +57,9 @@ numElements = 10;
 % md
 % md### materials
 % md Since the example contains only one rod the fields of the `materials` struct will have only one entry. Although, it is considered constitutive behavior according to the SaintVenantKirchhoff law:
-materials                 = struct();
-materials.modelName  = 'elastic-rotEngStr';
-materials.modelParams = [E nu];
+materialsNL                 = struct();
+materialsNL.modelName  = 'elastic-rotEngStr';
+materialsNL.modelParams = [E nu];
 % md The density is not defined, therefore it is considered as zero (default), then no inertial effects are considered (static analysis).
 % md
 % md### elements
@@ -73,13 +75,12 @@ elements(2).elemCrossSecParams{2, 1} = [ty tz];
 % md### boundaryConds
 % md
 % md The elements are submitted to two different BC settings. The first BC corresponds to a welded condition (all 6 dofs set to zero)
-Iy = ty * tz^3 / 12;
 boundaryConds                  = struct();
 boundaryConds(1).imposDispDofs = [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals = [0 0 0 0 0 0];
 % mdand the second corresponds to an incremental nodal moment, where the target load produces a circular form of the deformed beam.
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) E * Iy * 2 * pi / l * t;
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t;
 boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 % md
 % md
@@ -106,47 +107,112 @@ end
 analysisSettings               = struct();
 analysisSettings.methodName    = 'newtonRaphson';
 analysisSettings.deltaT        =   0.1;
-analysisSettings.finalTime      =   1;
+analysisSettings.finalTime     =   1;
 analysisSettings.stopTolDeltau =   1e-6;
 analysisSettings.stopTolForces =   1e-6;
 analysisSettings.stopTolIts    =   10;
 % md
 % md## otherParams
 otherParams             = struct();
-otherParams.problemName = 'uniformCurvatureCantilever';
+otherParams.problemName = 'uniformCurvatureCantilever-frame';
 otherParams.controlDofs = [numElements + 1  4];
 otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
-
-[modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 %
 % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-
 % md
 % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
 angleControlDof      = (numElements + 1) * 6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof, :);
 loadFactorsNREngRot  =  loadFactorsMat(:, 2);
+
+% ====================================================
+% shell non linear
+% ====================================================
+%
+elements             = struct();
+elements(1).elemType = 'edge';
+elements(1).elemCrossSecParams = tz;
+elements(2).elemType = 'triangle-shell';
+elements(2).elemCrossSecParams = {'thickness', tz };
+%
+boundaryConds                  = struct();
+boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
+boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
+%
+boundaryConds(2).loadsCoordSys = 'global';
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t / (ty * tz);
+boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
+%
+mesh = struct();
+base_dir = '';
+if strcmp(getenv('TESTS_RUN'), 'yes') && isfolder('examples')
+  base_dir = ['.' filesep 'examples' filesep  'uniformCurvatureCantilever' filesep];
+end
+[mesh.nodesCoords, mesh.conecCell] = meshFileReader([base_dir 'geometry_cantilever.msh']);
+assert(max(mesh.nodesCoords(:, 1)) == l && max(mesh.nodesCoords(:, 2)) == ty);
+%
+otherParams.problemName = 'uniformCurvatureCantilever-nonLinearShell';
+%
+analysisSettings               = struct();
+analysisSettings.methodName    = 'newtonRaphson';
+analysisSettings.deltaT        =   0.05; % 100 steps
+analysisSettings.finalTime     =   1;
+analysisSettings.stopTolDeltau =   1e-5;
+analysisSettings.stopTolForces =   1e-5;
+analysisSettings.stopTolIts    =   15;
+%
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+
+node = 18;
+ux_dof_shell    = node * 6 - 5;
+uz_dof_shell    = node * 6 - 1;
+angle_dof_shell = node * 6 - 2;
+
+controlDispsShellNonLinear  = -matUs(angle_dof_shell, :);
+control_ux_shell            = matUs(ux_dof_shell, :);
+control_uz_shell            = matUs(uz_dof_shell, :);
+loadFactorsShell            = loadFactorsMat(:, 2) * ty * tz;
+% md
+vec = (1e-6:0.01:2 * pi);
+% Analytical solution: Ibrahimbegovic - On the choice of finite rotation parameters
+% doi.org/10.1016/S0045-7825(97)00059-5
 % md and the analytical value of the load factors is computed
 analyticLoadFactorsNREngRot = @(w) E * Iy * w / l;
+ux_ana = @(t) l - l ./ (t / 2) .* sin(t / 2) .* cos(t / 2);
+uz_ana = @(t) l ./ (t / 2) .* (sin(t / 2)).^2;
+%
 % md
 % md## Verification
 % md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')                    < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
-% md
+verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
+                    loadFactorsNREngRot')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4) && ...
+              norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear) - ...
+                   loadFactorsShell')  < ...
+              (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
+%
 lw = 2.0;
-ms = 11;
-plotfontsize = 22;
+ms = 5;
+plotfontsize = 10;
 figure;
-plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+% plot(controlDispsNREngRot, analyticLoadFactorsNREngRot(controlDispsNREngRot), 'b-x', 'linewidth', lw, 'markersize', ms);
+plot(ux_ana(vec), analyticLoadFactorsNREngRot(vec), 'b-', 'linewidth', lw, 'markersize', ms);
 hold on;
 grid on;
-plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+% plot(controlDispsNREngRot, loadFactorsNREngRot, 'k-o', 'linewidth', lw, 'markersize', ms);
+plot(uz_ana(vec), analyticLoadFactorsNREngRot(vec), 'k-', 'linewidth', lw, 'markersize', ms);
+plot(-control_ux_shell(1:2:end), loadFactorsShell(1:2:end), 'g--*', 'linewidth', lw, 'markersize', ms);
+plot(control_uz_shell(1:2:end), loadFactorsShell(1:2:end), 'r--x', 'linewidth', lw, 'markersize', ms);
+% plot(control_theta_shell, loadFactorsShell, 'y-s', 'linewidth', lw, 'markersize', ms);
 labx = xlabel('Displacement');
 laby = ylabel('\lambda');
-legend('analytic', 'NR-RotEng', 'location', 'North');
+legend('analytic_ux', 'analytic_uz', 'NL_ux', 'NL_uz', 'location', 'East');
+% legend('analytic', 'NR-RotEng', 'Shell','location', 'North');
 set(gca, 'linewidth', 1.2, 'fontsize', plotfontsize);
 set(labx, 'FontSize', plotfontsize);
 set(laby, 'FontSize', plotfontsize);
@@ -155,6 +221,4 @@ print('output/verifCantileverBeam.png', '-dpng');
 % md```@raw html
 % md<img src="../../assets/verifCantileverBeam.png" alt="plot check" width="500"/>
 % md```
-% md
-verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - loadFactorsNREngRot')  < (norm(analyticLoadFactorsNREngRot(controlDispsNREngRot)) * 1e-4);
 % md
