@@ -26,6 +26,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
   flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
   flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not / quaternions
+  flag_OPT        = 1;  % 1 if battini modification is used - 0 if not / quaternions
 
   % material and geometric parameters
   young_modulus = modelParams(1);
@@ -179,7 +180,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   pl_full(index_full) = pl;
 
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
-  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full);
+  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full, flag_OPT);
 
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
