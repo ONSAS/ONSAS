@@ -38,8 +38,10 @@ function [fs, ks, fintLocCoord, Kefora, Kb] = internalForcesLinearShellTriangle(
   [T, x02, x03, y03] = edgeLocalAxisShellTriangle(r1g, r2g, r3g);
   Te = blkdiag(T, T, T, T, T, T);
   Ul = Te * Ug;
-
-  [Kl, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul);
+  %
+  flag_OPT = 0;
+  %
+  [Kl, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul, flag_OPT);
 
   Kg = Te' * Kl * Te;
   fg = Kg * Ug;

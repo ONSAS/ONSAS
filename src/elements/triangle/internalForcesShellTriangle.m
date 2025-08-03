@@ -180,7 +180,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   pl_full(index_full) = pl;
 
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
-  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full, flag_OPT);
+  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full, flag_OPT, r1_g, r2_g, r3_g, Tr);
 
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
