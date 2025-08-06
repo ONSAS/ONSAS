@@ -55,9 +55,9 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
       % deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
      
       % Follow the sign of the stiffness determinant
-      % detKT = det(systemDeltauMatrix) ;
-      % sign(detKT) ;
-      % deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+        detKT = det(systemDeltauMatrix) ;
+        sign(detKT) ;
+        deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
     
     end
   
