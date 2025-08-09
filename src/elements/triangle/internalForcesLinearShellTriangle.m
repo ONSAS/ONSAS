@@ -41,7 +41,7 @@ function [fs, ks, fintLocCoord, Kefora, Kb] = internalForcesLinearShellTriangle(
   %
   flag_OPT = 0;
   %
-  [Kl, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul, flag_OPT);
+  [Kl, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, Ul, flag_OPT);
 
   Kg = Te' * Kl * Te;
   fg = Kg * Ug;

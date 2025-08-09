@@ -26,7 +26,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
   flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
   flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not / quaternions
-  flag_OPT        = 1;  % 1 if battini modification is used - 0 if not / quaternions
+  flag_OPT        = 0;  % 1 if battini modification is used - 0 if not / quaternions
 
   % material and geometric parameters
   young_modulus = modelParams(1);
@@ -62,21 +62,12 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   elseif origin == 1
     pog = p1_g;
   end
-  % fprintf('p_g \n')
-  % [ p1_g p2_g p3_g pog ]
 
   % Global rotation matrix
   % eq. (35) of 10.1016/j.cma.2006.10.006
-  % R1_g = rotMat{1};
-  % R2_g = rotMat{2};
-  % R3_g = rotMat{3};
   R1_g = expm(skew(t1_g));
   R2_g = expm(skew(t2_g));
   R3_g = expm(skew(t3_g));
-  % R1_g = expon(t1_g);
-  % R2_g = expon(t2_g);
-  % R3_g = expon(t3_g);
-  % stop
 
   % Transformation matrices from global reference frame
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1_g, r2_g, r3_g);
@@ -92,21 +83,15 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   r1_o = To * (r1_g - rc_g);
   r2_o = To * (r2_g - rc_g);
   r3_o = To * (r3_g - rc_g);
-  % fprintf('ri_o \n')
-  % [ r1_o r2_o r3_o ]
 
   u1_def = Rr' * (p1_g - pog) - r1_o;
   u2_def = Rr' * (p2_g - pog) - r2_o;
   u3_def = Rr' * (p3_g - pog) - r3_o;
-  % fprintf('u_def \n')
-  % [ u1_def u2_def u3_def ]
-  % stop
 
   % eq. (7) of 10.1016/j.cma.2006.10.006
   a1_def = u1_def + r1_o;
   a2_def = u2_def + r2_o;
   a3_def = u3_def + r3_o;
-  % [a1_def a2_def a3_def]
 
   if e1_parallel_side12 == 0
     Num = 0;
@@ -133,33 +118,26 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   % eq. (27) of 10.1016/j.cma.2006.10.006
   [G1, G2, G3] = matrixGi(a1_def, a2_def, a3_def, r1_o, r2_o, r3_o, e1_parallel_side12, origin);
   G = [G1; G2; G3];
-  % [ sum(G(:,1)) sum(G(:,2)) sum(G(:,3)) ]
-  % stop
 
   % Rotation matrix from local reference frame to nodal reference frame in deformed configuration
   % eq. (2) of 10.1016/j.cma.2006.10.006
   R1_def = Rr' * R1_g * Ro;
   R2_def = Rr' * R2_g * Ro;
   R3_def = Rr' * R3_g * Ro;
-  % stop
 
   % Nodal rotations in local reference frame in deformed configuration
   % eq. (13) of 10.1016/j.cma.2006.10.006
   v1_def = rotationVector(R1_def, flag_first_mod);
   v2_def = rotationVector(R2_def, flag_first_mod);
   v3_def = rotationVector(R3_def, flag_first_mod);
-  % [ v1_def v2_def v3_def ] ;
-  % stop
+
   % Local displacement vector in local reference frame in deformed configuration
   % eq. (12) of 10.1016/j.cma.2006.10.006
   pl_full = zeros(18, 1);
-  uz_dofs = [3, 9, 15];
   index_full = (1:18);
-  % im = [1, 2, 7, 8, 13, 14];              % Membrane dofs (u, v)
-  % ib = [3, 4, 5, 9, 10, 11, 15, 16, 17];  % bending dofs (w, rx, ry)
-  % drill_dofs = [6, 12, 18];              % (rz)
 
   if flag_second_mod == 1
+    uz_dofs = [3, 9, 15];
     pl = zeros(15, 1);
     pl(1:2)   = u1_def(1:2);
     pl(3:5)   = v1_def;
@@ -180,11 +158,11 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   pl_full(index_full) = pl;
 
   % calculating the linear stiffness matrix and internal force vector of the shell element in local coordinates
-  [Kl_full, fintLocCoord, Kb] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full, flag_OPT, r1_g, r2_g, r3_g, Tr);
+  [Kl_full, fintLocCoord] = localShellTriangle(x02, x03, y03, young_modulus, poisson_ratio, h, pl_full, flag_OPT, r1_g, r2_g, r3_g, To);
 
   % Reduces Kl matrix to number of dofs considered
   Kl = Kl_full(index_full, index_full);
-  % Kl =(Kl + Kl')/2;
+
   % local internal force vector
   fl = Kl * pl;
 
@@ -240,60 +218,41 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   n = P' * fa; % eq. (31) of 10.1016/j.cma.2006.10.006
 
   [F1, F2] = matrixF(n, flag_second_mod);
-  % [F1, F2] = matrixF(fa, flag_second_mod);
-  % stop
 
   % eq. (29) of 10.1016/j.cma.2006.10.006
   fg = E * n;
-  % [ switchToNodalIndexing(fg) fg n fa fl]
-  % stop
 
+  % Stiffness matrix
   Kl = (P' * Ka * P - G * F1' * P - F2 * G');
   Kg = E * Kl * E';
-  % Kg = (Kg+Kg')/2;
-  % Rankin
-  % F = 1/2 * (F1+F2);
-  % Kg = E * (P' * Ka * P - G * F' * P - F * G') * E';
 
-  % change of variables to rotation vector
-  Ts1   = funTsShell(t1_g);
-  Ts2   = funTsShell(t2_g);
-  Ts3   = funTsShell(t3_g);
-  Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3);
-
-  Kv1 = dTsShell(t1_g, fg(4:6));
-  Kv2 = dTsShell(t2_g, fg(10:12));
-  Kv3 = dTsShell(t3_g, fg(16:18));
-  Kv = blkdiag(zeros(3, 3), Kv1, zeros(3, 3), Kv2, zeros(3, 3), Kv3);
-
-  fr = Br' * fg;
-  Kr = Br' * Kg * Br + Kv;
-
-  % Kr= (Kr+Kr')/2;
-
-  % fr = fg;
-  % Kr = Kg;
-  % Bm = eye(18);
-  % Kk = zeros(18, 18);
-  % if flag_third_mod == 1
-  %   % eq. (39) of 10.1016/j.cma.2006.10.006
-  %   Bm(4:6, 4:6)      = matrixTm(rot1_g);
-  %   Bm(10:12, 10:12)  = matrixTm(rot2_g);
-  %   Bm(16:18, 16:18)  = matrixTm(rot3_g);
-  %   % eq. (40) of 10.1016/j.cma.2006.10.006
-  %   Kk(4:6, 4:6)      = matrixKki(rot1_g, fg(4:6));
-  %   Kk(10:12, 10:12)  = matrixKki(rot2_g, fg(10:12));
-  %   Kk(16:18, 16:18)  = matrixKki(rot3_g, fg(16:18));
-  % end
-
-  % % eq.(38) of 10.1016/j.cma.2006.10.006
-  % % this could be done much more efficiently avoiding unnecessary multiplications by zero or 1
-  % fm = Bm' * fg;
-  % Km = Bm' * Kg * Bm + Kk;
-
-  % shifting lines and columns to onsas convention of dofs ordering
-  % ks = {switchToNodalIndexing(Km)};
-  % fs = {switchToNodalIndexing(fm)};
+  if flag_third_mod == 1 % quaternions
+    Bm = eye(18);
+    Kk = zeros(18, 18);
+    % eq. (39) of 10.1016/j.cma.2006.10.006
+    Bm(4:6, 4:6)      = matrixTm(rot1_g);
+    Bm(10:12, 10:12)  = matrixTm(rot2_g);
+    Bm(16:18, 16:18)  = matrixTm(rot3_g);
+    % eq. (40) of 10.1016/j.cma.2006.10.006
+    Kk(4:6, 4:6)      = matrixKki(rot1_g, fg(4:6));
+    Kk(10:12, 10:12)  = matrixKki(rot2_g, fg(10:12));
+    Kk(16:18, 16:18)  = matrixKki(rot3_g, fg(16:18));
+    % eq.(38) of 10.1016/j.cma.2006.10.006
+    fr = Bm' * fg;
+    Kr = Bm' * Kg * Bm + Kk;
+  else % change of variables to rotation vector  
+    Ts1   = funTsShell(t1_g);
+    Ts2   = funTsShell(t2_g);
+    Ts3   = funTsShell(t3_g);
+    Br = blkdiag(eye(3), Ts1, eye(3), Ts2, eye(3), Ts3);
+    Kv1 = dTsShell(t1_g, fg(4:6));
+    Kv2 = dTsShell(t2_g, fg(10:12));
+    Kv3 = dTsShell(t3_g, fg(16:18));
+    Kv = blkdiag(zeros(3, 3), Kv1, zeros(3, 3), Kv2, zeros(3, 3), Kv3);
+    %
+    fr = Br' * fg;
+    Kr = Br' * Kg * Br + Kv;
+  end
 
   ks = {switchToNodalIndexing(Kr)};
   fs = {switchToNodalIndexing(fr)};
