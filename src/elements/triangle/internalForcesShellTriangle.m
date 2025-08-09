@@ -26,7 +26,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   flag_first_mod  = 0; % 1 if battini modification is used - 0 if not / local rotations
   flag_second_mod = 0;  % 1 if battini modification is used - 0 if not / out of plane disps = 0
   flag_third_mod  = 0;  % 1 if battini modification is used - 0 if not / quaternions
-  flag_OPT        = 0;  % 1 if battini modification is used - 0 if not / quaternions
+  flag_OPT        = 1;  % 1 if optimal triangle membrane element is used
 
   % material and geometric parameters
   young_modulus = modelParams(1);

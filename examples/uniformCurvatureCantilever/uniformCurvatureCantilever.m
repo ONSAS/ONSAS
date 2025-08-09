@@ -119,15 +119,15 @@ otherParams.controlDofs = [numElements + 1  4];
 otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
-% [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+[modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 % %
 % % mdAfter that the structs are used to perform the numerical time analysis
-% [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 % % md
 % % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
-% angleControlDof      = (numElements + 1) * 6 - 2;
-% controlDispsNREngRot =  -matUs(angleControlDof, :);
-% loadFactorsNREngRot  =  loadFactorsMat(:, 2);
+angleControlDof      = (numElements + 1) * 6 - 2;
+controlDispsNREngRot =  -matUs(angleControlDof, :);
+loadFactorsNREngRot  =  loadFactorsMat(:, 2);
 
 % ====================================================
 % shell non linear
@@ -168,7 +168,7 @@ analysisSettings.stopTolIts    =   15;
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-node = 18;
+node = 3; % 18
 ux_dof_shell    = node * 6 - 5;
 uz_dof_shell    = node * 6 - 1;
 angle_dof_shell = node * 6 - 2;
