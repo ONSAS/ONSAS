@@ -31,7 +31,7 @@ ONSAS is a [GNU-Octave](https://www.gnu.org/software/octave/)/Matlab code for st
 
 ## Contact <a name="connect"></a>
 
-You can publicly post in the [discussion section](https://github.com/ONSAS/ONSAS/discussions) or contact privately sending an e-mail to _jorgepz [AT] fing.edu.uy_ .
+You can send an e-mail to _jorgepz [AT] fing.edu.uy_ .
 
 ## License
 
