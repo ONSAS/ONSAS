@@ -15,12 +15,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul, flag_OPT, r1_g, r2_g, r3_g, To)
+function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul, flag_OPT)
 
   % Calculate the area of the triangle
   area = x02 * y03 / 2;
   %
   Kel = zeros(18, 18);
+  Km_CST = zeros(9,9);
   %
   % bending stiffness
   aux1 = E * h^3 / (12 * (1 - nu^2));
@@ -58,10 +59,8 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul, f
     Kel(12, 12) = k_dr;
     Kel(18, 18) = k_dr;
   else
-    Km_opt = opt_membrane_element(E, nu, h, area, r1_g, r2_g, r3_g) ;
+    Km = opt_membrane_element(E, nu, h, area, x02, x03, y03);
     im = [1, 2, 6, 7, 8, 12, 13, 14, 18];
-    Te = blkdiag(To, To, To);
-    Km = Te * Km_opt * Te' ;    
   end
 
   % assembling the stiffness matrix of the shell element in local coordinates
