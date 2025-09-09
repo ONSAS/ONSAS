@@ -91,7 +91,7 @@ initialConds = {} ;
 analysisSettings                    = {} ;
 analysisSettings.methodName         = 'arcLength' ;
 analysisSettings.deltaT             = 1 ;
-# analysisSettings.incremArcLen       = [1e-4*ones(1,10) 1e-5*ones(1,3000) 1e-4*ones(1,1000)] ;
+% analysisSettings.incremArcLen       = [1e-4*ones(1,10) 1e-5*ones(1,3000) 1e-4*ones(1,1000)] ;
 analysisSettings.incremArcLen       = [ deltac/10*ones(1,8) -deltac/10*ones(1,8)  deltac/10*ones(1,30) -deltac/10*ones(1,14) deltac/10*ones(1,180) +deltac/1000*ones(1,10) ] ;
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
 analysisSettings.iniDeltaLamb       = 1 ;
@@ -147,10 +147,8 @@ grid on, hold on
 plot( xs1, deformada1, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 plot( xs2, deformada2, '-s', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
 
+%{
 
-
-
-stop
 plot(abs(descensosUltimoNodo), factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 
 plot(abs(girosUltimoNodo_2), factorescarga_2, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
@@ -193,3 +191,5 @@ title('Cantilever Beam / Plasticity (validation)') ;
 
 print('-f1','../../../Tesis/tex/imagenes/Load_factors.png','-dpng') ;
 print('-f2','../../../Tesis/tex/imagenes/Validation.png','-dpng') ;
+
+%}

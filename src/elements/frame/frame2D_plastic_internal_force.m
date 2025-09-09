@@ -35,6 +35,7 @@ function [ fs , ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2D_plastic_
 % global soft_activation
 global Timex ;
 global TZERO ;
+global HINGE ;
 
 % \/
 % called by the function assembler
@@ -203,6 +204,9 @@ params_plastic_2Dframe_np1(8)   = SH_boole_np1 ;
 params_plastic_2Dframe_np1(9)   = xd_np1 ;
 params_plastic_2Dframe_np1(10)  = xdi_np1 ;
 params_plastic_2Dframe_np1(11)  = alfa_np1 ;
+
+HINGE(1,element) = alfa_np1 ;
+HINGE(2,element) = xd_np1 ;
 
 Mzs_integrados = [ Fintout(6) Fintout(12) ] ;
 fintLocCoord = [Mnp1' tM_np1 Mzs_integrados ] ;
