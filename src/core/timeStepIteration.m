@@ -23,6 +23,9 @@ function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsDat
 % global booleanConverged
 % global timeIndex
 
+global plastic_values1
+global plastic_values2
+
 % assign current time (t) variables
 % ---------------------------------
 Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
@@ -33,7 +36,7 @@ currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
 % -----------------------------------------------------------
 stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
 if ~(stabilityAnalysisFlag==0)
-  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');  
+  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');
   % reduced tangent matrix of previous time for nonlinear buckling analysis
   KTtred = modelCurrSol.systemDeltauMatrix ;
 end
@@ -100,7 +103,7 @@ while  booleanConverged == 0
   [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
   % ---------------------------------------------------
 
-  % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther  
+  % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
   fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   % --- prints iteration info in file ---
@@ -120,6 +123,16 @@ KTtp1red = systemDeltauMatrix ;
 
 % compute stress at converged state
 [~, Stresstp1, ~, localInternalForces, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
+
+if length(plastic_values1) == 0
+  plastic_values1 = zeros(1,11) ;
+  plastic_values2 = zeros(1,11) ;
+end
+
+plastic_values1 = [ plastic_values1 ; ...
+                   stateCellnp1(1,:)] ;
+plastic_values2 = [ plastic_values2 ; ...
+                   stateCellnp1(2,:)] ;
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
@@ -205,7 +218,7 @@ function args = argsAL(analysisSettings, len, neumDofs, timeIndex)
   arcLengthNorm = arcLengthNorm(neumDofs) ;
   if length( analysisSettings.incremArcLen ) > 1
     incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
-  else	
+  else
     incremArcLen = analysisSettings.incremArcLen ;
   end
   args = {arcLengthNorm; incremArcLen} ;

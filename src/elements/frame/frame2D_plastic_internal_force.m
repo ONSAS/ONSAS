@@ -99,7 +99,7 @@ alfa_np1    = alfa_n ;      % alpha in time n
 % initialization
 if TZERO(1,element) == 0
     SH_boole_np1 = SH_boole_n ;
-else 
+else
     SH_boole_np1 =true ;
 end
 % ==========================================================
@@ -131,24 +131,24 @@ end
 if SH_boole_np1 == false
 
   % elastic/plastic case without softening
-  
+
   % solve plastic bending step
- 
+
   [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1) ;
 
 else
 
   [~, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
 
-  % solve softening step  
-  
+  % solve softening step
+
   [alfa_np1, xi2_np1, xdi_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks) ;
 
   Cep_np1 = ones(3,1)*E*Iy ;
 
   kp_np1  = kp_n ;
   xi1_np1 = xi1_n ;
-  
+
 end
 
 [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi) ;
