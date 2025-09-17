@@ -18,6 +18,8 @@
 function [deltaured, nextLoadFactorVals ] = computeDeltaU( ...
   systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args )
 
+  global flag_predictor
+
 if isempty( analysisSettings.ALdominantDOF )
   arcLengthFlag = 1 ; % cylindrical
 else
@@ -28,42 +30,51 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 
   arcLengthNorm = args{1} ;
   incremArcLen = args{2} ;
-  
+
   % cond(systemDeltauMatrix)
   % det(systemDeltauMatrix)
-  
+
   % if det(systemDeltauMatrix)<0
   %    det(systemDeltauMatrix)
   %    stop
   % end
 
   aux = systemDeltauMatrix \ systemDeltauRHS ;
-					
+
   deltauast = aux(:,1) ;  deltaubar = aux(:,2) ;
-    
+
   posVariableLoadBC = analysisSettings.posVariableLoadBC ;
 
   if dispIter == 1 % predictor solution
     if norm( convDeltau ) == 0
       deltalambda = analysisSettings.iniDeltaLamb ;
-    else 
+    else
+
+      if flag_predictor == 0
+
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
 
+      elseif flag_predictor == 1
+
       % Follow the sign of the predictor work increment (incremental work)
-      % Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
-      % sign(deltaubar'*Fext) ;
-      % deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
-     
+        Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
+        sign(deltaubar'*Fext) ;
+        deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+
+      elseif flag_predictor == 2
+
       % Follow the sign of the stiffness determinant
-      %  detKT = det(systemDeltauMatrix) ;
-      %  sign(detKT) ;
-      %  deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
-    
+        detKT = det(systemDeltauMatrix) ;
+        sign(detKT) ;
+        deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+
+      end
+
     end
-  
+
   elseif arcLengthFlag == 2 % Jirasek approach
-	
-    cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek  	
+
+    cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
 
     % Variables to be defined by user
 		dominantDofs = analysisSettings.ALdominantDOF(1);
@@ -73,7 +84,7 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
 		cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
 
     deltalambda = (incremArcLen - cMatrix'*currDeltau - cMatrix'*deltauast ) / ( cMatrix'*deltaubar ) ;
-  
+
   elseif arcLengthFlag == 1  % Cylindrical constraint equation
     discriminant_not_accepted = true ;
     num_reductions = 0 ;
@@ -109,14 +120,14 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
     % choose lambda that maximizes that scalar product
     deltalambda = sols( find( vals == max(vals) ) ) ;
   end
-  
+
   nextLoadFactorVals( posVariableLoadBC )  = nextLoadFactorVals( posVariableLoadBC ) + deltalambda(1) ;
 
   deltaured = deltauast + deltalambda(1) * deltaubar ;
 
   else   % incremental displacement
-  
+
   %~ full(systemDeltauMatrix)
-  
+
     deltaured = systemDeltauMatrix \ systemDeltauRHS ;
 end
