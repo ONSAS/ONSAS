@@ -50,11 +50,9 @@ if strcmp( analysisSettings.methodName, 'arcLength' )
       deltalambda = analysisSettings.iniDeltaLamb ;
     else
 
-      if flag_predictor == 0
-
       deltalambda = sign( convDeltau' * (arcLengthNorm .* deltaubar ) ) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
 
-      elseif flag_predictor == 1
+      if flag_predictor == 1
 
       % Follow the sign of the predictor work increment (incremental work)
         Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
