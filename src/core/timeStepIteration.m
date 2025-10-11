@@ -129,10 +129,12 @@ if length(plastic_values1) == 0
   plastic_values2 = zeros(1,11) ;
 end
 
+%{
 plastic_values1 = [ plastic_values1 ; ...
                    stateCellnp1(1,:)] ;
 plastic_values2 = [ plastic_values2 ; ...
                    stateCellnp1(2,:)] ;
+%}
 
 printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
 
