@@ -26,8 +26,6 @@ utils/.venv/
 octave-workspace
 *.csv#
 
-tex/tesis.pdf
-
 # LaTeX outputs
 /*/*.aux
 /*/*.pdf
