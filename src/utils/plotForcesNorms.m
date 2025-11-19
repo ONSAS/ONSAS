@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -18,78 +18,76 @@
 % This functions reads a text file with the norms of the forces at
 %  each iteration of the code execution and generates a series of plots
 
-function plotForcesNorms(outputDir, problemName )
+function plotForcesNorms(outputDir, problemName)
 
-filename = [ outputDir  problemName '_forcesNorms.txt' ] ;
+  filename = [outputDir  problemName '_forcesNorms.txt'];
 
-matriz = load(filename);
+  matriz = load(filename);
 
-times = matriz(:,1);
-[~,inds_last_iters] = unique( times,'last');
+  times = matriz(:, 1);
+  [~, inds_last_iters] = unique(times, 'last');
 
-iters = matriz(:,2);
+  iters = matriz(:, 2);
 
-times = matriz(:,end);
+  times = matriz(:, end);
 
+  indexes = inds_last_iters;
 
-indexes = inds_last_iters ;
+  h = figure();
 
-h = figure();
+  subplot(5, 1, 1);
+  plot(times(indexes), matriz(indexes, 4), 'b-x');
+  grid on;
+  title('external forces');
 
-subplot(5,1,1)
-plot(times(indexes), matriz(indexes,4),'b-x')
-grid on
-title('external forces')
+  subplot(5, 1, 2);
+  plot(times(indexes), matriz(indexes, 5), 'b-x');
+  grid on;
+  title('internal forces');
 
-subplot(5,1,2)
-plot(times(indexes),matriz(indexes,5),'b-x')
-grid on
-title('internal forces')
+  subplot(5, 1, 3);
+  plot(times(indexes), matriz(indexes, 7), 'b-x');
+  grid on;
+  title('inertial forces');
 
-subplot(5,1,3)
-plot( times(indexes), matriz(indexes,7) ,'b-x')
-grid on
-title('inertial forces')
+  subplot(5, 1, 4);
+  plot(times(indexes), matriz(indexes, 3), 'b-x');
+  grid on;
+  title('residual forces');
 
-subplot(5,1,4)
-plot( times(indexes), matriz(indexes,3) ,'b-x')
-grid on
-title('residual forces')
+  subplot(5, 1, 5);
+  plot(times(indexes), iters(indexes), 'b-x');
+  grid on;
+  title('iterations');
 
-subplot(5,1,5)
-plot( times(indexes), iters(indexes) ,'b-x')
-grid on
-title('iterations')
+  print([outputDir  problemName '_forcesNorms_plot_converged.png'], '-dpng');
 
-print([ outputDir  problemName '_forcesNorms_plot_converged.png'], '-dpng');
+  close(h);
 
-close(h)
+  h = figure();
 
-h = figure();
+  finalIters = min([300, length(times) - 1]);
 
+  subplot(4, 1, 1);
+  plot(matriz((end - finalIters):end, 4), 'b-x');
+  grid on;
+  title('external forces');
 
-finalIters = min([ 300, length(times)-1]) ;
+  subplot(4, 1, 2);
+  plot(matriz((end - finalIters):end, 5), 'b-x');
+  grid on;
+  title('internal forces');
 
-subplot(4,1,1)
-plot(matriz((end-finalIters):end,4),'b-x')
-grid on
-title('external forces')
+  subplot(4, 1, 3);
+  plot(matriz((end - finalIters):end, 7), 'b-x');
+  grid on;
+  title('inertial forces');
 
-subplot(4,1,2)
-plot(matriz((end-finalIters):end,5),'b-x')
-grid on
-title('internal forces')
+  subplot(4, 1, 4);
+  plot(matriz((end - finalIters):end, 3), 'b-x');
+  grid on;
+  title('residual forces');
 
-subplot(4,1,3)
-plot(matriz((end-finalIters):end,7),'b-x')
-grid on
-title('inertial forces')
+  print([outputDir  problemName '_forcesNorms_plot_all.png'], '-dpng');
 
-subplot(4,1,4)
-plot(matriz((end-finalIters):end,3),'b-x')
-grid on
-title('residual forces')
-
-print([ outputDir  problemName '_forcesNorms_plot_all.png'], '-dpng');
-
-close(h)
+  close(h);

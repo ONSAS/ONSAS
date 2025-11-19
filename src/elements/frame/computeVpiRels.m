@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -17,11 +17,11 @@
 %
 % This function returns the relative projected velocity in local coordinates
 
-function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels( udotFlow, udotFrame, Rroof, Rr, L2, L3 )
+function [VpiRel, VpiRelPerp, VrelG] = computeVpiRels(udotFlow, udotFrame, Rroof, Rr, L2, L3)
   % the relative velocity in global cooridantes is:
-  VrelG = udotFlow - udotFrame ;
+  VrelG = udotFlow - udotFrame;
   % then the projection (in t2,t3 plane) of the relative flow velocity in deformed coordinates is:
-  VpiRel = L2 * Rroof' * Rr' * VrelG ;
+  VpiRel = L2 * Rroof' * Rr' * VrelG;
   % the perpendicular flow relative velocity projection in deformed coordinates is:
-  VpiRelPerp = L3 * VpiRel ;
+  VpiRelPerp = L3 * VpiRel;
 end

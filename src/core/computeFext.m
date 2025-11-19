@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,27 +15,26 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ Fext, vecLoadFactors ] = computeFext( modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors  , UsCell)
+function [Fext, vecLoadFactors] = computeFext(modelProperties, BCsData, evalTime, lengthFext, vecLoadFactors, UsCell)
 
-Fext = zeros( lengthFext, 1 ) ;
+  Fext = zeros(lengthFext, 1);
 
-factorLoadsFextCell = BCsData.factorLoadsFextCell ; 
-loadFactorsFuncCell = BCsData.loadFactorsFuncCell ;
-userLoadsFilename   = BCsData.userLoadsFilename ;
-analysisSettings    = modelProperties.analysisSettings ;
+  factorLoadsFextCell = BCsData.factorLoadsFextCell;
+  loadFactorsFuncCell = BCsData.loadFactorsFuncCell;
+  userLoadsFilename   = BCsData.userLoadsFilename;
+  analysisSettings    = modelProperties.analysisSettings;
 
-generateFactorsFlag = isempty( vecLoadFactors ) ;
+  generateFactorsFlag = isempty(vecLoadFactors);
 
-for i=1:length( factorLoadsFextCell )
-  if ~isempty( factorLoadsFextCell{i} )
-    if generateFactorsFlag
-      vecLoadFactors(i) = loadFactorsFuncCell{i}( evalTime ) ;
+  for i = 1:length(factorLoadsFextCell)
+    if ~isempty(factorLoadsFextCell{i})
+      if generateFactorsFlag
+        vecLoadFactors(i) = loadFactorsFuncCell{i}(evalTime);
+      end
+      Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i};
     end
-    Fext  = Fext + vecLoadFactors(i) * factorLoadsFextCell{i} ;
   end
-end
 
-if ~isempty( userLoadsFilename )
-  Fext = Fext + feval( userLoadsFilename, evalTime , UsCell)  ;
-end
-
+  if ~isempty(userLoadsFilename)
+    Fext = Fext + feval(userLoadsFilename, evalTime, UsCell);
+  end

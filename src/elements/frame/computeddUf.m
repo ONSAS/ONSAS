@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -17,9 +17,9 @@
 %
 % This function returns the fluid acceleration in global coordinates
 function ddUf = computeddUf(nextTime, dt, userFlowVel,  elemCoords)
-   t0 = (nextTime-dt);
-   t1 = nextTime;
-   udotdotFlowNode1 = (feval(userFlowVel, elemCoords(1:3)', t1) - feval(userFlowVel,  elemCoords(1:3)', t0))/dt ;
-   udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0))/dt ;
-   ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
+  t0 = (nextTime - dt);
+  t1 = nextTime;
+  udotdotFlowNode1 = (feval(userFlowVel, elemCoords(1:3)', t1) - feval(userFlowVel,  elemCoords(1:3)', t0)) / dt;
+  udotdotFlowNode2 = (feval(userFlowVel, elemCoords(4:6)', t1) - feval(userFlowVel, elemCoords(4:6)', t0)) / dt;
+  ddUf = [udotdotFlowNode1' udotdotFlowNode2'];
 end

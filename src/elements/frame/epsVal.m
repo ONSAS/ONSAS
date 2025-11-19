@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -17,6 +17,6 @@
 %
 function epsk = epsVal(z, B, R, Ut)
 
-	epsk = -z'.* B * R * Ut ;
+  epsk = -z' .* B * R * Ut;
 
 end

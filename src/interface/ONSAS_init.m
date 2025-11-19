@@ -57,7 +57,6 @@ modelProperties = construct_modelProperties( Nodes, Conec, materials, elements, 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TEMPORARY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global spitMatrices
 if spitMatrices == true

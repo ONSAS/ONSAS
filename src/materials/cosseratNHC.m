@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -16,29 +16,29 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % Cosserat tensor considering a new Neo-Hookean with the following strain energy:
-%  phi(J) = (I1 - ln(J)) + K/2 (J-1)^2 
+%  phi(J) = (I1 - ln(J)) + K/2 (J-1)^2
 
-% This function returns the cosserat stress tensor S and its derivatives respect 
+% This function returns the cosserat stress tensor S and its derivatives respect
 % to the tensor Egreen, which is the Green-Lagrange strain tensor.
-function [S, ConsMat] = cosseratNHC( consParams, Egreen, consMatFlag)
+function [S, ConsMat] = cosseratNHC(consParams, Egreen, consMatFlag)
 
-shear    = consParams(1) ;
-bulk     = consParams(2) ;
+  shear    = consParams(1);
+  bulk     = consParams(2);
 
-C       = 2*Egreen + eye(3);  % Egreen = 1/2 (C - I)
-invC    = inv(C);
-detC    = det(C); % TODO use analyDet ?
-J       = sqrt(detC);
-S       = shear * ( eye(3) - invC ) + bulk * ( J * (J-1)* invC) ;
+  C       = 2 * Egreen + eye(3);  % Egreen = 1/2 (C - I)
+  invC    = inv(C);
+  detC    = det(C); % TODO use analyDet ?
+  J       = sqrt(detC);
+  S       = shear * (eye(3) - invC) + bulk * (J * (J - 1) * invC);
 
-if consMatFlag == 0 % only stress computed
-  ConsMat = [] ;
+  if consMatFlag == 0 % only stress computed
+    ConsMat = [];
 
-elseif consMatFlag == 1 % analytic expression
-  error("the analytical expression for the Neo-Hookean constitutive law is not available")
+  elseif consMatFlag == 1 % analytic expression
+    error("the analytical expression for the Neo-Hookean constitutive law is not available");
 
-elseif consMatFlag == 2 % complex-step computation expression
+  elseif consMatFlag == 2 % complex-step computation expression
 
-  ConsMat = zeros(6,6);
-  ConsMat = complexStepConsMat( 'cosseratNHC', consParams, Egreen ) ;
-end
+    ConsMat = zeros(6, 6);
+    ConsMat = complexStepConsMat('cosseratNHC', consParams, Egreen);
+  end

@@ -16,8 +16,8 @@ docs/src/examples/
 docs/src/assets/generated/
 test/aux.txt
 
-cantilever_Soft_Hinge/output/*/*
-cantilever_Soft_Hinge/output/
+# utils
+utils/.venv/
 
 
 # editors and OSs
