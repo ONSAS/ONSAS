@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,30 +15,29 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
- 
-%md function for writing vtk files of deformed configurations of structures.
-%md Creates the file filename with the nodes coordinates given in nodes,
-%md the conectivity given in conect and with the point and element data
-%md given in cellPointData and cellCellData, respectively.
 
-function vtkMainWriter( modelCurrSol, modelProperties )
+% md function for writing vtk files of deformed configurations of structures.
+% md Creates the file filename with the nodes coordinates given in nodes,
+% md the conectivity given in conect and with the point and element data
+% md given in cellPointData and cellCellData, respectively.
 
-plot_ind_float = modelCurrSol.currTime ...
-            / ( modelProperties.plots_deltaTs_separation*modelProperties.analysisSettings.deltaT ) ;
+function vtkMainWriter(modelCurrSol, modelProperties)
 
-plot_ind_round = round( plot_ind_float ) ;
+  plot_ind_float = modelCurrSol.currTime / (modelProperties.plots_deltaTs_separation * modelProperties.analysisSettings.deltaT);
 
-if abs( plot_ind_float-plot_ind_round) < 1e-10,
+  plot_ind_round = round(plot_ind_float);
 
-  plotInd = plot_ind_round ;
+  if abs(plot_ind_float - plot_ind_round) < 1e-10
 
-  %md filname counter starts in zero
-  filename = [ modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'] ;
+    plotInd = plot_ind_round;
 
-  %fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
-  %md nodes and data conversion
-  [ vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ] = vtkDataConversion( modelCurrSol, modelProperties ) ;
-  %md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
-  
-  vtkFileWriter( filename, vtkNodes, vtkConec , vtkPointDataCell, vtkCellDataCell ) ;
-end
+    % md filname counter starts in zero
+    filename = [modelProperties.outputDir modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk'];
+
+    % fprintf( [ '  writing vtk file ' modelProperties.problemName '_' sprintf('%04i', plotInd) '.vtk\n'] ) ;
+    % md nodes and data conversion
+    [vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell] = vtkDataConversion(modelCurrSol, modelProperties);
+    % md the function __vtkWriter__ writes the vtk file. it has no outputs and recieves vtk formatted nodes, conectivity and cell and point data.
+
+    vtkFileWriter(filename, vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell);
+  end

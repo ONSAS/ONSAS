@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -17,27 +17,24 @@
 %
 % --------------------------------------------------------------------------------------------------
 
-function [Local2GlobalMats,ElemLengths] = beamParameters(elemCoords)
+function [Local2GlobalMats, ElemLengths] = beamParameters(elemCoords)
 
-  ElemLengths = sqrt ( sum( ( elemCoords(4:6) - elemCoords(1:3) ).^2 ) ) ;
+  ElemLengths = sqrt (sum((elemCoords(4:6) - elemCoords(1:3)).^2));
 
   % ----- local coordinate system setting -------------
 
-  dxLdls       = ( elemCoords(4) - elemCoords(1) ) ...
-                 ./ ElemLengths ;
-  dyLdls       = ( elemCoords(5) - elemCoords(2) ) ...
-                 ./ ElemLengths ;
-  dzLdls       = ( elemCoords(6) - elemCoords(3) ) ...
-                 ./ ElemLengths ;
+  dxLdls       = (elemCoords(4) - elemCoords(1)) ./ ElemLengths;
+  dyLdls       = (elemCoords(5) - elemCoords(2)) ./ ElemLengths;
+  dzLdls       = (elemCoords(6) - elemCoords(3)) ./ ElemLengths;
 
-  exL = [dxLdls dyLdls dzLdls]' ;
-  if ( norm( [ dyLdls dxLdls ] ) > (1e-5*ElemLengths) )
-    eyL = [ -dyLdls  dxLdls 0 ]' / sqrt( dyLdls^2 + dxLdls^2 ) ;
+  exL = [dxLdls dyLdls dzLdls]';
+  if norm([dyLdls dxLdls]) > (1e-5 * ElemLengths)
+    eyL = [-dyLdls  dxLdls 0]' / sqrt(dyLdls^2 + dxLdls^2);
   else
-  % The convention adopted for the local y in this case is: yL = yG
-    eyL = [ 0 1 0 ]' ;
+    % The convention adopted for the local y in this case is: yL = yG
+    eyL = [0 1 0]';
   end
-  ezL = cross( exL, eyL ) ;
-  Local2GlobalMats = [ exL  eyL  ezL ] ;
+  ezL = cross(exL, eyL);
+  Local2GlobalMats = [exL  eyL  ezL];
 
 end

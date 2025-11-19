@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,260 +15,257 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%md
-%md This function converts the mesh MEB information to the data structures used in the numerical simulation
-%md
-function [ Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel ] = boundaryCondsProcessing ( mesh, ...
-                        materials, ...     % M
-                        elements, ...      % E
-                        boundaryConds, ... % B
-                        analysisSettings  )
+% md
+% md This function converts the mesh MEB information to the data structures used in the numerical simulation
+% md
+function [Conec, Nodes, factorLoadsFextCell, loadFactorsFuncCell, diriDofs, neumDofs, KS, userLoadsFilename, userWindVel] = boundaryCondsProcessing (mesh, ...
+                                                                                                                                                     materials, ...     % M
+                                                                                                                                                     elements, ...      % E
+                                                                                                                                                     boundaryConds, ... % B
+                                                                                                                                                     analysisSettings)
 
-Conec  = myCell2Mat( mesh.conecCell ) ;
-Nodes  = mesh.nodesCoords ;
-nnodes = size( Nodes,1);
-KS     = sparse( 6*nnodes, 6*nnodes );
+  Conec  = myCell2Mat(mesh.conecCell);
+  Nodes  = mesh.nodesCoords;
+  nnodes = size(Nodes, 1);
+  KS     = sparse(6 * nnodes, 6 * nnodes);
 
-%md Since we want to process the BCs, we keep only the non-zeros at the third column of the Conec matrix
-%md Computes the number of elements and BCs we have
-boundaryTypes  = unique( Conec( :, 3) ) ;
-if boundaryTypes(1) == 0,
-  boundaryTypes(1)=[];
-end
-
-elementTypes   = unique( Conec( :, 2) ) ;
-if elementTypes(1)  == 0, % checks if all elements have a type
-  error('all the entries of the mesh.conecCell must have an element defined in the second column');
-end
-
-factorLoadsFextCell = {} ;
-loadFactorsFuncCell = {} ;
-diriDofs            = [] ;
-
-%md loop over the boundary conditions used in the mesh
-for indBC = 1:length( boundaryTypes )
-
-  % number of current BC processed
-  BCnum = boundaryTypes(indBC) ;
-  %md loads verification
-  %md is loadsCoordSys is not empty, then some load is applied in this BC
-  if ~isempty( boundaryConds( indBC ).loadsCoordSys )
-    %md The nodal loads vector is computed and assiged to the corresponding BC entry.
-    factorLoadsFextCell{ BCnum } = elem2NodalLoads ( Conec, BCnum, elements, boundaryConds( BCnum ),  Nodes ) ;
-    % defaul load factor function
-    if isempty( boundaryConds(BCnum).loadsTimeFact ),
-      boundaryConds(BCnum).loadsTimeFact = @(t) t ;
-    end
-    loadFactorsFuncCell{ BCnum } = boundaryConds(BCnum).loadsTimeFact ;
-  end % if load
-
-  %md displacement verification
-  if ~isempty( boundaryConds(BCnum).imposDispDofs ),
-    
-    %md values and imposed dofs of current BC
-    impoDofs = boundaryConds(BCnum).imposDispDofs ;
-    impoVals = boundaryConds(BCnum).imposDispVals ;
-    
-    %md find the elements with the current boundary condition
-    elemsWithBC = find( Conec(:,3) == indBC ) ;
-    
-    %md compute the values of nonHom BC
-    [ nonHomDiriVals, bcDiriDofs, nonHomDiriDofs ] = elem2NodalDisps ( Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes ) ;
-    diriDofs = [ diriDofs; bcDiriDofs ] ;
-
-  end % if: disp dofs
-
-
-
-  if ~isempty( boundaryConds(BCnum).springDofs ),
-    
-    %md find the elements with the current boundary condition
-    elemsWithBC = find( Conec(:,3) == indBC ) ;
-
-    for inde = 1:length( elemsWithBC )
-      %
-      if ~strcmp( elements( Conec( elemsWithBC(inde), 2 ) ).elemType, 'node' )    
-        error('springDofs can only be assigned to node elements, by the moment!')
-      else
-        nodes_with_spring = Conec( elemsWithBC(inde), 3 + 1 )  ;
-        for indn = 1:length( nodes_with_spring )
-          nodedofs = nodes2dofs( nodes_with_spring(indn), 6 ) ;
-          locdofs  = boundaryConds(BCnum).springDofs ;
-          KS( nodedofs(locdofs), nodedofs(locdofs) ) = KS( nodedofs(locdofs), nodedofs(locdofs) ) ...
-            + spdiags( boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs) ) ;
-        end
-      end
-    end
-
-  end % if: springDofs
-
-end % for: elements with boundary condition assigned
-
-diriDofs = unique( diriDofs) ;
-
-%md remove element if no material is assigned
-elemsToRemove = find( Conec( :, 1 ) == 0 ) ;
-Conec( elemsToRemove, :  ) = [] ;
-
-%md construction of a vector with the Neumann degrees of freedom
-
-%md a zeros-filled vector is created
-neumDofs = zeros( 6*nnodes, 1 ) ; % maximum possible vector
-
-%md loop for construction of vector of dofs
-for elemNum = 1:length( elementTypes )
-
-  %md find the numbers of the elements with the current element type
-  elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
-
-  %md get current element type
-  elemType = elements( elementTypes(elemNum) ).elemType ;
-
-  %md if there are any elements with this type
-  if length( elementsNums ) > 0
-    [numNodes, nodalDofsEntries] = elementTypeDofs( elemType ) ;
-    nodes    = Conec( elementsNums, (3+1):(3+numNodes) ) ;
-    dofs     = nodes2dofs( unique(nodes), 6)' ; % computes the dofs of all the nodes of all the elements
-    auxA = repmat(nodalDofsEntries,length(dofs)/6,1);
-    auxB = repelem( (0:6:length(dofs)-1)',length(nodalDofsEntries),1);
-    dofs     = dofs( auxA+auxB )   ;
-
-    %md remove z displacement for triangles with material assigned (plane movement in x-y)
-    if strcmp( elemType, 'triangle' );
-      dofs(3:3:end) = [ ] ;
-    end
-
-    neumDofs ( dofs ) = dofs ;
-
+  % md Since we want to process the BCs, we keep only the non-zeros at the third column of the Conec matrix
+  % md Computes the number of elements and BCs we have
+  boundaryTypes  = unique(Conec(:, 3));
+  if boundaryTypes(1) == 0
+    boundaryTypes(1) = [];
   end
-end
 
-if length( diriDofs)>0
-  neumDofs( diriDofs ) = 0 ;
-end
-neumDofs = unique( neumDofs ) ;
-if neumDofs(1) == 0,
-  neumDofs(1)=[] ;
-end
-
-% read user load filename
-userLoadsFilename = [] ;
-
-if isfield( boundaryConds,'userLoadsFilename' )
-  for ind = 1:length(boundaryConds)
-    if ~isempty( boundaryConds(ind).userLoadsFilename )
-      if ~isempty( userLoadsFilename )
-        error('only one user load function can be used!');
-      else
-        userLoadsFilename = boundaryConds(ind).userLoadsFilename ;
-      end
-    end
+  elementTypes   = unique(Conec(:, 2));
+  if elementTypes(1)  == 0  % checks if all elements have a type
+    error('all the entries of the mesh.conecCell must have an element defined in the second column');
   end
-end
 
-% FIx me when userWindVel boundaryConds(wind is not in the first cell)
-if isfield( boundaryConds,'userWindVel' )
-  userWindVel  = boundaryConds.userWindVel     ;
-else
-  userWindVel     = [];
-end
-% ----------------------------------------------------------------------
+  factorLoadsFextCell = {};
+  loadFactorsFuncCell = {};
+  diriDofs            = [];
 
+  % md loop over the boundary conditions used in the mesh
+  for indBC = 1:length(boundaryTypes)
 
-% ----------------------------------------------------------------------
-%md Loop for computing of gravity external force vector
-if analysisSettings.booleanSelfWeight == true
-  % initialize the gravity load vector
-  gravityFactorLoads = zeros( 6*nnodes, 1 ) ; % maximum possible vector
-  g = 9.8067 ;
-
-  %md loop in type of element indexes
-  for elemNum = 1:length( elementTypes )
-    %md find the numbers of the elements with the current element type
-    elementsNums = find( Conec( :, 2 ) == elementTypes( elemNum ) ) ;
-
-    %md if there is any element
-    if length( elementsNums ) > 0
-
-      %md get current element type
-      elemType = elements( elementTypes(elemNum) ).elemType ;
-
-      %md get the material types of the current element type
-      materialElemTypes   = unique( Conec( elementsNums, 1) ) ;
-
-      % keep positive-rho materials
-      aux = [ ] ;
-      for ir = 1:length( materialElemTypes )
-        if materials( materialElemTypes(ir) ).density > 0
-          aux = [ aux; materialElemTypes(ir) ] ;
-        end
+    % number of current BC processed
+    BCnum = boundaryTypes(indBC);
+    % md loads verification
+    % md is loadsCoordSys is not empty, then some load is applied in this BC
+    if ~isempty(boundaryConds(indBC).loadsCoordSys)
+      % md The nodal loads vector is computed and assiged to the corresponding BC entry.
+      factorLoadsFextCell{ BCnum } = elem2NodalLoads (Conec, BCnum, elements, boundaryConds(BCnum),  Nodes);
+      % defaul load factor function
+      if isempty(boundaryConds(BCnum).loadsTimeFact)
+        boundaryConds(BCnum).loadsTimeFact = @(t) t;
       end
-      materialElemTypes = aux ;
+      loadFactorsFuncCell{ BCnum } = boundaryConds(BCnum).loadsTimeFact;
+    end % if load
 
-      %md  loop in different materials of current element
-      for matElem = 1: length(materialElemTypes)
+    % md displacement verification
+    if ~isempty(boundaryConds(BCnum).imposDispDofs)
 
-        %md  extract the material of the current element type
-        rhoElemTypeMaterial = materials( materialElemTypes(matElem) ).density ;
+      % md values and imposed dofs of current BC
+      impoDofs = boundaryConds(BCnum).imposDispDofs;
+      impoVals = boundaryConds(BCnum).imposDispVals;
 
-        %md  find the elements with elements = elemNum and material = matElem
-        elemntsSameMat  = elementsNums(find(Conec( elementsNums, 1 ) == materialElemTypes(matElem) ) ) ;
+      % md find the elements with the current boundary condition
+      elemsWithBC = find(Conec(:, 3) == indBC);
 
-        if strcmp( elemType, 'truss') || strcmp( elemType, 'frame') ;
+      % md compute the values of nonHom BC
+      [nonHomDiriVals, bcDiriDofs, nonHomDiriDofs] = elem2NodalDisps (Conec, indBC, elemsWithBC, elements, impoDofs, impoVals, Nodes);
+      diriDofs = [diriDofs; bcDiriDofs];
 
-          %md extract connectivity of element
-          conecElemsThisMat = Conec( elemntsSameMat, 4:5 );
-          % final minus initial nodes coords matrices
-          matrixDiffs = Nodes( conecElemsThisMat(:,2),:) - Nodes( conecElemsThisMat(:,1), : );
-          vecSquareDiff = sum( (matrixDiffs.^2)' )';
-          lengthElems = sqrt( vecSquareDiff ) ;
-          elemCrossSecParams = elements(elemNum).elemCrossSecParams ;
-          [areaElem, ~, ~, ~, ~ ] = crossSectionProps ( elemCrossSecParams, rhoElemTypeMaterial ) ;
+    end % if: disp dofs
 
-          %md compute nodal selfweight loads
-          Fz = - rhoElemTypeMaterial * lengthElems * areaElem * g * 0.5;
+    if ~isempty(boundaryConds(BCnum).springDofs)
 
-          %md compute the dofs where gravitiy is applied: and add loads
-          for elem = 1: size(conecElemsThisMat, 1)
-            dofs  = nodes2dofs( conecElemsThisMat(elem,:), 6)';
-            dofs  = dofs(5:6:end);
-            gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fz(elem);
-          end
+      % md find the elements with the current boundary condition
+      elemsWithBC = find(Conec(:, 3) == indBC);
 
-        elseif strcmp( elemType, 'tetrahedron')
-
-          %md extract connectivity of element
-          conecElemsThisMat = Conec( elemntsSameMat, 3+(1:4) );
-
-          %md compute the dofs where gravitiy is applied: and add loads
-          for elem = 1: size(conecElemsThisMat, 1)
-            auxnodes = conecElemsThisMat(elem,:) ;
-            dofs     = nodes2dofs( auxnodes, 6)' ;
-            dofs     = dofs(5:6:end) ;
-
-            elemCoords = reshape( Nodes( auxnodes, : )', 1, 12 ) ;
-
-            [ ~, ~, vol ] = computeFuncDerivVolTetraSolid( elemCoords ) ;
-
-            Fzval = - vol *.25 * rhoElemTypeMaterial * g ;
-
-            gravityFactorLoads(dofs,1) = gravityFactorLoads(dofs,1) + Fzval ;
-          end
-
+      for inde = 1:length(elemsWithBC)
+        %
+        if ~strcmp(elements(Conec(elemsWithBC(inde), 2)).elemType, 'node')
+          error('springDofs can only be assigned to node elements, by the moment!');
         else
-          error('this elemType is not implemented using self weight boolean yet')
+          nodes_with_spring = Conec(elemsWithBC(inde), 3 + 1);
+          for indn = 1:length(nodes_with_spring)
+            nodedofs = nodes2dofs(nodes_with_spring(indn), 6);
+            locdofs  = boundaryConds(BCnum).springDofs;
+            KS(nodedofs(locdofs), nodedofs(locdofs)) = KS(nodedofs(locdofs), nodedofs(locdofs)) + ...
+              spdiags(boundaryConds(BCnum).springVals, 0, length(locdofs), length(locdofs));
+          end
+        end
+      end
 
-        end % element type case
+    end % if: springDofs
 
-      end % for materials
+  end % for: elements with boundary condition assigned
 
-    end % if there are elements
+  diriDofs = unique(diriDofs);
 
-  end % for elementTypes
+  % md remove element if no material is assigned
+  elemsToRemove = find(Conec(:, 1) == 0);
+  Conec(elemsToRemove, :) = [];
 
-  %md the number of BC that represent the self weight condition is
-  numberOfBCSelfWeight = length( factorLoadsFextCell )  + 1         ;
-  factorLoadsFextCell{numberOfBCSelfWeight} = gravityFactorLoads    ;
-  loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1                ;
+  % md construction of a vector with the Neumann degrees of freedom
 
-end % if booleanSelfWeight
+  % md a zeros-filled vector is created
+  neumDofs = zeros(6 * nnodes, 1); % maximum possible vector
+
+  % md loop for construction of vector of dofs
+  for elemNum = 1:length(elementTypes)
+
+    % md find the numbers of the elements with the current element type
+    elementsNums = find(Conec(:, 2) == elementTypes(elemNum));
+
+    % md get current element type
+    elemType = elements(elementTypes(elemNum)).elemType;
+
+    % md if there are any elements with this type
+    if length(elementsNums) > 0
+      [numNodes, nodalDofsEntries] = elementTypeDofs(elemType);
+      nodes    = Conec(elementsNums, (3 + 1):(3 + numNodes));
+      dofs     = nodes2dofs(unique(nodes), 6)'; % computes the dofs of all the nodes of all the elements
+      auxA = repmat(nodalDofsEntries, length(dofs) / 6, 1);
+      auxB = repelem((0:6:length(dofs) - 1)', length(nodalDofsEntries), 1);
+      dofs     = dofs(auxA + auxB);
+
+      % md remove z displacement for triangles with material assigned (plane movement in x-y)
+      if strcmp(elemType, 'triangle')
+        dofs(3:3:end) = [];
+      end
+
+      neumDofs (dofs) = dofs;
+
+    end
+  end
+
+  if length(diriDofs) > 0
+    neumDofs(diriDofs) = 0;
+  end
+  neumDofs = unique(neumDofs);
+  if neumDofs(1) == 0
+    neumDofs(1) = [];
+  end
+
+  % read user load filename
+  userLoadsFilename = [];
+
+  if isfield(boundaryConds, 'userLoadsFilename')
+    for ind = 1:length(boundaryConds)
+      if ~isempty(boundaryConds(ind).userLoadsFilename)
+        if ~isempty(userLoadsFilename)
+          error('only one user load function can be used!');
+        else
+          userLoadsFilename = boundaryConds(ind).userLoadsFilename;
+        end
+      end
+    end
+  end
+
+  % FIx me when userWindVel boundaryConds(wind is not in the first cell)
+  if isfield(boundaryConds, 'userWindVel')
+    userWindVel  = boundaryConds.userWindVel;
+  else
+    userWindVel     = [];
+  end
+  % ----------------------------------------------------------------------
+
+  % ----------------------------------------------------------------------
+  % md Loop for computing of gravity external force vector
+  if analysisSettings.booleanSelfWeight == true
+    % initialize the gravity load vector
+    gravityFactorLoads = zeros(6 * nnodes, 1); % maximum possible vector
+    g = 9.8067;
+
+    % md loop in type of element indexes
+    for elemNum = 1:length(elementTypes)
+      % md find the numbers of the elements with the current element type
+      elementsNums = find(Conec(:, 2) == elementTypes(elemNum));
+
+      % md if there is any element
+      if length(elementsNums) > 0
+
+        % md get current element type
+        elemType = elements(elementTypes(elemNum)).elemType;
+
+        % md get the material types of the current element type
+        materialElemTypes   = unique(Conec(elementsNums, 1));
+
+        % keep positive-rho materials
+        aux = [];
+        for ir = 1:length(materialElemTypes)
+          if materials(materialElemTypes(ir)).density > 0
+            aux = [aux; materialElemTypes(ir)];
+          end
+        end
+        materialElemTypes = aux;
+
+        % md  loop in different materials of current element
+        for matElem = 1:length(materialElemTypes)
+
+          % md  extract the material of the current element type
+          rhoElemTypeMaterial = materials(materialElemTypes(matElem)).density;
+
+          % md  find the elements with elements = elemNum and material = matElem
+          elemntsSameMat  = elementsNums(find(Conec(elementsNums, 1) == materialElemTypes(matElem)));
+
+          if strcmp(elemType, 'truss') || strcmp(elemType, 'frame')
+
+            % md extract connectivity of element
+            conecElemsThisMat = Conec(elemntsSameMat, 4:5);
+            % final minus initial nodes coords matrices
+            matrixDiffs = Nodes(conecElemsThisMat(:, 2), :) - Nodes(conecElemsThisMat(:, 1), :);
+            vecSquareDiff = sum((matrixDiffs.^2)')';
+            lengthElems = sqrt(vecSquareDiff);
+            elemCrossSecParams = elements(elemNum).elemCrossSecParams;
+            [areaElem, ~, ~, ~, ~] = crossSectionProps (elemCrossSecParams, rhoElemTypeMaterial);
+
+            % md compute nodal selfweight loads
+            Fz = -rhoElemTypeMaterial * lengthElems * areaElem * g * 0.5;
+
+            % md compute the dofs where gravitiy is applied: and add loads
+            for elem = 1:size(conecElemsThisMat, 1)
+              dofs  = nodes2dofs(conecElemsThisMat(elem, :), 6)';
+              dofs  = dofs(5:6:end);
+              gravityFactorLoads(dofs, 1) = gravityFactorLoads(dofs, 1) + Fz(elem);
+            end
+
+          elseif strcmp(elemType, 'tetrahedron')
+
+            % md extract connectivity of element
+            conecElemsThisMat = Conec(elemntsSameMat, 3 + (1:4));
+
+            % md compute the dofs where gravitiy is applied: and add loads
+            for elem = 1:size(conecElemsThisMat, 1)
+              auxnodes = conecElemsThisMat(elem, :);
+              dofs     = nodes2dofs(auxnodes, 6)';
+              dofs     = dofs(5:6:end);
+
+              elemCoords = reshape(Nodes(auxnodes, :)', 1, 12);
+
+              [~, ~, vol] = computeFuncDerivVolTetraSolid(elemCoords);
+
+              Fzval = -vol * .25 * rhoElemTypeMaterial * g;
+
+              gravityFactorLoads(dofs, 1) = gravityFactorLoads(dofs, 1) + Fzval;
+            end
+
+          else
+            error('this elemType is not implemented using self weight boolean yet');
+
+          end % element type case
+
+        end % for materials
+
+      end % if there are elements
+
+    end % for elementTypes
+
+    % md the number of BC that represent the self weight condition is
+    numberOfBCSelfWeight = length(factorLoadsFextCell)  + 1;
+    factorLoadsFextCell{numberOfBCSelfWeight} = gravityFactorLoads;
+    loadFactorsFuncCell{numberOfBCSelfWeight} = @(t) 1;
+
+  end % if booleanSelfWeight

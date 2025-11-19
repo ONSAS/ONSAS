@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [fl,kl, strain, stress] = beamLocalStaticForces (u, tl1, tl2, L, E, G, A, Iyy, Izz, J);
+function [fl, kl, strain, stress] = beamLocalStaticForces (u, tl1, tl2, L, E, G, A, Iyy, Izz, J)
 
   ltx1 = tl1(1);
   lty1 = tl1(2);
@@ -26,31 +26,31 @@ function [fl,kl, strain, stress] = beamLocalStaticForces (u, tl1, tl2, L, E, G, 
   ltz2 = tl2(3);
 
   % --- internal forces vector --
-  fl = zeros(7,1);
+  fl = zeros(7, 1);
 
   % Auxiliar epsilon x
-  strain = u/L ;
+  strain = u / L;
   % Auxiliar sigma x
-  stress = E*strain ;
+  stress = E * strain;
 
-  fl(1) = E*A*u/L;
+  fl(1) = E * A * u / L;
 
-  fl(2) = - G * J / L * (ltx2-ltx1) ;
+  fl(2) = -G * J / L * (ltx2 - ltx1);
   fl(5) = -fl(2);
 
-  fl(3) = 2*E*Iyy/L * ( 2*lty1 +   lty2 ) ;
-  fl(6) = 2*E*Iyy/L * (   lty1 + 2*lty2 ) ;
+  fl(3) = 2 * E * Iyy / L * (2 * lty1 +   lty2);
+  fl(6) = 2 * E * Iyy / L * (lty1 + 2 * lty2);
 
-  fl(4) = 2*E*Izz/L * ( 2*ltz1 +   ltz2 ) ;
-  fl(7) = 2*E*Izz/L * (   ltz1 + 2*ltz2 ) ;
+  fl(4) = 2 * E * Izz / L * (2 * ltz1 +   ltz2);
+  fl(7) = 2 * E * Izz / L * (ltz1 + 2 * ltz2);
 
   % stiffness matrix
-  kl = zeros(7,7);
+  kl = zeros(7, 7);
 
-  kl(1,1) = E*A/L ;
+  kl(1, 1) = E * A / L;
 
-  kl([2 5], [2 5] ) = G * J / L  * [ 1 -1 ; -1 1 ];
+  kl([2 5], [2 5]) = G * J / L  * [1 -1; -1 1];
 
-  kl([3 6], [3 6] ) = 2* E * Iyy / L * [ 2  1 ; 1 2 ];
+  kl([3 6], [3 6]) = 2 * E * Iyy / L * [2  1; 1 2];
 
-  kl([4 7], [4 7] ) = 2* E * Izz / L * [ 2  1 ; 1 2 ];
+  kl([4 7], [4 7]) = 2 * E * Izz / L * [2  1; 1 2];

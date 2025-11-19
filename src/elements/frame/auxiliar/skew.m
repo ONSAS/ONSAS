@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,8 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function sk = skew( x )
-  sk = [    0 -x(3)   x(2)  ; ...
-         x(3)     0  -x(1)  ; ...
-        -x(2)  x(1)      0  ] ;
+function sk = skew(x)
+  sk = [0 -x(3)   x(2); ...
+        x(3)     0  -x(1); ...
+        -x(2)  x(1)      0];
 end

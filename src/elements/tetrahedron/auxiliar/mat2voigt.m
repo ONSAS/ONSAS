@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -16,12 +16,12 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 
-function v = mat2voigt( Tensor, factor )
+function v = mat2voigt(Tensor, factor)
 
-  %~ if norm( Tensor - Tensor' ) > 1e-10
-    %~ Tensor
-    %~ norm( Tensor - Tensor' )
-    %~ error('tensor not symmetric')
-  %~ end
+  % ~ if norm( Tensor - Tensor' ) > 1e-10
+  % ~ Tensor
+  % ~ norm( Tensor - Tensor' )
+  % ~ error('tensor not symmetric')
+  % ~ end
 
-  v = [ Tensor(1,1)  Tensor(2,2)  Tensor(3,3)  factor*Tensor(2,3) factor*Tensor(1,3) factor*Tensor(1,2) ]' ;
+  v = [Tensor(1, 1)  Tensor(2, 2)  Tensor(3, 3)  factor * Tensor(2, 3) factor * Tensor(1, 3) factor * Tensor(1, 2)]';

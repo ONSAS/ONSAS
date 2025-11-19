@@ -1,7 +1,7 @@
 
 # Introduction
 
-![tests](https://github.com/ONSAS/ONSAS/workflows/octave_tests/badge.svg)
+![tests](https://github.com/ONSAS/ONSAS/actions/workflows/octave_docker_tests.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/ONSAS/ONSAS/blob/master/COPYING.txt)
 
 

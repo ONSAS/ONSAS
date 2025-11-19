@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -24,31 +24,34 @@
 %    - the vector of entries of the nodal degrees of freedom
 %      Assuming that the dofs per node are sorted, for node 1, as:
 %      [ u_x^1 \theta_x^1 u_y^1 \theta_y^1 u_z^1 \theta_z^1 ]
-function [numNodes, nodalDofsEntries] = elementTypeDofs( elemType )
+function [numNodes, nodalDofsEntries] = elementTypeDofs(elemType)
 
-if strcmp( elemType, 'node');
-  numNodes = 1 ;
-  nodalDofsEntries = (1:2:6)' ;
+  if strcmp(elemType, 'node')
+    numNodes = 1;
+    nodalDofsEntries = (1:2:6)';
 
-elseif strcmp( elemType, 'truss') || strcmp( elemType, 'edge')
-  numNodes = 2 ;
-  nodalDofsEntries = (1:2:6)' ;
+  elseif strcmp(elemType, 'truss') || strcmp(elemType, 'edge')
+    numNodes = 2;
+    nodalDofsEntries = (1:2:6)';
 
-elseif strcmp( elemType, 'frame')
-  numNodes = 2 ;
-  nodalDofsEntries = (1:6)' ;
+  elseif strcmp(elemType, 'frame')
+    numNodes = 2;
+    nodalDofsEntries = (1:6)';
 
-elseif strcmp( elemType, 'tetrahedron')
-  numNodes = 4 ;
-  nodalDofsEntries = (1:2:6)' ;
+  elseif strcmp(elemType, 'tetrahedron')
+    numNodes = 4;
+    nodalDofsEntries = (1:2:6)';
 
-elseif strcmp( elemType, 'triangle')
-  numNodes = 3 ;
-  nodalDofsEntries = [1 3 5]' ; % only x-y displacements
+  elseif strcmp(elemType, 'triangle')
+    numNodes = 3;
+    nodalDofsEntries = [1 3 5]'; % only x-y displacements
 
-elseif strcmp( elemType, 'triangle-plate')
-  numNodes = 3 ;
-  nodalDofsEntries = [5 2 4]' ; % assumed plate surface in x-y
+  elseif strcmp(elemType, 'triangle-plate')
+    numNodes = 3;
+    nodalDofsEntries = [5 2 4]'; % assumed plate surface in x-y
 
-end
+  elseif strcmp(elemType, 'triangle-shell')
+    numNodes = 3;
+    nodalDofsEntries = [1 2 3 4 5 6]'; % assumed plate surface in x-y
 
+  end

@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,12 +15,12 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [x21, d21, l, l0] = corotLenCoords(xs ,dg)
+function [x21, d21, l, l0] = corotLenCoords(xs, dg)
 
-  x21 = xs(4:6) - xs(1:3) ;
-  d21 = dg(7:9) - dg(1:3) ;
+  x21 = xs(4:6) - xs(1:3);
+  d21 = dg(7:9) - dg(1:3);
 
-  l0 = sqrt( ( x21       )' * ( x21       ) ) ; % reference length
-  l  = sqrt( ( x21 + d21 )' * ( x21 + d21 ) ) ; % deformed length
+  l0 = sqrt((x21)' * (x21)); % reference length
+  l  = sqrt((x21 + d21)' * (x21 + d21)); % deformed length
 
 end

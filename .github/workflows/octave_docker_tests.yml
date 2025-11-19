@@ -8,5 +8,5 @@ jobs:
     #container: gnuoctave/octave:latest
     container: gnuoctave/octave:8.3.0
     steps:
-      - uses: actions/checkout@v3
-      - run: octave --eval "cd ./test, runTestProblems_local"
+      - uses: actions/checkout@v4
+      - run: octave --eval "cd ./test, runTestProblemsLocal"

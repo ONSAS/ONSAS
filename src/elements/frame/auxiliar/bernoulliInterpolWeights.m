@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,18 +15,18 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [ N1, N2, N3, N4, N5, N6, N7, N8 ] = bernoulliInterpolWeights(x, l0) 
+function [N1, N2, N3, N4, N5, N6, N7, N8] = bernoulliInterpolWeights(x, l0)
 
   % Shape functions of Euler Bernoulli element to interpolate displacements and velocites for the cross section:
   % linear
-  N1 = 1 -x / l0                           ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N2 = x / l0                              ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N1 = 1 - x / l0; % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N2 = x / l0; % Eq.(37)  T-N Le J.-M. Battini et al 2014
   % cubic
-  N3 = x * ( 1 - x / l0 )^2                ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N4 = - ( 1 - x / l0 ) * ( x^2 ) / l0     ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N5 = ( 1 - 3 * x / l0) * ( 1 - x / l0 )  ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N6 = ( 3 * x / l0 - 2 ) * ( x / l0 )	   ; % Eq.(37)  T-N Le J.-M. Battini et al 2014
-  N7 = N3 + N4 		                         ;
-  N8 = N5 + N6 -1		                       ; 
+  N3 = x * (1 - x / l0)^2; % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N4 = -(1 - x / l0) * (x^2) / l0; % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N5 = (1 - 3 * x / l0) * (1 - x / l0); % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N6 = (3 * x / l0 - 2) * (x / l0); % Eq.(37)  T-N Le J.-M. Battini et al 2014
+  N7 = N3 + N4;
+  N8 = N5 + N6 - 1;
 
 end

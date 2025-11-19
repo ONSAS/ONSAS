@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,17 +15,19 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function Mat = myCell2Mat( Cell )
+function Mat = myCell2Mat(Cell)
 
-if iscell( Cell )
-  nCellRows = size(  Cell,      1 ) ;
-  Mat       = zeros( nCellRows, 1 ) ;
-  for i = 1:nCellRows
-    aux                   = Cell{i,1} ;
-    Mat ( i,1:length(aux)) = aux ;
+  if iscell(Cell)
+    [a, b] = size(Cell); % checks that either cell is a "column" or a "row"
+    assert(min(a, b) == 1);
+    nCellRows = max(a, b);
+    Mat       = zeros(nCellRows, 1);
+    for i = 1:nCellRows
+      aux                   = Cell{i};
+      Mat (i, 1:length(aux)) = aux;
+    end
+  elseif ismatrix(Cell)
+    Mat = Cell;
+  else
+    error('check ConecCell');
   end
-elseif ismatrix( Cell )
-  Mat = Cell ;
-else
-  error('check ConecCell')
-end

@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -18,209 +18,215 @@
 % This functions performs the iteration for the computations of the state in
 % the next time step using the numerical method and parameters provided by the
 % user.
-function modelNextSol = timeStepIteration( modelCurrSol, modelProperties, BCsData ) ;
+function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData)
 
-% global booleanConverged
-% global timeIndex
+  global plastic_values1
+  global plastic_values2
 
-global plastic_values1
-global plastic_values2
+  % assign current time (t) variables
+  % ---------------------------------
+  Ut         = modelCurrSol.U;
+  Udott = modelCurrSol.Udot;
+  Udotdott = modelCurrSol.Udotdot;
+  convDeltau = modelCurrSol.convDeltau;
+  currLoadFactorsVals = modelCurrSol.currLoadFactorsVals;
 
-% assign current time (t) variables
-% ---------------------------------
-Ut         = modelCurrSol.U ; Udott = modelCurrSol.Udot ; Udotdott = modelCurrSol.Udotdot ;
-convDeltau = modelCurrSol.convDeltau ;
-currLoadFactorsVals = modelCurrSol.currLoadFactorsVals ;
+  % stability analysis
+  % -----------------------------------------------------------
+  stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag;
+  if ~(stabilityAnalysisFlag == 0)
+    error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');
+    % reduced tangent matrix of previous time for nonlinear buckling analysis
+    KTtred = modelCurrSol.systemDeltauMatrix;
+  end
 
-% stability analysis
-% -----------------------------------------------------------
-stabilityAnalysisFlag = modelProperties.analysisSettings.stabilityAnalysisFlag ;
-if ~(stabilityAnalysisFlag==0)
-  error(' stability analysis pending: see issue https://github.com/ONSAS/ONSAS/issues/351');
-  % reduced tangent matrix of previous time for nonlinear buckling analysis
-  KTtred = modelCurrSol.systemDeltauMatrix ;
-end
+  % update time and set candidate displacements and derivatives
+  % -----------------------------------------------------------
+  if isempty(modelProperties.analysisSettings.Utp10)
+    Utp1k = Ut;
+  else
+    error('Add case for several times.');
+  end
 
-% update time and set candidate displacements and derivatives
-% -----------------------------------------------------------
-if isempty( modelProperties.analysisSettings.Utp10 )
-  Utp1k = Ut ;
-else
-  error('Add case for several times.')
-end
+  [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
+                                                 Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
 
-[ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
-  Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
+  % compute RHS for initial guess Utp1 and in next time step
+  % --------------------------------------------------------
+  if strcmp(modelProperties.analysisSettings.methodName, 'arcLength') == 1
+    nextLoadFactorsVals = currLoadFactorsVals;
+    args = argsAL(modelProperties.analysisSettings, length(convDeltau), BCsData.neumDofs, modelCurrSol.timeIndex);
+  else
+    args = [];
+    nextLoadFactorsVals = [];
+  end
 
-% compute RHS for initial guess Utp1 and in next time step
-% --------------------------------------------------------
-if strcmp( modelProperties.analysisSettings.methodName, 'arcLength') == 1
-  nextLoadFactorsVals = currLoadFactorsVals ;
-  args = argsAL(modelProperties.analysisSettings, length(convDeltau), BCsData.neumDofs, modelCurrSol.timeIndex) ;
-else
-  args = [] ;
-  nextLoadFactorsVals = [] ;
-end
+  % current system variables
+  % ----------------------
+  systemDeltauRHS    = modelCurrSol.systemDeltauRHS;
+  systemDeltauMatrix = modelCurrSol.systemDeltauMatrix;
+  previousStateCell  = modelCurrSol.previousStateCell;
 
-% current system variables
-% ----------------------
-systemDeltauRHS    = modelCurrSol.systemDeltauRHS    ;
-systemDeltauMatrix = modelCurrSol.systemDeltauMatrix ;
-previousStateCell  = modelCurrSol.previousStateCell  ;
-
-% --- assemble system of equations ---
-
-[ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
-
-booleanConverged = false ;
-dispIters        = 0     ;
-currDeltau       = zeros( length( BCsData.neumDofs ), 1 ) ;
-
-% disp(' ==========================================================') ;
-% disp(' /\  /\  /\  /\  /\  BEGIN NEW ITERATION /\  /\  /\  /\  /\') ;
-
-while  booleanConverged == 0
-
-  %fprintf(' ============== new iteration ====================\n')
-  dispIters = dispIters + 1 ;
-
-% disp(' =================== ||  ITERATION N || ===================') ;
-
-  % solve system
-  [ deltaured, nextLoadFactorsVals ] = computeDeltaU( systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals , currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args ) ;
-
-  % updates: model variables and computes internal forces ---
-  [Utp1k, currDeltau] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau ) ;
-
-  % --- update next time magnitudes ---
-  [ Udottp1k, Udotdottp1k, nextTime ] = updateTime( ...
-    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime ) ;
+  % ===========================================================================================================
+  % ===========================================================================================================
+  rotMatCell = modelCurrSol.rotMatCell;
+  % ===========================================================================================================
+  % ===========================================================================================================
 
   % --- assemble system of equations ---
-  [ systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices ] = system_assembler( modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell ) ;
+  [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
 
-  % --- check convergence ---
-  [ booleanConverged, stopCritPar, deltaErrLoad, normFext ] = convergenceTest( modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:,1) ) ;
-  % ---------------------------------------------------
+  booleanConverged = false;
+  dispIters        = 0;
+  currDeltau       = zeros(length(BCsData.neumDofs), 1);
 
   % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
   fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
-  % --- prints iteration info in file ---
-  printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured) ], fnormsGlobal ) ;
+  while  booleanConverged == 0
 
-end % iteration while
-% --------------------------------------------------------------------
+    % fprintf(' ============== new iteration ====================\n')
+    dispIters = dispIters + 1;
 
-% disp( '=================== ||  END ITERATION N || ===================') ;
+    % solve system
+    [deltaured, nextLoadFactorsVals] = computeDeltaU(systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals, currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args);
 
-Utp1       = Utp1k ;
-Udottp1    = Udottp1k ;
-Udotdottp1 = Udotdottp1k ;
 
-% computes KTred at converged Uk
-KTtp1red = systemDeltauMatrix ;
+    % updates: model variables and computes internal forces ---
+    [Utp1k, currDeltau, rotMatCell] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau, rotMatCell);
 
-% compute stress at converged state
-[~, Stresstp1, ~, localInternalForces, matFint, stateCellnp1 ] = assembler ( modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [ 0 1 0 1 ], modelProperties.nodalDispDamping, nextTime, previousStateCell ) ;
+    
+    % --- update next time magnitudes ---
+    [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
+                                                   Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
+    % --- assemble system of equations ---
+    [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
 
-if length(plastic_values1) == 0
-  plastic_values1 = zeros(1,11) ;
-  plastic_values2 = zeros(1,11) ;
-end
+    % --- check convergence ---
+    [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest(modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:, 1));
+    % ---------------------------------------------------
 
-%{
-plastic_values1 = [ plastic_values1 ; ...
-                   stateCellnp1(1,:)] ;
-plastic_values2 = [ plastic_values2 ; ...
-                   stateCellnp1(2,:)] ;
-%}
+    % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
+    fnormsGlobal = [modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime];
 
-printSolverOutput( modelProperties.outputDir, modelProperties.problemName, [ 2 (modelCurrSol.timeIndex)+1 nextTime dispIters stopCritPar ] ,[]) ;
+    % --- prints iteration info in file ---
+    printSolverOutput(modelProperties.outputDir, modelProperties.problemName, [1 norm(nextLoadFactorsVals) dispIters deltaErrLoad norm(deltaured)], fnormsGlobal);
 
-if stabilityAnalysisFlag == 2
-  [ nKeigpos, nKeigneg, factorCrit ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-elseif stabilityAnalysisFlag == 1
-  [ nKeigpos, nKeigneg ] = stabilityAnalysis ( KTtred, KTtp1red, currLoadFactor, nextLoadFactor ) ;
-  factorCrit = 0;
-else
-  nKeigpos = 0;  nKeigneg = 0; factorCrit = 0 ;
-end
+  end % iteration while
+  % --------------------------------------------------------------------
 
-% --- stores next step values ---
-U          = Utp1 ;
-Udot       = Udottp1  ;
-Udotdot    = Udotdottp1 ;
-convDeltau = Utp1 - Ut ;
-%
-Stress     = Stresstp1 ;
+  Utp1       = Utp1k;
+  Udottp1    = Udottp1k;
+  Udotdottp1 = Udotdottp1k;
 
-timeIndex  = modelCurrSol.timeIndex + 1 ;
+  % computes KTred at converged Uk
+  KTtp1red = systemDeltauMatrix;
 
-currTime   = nextTime ;
+  % compute stress at converged state
+  [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, nextTime, previousStateCell, rotMatCell);
 
-timeStepStopCrit = stopCritPar ;
-timeStepIters = dispIters ;
+  printSolverOutput(modelProperties.outputDir, modelProperties.problemName, [2 (modelCurrSol.timeIndex) + 1 nextTime dispIters stopCritPar], []);
 
-%~ for i = 1:size(Stress,1)
-	%~ previousStateCell(i,1) = {Stress(i,:)} ;
-%~ end
+  if length(plastic_values1) == 0
+    plastic_values1 = zeros(1,11) ;
+    plastic_values2 = zeros(1,11) ;
+  end
 
-%~ previousStateCell(:,2) = strain_vec ;
-%~ previousStateCell(:,3) = acum_plas_strain_vec ;
-%~ previousStateCell(:,4) = params_plastic_2Dframe ;
+  if stabilityAnalysisFlag == 2
+    [nKeigpos, nKeigneg, factorCrit] = stabilityAnalysis (KTtred, KTtp1red, currLoadFactor, nextLoadFactor);
+  elseif stabilityAnalysisFlag == 1
+    [nKeigpos, nKeigneg] = stabilityAnalysis (KTtred, KTtp1red, currLoadFactor, nextLoadFactor);
+    factorCrit = 0;
+  else
+    nKeigpos = 0;
+    nKeigneg = 0;
+    factorCrit = 0;
+  end
 
-modelNextSol = construct_modelSol( timeIndex, currTime, U , Udot, ...
+  % --- stores next step values ---
+  U          = Utp1;
+  Udot       = Udottp1;
+  Udotdot    = Udotdottp1;
+  convDeltau = Utp1 - Ut;
+  %
+  Stress     = Stresstp1;
+
+  timeIndex  = modelCurrSol.timeIndex + 1;
+
+  currTime   = nextTime;
+
+  timeStepStopCrit = stopCritPar;
+  timeStepIters = dispIters;
+
+  for i = 1:size(Stress, 1)
+    previousStateCell(i, 1) = {Stress(i, :)};
+  end
+
+  previousStateCell(:, 2) = strain_vec;
+  previousStateCell(:, 3) = acum_plas_strain_vec;
+
+  modelNextSol = constructModelSol(timeIndex, currTime, U, Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, stateCellnp1 ) ;
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, rotMatCell);
 
-% ==============================================================================
-% ==============================================================================
-function [ Udottp1, Udotdottp1, nextTime ] = updateTime(Ut, Udott, Udotdott, Uk, analysisSettings, currTime )
+  % ==============================================================================
+  % ==============================================================================
+function [Udottp1, Udotdottp1, nextTime] = updateTime(Ut, Udott, Udotdott, Uk, analysisSettings, currTime)
 
-  nextTime   = currTime + analysisSettings.deltaT                     ;
+  nextTime   = currTime + analysisSettings.deltaT;
 
-  if strcmp( analysisSettings.methodName, 'newmark') || strcmp( analysisSettings.methodName, 'alphaHHT' )
+  if strcmp(analysisSettings.methodName, 'newmark') || strcmp(analysisSettings.methodName, 'alphaHHT')
 
-    deltaT = analysisSettings.deltaT ;
+    deltaT = analysisSettings.deltaT;
 
-    if strcmp( analysisSettings.methodName, 'alphaHHT' )
-      alphaHHT = analysisSettings.alphaHHT ;
-      deltaNM  = (1-2*alphaHHT)/2 ;
-      alphaNM  = (1-alphaHHT)^2/4 ;
+    if strcmp(analysisSettings.methodName, 'alphaHHT')
+      alphaHHT = analysisSettings.alphaHHT;
+      deltaNM  = (1 - 2 * alphaHHT) / 2;
+      alphaNM  = (1 - alphaHHT)^2 / 4;
     else
-      deltaNM  = analysisSettings.deltaNM ;
-      alphaNM  = analysisSettings.alphaNM ;
+      deltaNM  = analysisSettings.deltaNM;
+      alphaNM  = analysisSettings.alphaNM;
     end
 
-    Udotdottp1 = 1.0/( alphaNM * (deltaT)^2 ) * ( Uk - Ut ) - 1.0/( alphaNM * deltaT ) * Udott - ( 1.0/ ( alphaNM * 2 ) - 1 ) * Udotdott ;
+    Udotdottp1 = 1.0 / (alphaNM * (deltaT)^2) * (Uk - Ut) - 1.0 / (alphaNM * deltaT) * Udott - (1.0 / (alphaNM * 2) - 1) * Udotdott;
 
-    Udottp1    = Udott + ( ( 1 - deltaNM ) * Udotdott + deltaNM * Udotdottp1 ) * deltaT    ;
+    Udottp1    = Udott + ((1 - deltaNM) * Udotdott + deltaNM * Udotdottp1) * deltaT;
 
   else
-    Udotdottp1 = Udotdott ;
-    Udottp1    = Udott ;
+    Udotdottp1 = Udotdott;
+    Udottp1    = Udott;
   end
 
-% ==============================================================================
-% update Uiter
-% ==============================================================================
+  % ==============================================================================
+  % update Uiter
+  % ==============================================================================
 
-function [Uk, currDeltau] = updateUiter(Uk, deltaured, neumdofs, currDeltau )
-  Uk( neumdofs ) = Uk( neumdofs ) + deltaured ;
-  currDeltau     = currDeltau     + deltaured ;
+function [Uk, currDeltau, rotMatCell] = updateUiter(Uk, deltaured, neumdofs, currDeltau, rotMatCell)
+  Uk(neumdofs) = Uk(neumdofs) + deltaured;
+  currDeltau     = currDeltau     + deltaured;
+  deltau = zeros(size(Uk, 1), 1);
+  deltau(neumdofs) = deltaured;
+  nnodes = size(Uk, 1) / 6;
+  % for i = 1:nnodes
+  %   rotMat = rotMatCell{i};
+  %   dofs = (i-1)*6 + (2:2:6);
+  %   rot_i = deltau(dofs);
+  %   rotMatCell(i) = expm(skew(rot_i)) * rotMat;
+  %   rot_i = Uk(dofs);
+  %   rotMatCell(i) = expm(skew(rot_i));
+  % end
 
-function vec = antiSkew( mat )
-  vec = [ mat(3,2); mat(1,3); mat(2,1) ] ;
+function vec = antiSkew(mat)
+  vec = [mat(3, 2); mat(1, 3); mat(2, 1)];
 
 function args = argsAL(analysisSettings, len, neumDofs, timeIndex)
-  arcLengthNorm = zeros( len ) ;
-  arcLengthNorm(1:2:end) = 1 ;
-  arcLengthNorm = arcLengthNorm(neumDofs) ;
-  if length( analysisSettings.incremArcLen ) > 1
-    incremArcLen = analysisSettings.incremArcLen(timeIndex) ;
+  arcLengthNorm = zeros(len);
+  arcLengthNorm(1:2:end) = 1;
+  arcLengthNorm = arcLengthNorm(neumDofs);
+  if length(analysisSettings.incremArcLen) > 1
+    incremArcLen = analysisSettings.incremArcLen(timeIndex);
   else
-    incremArcLen = analysisSettings.incremArcLen ;
+    incremArcLen = analysisSettings.incremArcLen;
   end
-  args = {arcLengthNorm; incremArcLen} ;
+  args = {arcLengthNorm; incremArcLen};

@@ -1,4 +1,4 @@
-% Copyright 2024, ONSAS Authors (see documentation)
+% Copyright 2025, ONSAS Authors (see documentation)
 %
 % This file is part of ONSAS.
 %
@@ -15,55 +15,55 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function  [ R0, Rr, locDisp ] = elementBeamRotData( xs, Ue ) ;
+function  [R0, Rr, locDisp] = elementBeamRotData(xs, Ue)
 
-  assert( iscolumn( xs ), 'the coordinates must be provided in a column vector.' )
+  assert(iscolumn(xs), 'the coordinates must be provided in a column vector.');
 
   % global thetas
-  tg1 = Ue( 2:2:6  ) ;
-  tg2 = Ue( 8:2:12 ) ;
+  tg1 = Ue(2:2:6);
+  tg2 = Ue(8:2:12);
 
   % rotation matrices
-  Rg1 = expon( tg1 ) ;
-  Rg2 = expon( tg2 ) ;
+  Rg1 = expon(tg1);
+  Rg2 = expon(tg2);
 
-  x21 = xs(4:6)    - xs(1:3)   ;
-  d21 = Ue(7:2:11) - Ue(1:2:5) ;
+  x21 = xs(4:6)    - xs(1:3);
+  d21 = Ue(7:2:11) - Ue(1:2:5);
 
-  refLength = norm( x21       ) ;
-  defLength = norm( x21 + d21 ) ;
+  refLength = norm(x21);
+  defLength = norm(x21 + d21);
 
   % rotation matrix to reference configuration
-  R0 = beamRefConfRotMat( x21 ) ;
+  R0 = beamRefConfRotMat(x21);
 
   % deformed x axis
-  e1 = ( x21 + d21 ) / defLength   ;
+  e1 = (x21 + d21) / defLength;
 
-  q1 = Rg1 * R0 * [0 1 0]'  ;
-  q2 = Rg2 * R0 * [0 1 0]'  ;
-  q  = ( q1 + q2 ) / 2      ;
+  q1 = Rg1 * R0 * [0 1 0]';
+  q2 = Rg2 * R0 * [0 1 0]';
+  q  = (q1 + q2) / 2;
 
   % deformed z local axis
-  e3 = cross ( e1, q ) ;
-  e3 = e3 / norm( e3 ) ; % normalization
+  e3 = cross (e1, q);
+  e3 = e3 / norm(e3); % normalization
 
   % deformed y local axis
-  e2 = cross ( e3, e1 );
+  e2 = cross (e3, e1);
 
   % rotation matrix
-  Rr = [ e1 e2 e3 ] ;
+  Rr = [e1 e2 e3];
   % -------------------
 
   % --- local displacements ---
   % axial displacement
-  ul  = defLength - refLength ;
+  ul  = defLength - refLength;
 
   % local rotations
   % Rr * Re1 * u = Rg1 * R0 * u
-  Re1 = Rr' * Rg1 * R0 ;
-  Re2 = Rr' * Rg2 * R0 ;
+  Re1 = Rr' * Rg1 * R0;
+  Re2 = Rr' * Rg2 * R0;
 
-  tl1 = logar( Re1 ) ;
-  tl2 = logar( Re2 ) ;
+  tl1 = logar(Re1);
+  tl2 = logar(Re2);
 
-  locDisp = [ ul tl1' tl2' ] ;
+  locDisp = [ul tl1' tl2'];
