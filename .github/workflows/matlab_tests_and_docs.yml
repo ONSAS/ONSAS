@@ -15,7 +15,7 @@ jobs:
         with:
           command: cd test, runTestProblemsLocal
       - name: extract markdown from example scripts
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v1
         with:
           command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
