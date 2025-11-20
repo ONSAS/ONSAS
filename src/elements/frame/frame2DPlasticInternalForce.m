@@ -70,8 +70,8 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
   thetavector = Uvector([5, 6]);     % theta z
 
   % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-  xpi = [0 l / 2 l];
-  wpi = [1 / 3 4 / 3 1 / 3] * l * 0.5;
+  xpi = [0 0.5 l];
+  wpi = [(1 / 3) (4 / 3) (1 / 3)] * l * 0.5;
 
   npi = length(xpi);
 
@@ -113,14 +113,14 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
 
   if SH_boole_np1 == false
 
-    [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
+    [Mnp1, ~, ~] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
 
     [~, ind] = max(abs(Mnp1));
     xd_np1  = xpi(ind);
 
   else
 
-    [Mnp1, ~, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
+    [Mnp1, ~, ~] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
 
   end
 
@@ -134,15 +134,15 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
 
     % solve plastic bending step
 
-    [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1);
+    [kp_np1, xi1_np1, Cep_np1] = plasticHardeningStep(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Mnp1);
 
   else
 
-    [~, tM_np1, ~] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
+    [~, tM_np1, ~] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
 
     % solve softening step
 
-    [alfa_np1, xi2_np1, xdi_np1] = plastic_softening_step(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks);
+    [alfa_np1, xi2_np1, xdi_np1] = plasticSofteningStep(xd_n, alfa_n, xi2_n, tM_np1, l, E, Iy, Mu, Ks);
 
     Cep_np1 = ones(3, 1) * E * Iy;
 
@@ -151,7 +151,7 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
 
   end
 
-  [Mnp1, tM_np1, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
+  [Mnp1, tM_np1, Ghats] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd_np1, l, alfa_np1, kp_np1, wpi);
 
   % condition for the softening hinges activation / label SH_boole_np1 = true
   if SH_boole_np1 == false
@@ -173,7 +173,7 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
   % solve global equations
   % ==========================================================
 
-  [Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa_np1);
+  [Kfd, Kfalfa, Khd, Khalfa, Fint] = framePlasticMatrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa_np1);
 
   if SH_boole_np1 == true
     Kelement = Kfd - Kfalfa * Khalfa^(-1) * Khd;

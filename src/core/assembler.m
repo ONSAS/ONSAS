@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec, matFint, stateCellnp1] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec, frameStateCellnp1] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell, previousPlasticFrameState)
 
   global TZERO
 
@@ -66,12 +66,12 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     stressMat = [];
   end
 
-  % -------  matrix with internal forces per element -------------------
-  if matFintBool
-    matFint = zeros(nElems, 6 * 4);
-  else
-    matFint = [];
-  end
+  %% -------  matrix with internal forces per element -------------------
+  % if matFintBool
+  %  matFint = zeros(nElems, 6 * 4);
+  % else
+  %  matFint = [];
+  % end
 
   localInternalForces = struct();
 
@@ -212,12 +212,10 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
       elseif strcmp(modelName, 'plastic-2Dframe')
 
-        params_plastic_2Dframe(elem, :) = previousStateCell(elem, :);
-
         [fs, ks, fintLocCoord, aux] = frame2DPlasticInternalForce(elemNodesxyzRefCoords, ...
                                                                   elemCrossSecParams, ...
                                                                   modelParams, ...
-                                                                  elemDisps, params_plastic_2Dframe(elem, :), elem);
+                                                                  elemDisps, previousPlasticFrameState(elem, :), elem);
 
         Nx = 0;
         My = 0;
@@ -232,7 +230,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         Finte = fs{1};
         Ke = ks{1};
 
-        stateCellnp1(elem, :) = aux;
+        frameStateCellnp1(elem, :) = aux;
 
         if dynamicProblemBool
           [fs, ks] = frame_inertial_force(elemNodesxyzRefCoords, elemCrossSecParams, ...
