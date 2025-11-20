@@ -1,10 +1,27 @@
+% Copyright 2025, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
 % algorithm for the update of the internal variables for elastoplasticity with hardening
 % and for the computation of the moment in the bulk Mn1
 
 % displacements in time n + 1, dpn1 v1, v2, theta1, theta2, alpha, xd
 % plastic curvature in time n / kappa_plas_n
 
-function [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOF_semiAnalyticSol(v1, v2, theta1, theta2, xd, alfan, xin1, xin2, kappa_plas_n, Mc, My, Mu, kh1, kh2, Ks, E, Iy, l)
+function [kappa_plas_n1, xin11val, xin21val, alfan1, Mn1] = softHinge1DOFSemiAnalyticSol(v1, v2, theta1, theta2, xd, alfan, xin1, xin2, kappa_plas_n, Mc, My, Mu, kh1, kh2, Ks, E, Iy, l)
 
   % integration points
   x = [0 l / 2 l];

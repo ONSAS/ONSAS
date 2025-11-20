@@ -1,7 +1,24 @@
+% Copyright 2025, ONSAS Authors (see documentation)
+%
+% This file is part of ONSAS.
+%
+% ONSAS is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% ONSAS is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
+
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
 
-function [Mn, Fn, matdes] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks)
+function [Mn, Fn, matdes] = softHinge1DOFNumericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks)
 
   freedofs = [2 4 6]; % u2 v2 theta2
 
