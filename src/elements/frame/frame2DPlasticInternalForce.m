@@ -60,7 +60,7 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
   % Rotation of coordinates
   local2globalMats = beamParameters(elemNodesxyzRefCoords)';
   dofsconv = [1 1 + 6 3 3 + 6 6 6 + 6];
-  R = RotationMatrix(6, local2globalMats);
+  R = rotationMatrix(6, local2globalMats);
   RMat = R(dofsconv, dofsconv);
 
   Uvector = RMat' * elemDisps(dofsconv);
