@@ -81,7 +81,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   currDeltau       = zeros(length(BCsData.neumDofs), 1);
 
   % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
-  fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
+  %fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   while  booleanConverged == 0
 

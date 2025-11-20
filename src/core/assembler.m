@@ -15,17 +15,10 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-%mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-
-function [ fsCell, stressMat, tangMatsCell, localInternalForces, matFint, stateCellnp1 ] = assembler( Conec, elements, Nodes,...
-                                                           materials, KS, Ut, Udott, Udotdott,...
-                                                           analysisSettings, outputBooleans, nodalDispDamping,...
-                                                           timeVar, previousStateCell )
-
-global TZERO
-
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec, matFint, stateCellnp1] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
+
+  global TZERO
 
   % ====================================================================
   %  --- 1 declarations ---
