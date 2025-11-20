@@ -27,7 +27,7 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [Mnp1, tM, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
+function [Mnp1, tM, Ghats] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
 
   tM = 0;
   Ghats   = zeros(npi, 1);

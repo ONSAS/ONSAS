@@ -27,7 +27,7 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
+function [Kfd, Kfalfa, Khd, Khalfa, Fint] = framePlasticMatrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
 
   Kfd    = zeros(6, 6);
   Kfalfa = zeros(6, 1);
