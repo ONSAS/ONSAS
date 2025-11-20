@@ -27,50 +27,50 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
+function [Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
 
-Kfd    = zeros(6, 6) ;
-Kfalfa = zeros(6, 1) ;
-Khd    = zeros(1, 6) ;
-Khalfa = 0 ;
+  Kfd    = zeros(6, 6);
+  Kfalfa = zeros(6, 1);
+  Khd    = zeros(1, 6);
+  Khalfa = 0;
 
-Fint   = zeros(6, 1) ;
+  Fint   = zeros(6, 1);
 
-Bu = [-1/l 1/l] ;
+  Bu = [-1 / l 1 / l];
 
-for ip = 1:npi
+  for ip = 1:npi
 
-  N = bendingInterFuns (xpi(ip), l, 2) ;
+    N = bendingInterFuns (xpi(ip), l, 2);
 
-  Bv = [N(1) N(3)] ;
-  Btheta = [N(2) N(4)] ;
-  
-  Bd = [ Bu   0 0 0 0    ; ...
-         0  0 Bv  Btheta ] ;
+    Bv = [N(1) N(3)];
+    Btheta = [N(2) N(4)];
 
-  Kfdj     = Bd'*[E*A 0; 0 Cep_np1(ip)]*Bd ;
-  
-  Kfalfaj  = Bd'*[E*A 0; 0 Cep_np1(ip)]*[0 Ghats(ip)]' ;
-  
-  Khdj     = [0 Ghats(ip)]*[E*A 0; 0 Cep_np1(ip)]*Bd ;
-  
-  Khalfaj  = Ghats(ip)*Cep_np1(ip)*Ghats(ip) ;
-  
-  epsilon = Bu*uvector ;
-  
-  Fi      = Bd' * [E*A*epsilon; Mnp1(ip)] ;
+    Bd = [Bu   0 0 0 0; ...
+          0  0 Bv  Btheta];
 
-  % stiffness matrices / integration (Gauss-Lobatto)
-  Kfd    = Kfd    + Kfdj    * wpi(ip) ;
-  Kfalfa = Kfalfa + Kfalfaj * wpi(ip) ;
-  Khd    = Khd    + Khdj    * wpi(ip) ;
-  Khalfa = Khalfa + Khalfaj * wpi(ip) ;
+    Kfdj     = Bd' * [E * A 0; 0 Cep_np1(ip)] * Bd;
 
-  % internal forces / integration (Gauss-Lobatto)
-  Fint = Fint + Fi*wpi(ip) ;
+    Kfalfaj  = Bd' * [E * A 0; 0 Cep_np1(ip)] * [0 Ghats(ip)]';
 
-end
+    Khdj     = [0 Ghats(ip)] * [E * A 0; 0 Cep_np1(ip)] * Bd;
 
-Khalfa = Khalfa + Ks ;
+    Khalfaj  = Ghats(ip) * Cep_np1(ip) * Ghats(ip);
+
+    epsilon = Bu * uvector;
+
+    Fi      = Bd' * [E * A * epsilon; Mnp1(ip)];
+
+    % stiffness matrices / integration (Gauss-Lobatto)
+    Kfd    = Kfd    + Kfdj    * wpi(ip);
+    Kfalfa = Kfalfa + Kfalfaj * wpi(ip);
+    Khd    = Khd    + Khdj    * wpi(ip);
+    Khalfa = Khalfa + Khalfaj * wpi(ip);
+
+    % internal forces / integration (Gauss-Lobatto)
+    Fint = Fint + Fi * wpi(ip);
+
+  end
+
+  Khalfa = Khalfa + Ks;
 
 end

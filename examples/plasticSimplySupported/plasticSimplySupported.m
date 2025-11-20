@@ -17,135 +17,138 @@
 
 % =========================================================================
 
-close all ; clear ;
-addpath( genpath( [ pwd '/../../src'] ) ) ;
+close all;
+clear;
+addpath(genpath([pwd '/../../src']));
 
 % assumed XY plane
 
 % -------------------------------------------
 % scalar parameters
 % material
-EI  = 77650 ;       % KN.m^2
-kh1 = 29400 ;       % KN.m^2
-kh2 = 273 ;
-Ks  = -18000 ;      % KN.m
+EI  = 77650;       % KN.m^2
+kh1 = 29400;       % KN.m^2
+kh2 = 273;
+Ks  = -18000;      % KN.m
 
-nu = 0.3 ;          % Poisson's ratio
+nu = 0.3;          % Poisson's ratio
 
 % geometry
-l1  = 1.0 ;              % m
-l2  = 1.0 ;              % m
-ty = 0.3 ;              % width cross section
-tz = 0.4 ;              % height cross section
-Inertia = tz*ty^3/12 ;  % m^4
+l1  = 1.0;              % m
+l2  = 1.0;              % m
+ty = 0.3;              % width cross section
+tz = 0.4;              % height cross section
+Inertia = tz * ty^3 / 12;  % m^4
 
-E = EI/Inertia ;        % KN/m^2 [KPa]
+E = EI / Inertia;        % KN/m^2 [KPa]
 
-A  = ty*tz ;            % m^2
-Mc = 37.9 ;             % KN.m
-My = 268 ;
-Mu = 374 ;
+A  = ty * tz;            % m^2
+Mc = 37.9;             % KN.m
+My = 268;
+Mu = 374;
 
-materials             = struct() ;
-materials.modelName   = 'plastic-2Dframe' ;
-materials.modelParams = [ E Mc My Mu kh1 kh2 Ks nu ] ;
+materials             = struct();
+materials.modelName   = 'plastic-2Dframe';
+materials.modelParams = [E Mc My Mu kh1 kh2 Ks nu];
 
-Pc = Mc * (l1+l2)/(l1*l2)
+Pc = Mc * (l1 + l2) / (l1 * l2);
 
-deltac = Pc * (l2*((l1+l2)^2-l2^2)^(1.5) )/(9 *sqrt(3)*EI)
+deltac = Pc * (l2 * ((l1 + l2)^2 - l2^2)^(1.5)) / (9 * sqrt(3) * EI);
 
-elements             = struct() ;
-elements(1).elemType = 'node' ;
+elements             = struct();
+elements(1).elemType = 'node';
 
-elements(2).elemType = 'frame' ;
-elements(2).elemCrossSecParams = {'generic' ; [A 1 Inertia Inertia] } ;
+elements(2).elemType = 'frame';
+elements(2).elemCrossSecParams = {'generic'; [A 1 Inertia Inertia] };
 
-boundaryConds                  = {} ;
-boundaryConds(1).imposDispDofs = [ 1 2 3 4 5 ] ;
-boundaryConds(1).imposDispVals = [ 0 0 0 0 0 ] ;
+boundaryConds                  = {};
+boundaryConds(1).imposDispDofs = [1 2 3 4 5];
+boundaryConds(1).imposDispVals = [0 0 0 0 0];
 
-boundaryConds(2).loadsCoordSys = 'global' ;
-boundaryConds(2).loadsBaseVals = [ 0 0 -1 0 0 0 ] ;
-boundaryConds(2).loadsTimeFact = @(t) t ;
-boundaryConds(2).imposDispDofs = [ 2 4 5] ;
-boundaryConds(2).imposDispVals = [ 0 0 0 ] ;
+boundaryConds(2).loadsCoordSys = 'global';
+boundaryConds(2).loadsBaseVals = [0 0 -1 0 0 0];
+boundaryConds(2).loadsTimeFact = @(t) t;
+boundaryConds(2).imposDispDofs = [2 4 5];
+boundaryConds(2).imposDispVals = [0 0 0];
 
 % The coordinates of the nodes of the mesh are given by the matrix:
-mesh = {} ;
-num_elem = 2 ;
-xs = linspace(0,l1+l2,num_elem+1);
-mesh.nodesCoords = [ 0 0 0 ;  l1 0 0; l1+l2 0 0 ] ;
+mesh = {};
+num_elem = 2;
+xs = linspace(0, l1 + l2, num_elem + 1);
+mesh.nodesCoords = [0 0 0;  l1 0 0; l1 + l2 0 0];
 
-mesh.conecCell = {} ;
+mesh.conecCell = {};
 
-mesh.conecCell{ 1    , 1 } = [ 0 1 1  1 ] ; % node with fixed end support
-mesh.conecCell{ end+1, 1 } = [ 0 1 1  3 ] ; % node with fixed end support
-mesh.conecCell{ end+1, 1 } = [ 0 1 2  2 ] ; % loaded node
+mesh.conecCell{ 1, 1 } = [0 1 1  1]; % node with fixed end support
+mesh.conecCell{ end + 1, 1 } = [0 1 1  3]; % node with fixed end support
+mesh.conecCell{ end + 1, 1 } = [0 1 2  2]; % loaded node
 
-for k=1:num_elem
-    mesh.conecCell{ end+1, 1 } = [ 1 2 0 k k+1 ] ;
+for k = 1:num_elem
+  mesh.conecCell{ end + 1, 1 } = [1 2 0 k k + 1];
 end
 
-initialConds = {} ;
+initialConds = {};
 
-analysisSettings                    = {} ;
-analysisSettings.methodName         = 'arcLength' ;
-analysisSettings.deltaT             = 1 ;
+analysisSettings                    = {};
+analysisSettings.methodName         = 'arcLength';
+analysisSettings.deltaT             = 1;
 % analysisSettings.incremArcLen       = [1e-4*ones(1,10) 1e-5*ones(1,3000) 1e-4*ones(1,1000)] ;
-analysisSettings.incremArcLen       = [ deltac/10*ones(1,8) -deltac/10*ones(1,8)  deltac/10*ones(1,30) -deltac/10*ones(1,14) deltac/10*ones(1,180) +deltac/1000*ones(1,10) ] ;
-analysisSettings.finalTime          = length(analysisSettings.incremArcLen) ;
-analysisSettings.iniDeltaLamb       = 1 ;
-analysisSettings.posVariableLoadBC  = 2 ;
-analysisSettings.stopTolDeltau      = 1e-14 ;
-analysisSettings.stopTolForces      = 1e-8 ;
-analysisSettings.stopTolIts         = 30 ;
-analysisSettings.ALdominantDOF      = [6+3 -1] ;
+analysisSettings.incremArcLen       = [deltac / 10 * ones(1, 8) -deltac / 10 * ones(1, 8)  deltac / 10 * ones(1, 30) -deltac / 10 * ones(1, 14) deltac / 10 * ones(1, 180) +deltac / 1000 * ones(1, 10)];
+analysisSettings.finalTime          = length(analysisSettings.incremArcLen);
+analysisSettings.iniDeltaLamb       = 1;
+analysisSettings.posVariableLoadBC  = 2;
+analysisSettings.stopTolDeltau      = 1e-14;
+analysisSettings.stopTolForces      = 1e-8;
+analysisSettings.stopTolIts         = 30;
+analysisSettings.ALdominantDOF      = [6 + 3 -1];
 
-otherParams              = struct() ;
-otherParams.problemName  = 'plastic_2dframe' ;
+otherParams              = struct();
+otherParams.problemName  = 'plastic_2dframe';
 % otherParams.plots_format = 'vtk' ;
 
-[ modelCurrSol, modelProperties, BCsData ] = ONSAS_init( materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams ) ;
+[modelCurrSol, modelProperties, BCsData] = ONSAS_init(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 
-[matUs, loadFactorsMat, ~ ] = ONSAS_solve( modelCurrSol, modelProperties, BCsData ) ;
+[matUs, loadFactorsMat, ~] = ONSAS_solve(modelCurrSol, modelProperties, BCsData);
 
+girosUltimoNodo      = matUs((num_elem + 1) * 6, :);
+descensosNodoCargado = matUs(6 + 3, :);
+factorescarga        = loadFactorsMat(:, 2);
 
-girosUltimoNodo      = matUs((num_elem+1)*6,:) ;
-descensosNodoCargado = matUs(6+3,:) ;
-factorescarga        = loadFactorsMat(:,2) ;
+u_elem1 = matUs([3 6 3 + 6 6 + 6], end);
+u_elem2 = matUs(6 + [3 6 3 + 6 6 + 6], end);
 
-u_elem1 = matUs(   [3 6 3+6 6+6],end);
-u_elem2 = matUs( 6+[3 6 3+6 6+6],end);
-
-[xs1, deformada1] = forma(u_elem1,.01,l1/2,l1);
-[xs2, deformada2] = forma(u_elem2,0,0,l2);
-xs2=xs2+l1;
+[xs1, deformada1] = forma(u_elem1, .01, l1 / 2, l1);
+[xs2, deformada2] = forma(u_elem2, 0, 0, l2);
+xs2 = xs2 + l1;
 % ----------------------------------------------------------------------------------
 
 % Plots
 
-lw = 2 ; ms = 1 ; plotfontsize = 14 ;
+lw = 2;
+ms = 1;
+plotfontsize = 14;
 
-figure('Name','giros','NumberTitle','off') ;
-grid on
-plot( girosUltimoNodo , factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+figure('Name', 'giros', 'NumberTitle', 'off');
+grid on;
+plot(girosUltimoNodo, factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
 
-figure('Name','desplazamientos/load fact','NumberTitle','off') ;
-grid on
-plot( descensosNodoCargado, factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+figure('Name', 'desplazamientos/load fact', 'NumberTitle', 'off');
+grid on;
+plot(descensosNodoCargado, factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
 
-figure('Name','desplazamientos/tiempo','NumberTitle','off') ;
-grid on
-plot( descensosNodoCargado, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+figure('Name', 'desplazamientos/tiempo', 'NumberTitle', 'off');
+grid on;
+plot(descensosNodoCargado, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
 
-figure('Name','load factors solo','NumberTitle','off') ;
-grid on
-plot( factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+figure('Name', 'load factors solo', 'NumberTitle', 'off');
+grid on;
+plot(factorescarga, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
 
-figure('Name','deformada','NumberTitle','off') ;
-grid on, hold on
-plot( xs1, deformada1, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
-plot( xs2, deformada2, '-s', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120") ;
+figure('Name', 'deformada', 'NumberTitle', 'off');
+grid on;
+hold on;
+plot(xs1, deformada1, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
+plot(xs2, deformada2, '-s', 'linewidth', lw, 'markersize', ms, "Color", "#EDB120");
 
 %{
 
@@ -159,7 +162,6 @@ plot(abs(descensosUltimoNodo_5), factorescarga_5, '-x', 'linewidth', lw, 'marker
 
 plot(abs(girosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#0072BD") ;
 plot(abs(descensosUltimoNodo_10), factorescarga_10, '-x', 'linewidth', lw, 'markersize', ms, "Color", "#D95319") ;
-
 
 labx = xlabel('Generalized displacements in free node (m, rad)') ;
 laby = ylabel('Forces') ;

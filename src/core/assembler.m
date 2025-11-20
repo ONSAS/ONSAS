@@ -209,17 +209,19 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
           Ce = ks{2};
           Mmase = ks{3};
         end
-      
-      elseif strcmp( modelName, 'plastic-2Dframe')
 
-        params_plastic_2Dframe(elem,:) = previousStateCell(elem,:) ;
+      elseif strcmp(modelName, 'plastic-2Dframe')
 
-        [ fs, ks, fintLocCoord, aux ] = frame2D_plastic_internal_force( elemNodesxyzRefCoords , ...
-                                                                      elemCrossSecParams    , ...
-                                                                      modelParams , ...
-                                                                      elemDisps , params_plastic_2Dframe(elem,:), elem) ;
+        params_plastic_2Dframe(elem, :) = previousStateCell(elem, :);
 
-        Nx = 0;   My = 0;   Mz = fintLocCoord(1) ;
+        [fs, ks, fintLocCoord, aux] = frame2D_plastic_internal_force(elemNodesxyzRefCoords, ...
+                                                                       elemCrossSecParams, ...
+                                                                       modelParams, ...
+                                                                       elemDisps, params_plastic_2Dframe(elem, :), elem);
+
+        Nx = 0;
+        My = 0;
+        Mz = fintLocCoord(1);
 
         localInternalForces(elem).Mz2 = fintLocCoord(2);
         localInternalForces(elem).Mz3 = fintLocCoord(3);
@@ -227,20 +229,22 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         localInternalForces(elem).Mz_integrado_izq  = fintLocCoord(5);
         localInternalForces(elem).Mz_integrado_der  = fintLocCoord(6);
 
-        Finte = fs{1} ;  Ke = ks{1} ;
+        Finte = fs{1};
+        Ke = ks{1};
 
-        stateCellnp1(elem,:) = aux ;
-        
+        stateCellnp1(elem, :) = aux;
+
         if dynamicProblemBool
-          [ fs, ks  ] = frame_inertial_force( elemNodesxyzRefCoords , elemCrossSecParams, ...
-                                              [ 1 modelParams ], elemDisps, ...
-                                              dotdispsElem, dotdotdispsElem  , ...
-                                              density, massMatType, analysisSettings ) ;
+          [fs, ks] = frame_inertial_force(elemNodesxyzRefCoords, elemCrossSecParams, ...
+                                             [1 modelParams], elemDisps, ...
+                                             dotdispsElem, dotdotdispsElem, ...
+                                             density, massMatType, analysisSettings);
 
-
-          Fmase = fs{3} ; Ce = ks{2} ; Mmase = ks{3} ;
+          Fmase = fs{3};
+          Ce = ks{2};
+          Mmase = ks{3};
         end
-      
+
       else
         error('wrong modelName for frame element.');
       end

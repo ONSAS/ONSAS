@@ -27,30 +27,30 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [Mnp1, tM, Ghats] = frame_plastic_IPmoments( E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
+function [Mnp1, tM, Ghats] = frame_plastic_IPmoments(E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
 
-tM = 0 ;
-Ghats   = zeros(npi,1) ;
-Mnp1    = zeros(npi,1) ;
+  tM = 0;
+  Ghats   = zeros(npi, 1);
+  Mnp1    = zeros(npi, 1);
 
-for ip = 1:npi
+  for ip = 1:npi
 
-  N = bendingInterFuns (xpi(ip), l, 2) ;
+    N = bendingInterFuns (xpi(ip), l, 2);
 
-  Bv = [N(1) N(3)] ;
-  Btheta = [N(2) N(4)] ;
-  
-  Ghats(ip) = -1/l*(1+3*(1-2*xd/l)*(1-2*xpi(ip)/l)) ;
+    Bv = [N(1) N(3)];
+    Btheta = [N(2) N(4)];
 
-  khatxpi = Bv*vvector + Btheta*thetavector + Ghats(ip)*alfa ;
-  kenxpi = khatxpi - kp(ip) ;
+    Ghats(ip) = -1 / l * (1 + 3 * (1 - 2 * xd / l) * (1 - 2 * xpi(ip) / l));
 
-  % moments Mn at integration points, corresponding to time n + 1
-  Mnp1(ip) = E*Iy*kenxpi ;
+    khatxpi = Bv * vvector + Btheta * thetavector + Ghats(ip) * alfa;
+    kenxpi = khatxpi - kp(ip);
 
-  % tM calculated with the moments Mn corresponding to time n + 1
-  tM = tM - Ghats(ip)*Mnp1(ip)*wpi(ip) ;
-  
-end
+    % moments Mn at integration points, corresponding to time n + 1
+    Mnp1(ip) = E * Iy * kenxpi;
+
+    % tM calculated with the moments Mn corresponding to time n + 1
+    tM = tM - Ghats(ip) * Mnp1(ip) * wpi(ip);
+
+  end
 
 end

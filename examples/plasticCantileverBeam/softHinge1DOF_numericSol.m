@@ -1,128 +1,128 @@
 % numerical example
 % cantilever beam loaded with a vertical force at the free end
 
-function [ Mn, Fn, matdes ] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks)
-        
-freedofs = [2 4 6]; % u2 v2 theta2
+function [Mn, Fn, matdes] = softHinge1DOF_numericSol(l, A, E, Inertia, Mc, My, Mu, kh1, kh2, Ks)
 
-% at the beginning..., there was no softening hinge
-soft_hinge_boolean = false ;
+  freedofs = [2 4 6]; % u2 v2 theta2
 
-% Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-npi = 3 ;
-xpi = [0 l/2 l] ;
-wpi = [1/3 4/3 1/3] * l * 0.5 ;
+  % at the beginning..., there was no softening hinge
+  soft_hinge_boolean = false;
 
-nu   = 0.3 ;
-tol1 = 1e-8;
-tol2 = 1e-8 ;
-tolk = 15 ;
+  % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
+  npi = 3;
+  xpi = [0 l / 2 l];
+  wpi = [1 / 3 4 / 3 1 / 3] * l * 0.5;
 
-% initial values
-dn   = [0 0 0 0 0 0]' ;
-Fint = [0 0 0 0 0 0]' ;
-tM   = 0 ;
+  nu   = 0.3;
+  tol1 = 1e-8;
+  tol2 = 1e-8;
+  tolk = 15;
 
-kpn  = zeros(npi,1) ;
-xin1 = zeros(npi,1) ;
-xin2 = 0 ;
+  % initial values
+  dn   = [0 0 0 0 0 0]';
+  Fint = [0 0 0 0 0 0]';
+  tM   = 0;
 
-kpn1  = zeros(npi,1) ;
-xin11 = zeros(npi,1) ;
-xin21 = 0 ;
+  kpn  = zeros(npi, 1);
+  xin1 = zeros(npi, 1);
+  xin2 = 0;
 
-khat1 = zeros(npi,1) ;
+  kpn1  = zeros(npi, 1);
+  xin11 = zeros(npi, 1);
+  xin21 = 0;
 
-M1 = zeros(npi,1) ;
-Fn = zeros(npi,1) ;
+  khat1 = zeros(npi, 1);
 
-alfan = 0 ;
+  M1 = zeros(npi, 1);
+  Fn = zeros(npi, 1);
 
-xd = 0 ;
-xdi = 1 ;
+  alfan = 0;
 
-Final_force = 205 ; % value of the final force
+  xd = 0;
+  xdi = 1;
 
-load_case = [0 0 0 1 0 0]' ; % load applied in vertical direction (Y)
-load_factors = 0:Final_force ;
+  Final_force = 205; % value of the final force
 
-% --- element params ---
-elemParams = [l A Inertia] ;
+  load_case = [0 0 0 1 0 0]'; % load applied in vertical direction (Y)
+  load_factors = 0:Final_force;
 
-% --- elastoplastic params ---
-elastoplasticParams = [E Mc My Mu kh1 kh2 Ks] ;
+  % --- element params ---
+  elemParams = [l A Inertia];
 
-matdes = zeros (6, Final_force+1) ;
+  % --- elastoplastic params ---
+  elastoplasticParams = [E Mc My Mu kh1 kh2 Ks];
 
-matdes(:,1) = dn ;
+  matdes = zeros (6, Final_force + 1);
 
-gxin = zeros(Final_force, 1) ;
-gxin2 = zeros(Final_force, 1) ;
-gkpn = zeros(Final_force, 1) ;
+  matdes(:, 1) = dn;
 
-Mn = zeros(Final_force, 1) ;
-TM = zeros(Final_force, 1) ;
+  gxin = zeros(Final_force, 1);
+  gxin2 = zeros(Final_force, 1);
+  gkpn = zeros(Final_force, 1);
 
-Alf = zeros(Final_force, 1) ;
+  Mn = zeros(Final_force, 1);
+  TM = zeros(Final_force, 1);
 
-for ind = 2:length(load_factors)
+  Alf = zeros(Final_force, 1);
 
-    curr_load_factor = load_factors(ind) ;
+  for ind = 2:length(load_factors)
 
-    Fext = load_case * curr_load_factor ;
+    curr_load_factor = load_factors(ind);
 
-    dnk = matdes(:,ind-1) ;
+    Fext = load_case * curr_load_factor;
+
+    dnk = matdes(:, ind - 1);
 
     % iteration vars
-    converged_boolean = false ;
-    k = 0 ; % set iterations zero
+    converged_boolean = false;
+    k = 0; % set iterations zero
 
-    gxin(ind-1,1)   = xin1(1)   ;
-    gxin2(ind-1,1)  = xin2      ;
-    gkpn(ind-1,1)   = kpn(1)    ;
-    Mn(ind-1,1)     = M1(1)     ;
-    TM(ind-1,1)     = tM        ;
-    Fn(ind-1,1)     = Fint(4)   ;
-    Alf(ind-1,1)    = alfan     ;
+    gxin(ind - 1, 1)   = xin1(1);
+    gxin2(ind - 1, 1)  = xin2;
+    gkpn(ind - 1, 1)   = kpn(1);
+    Mn(ind - 1, 1)     = M1(1);
+    TM(ind - 1, 1)     = tM;
+    Fn(ind - 1, 1)     = Fint(4);
+    Alf(ind - 1, 1)    = alfan;
 
     while converged_boolean == false && k < tolk && tM >= 0
 
-        k = k + 1 ;
+      k = k + 1;
 
-        [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, xdi, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, xdi, tM, elemParams, elastoplasticParams) ;
+      [soft_hinge_boolean, Fint, M1, Kelement, kpn1, xin11, xin21, alfan1, xd, xdi, tM] = framePlastic(soft_hinge_boolean, dnk, kpn, xin1, xin2, alfan, xd, xdi, tM, elemParams, elastoplasticParams);
 
-        residualForce = Fext - Fint ;
+      residualForce = Fext - Fint;
 
-        Krelement = Kelement(freedofs,freedofs) ;
- 
-        residualForceRed = residualForce(freedofs) ;
-      
-        % system of equilibrium equations
+      Krelement = Kelement(freedofs, freedofs);
 
-        deltadred = Krelement\residualForceRed ;
+      residualForceRed = residualForce(freedofs);
 
-        % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
-        
-        deltad = zeros(6,1) ;      
-        deltad(freedofs) = deltadred ;
+      % system of equilibrium equations
 
-        dnk1 = dnk + deltad ;
+      deltadred = Krelement \ residualForceRed;
 
-        dnk     = dnk1   ;
+      % /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
-        kpn     = kpn1   ;
-        xin1    = xin11  ;
+      deltad = zeros(6, 1);
+      deltad(freedofs) = deltadred;
 
-        xin2    = xin21  ;
-        alfan   = alfan1 ;
+      dnk1 = dnk + deltad;
 
-        norm1 = norm(deltadred) ;
-        norm2 = norm(residualForceRed) ;
+      dnk     = dnk1;
 
-        converged_boolean = norm1 < tol1 || norm2 < tol2 ;
+      kpn     = kpn1;
+      xin1    = xin11;
+
+      xin2    = xin21;
+      alfan   = alfan1;
+
+      norm1 = norm(deltadred);
+      norm2 = norm(residualForceRed);
+
+      converged_boolean = norm1 < tol1 || norm2 < tol2;
 
     end
 
-    matdes(:,ind) = dnk1 ;
+    matdes(:, ind) = dnk1;
 
-end
+  end

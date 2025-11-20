@@ -34,34 +34,34 @@
 function [alfan1, xin21, xd] ...
   = plastic_softening_step(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
 
-% assert(Ks<0) ;
+  % assert(Ks<0) ;
 
-qfailxpi = min(-Ks*xin2, Mu) ; % test
+  qfailxpi = min(-Ks * xin2, Mu); % test
 
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
+  phifailxpi = abs(tM) - (Mu - qfailxpi);
 
-if phifailxpi <= 0
+  if phifailxpi <= 0
 
-    alfan1 = alfan ;
-    xin21 = xin2 ;
+    alfan1 = alfan;
+    xin21 = xin2;
 
-else
+  else
 
-    int_G = (4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2) ;
-    
-    gamma_test = phifailxpi / ( int_G + Ks) ;
+    int_G = (4 * E * Iy) / l^3 * (l^2 - 3 * l * xd + 3 * xd^2);
 
-    if  (xin2 + gamma_test) <= -Mu/Ks
+    gamma_test = phifailxpi / (int_G + Ks);
 
-        gamma2 = gamma_test ;
+    if  (xin2 + gamma_test) <= -Mu / Ks
+
+      gamma2 = gamma_test;
 
     else
 
-        gamma2 = abs(tM) / int_G ;
-    
+      gamma2 = abs(tM) / int_G;
+
     end
 
-    alfan1      = alfan     + gamma2*sign(tM) ;
-    xin21       = xin2      + gamma2 ;
+    alfan1      = alfan     + gamma2 * sign(tM);
+    xin21       = xin2      + gamma2;
 
-end
+  end
