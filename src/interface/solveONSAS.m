@@ -65,8 +65,8 @@ function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, mode
 
     % iterations average
     iterations_average = ...
-      (iterations_average * (modelNextSol.timeIndex - 2) + modelNextSol.timeStepIters) ...
-      / (modelNextSol.timeIndex - 1);
+      (iterations_average * (modelNextSol.timeIndex - 2) + modelNextSol.timeStepIters) / ...
+      (modelNextSol.timeIndex - 1);
 
     % iterations max
     iterations_maximum = max(iterations_maximum, modelNextSol.timeStepIters);
@@ -74,8 +74,8 @@ function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, mode
       iterations_strop_crit_vec(modelNextSol.timeStepStopCrit) + 1;
 
     % check if final time was reached
-    finalTimeReachedBoolean = (modelNextSol.currTime - modelProperties.analysisSettings.finalTime) ...
-                          >= (-(modelProperties.analysisSettings.finalTime) * 1e-8);
+    finalTimeReachedBoolean = (modelNextSol.currTime - modelProperties.analysisSettings.finalTime) >= ...
+                              (-(modelProperties.analysisSettings.finalTime) * 1e-8);
 
     % store results and update structs
     modelCurrSol    =   modelNextSol;
@@ -158,8 +158,8 @@ function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, mode
 
 function plotted_bars = progressBarPlot(modelCurrSol, modelProperties, plotted_bars)
 
-  percent_time = round((modelCurrSol.timeIndex * modelProperties.analysisSettings.deltaT) ...
-                       / modelProperties.analysisSettings.finalTime * 20);
+  percent_time = round((modelCurrSol.timeIndex * modelProperties.analysisSettings.deltaT) / ...
+                       modelProperties.analysisSettings.finalTime * 20);
   while plotted_bars < percent_time
     fprintf('=');
     plotted_bars = plotted_bars + 1;
