@@ -30,7 +30,7 @@
 % plastic hardening
 % the standard trial-corrector (return mapping) algorithm is used
 
-function [kp_np1, xi1_np1, Cep_np1] = plastic_hardening_step(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
+function [kp_np1, xi1_np1, Cep_np1] = plasticHardeningStep(E, Iy, xpi, xi1_n, kp_n, My, Mc, kh1, kh2, Ms)
 
   kp_np1  = kp_n;
   xi1_np1 = xi1_n; % test

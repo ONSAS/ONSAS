@@ -32,9 +32,7 @@
 % softening criterion (failure function) at integration points
 
 function [alfan1, xin21, xd] ...
-  = plastic_softening_step(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
-
-  % assert(Ks<0) ;
+  = plasticSofteningStep(xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
 
   qfailxpi = min(-Ks * xin2, Mu); % test
 
