@@ -47,25 +47,25 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
         deltalambda = sign(convDeltau' * (arcLengthNorm .* deltaubar)) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
 
         if flag_predictor == 1
-  
+
           % Follow the sign of the predictor work increment (incremental work)
-          Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar) ;
-          sign(deltaubar'*Fext) ;
-          deltalambda(1) = sign(deltaubar'*Fext) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
-  
+          Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar);
+          sign(deltaubar' * Fext);
+          deltalambda(1) = sign(deltaubar' * Fext) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
+
         elseif flag_predictor == 2
-  
+
           % Follow the sign of the stiffness determinant
-          detKT = det(systemDeltauMatrix) ;
-          sign(detKT) ;
-          deltalambda(1) = sign(detKT) * incremArcLen / sqrt( deltaubar' * ( arcLengthNorm .* deltaubar ) ) ;
+          detKT = det(systemDeltauMatrix);
+          sign(detKT);
+          deltalambda(1) = sign(detKT) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
         end
 
       end
 
     elseif arcLengthFlag == 2 % Jirasek approach
       cMatrix = zeros(size(convDeltau)); % Jirasek
-      %cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
+      % cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
 
       % Variables to be defined by user
       dominantDofs      = analysisSettings.ALdominantDOF(1);
@@ -79,12 +79,10 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
       % Projection matrix
       cMatrix(dominantDofsInd) = scalingProjection; % reduced projection matrix
 
- 		  %cMatrix(dominantDofs) = scalingProjection ;
-		  %cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
+      % cMatrix(dominantDofs) = scalingProjection ;
+      % cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
 
       deltalambda = (incremArcLen - cMatrix' * currDeltau - cMatrix' * deltauast) / (cMatrix' * deltaubar);
-
-
 
     elseif arcLengthFlag == 1  % Cylindrical constraint equation
       discriminant_not_accepted = true;

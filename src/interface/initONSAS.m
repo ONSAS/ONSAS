@@ -96,6 +96,8 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
 
   convDeltau   = zeros(size(U));
 
+  TZERO = zeros(1, size(Conec, 1));
+
   % ~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
   previousStateCell = cell(size(Conec, 1), 3);
   previousStateCell(:, 1) = {zeros(1, 3)};

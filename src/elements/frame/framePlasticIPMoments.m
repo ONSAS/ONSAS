@@ -27,50 +27,30 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-function [ Kfd, Kfalfa, Khd, Khalfa, Fint] = frame_plastic_matrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
+function [Mnp1, tM, Ghats] = framePlasticIPMoments(E, Iy, vvector, thetavector, npi, xpi, xd, l, alfa, kp, wpi)
 
-Kfd    = zeros(6, 6) ;
-Kfalfa = zeros(6, 1) ;
-Khd    = zeros(1, 6) ;
-Khalfa = 0 ;
+  tM = 0;
+  Ghats   = zeros(npi, 1);
+  Mnp1    = zeros(npi, 1);
 
-Fint   = zeros(6, 1) ;
+  for ip = 1:npi
 
-Bu = [-1/l 1/l] ;
+    N = bendingInterFuns (xpi(ip), l, 2);
 
-for ip = 1:npi
+    Bv = [N(1) N(3)];
+    Btheta = [N(2) N(4)];
 
-  N = bendingInterFuns (xpi(ip), l, 2) ;
+    Ghats(ip) = -1 / l * (1 + 3 * (1 - 2 * xd / l) * (1 - 2 * xpi(ip) / l));
 
-  Bv = [N(1) N(3)] ;
-  Btheta = [N(2) N(4)] ;
-  
-  Bd = [ Bu   0 0 0 0    ; ...
-         0  0 Bv  Btheta ] ;
+    khatxpi = Bv * vvector + Btheta * thetavector + Ghats(ip) * alfa;
+    kenxpi = khatxpi - kp(ip);
 
-  Kfdj     = Bd'*[E*A 0; 0 Cep_np1(ip)]*Bd ;
-  
-  Kfalfaj  = Bd'*[E*A 0; 0 Cep_np1(ip)]*[0 Ghats(ip)]' ;
-  
-  Khdj     = [0 Ghats(ip)]*[E*A 0; 0 Cep_np1(ip)]*Bd ;
-  
-  Khalfaj  = Ghats(ip)*Cep_np1(ip)*Ghats(ip) ;
-  
-  epsilon = Bu*uvector ;
-  
-  Fi      = Bd' * [E*A*epsilon; Mnp1(ip)] ;
+    % moments Mn at integration points, corresponding to time n + 1
+    Mnp1(ip) = E * Iy * kenxpi;
 
-  % stiffness matrices / integration (Gauss-Lobatto)
-  Kfd    = Kfd    + Kfdj    * wpi(ip) ;
-  Kfalfa = Kfalfa + Kfalfaj * wpi(ip) ;
-  Khd    = Khd    + Khdj    * wpi(ip) ;
-  Khalfa = Khalfa + Khalfaj * wpi(ip) ;
+    % tM calculated with the moments Mn corresponding to time n + 1
+    tM = tM - Ghats(ip) * Mnp1(ip) * wpi(ip);
 
-  % internal forces / integration (Gauss-Lobatto)
-  Fint = Fint + Fi*wpi(ip) ;
-
-end
-
-Khalfa = Khalfa + Ks ;
+  end
 
 end

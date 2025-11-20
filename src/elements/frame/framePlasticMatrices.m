@@ -15,6 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
+
 % Euler-Bernoulli element with embeded discontinuity
 
 % Numerical modeling of softening hinges in thin Euler–Bernoulli beams
@@ -26,27 +27,50 @@
 % Adnan Ibrahimbegović / Ecole normale supérieure de Cachan
 % =========================================================================
 
-% plastic softening at the discontinuity
-% the standard trial-corrector (return mapping) algorithm is used also for softening rigid plasticity
-% softening criterion (failure function) at integration points
+function [Kfd, Kfalfa, Khd, Khalfa, Fint] = framePlasticMatrices(E, Ks, A, l, uvector, npi, xpi, wpi, Mnp1, Cep_np1, Ghats, alfa)
 
-function [soft_hinge_boolean, alfan1, xin21, xd] ...
-  = soft_hinge(soft_hinge_boolean, xd, alfan, xin2, tM, l, E, Iy, Mu, Ks)
-qfailxpi = min(-Ks*xin2, Mu) ;
-phifailxpi = abs(tM)-(Mu-qfailxpi) ;
-if phifailxpi <= 0
-    alfan1 = alfan ;
-    xin21 = xin2 ;
-else
-    
-    if  xin2 <= -Mu/Ks
-        gamma2 = phifailxpi/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)+Ks) ;
-    else
-        gamma2 = abs(tM)/((4*E*Iy)/l^3*(l^2-3*l*xd+3*xd^2)) ;
-    
-    end
+  Kfd    = zeros(6, 6);
+  Kfalfa = zeros(6, 1);
+  Khd    = zeros(1, 6);
+  Khalfa = 0;
 
-    alfan1      = alfan     + gamma2*sign(tM) ;
-    xin21       = xin2      + gamma2 ;
+  Fint   = zeros(6, 1);
+
+  Bu = [-1 / l 1 / l];
+
+  for ip = 1:npi
+
+    N = bendingInterFuns (xpi(ip), l, 2);
+
+    Bv = [N(1) N(3)];
+    Btheta = [N(2) N(4)];
+
+    Bd = [Bu   0 0 0 0; ...
+          0  0 Bv  Btheta];
+
+    Kfdj     = Bd' * [E * A 0; 0 Cep_np1(ip)] * Bd;
+
+    Kfalfaj  = Bd' * [E * A 0; 0 Cep_np1(ip)] * [0 Ghats(ip)]';
+
+    Khdj     = [0 Ghats(ip)] * [E * A 0; 0 Cep_np1(ip)] * Bd;
+
+    Khalfaj  = Ghats(ip) * Cep_np1(ip) * Ghats(ip);
+
+    epsilon = Bu * uvector;
+
+    Fi      = Bd' * [E * A * epsilon; Mnp1(ip)];
+
+    % stiffness matrices / integration (Gauss-Lobatto)
+    Kfd    = Kfd    + Kfdj    * wpi(ip);
+    Kfalfa = Kfalfa + Kfalfaj * wpi(ip);
+    Khd    = Khd    + Khdj    * wpi(ip);
+    Khalfa = Khalfa + Khalfaj * wpi(ip);
+
+    % internal forces / integration (Gauss-Lobatto)
+    Fint = Fint + Fi * wpi(ip);
+
+  end
+
+  Khalfa = Khalfa + Ks;
 
 end

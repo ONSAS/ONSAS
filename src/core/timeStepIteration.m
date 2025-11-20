@@ -81,7 +81,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   currDeltau       = zeros(length(BCsData.neumDofs), 1);
 
   % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
-  %fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
+  % fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   while  booleanConverged == 0
 
@@ -91,11 +91,9 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
     % solve system
     [deltaured, nextLoadFactorsVals] = computeDeltaU(systemDeltauMatrix, systemDeltauRHS, dispIters, convDeltau(BCsData.neumDofs), modelProperties.analysisSettings, nextLoadFactorsVals, currDeltau, modelCurrSol.timeIndex, BCsData.neumDofs, args);
 
-
     % updates: model variables and computes internal forces ---
     [Utp1k, currDeltau, rotMatCell] = updateUiter(Utp1k, deltaured, BCsData.neumDofs, currDeltau, rotMatCell);
 
-    
     % --- update next time magnitudes ---
     [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
                                                    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
@@ -128,8 +126,8 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   printSolverOutput(modelProperties.outputDir, modelProperties.problemName, [2 (modelCurrSol.timeIndex) + 1 nextTime dispIters stopCritPar], []);
 
   if length(plastic_values1) == 0
-    plastic_values1 = zeros(1,11) ;
-    plastic_values2 = zeros(1,11) ;
+    plastic_values1 = zeros(1, 11);
+    plastic_values2 = zeros(1, 11);
   end
 
   if stabilityAnalysisFlag == 2
