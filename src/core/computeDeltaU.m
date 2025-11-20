@@ -64,8 +64,8 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
       end
 
     elseif arcLengthFlag == 2 % Jirasek approach
-      % cMatrix = zeros(size(convDeltau)); % Jirasek
-      cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
+      cMatrix = zeros(size(convDeltau)); % Jirasek
+      %cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
 
       % Variables to be defined by user
       dominantDofs      = analysisSettings.ALdominantDOF(1);
