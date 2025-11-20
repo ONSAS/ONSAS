@@ -7,7 +7,7 @@ jobs:
   matlab_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
       - name: run matlab test problems
@@ -15,7 +15,7 @@ jobs:
         with:
           command: cd test, runTestProblemsLocal
       - name: extract markdown from example scripts
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: cd docs, cd src, bringONSASmFilesToONSASdocs
       - uses: julia-actions/setup-julia@latest
