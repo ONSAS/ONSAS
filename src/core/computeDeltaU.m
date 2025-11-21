@@ -45,7 +45,7 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
 
       else
         deltalambda = sign(convDeltau' * (arcLengthNorm .* deltaubar)) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
-
+        
         if flag_predictor == 1
 
           % Follow the sign of the predictor work increment (incremental work)

@@ -70,7 +70,7 @@ function [fs, ks, fintLocCoord, params_plastic_2Dframe_np1] = frame2DPlasticInte
   thetavector = Uvector([5, 6]);     % theta z
 
   % Gauss-Lobatto Quadrature with 3 integration points [a (a+b)/2 b]
-  xpi = [0 0.5 l];
+  xpi = [0 (l * 0.5) l];
   wpi = [(1 / 3) (4 / 3) (1 / 3)] * l * 0.5;
 
   npi = length(xpi);

@@ -66,6 +66,10 @@ materials(1).modelName = 'plastic-2Dframe';
 materials(1).modelParams = [E Mc_c My_c Mu_c kh1 kh2 Ks nu];
 materials(2).modelName = 'plastic-2Dframe';
 materials(2).modelParams = [E Mc_b My_b Mu_b kh1 kh2 Ks nu];
+
+materials(1).modelParams(7)
+Ks
+stop
 % elements
 elements = struct();
 elements(1).elemType  = 'node';

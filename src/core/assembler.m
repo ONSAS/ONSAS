@@ -86,6 +86,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ||  ...
                        strcmp(analysisSettings.methodName, 'alphaHHT');
 
+  frameStateCellnp1 = [];
   % ====================================================================
 
   % ====================================================================
@@ -211,6 +212,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         end
 
       elseif strcmp(modelName, 'plastic-2Dframe')
+
 
         [fs, ks, fintLocCoord, aux] = frame2DPlasticInternalForce(elemNodesxyzRefCoords, ...
                                                                   elemCrossSecParams, ...
