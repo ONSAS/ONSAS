@@ -125,7 +125,6 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   % md call assembler
   [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell, rotMatCell, previousPlasticFrameState);
 
-
   modelCurrSol = constructModelSol(timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
                                    currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell, rotMatCell, previousPlasticFrameState);
   % =================================================================

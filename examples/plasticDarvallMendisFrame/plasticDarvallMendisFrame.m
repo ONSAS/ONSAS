@@ -67,9 +67,6 @@ materials(1).modelParams = [E Mc_c My_c Mu_c kh1 kh2 Ks nu];
 materials(2).modelName = 'plastic-2Dframe';
 materials(2).modelParams = [E Mc_b My_b Mu_b kh1 kh2 Ks nu];
 
-materials(1).modelParams(7)
-Ks
-stop
 % elements
 elements = struct();
 elements(1).elemType  = 'node';
@@ -136,7 +133,6 @@ initialConds = struct();
 analysisSettings                    = {};
 analysisSettings.methodName         = 'arcLength';
 analysisSettings.deltaT             = 1;
-# analysisSettings.incremArcLen       = [1e-5 * ones(1, 2100)];
 analysisSettings.incremArcLen       = [1e-5 * ones(1, 2)];
 analysisSettings.finalTime          = length(analysisSettings.incremArcLen);
 analysisSettings.iniDeltaLamb       = 1;
@@ -180,11 +176,6 @@ fprintf('\n');
 fprintf('[');
 fprintf('%g, ', TZERO(1:end - 1));
 fprintf('%g]\n', TZERO(end));
-
-matUs
-
-
-stop
 
 fprintf(' a = 0\n');
 fprintf(' First hinge\n Displacement u = %g\n Load Factor lambdaF = %g\n', matUs((4) * 6 + 3, TZERO(4)) * 100, loadFactorsMat(TZERO(4), 2));
