@@ -22,7 +22,11 @@ authors:
   - given-names: Joaquín
     surname: Viera Sosa
     affiliation: '1'
-    
+
+  - given-names: Sergio Ariel
+    surname: Merlino Chiozza
+    affiliation: '1'
+
   - given-names: Felipe
     surname: Schaedler de Almeida
     affiliation: '4'
@@ -73,7 +77,7 @@ $$
 $$
 where $\textbf{f}_{int}$ and $\textbf{f}_{vis}$ are the vector of internal static and damping forces, $\textbf{f}_{ext,t}$ is the vector of external forces, $\textbf{f}_{ext,add}$ is the vector of external additional forces (caused by different external agents) that can be set by the user and $\textbf{f}_{ine}$ the vector of inertial forces. The vectors $\textbf{u}_t$, $\dot{\textbf{u}}_t$ and $\ddot{\textbf{u}}_t$, represent the displacements, velocities and accelerations of all the degrees of freedom of the structure at time $t$, respectively.
 
-For the numerical time integration, `ONSAS` includes built-in nonlinear solution strategies, such as the Newton-Raphson and the Arc-Length methods, for static analyses, and the Newmark and the $\alpha$-HHT methods for transient dynamic analyses. Linear modal analysis is available for frame and truss elements. For solid elements, it is possible to compute the tangent matrix associated with the internal forces by using the complex-step approach presented in [@kiran]. 
+For the numerical time integration, `ONSAS` includes built-in nonlinear solution strategies, such as the Newton-Raphson and the Arc-Length methods, for static analyses, and the Newmark and the $\alpha$-HHT methods for transient dynamic analyses. Linear modal analysis is available for frame and truss elements. For solid elements, it is possible to compute the tangent matrix associated with the internal forces by using the complex-step approach presented in [@kiran]. For planar frame structures it is also possible to perform plastic analyses considering softening hinges as described in [@jukic].
 
 The tool also allows the users to: import meshes from the open-source meshing software GMSH [@GMSH], and export results as VTK files for visualization using open-source tools such as Paraview [@ParaView]. In \autoref{fig} subfigure a) a modal analysis deformation is shown, while in subfigure b) the deformation of a deployable ring problem, introduced in [@yoshi], showing the ability of `ONSAS` to solve large displacements and rotations problems.
 
