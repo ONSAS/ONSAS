@@ -17,15 +17,15 @@
 
 %  Darvall-Mendis Frame Analysis / Softening Hinges
 close all;
-clear all;
+if ~strcmp(getenv('TESTS_RUN'), 'yes')
+  clear all;
+end
 
 addpath(genpath([pwd '/../../src/']));
 
 global TZERO
 
 % assumed XY plane
-
-% /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\  /\
 
 % geometry
 L  = 3.048;            % m
