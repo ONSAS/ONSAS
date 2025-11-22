@@ -120,11 +120,11 @@ otherParams.plots_format = 'vtk';
 % md## Analysis case 1: NR with Rotated Eng Strain
 % md In the first case ONSAS is run and the solution at the dof (angle of node B) of interest is stored:
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
-%
-% mdAfter that the structs are used to perform the numerical time analysis
+% %
+% % mdAfter that the structs are used to perform the numerical time analysis
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
-% md
-% md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
+% % md
+% % md the control dof to verificate the solution is the node angle B, this corresponds to the following dof number:
 angleControlDof      = (numElements + 1) * 6 - 2;
 controlDispsNREngRot =  -matUs(angleControlDof, :);
 loadFactorsNREngRot  =  loadFactorsMat(:, 2);
@@ -144,7 +144,7 @@ boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 %
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) Mobj * t / (ty * tz);
+boundaryConds(2).loadsTimeFact = @(t) Mobj * t / (ty * tz) /2*1.95;
 boundaryConds(2).loadsBaseVals = [0 0 0 -1 0 0];
 %
 mesh = struct();
@@ -168,7 +168,7 @@ analysisSettings.stopTolIts    =   15;
 [modelCurrSol, modelProperties, BCsData] = initONSAS(materialsNL, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData);
 
-node = 18;
+node = 3; % 18
 ux_dof_shell    = node * 6 - 5;
 uz_dof_shell    = node * 6 - 1;
 angle_dof_shell = node * 6 - 2;
@@ -196,6 +196,7 @@ verifBoolean = norm(analyticLoadFactorsNREngRot(controlDispsNREngRot) - ...
                    loadFactorsShell')  < ...
               (norm(analyticLoadFactorsNREngRot(controlDispsShellNonLinear)) * 1e-2);
 %
+close all;
 lw = 2.0;
 ms = 5;
 plotfontsize = 10;
