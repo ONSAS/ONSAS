@@ -20,6 +20,9 @@
 % user.
 function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData)
 
+  global plastic_values1
+  global plastic_values2
+
   % assign current time (t) variables
   % ---------------------------------
   Ut         = modelCurrSol.U;
@@ -63,6 +66,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   systemDeltauRHS    = modelCurrSol.systemDeltauRHS;
   systemDeltauMatrix = modelCurrSol.systemDeltauMatrix;
   previousStateCell  = modelCurrSol.previousStateCell;
+  previousPlasticFrameState = modelCurrSol.previousPlasticFrameState;
 
   % ===========================================================================================================
   % ===========================================================================================================
@@ -71,11 +75,14 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   % ===========================================================================================================
 
   % --- assemble system of equations ---
-  [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
+  [systemDeltauMatrix, systemDeltauRHS, FextG, ~, nextLoadFactorsVals] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell, previousPlasticFrameState);
 
   booleanConverged = false;
   dispIters        = 0;
   currDeltau       = zeros(length(BCsData.neumDofs), 1);
+
+  % paso tiempo     iters     norm rhs  norm fext norm fint   vis = mas = fs aero   ther
+  % fnormsGlobal = [ modelCurrSol.timeIndex; dispIters; deltaErrLoad; normFext; fnorms; modelCurrSol.currTime  ] ;
 
   while  booleanConverged == 0
 
@@ -91,9 +98,8 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
     % --- update next time magnitudes ---
     [Udottp1k, Udotdottp1k, nextTime] = updateTime( ...
                                                    Ut, Udott, Udotdott, Utp1k, modelProperties.analysisSettings, modelCurrSol.currTime);
-
     % --- assemble system of equations ---
-    [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell);
+    [systemDeltauMatrix, systemDeltauRHS, FextG, fint_, nextLoadFactorsVals, fnorms, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1k, Udottp1k, Udotdottp1k, nextTime, nextLoadFactorsVals, previousStateCell, rotMatCell, previousPlasticFrameState);
 
     % --- check convergence ---
     [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTest(modelProperties.analysisSettings, FextG(BCsData.neumDofs), deltaured, Utp1k(BCsData.neumDofs), dispIters, systemDeltauRHS(:, 1));
@@ -116,9 +122,14 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   KTtp1red = systemDeltauMatrix;
 
   % compute stress at converged state
-  [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, nextTime, previousStateCell, rotMatCell);
+  [~, Stresstp1, ~, matFint, strain_vec, acum_plas_strain_vec, frameStateCellnp1] = assembler (modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, Utp1, Udottp1, Udotdottp1, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, nextTime, previousStateCell, rotMatCell, previousPlasticFrameState);
 
   printSolverOutput(modelProperties.outputDir, modelProperties.problemName, [2 (modelCurrSol.timeIndex) + 1 nextTime dispIters stopCritPar], []);
+
+  if length(plastic_values1) == 0
+    plastic_values1 = zeros(1, 11);
+    plastic_values2 = zeros(1, 11);
+  end
 
   if stabilityAnalysisFlag == 2
     [nKeigpos, nKeigneg, factorCrit] = stabilityAnalysis (KTtred, KTtp1red, currLoadFactor, nextLoadFactor);
@@ -156,7 +167,7 @@ function modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData
   modelNextSol = constructModelSol(timeIndex, currTime, U, Udot, ...
                                    Udotdot, Stress, convDeltau, ...
                                    nextLoadFactorsVals, systemDeltauMatrix, ...
-                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, rotMatCell);
+                                   systemDeltauRHS, timeStepStopCrit, timeStepIters, matFint, previousStateCell, rotMatCell, frameStateCellnp1);
 
   % ==============================================================================
   % ==============================================================================

@@ -16,7 +16,9 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec, frameStateCellnp1] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell, previousPlasticFrameState)
+
+  global TZERO
 
   % ====================================================================
   %  --- 1 declarations ---
@@ -64,12 +66,12 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     stressMat = [];
   end
 
-  % -------  matrix with internal forces per element -------------------
-  if matFintBool
-    matFint = zeros(nElems, 6 * 4);
-  else
-    matFint = [];
-  end
+  %% -------  matrix with internal forces per element -------------------
+  % if matFintBool
+  %  matFint = zeros(nElems, 6 * 4);
+  % else
+  %  matFint = [];
+  % end
 
   localInternalForces = struct();
 
@@ -84,6 +86,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   dynamicProblemBool = strcmp(analysisSettings.methodName, 'newmark') ||  ...
                        strcmp(analysisSettings.methodName, 'alphaHHT');
 
+  frameStateCellnp1 = [];
   % ====================================================================
 
   % ====================================================================
@@ -207,6 +210,40 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
           Ce = ks{2};
           Mmase = ks{3};
         end
+
+      elseif strcmp(modelName, 'plastic-2Dframe')
+
+        [fs, ks, fintLocCoord, aux] = frame2DPlasticInternalForce(elemNodesxyzRefCoords, ...
+                                                                  elemCrossSecParams, ...
+                                                                  modelParams, ...
+                                                                  elemDisps, previousPlasticFrameState(elem, :), elem);
+
+        Nx = 0;
+        My = 0;
+        Mz = fintLocCoord(1);
+
+        localInternalForces(elem).Mz2 = fintLocCoord(2);
+        localInternalForces(elem).Mz3 = fintLocCoord(3);
+        localInternalForces(elem).tM  = fintLocCoord(4);
+        localInternalForces(elem).Mz_integrado_izq  = fintLocCoord(5);
+        localInternalForces(elem).Mz_integrado_der  = fintLocCoord(6);
+
+        Finte = fs{1};
+        Ke = ks{1};
+
+        frameStateCellnp1(elem, :) = aux;
+
+        if dynamicProblemBool
+          [fs, ks] = frame_inertial_force(elemNodesxyzRefCoords, elemCrossSecParams, ...
+                                          [1 modelParams], elemDisps, ...
+                                          dotdispsElem, dotdotdispsElem, ...
+                                          density, massMatType, analysisSettings);
+
+          Fmase = fs{3};
+          Ce = ks{2};
+          Mmase = ks{3};
+        end
+
       else
         error('wrong modelName for frame element.');
       end
