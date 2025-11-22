@@ -18,6 +18,8 @@
 
 function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams)
 
+  global TZERO
+
   % checks if the fields defined are correct or not
   checkONSASFields(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
 
@@ -25,7 +27,7 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   [materials, elements, boundaryConds, analysisSettings, otherParams] = setDefaults(materials, elements, boundaryConds, analysisSettings, otherParams);
 
   % md sets the current version and welcomes user
-  ONSASversion = '0.3.3';
+  ONSASversion = '0.4.1';
   welcomeMessage(ONSASversion, otherParams);
 
   % creates outputdir in current location
@@ -94,24 +96,37 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
 
   convDeltau   = zeros(size(U));
 
+  TZERO = zeros(1, size(Conec, 1));
+
   % ~ previousStateCell = zeros( size(Conec,1), 3 ) ; % assumed only for trusses: scalar per element
   previousStateCell = cell(size(Conec, 1), 3);
   previousStateCell(:, 1) = {zeros(1, 3)};
   previousStateCell(:, 2) = {zeros(1, 3)};
   previousStateCell(:, 3) = {0};
 
+  previousPlasticFrameState = zeros(size(Conec, 1), 11);
+
+  % ==========================================================================================
+  % ==========================================================================================
+  % Global rotation matrices for triangle elements
+  rotMatCell = cell(size(U, 1) / 6);
+  % Esto se tiene que mejorar, se asume que no hay rotaciones iniciales
+  rotMatCell(:) = {eye(3)};
+  % ==========================================================================================
+  % ==========================================================================================
+
   % comput internal forces and stresses
-  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell);
+  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell, rotMatCell, previousPlasticFrameState);
 
   [FextG, currLoadFactorsVals]  = computeFext(modelProperties, BCsData, 0, length(U), [], {U, Udot, Udotdot});
 
   nextTime = currTime + analysisSettings.deltaT;
 
   % md call assembler
-  [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell);
+  [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell, rotMatCell, previousPlasticFrameState);
 
   modelCurrSol = constructModelSol(timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-                                   currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell);
+                                   currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell, rotMatCell, previousPlasticFrameState);
   % =================================================================
 
   % md prints headers for solver output file

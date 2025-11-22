@@ -10,6 +10,11 @@ authors:
 - family-names: "Viera Sosa"
   given-names: "J."
   orcid: "https://orcid.org/0000-0003-3615-6966"
+- family-names: "Schaedler de Almeida"
+  given-names: "F."
+  orcid: "https://orcid.org/0000-0003-1535-5405"
+- family-names: "Merlino Chiozza"
+  given-names: "S. A."
 - family-names: "Villié"
   given-names: "A."
   orcid: "https://orcid.org/0000-0001-5431-2892" 
@@ -22,5 +27,5 @@ authors:
 - family-names: "Bazzano García"
   given-names: "J. B."
 title: "ONSAS: an Open Nonlinear Structural Analysis Solver for GNU-Octave/Matlab"
-version: 0.3.3
+version: 0.4.1
 url: "https://github.com/ONSAS/ONSAS"

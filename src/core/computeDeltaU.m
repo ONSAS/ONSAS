@@ -18,7 +18,9 @@
 function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
                                                          systemDeltauMatrix, systemDeltauRHS, dispIter, convDeltau, analysisSettings, nextLoadFactorVals, currDeltau, timeIndex, neumDofs, args)
 
+  global flag_predictor
   global arcLengthFlag % 1: cylindrical 2: jirasek
+
   if isempty(analysisSettings.ALdominantDOF)
     arcLengthFlag = 1;
   else
@@ -40,12 +42,29 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
     if dispIter == 1 % predictor solution
       if norm(convDeltau) == 0
         deltalambda = analysisSettings.iniDeltaLamb;
+
       else
         deltalambda = sign(convDeltau' * (arcLengthNorm .* deltaubar)) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
+        if flag_predictor == 1
+
+          % Follow the sign of the predictor work increment (incremental work)
+          Fext = systemDeltauMatrix * (arcLengthNorm .* deltaubar);
+          sign(deltaubar' * Fext);
+          deltalambda(1) = sign(deltaubar' * Fext) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
+
+        elseif flag_predictor == 2
+
+          % Follow the sign of the stiffness determinant
+          detKT = det(systemDeltauMatrix);
+          sign(detKT);
+          deltalambda(1) = sign(detKT) * incremArcLen / sqrt(deltaubar' * (arcLengthNorm .* deltaubar));
+        end
+
       end
 
     elseif arcLengthFlag == 2 % Jirasek approach
       cMatrix = zeros(size(convDeltau)); % Jirasek
+      % cMatrix = zeros(max(neumDofs),1 ) ; % see Jirasek
 
       % Variables to be defined by user
       dominantDofs      = analysisSettings.ALdominantDOF(1);
@@ -58,6 +77,9 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
 
       % Projection matrix
       cMatrix(dominantDofsInd) = scalingProjection; % reduced projection matrix
+
+      % cMatrix(dominantDofs) = scalingProjection ;
+      % cMatrix = cMatrix(neumDofs) ; % reduced projection matrix
 
       deltalambda = (incremArcLen - cMatrix' * currDeltau - cMatrix' * deltauast) / (cMatrix' * deltaubar);
 
@@ -73,8 +95,6 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
         disc = cb^2 - 4 * ca * cc;
 
         if disc < 0
-          cc;
-          disc;
           num_reductions = num_reductions + 1;
           incremArcLen = incremArcLen * .5;
           warning('negative discriminant, reducing arc length time : %3i', num_reductions);
@@ -85,7 +105,6 @@ function [deltaured, nextLoadFactorVals] = computeDeltaU( ...
       end
 
       if disc < 0
-        disc;
         error('negative discriminant');
       end
 

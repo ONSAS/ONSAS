@@ -15,13 +15,13 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell)
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell, rotMatCell, previousPlasticFrameState)
 
   analysisSettings = modelProperties.analysisSettings;
   nodalDispDamping = modelProperties.nodalDispDamping;
   neumdofs = BCsData.neumDofs;
 
-  [fs, ~, mats, ~] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell);
+  [fs, ~, mats, ~] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell, rotMatCell, previousPlasticFrameState);
 
   Fint = fs{1};
   Fvis =  fs{2};
@@ -58,7 +58,6 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
                   Faero(BCsData.neumDofs);
 
     systemDeltauRHS = -rhat;
-
     systemDeltauMatrix = KT (neumdofs, neumdofs);
 
     % -----------------------------------------------------------------------------------

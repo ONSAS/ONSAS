@@ -21,6 +21,9 @@
 %
 function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, modelProperties, BCsData)
 
+  global historic_parameters
+  global Timex
+
   % initialize structures to store solutions
   matUs          = modelCurrSol.U;
   loadFactorsMat = modelCurrSol.currLoadFactorsVals;
@@ -48,10 +51,17 @@ function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, mode
   aux_time = cputime();
 
   while finalTimeReachedBoolean == false
+
+    % disp(' ====================================================') ;
+    % disp(' /\  /\  /\  /\  /\  NEW TIME STEP /\  /\  /\  /\  /\') ;
     plotted_bars = progressBarPlot(modelCurrSol, modelProperties, plotted_bars);
+
+    Timex = modelCurrSol.currTime;
 
     % compute the model state at next time
     modelNextSol = timeStepIteration(modelCurrSol, modelProperties, BCsData);
+
+    historic_parameters = [historic_parameters;  modelNextSol.previousStateCell];
 
     % iterations average
     iterations_average = ...
@@ -64,7 +74,7 @@ function [matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelCurrSol, mode
       iterations_strop_crit_vec(modelNextSol.timeStepStopCrit) + 1;
 
     % check if final time was reached
-    finalTimeReachedBoolean = (modelNextSol.currTime - modelProperties.analysisSettings.finalTime)  >= ...
+    finalTimeReachedBoolean = (modelNextSol.currTime - modelProperties.analysisSettings.finalTime) >= ...
                               (-(modelProperties.analysisSettings.finalTime) * 1e-8);
 
     % store results and update structs
