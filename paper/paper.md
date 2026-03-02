@@ -83,7 +83,7 @@ where $\textbf{f}_{int}$ and $\textbf{f}_{vis}$ are the vectors of internal stat
 
 For the numerical time integration, `ONSAS` includes built-in nonlinear solution strategies, such as the Newton-Raphson and the Arc-Length methods, for static analyses, and the Newmark and the $\alpha$-HHT methods for transient dynamic analyses. Linear modal analysis is available for frame and truss elements. For solid elements, it is possible to compute the tangent matrix associated with the internal forces by using the complex-step approach presented in [@kiran]. For planar frame structures it is also possible to perform plastic analyses considering softening hinges as described in [@jukic].
 
-The tool also allows users to import meshes from the open-source meshing software GMSH [@GMSH] and export results as VTK files for visualization using open-source tools such as Paraview [@ParaView]. In \autoref{fig}, subfigure a) shows a modal analysis deformation, while subfigure b) shows the deformation of a deployable ring problem, introduced in [@yoshi], demonstrating the ability of `ONSAS` to solve large displacement and rotation problems.
+The tool also allows users to import meshes from the open-source meshing software GMSH [@GMSH] and export results as VTK files for visualization using open-source tools such as Paraview [@ParaView]. In \autoref{fig}, a) shows a modal analysis deformation, while b) shows the deformation of a deployable ring problem, introduced in [@yoshi], demonstrating the ability of `ONSAS` to solve large displacement and rotation problems.
 
 ![Visualization examples: a) two modes of deformation obtained for a multi-storey building; b) reference and deformed configuration of a deployable ring. \label{fig}](fig.png)
 
