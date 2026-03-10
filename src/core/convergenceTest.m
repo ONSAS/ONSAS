@@ -42,6 +42,7 @@ function [booleanConverged, stopCritPar, deltaErrLoad, normFext] = convergenceTe
     booleanConverged = 1;
   elseif dispIter >= stopTolIts
     stopCritPar = 3;
+    warning('maximum iterations reached!')
     booleanConverged = 1;
   else
     stopCritPar = 0;
