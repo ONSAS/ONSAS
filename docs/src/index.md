@@ -89,11 +89,14 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * [**Alexandre Villié**](https://www.linkedin.com/in/alexandre-villi%C3%A9-343870187/) (**3**) developed the current Vortex-Induced-Vibrations Wake Oscillator model. Also contributed in the validation of this function in the integration with the co-rotational frame element.
 
+* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
+
+**Relevant contributors**:
+
 * [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
 
 * [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**4**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
 
-* [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
 
 **Affiliations**:
 
