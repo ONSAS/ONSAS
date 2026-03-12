@@ -21,7 +21,9 @@ Theses using ONSAS:
 
  * 2021, M. Vanzulli, *Implementación de una formulación corrotacional en dinámica no lineal y aplicación al modelado de líneas de transmisión eléctrica* [url](https://www.colibri.udelar.edu.uy/jspui/handle/20.500.12008/28388)
  * 2021, A. Teliz, *Optimización de torres de alta tensión y su análisis frente a vientos de alta intensidad* [url](https://hdl.handle.net/20.500.12008/35985)
-
+ * 2023, A. Villié, *On the 3D Vortex-Induced Dynamics of Soft Corals*, [url](https://publications.polymtl.ca/54848/)
+ * 2026, S. Merlino, *Estudio e implementación de una formulación de elementos finitos con discontinuidad fuerte para el análisis post-colapso de pórticos*, [url](https://hdl.handle.net/20.500.12008/53614)
+   
 Conference full-articles using ONSAS:
 
  * 2025, S. Merlino, J.M. Pérez Zerpa, *Implementación en Código Abierto de un Método para el Análisis Post-Colapso de Pórticos*, MECOM AMCA [proceeding](https://amcaonline.org.ar/ocs/index.php/mecom2025/mecom2025/paper/view/8246)
@@ -89,15 +91,15 @@ The authorship of each version is (or tends to be) based on the criteria defined
 
 * **Sergio Merlino**(**1**), leaded the development of the formulation for plastic analysis of frames considering hardening and softening hinges.
 
-* [**Felipe Schaedler de Almeida**](https://scholar.google.com/citations?user=mMeeTrwAAAAJ&hl=en) (**6**), contributed to the design and development of the co-rotational shell element formularion. 
+* [**Felipe Schaedler de Almeida**](https://scholar.google.com/citations?user=mMeeTrwAAAAJ&hl=en) (**4**), contributed to the design and development of the co-rotational shell element formularion. 
 
 * [**J. Bruno Bazzano**](https://uy.linkedin.com/in/juan-bruno-bazzano-garc%C3%ADa-a045bb56) (**1**), contributed to the design/development of the buckling analysis modules, co-designed the initial version of the code, developed and implemented validation examples, validated the HHT implementation.
 
 **Relevant contributors**:
 
-* [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**4**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
+* [**Marcelo Forets**](https://scholar.google.fr/citations?user=XSJzDEsAAAAJ&hl=en) (**5**) made relevant contributions to application of software technology tools, in particular, the documentation generation workflow. Contributed also to the implementation of the Neo-Hookean solid model.
 
-* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**4**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
+* [**Jean-Marc Battini**](https://scholar.google.com/citations?user=7dzVcKoAAAAJ&hl=en) (**6**), contributed functions for the computation of static internal forces of the nonlinear co-rotational frame element.
 
 
 **Affiliations**:
@@ -105,9 +107,9 @@ The authorship of each version is (or tends to be) based on the criteria defined
  1. Instituto de Estructuras y Transporte, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay
  1. Instituto de Ingeniería Mecánica y Producción Industrial, Facultad de Ingeniería, Universidad de la República, Montevideo, Uruguay.
  1. Department of Mechanical Engineering, Polytechnique Montréal, Montréal, Canada.
+ 1. Department of Civil Engineering, Federal University of Rio Grande Do Sul, Porto Alegre, Brazil 
  1. Centro Universitario Regional Este, Universidad de la República, Maldonado, Uruguay
  1. Department of Civil and Architectural Engineering, KTH Royal Institute of Technology, Stockholm, Sweden
- 1. Department of Civil Engineering, Federal University of Rio Grande Do Sul, Porto Alegre, Brazil 
 
 ### Contributions and Acknowledgments
 
