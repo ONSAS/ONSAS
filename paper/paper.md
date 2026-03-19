@@ -87,7 +87,7 @@ The tool also allows users to import meshes from the open-source meshing softwar
 
 ![Visualization examples: a) two modes of deformation obtained for a multi-storey building; b) reference and deformed configuration of a deployable ring. \label{fig}](fig.png)
 
-`ONSAS` was also applied by @forets for the computation of mass and stiffness FEM matrices for the resolution of wave propagation and heat transfer problems using 2D triangular plane elements. Finally, the current development of the library is mostly focused on adding plastic analysis of frame elements and adding magnitudes to the generated visualization. 
+`ONSAS` was also applied by @forets for the computation of mass and stiffness FEM matrices for the resolution of wave propagation and heat transfer problems using 2D triangular plane elements.
 
 # Acknowledgements
 
