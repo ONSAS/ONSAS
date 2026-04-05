@@ -69,18 +69,59 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
       thickness  = elements(elemInd).elemCrossSecParams;
 
       % check oriented vector is defined into x-y plane
-      assert(abs(directionVector(3)) < eps * 10, 'edge must be defined into x-y plane');
-
-      % factor of the load for each node
+      % assert(abs(directionVector(3)) < eps * 10, 'edge must be defined into x-y plane');
+      % if abs(Nodes(nodes(1), 3)) > eps * 10 || abs(Nodes(nodes(2), 3)) > eps * 10 
+        % error('edge must be defined into x-y plane');
+      % end
+      
+      % % factor of the load for each node
       factor = lengthElem * thickness * 0.5;
 
       if strcmp(loadCoordSys, 'global')
+        % only for loads on x axis and sides parallel to XY or XZ
+        qx = loadvals(1) ;
+        % qy = loadvals(2) ;
+        % qz = loadvals(3) ;
+        xaxis = [1,0,0];
+        yaxis = [0,1,0];
+        zaxis = [0,0,1];
+        
+        normalVector = cross(xaxis,directionVector);
+        nvector = normalVector / norm(normalVector);
+        
+        if norm(normalVector) == 0 
+          angle = 0;
+        else
+          angle = asin(normalVector/( norm(xaxis)*norm(directionVector)*nvector )); % cross(a,b) = |a|*|b|*sin(theta)*n
+        end
+        q_perp = qx*sin(angle);
+
+        % Projection of normal vector into x,y,z axes
+        % indBC
+        % directionVector
+        % nvector
+
+        Mq = q_perp*thickness*lengthElem^2/8; %
+        Mq=0;
+        cos_nx = abs(xaxis * nvector');
+        cos_ny = abs(yaxis * nvector');
+        cos_nz = abs(zaxis * nvector');
+        
+        Mqx = Mq*cos_nx;
+        Mqy = Mq*cos_ny;
+        Mqz = Mq*cos_nz;
+
+        Mq_opt = [0 Mqx 0 -Mqy 0 Mqz; 0 Mqx 0 Mqy 0 -Mqz] ;
+         
         Fx = loadvals(1) * factor;
         Mx = loadvals(2) * factor;
         Fy = loadvals(3) * factor;
         My = loadvals(4) * factor;
         Fz = loadvals(5) * factor;
         Mz = loadvals(6) * factor;
+        
+        elemNodeLoadsMatrix = [Fx Mx Fy My Fz Mz; Fx Mx Fy My Fz Mz] + Mq_opt;
+        
       elseif strcmp(loadCoordSys, 'local')
         % consider a 90 degrees rotation of the oriented vector of the line element
         % tangent unitary vector
@@ -97,9 +138,9 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
         Mx = 0;
         My = 0;
         Mz = 0;
+        elemNodeLoadsMatrix = ones(length(nodes), 1) * [Fx Mx Fy My Fz Mz];
+      
       end % if global/local system
-
-      elemNodeLoadsMatrix = ones(length(nodes), 1) * [Fx Mx Fy My Fz Mz];
 
       assert(size(elemNodeLoadsMatrix, 2) == 6, 'error, maybe missing thickness');
 
@@ -160,3 +201,4 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
       fext(aux) = fext(aux) + loadedNodes(i, 2:7)';
     end
   end
+
