@@ -477,7 +477,6 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     tangMatsCell{3} = M;
   end
 
-
   % ==============================================================================
   %
   % function to convert vector of displacements into displacements of element.
