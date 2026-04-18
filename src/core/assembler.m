@@ -96,7 +96,12 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
   for elem = 1:nElems
 
     % Initialize conditional variables to prevent leakage from previous iterations
-    Ce = []; Fmase = []; Mmase = []; FaeroElem = []; Fthere = []; MataeroEelem = [];
+    Ce = [];
+    Fmase = [];
+    Mmase = [];
+    FaeroElem = [];
+    Fthere = [];
+    MataeroEelem = [];
 
     mebVec = Conec(elem, 1:3);
 
@@ -381,7 +386,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
     if tangBool
       ndofs = length(dofselemRed);
-      entriesSparseStorVecs = counterInds + (1:ndofs*ndofs);
+      entriesSparseStorVecs = counterInds + (1:ndofs * ndofs);
 
       [JK, IK] = meshgrid(dofselemRed, dofselemRed);
       indsIK(entriesSparseStorVecs) = IK(:);
@@ -401,7 +406,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         end
       end
 
-      counterInds = counterInds + ndofs*ndofs;
+      counterInds = counterInds + ndofs * ndofs;
     end
 
     if stressBool
