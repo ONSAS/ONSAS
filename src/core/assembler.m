@@ -95,6 +95,9 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
 
   for elem = 1:nElems
 
+    % Initialize conditional variables to prevent leakage from previous iterations
+    Ce = []; Fmase = []; Mmase = []; FaeroElem = []; Fthere = []; MataeroEelem = [];
+
     mebVec = Conec(elem, 1:3);
 
     % md extract element properties
@@ -371,35 +374,34 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         Faero(dofselemRed) = Faero(dofselemRed) + FaeroElem;
       end
 
-      if exist('Fthere') == 1 && (norm(Fthere) > 0.0)
+      if ~isempty(Fthere) && (norm(Fthere) > 0.0)
         Fther(dofselemRed) = Fther(dofselemRed) + Fthere;
       end
     end
 
     if tangBool
-      for indRow = 1:length(dofselemRed)
+      ndofs = length(dofselemRed);
+      entriesSparseStorVecs = counterInds + (1:ndofs*ndofs);
 
-        entriesSparseStorVecs = counterInds + (1:length(dofselemRed));
+      [JK, IK] = meshgrid(dofselemRed, dofselemRed);
+      indsIK(entriesSparseStorVecs) = IK(:);
+      indsJK(entriesSparseStorVecs) = JK(:);
 
-        indsIK (entriesSparseStorVecs)  = dofselemRed(indRow);
-        indsJK (entriesSparseStorVecs)  = dofselemRed;
-
-        if aeroBool && strcmp(elemType, 'frame') && computeAeroStiffnessMatrix
-          % add displacements minus since is an external force
-          valsK  (entriesSparseStorVecs)  = Ke(indRow, :)' - MataeroEelem(indRow, :)';
-        else
-          valsK  (entriesSparseStorVecs)  = Ke(indRow, :)';
-        end
-
-        if dynamicProblemBool
-          valsM(entriesSparseStorVecs) = Mmase(indRow, :)';
-          if exist('Ce') == 1
-            valsC(entriesSparseStorVecs) = Ce(indRow, :)';
-          end
-        end
-
-        counterInds = counterInds + length(dofselemRed);
+      if aeroBool && strcmp(elemType, 'frame') && computeAeroStiffnessMatrix
+        % add displacements minus since is an external force
+        valsK(entriesSparseStorVecs) = Ke(:) - MataeroEelem(:);
+      else
+        valsK(entriesSparseStorVecs) = Ke(:);
       end
+
+      if dynamicProblemBool
+        valsM(entriesSparseStorVecs) = Mmase(:);
+        if ~isempty(Ce)
+          valsC(entriesSparseStorVecs) = Ce(:);
+        end
+      end
+
+      counterInds = counterInds + ndofs*ndofs;
     end
 
     if stressBool
@@ -470,21 +472,6 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     tangMatsCell{3} = M;
   end
 
-  % ==============================================================================
-  %
-  %
-  % ==============================================================================
-
-  % function nodesmat = conv ( conec, coordsElemsMat )
-  % nodesmat  = [] ;
-  % nodesread = [] ;
-  % for i=1:size(conec,1)
-  %   for j=1:2
-  %     if length( find( nodesread == conec(i,j) ) ) == 0
-  %       nodesmat( conec(i,j),:) = coordsElemsMat( i, (j-1)*6+(1:2:5) ) ;
-  %     end
-  %   end
-  % end
 
   % ==============================================================================
   %
