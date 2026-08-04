@@ -15,13 +15,23 @@
 % You should have received a copy of the GNU General Public License
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
-function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell, rotMatCell)
+function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fnorms, exportFirstMatrices] = systemAssembler(modelProperties, BCsData, Ut, Udott, Udotdott, Utp1, Udottp1, Udotdottp1, nextTime, nexTimeLoadFactors, previousStateCell)
 
   analysisSettings = modelProperties.analysisSettings;
   nodalDispDamping = modelProperties.nodalDispDamping;
   neumdofs = BCsData.neumDofs;
 
-  [fs, ~, mats, ~] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell, rotMatCell);
+  if strcmp(modelProperties.analysisSettings.methodName, 'newtonRaphson')
+    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Utp1), [],  {Utp1});
+  elseif strcmp(modelProperties.analysisSettings.methodName, 'arcLength')
+    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Utp1), nexTimeLoadFactors, {Utp1});
+  elseif strcmp(modelProperties.analysisSettings.methodName, 'newmark')
+    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Utp1), [], {Utp1, Udottp1, Udotdottp1});
+  elseif strcmp(modelProperties.analysisSettings.methodName, 'alphaHHT')
+    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Utp1), [], {Utp1, Udottp1, Udotdottp1});
+  end
+
+  [fs, ~, mats, ~, ~, ~, FextG] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell, FextG);
 
   Fint = fs{1};
   Fvis =  fs{2};
@@ -51,7 +61,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
   if strcmp(modelProperties.analysisSettings.methodName, 'newtonRaphson')
 
-    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [],  {Utp1});
+    % [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [],  {Utp1});
 
     rhat      =   Fint (BCsData.neumDofs) - ...
                   FextG(BCsData.neumDofs) - ...
@@ -65,7 +75,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     % -----------------------------------------------------------------------------------
   elseif strcmp(modelProperties.analysisSettings.methodName, 'arcLength')
 
-    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors, {Utp1});
+    % [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), nexTimeLoadFactors, {Utp1});
 
     foundLoadCase = false;
     loadCase = 1;
@@ -83,6 +93,12 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
 
     systemDeltauRHS = [-rhat   BCsData.factorLoadsFextCell{loadCase}(BCsData.neumDofs)];
 
+    % applied moments - non conservative
+    % global momentDofs
+    % FextG
+    % [~, ~, ~, ~] = internalForcesShellTriangle()
+    % [fs, ~, mats, ~] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData(1).KS, Utp1, Udottp1, Udotdottp1, analysisSettings, [1 0 1 0], nodalDispDamping, nextTime, previousStateCell, FextG);
+
     systemDeltauMatrix = KT (neumdofs, neumdofs);
 
     % -----------------------------------------------------------------------------------
@@ -90,7 +106,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     % -----------------------------------------------------------------------------------
   elseif strcmp(modelProperties.analysisSettings.methodName, 'newmark')
 
-    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [], {Utp1, Udottp1, Udotdottp1});
+    % [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [], {Utp1, Udottp1, Udotdottp1});
 
     rhat      =   Fint (BCsData.neumDofs) + ...
                   Fvis (BCsData.neumDofs) + ...
@@ -128,7 +144,7 @@ function [systemDeltauMatrix, systemDeltauRHS, FextG, fs, nexTimeLoadFactors, fn
     Fmast = fs{3};
     Faerot = fs{4};
 
-    [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [], {Utp1, Udottp1, Udotdottp1});
+    % [FextG, nexTimeLoadFactors]  = computeFext(modelProperties, BCsData, nextTime, length(Fint), [], {Utp1, Udottp1, Udotdottp1});
 
     [FextGt]  = computeFext(modelProperties, BCsData, nextTime - modelProperties.analysisSettings.deltaT, length(Fint), [], {Ut, Udott, Udotdott});  % Evaluate external force in previous step
 

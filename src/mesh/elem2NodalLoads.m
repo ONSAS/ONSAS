@@ -97,12 +97,8 @@ function fext = elem2NodalLoads (Conec, indBC, elements, boundaryCond, Nodes)
         q_perp = qx*sin(angle);
 
         % Projection of normal vector into x,y,z axes
-        % indBC
-        % directionVector
-        % nvector
 
         Mq = q_perp*thickness*lengthElem^2/8; %
-        Mq=0;
         cos_nx = abs(xaxis * nvector');
         cos_ny = abs(yaxis * nvector');
         cos_nz = abs(zaxis * nvector');

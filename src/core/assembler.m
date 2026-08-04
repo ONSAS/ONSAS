@@ -16,7 +16,7 @@
 % along with ONSAS.  If not, see <https://www.gnu.org/licenses/>.
 %
 % mdThis function computes the assembled force vectors, tangent matrices and stress matrices.
-function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, rotMatCell)
+function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum_plas_strain_vec, FextG] = assembler(Conec, elements, Nodes, materials, KS, Ut, Udott, Udotdott, analysisSettings, outputBooleans, nodalDispDamping, timeVar, previousStateCell, FextG)
 
   % ====================================================================
   %  --- 1 declarations ---
@@ -128,6 +128,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     elemDisps       = u2ElemDisps(Ut, dofselemRed);
     dotdispsElem    = u2ElemDisps(Udott, dofselemRed);
     dotdotdispsElem = u2ElemDisps(Udotdott, dofselemRed);
+    elemFext        = FextG(dofselemRed);
 
     elemNodesxyzRefCoords  = reshape(Nodes(nodeselem, :)', 1, 3 * numNodes);
 
@@ -278,8 +279,9 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
         [fs, ks, fintLocCoord] =  internalForcesLinearShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness);
 
       elseif strcmp(modelName, 'elastic-rotEngStr')
-        rotMat = rotMatCell(nodeselem);
-        [fs, ks, fintLocCoord] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness, rotMat);
+      
+        [fs, ks, fintLocCoord, fext_s] =  internalForcesShellTriangle(elemNodesxyzRefCoords, elemDisps, modelName, modelParams, thickness, elemFext);
+        FextG(dofselemRed) = fext_s;
       else
         error('material model not implemented');
       end
@@ -337,6 +339,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
       if exist('Fthere') == 1 && (norm(Fthere) > 0.0)
         Fther(dofselemRed) = Fther(dofselemRed) + Fthere;
       end
+      
     end
 
     if tangBool

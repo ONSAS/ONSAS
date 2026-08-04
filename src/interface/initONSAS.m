@@ -100,27 +100,21 @@ function [modelCurrSol, modelProperties, BCsData] = initONSAS(materials, element
   previousStateCell(:, 2) = {zeros(1, 3)};
   previousStateCell(:, 3) = {0};
 
-  % ==========================================================================================
-  % ==========================================================================================
-  % Global rotation matrices for triangle elements
-  rotMatCell = cell(size(U, 1) / 6);
-  % Esto se tiene que mejorar, se asume que no hay rotaciones iniciales
-  rotMatCell(:) = {eye(3)};
-  % ==========================================================================================
-  % ==========================================================================================
 
   % comput internal forces and stresses
-  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell, rotMatCell);
-
   [FextG, currLoadFactorsVals]  = computeFext(modelProperties, BCsData, 0, length(U), [], {U, Udot, Udotdot});
+
+  [~, Stress, ~, localInternalForces, strain_vec, acum_plas_strain_vec, FextG] = assembler(modelProperties.Conec, modelProperties.elements, modelProperties.Nodes, modelProperties.materials, BCsData.KS, U, Udot, Udotdot, modelProperties.analysisSettings, [0 1 0 1], modelProperties.nodalDispDamping, currTime, previousStateCell, FextG);
+
+  
 
   nextTime = currTime + analysisSettings.deltaT;
 
   % md call assembler
-  [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell, rotMatCell);
+  [systemDeltauMatrix, systemDeltauRHS, ~, ~, ~, ~, modelProperties.exportFirstMatrices] = systemAssembler(modelProperties, BCsData, U, Udot, Udotdot, U, Udot, Udotdot, nextTime, [], previousStateCell);
 
   modelCurrSol = constructModelSol(timeIndex, currTime, U, Udot, Udotdot, Stress, convDeltau, ...
-                                   currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell, rotMatCell);
+                                   currLoadFactorsVals, systemDeltauMatrix, systemDeltauRHS, timeStepStopCrit, timeStepIters, localInternalForces, previousStateCell);
   % =================================================================
 
   % md prints headers for solver output file

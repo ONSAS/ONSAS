@@ -19,7 +19,7 @@
 % The element is formed by the superposition of a plate element (DKT) and a plane stress element (CST) with
 % with addition to artificial drilling (rotation about the axis normal to the element plane) stiffness.
 %
-function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness, rotMat)
+function [fs, ks, fintLocCoord, fext_s] = internalForcesShellTriangle(elemCoords, elemDisps, modelName, modelParams, thickness, FextG)
 
   origin = 0;
   e1_parallel_side12 = 1;  % 0 if battini modification is used - 1 if not
@@ -70,7 +70,7 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
   R2_g = expm(skew(t2_g));
   R3_g = expm(skew(t3_g));
 
-  % Transformation matrices from global reference frame
+  % Transformation matrices from local reference frame to global reference frame
   [To, x02, x03, y03] = edgeLocalAxisShellTriangle(r1_g, r2_g, r3_g);
   [Tr, ~, ~, ~]       = edgeLocalAxisShellTriangle(p1_g, p2_g, p3_g);
 
@@ -255,6 +255,8 @@ function [fs, ks, fintLocCoord, rotMat] = internalForcesShellTriangle(elemCoords
     Kr = Br' * Kg * Br + Kv;
   end
 
+  fext_g = switchToTypeIndexing(FextG);
+  fext_s = switchToNodalIndexing(fext_g);
   ks = {switchToNodalIndexing(Kr)};
   fs = {switchToNodalIndexing(fr)};
 

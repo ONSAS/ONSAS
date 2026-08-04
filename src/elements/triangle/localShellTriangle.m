@@ -42,7 +42,7 @@ function [Kel, fintLocCoord] = localShellTriangle(x02, x03, y03, E, nu, h, Ul, f
   Bb = dktB(1 ./ 3., 1 ./ 3., x02, x03, y03);
   curv = Bb * Ulb;
   M = Db * curv;
-
+  
   % membrane stiffness
   if flag_OPT == 0
     aux1 = h *  E / (1 - nu^2);
