@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Heat Analytic · ONSAS.m</title><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img src="../../../assets/logo.png" alt="ONSAS.m logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">ONSAS.m</a></span></div><form class="docs-search" action="../../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><span class="tocitem">Learning by examples</span><ul><li><a class="tocitem" href="../../../staticVonMisesTruss/">Static Von-Mises Truss</a></li><li><a class="tocitem" href="../../../uniaxialExtension/">Uniaxial extension</a></li><li><a class="tocitem" href="../../../cantileverBeam/">Cantilever Beam</a></li></ul></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../../howtouse/install/">Installation</a></li><li><a class="tocitem" href="../../../howtouse/creatingModels/">Creating Models</a></li><li><a class="tocitem" href="../../../corotationalFrameElement/">Corotational frame</a></li><li><a class="tocitem" href="../../../theory/references/">References</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Heat Analytic</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Heat Analytic</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ONSAS/ONSAS.m/blob/master/docs/src/tutorials/HeatAnalytic/HeatAnalytic.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Heat-Analytic"><a class="docs-heading-anchor" href="#Heat-Analytic">Heat Analytic</a><a id="Heat-Analytic-1"></a><a class="docs-heading-anchor-permalink" href="#Heat-Analytic" title="Permalink"></a></h1><p>In this example a heat transfer problem with known analytical solution is presented and solved. The FEM solution is verified using the analytical solution.</p><h2 id="problem-description"><a class="docs-heading-anchor" href="#problem-description">problem description</a><a id="problem-description-1"></a><a class="docs-heading-anchor-permalink" href="#problem-description" title="Permalink"></a></h2><p>Let us consider the one-dimensional heat equation, <span>$\partial_t T(x, t) = \alpha \partial^2_{xx}T(x, t)$</span> where <span>$\alpha := k / \rho c$</span> is assumed uniform in the domain <span>$[0,1]$</span> and constant. <span>$Q_h = 0$</span> is also assumed. The boundary conditions are given by Dirichlet conditions at both boundaries for all times <span>$T(0,t) = 0$</span> and <span>$T(1,t)=0$</span>. The initial condition is given by the following temperature distribution function:</p><p class="math-container">\[T(x, t=0) = \phi(x) := \sin \pi x + \frac{1}{2}\sin 3\pi x\]</p><pre><code class="nohighlight hljs">using Plots, LaTeXStrings
+
+ϕ(x) = sin(π*x) + sin(3π*x)/2
+
+ne = 50 # number of elements
+xdom = 0:1/ne:1
+T0 = ϕ.(xdom)
+
+plot(0:1e-3:1, ϕ, seriestype=:line, lab=L&quot;\phi(x)&quot;,
+     xlab=L&quot;x&quot;, ylab=L&quot;T&quot;, legend=:bottomright, title=&quot;Initial temperature profile&quot;)
+plot!(xdom, T0, seriestype = :scatter, lab=L&quot;T(x=x_e, 0)&quot;)
+#savefig(&quot;plot_initial_temperature.svg&quot;)
+
+nothing</code></pre><p>The analytic solution in this case is</p><p class="math-container">\[T(x, t) = e^{- \pi^2 \alpha t}\sin \pi x + \frac{1}{2}e^{-(3\pi)^2 \alpha t}\sin 3\pi x,\qquad 0 \leq x \leq 1, t \geq 0.\]</p><h2 id="Numerical-resolution"><a class="docs-heading-anchor" href="#Numerical-resolution">Numerical resolution</a><a id="Numerical-resolution-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-resolution" title="Permalink"></a></h2><h3 id="D-numerical-solution"><a class="docs-heading-anchor" href="#D-numerical-solution">1D numerical solution</a><a id="D-numerical-solution-1"></a><a class="docs-heading-anchor-permalink" href="#D-numerical-solution" title="Permalink"></a></h3><pre><code class="nohighlight hljs">close all, clear all
+addpath( genpath( &#39;../../src/&#39;)); % add ONSAS src functions</code></pre><pre><code class="nohighlight hljs">timeIncr  = 0.0001 ;   Tfinal    = 0.02   ;
+rho       = 1.     ;   cSpHe     = 1.     ;
+kCond     = 4      ;   L         = 1      ;
+Area      = 0.25   ;   nelem     = 20     ;
+Tdiri     = 0      ;   nPlots = 4 ;</code></pre><pre><code class="nohighlight hljs">
+diriDofs = [ 1 nelem+1 ];  robiDofs = [] ;
+
+problemName     = &#39;Heat1DAnalytic&#39; ;
+initialTempFunc = &#39;myInitialTemp&#39; ;
+ambTempFuncName = &#39;myAmbTemp&#39;     ;
+
+ndivs     = [ nelem  ];
+hConv = []; Tamb = [];
+qInpLeft = []; qInpRight = [];
+Tdiri = 0 ;
+
+[Ts, NodesCoord, times ] = HeatFEM( ...
+  timeIncr, Tfinal, ...
+  [rho, cSpHe, kCond], ...
+  [ 1 L Area ], ...
+  ndivs, ...
+  hConv, diriDofs, robiDofs, ambTempFuncName, qInpLeft, qInpRight, Tdiri, ...
+  nPlots, problemName, initialTempFunc, [], [], [], []);
+
+</code></pre><h3 id="D-numerical-solution-2"><a class="docs-heading-anchor" href="#D-numerical-solution-2">3D numerical solution</a><a class="docs-heading-anchor-permalink" href="#D-numerical-solution-2" title="Permalink"></a></h3><pre><code class="nohighlight hljs">
+timeIncr  = 0.0001 ; Tfinal    = 0.01   ;
+Lx        = 1      ; Ly        = .5     ;
+Lz        = .5     ; Tdiri     = 0      ;
+
+assert( Area == (Ly*Lz) ) ;
+
+diriDofs = []; robiDofs = [] ;
+
+nPlots = inf ;
+
+initialTempFunc = &#39;myInitialTemp&#39; ;
+
+ndivs     = [ 10 2 2 ];
+
+hConv = []; Tamb = [];
+qInpLeft = []; qInpRight = [];
+
+Tdiri = 0 ; qInp = 0;
+
+diriFaces = [ Tdiri 1 2 ];
+neumFaces = [ qInp  3 4 5 6 ] ;
+robiFaces = [  ] ;
+
+[Ts3D, NodesCoord, times ] = HeatFEM( ...
+  timeIncr, Tfinal, ...
+  [rho, cSpHe, kCond], ...
+  [ 2 Lx Ly Lz ], ...
+  ndivs, ...
+  hConv, diriDofs, robiDofs, Tamb, qInpLeft, qInpRight, Tdiri, ...
+  nPlots, problemName, initialTempFunc, [], ...
+  diriFaces, neumFaces, robiFaces  );
+
+
+
+
+
+</code></pre><h2 id="solution-verification"><a class="docs-heading-anchor" href="#solution-verification">solution verification</a><a id="solution-verification-1"></a><a class="docs-heading-anchor-permalink" href="#solution-verification" title="Permalink"></a></h2><p>analytical solution computation</p><pre><code class="nohighlight hljs">% analytic solution computation
+indplot = round(nelem/2) ;
+xsAnly = NodesCoord(indplot) ;
+alpha  = kCond / ( rho * cSpHe ) ;
+tanali =  exp( -(  pi)^2 * alpha * times ) *       sin(     pi * xsAnly) ...
+        + exp( -(3*pi)^2 * alpha * times ) * 0.5 * sin( 3 * pi * xsAnly ) ;</code></pre><p>plot settings ``` figure, grid on, hold on MS = 18 ; LW = 1.5 ;</p><p>ntimes = length(times); indsMarkers = floor( linspace(1,ntimes, 6)&#39; ) ;</p><p>plot( times(indsMarkers(1)), Ts(indplot,indsMarkers(1)), &#39;b-x&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW ) plot( times(indsMarkers(1)), tanali(indsMarkers(1)), &#39;r-o&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW )</p><p>% numerical solution plot</p><p>plot( times, Ts(indplot,:), &#39;b&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW ) plot( times(indsMarkers), Ts(indplot,indsMarkers), &#39;x&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW )</p><p>% analytic solution plot plot( times, tanali, &#39;r&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW ) plot( times(indsMarkers), tanali(indsMarkers), &#39;o&#39;,  &#39;markersize&#39;, MS,&#39;linewidth&#39;,LW ) xlabel(&#39;t&#39;), ylabel(&#39;Temp&#39;)</p><p>legend(&#39;FEM1D&#39;,&#39;analytic&#39;)</p><p>print( [ &#39;./pngs/&#39; problemName &#39;.png&#39;],&#39;-dpng&#39; ) % –––––––––––––––––</p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.10 on <span class="colophon-date" title="Saturday 27 November 2021 23:09">Saturday 27 November 2021</span>. Using Julia version 1.6.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
