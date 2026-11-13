@@ -54,4 +54,8 @@ function [numNodes, nodalDofsEntries] = elementTypeDofs(elemType)
     numNodes = 3;
     nodalDofsEntries = [1 2 3 4 5 6]'; % assumed plate surface in x-y
 
+  elseif strcmp(elemType, 'contact-node')
+    numNodes = 1;
+    nodalDofsEntries = [1 3]'; % only x-y displacements, as the triangle solid element
+
   end

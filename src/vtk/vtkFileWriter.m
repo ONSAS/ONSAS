@@ -64,7 +64,10 @@ function vtkFileWriter(filename, nodes, conect, cellPointData, cellCellData)
     % count elements with the current cell type
     nelemCurrType = sum(conect(:, 1) == cellTypes(i));
 
-    if cellTypes(i) == 5   % if it is triangle add (3+1)*nelemCurrType
+    if cellTypes(i) == 3   % if it is a line add (2+1)*nelemCurrType
+      nTotNumbers = nTotNumbers + (2 + 1) * nelemCurrType;
+
+    elseif cellTypes(i) == 5   % if it is triangle add (3+1)*nelemCurrType
       nTotNumbers = nTotNumbers + (3 + 1) * nelemCurrType;
 
     elseif cellTypes(i) == 10   % if it is tetrahedron add (4+1)*nelemCurrType
@@ -88,7 +91,10 @@ function vtkFileWriter(filename, nodes, conect, cellPointData, cellCellData)
     % if (conect(i,1) == 1) || (conect(i,1) == 2)
     %   fprintf(fid,'2 %g %g \n', conect(i,1+(1:2))-1 ) ;
 
-    if conect(i, 1) == 5  % triangle
+    if conect(i, 1) == 3  % line
+      fprintf(fid, '2 %g %g \n', conect(i, 1 + (1:2)));
+
+    elseif conect(i, 1) == 5  % triangle
       fprintf(fid, '3 %g %g %g \n', conect(i, 1 + (1:3)));
 
     elseif conect(i, 1) == 10  % tetrahedron
