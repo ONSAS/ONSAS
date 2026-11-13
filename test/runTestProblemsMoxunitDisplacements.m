@@ -117,3 +117,7 @@ function test21
 
 function test22
   assertEqual(gaussIntegrationTest, true);
+
+function test23
+  contactPlanePlasticity;
+  assertEqual(verifBoolean, true);

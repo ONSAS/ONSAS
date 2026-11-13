@@ -78,19 +78,70 @@ function [vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell] = vtkDataConver
         = frameVtkData(modP.Nodes, modP.Conec(elemIndsElemType, 4:end), ...
                        elemCrossSecParams, modS.U, localIntForces);
 
+    elseif strcmp(elemTypeString, 'contact-node')
+
+      % md the contact elements are not represented themselves, instead a line cell is added
+      % md for each rigid plane they are associated with, to show in the output the obstacle
+      % md the body is in contact with. The line is drawn along the plane, spanning the
+      % md extension of the model plus a margin.
+      matIndsContact = unique(modP.Conec(elemIndsElemType, 1));
+
+      currVtkNodes = [];
+      currVtkConec = [];
+
+      for indMat = 1:length(matIndsContact)
+
+        planeParams  = modP.materials(matIndsContact(indMat)).modelParams;
+        pointOnPlane = planeParams(2:3);
+        normalVec    = planeParams(4:5) / norm(planeParams(4:5));
+        tangentVec   = [-normalVec(2) normalVec(1)];
+
+        % coordinates of the nodes of the model measured along the rigid plane
+        coordsAlongPlane = (modP.Nodes(:, 1:2) - pointOnPlane) * tangentVec';
+        coordIni = min(coordsAlongPlane);
+        coordEnd = max(coordsAlongPlane);
+        margin   = 0.1 * (coordEnd - coordIni);
+
+        % the vtk node numbers are zero based, as for the other element types
+        currVtkConec = [currVtkConec; 3  size(currVtkNodes, 1)  size(currVtkNodes, 1) + 1];
+
+        currVtkNodes = [currVtkNodes; ...
+                        pointOnPlane + (coordIni - margin) * tangentVec  0; ...
+                        pointOnPlane + (coordEnd + margin) * tangentVec  0];
+      end
+
+      % the rigid planes do not move and have no internal forces associated
+      currVtkNodalDisps = zeros(size(currVtkNodes, 1), 3);
+
+      currVtkInternalForcesCell = cell(nIntForces, 1);
+      for i = 1:nIntForces
+        currVtkInternalForcesCell{i} = zeros(size(currVtkConec, 1), 1);
+      end
+
     elseif strcmp(elemTypeString, 'triangle')
 
-      assert(nelems == length(elemIndsElemType), 'plane models do not accept mixed types of elements. create an issue to ask for new feature allowing this');
+      nelemsElemType = length(elemIndsElemType);
+
+      % md the contact elements add no cells to the vtk output, therefore they are allowed to
+      % md be combined with the triangles. Any other combination is not supported yet.
+      nelemsContact = 0;
+      for indAux = 1:length(elemTypeInds)
+        if strcmp(modP.elements(elemTypeInds(indAux)).elemType, 'contact-node')
+          nelemsContact = nelemsContact + sum(modP.Conec(:, 2) == elemTypeInds(indAux));
+        end
+      end
+
+      assert(nelems == nelemsElemType + nelemsContact, 'plane models do not accept mixed types of elements. create an issue to ask for new feature allowing this');
 
       currVtkInternalForcesCell = cell(length(localIntForces), 1);
       for i = 1:length(currVtkInternalForcesCell)
-        currVtkInternalForcesCell{i} = zeros(nelems, 1);
+        currVtkInternalForcesCell{i} = zeros(nelemsElemType, 1);
       end
       % reshape the displacements vector
       currVtkNodalDisps = reshape(modS.U(1:2:end)', [3, size(modP.Nodes, 1)])';
       % and add it to the nodes matrix
       currVtkNodes   = modP.Nodes + currVtkNodalDisps;
-      currVtkConec = [5 * ones(nelems, 1)     modP.Conec(:, 4:6) - 1];
+      currVtkConec = [5 * ones(nelemsElemType, 1)     modP.Conec(elemIndsElemType, 4:6) - 1];
       vtkStress  = {};
 
     elseif strcmp(elemTypeString, 'triangle-plate') || strcmp(elemTypeString, 'triangle-shell')
@@ -128,7 +179,7 @@ function [vtkNodes, vtkConec, vtkPointDataCell, vtkCellDataCell] = vtkDataConver
     % add cells
     nVtkCells = size(vtkConec, 1);
     nCurrVtkCells = size(currVtkConec, 1);
-    if nVtkCells > 0 % not the first time in elemtype loop
+    if nCurrVtkCells > 0 && nVtkCells > 0 % not the first time in elemtype loop
       vtkConec((nVtkCells + 1):(nVtkCells + nCurrVtkCells), 1:(size(currVtkConec, 2))) ...
         = [currVtkConec(:, 1) currVtkConec(:, 2:end) + totalNodes];
     elseif nCurrVtkCells > 0

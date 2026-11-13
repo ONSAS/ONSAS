@@ -102,6 +102,8 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     FaeroElem = [];
     Fthere = [];
     MataeroEelem = [];
+    strain = [];
+    acum_plas_strain = [];
 
     mebVec = Conec(elem, 1:3);
 
@@ -336,6 +338,21 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
       Finte = fs{1};
       Ke    = ks{1};
 
+      % ---------  node to rigid plane contact element --------------------
+    elseif strcmp(elemType, 'contact-node')
+
+      [fs, ks, gapElem] =  contactNodeRigidPlane(elemNodesxyzRefCoords, elemDisps, modelName, modelParams);
+
+      Finte = fs{1};
+      Ke    = ks{1};
+
+      % the contact element has no mass nor damping, null blocks are assembled in dynamics
+      Fmase = fs{3};
+      Mmase = ks{3};
+      Ce    = ks{2};
+
+      localInternalForces(elem).gap = gapElem;
+
       % ---------  tetrahedron solid element -----------------------------
     elseif strcmp(elemType, 'tetrahedron')
 
@@ -412,7 +429,7 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
     if stressBool
       stressMat(elem, 1:length(stressElem)) = stressElem;
 
-      if exist('strain') == 1
+      if ~isempty(strain)
         strain_vec{ elem }           = strain';
         acum_plas_strain_vec{ elem } = acum_plas_strain;
       end
