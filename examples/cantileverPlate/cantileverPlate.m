@@ -28,7 +28,7 @@ E = 200e6;
 nu = 0.0;
 Ly = .5;
 Lx = 1;
-tz = .05;
+tz = .02;
 I = Ly * tz^3 / 12;
 %
 qx  = 100; % kN/m2
@@ -64,7 +64,7 @@ boundaryConds(1).imposDispDofs =  [1 2 3 4 5 6];
 boundaryConds(1).imposDispVals =  [0 0 0 0 0 0];
 %
 boundaryConds(2).loadsCoordSys = 'global';
-boundaryConds(2).loadsTimeFact = @(t) t;
+boundaryConds(2).loadsTimeFact = @(t) 1;
 boundaryConds(2).loadsBaseVals = [qx 0 0 0 -qz 0];
 %
 % md
@@ -108,12 +108,44 @@ otherParams.plots_format = 'vtk';
 nelem = size(modelProperties.Conec, 1);
 matSolic = getInternalForces(modelSolutions{end}.localInternalForces, 1:nelem, {'Mx', 'My', 'Mxy'});
 numer_maxMx_plate = max(max(matSolic));
-numer_wmax_plate = min(matUs(5:6:end));
+
+[numer_wmax_plate, idx] = min(matUs(5:6:end,2));
 % md
 analy_maxMx = Fz * Lx / Ly;
 analy_wmax = -Fz * Lx^3 / (3 * E * I);
 analy_dxmax = qx * Lx / E;
 %
+
+
+materials(1).density  = 8e3 ;
+
+boundaryConds(2).loadsTimeFact = @(t) 1;
+boundaryConds(2).loadsBaseVals = [qx 0 0 0 -qz 0];
+
+analysisSettings.methodName    = 'newmark';
+analysisSettings.deltaT        =   0.5;
+analysisSettings.finalTime     =   100;
+analysisSettings.stopTolDeltau =   1e-8;
+analysisSettings.stopTolForces =   1e-8;
+analysisSettings.stopTolIts    =   10;
+
+
+otherParams.nodalDispDamping = 1e-0;
+
+
+[modelInitSol, modelProperties, BCsData] = initONSAS(materials, elements, boundaryConds, initialConds, mesh, analysisSettings, otherParams);
+
+% mdAfter that the structs are used to perform the numerical time analysis
+[matUs, loadFactorsMat, modelSolutions] = solveONSAS(modelInitSol, modelProperties, BCsData);
+idx
+desp_dinam = matUs(5:6:end,:)(idx,:);
+
+plot(0:analysisSettings.deltaT:analysisSettings.finalTime, desp_dinam)
+
+
+stop
+
+
 % ====================================================
 % triangle CST element
 % ====================================================

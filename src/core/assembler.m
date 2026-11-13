@@ -314,6 +314,10 @@ function [fsCell, stressMat, tangMatsCell, localInternalForces, strain_vec, acum
       Finte = fs{1};
       Ke    = ks{1};
 
+      if dynamicProblemBool
+        [Fmase, Mmase] = inertialTriangleForces(elemNodesxyzRefCoords, thickness, density, dotdotdispsElem);
+      end
+
     elseif strcmp(elemType, 'triangle-shell')
 
       thickness = elemCrossSecParams{2};
